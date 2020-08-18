@@ -26800,7 +26800,8 @@
 				}
 			}
 			if(!withport){
-				ip=ip+':8080';
+				ip=ip+'';
+				//ip=ip+':8080';
 			}
 			_status.connectCallback=callback;
 			try{
@@ -26809,7 +26810,7 @@
 					game.ws.close();
 					delete game.ws;
 				}
-				game.ws=new WebSocket('ws://'+ip+'');
+				game.ws=new WebSocket('wss://'+ip+'/wss/');
 			}
 			catch(e){
 				alert('错误：无效联机地址');
