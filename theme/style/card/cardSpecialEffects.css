@@ -1,0 +1,41 @@
+
+.card_hightlight {
+    animation: pulse 5s infinite;
+}
+
+.player_buff {
+    animation: game_start 0.2s;
+    -webkit-animation: game_start 0.2s;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: rgba(255, 150, 0, 0.45);
+}
+.player_nerf {
+    animation: game_start 0.2s;
+    -webkit-animation: game_start 0.2s;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: rgba(10, 155, 70, 0.5);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 8px 6px #fff;
+    }
+    50% {
+        box-shadow: 0 0 8px 6px #faf607;
+    }
+    100% {
+        box-shadow: 0 0 8px 6px #fff;
+    }
+}
