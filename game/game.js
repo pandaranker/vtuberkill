@@ -49542,7 +49542,7 @@
 				for(i=0;i<skills.length;i++){
 					if(lib.skill[skills[i]]&&(lib.skill[skills[i]].nopop||lib.skill[skills[i]].equipSkill)) continue;
 					if(lib.translate[skills[i]+'_info']){
-						translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,2);
+						translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,4);
 						if(node.forbiddenSkills[skills[i]]){
 							var forbidstr='<div style="opacity:0.5"><div class="skill">【'+translation+'】</div><div>';
 							if(node.forbiddenSkills[skills[i]].length){
