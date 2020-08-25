@@ -12,12 +12,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             AkaiHaato:['female','shu',3,['liaolishiyan','momizhiyan']],
             /**夏色祭 */
             NatsuiroMatsuri:['female','shu',3,['huxi1','lianmeng']],
+            /**萝卜子 */
+            RobokoSan:['female','shu',3,['gaonengzhanxie','ranyouxielou']],
         },
         characterIntro:{
             TokinoSora:'时乃空',
             YozoraMel:'夜空梅露',
             AkaiHaato:'赤井心',
-            NatsuiroMatsuri:'夏色祭'
+            NatsuiroMatsuri:'夏色祭',
+            RobokoSan:'萝卜子'
         },
 		skill:{
 			taiyangzhiyin:{
@@ -866,7 +869,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         if(target.countCards('h')<1){
                             return false;
                         }
-                        if(get.distance(player,target)<=1) return true;
+                        if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(target)){
+                            return false;
+                        }
+                        if(player.storage.huxiGroup.contains(target)) return false;
 						if(game.hasPlayer(function(current){
                             if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(current)&&current.countCards('h')){
                                 return false;
@@ -987,6 +993,67 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         }
                     }
                 }
+            },
+            gaonengzhanxie:{
+				mod:{
+					cardUsable:function(card,player,num){
+						if(card.name=='sha'){
+                            if(player.countCards('e')==0)
+                                return num;
+                            else
+                                return player.countCards('e');
+                        } 
+					},
+                },
+                group:['gaonengzhanxie_draw'],
+                subSkill:{
+                    draw:{
+                        trigger:{
+                            player:'useCardAfter'
+                        },
+                        firstDo:true,
+                        direct:true,
+                        filter:function(event,player){
+                            if(event.card.name=='sha'&&player.getCardUsable({name:'sha'})==0) return true;
+                            else return false;
+                        },
+                        content:function(){
+                            player.draw(player.countCards('e')==0?1:player.countCards('e'));
+                        }
+                    }
+                }
+            },
+            ranyouxielou:{
+                forced:true,
+				//charlotte:true,
+				trigger:{player:'damageBegin4'},
+				filter:function(event){
+					if(event.nature=='thunder') return true;
+					return false;
+				},
+				content:function(){
+                    trigger.cancel();
+                    player.hp+=trigger.num;
+                },
+                group:'ranyouxielou_fire',
+                subSkill:{
+                    fire:{
+                        trigger:{global:'damageBegin3'},
+                        forced:true,
+                        filter:function(event,player){
+                            if(event.player&&player.inRange(event.player)&&event.nature=='fire') {
+                                if(player.countCards('h')>=player.getHandcardLimit())
+                                return true;
+                            }//
+                            return false;
+                        },
+                        content:function(){
+                            player.chooseToDiscard('he','弃置一张牌，使该伤害+1',true,1);
+                            trigger.num++;
+                            //player.recover();
+                        }
+                    }
+                }
             }
 		},
 		translate:{
@@ -1012,7 +1079,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             huxi1:'呼吸',
             huxi1_info:'出牌阶段限一次，你可以令攻击范围内的一名其他角色与你同时展示一张手牌并交换，若你获得了红色牌，你可以摸一张牌并令你本回合使用的下一张牌不受距离与次数限制；若没有人获得红色牌，你失去 1 点体力。',
             lianmeng:'连梦',
-            lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。'
+            lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
+            RobokoSan:'萝卜子',
+            gaonengzhanxie:'高能战械',
+            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数且至少为1。当你于回合内使用【杀】后，若你无法再使用【杀】，你摸X张牌。（X为你本阶段已使用过的【杀】的数量）',
+            ranyouxielou:'燃油泄漏',
+            ranyouxielou_info:'锁定技，你受到火焰伤害时改为回复等量体力值。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
         },
 	};
 });

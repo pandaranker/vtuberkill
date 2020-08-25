@@ -34,7 +34,7 @@ window.config={
 	volumn_background:8,
 	volumn_audio:8,
 
-	connect_avatar:'caocao',
+	connect_avatar:'KizunaAI',
 	connect_nickname:'无名玩家',
 	config_menu:true,
 	auto_popped_config:true,
@@ -72,14 +72,14 @@ window.config={
 	alteredSkills:[],
 	brokenFile:[],
 
-	theme:'woodden',
+	theme:'music',
 	layout:'mobile',
 	card_style:'default',
 	cardback_style:'default',
 	hp_style:'default',
 
 	image_character:'default',
-	image_background:'default',
+	image_background:'yinxiang_bg',
 
 	asset_image:true,
 	asset_font:true,

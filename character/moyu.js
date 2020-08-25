@@ -3,19 +3,117 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'moyu',
 		connect:true,
+		card: {
+			huoyanping: {
+				fullskin:true,
+				type:'trick',
+				enable:true,
+				vanish:true,
+				derivation:'dujun',
+				filterTarget: function(card, player, target) {
+					return true;
+				},
+				content: function() {
+					'step 0'
+					target.damage('fire', player);
+					'step 1'
+					event.list = [];
+					game.players.forEach(function(cur) {
+						if (get.distance(target, cur) <= 1 && target != cur) {
+							event.list.push(cur);
+						}
+					})
+					event.list.sortBySeat(player);
+					player.line(event.list, 'white');
+					'step 2'
+					if (!event.list.length) {
+						event.finish();
+					}
+					else {
+						var cur = event.list.shift();
+						cur.damage('fire', player);
+						event.goto(2);
+					}
+				}
+			},
+			kuangnujungu: {
+				fullskin:true,
+				type:'trick',
+				enable:true,
+				vanish:true,
+				derivation:'dujun',
+				selectTarget:-1,
+				toself:true,
+				filterTarget:function(card,player,target){
+					return target==player;
+				},
+				modTarget:true,
+				content: function() {
+					player.recover();
+					player.addTempSkill('kuangnujungu');
+				},
+			},
+			buxiongxianjing: {
+				fullskin:true,
+				type:'trick',
+				enable:true,
+				vanish:true,
+				derivation:'dujun',
+				filterTarget: function(card, player, target) {
+					return true;
+				},
+				content: function() {
+					'step 0'
+					target.discard(target.getCards('e'));
+					'step 1'
+					if (target.countCards('h')) {
+						target.chooseToDiscard(true, 'h', target.countCards('h') - 1);
+					}
+				},
+			},
+		},
 		character:{
 			shenshenAlice: ['female', 'shen', 6, ['huanzhuang', 'tinenghuifu']],
 			shenshenHoshimatiSuisei: ['female', 'shen', 4, ['xinghejianduei_ban', 'xingyongzange']],
 			conqueror: ['male', 'qun', 4, ['dunji', 'kongtizhemo']],
 			hongyouchaoshou: ['male', 'qun', 3, ['wangzhedating', 'xukongkaituan', 'yingyangjiaohuan']],
-			highlander: ['male', 'qun', 4, ['jinggongzitai', 'poshantiji', 'lingqiaoshanbi']],
+			highlander: ['male', 'qun', 4, ['jinggongzitai', 'poshantiji', 'balor']],
 			// SuzukaUtako2: ['female', 'wu', 3, ['jiuhao', 'shizhangmengyan', 'fuzhe']],
+			Apollyon: ['female', 'shen', 4, ['tiaobo', 'tiaobo_glo', 'haozhanzhe', 'zhuosheng'], ['zhu']],
+			dujun: ['male', 'qun', 5, ['zhangzhezhinu', 'weijingwuqi']],
 		},
 		characterIntro:{
 			conqueror: 'In desperate times, conscripted criminals refill our ranks. Sometimes, however, you find a diamond in the rough. The most elite earn their name: Conquerors. Strong as a battering ram, resilient as a fortress gate, their flail is as dangerous to the wielder as it is to the enemy. But in the right hands it becomes... unstoppable',
 			hongyouchaoshou: '最好的评价就是逝者安息',
+			Apollyon: '乐子人领袖亚珀伦',
 		},
 		skill:{
+			kuangnujungu: {
+				direct: true,
+				init: function(player) {
+					var buff = '.player_buff';
+					game.broadcastAll(function(player, buff){
+						player.node.kuangnujungu= ui.create.div(buff ,player.node.avatar);
+						player.node.kuangnujungu2 = ui.create.div(buff ,player.node.avatar2);
+					}, player, buff);
+				},
+				trigger: {
+					source: 'damageBegin',
+				},
+				content: function() {
+					player.removeSkill('kuangnujungu');
+					trigger.num++;
+				},
+				onremove: function(player) {
+					game.broadcastAll(function(player){
+						player.node.kuangnujungu.delete();
+						player.node.kuangnujungu2.delete();
+						delete player.node.kuangnujungu;
+						delete player.node.kuangnujungu2;
+					}, player);
+				}
+			},
+
 			xinghejianduei_ban: {
 				trigger: {
 					player: ['phaseUseBegin'],
@@ -563,12 +661,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					in: {
 						audio: 'jinggongzitai_in',
 						trigger: {
-							source: 'damageEnd',
+							source: 'damageAfter',
 							player: 'phaseDiscardEnd'
 						},
 						filter: function(event, player) {
 							if (player.hasSkill('gong_mark')) return false;
-							// console.log(event.name);
 							if (event.name == 'phaseDiscard') {
 								return event.cards && event.cards.length >= 2;
 							}
@@ -586,7 +683,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						forced: true, 
 						filter: function(event, player) {
-							return player.hasSkill('gong_mark');
+							return player.hasSkill('gong_mark') && get.name(event.card) == 'sha';
 						},
 						content: function() {
 							player.chooseToDiscard(true, 'h');
@@ -596,52 +693,80 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			poshantiji: {
+				direct: true,
 				audio: 2,
 				trigger: {
 					player: 'shaMiss',
-					target: 'shaMiss',
+					target: 'shaMiss'
 				},
 				filter: function(event, player) {
 					return player.hasSkill('gong_mark');
 				},
 				content: function() {
 					'step 0'
-					event.tar = trigger.target == player ? trigger.player : trigger.target;
-					console.log(event.tar);
-					player.chooseToDiscard('he');
-					'step 1'
-					if (result.bool) {
-						console.log('true');
-						player.judge();
-					}
-					else event.finish();
-					'step 2'
-					var suit = result.suit;
-					console.log(suit);
-					if (suit == 'heart') {
-						player.removeSkill('gong_mark');
-					}
-					else if (suit == 'diamond') {
-						if (!event.tar.classList.contains('turnedover')) {
-							event.tar.turnOver();
-						}
+					if (trigger.player == player && player.countDiscardableCards('he')) {
+                    	player.getStat().card.sha--;
 					}
 					else {
-						event.tar.discard(event.tar.getCards('e'));
-						event.tar.chooseToDiscard(true, 'h', 2);
+						player.drawTo(player.maxHp);
 					}
-				}
+					'step 1'
+					event.tar = trigger.target == player ? trigger.player : trigger.target;
+					player.chooseToDiscard('he', [1, Infinity], true).set('ai', function(card) {
+						if (_status.event.goon) return 8 - get.value(card);
+						return 0;
+					});
+					'step 2'
+					if (result.bool && result.cards.length) {
+						player.logSkill('poshantiji', event.tar);
+						player.discardPlayerCard(
+							'he', 
+							event.tar, 
+							Math.min(result.cards.length, event.tar.countDiscardableCards(player, 'he')),
+							true
+						);
+					}
+				},
 			},
-			lingqiaoshanbi: {
+			balor: {
 				audio: 2,
-				trigger: {
-					player: ['useCardAfter', 'respondAfter'],
+				enable:["chooseToRespond","chooseToUse"],
+				selectCard: 2,
+				complexCard:true,
+				filter: function (event, player) {
+					return player.hasSkill('gong_mark');
 				},
-				filter: function(event, player) {
-					return player.hasSkill('gong_mark') && get.name(event.card) == 'shan';
+				filterCard:function (card,player){
+					if(ui.selected.cards.length){
+						return get.suit(card)==get.suit(ui.selected.cards[0]);
+					}
+					var cards=player.getCards('h');
+					for(var i=0;i<cards.length;i++){
+						if(card != cards[i]){
+							if(get.suit(card)==get.suit(cards[i])) return true;
+						}
+					}
+					return false;
 				},
-				content: function() {
-					player.draw();
+				viewAs: {
+					name: 'sha',
+					nature: 'fire',
+				},
+				group: ['balor_dam'],
+				subSkill: {
+					dam: {
+						trigger: {
+							player: 'useCard',
+						},
+						direct: true,
+						popup:false,
+						content: function() {
+							console.log(trigger);
+							if (trigger.skill == 'balor') {
+								trigger.baseDamage = trigger.cards.length;
+							}
+						}
+					},
 				}
 			},
 
@@ -730,6 +855,178 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+
+			wolf: {
+				mark: true,
+				locked: true,
+				marktext: '狼',
+				intro: {
+					content: '狼标记',
+				},
+			},
+			sheep: {
+				mark: true,
+				locked: true,
+				marktext: '羊',
+				intro: {
+					content: "羊标记",
+				}
+			},
+
+			tiaobo: {
+				unique: true,
+				enable: 'phaseUse',
+				limited: true,
+				skillAnimation: 'epic',
+				animationColor: 'thunder',
+				selectTarget: 2,
+				multitarget: true,
+				multiline: true,
+				filterTarget: function(card, player, target) {
+					return player != target;
+				},
+				content: function() {
+					player.awakenSkill('tiaobo');
+					player.addSkill('tiaobo_used');
+					targets[0].addSkill('wolf');
+					targets[0].markSkill('wolf');
+					targets[1].addSkill('sheep');
+					targets[1].markSkill('sheep');
+				},
+				subSkill: {
+					glo: {
+						direct: true,
+						priority: -100,
+						trigger: {
+							global: 'dieAfter',
+						},
+						filter: function(event, player) {
+							return event.source != player && event.source;
+						},
+						content: function() {
+							var target = trigger.source;
+							if (target.hasSkill('sheep')){
+								target.removeSkill('sheep');
+								target.unmarkSkill('sheep');
+							}
+							target.addSkill('wolf');
+							target.markSkill('wolf');
+						}
+					}
+				}
+			},
+			haozhanzhe: {
+				group: ['haozhanzhe_dam', 'haozhanzhe_die'],
+				subSkill: {
+					dam: {
+						direct: true,
+						trigger: {
+							global: 'damageEnd',
+						},
+						filter: function(event, player) {
+							return event.player.hasSkill('sheep')
+								|| (event.source && event.source.hasSkill('wolf'));
+						},
+						content: function() {
+							'step 0'
+							game.broadcastAll(function(player, source) {
+								player.chooseTarget("令一名角色摸一张牌", function(card, player, target) {
+									return target == player || target == source;
+								})
+							}, player, trigger.source);
+							'step 1'
+							if (result.bool) {
+								player.logSkill('haozhanzhe', result.targets);
+								result.targets[0].draw();
+							}
+						}
+					},
+					die: {
+						trigger: {
+							global: 'dieAfter',
+						},
+						content: function() {
+							player.draw(3);
+						}
+					},
+				},
+			},
+			zhuosheng: {
+				zhuSkill: true, 
+				unique: true,
+				limited: true,
+				skillAnimation: 'epic',
+				animationColor: 'thunder',
+				trigger: {
+					global: 'dieAfter',
+				},
+				filter: function(event, player) {
+					return event.player != player 
+						&& event.player.hasSkill('wolf')
+						&& player.hasZhuSkill('zhuosheng')
+						&& player.countDiscardableCards('he') >= 5;
+				},
+				content: function() {
+					'step 0'
+					player.chooseToDiscard("弃置四张牌令其复活", 'he', 4, true);
+					'step 1'
+					if (result.bool && result.cards.length == 4) {
+						player.awakenSkill('zhuosheng');
+						var cur = trigger.player;
+						game.broadcastAll(function(target) {
+							target.revive(2);
+							game.addVideo('revive', target);
+							target.draw(2);
+							target.identity = 'zhong'
+							target.update();
+							// if (target.hasSkill('wolf')) {
+							// 	target.markSkill('wolf');
+							// }
+							// if (target.hasSkill('sheep')) {
+							// 	target.markSkill('sheep');
+							// }
+						}, cur)
+					}
+				}
+			},
+
+			zhangzhezhinu: {
+				direct: true,
+				shaRelated:true,
+				trigger: {
+					player:'useCard'
+				},
+				filter: function(event, player){
+					return event.card.name == 'sha';
+				},
+				content:function(){
+					trigger.directHit.addArray(game.filterPlayer(function(cur) {
+						return get.distance(player, cur) <= 1;
+					}));
+				}
+			},
+			weijingwuqi: {
+				enable: 'chooseToUse',
+				chooseButton: {
+					dialog: function() {
+						return ui.create.dialog('维京武器', [[
+								['', '', 'huoyanping'], 
+								['', '', 'kuangnujungu'], 
+								['', '', 'buxiongxianjing']
+							], 'vcard']);
+					},
+					backup: function(links, player) {
+						return {
+							selectCard: 2,
+							filterCard: function(card) {
+								return get.type(card) == 'trick' || get.type(card) == 'delay';
+								// return ['delay', 'trick'].contains(get.type(card));
+							},
+							viewAs: {name: links[0][2]},
+						}
+					}
+				},
+			},
 		},
 		translate:{
 			shenshenAlice: '神神爱丽丝',
@@ -768,7 +1065,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				+ get.translation('heart')  + '，退出进攻姿态'
 				+ get.translation('diamond') + '，若来源未翻面，来源翻面'
 				+ '为黑色，来源弃置所有装备再弃置两张手牌', 
-			lingqiaoshanbi: '灵巧闪避',
+			balor: '巴罗尔之力',
 			lingqiaoshanbi_info: '当你处于进攻姿态时，你使用或打出一张闪后可以摸一张牌',
 
 			SuzukaUtako2: '2号铃鹿诗子',
@@ -778,6 +1075,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shizhangmengyan_info: '当你成为黑色牌的目标时，你弃置一张牌，视为对黑牌使用者使用一张杀，若此杀被抵消，取消你于该黑色牌的目标。',
 			fuzhe: '腐者',
 			fuzhe_info: '其他角色对自己以外的同性别角色造成伤害，若因本次伤害进入濒死状态时你可以立即摸一张牌，若因此伤害导致角色阵亡你可以再摸两张牌。',
+
+			Apollyon: '亚珀伦',
+			tiaobo: '挑拨',
+			tiaobo_info: '限定技，出牌阶段，你选择两名其它角色分别获得“狼”标记和“羊”标记。一名其它角色杀死其它角色后，他失去“羊”标记并获得“狼”标记',
+			haozhanzhe: '好战者',
+			haozhanzhe_info: '造成伤害后，若伤害的来源有“狼”标记或受到伤害的角色有“羊”标记，你可令你或伤害来源摸一张牌；当一名角色阵亡后，你可以摸三张牌',
+			zhuosheng: '擢升',
+			zhuosheng_info: '主公技，限定技，有“狼”标记的角色阵亡后，你可以弃置四张牌令其复活。其回复两点体力并摸两张牌，然后将身份改变为忠臣',
+
+			dujun: '督军',
+			zhangzhezhinu: '长者之怒',
+			zhangzhezhinu_info: '锁定技，你计算距离为1的角色无法响应你的【杀】。',
+			weijingwuqi: '维京武器',
+			weijingwuqi_info: '你可以将两张锦囊牌当作【火焰瓶】，【狂怒菌菇】或【捕熊陷阱】使用。',
+			huoyanping: '火焰瓶',
+			huoyanping_info: '对一名角色造成一点火焰伤害，然后对此角色距离1以内的其它角色造成一点火焰伤害。',
+			kuangnujungu: '狂怒菌菇',
+			kuangnujungu_info: '你回复一点体力，且本回合下一次造成的伤害+1。',
+			buxiongxianjing: '捕熊陷阱',
+			buxiongxianjing_info: '弃置一名角色装备区的所有牌，再令其弃置其手牌数-1的手牌。',
 		},
 	};
 });
