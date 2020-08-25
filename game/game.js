@@ -716,7 +716,7 @@
 									me.style.height='22px';
 								}
 								me.style.borderRadius='2px';
-								var list=['KizunaAI','MiraiAkari','Siro','Nekomasu'];
+								var list=['re_caocao','re_liubei','sp_zhangjiao','sunquan'];
 								for(var i=0;i<4;i++){
 									var player=ui.create.div('.fakeplayer',node);
 									ui.create.div('.avatar',player).setBackground(list.randomRemove(),'character');
@@ -5419,7 +5419,7 @@
 					},
 					connect_avatar:{
 						name:'联机头像',
-						init:'KizunaAI',
+						init:'caocao',
 						item:{},
 						frequent:true,
 						onclick:function(item){
@@ -25774,7 +25774,7 @@
 				updaterooms:function(list,clients){
 					if(ui.rooms){
 						ui.window.classList.add('more_room');
-						var list2=['KizunaAI','MononobeAlice','TokinoSora','MiraiAkari','Siro','Nekomasu'];
+						var list2=['re_caocao','re_liubei','sunquan','sp_zhangjiao','re_yuanshao','dongzhuo'];
 						for(var i=0;i<ui.rooms.length;i++){
 							ui.rooms[i].initRoom(list[i],list2[i]);
 						}
@@ -43362,7 +43362,7 @@
 
 						for(var i=0;i<button.info.length;i++){
 							var node=ui.create.div('.menubutton.videonode.pointerdiv',uiintro.content);
-							ui.create.div('.menubutton.videoavatar',node).setBackground(button.info[i][1]||'KizunaAI','character');
+							ui.create.div('.menubutton.videoavatar',node).setBackground(button.info[i][1]||'caocao','character');
 							if(button.info[i][4]==game.wsid){
 								ui.create.div('.name','<span class="thundertext thunderauto">'+(button.info[i][0]||'无名玩家'),node);node.isme=true;
 							}

@@ -4,10 +4,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'nijisanji',
         connect:true,
         character:{
-            MononobeAlice:['female','wu',3,['tinenghuifu1','dianmingguzhen']],
+			/**物述有栖 */
+			MononobeAlice:['female','wu',3,['tinenghuifu1','dianmingguzhen']],
+			/**静凛 */
+			ShizukaRin:['female','wu',4,['mozhaotuji']],
+			/**家长麦 */
+			IenagaMugi:['female','wu',3,['fengxue','yuepi','cangxiong']],
         },
         characterIntro:{
-            MononobeAlice:'物述有栖',
+			MononobeAlice:'物述有栖',
+			ShizukaRin:'静凛',
+			IenagaMugi:'家长麦',
         },
         skill:{
             fuheijs:{
@@ -186,7 +193,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 },
 				mod:{
 					selectTarget:function(card,player,range){
-						console.log(card.nature,range);
+						//console.log(card.nature,range);
 						if(card.name!='sha'||card.nature!='thunder') return;
 						if(range[1]==-1) return;
 						range[1]+=2;
@@ -290,7 +297,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.recover();
 					"step 2"
 					if(event.count>0){
-						console.log(event.count);
+						//console.log(event.count);
 						player.chooseBool(get.prompt2('tinenghuifu1')).set('frequentSkill','tinenghuifu1').ai=lib.filter.all;
 					}
 					"step 3"
@@ -303,7 +310,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['tinenghuifu1_hp'],
 				subSkill:{
 					hp:{
-						trigger:{player:'changeHp'},
+						trigger:{player:'loseHpEnd'},
 						forced:true,	
 						nopop:true,//player是否logSkill('此技能')，true为不
 						content:function(){
@@ -521,6 +528,256 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					});
 				},
+			},
+			mozhaotuji:{
+				trigger:{player:'phaseUseAfter'},
+				filter:function(event,player){
+					if((player.getHistory('useCard').length+player.getHistory('respond').length)>=2)
+						return true;
+					else
+						return false;
+				},
+				forced:true,
+				group:['mozhaotujiJudge','mozhaotujiPhaseDraw','mozhaotujiDiscard'],
+				content:function(){
+					'step 0'
+					player.draw(1);
+					'step 1'
+					player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
+					player.getHistory('respond').splice(0,player.getHistory('respond').length);
+				}
+			},
+			mozhaotujiJudge:{
+				trigger:{
+					player:'phaseJudgeBefore'
+				},
+				filter:function(event,player){
+					return !player.hasSkill('mozhaotujiStop');
+				},
+				prompt:function(){
+					return '把判定阶段转换为出牌阶段';
+				},
+				content:function(){
+					'step 0'
+					if(!player.hasSkill('mozhaotujiStart'))
+						player.addTempSkill('mozhaotujiStart');
+					trigger.cancel();
+					'step 1'
+					player.phaseUse();
+					'step 2'
+					var stat=player.getStat();
+					stat.card={};
+					for(var i in stat.skill){
+						var bool=false;
+						var info=lib.skill[i];
+						if(info.enable!=undefined){
+							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+						}
+						if(bool) stat.skill[i]=0;
+					}
+				}
+			},
+			mozhaotujiPhaseDraw:{
+				trigger:{
+					player:'phaseDrawBefore'
+				},
+				filter:function(event,player){
+					return !player.hasSkill('mozhaotujiStop');
+				},
+				prompt:function(){
+					return '把摸牌阶段转换为出牌阶段';
+				},
+				content:function(){
+					'step 0'
+					if(!player.hasSkill('mozhaotujiStart'))
+						player.addTempSkill('mozhaotujiStart');
+					trigger.cancel();
+					'step 1'
+					player.phaseUse();
+					'step 2'
+					var stat=player.getStat();
+					stat.card={};
+					for(var i in stat.skill){
+						var bool=false;
+						var info=lib.skill[i];
+						if(info.enable!=undefined){
+							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+						}
+						if(bool) stat.skill[i]=0;
+					}
+				}
+			},
+			mozhaotujiDiscard:{
+				trigger:{
+					player:'phaseDiscardBefore'
+				},
+				filter:function(event,player){
+					return !player.hasSkill('mozhaotujiStop');
+				},
+				prompt:function(){
+					return '把弃牌阶段转换为出牌阶段';
+				},
+				content:function(){
+					'step 0'
+					if(!player.hasSkill('mozhaotujiStart'))
+						player.addTempSkill('mozhaotujiStart');
+					trigger.cancel();
+					'step 1'
+					player.phaseUse();
+					'step 2'
+					var stat=player.getStat();
+					stat.card={};
+					for(var i in stat.skill){
+						var bool=false;
+						var info=lib.skill[i];
+						if(info.enable!=undefined){
+							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+						}
+						if(bool) stat.skill[i]=0;
+					}
+				}
+			},
+			mozhaotujiStart:{
+				trigger:{
+					player:['phaseJudgeAfter','phaseDrawAfter','phaseDiscardAfter']
+				},
+				direct:true,
+				filter:function(event,player){
+					if((player.getHistory('useCard').length+player.getHistory('respond').length)==0)
+						return true;
+					else
+						return !player.hasSkill('mozhaotujiStop');
+				},
+				content:function(){
+					player.addTempSkill('mozhaotujiStop');
+				}
+			},
+			mozhaotujiStop:{
+
+			},
+			fengxue:{
+				trigger:{
+					player:'phaseUseBefore'
+				},
+				content:function(){
+					'step 0'
+					trigger.cancel();
+					'step 1'
+					event.players=[];
+					event.players=game.filterPlayer(function(current){
+						return (current!=player)&&current.hp>player.hp;
+					});
+					'step 2'
+					ui.clear();
+					var num;
+					num=event.players.length+1;
+					var cards=get.cards(num);
+					event.cards=cards;
+					event.gains=[];
+					event.discards=[];
+					game.cardsGotoOrdering(cards).relatedEvent=event.getParent();
+					var dialog=ui.create.dialog('奋学',cards,true);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['奋学',get.cardsInfo(cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						var dialog=ui.create.dialog('奋学',cards,true);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},cards,dialog.videoId);
+					event.dialog=dialog
+					game.log(player,'观看了','#y牌堆顶的四张牌');
+					//var content=['牌堆顶的'+event.cards.length+'张牌',event.cards];
+					//player.chooseControl('ok').set('dialog',content);
+					var chooseButton=player.chooseButton(true,function(button){
+						return get.value(button.link,_status.event.player);
+					}).set('dialog',dialog.videoId);
+					event.chooseButton=chooseButton;
+					'step 3'
+					if(!result.links[0]){
+						event.finish();
+					}
+					else{
+						var bool=game.hasPlayer(function(current){
+							return player.canUse(result.links[0],current);
+						});
+						if(bool){
+							player.chooseUseTarget(result.links[0],true,false);
+						}
+						else event.discards.push(result.links[0]);
+						event.cards.remove(result.links[0]);
+					}
+					'step 4'
+					player.gain(event.cards,'gain2');
+					if(event.discards.length){
+						player.$throw(event.discards);
+						game.cardsDiscard(event.discards);
+					}
+					ui.clear();
+					'step 5'
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+				},
+			},
+			yuepi:{
+				trigger:{
+					player:'phaseDiscardBefore',
+				},
+				filter:function (event,player){
+					return (player.countCards('h')>=player.countCards('e'))&&player.countCards('e')>0;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard('h',player.countCards('e'),true,'请选择重铸的牌');
+					'step 1'
+					player.lose(result.cards, ui.discardPile);
+					player.$throw(result.cards,1000);
+					game.log(player,'将',cards,'置入了弃牌堆');
+					'step 2'
+					player.draw(player.countCards('e'));
+					player.addTempSkill('yuepi_handLimit');
+				},
+				subSkill:{
+					handLimit:{
+						mod:{
+							maxHandcard:function (player,num){
+								return num+player.countCards('e');
+							},
+						}
+					}
+				}
+			},
+			cangxiong:{
+				trigger:{
+					global:'useCardToBegin'
+				},
+				filter:function (event,player){
+					if(!event.targets||!event.player||event.player==event.targets[0]) return false;
+					return event.targets[0].hp==1&&event.targets[0]!=player&&player.countCards('h')>event.targets[0].countCards('h');
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard('h',[1,Infinity],'请选择要给对方的牌');
+					'step 1'
+					if(result.cards){
+						trigger.targets[0].gain(result.cards,player,'giveAuto');
+					}
+					'step 2'
+					if(trigger.targets[0].countCards('h')>player.countCards('h')){
+						trigger.cancel();
+					}
+				}
 			}
         },
         translate:{
@@ -534,9 +791,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             yongchun:'咏春',
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
-			tinenghuifu1_info:'锁定技。当你失去一张装备牌后，你回复 1 点体力。当你的体力值变化后，你摸一张牌。',
+			tinenghuifu1_info:'锁定技。当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
 			dianmingguzhen:'电鸣鼓震',
-			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。'
+			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
+			ShizukaRin:'静凛',
+			mozhaotuji:'魔爪突击',
+			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的出牌阶段结束时，你摸一张牌。',
+			IenagaMugi:'家长麦',
+			fengxue:'奋学',
+			fengxue_info:'你可以跳过出牌阶段，亮出牌堆顶的X+1张牌，使用其中一张牌，然后获得其中一种花色的牌，弃置其余的牌。（X为体力值大于你的角色数）',
+			yuepi:'乐癖',
+			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
+			cangxiong:'藏兄',
+			cangxiong_info:'体力值为1的其他角色成为另一名角色牌的目标时，若其手牌数小于你，你可以交给其任意手牌，然后若其手牌数大于你，取消之。',
         }
     }
 }

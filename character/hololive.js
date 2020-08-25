@@ -517,14 +517,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             player.recover();
                             break
                         case 'diamond':
-                            player.chooseToDiscard('he','重铸一张牌',1,true)
-                            player.draw();
+                            player.chooseCard('he','重铸一张牌',1,true);
+                            // player.chooseToDiscard('he','重铸一张牌',1,true)
+                            // player.draw();
                             break
                         case 'club':
                             player.discardPlayerCard(player,1,'he',true);
                             break
                     }
                     "step 4"
+                    if(get.suit(player.storage.resultCards[0])=='diamond'&&result.cards){
+                        player.lose(result.cards, ui.discardPile);
+                        player.$throw(result.cards,1000);
+                        game.log(player,'将',result.cards,'置入了弃牌堆');
+                        player.draw();
+                    }
                     switch (get.suit(player.storage.resultCards[1])) {
                         case 'spade':
                             player.loseHp(1);
@@ -533,14 +540,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             player.recover();
                             break
                         case 'diamond':
-                            player.chooseToDiscard('he','重铸一张牌',1,true)
-                            player.draw();
+                            player.chooseCard('he','重铸一张牌',1,true);
+                            // player.chooseToDiscard('he','重铸一张牌',1,true)
+                            // player.draw();
                             break
                         case 'club':
                             player.discardPlayerCard(player,1,'he',true);
                             break
                     }
                     "step 5"
+                    if(get.suit(player.storage.resultCards[0])=='diamond'&&result.cards){
+                        player.lose(result.cards, ui.discardPile);
+                        player.$throw(result.cards,1000);
+                        game.log(player,'将',result.cards,'置入了弃牌堆');
+                        player.draw();
+                    }
                     game.broadcastAll('closeDialog',event.videoId);
                     player.addTempSkill('liaolishiyan2');
                 },
@@ -585,7 +599,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     'step 1'
                     event.result=result;
                     if(event.result.bool){
-                        player.discard(result.cards,'重铸二张牌',2);
+                        // player.discard(result.cards,'重铸二张牌',2);
+                        // player.draw(2);
+                        player.lose(result.cards, ui.discardPile);
+                        player.$throw(result.cards,1000);
+                        game.log(player,'将',result.cards,'置入了弃牌堆');
                         player.draw(2);
                         switch (get.suit(player.storage.resultCards[0])) {
                             case 'spade':
@@ -596,8 +614,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                 //event.result.targets[0].recover();
                                 break
                             case 'diamond':
-                                event.result.targets[0].chooseToDiscard('he','重铸一张牌',1,true);
-                                event.result.targets[0].draw();
+                                event.result.targets[0].chooseCard('he','重铸一张牌',1,true);
                                 break
                             case 'club':
                                 event.result.targets[0].discardPlayerCard(event.result.targets[0],1,'he',true);
@@ -608,6 +625,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         event.goto(4);
                     }
                     'step 2'
+                    if(get.suit(player.storage.resultCards[0])=='diamond'&&result.cards){
+                        event.result.targets[0].lose(result.cards, ui.discardPile);
+                        event.result.targets[0].$throw(result.cards,1000);
+                        game.log(event.result.targets[0],'将',result.cards,'置入了弃牌堆');
+                        event.result.targets[0].draw();
+                    }
                     switch (get.suit(player.storage.resultCards[1])) {
                         case 'spade':
                             event.result.targets[0].loseHp(1);
@@ -617,14 +640,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             //event.result.targets[0].recover();
                             break
                         case 'diamond':
-                            event.result.targets[0].chooseToDiscard('he','重铸一张牌',1,true);
-                            event.result.targets[0].draw();
+                            event.result.targets[0].chooseCard('he','重铸一张牌',1,true);
                             break
                         case 'club':
                             event.result.targets[0].discardPlayerCard(event.result.targets[0],1,'he',true);
                             break
                     }
                     'step 3'
+                    if(get.suit(player.storage.resultCards[1])=='diamond'&&result.cards){
+                        event.result.targets[0].lose(result.cards, ui.discardPile);
+                        event.result.targets[0].$throw(result.cards,1000);
+                        game.log(event.result.targets[0],'将',result.cards,'置入了弃牌堆');
+                        event.result.targets[0].draw();
+                    }
                     player.addTempSkill('liaolishiyan3');
                     event.finish();
                     'step 4'
@@ -688,7 +716,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                 //trigger.targets[0].recover();
                                 break
                             case 'diamond':
-                                trigger.targets[0].chooseToDiscard('he','重铸一张牌',1,true);
+                                trigger.targets[0].chooseCard('he','重铸一张牌',1,true);
                                 trigger.targets[0].draw();
                                 break
                             case 'club':
@@ -697,6 +725,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         }
                     }
                     delete player.storage.momizhiyanGroup;
+                    'step 3'
+                    if(result){
+                        trigger.targets[0].lose(result.cards, ui.discardPile);
+                        trigger.targets[0].$throw(result.cards,1000);
+                    }
+                    event.finish()
                 }
             },
             huxi1:{
@@ -1014,11 +1048,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         firstDo:true,
                         direct:true,
                         filter:function(event,player){
-                            if(event.card.name=='sha'&&player.getCardUsable({name:'sha'})==0) return true;
+                            if(event.card.name=='sha') return true;
                             else return false;
                         },
                         content:function(){
+                            'step 0'
                             player.draw(player.countCards('e')==0?1:player.countCards('e'));
+                            'step 1'
+                            if(player.getCardUsable({name:'sha'})!==0){
+                                player.chooseToDiscard('he','弃置'+player.countCards('e').toString()+'张牌',player.countCards('e').toString(),true)
+                            }
                         }
                     }
                 }
@@ -1028,7 +1067,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				//charlotte:true,
 				trigger:{player:'damageBegin4'},
 				filter:function(event){
-					if(event.nature=='thunder') return true;
+					if(event.nature!=null) return true;
 					return false;
 				},
 				content:function(){
@@ -1082,9 +1121,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
             RobokoSan:'萝卜子',
             gaonengzhanxie:'高能战械',
-            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数且至少为1。当你于回合内使用【杀】后，若你无法再使用【杀】，你摸X张牌。（X为你本阶段已使用过的【杀】的数量）',
+            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数增加你装备区内牌数。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
-            ranyouxielou_info:'锁定技，你受到火焰伤害时改为回复等量体力值。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
+            ranyouxielou_info:'锁定技，你受到属性伤害时改为回复等量体力值。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1',
         },
 	};
 });
