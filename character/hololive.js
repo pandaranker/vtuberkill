@@ -1029,6 +1029,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 }
             },
             gaonengzhanxie:{
+                firstDo:true,
 				mod:{
 					cardUsable:function(card,player,num){
 						if(card.name=='sha'){
