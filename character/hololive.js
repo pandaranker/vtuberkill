@@ -436,7 +436,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         content:function(){
                             if(player.hp<player.maxHp){
                                 player.markSkill('meilu');
-                                player.hp++;
+                                player.recover();
                             }
                         },
                     },
@@ -1032,10 +1032,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					cardUsable:function(card,player,num){
 						if(card.name=='sha'){
-                            if(player.countCards('e')==0)
-                                return num;
-                            else
-                                return player.countCards('e');
+                            return num+player.countCards('e');
                         } 
 					},
                 },
@@ -1053,10 +1050,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         },
                         content:function(){
                             'step 0'
-                            player.draw(player.countCards('e')==0?1:player.countCards('e'));
+                            player.draw(player.getStat().card.sha);
                             'step 1'
                             if(player.getCardUsable({name:'sha'})!==0){
-                                player.chooseToDiscard('he','弃置'+player.countCards('e').toString()+'张牌',player.countCards('e').toString(),true)
+                                player.chooseToDiscard('he','弃置'+player.getStat().card.sha.toString()+'张牌',player.getStat().card.sha,true)
                             }
                         }
                     }
@@ -1071,8 +1068,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				content:function(){
+                    player.recover(trigger.num);
+                    console.log(trigger);
+                    if(trigger.cards){
+                        player.gain(trigger.cards,'gain2')
+                    }
                     trigger.cancel();
-                    player.hp+=trigger.num;
                 },
                 group:'ranyouxielou_fire',
                 subSkill:{
@@ -1123,7 +1124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             gaonengzhanxie:'高能战械',
             gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数增加你装备区内牌数。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
-            ranyouxielou_info:'锁定技，你受到属性伤害时改为回复等量体力值。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1',
+            ranyouxielou_info:'锁定技，你受到属性伤害时改为回复等量体力值并获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1',
         },
 	};
 });
