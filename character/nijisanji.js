@@ -310,7 +310,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['tinenghuifu1_hp'],
 				subSkill:{
 					hp:{
-						trigger:{player:'loseHpEnd'},
+						trigger:{player:['loseHpEnd','damageEnd']},
 						forced:true,	
 						nopop:true,//player是否logSkill('此技能')，true为不
 						content:function(){
@@ -567,9 +567,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					DrawOrStop:{
 						trigger:{global:'phaseUseAfter'},
 						filter:function(event,player){
-							if((player.getHistory('useCard').length+player.getHistory('respond').length)>=2)
+							if((player.getHistory('useCard').length)>=2)
 								return true;
-							else if((player.getHistory('useCard').length+player.getHistory('respond').length)==0)
+							else if((player.getHistory('useCard').length)==0)
 								return player==_status.currentPhase;
 							else
 								return false;
@@ -577,7 +577,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						content:function(){
 							'step 0'
-							if((player.getHistory('useCard').length+player.getHistory('respond').length)>=2)
+							if((player.getHistory('useCard').length)>=2)
 								player.draw(1);
 							else
 								player.addTempSkill('mozhaotujiStop');
@@ -826,23 +826,57 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			cangxiong:{
 				trigger:{
-					global:'useCardToTargeted'
+					global:'changeHp'
 				},
 				filter:function (event,player){
-					if(!event.targets||!event.target||!event.player||event.player==event.target) return false;
-					return event.target.hp==1&&event.target!=player&&player.countCards('h')>event.target.countCards('h');
+					if(!event.player||event.player==player||player.countCards('h')==0) return false;
+					return event.player.hp==1;
 				},
 				content:function(){
 					'step 0'
-					player.chooseCard('h',[1,Infinity],'请选择要给对方的牌');
+					player.chooseCard('h',[1,Infinity],true,'请选择要给对方的牌');
 					'step 1'
 					if(result.cards){
-						trigger.target.gain(result.cards,player,'giveAuto');
+						trigger.player.gain(result.cards,player,'giveAuto');
 					}
 					'step 2'
-					if(trigger.target.countCards('h')>player.countCards('h')){
-						trigger.getParent().excluded.add(trigger.target);
+					if(trigger.player.countCards('h')>player.countCards('h')){
+						trigger.player.addTempSkill('cangxiong_diao');//调虎离山
+						//trigger.getParent().excluded.add(trigger.target);//取消之
 					}
+				},
+				subSkill:{
+					diao:{
+						trigger:{player:['damageBegin3','loseHpBefore','recoverBefore']},
+						forced:true,
+						popup:false,
+						content:function(){
+							trigger.cancel();
+						},
+						mod:{
+							cardEnabled:function(){
+								return false;
+							},
+							cardSavable:function(){
+								return false;
+							},
+							targetEnabled:function(){
+								return false;
+							},
+						},
+						mark:true,
+						intro:{
+							content:'不计入距离的计算且不能使用牌且不是牌的合法目标且不能失去/回复体力和受到伤害'
+						},
+						group:'undist',
+						ai:{
+							effect:{
+								target:function (card,player,target){
+									if(get.tag(card,'recover')||get.tag(card,'damage')) return 'zeroplayertarget';
+								},
+							},
+						},
+					},
 				}
 			}
         },
@@ -869,7 +903,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuepi:'乐癖',
 			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
 			cangxiong:'藏兄',
-			cangxiong_info:'体力值为1的其他角色成为另一名角色牌的目标时，若其手牌数小于你，你可以交给其任意手牌，然后若其手牌数大于你，取消之。',
+			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，其视为不存在直到其回合开始。',
         }
     }
 }

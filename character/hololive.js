@@ -717,7 +717,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                 break
                             case 'diamond':
                                 trigger.targets[0].chooseCard('he','重铸一张牌',1,true);
-                                trigger.targets[0].draw();
                                 break
                             case 'club':
                                 trigger.targets[0].discardPlayerCard(trigger.targets[0],1,'he',true);
@@ -726,9 +725,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     }
                     delete player.storage.momizhiyanGroup;
                     'step 3'
-                    if(result){
+                    if(event.suit=='diamond'&&result.cards){
                         trigger.targets[0].lose(result.cards, ui.discardPile);
                         trigger.targets[0].$throw(result.cards,1000);
+                        game.log(event.result.targets[0],'将',result.cards,'置入了弃牌堆');
+                        trigger.targets[0].draw();
                     }
                     event.finish()
                 }
@@ -891,15 +892,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         return false;
                     }
                     if(game.hasPlayer(function(current){
-                        return player.inRange(current)&&!player.storage.huxiGroup.contains(current);
+                        return player.inRange(current)&&!player.storage.huxiGroup.contains(current)&&current.countCards('h')>0;
                     })){
                         return true;
                     }
+                    else
+                        return false
                 },
                 content:function(){
                     'step 0'
                     player.chooseTarget('对一名角色使用'+get.translation('huxi1'),{},true,function(card,player,target){
-						if(player==target) return false;
+                        if(player==target) return false;
+                        if(!player.inRange(target)) return false;
                         if(target.countCards('h')<1){
                             return false;
                         }
@@ -908,7 +912,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         }
                         if(player.storage.huxiGroup.contains(target)) return false;
 						if(game.hasPlayer(function(current){
-                            if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(current)&&current.countCards('h')){
+                            if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(current)){
+                                return false;
+                            }
+                            if(current.countCards('h')==0){
                                 return false;
                             }
                             if(current!=player&&get.distance(player,current)<get.distance(player,target)){
@@ -920,14 +927,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						})){
 							return false;
                         }
-                        if(player.inRange(target))
-                            return true;
-                        else
-                            return false;
+                        return true;
                     });
                     'step 1'
                     event.target=result.targets[0];
-                    if(player.countCards('h')==0||event.target.countCards('h')==0){
+                    if(player.countCards('h')==0||!event.target||event.target.countCards('h')==0){
 						event.result={cancelled:true,bool:false}
 						event.finish();
 						return;
@@ -1029,6 +1033,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 }
             },
             gaonengzhanxie:{
+                priority:15,
                 firstDo:true,
 				mod:{
 					cardUsable:function(card,player,num){
@@ -1036,6 +1041,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             return num+player.countCards('e');
                         } 
 					},
+                    cardEnabled:function(card,player){
+                        if(card.name=='sha'&&(player.getStat().card.sha>player.countCards('e'))) 
+                            return false
+                    }
                 },
                 group:['gaonengzhanxie_draw'],
                 subSkill:{
@@ -1053,7 +1062,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             'step 0'
                             player.draw(player.getStat().card.sha);
                             'step 1'
-                            if(player.getCardUsable({name:'sha'})!==0){
+                            if(player.getCardUsable({name:'sha'})!==0&&lib.filter.cardEnabled({name:'sha'},player)){
                                 player.chooseToDiscard('he','弃置'+player.getStat().card.sha.toString()+'张牌',player.getStat().card.sha,true)
                             }
                         }
@@ -1100,7 +1109,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		translate:{
 			TokinoSora:'时乃空',
 			taiyangzhiyin:'太阳之音',
-			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择一次：为之额外指定一名目标（无距离限制）；或摸一张牌。',
+			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标（无距离限制）；或摸一张牌。',
             renjiazhizhu:'仁家之主',
             renjiazhizhu_info:'主公技。你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
             renjiazhizhu_tag:'仁家之主',
@@ -1123,7 +1132,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
             RobokoSan:'萝卜子',
             gaonengzhanxie:'高能战械',
-            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数增加你装备区内牌数。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
+            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
             ranyouxielou_info:'锁定技，你受到属性伤害时改为回复等量体力值并获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1',
         },
