@@ -73,6 +73,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             }
                             if(element[2]=="无法响应"){
                                 trigger.directHit.addArray(players);
+                                trigger.nowuxie=true;
                             }
                         });
                         result.links.forEach(element => {
