@@ -32,7 +32,7 @@
 		},
 		updateURL:'https://raw.githubusercontent.com/libccy/noname',
 		mirrorURL:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
-		hallURL:'www.vtuberkill.cn',
+		hallURL:'www.vtuberkill.com',
 		assetURL:'',
 		changeLog:[],
 		updates:[],
@@ -9275,8 +9275,8 @@
 			},
 			c:function(){
 				(function(){
-					var a=0,b=0,c=0,d=0,e=0,f=0;
-					var sa=0,sb=0,sc=0,sd=0,se=0,sf=0;
+					var a=0,b=0,c=0,d=0,e=0,f=0,g=0;
+					var sa=0,sb=0,sc=0,sd=0,se=0,sf=0,sg=0;
 					for(var i in lib.character){
 						switch(lib.character[i][1]){
 							case 'wei':a++;if(lib.config.banned.contains(i)) sa++;break;
@@ -9285,6 +9285,7 @@
 							case 'qun':d++;if(lib.config.banned.contains(i)) sd++;break;
 							case 'western':e++;if(lib.config.banned.contains(i)) se++;break;
 							case 'key':f++;if(lib.config.banned.contains(i)) sf++;break;
+							case 'holo':g++;if(lib.config.banned.contains(i)) sg++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -9293,7 +9294,8 @@
 					console.log('群：'+(d-sd)+'/'+d);
 					console.log('西：'+(e-se)+'/'+e);
 					console.log('键：'+(f-sf)+'/'+f);
-					console.log('已启用：'+((a+b+c+d+e+f)-(sa+sb+sc+sd+se+sf))+'/'+(a+b+c+d+e+f));
+					console.log('杏：'+(g-sg)+'/'+g);
+					console.log('已启用：'+((a+b+c+d+e+f+g)-(sa+sb+sc+sd+se+sf+sg))+'/'+(a+b+c+d+e+f+g));
 				}());
 				(function(){
 					var a=0,b=0,c=0,d=0;
@@ -9734,6 +9736,7 @@
 			shen:'神',
 			western:'西',
 			key:'键',
+			holo:'杏',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -9741,6 +9744,7 @@
 			shen2:'神明',
 			western2:'西方',
 			key2:'KEY',
+			holo2:'HoloLive',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -9759,6 +9763,7 @@
 			shenColor:"#ffe14c",
 			westernColor:"#ffe14c",
 			keyColor:"#c9b1fd",
+			holoColor:"#ffddb9",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -24473,7 +24478,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 6;
+					if(!lib.character[name]) return 7;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -24481,7 +24486,8 @@
 					if(lib.character[name][1]=='qun') return 3;
 					if(lib.character[name][1]=='key') return 4;
 					if(lib.character[name][1]=='western') return 5;
-					return 6;
+					if(lib.character[name][1]=='holo') return 6;
+					return 7;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -26294,7 +26300,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen'],
+		group:['wei','shu','wu','qun','shen','holo'],
 		nature:['fire','thunder','poison','kami'],
 		linked:['fire','thunder','kami'],
 		groupnature:{
@@ -26305,6 +26311,7 @@
 			qun:'metal',
 			western:'thunder',
 			key:'key',
+			holo:'soil',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 	};
@@ -35782,7 +35789,8 @@
 							if(info[name][1]=='qun') return 3;
 							if(info[name][1]=='western') return 4;
 							if(info[name][1]=='key') return 5;
-							return 6;
+							if(info[name][1]=='holo') return 6;
+							return 7;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -40758,7 +40766,7 @@
 				},true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('wei','shu','wu','qun','western','key',function(link,node){
+				return ui.create.control('wei','shu','wu','qun','western','key','holo',function(link,node){
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -41185,7 +41193,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['wei','shu','wu','qun'];
+					var groups=['wei','shu','wu','qun','holo'];
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -41408,7 +41416,8 @@
 						if(lib.character[name][1]=='shu') return 1;
 						if(lib.character[name][1]=='wu') return 2;
 						if(lib.character[name][1]=='qun') return 3;
-						return 4
+						if(lib.character[name][1]=='holo') return 4;
+						return 5
 					}
 				}
 				list.sort(function(a,b){
@@ -43702,7 +43711,7 @@
 				}
 				else{
 					if(get.mode()=='guozhan'){
-						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群'};
+						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏'};
 					}
 					var list2=get.copy(list);
 					if(game.getIdentityList2){
@@ -50472,7 +50481,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key'];
+			return ['wei','shu','wu','qun','western','key','holo'];
 		},
 		types:function(){
 			var types=[];

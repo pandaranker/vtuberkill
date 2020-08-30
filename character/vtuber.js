@@ -19,8 +19,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'h',
 				filter:function(event,player){
 					if(player.hasSkill('ailianUsable')) return false;
-					console.log(lib.filter.cardUsable({name:'sha'},player));
-					console.log(player);
                     return player.countCards('h')>0;
                 },
                 content: function(){
@@ -223,14 +221,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			qixu1:{
 				trigger:{player:['chooseToRespondBefore']},
-				round: 1,
 				check:function(event){
 					if(event.qixu) return false;
 					return true;
 				},
 				filter:function(event,player){
 					if(event.responded) return false;
-					if(player.storage.qixuing) return false;
+					//if(player.storage.qixuing) return false;
 					if(!player.hasZhuSkill('qixu')) return false;
 					if(player.hasSkill('qixu3')) return false;
 					if(!event.filterCard({name:'sha'},player,event)) return false;
@@ -247,13 +244,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					else if(event.current){
-						player.storage.qixuing=true;
-						var next=event.current.chooseToDiscard(1,get.translation(player)+'声明使用一张杀，是否替弃置一张杀阻止',{name:'sha'},
+						//player.storage.qixuing=true;
+						var next=event.current.chooseCard(get.translation(player)+'声明使用一张杀，是否替弃置一张杀阻止',
 						function(card,player,event){
 							event=event||_status.event;
 							return card.name=='sha';
-						}
-						);
+						},{name:'sha'},1);
 						next.set('ai',function(){
 							var event=_status.event;
 							return (get.attitude(event.player,event.source)+1);
@@ -269,7 +265,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.redo();
 					}
 					"step 1"
-					player.storage.qixuing=false;
+					//player.storage.qixuing=false;
 					if(!result.bool){
 						event.current=event.current.next;
 						if(event.current==player){
@@ -280,6 +276,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					else{
+						event.current.discard(result.cards);
 						event.finish();
 					}
 					'step 2'
@@ -323,14 +320,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					else if(event.current){
-						var next=event.current.chooseToDiscard(get.translation(player)+'对'+get.translation(target)+'使用一张杀，是否替弃置一张杀阻止',
+						var next=event.current.chooseCard(get.translation(player)+'对'+get.translation(target)+'使用一张杀，是否替弃置一张杀阻止',
 						function(card,player,event){
 							event=event||_status.event;
 							return card.name=='sha';
 						},{name:'sha'},1);
 						next.set('ai',function(card){
 							var event=_status.event;
-							return !get.effect(event.target,card,event.source,event.player);
+							return get.effect(event.target,card,event.source,event.player);
 						});
 						next.set('source',player);
 						next.set('target',target);
@@ -346,6 +343,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 1"
 					if(result.bool){
 						player.addSkill('qixu3');
+						event.current.discard(result.cards);
 						event.finish();
 					}
 					else{
@@ -392,23 +390,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					global: 'roundStart'
 				},
+				mark:true,
+				intro:{content:'一轮后重置(杀)'},
 				silent:true,
-				filter:function(event){
-					return event.skill!='qixu2'&&event.skill!='qixu4';
-				},
+				// filter:function(event){
+				// 	return event.skill!='qixu2'&&event.skill!='qixu4';
+				// },
 				content:function(){
 					player.removeSkill('qixu3');
 				}
 			},
 			qixu4:{
 				unique:true,
-				round: 1,
 				trigger:{player:['chooseToRespondBefore','chooseToUseBefore']},
 				filter:function(event,player){
 					if(event.responded) return false;
-					if(player.storage.qixu) return false;
+					//if(player.storage.qixu4) return false;
 					if(!player.hasZhuSkill('qixu')) return false;
-					//if(player.hasSkill('qixu3')) return false;
+					if(player.hasSkill('qixu5')) return false;
 					if(!event.filterCard({name:'shan'},player,event)) return false;
 					return true;
 				},
@@ -420,30 +419,40 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					if(event.current==undefined) event.current=player.next;
 					if(event.current==player){
-						event.finish();
+						event.goto(2);
 					}
 					else if(event.current){
-						if((event.current==game.me&&!_status.auto)||(
-							get.attitude(event.current,player)>2)||
-							event.current.isOnline()){
-							player.storage.qixu=true;
-							var next=event.current.chooseToDiscard('弃置一张闪阻止'+get.translation(player)+'发动技能？',{name:'shan'},
-							function(card,player,event){
-								event=event||_status.event;
-								return card.name=='shan';
-							},1);
+							//player.storage.qixu4=true;
+							// var next=event.current.chooseToDiscard('弃置一张闪阻止'+get.translation(player)+'发动技能？',{name:'shan'},
+							// function(card,player,event){
+							// 	event=event||_status.event;
+							// 	return card.name=='shan';
+							// },1);
+							var next=event.current.chooseCard(get.translation(player)+'声明使用一张闪，是否替弃置一张闪阻止',{name:'shan'},
+							// function(card,player,event){
+							// 	return card.name=='shan';
+							// },
+							1,false);
+							// next.set('ai',function(card){
+							// 	var event=_status.event;
+							// 	return get.effect(event.target,card,event.event.source,event.player);
+							// });
 							next.set('ai',function(){
 								var event=_status.event;
-								return (get.attitude(event.player,event.source)+1);
+								return (3-get.attitude(event.player,event.source));
 							});
 							next.set('skillwarn','阻止'+get.translation(player)+'技能生效');
 							next.autochoose=lib.filter.autoRespondShan;
 							next.set('source',player);
-						}
 					}
 					"step 1"
-					player.storage.qixu=false;
-					if(!result.bool){
+					//player.storage.qixu4=false;
+					console.log(result);
+					if(result.bool){
+						event.current.discard(result.cards);
+						event.finish();
+					}
+					else{
 						event.current=event.current.next;
 						if(event.current==player){
 							event.goto(2);
@@ -451,9 +460,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						else{
 							event.goto(0);
 						}
-					}
-					else{
-						event.finish();
 					}
 					'step 2'
 					trigger.result={bool:true,card:{name:'shan',isCard:true}};
@@ -474,6 +480,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return true;
 					},
 				},
+			},
+			qixu5:{
+				trigger:{
+					global: 'roundStart'
+				},
+				mark:true,
+				intro:{content:'一轮后重置(闪)'},
+				silent:true,
+				// filter:function(event){
+				// 	return event.skill!='qixu2'&&event.skill!='qixu4';
+				// },
+				content:function(){
+					player.removeSkill('qixu5');
+				}
 			},
 			rongyaochengyuan:{
 				trigger:{

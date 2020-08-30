@@ -5,15 +5,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
             /**时乃空 */
-            TokinoSora:['female','shu',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
+            TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
             /**夜空梅露 */
-            YozoraMel:['female','shu',3,['juhun','meilu']],
+            YozoraMel:['female','holo',3,['juhun','meilu']],
             /**赤井心 */
-            AkaiHaato:['female','shu',3,['liaolishiyan','momizhiyan']],
+            AkaiHaato:['female','holo',3,['liaolishiyan','momizhiyan']],
             /**夏色祭 */
-            NatsuiroMatsuri:['female','shu',3,['huxi1','lianmeng']],
+            NatsuiroMatsuri:['female','holo',3,['huxi1','lianmeng']],
             /**萝卜子 */
-            RobokoSan:['female','shu',3,['gaonengzhanxie','ranyouxielou']],
+            RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
         },
         characterIntro:{
             TokinoSora:'时乃空',
@@ -24,7 +24,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
         },
 		skill:{
 			taiyangzhiyin:{
-                trigger:{ player:['useCardToBegin'] },
+                trigger:{ player:['useCard2'] },
 				filter:function(event,player){
                     //console.log(event.card,1)
                     //console.log(player.storage.onlink,event.card.cardid)
@@ -35,133 +35,50 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 forced:false,
                 content:function (){
 					var info=get.info(trigger.card);
-                    var Dvalue=get.number(trigger.card)-10;
                     var players=game.filterPlayer();
                     if(player.storage.onlink==null){
                         player.storage.onlink=[];
                     }//处理正处于连锁中的卡牌
                     'step 0'
+                    event.Dvalue=get.number(trigger.card)-10;
+                    var list=[['无法响应'],['额外目标'],['摸一张牌']];
+                    if(!game.hasPlayer(function(current) {
+                        return lib.filter.targetEnabled2(trigger.card, player, current)
+                            && player.inRange(current)
+                            && !trigger.targets.contains(current)
+                            && player.canUse(trigger.card, current)
+                    })) {
+                        list.splice(1,1);
+                        if(event.Dvalue==3){
+                            event.Dvalue=2;
+                        }
+                    }
+					event.videoId = lib.status.videoId++;
+					game.broadcastAll(function(id, choicelist,Dvalue){
+                        var dialog=ui.create.dialog('选择'+Dvalue+'项');
+                        choicelist.forEach(element=>{
+                            dialog.add([element,'vcard']);
+                        })
+						dialog.videoId = id;
+					}, event.videoId, list,event.Dvalue);
                     player.storage.onlink.push(trigger.card.cardid);
-                    event.goon=false;
-					if(trigger.targets&&!info.multitarget){
-                        var type=get.type(trigger.card);
-						for(var i=0;i<players.length;i++){
-                            if(type!=='basic'&&type!=='trick'){
-                                event.goon=false;break;
-                            };
-							if(lib.filter.targetEnabled2(trigger.card,player,players[i])&&!trigger.targets.contains(players[i])){
-								event.goon=true;break;
-							}
-						}
-                    }
-                    if(event.goon){
-                        player.chooseTarget('是否额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
-                            var trigger=_status.event;
-                            if(trigger.targets.contains(target)) return false;
-                            return lib.filter.targetEnabled2(trigger.card,_status.event.player,target);
-                        }).set('ai',function(target){
-                            var trigger=_status.event.getTrigger();
-                            var player=_status.event.player;
-                            return get.effect(target,trigger.card,player,player);
-                        }).set('targets',trigger.targets).set('card',trigger.card);
-                    }
-                    else{
-                        player.draw();
-                    } 
                     'step 1'
-                    if(!event.goon){
-                        if(Dvalue<2){
-                            event.finish();
-                        }
-                        else{
-                            player.draw();
-                            event.goto(2);
-                        }
-                    }
-                    else{
-                        if(result.bool){
-                            if(!event.isMine()) game.delayx();
-                            event.target=result.targets[0];
-                            if(event.target){
-                                player.logSkill('taiyangzhiyin',event.target);
-                                trigger.targets.add(event.target);
-                            }
-                        }
-                        else{
-                            player.draw();
-                        }
-                        if(Dvalue<2){
-                            event.finish();
-                        }
-                        else{
-                            if(trigger.targets&&!info.multitarget){
-                                players=game.filterPlayer();
-                                var type=get.type(trigger.card);
-                                for(var i=0;i<players.length;i++){
-                                    if(type!=='basic'&&type!=='trick'){
-                                        event.goon=false;break;
-                                    };
-                                    if(lib.filter.targetEnabled2(trigger.card,player,players[i])&&!trigger.targets.contains(players[i])){
-                                        event.goon=true;break;
-                                    }
-                                }
-                            }
-                            if(event.goon){
-                                player.chooseTarget('是否额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
-                                    var trigger=_status.event;
-                                    if(trigger.targets.contains(target)) return false;
-                                    return lib.filter.targetEnabled2(trigger.card,_status.event.player,target);
-                                }).set('ai',function(target){
-                                    var trigger=_status.event.getTrigger();
-                                    var player=_status.event.player;
-                                    return get.effect(target,trigger.card,player,player);
-                                }).set('targets',trigger.targets).set('card',trigger.card);
-                            }
-                            else{
-                                player.draw();
-                            }
-                        }
-                    } 
+                    player.chooseButton(event.Dvalue).set('dialog',event.videoId).set('prompt',get.prompt('taiyangzhiyin'));
                     'step 2'
-                    if(!event.goon){
-                        if(Dvalue<3){
-                            event.finish();
-                        }
-                        else{
-                            player.draw();
-                            event.goto(3);
-                        }
-                    }
-                    else{
-                        if(result.bool){
-                            if(!event.isMine()) game.delayx();
-                            event.target=result.targets[0];
-                            if(event.target){
-                                player.logSkill('taiyangzhiyin',event.target);
-                                trigger.targets.add(event.target);
+					game.broadcastAll('closeDialog', event.videoId);
+                    if(result.bool){
+                        result.links.forEach(element => {
+                            if(element[2]=="摸一张牌"){
+                                player.draw();
                             }
-                        }
-                        else{
-                            player.draw();
-                        }
-                        if(Dvalue<3){
-                            event.finish();
-                        }
-                        else{
-                            if(trigger.targets&&!info.multitarget){
-                                players=game.filterPlayer();
-                                var type=get.type(trigger.card);
-                                for(var i=0;i<players.length;i++){
-                                    if(type!=='basic'&&type!=='trick'){
-                                        event.goon=false;break;
-                                    };
-                                    if(lib.filter.targetEnabled2(trigger.card,player,players[i])&&!trigger.targets.contains(players[i])){
-                                        event.goon=true;break;
-                                    }
-                                }
+                            if(element[2]=="无法响应"){
+                                trigger.directHit.addArray(players);
+                                trigger.nowuxie=true;
                             }
-                            if(event.goon){
-                                player.chooseTarget('是否额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
+                        });
+                        result.links.forEach(element => {
+                            if(element[2]=="额外目标"){
+                                player.chooseTarget(true,'额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
                                     var trigger=_status.event;
                                     if(trigger.targets.contains(target)) return false;
                                     return lib.filter.targetEnabled2(trigger.card,_status.event.player,target);
@@ -171,29 +88,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                     return get.effect(target,trigger.card,player,player);
                                 }).set('targets',trigger.targets).set('card',trigger.card);
                             }
-                            else{
-                                player.draw();
-                            }
-                        }
-                    } 
-                    'step 3'
-                    if(!event.goon){
-                        event.finish();
+                        });
                     }
-                    else{
-                        if(result.bool){
-                            if(!event.isMine()) game.delayx();
-                            event.target=result.targets[0];
-                            if(event.target){
-                                player.logSkill('taiyangzhiyin',event.target);
-                                trigger.targets.add(event.target);
-                            }
-                            event.finish();
+                    'step 3'
+                    if(result&&result.bool){
+                        if(!event.isMine()) game.delayx();
+                        event.target=result.targets[0];
+                        if(event.target){
+                            trigger.targets.add(event.target);
                         }
-                        else{
-                            player.draw();
-                        }
-                    } 
+                    }
                 },
                 group:'taiyangzhiyin_clear',
                 subSkill:{
@@ -549,7 +453,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             break
                     }
                     "step 5"
-                    if(get.suit(player.storage.resultCards[0])=='diamond'&&result.cards){
+                    if(get.suit(player.storage.resultCards[1])=='diamond'&&result.cards){
                         player.lose(result.cards, ui.discardPile);
                         player.$throw(result.cards,1000);
                         game.log(player,'将',result.cards,'置入了弃牌堆');
@@ -728,7 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     if(event.suit=='diamond'&&result.cards){
                         trigger.targets[0].lose(result.cards, ui.discardPile);
                         trigger.targets[0].$throw(result.cards,1000);
-                        game.log(event.result.targets[0],'将',result.cards,'置入了弃牌堆');
+                        game.log(trigger.targets[0],'将',result.cards,'置入了弃牌堆');
                         trigger.targets[0].draw();
                     }
                     event.finish()
