@@ -708,7 +708,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						dialog.videoId=id;
 					},cards,dialog.videoId);
 					event.dialog=dialog;
-					game.log(player,'观看了','#y牌堆顶的四张牌');
+					game.log(player,'观看了','#y牌堆顶的牌');
 					//var content=['牌堆顶的'+event.cards.length+'张牌',event.cards];
 					//player.chooseControl('ok').set('dialog',content);
 					var chooseButton=player.chooseButton(true,function(button){

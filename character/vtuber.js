@@ -7,11 +7,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             /**绊爱 */
 			KizunaAI:['female','qun',4,['ailian','qixu'],['zhu']],
 			/**犬山 */
-			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']]
+			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
+			/**小希小桃 */
+			XiaoxiXiaotao:['male','qun',3,['yipengyidou','renleiguancha']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱',
-			InuyamaTamaki:'犬山玉姬'
+			InuyamaTamaki:'犬山玉姬',
+			XiaoxiXiaotao:'小希小桃'
         },
 		skill:{
             ailian:{
@@ -675,12 +678,267 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.finish();
 				}
 			},
+			yipengyidou:{
+				enable:'phaseUse',
+				usable:1,
+				filterTarget:function(card,player,target){
+					return player.canCompare(target);
+				},
+				filter:function(event,player){
+					return player.countCards('h')>0;
+				},
+				content:function(){
+					"step 0"
+					player.chooseToCompare(target);
+					"step 1"
+					event.resultBool=result.bool;
+					event.loop=true;//循环一次（询问是否发动效果后）
+					event.cards=[];
+					"step 2"
+					game.getGlobalHistory('cardMove',function(evt){
+						if(evt==trigger||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+						if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+						for(var i=0;i<evt.cards.length;i++){
+							var card=evt.cards[i];
+							if(get.type(card)!='equip'&&get.type(card)!='delay'&&!get.info(card).multitarget&&get.info(card).name!='shan'){
+								if((event.loop&&event.resultBool)||(!event.loop&&!event.resultBool)){
+									if(game.hasPlayer(function(current){
+										return player.canUse(card,current);
+									})){
+									event.cards.add(card);
+									}
+								}
+								else if((event.loop&&!event.resultBool)||(!event.loop&&event.resultBool)){
+									if(game.hasPlayer(function(current){
+										return event.target.canUse(card,current);
+									})){
+									event.cards.add(card);
+									}
+								}
+							}
+						}
+					},trigger);
+					game.cardsGotoOrdering(event.cards).relatedEvent=event.getParent();
+					var dialog=ui.create.dialog('一捧一逗',event.cards,true);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['一捧一逗',get.cardsInfo(event.cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						var dialog=ui.create.dialog('一捧一逗',cards,true);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},event.cards,dialog.videoId);
+					event.dialog=dialog;
+					"step 3"
+					if(event.resultBool){
+						player.chooseCard(1,'是否将一张牌当其中一张牌打出?');
+					}
+					else{
+						event.target.chooseCard(1,'是否将一张牌当其中一张牌打出?');
+					}
+					"step 4"
+					if(result.bool){
+						console.log(result);
+						event.viewAsCards=result.cards;
+						if(event.resultBool){
+							game.log(player,'观看了','#y弃牌堆的牌');
+							var chooseButton=player.chooseButton(true,function(button){
+								return get.value(button.link,_status.event.player);
+							}).set('dialog',event.dialog.videoId);
+							event.chooseButton=chooseButton;
+						}
+						else{
+							game.log(event.target,'观看了','#y弃牌堆的牌');
+							var chooseButton=event.target.chooseButton(true,function(button){
+								return get.value(button.link,_status.event.player);
+							}).set('dialog',event.dialog.videoId);
+							event.chooseButton=chooseButton;
+						}
+					}
+					else{
+						event.goto(6);
+					}
+					"step 5"
+					if(!result.links[0]){
+						event.goto(6);
+					}
+					else{
+						if(event.resultBool){
+							var bool=game.hasPlayer(function(current){
+								return player.canUse(result.links[0],current);
+							});
+							if(bool){
+								//player.chooseUseTarget(result.links[0],true,false);
+								console.log(result.links[0]);
+								player.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
+							}
+						}
+						else{
+							var bool=game.hasPlayer(function(current){
+								return event.target.canUse(result.links[0],current);
+							});
+							if(bool){
+								event.target.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
+							}
+						}
+					}
+					"step 6"
+					ui.clear();
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+					if(event.loop){
+						event.loop=false;
+						event.resultBool=!event.resultBool;
+						if(event.resultBool){
+							player.chooseBool('同样发动一次效果，或取消使对方回复一点体力');
+						}
+						else{
+							event.target.chooseBool('同样发动一次效果，或取消使对方回复一点体力');
+						}
+					}
+					else{
+						event.finish();
+					}
+					"step 7"
+					if(result.bool){
+						event.goto(2);
+					}
+					else{
+						if(event.resultBool){
+							event.target.recover();
+						}
+						else{
+							player.recover();
+						}
+					}
+				}
+			},
+			renleiguancha:{
+				enable:'phaseUse',
+				usable:1,
+				filterTarget:function(card,player,target){
+					return player!=target;
+				},
+				content:function(){
+					target.addSkill('renleiguancha_mark');
+				},
+				group:['renleiguancha_phaseStart','renleiguancha_damage','renleiguancha_die'],
+				subSkill:{
+					mark:{
+						mark:true,
+						intro:{
+							content:'造成或受到伤害，杀死玩家与死亡都被列入了观察项目'
+						},
+					},
+					phaseStart:{
+						trigger:{player:'phaseBegin'},
+						forced:true,
+						filter:function(event,player){
+							console.log(player.hasSkill('renleiguancha_damaged'),player.hasSkill('renleiguancha_dead'),game.filterPlayer(function(current){
+								if(current.hasSkill('renleiguancha_mark')){
+									current.removeSkill('renleiguancha_mark')
+									return true;
+								}
+								else
+									return false
+							}).length);
+							return player.hasSkill('renleiguancha_damaged')||player.hasSkill('renleiguancha_dead')||game.filterPlayer(function(current){
+								if(current.hasSkill('renleiguancha_mark')){
+									current.removeSkill('renleiguancha_mark')
+									return true;
+								}
+								else
+									return false
+							}).length>0
+						},
+						content:function(){
+							'step 0'
+							if(!player.hasSkill('renleiguancha_damaged')&&!player.hasSkill('renleiguancha_dead')){
+								player.draw(2);
+								player.loseHp();
+								event.finish();
+							}
+							'step 1'
+							if(player.hasSkill('renleiguancha_damaged')){
+								player.draw(1);
+								player.removeSkill('renleiguancha_damaged');
+							}
+							'step 2'
+							if(player.hasSkill('renleiguancha_dead')){
+								player.removeSkill('renleiguancha_dead');
+								player.chooseTarget(1,'对一名角色造成一点伤害');
+							}
+							else{
+								event.finish();
+							}
+							'step 3'
+							if(result.bool){
+								console.log(result);
+								result.targets[0].damage(player);
+							}
+						}
+					},
+					damage:{
+						trigger:{global:'damageAfter'},
+						forced:true,
+						filter:function(event,player){
+							if(event.source){
+								return event.source.hasSkill('renleiguancha_mark');//||event.player.hasSkill('renleiguancha_mark');
+							}
+							else
+								return false;
+								//return event.player.hasSkill('renleiguancha_mark');
+						},
+						content:function(){
+							player.addSkill('renleiguancha_damaged');
+						}
+					},
+					die:{
+						trigger:{global:'dieBefore'},
+						forced:true,
+						filter:function(event,player){
+							if(event.source){
+								return event.source.hasSkill('renleiguancha_mark')||event.player.hasSkill('renleiguancha_mark');
+							}
+							else
+								return event.player.hasSkill('renleiguancha_mark');
+						},
+						content:function(){
+							player.addSkill('renleiguancha_dead');
+						}
+					},
+					damaged:{
+						mark:true,
+						marktext:'伤',
+						intro:{
+							content:'观察目标造成了伤害'
+						},
+					},
+					dead:{
+						mark:true,
+						marktext:'亡',
+						intro:{
+							content:'观察目标死亡或杀死过角色'
+						},
+					}
+				}
+			}
 		},
 		translate:{
             KizunaAI:'绊爱',
 			KizunaAI_info:'绊爱',
 			InuyamaTamaki:'犬山玉姬',
 			InuyamaTamaki_info:'犬山玉姬',
+			XiaoxiXiaotao:'小希小桃',
+			XiaoxiXiaotao_info:'小希小桃',
             ailian:'爱链',
             ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给势力不重复的其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
 			qixu:'启虚',
@@ -693,6 +951,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rongyaochengyuan_info:'其他势力角色对你造成伤害时，若其没有“homolive”标记，你可令其获得一个，然后防止此伤害。',
 			hundunliandong:'混沌联动',
 			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有三种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有“homolive”标记的角色视为同一势力',
+			yipengyidou:'一捧一逗',
+			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常单体锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
+			renleiguancha:'人类观察',
+			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。'
 		},
 	};
 });
