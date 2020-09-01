@@ -14,13 +14,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             NatsuiroMatsuri:['female','holo',3,['huxi1','lianmeng']],
             /**萝卜子 */
             RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
+            /**白上吹雪 */
+            ShirakamiFubuki:['female','holo',3,['baihuqingguo','huyanluanyu']],
         },
         characterIntro:{
             TokinoSora:'时乃空',
             YozoraMel:'夜空梅露',
             AkaiHaato:'赤井心',
             NatsuiroMatsuri:'夏色祭',
-            RobokoSan:'萝卜子'
+            RobokoSan:'萝卜子',
+            ShirakamiFubuki:'白上吹雪',
         },
 		skill:{
 			taiyangzhiyin:{
@@ -1008,7 +1011,105 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         }
                     }
                 }
-            }
+            },
+            baihuqingguo:{
+                trigger:{global:'phaseBegin'},
+                filter:function(event,player){
+                    return event.player!=player&&player.countCards('he')>0;
+                },
+                content:function(){
+                    'step 0'
+                    player.chooseToDiscard(1,'弃置一张牌');
+                    'step 1'
+                    if(result.bool){
+                        player.addTempSkill('baihuqingguo_chaofeng');
+                        trigger.player.addTempSkill('baihuqingguo_meihuo');
+                    }
+                    else{
+                        event.finish();
+                    }
+                },
+                subSkill:{
+                    chaofeng:{
+                        mark:true,
+                        markText:'狐',
+                        intro:{
+                            name:'狐',
+                            content:'你只能摸这只🦊'
+                        },
+                    },
+                    meihuo:{
+                        mark:true,
+                        markText:'魅',
+                        intro:{
+                            name:'魅',
+                            content:'你只能摸那只🦊'
+                        },
+                        mod:{
+                            playerEnabled:function(card,player,target){
+                                if(target==player||target.hasSkill('baihuqingguo_chaofeng')){
+                                    return true;
+                                }
+                                else{
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            huyanluanyu:{
+                trigger:{
+                    player:'damage'
+                },
+                content:function(){
+                    'step 0'
+                    event.index=0;
+                    event.damageNum=trigger.num;
+                    event.nowHand=player.countCards('h');
+                    event.getPlayers=game.filterPlayer(function(current){
+                        if(current.countCards('h')>event.nowHand){
+                            return true;
+                        }
+                    });
+                    event.givePlayers=game.filterPlayer(function(current){
+                        if(current.countCards('h')<event.nowHand){
+                            return true;
+                        }
+                    });
+                    'step 1'
+                    if(event.index<event.getPlayers.length){
+                        if(event.getPlayers[event.index].countCards('he')>0){
+                            event.getPlayers[event.index].chooseCard(1,'he','交给'+get.translation(player)+'一张牌',true);
+                        }
+                    }
+                    else{
+                        event.index=0;
+                        event.goto(3);
+                    }
+                    'step 2'
+                    player.gain(result.cards);
+                    game.delayx();
+                    event.index+=1;
+                    event.goto(1);
+                    'step 3'
+                    if(event.index<event.givePlayers.length){
+                        if(player.countCards('he')>0){
+                            player.chooseCard(1,'he','交给'+get.translation(event.givePlayers[event.index])+'一张牌',true);
+                        }
+                    }
+                    else{
+                        event.goto(5);
+                    }
+                    'step 4'
+                    event.givePlayers[event.index].gain(result.cards);
+                    game.delayx();
+                    event.index+=1;
+                    event.goto(3);
+                    'step 5'
+                    event.finish();
+                }
+            },
 		},
 		translate:{
 			TokinoSora:'时乃空',
@@ -1039,6 +1140,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
             ranyouxielou_info:'锁定技，你受到属性伤害时改为回复等量体力值并获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1',
+            ShirakamiFubuki:'白上吹雪',
+            baihuqingguo:'白狐倾国',
+            baihuqingguo_info:'其他角色的出牌阶段开始时，你可弃一张牌，若如此做，该角色于此阶段使用的牌只能以你或其自己为目标。',
+            huyanluanyu:'狐言乱语',
+            huyanluanyu_info:'每当你受到1点伤害后，（记你此时手牌数为X）你可令手牌数多于X的角色各交给你一张牌，然后你交给手牌数少于X的角色各一张牌。',
         },
 	};
 });
