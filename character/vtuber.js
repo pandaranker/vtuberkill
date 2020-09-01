@@ -718,18 +718,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					},trigger);
-					game.cardsGotoOrdering(event.cards).relatedEvent=event.getParent();
-					var dialog=ui.create.dialog('一捧一逗',event.cards,true);
-					_status.dieClose.push(dialog);
-					dialog.videoId=lib.status.videoId++;
-					game.addVideo('cardDialog',null,['一捧一逗',get.cardsInfo(event.cards),dialog.videoId]);
-					event.getParent().preResult=dialog.videoId;
-					game.broadcast(function(cards,id){
-						var dialog=ui.create.dialog('一捧一逗',cards,true);
+					if(event.cards.length<0){
+						event.finish();
+					}
+					else{
+						game.cardsGotoOrdering(event.cards).relatedEvent=event.getParent();
+						var dialog=ui.create.dialog('一捧一逗',event.cards,true);
 						_status.dieClose.push(dialog);
-						dialog.videoId=id;
-					},event.cards,dialog.videoId);
-					event.dialog=dialog;
+						dialog.videoId=lib.status.videoId++;
+						game.addVideo('cardDialog',null,['一捧一逗',get.cardsInfo(event.cards),dialog.videoId]);
+						event.getParent().preResult=dialog.videoId;
+						game.broadcast(function(cards,id){
+							var dialog=ui.create.dialog('一捧一逗',cards,true);
+							_status.dieClose.push(dialog);
+							dialog.videoId=id;
+						},event.cards,dialog.videoId);
+						event.dialog=dialog;
+					}
 					"step 3"
 					if(event.resultBool){
 						player.chooseCard(1,'he','是否将一张牌当其中一张牌打出?');
