@@ -584,7 +584,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(player.storage.targets.length>0){
-						if(player.storage.targets[event.playerIndex].countCards('hj')){
+						if(player.storage.targets[event.playerIndex].countCards('he')){
 							event.handcardsCount= player.storage.targets[event.playerIndex].countCards('h');
 							player.storage.targets[event.playerIndex].chooseToDiscard(true,1,'弃置一张牌');
 						}
