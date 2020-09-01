@@ -708,7 +708,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						dialog.videoId=id;
 					},cards,dialog.videoId);
 					event.dialog=dialog;
-					game.log(player,'观看了','#y牌堆顶的四张牌');
+					game.log(player,'观看了','#y牌堆顶的牌');
 					//var content=['牌堆顶的'+event.cards.length+'张牌',event.cards];
 					//player.chooseControl('ok').set('dialog',content);
 					var chooseButton=player.chooseButton(true,function(button){
@@ -841,41 +841,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(trigger.player.countCards('h')>player.countCards('h')){
-						trigger.player.addTempSkill('cangxiong_diao');//调虎离山
-						//trigger.getParent().excluded.add(trigger.target);//取消之
+						if(player.storage.outPlayers==null){
+							player.storage.outPlayers=[];
+						}
+						player.storage.outPlayers.push(trigger.player);
+						trigger.player.addTempSkill('cangxiong_diao',{target:'phaseBegin'});//移除游戏
+						trigger.player.out('cangxiong_diao');
 					}
 				},
 				subSkill:{
 					diao:{
-						trigger:{player:['damageBegin3','loseHpBefore','recoverBefore']},
-						forced:true,
-						popup:false,
-						content:function(){
-							trigger.cancel();
-						},
-						mod:{
-							cardEnabled:function(){
-								return false;
-							},
-							cardSavable:function(){
-								return false;
-							},
-							targetEnabled:function(){
-								return false;
-							},
-						},
+						trigger:{player:'phaseBegin'},
 						mark:true,
+						direct:true,
+						filter:function(event,player){
+							player.in('cangxiong_diao');
+							//
+							return true;
+						},
 						intro:{
-							content:'不计入距离的计算且不能使用牌且不是牌的合法目标且不能失去/回复体力和受到伤害'
+							content:'移除游戏外'
 						},
-						group:'undist',
-						ai:{
-							effect:{
-								target:function (card,player,target){
-									if(get.tag(card,'recover')||get.tag(card,'damage')) return 'zeroplayertarget';
-								},
-							},
-						},
+						content:function(){
+							player.removeSkill('cangxiong_diao');
+						}
 					},
 				}
 			}

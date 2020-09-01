@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.100.23',
-	update:'1.9.100.23.1',
+	version:'1.9.100.25',
+	update:'1.9.100.25.1',
 	changeLog:[
-		'各种修复'
+		'小希小桃',
 	],
 	files:[
 		'character/hololive.js',

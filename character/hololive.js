@@ -5,15 +5,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
             /**时乃空 */
-            TokinoSora:['female','shu',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
+            TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
             /**夜空梅露 */
-            YozoraMel:['female','shu',3,['juhun','meilu']],
+            YozoraMel:['female','holo',3,['juhun','meilu']],
             /**赤井心 */
-            AkaiHaato:['female','shu',3,['liaolishiyan','momizhiyan']],
+            AkaiHaato:['female','holo',3,['liaolishiyan','momizhiyan']],
             /**夏色祭 */
-            NatsuiroMatsuri:['female','shu',3,['huxi1','lianmeng']],
+            NatsuiroMatsuri:['female','holo',3,['huxi1','lianmeng']],
             /**萝卜子 */
-            RobokoSan:['female','shu',3,['gaonengzhanxie','ranyouxielou']],
+            RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
         },
         characterIntro:{
             TokinoSora:'时乃空',
@@ -453,7 +453,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             break
                     }
                     "step 5"
-                    if(get.suit(player.storage.resultCards[0])=='diamond'&&result.cards){
+                    if(get.suit(player.storage.resultCards[1])=='diamond'&&result.cards){
                         player.lose(result.cards, ui.discardPile);
                         player.$throw(result.cards,1000);
                         game.log(player,'将',result.cards,'置入了弃牌堆');
@@ -632,7 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     if(event.suit=='diamond'&&result.cards){
                         trigger.targets[0].lose(result.cards, ui.discardPile);
                         trigger.targets[0].$throw(result.cards,1000);
-                        game.log(event.result.targets[0],'将',result.cards,'置入了弃牌堆');
+                        game.log(trigger.targets[0],'将',result.cards,'置入了弃牌堆');
                         trigger.targets[0].draw();
                     }
                     event.finish()
