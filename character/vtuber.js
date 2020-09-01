@@ -634,7 +634,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							},event.dropCards,dialog.videoId);
 							event.dialogId=dialog.videoId;
 							///显示当前弃牌框，待改进
-							if(event.dropCardsType.length>2){
+							if(event.dropCardsType.length>3){
 								event.goto(4);
 							}
 							else{
