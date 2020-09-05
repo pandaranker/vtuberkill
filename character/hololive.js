@@ -15,7 +15,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             /**萝卜子 */
             RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
             /**白上吹雪 */
-            ShirakamiFubuki:['female','holo',3,['baihuqingguo','huyanluanyu']],
+            ShirakamiFubuki:['female','holo',4,['baihuqingguo','huyanluanyu']],
         },
         characterIntro:{
             TokinoSora:'时乃空',

@@ -10,11 +10,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
 			/**小希小桃 */
 			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha']],
+			/**辉夜月 */
+			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱',
 			InuyamaTamaki:'犬山玉姬',
-			XiaoxiXiaotao:'小希小桃'
+			XiaoxiXiaotao:'小希小桃',
+			KaguyaLuna:'辉夜月'
         },
 		skill:{
             ailian:{
@@ -936,6 +939,102 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					}
 				}
+			},
+			jiajiupaidui:{
+				enable:'chooseToUse',
+				filter:function(event,player){
+					if(player.hasSkill('jiajiupaidui_tag')) return false;
+					return event.filterCard({name:'jiu',isCard:true},player,event);
+				},
+				content:function(){
+					"step 0"
+					console.log(player,event);
+					player.addSkill('jiajiupaidui_tag');
+					player.chooseTarget(2,'指定二名玩家弃置各弃置1张牌',function(card,player,target){
+						return target.countCards('he')>0;
+					});
+					"step 1"
+					if(result.bool&&result.targets.length>0){
+						event.targets=result.targets;
+						event.discardNum=result.targets.length;
+					}
+					else{
+						event.finish();
+					}
+					"step 2"
+					if(event.discardNum>1){
+						event.one=event.targets[0].chooseToDiscard(1,'弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+						event.two=event.targets[1].chooseToDiscard(1,'弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+					}
+					else{
+						event.onlyOne=event.targets[0].chooseToDiscard(2,'弃置两张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+					}
+					"step 3"
+					event.discardCards=[];
+					if(event.onlyOne!=undefined){
+						event.discardCards.addArray(event.onlyOne.result.cards);
+					}
+					else{
+						event.discardCards.addArray(event.one.result.cards);
+						event.discardCards.addArray(event.two.result.cards);
+					}
+					"step 4"
+					event.isJiu=false;
+					event.allJiu=true;
+					event.discardCards.forEach(discard => {
+						if(get.suit(discard)=='spade'||get.number(discard)==9)
+							event.isJiu=true;
+						else{
+							event.allJiu=false;
+						}
+					});
+					if(event.isJiu){
+						if(_status.event.getParent(2).type=='dying'){
+							event.dying=player;
+							event.type='dying';
+						}
+						player.useCard({name:'jiu',isCard:true},player);
+					}
+					else{
+						event.finish();
+					}
+					"step 5"
+					player.getStat().card.jiu--;
+					if(event.allJiu){
+						player.removeSkill('jiajiupaidui_tag');
+						player.draw();
+					}
+				},
+				subSkill:{
+					tag:{
+						trigger:{global:'roundStart'},
+						direct:true,
+						mark:true,
+						intro:{
+							content:'下轮开始后可以再次使用技能'
+						},
+						content:function(){
+							player.removeSkill('jiajiupaidui_tag');
+						}
+					}
+				}
+			},
+			kuangzuiluanwu:{
+				// group:['kuangzuiluanwu_tag'],
+				// subSkill:{
+				//	tag:{
+				
+				mark:true,
+				intro:{
+					content:function(storage, player, skill){
+						if(player.storage.jiu)
+							return '当前基础伤害计数:'+(player.storage.jiu+1).toString()
+						else
+							return '当前基础伤害计数:1'
+					}
+				},
+				//	}
+				//}
 			}
 		},
 		translate:{
@@ -945,6 +1044,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			InuyamaTamaki_info:'犬山玉姬',
 			XiaoxiXiaotao:'小希小桃',
 			XiaoxiXiaotao_info:'小希小桃',
+			KaguyaLuna:'辉夜月',
+			KaguyaLuna_info:'辉夜月',
             ailian:'爱链',
             ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给势力不重复的其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
 			qixu:'启虚',
@@ -960,7 +1061,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yipengyidou:'一捧一逗',
 			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常单体锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
 			renleiguancha:'人类观察',
-			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。'
+			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',
+			jiajiupaidui:'假酒派对',
+			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令一至两名角色弃置合计两张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
+			kuangzuiluanwu:'狂醉乱舞',
+			kuangzuiluanwu_info:'限定技，出牌阶段，你可以视为对X名角色各使用了一张【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你下一张【杀】会造成的伤害）',
 		},
 	};
 });
