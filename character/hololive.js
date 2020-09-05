@@ -49,7 +49,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         return lib.filter.targetEnabled2(trigger.card, player, current)
                             && player.inRange(current)
                             && !trigger.targets.contains(current)
-                            && player.canUse(trigger.card, current)
+                            //&& (player.canUse(trigger.card, current)||current.canUse(trigger.card, current))
+                            && (get.type(trigger.card)!='equip'&&get.type(trigger.card)!='delay')
                     })) {
                         list.splice(1,1);
                         if(event.Dvalue==3){
@@ -75,12 +76,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                 player.draw();
                             }
                             if(element[2]=="无法响应"){
+                                game.log(player,'令',trigger.card,'无法被响应');
                                 trigger.directHit.addArray(players);
                                 trigger.nowuxie=true;
                             }
                         });
                         result.links.forEach(element => {
                             if(element[2]=="额外目标"){
+                                //console.log(trigger);
                                 player.chooseTarget(true,'额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
                                     var trigger=_status.event;
                                     if(trigger.targets.contains(target)) return false;
@@ -105,7 +108,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 group:'taiyangzhiyin_clear',
                 subSkill:{
 					clear:{
-						trigger:{player:'useCardAfter'},
+						trigger:{player:['useCardAfter']},
                         direct:true,
 						content:function(){
                             if(player.storage.onlink!=null){

@@ -423,6 +423,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
+					player.addSkill('qixu5');
 					if(event.current==undefined) event.current=player.next;
 					if(event.current==player){
 						event.goto(2);
@@ -453,7 +454,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					"step 1"
 					//player.storage.qixu4=false;
-					console.log(result);
+					//console.log(result);
 					if(result.bool){
 						event.current.discard(result.cards);
 						event.finish();
@@ -948,7 +949,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					console.log(player,event);
 					player.addSkill('jiajiupaidui_tag');
 					player.chooseTarget(2,'指定二名玩家弃置各弃置1张牌',function(card,player,target){
 						return target.countCards('he')>0;
@@ -963,11 +963,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					"step 2"
 					if(event.discardNum>1){
-						event.one=event.targets[0].chooseToDiscard(1,'弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
-						event.two=event.targets[1].chooseToDiscard(1,'弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+						event.one=event.targets[0].chooseCard(1,'he','弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+						event.two=event.targets[1].chooseCard(1,'he','弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
 					}
 					else{
-						event.onlyOne=event.targets[0].chooseToDiscard(2,'弃置两张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
+						event.onlyOne=event.targets[0].chooseCard(2,'he','弃置两张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
 					}
 					"step 3"
 					event.discardCards=[];
@@ -979,6 +979,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.discardCards.addArray(event.two.result.cards);
 					}
 					"step 4"
+					event.targets[0].$throw(event.one.result.cards);
+					game.log(event.targets[0],'弃置了',event.one.result.cards)
+					event.targets[1].$throw(event.two.result.cards);
+					game.log(event.targets[1],'弃置了',event.two.result.cards)
+					game.delayx();
+					game.cardsDiscard(event.discardCards);
+					//game.log()
 					event.isJiu=false;
 					event.allJiu=true;
 					event.discardCards.forEach(discard => {
@@ -1016,56 +1023,110 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							player.removeSkill('jiajiupaidui_tag');
 						}
-					}
+					},
 				}
 			},
 			kuangzuiluanwu:{
 				// group:['kuangzuiluanwu_tag'],
 				// subSkill:{
 				//	tag:{
-				
-				mark:true,
+				unique:true,
+				enable:'phaseUse',
+				limited:true,
+				skillAnimation:'epic',
+				animationColor:'thunder',
+				filter:function(card,player,target){
+					return player.storage.jiu;
+				},
+				content:function(){
+					'step 0'
+					player.awakenSkill('kuangzuiluanwu');
+					player.addSkill('kuangzuiluanwu_damage');
+					'step 1'
+					player.chooseTarget(player.storage.jiu,'选择杀的目标',function(card,player,target){
+						return lib.filter.targetEnabled2({name:'sha'},player,target);
+						//return player.canUse({name:'sha'},target);
+					})
+					'step 2'
+					if(result.bool){
+						if(result.targets){
+							event.shaEvent=player.useCard({name:'sha'},result.targets);
+						}
+					}
+					'step 3'
+					player.addSkill('kuangzuiluanwu_count');
+					player.removeSkill('kuangzuiluanwu_damage');
+				},
 				intro:{
 					content:function(storage, player, skill){
 						if(player.storage.jiu)
-							return '当前基础伤害计数:'+(player.storage.jiu+1).toString()
+							return '未发动。当前使用酒计数:'+(player.storage.jiu).toString()
 						else
-							return '当前基础伤害计数:1'
+							return '未发动。当前使用酒计数:0'
 					}
 				},
-				//	}
-				//}
+				subSkill:{
+					count:{
+						mark:true,
+						marktext:"酒",
+						trigger:{player:'phaseEnd'},
+						direct:true,
+						content:function(){
+							if(player.hasSkill('kuangzuiluanwu_damage'))
+								player.removeSkill('kuangzuiluanwu_damage');
+						},
+						intro:{
+							content:function(storage, player, skill){
+								if(player.storage.jiu)
+									return '已发动。当前使用酒计数:'+(player.storage.jiu).toString()
+								else
+									return '已发动。当前使用酒计数:0'
+							}
+						},
+					},
+					damage:{
+						trigger:{global:'damage'},
+						direct:true,
+						content:function(){
+							player.loseMaxHp();
+						}
+					}
+				}
 			}
 		},
 		translate:{
             KizunaAI:'绊爱',
 			KizunaAI_info:'绊爱',
-			InuyamaTamaki:'犬山玉姬',
-			InuyamaTamaki_info:'犬山玉姬',
-			XiaoxiXiaotao:'小希小桃',
-			XiaoxiXiaotao_info:'小希小桃',
-			KaguyaLuna:'辉夜月',
-			KaguyaLuna_info:'辉夜月',
             ailian:'爱链',
             ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给势力不重复的其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
 			qixu:'启虚',
 			qixu1:'启虚',
             qixu2:'启虚',
-            qixu3:'启虚',
+            qixu3:'杀启虚',
             qixu4:'启虚',
+            qixu5:'闪启虚',
             qixu_info:'主公技。当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
+			
+			InuyamaTamaki:'犬山玉姬',
+			InuyamaTamaki_info:'犬山玉姬',
 			rongyaochengyuan:'荣誉成员',
 			rongyaochengyuan_info:'其他势力角色对你造成伤害时，若其没有“homolive”标记，你可令其获得一个，然后防止此伤害。',
 			hundunliandong:'混沌联动',
 			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有三种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有“homolive”标记的角色视为同一势力',
+			
+			XiaoxiXiaotao:'小希小桃',
+			XiaoxiXiaotao_info:'小希小桃',
 			yipengyidou:'一捧一逗',
 			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常单体锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
 			renleiguancha:'人类观察',
 			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',
+			
+			KaguyaLuna:'辉夜月',
+			KaguyaLuna_info:'辉夜月',
 			jiajiupaidui:'假酒派对',
-			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令一至两名角色弃置合计两张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
+			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色弃置合计两张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
 			kuangzuiluanwu:'狂醉乱舞',
-			kuangzuiluanwu_info:'限定技，出牌阶段，你可以视为对X名角色各使用了一张【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你下一张【杀】会造成的伤害）',
+			kuangzuiluanwu_info:'限定技，出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		},
 	};
 });
