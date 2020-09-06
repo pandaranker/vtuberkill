@@ -941,7 +941,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:['damageAfter','loseHpAfter','loseAfter']},
 						direct:true,
 						filter:function(event,player,name){
-							console.log(name);
 							if(name=='loseAfter'){
 								var indexi=0
 								while(indexi<event.cards.length){
@@ -975,6 +974,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.addTempSkill('hengkongchushi_cannot',{player:'phaseUseAfter'});
 					player.addTempSkill('hengkongchushi_qiyuyong',{player:'phaseUseAfter'});
 					player.addTempSkill('hengkongchushi_moyuqi',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_nanman');
 					player.addTempSkill('nochongzhu',{player:'phaseUseAfter'});
 				},
 				subSkill:{
@@ -997,23 +997,32 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			hengkongchushi_qiyuyong:{
 				enable:"phaseUse",
+				filter:function(event,player){
+					return player.countCards('he')>0;
+				},
 				content:function(){
 					"step 0"
-					player.chooseToDiscard(1,'选择一张牌弃置',true);
+					player.chooseToDiscard(1,'选择一张牌弃置','he',true);
 					"step 1"
-					event.cards=get.bottomCards();
-					player.showCards(event.cards,'底牌展示');
-					game.delayx();
+					if(result.cards.length>0){
+						event.cards=get.bottomCards();
+						player.showCards(event.cards,'底牌展示');
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
 					"step 2"
 					player.removeSkill('hengkongchushi_cannot');
 					var bool=game.hasPlayer(function(current){
-						return lib.filter.targetEnabled2(event.cards[0],player,current);
+						return player.canUse(event.cards[0],current)&&lib.filter.targetEnabled2(event.cards[0],player,current);
 					});
 					if(bool){
 						player.chooseUseTarget(event.cards[0],true,false);
 					}
 					else{
 						game.cardsDiscard(event.cards[0]);
+						game.log(event.cards[0],'从牌堆弃置到弃牌堆');
 						player.removeSkill('hengkongchushi_qiyuyong');
 					}
 					"step 3"
@@ -1032,11 +1041,48 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 2"
 					var bool=get.suit(event.cards[0])=='club';
 					game.cardsDiscard(event.cards[0]);
+					game.log(event.cards[0],'从牌堆弃置到弃牌堆');
 					if(bool){
 						event.finish()
 					}
 					"step 3"
 					player.removeSkill('hengkongchushi_moyuqi');
+				}
+			},
+			hengkongchushi_nanman:{
+				trigger:{player:'phaseEnd'},
+				direct:true,
+				filter:function(event,player,name){
+						var allcards=[];
+						var newcard={};
+						player.getHistory('useCard').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						player.getHistory('respond').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						player.getHistory('lose').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						if(allcards<1) return false;//game.countPlayer()
+						while(allcards.length>0){
+							newcard=allcards.pop();
+							console.log(newcard,allcards);
+							if(get.suit(newcard)!='spade'&&get.suit(newcard)!='club'){
+								return false
+							}
+						}
+						return true;
+				},
+				content:function(){
+					var list=game.filterPlayer(function(current){
+						return player.canUse('nanman',current);
+					});
+					list.sortBySeat();
+					player.useCard({name:'nanman'},list);
 				}
 			},
 			nochongzhu:{
@@ -1116,7 +1162,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chaoqianyishi:'超前意识',
 			chaoqianyishi_info:'你失去过锦囊牌或体力减少过的回合结束时，你可以摸等同你体力上限的牌，然后将等同你体力值的牌置于牌堆顶或牌堆底。',
 			hengkongchushi:'横空出世',
-			hengkongchushi_info:'出牌阶段开始时，你可以令你本阶段无法出牌并仅能执行以下行动：<br>1.弃置一张牌以使用牌堆底的一张牌，若无法使用，弃置之且本回合不能再执行此项；<br>2.摸一张牌并弃置牌堆底牌，若弃置的不为♣，本回合不能再执行此项。<br>本回合结束时，若你使用和弃置的黑色牌数大于其他角色数，你视为使用了一张【南蛮入侵】。',
+			hengkongchushi_info:'出牌阶段开始时，你可以令你本阶段无法出牌并仅能执行以下行动：<br>1.弃置一张牌以使用牌堆底的一张牌，若无法使用，弃置之且本回合不能再执行此项；<br>2.摸一张牌并弃置牌堆底牌，若弃置的不为♣，本回合不能再执行此项。<br>本回合结束时，若你使用和弃置的黑色牌数大于其他角色数，你视为使用了一张【南蛮入侵】(从牌堆中弃置的不算你弃置的牌)。',
 			hengkongchushi_qiyuyong:'弃牌并使用底牌',
 			hengkongchushi_moyuqi:'摸牌并弃置底牌',
 			wenhuazhian:'文化之暗',
