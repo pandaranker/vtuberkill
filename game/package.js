@@ -7,7 +7,7 @@ window.noname_package={
 		// yijiang:'一将成名',
 		hololive:'hololive',
 		basic: 'v杀基础包',
-		moyu: '摸鱼',
+		// moyu: '摸鱼',
 		nijisanji:'nijisanji',
 		vtuber:'vtuber',
 		// sp:'SP',
