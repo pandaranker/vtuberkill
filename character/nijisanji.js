@@ -1067,7 +1067,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							allcards.addArray(valueI.cards);
 						}
 						);
-						if(allcards<1) return false;//game.countPlayer()
+						if(allcards<game.countPlayer()) return false;//
 						while(allcards.length>0){
 							newcard=allcards.pop();
 							console.log(newcard,allcards);

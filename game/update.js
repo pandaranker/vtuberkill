@@ -1,8 +1,9 @@
 window.noname_update={
 	version:'1.9.100.27',
-	update:'1.9.100.27.1',
+	update:'1.9.100.27.2',
 	changeLog:[
 		'需知:当前部分人物的AI未编写完成，请尽量在联机模式下测试',
+		'美兔部分BUG修改'
 	],
 	files:[
 		'character/hololive.js',
