@@ -5,7 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
         connect:true,
 		character:{
             /**绊爱 */
-			KizunaAI:['female','qun',4,['ailian','qixu'],['zhu']],
+			KizunaAI:['female','upd8',4,['ailian','qixu'],['zhu']],
 			/**犬山 */
 			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
 			/**小希小桃 */
@@ -14,10 +14,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 		},
         characterIntro:{
-			KizunaAI:'绊爱',
+			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
 			InuyamaTamaki:'犬山玉姬',
 			XiaoxiXiaotao:'小希小桃',
-			KaguyaLuna:'辉夜月'
+			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。'
         },
 		skill:{
             ailian:{
@@ -979,12 +979,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.discardCards.addArray(event.two.result.cards);
 					}
 					"step 4"
+					event.targets[0].lose(event.one.result.cards,ui.ordering);
+					event.targets[1].lose(event.two.result.cards,ui.ordering);
 					event.targets[0].$throw(event.one.result.cards);
 					game.log(event.targets[0],'弃置了',event.one.result.cards)
 					event.targets[1].$throw(event.two.result.cards);
 					game.log(event.targets[1],'弃置了',event.two.result.cards)
 					game.delayx();
-					game.cardsDiscard(event.discardCards);
+					//game.cardsDiscard(event.discardCards);
 					//game.log()
 					event.isJiu=false;
 					event.allJiu=true;

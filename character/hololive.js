@@ -18,12 +18,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             ShirakamiFubuki:['female','holo',4,['baihuqingguo','huyanluanyu']],
         },
         characterIntro:{
-            TokinoSora:'时乃空',
+            TokinoSora:'混沌的尽头，少女的回旋曲，杏社起始同时也是终末的清楚担当，全杏社圆桌骑士之首，空友之母，反抗军的破坏者、狮心之人、大杏社的卡丽熙、hololive真主、永不恐惧者、阿芙乐尔公主，时乃空是也',
             YozoraMel:'夜空梅露',
-            AkaiHaato:'赤井心',
-            NatsuiroMatsuri:'夏色祭',
-            RobokoSan:'萝卜子',
-            ShirakamiFubuki:'白上吹雪',
+            AkaiHaato:'赤井心，京师名医之后也，嗜食成性，有《药膳经》流于世，其药多先夺人命后生之，用者莫不谈之色变，食尤喜沙琪玛，每日贡食入府，左右皆呼“哈恰玛恰玛”，后元昭起势，心随夏色祭往拜之，从军十年活人兆计，后拜土澳公主，总领土澳事宜。',
+            NatsuiroMatsuri:'夏色祭（V始二年）者，元昭之同族也，自党锢之祸后，元昭暗谋国事，遣祭访天下名士，得名士四人，是为杏国一期，祭不拘小节，最喜呼吸，同社皆避之，既为混沌传说，一般露○可轻言之，建功累累，元昭尊为第一将军',
+            RobokoSan:'萝卜子（V始三年）者，奇巧士之造物也，自号高性能机器人，实则不善文书，萝卜起于草莽，生性豪爽，后为时乃空所动，随杏社征战，V始二十年，杏国攻灭诸侯，远交近攻，俨然有大一统之势，萝卜子拜平南王福禄将军，安于南方',
+            ShirakamiFubuki:'白上吹雪者，青丘之狐也，夏色祭以玉米赚之，V始十五年，朝廷击绊爱于桐江，大破之，又击之于宛城，斩爱之左将军，一时人皆自危，起义初显败势，吹雪自领百骑迂回西南袭朝廷于后，解绊爱众叛亲离之危，重兴V国大业，吹雪虽为狐灵，然生猫态，憨态可掬',
         },
 		skill:{
 			taiyangzhiyin:{
@@ -1017,6 +1017,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             },
             baihuqingguo:{
                 trigger:{global:'phaseBegin'},
+				//frequent:true,
                 filter:function(event,player){
                     return event.player!=player&&player.countCards('he')>0;
                 },

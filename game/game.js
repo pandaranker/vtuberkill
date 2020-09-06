@@ -9275,8 +9275,8 @@
 			},
 			c:function(){
 				(function(){
-					var a=0,b=0,c=0,d=0,e=0,f=0,g=0;
-					var sa=0,sb=0,sc=0,sd=0,se=0,sf=0,sg=0;
+					var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,j=0,k=0;
+					var sa=0,sb=0,sc=0,sd=0,se=0,sf=0,sg=0,sh=0,sj=0,sk=0;
 					for(var i in lib.character){
 						switch(lib.character[i][1]){
 							case 'wei':a++;if(lib.config.banned.contains(i)) sa++;break;
@@ -9286,6 +9286,9 @@
 							case 'western':e++;if(lib.config.banned.contains(i)) se++;break;
 							case 'key':f++;if(lib.config.banned.contains(i)) sf++;break;
 							case 'holo':g++;if(lib.config.banned.contains(i)) sg++;break;
+							case 'nijisanji':h++;if(lib.config.banned.contains(i)) sh++;break;
+							case 'upd8':j++;if(lib.config.banned.contains(i)) sj++;break;
+							case 'dotlive':k++;if(lib.config.banned.contains(i)) sk++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -9295,7 +9298,10 @@
 					console.log('西：'+(e-se)+'/'+e);
 					console.log('键：'+(f-sf)+'/'+f);
 					console.log('杏：'+(g-sg)+'/'+g);
-					console.log('已启用：'+((a+b+c+d+e+f+g)-(sa+sb+sc+sd+se+sf+sg))+'/'+(a+b+c+d+e+f+g));
+					console.log('虹：'+(h-sh)+'/'+h);
+					console.log('U：'+(j-sj)+'/'+j);
+					console.log('点：'+(k-sk)+'/'+k);
+					console.log('已启用：'+((a+b+c+d+e+f+g+h+j+k)-(sa+sb+sc+sd+se+sf+sg+sh+sj+sk))+'/'+(a+b+c+d+e+f+g+h+j+k));
 				}());
 				(function(){
 					var a=0,b=0,c=0,d=0;
@@ -9735,16 +9741,22 @@
 			qun:'群',
 			shen:'神',
 			western:'西',
-			key:'键',
+			key:'N',
 			holo:'杏',
+			dotlive:'点',
+			nijisanji:'虹',
+			upd8:'U',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
 			qun2:'群雄',
 			shen2:'神明',
 			western2:'西方',
-			key2:'KEY',
+			key2:'Noripro',
 			holo2:'HoloLive',
+			upd82:'Upd8',
+			dotlive2:'.live',
+			nijisanji2:'Nijisanji',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -9764,6 +9776,9 @@
 			westernColor:"#ffe14c",
 			keyColor:"#c9b1fd",
 			holoColor:"#ffddb9",
+			nijisanjiColor:"#b0d0e2",
+			dotliveColor:"#b2d9a9",
+			upd8Color:"#ffe14c",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -24478,7 +24493,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 7;
+					if(!lib.character[name]) return 10;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -24487,7 +24502,10 @@
 					if(lib.character[name][1]=='key') return 4;
 					if(lib.character[name][1]=='western') return 5;
 					if(lib.character[name][1]=='holo') return 6;
-					return 7;
+					if(lib.character[name][1]=='nijisanji') return 7;
+					if(lib.character[name][1]=='dotlive') return 8;
+					if(lib.character[name][1]=='upd8') return 9;
+					return 10;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -25183,6 +25201,9 @@
 				visible:true,
 				prompt:'将要重铸的牌置入弃牌堆并摸一张牌',
 				filter:function(event,player){
+					if(player.hasSkill('nochongzhu')){
+						return false;
+					}
 					return player.hasCard(function(card){
 						var info=get.info(card);
 						if(typeof info.chongzhu=='function'){
@@ -26300,7 +26321,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','dotlive','udp8','key'],
 		nature:['fire','thunder','poison','kami'],
 		linked:['fire','thunder','kami'],
 		groupnature:{
@@ -26312,6 +26333,9 @@
 			western:'thunder',
 			key:'key',
 			holo:'soil',
+			udp8:'metal',
+			dotlive:'wood',
+			nijisanji:'water',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 	};
@@ -35790,7 +35814,10 @@
 							if(info[name][1]=='western') return 4;
 							if(info[name][1]=='key') return 5;
 							if(info[name][1]=='holo') return 6;
-							return 7;
+							if(info[name][1]=='nijisanji') return 7;
+							if(info[name][1]=='dotlive') return 8;
+							if(info[name][1]=='upd8') return 9;
+							return 10;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -40766,7 +40793,7 @@
 				},true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('wei','shu','wu','qun','western','key','holo',function(link,node){
+				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','dotlive','upd8',function(link,node){//
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -41193,7 +41220,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['wei','shu','wu','qun','holo'];
+					var groups=['wei','shu','wu','qun','holo','key','nijisanji','dotlive','upd8'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -41417,7 +41444,10 @@
 						if(lib.character[name][1]=='wu') return 2;
 						if(lib.character[name][1]=='qun') return 3;
 						if(lib.character[name][1]=='holo') return 4;
-						return 5
+						if(lib.character[name][1]=='nijisanji') return 5;
+						if(lib.character[name][1]=='dotlive') return 6;
+						if(lib.character[name][1]=='upd8') return 7;
+						return 8
 					}
 				}
 				list.sort(function(a,b){
@@ -43711,7 +43741,7 @@
 				}
 				else{
 					if(get.mode()=='guozhan'){
-						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏'};
+						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏',nijisanji:'虹'};//wei:'魏',shu:'蜀',wu:'吴',dotlive:'点',upd8:'U'
 					}
 					var list2=get.copy(list);
 					if(game.getIdentityList2){
@@ -50481,7 +50511,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','dotlive','upd8'];
 		},
 		types:function(){
 			var types=[];

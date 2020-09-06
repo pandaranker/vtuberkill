@@ -8,30 +8,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			HoshimatiSuisei:['female','holo',4,['yemuxingyong', 'xinghejianduei']],
 			KaguraMea: ['female', 'qun', 4, ['luecai', 'xiaoyan']],
-			UshimiIchigo: ['female', 'wu', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
+			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
 			SakuraMiko: ['female', 'holo', 4, ['haodu']],
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
-			Siro: ['female', 'qun', 4, ['zhongxinghezou']],
+			Siro: ['female', 'dotlive', 4, ['zhongxinghezou']],
 			HanazonoSerena: ['female', 'qun', 3, ['jiumao', 'enfan', 'shiqi']],
 			AkiRosenthal: ['female', 'holo', 3, ['meiwu', 'huichu']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
-			SuzukaUtako: ['female', 'wu', 3, ['meici', 'danlian']],
-			HiguchiKaede: ['female', 'wu', 4, ['zhenyin', 'saqi']],
+			SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
+			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 		},
 		characterIntro:{
-			HoshimatiSuisei:'如彗星般出现星（Star）之原石。我是虚拟偶像星街彗星。以至今为止积累的全部、以从现在开始积累的全部，向大家传达最好的音乐与舞台。无法忘却的瞬间、请与我共有吧。麻烦请你多多指教',
+			HoshimatiSuisei:'星街彗星（V始三年），北海人也，少时贫寒，彗酱一心求学，从当世之先达元昭执经叩问，元昭深器之，彗酱豆蔻之年即通晓诸经，人莫不言之曰天道酬勤，六边形战士之名世人皆知。V始十三年绊爱首义，彗酱自投笔从戎，有tst之神兵，杏国拜之曰上将军',
 			KaguraMea: '财布? 定叫他有来无回！',
 			UshimiIchigo: "8岁的小学三年级学生，居住在海边的小镇上。本体为草莓奶昔色海蛞蝓的小姑娘。性格泼辣，有些假小子。每天放学以后就潜入深海。喜食粉色的裙带菜和各种草莓味的点心。",
-			SakuraMiko: '很久很久之前被电脑世界的神为了初生世界变得繁荣而创造出来的神使。被神派遣到电脑世界，接触到萌文化、动画、游戏等等，从而决心成为偶像。',
+			SakuraMiko: '樱巫女（V始三年）者，神社之巫女也，性坚毅，素有樱火龙之称，子云，食色性也，圣人如此，miko亦然，miko喜黄油，常于配信误启之，虽贵为巫女，护东南诸郡安宁，然不识诗书，有《FAQ》、《倪哥》为众人笑，V始十九年，朝廷窜东南，miko力拒之，自封自由领，不受诸侯管制',
 			MiraiAkari: "因为人物设计是曾经创造过初音未来的KEI，因此经常被人称为初音的妹妹。Mirai Akari是一名失忆少女，为了让大家了解自己开始做视频。同时是一位NEET，且拥有一套别墅并作为背景。",
 			kaguraNaNa: "大家好辣！我是从唐辛子星来的，神乐七奈！平常是扮成插画师，偷偷地（？）辛略地球。",
-			Siro: "",
+			Siro: "siro（V始二年），字小白，别号电脑少女，母孕时梦海豚入怀，小白诞即能言，孩提之时即多识胡语，尤善海豚之言，既加冠，应召入宫，拜左将军V海豚候领幽州牧，善骑射，有神弓曰AKM，军中皆呼战神。",
 			HanazonoSerena: "被您收养的猫娘。主人！从现在开始请多关照喵。",
 			AkiRosenthal: '',
 			XiaDi: '',
-			HiguchiKaede: '生活在虚拟关西的二年级高中生。身材修长相貌出众。从小就喜欢吹小号，现在隶属校吹奏乐部。认为打扮、与猫咪一起生活是人生价值所在。为了想要更了解喜爱事物的相关，而开始了VTuber活动',
+			HiguchiKaede: '樋口枫者，关西之游侠也，姿色天然占尽风流，善以琴杀人，来去翩翩，有宾客枫组三千，V始二十年，月之美兔兴于西北，自封委员长、上将军，建国曰彩虹，枫率宾客从之，枫尝与杏之福禄将军萝卜子交好，惺惺相惜，成V界之佳话',
 			Nekomasu: '虚拟口癖萝莉狐娘YouTuber大叔',
 		},
 		skill:{
@@ -1235,22 +1235,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content: function() {
 					'step 0'
 					var list = [];
-					if (player.countCards('he') >= 2) list.push('弃置两张牌');
-					if (player.countCards('h')) list.push('弃置所有手牌');
+					//if (player.countCards('he') >= 2) list.push('弃置两张牌');
+					if (player.countCards('h')) list.push('弃置牌并发动技能');
 					if (list.length) {
 						player.addTempSkill('yinliu_used');
 						player.chooseControl(list);
 					}
 					else event.finish();
 					'step 1'
-					if (result.control == '弃置两张牌') event.control = 0;
-					if (result.control == '弃置所有手牌') event.control = 1;
+					//if (result.control == '弃置两张牌') event.control = 0;
+					if (result.control == '弃置牌并发动技能') event.control = 0;
 					if (event.control == 0) {
-						player.chooseCard('he', 2, true);
+						player.chooseCard('he', [1,3], true);
 					}
 					else {
 						event.cards = player.getCards('h');
-						player.addTempSkill('yinliu_end');
 					}
 					'step 2'
 					if (event.control == 0 && result.bool) {
@@ -1258,13 +1257,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					} 
 					'step 3'
 					player.discard(event.cards);
+					game.delayx();
+					if(player.countCards('h')==0){
+						player.addTempSkill('yinliu_end');
+					}
 					while (true) {
 						var card=get.cards()[0]
 						player.showCards(card);
 						player.gain(card, 'gain2');
-						var chk = true;
+						var chk = false;
 						event.cards.forEach(function(cur) {
-							if (get.suit(cur) == get.suit(card)) chk = false;
+							if (get.suit(cur) == get.suit(card)) chk = true;
 						})
 						if (!chk) break;
 					}
@@ -1286,9 +1289,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			dunzou: {
 				trigger: {
-					global: 'useCardAfter',
+					global:'useCardAfter',
 				},
 				filter: function(event, player) {
+					console.log(_status.currentPhase);
 					return 	player!=_status.currentPhase &&
 							// event.player != player &&
 							event.card && 
@@ -1296,39 +1300,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.targets.contains(player);
 				},
 				content: function () {
-					player.addTempSkill('dunzou_enable');
+					player.addTempSkill('dunzou_enable',{target:'phaseBegin'});//移除游戏
+					player.out('dunzou_enable');
 				},
 			},
 			dunzou_enable:{
-				trigger:{player:['damageBegin3','loseHpBefore','recoverBefore']},
-				forced:true,
-				popup:false,
-				content:function(){
-					trigger.cancel();
-				},
-				mod:{
-					cardEnabled:function(){
-						return false;
-					},
-					cardSavable:function(){
-						return false;
-					},
-					targetEnabled:function(){
-						return false;
-					},
-				},
+				trigger:{player:'phaseBegin'},
 				mark:true,
+				direct:true,
+				filter:function(event,player){
+					player.in('dunzou_enable');
+					//
+					return true;
+				},
 				intro:{
-					content:'不计入距离的计算且不能使用牌且不是牌的合法目标且不能失去/回复体力和受到伤害'
+					content:'移除游戏外'
 				},
-				group:'undist',
-				ai:{
-					effect:{
-						target:function (card,player,target){
-							if(get.tag(card,'recover')||get.tag(card,'damage')) return 'zeroplayertarget';
-						},
-					},
-				},
+				content:function(){
+					_status.currentPhase=player;
+					player.removeSkill('dunzou_enable');
+				}
 			},
 
 			meici: {
@@ -1661,7 +1652,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					event.count=trigger.num;
 					"step 1"
-					event.count--;
+					if(event.count)
+						event.count--;
 					var X = game.countPlayer(function(cur) {
 						return cur.hp > player.hp;
 					})
@@ -1680,6 +1672,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.tar = result.targets[0];
 						player.logSkill('dianyinchuancheng', event.tar);
 						player.swapHandcards(event.tar);
+					}
+					else{
+						event.finish();
 					}
 					'step 3'
 					if (event.tar) {
@@ -1742,7 +1737,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shiqi: '势起',
 			shiqi_info: '锁定技。准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
 
-			AkiRosenthal: '亚琦·罗森塔尔',
+			AkiRosenthal: '亚琦罗森塔尔',
 			meiwu: '魅舞',
 			meiwu_info: '当你于一回合内首次成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。',
 			huichu: '慧厨',
@@ -1750,7 +1745,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			XiaDi: '下地',
 			yinliu: '引流',
-			yinliu_info: '出牌阶段限一次，你可以弃置两张牌或所有手牌，然后摸牌并展示直到出现了你弃置牌包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
+			yinliu_info: '出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
 			dunzou: '遁走',
 			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以令你于本回合视为不存在。',
 			dunzou_enable: '遁走',
@@ -1767,7 +1762,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			saqi: '飒气',
 			saqi_info: '准备阶段，你可以增加（至多到 5 ）或扣减 1 点体力上限，若选择扣减，你获得以下效果直到你的下回合开始：你使用牌结算后，所有其他角色本回合无法使用该花色的牌；发动“震音”的条件改为“你使用牌指定唯一目标后”。',
 
-			Nekomasu: 'Nekomasu',
+			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
 			milijianying_info: '锁定技。你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',

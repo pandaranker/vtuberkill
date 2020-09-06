@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.100.26',
-	update:'1.9.100.26.1',
+	version:'1.9.100.27',
+	update:'1.9.100.27.1',
 	changeLog:[
-		'辉夜月',
+		'需知:当前部分人物的AI未编写完成，请尽量在联机模式下测试',
 	],
 	files:[
 		'character/hololive.js',

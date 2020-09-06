@@ -5,16 +5,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
         connect:true,
         character:{
 			/**物述有栖 */
-			MononobeAlice:['female','wu',3,['tinenghuifu1','dianmingguzhen']],
+			MononobeAlice:['female','nijisanji',3,['tinenghuifu1','dianmingguzhen']],
 			/**静凛 */
-			ShizukaRin:['female','wu',4,['mozhaotuji']],
+			ShizukaRin:['female','nijisanji',4,['mozhaotuji']],
 			/**家长麦 */
-			IenagaMugi:['female','wu',3,['fengxue','yuepi','cangxiong']],
+			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
+			/**月之美兔 */
+			MitoTsukino:['female','nijisanji',3,['chaoqianyishi','hengkongchushi','wenhuazhian'],['zhu']],
         },
         characterIntro:{
-			MononobeAlice:'物述有栖',
-			ShizukaRin:'静凛',
+			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王',
+			ShizukaRin:'静凛者，皇族也，因父败于樱巫女被贬为庶人，遂恨朝廷，先随绊爱征战，绊爱初建国，不慕名利，往杏国扶之，先取天水后取临沂，成杏国之伟业，元昭欲拜之国师，又避之，尝与美兔弈棋，战百余合，喜曰：美兔知我矣！遂安于彩虹',
 			IenagaMugi:'家长麦',
+			MitoTsukino:'彩虹社的红龙、英才教育者，虹社的统领者、lonely eater、全人类之委员长、脑控宗师、月之小丑、双生暗影、行为艺术家、至高魔主、怒涛聚集、海洋王者、永不沉寂者、彩虹社永远滴真神，月之美兔是也',
         },
         skill:{
             fuheijs:{
@@ -867,9 +870,221 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				}
-			}
+			},
+			chaoqianyishi:{
+				trigger:{global:['phaseEnd']},
+				filter:function(event,player){
+					if(player.hasSkill('chaoqianyishi_tag')){
+						return true;
+					}
+					else
+						return false;
+				},
+				content:function(){
+					"step 0"
+					player.draw(player.maxHp);
+					"step 1"
+					player.chooseCard(player.hp,'选择放置到牌堆顶部或底部的牌',true);
+					"step 2"
+					if(result.bool==true&&result.cards!=null){
+						event.cards=result.cards
+					}
+					player.chooseBool("选择确定放置到牌堆顶部，取消放置到牌堆底部");
+					"step 3"
+					event.intop=result.bool;
+					if(result.bool){
+						if(event.cards.length>1){
+							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
+								var value=get.value(button.link);
+								if(_status.event.reverse) return value;
+								return -value;
+							}).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+						}
+					}
+					else{
+						if(event.cards.length>1){
+							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆底（先选择的在下）',event.cards]).set('ai',function(button){
+								var value=get.value(button.link);
+								if(_status.event.reverse) return value;
+								return -value;
+							}).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+						}
+					}
+					"step 4"
+					if(result.bool&&result.links&&result.links.length) cards=result.links.slice(0);
+					if(event.intop){
+						while(cards.length){
+							var card=cards.pop();
+							if(get.position(card,true)=='h'||get.position(card,true)=='e'){
+								card.fix();
+								ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+								//game.log(player,'将',card,'置于牌堆顶');
+							}
+						}
+					}
+					else{
+						while(cards.length){
+							var card=cards.pop();
+							if(get.position(card,true)=='h'||get.position(card,true)=='e'){
+								card.fix();
+								ui.cardPile.appendChild(card);
+								//game.log(player,'将',card,'置于牌堆底');
+							}
+						}
+					}
+					ui.updatehl(player);
+					game.updateRoundNumber();
+				},
+				group:['chaoqianyishi_ready'],
+				subSkill:{
+					ready:{
+						trigger:{player:['damageAfter','loseHpAfter','loseAfter']},
+						direct:true,
+						filter:function(event,player,name){
+							console.log(name);
+							if(name=='loseAfter'){
+								var indexi=0
+								while(indexi<event.cards.length){
+									if(get.type(event.cards[indexi])=='trick')
+										return true;
+									indexi++;
+								}
+								return false;
+							}
+							else 
+								return true;
+						},
+						content:function(){
+							if(!player.hasSkill('chaoqianyishi_tag'))
+								player.addTempSkill('chaoqianyishi_tag');
+						}
+					},
+					tag:{
+						mark:true,
+						intro:{
+							content:function(){
+								return '结束时触发技能'+get.translation('chaoqianyishi')
+							}
+						}
+					}
+				}
+			},
+			hengkongchushi:{
+				trigger:{player:'phaseUseBefore'},
+				content:function(){
+					player.addTempSkill('hengkongchushi_cannot',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_qiyuyong',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_moyuqi',{player:'phaseUseAfter'});
+					player.addTempSkill('nochongzhu',{player:'phaseUseAfter'});
+				},
+				subSkill:{
+					cannot:{
+						mark:true,
+						markText:'禁',
+						intro:{
+							content:'禁止出牌'
+						},
+						mod:{
+							cardEnabled:function(){
+								return false;
+							},
+							cardSavable:function(){
+								return false;
+							},
+						}
+					}
+				}
+			},
+			hengkongchushi_qiyuyong:{
+				enable:"phaseUse",
+				content:function(){
+					"step 0"
+					player.chooseToDiscard(1,'选择一张牌弃置',true);
+					"step 1"
+					event.cards=get.bottomCards();
+					player.showCards(event.cards,'底牌展示');
+					game.delayx();
+					"step 2"
+					player.removeSkill('hengkongchushi_cannot');
+					var bool=game.hasPlayer(function(current){
+						return lib.filter.targetEnabled2(event.cards[0],player,current);
+					});
+					if(bool){
+						player.chooseUseTarget(event.cards[0],true,false);
+					}
+					else{
+						game.cardsDiscard(event.cards[0]);
+						player.removeSkill('hengkongchushi_qiyuyong');
+					}
+					"step 3"
+					player.addTempSkill('hengkongchushi_cannot',{player:'phaseUseAfter'});
+				}
+			},
+			hengkongchushi_moyuqi:{
+				enable:"phaseUse",
+				content:function(){
+					"step 0"
+					player.draw();
+					"step 1"
+					event.cards=get.bottomCards();
+					player.showCards(event.cards,'底牌展示');
+					game.delayx();
+					"step 2"
+					var bool=get.suit(event.cards[0])=='club';
+					game.cardsDiscard(event.cards[0]);
+					if(bool){
+						event.finish()
+					}
+					"step 3"
+					player.removeSkill('hengkongchushi_moyuqi');
+				}
+			},
+			nochongzhu:{
+
+			},
+			wenhuazhian:{
+				unique:true,
+				group:'wenhuazhian2',
+				zhuSkill:true,
+			},
+			wenhuazhian2:{
+				audio:2,
+				//forceaudio:true,
+				trigger:{global:'damageSource'},
+				usable:1,
+				filter:function(event,player){
+					if(player==event.source||!event.source||event.source.group!='wu') return false;
+					return player.hasZhuSkill('wenhuazhian',event.source);
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					trigger.source.chooseBool('是否对'+get.translation(player)+'发动【文化之暗】？').set('choice',get.attitude(trigger.source,player)>0);
+					'step 1'
+					if(result.bool){
+						player.logSkill('wenhuazhian');
+						trigger.source.line(player,'green')
+						trigger.source.judge(function(card){
+							if(get.suit(card)=='club') return 4;
+							return 0;
+						});
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.suit=='club'){
+						game.delayx();
+						trigger.source.draw();
+						ui.cardPile.appendChild(result.card);
+					}
+				}
+			},
         },
         translate:{
+
+			nochongzhu:'禁止重铸',
+
             MononobeAlice:'物述有栖',
             fuheijs:'腹黑JS',
             fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
@@ -883,16 +1098,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tinenghuifu1_info:'锁定技。当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
 			dianmingguzhen:'电鸣鼓震',
 			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
+
 			ShizukaRin:'静凛',
 			mozhaotuji:'魔爪突击',
 			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。',
+
 			IenagaMugi:'家长麦',
 			fengxue:'奋学',
 			fengxue_info:'你可以跳过出牌阶段，亮出牌堆顶的X+1张牌，使用其中一张牌，然后获得其中一种花色的牌，弃置其余的牌。（X为体力值不小于你的角色数）',
 			yuepi:'乐癖',
 			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
 			cangxiong:'藏兄',
-			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，其视为不存在直到其回合开始。',
+			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将其从游戏除外直到其回合开始。',
+			
+			MitoTsukino:'月之美兔',
+			MitoTsukino_info:'月之美兔',
+			chaoqianyishi:'超前意识',
+			chaoqianyishi_info:'你失去过锦囊牌或体力减少过的回合结束时，你可以摸等同你体力上限的牌，然后将等同你体力值的牌置于牌堆顶或牌堆底。',
+			hengkongchushi:'横空出世',
+			hengkongchushi_info:'出牌阶段开始时，你可以令你本阶段无法出牌并仅能执行以下行动：<br>1.弃置一张牌以使用牌堆底的一张牌，若无法使用，弃置之且本回合不能再执行此项；<br>2.摸一张牌并弃置牌堆底牌，若弃置的不为♣，本回合不能再执行此项。<br>本回合结束时，若你使用和弃置的黑色牌数大于其他角色数，你视为使用了一张【南蛮入侵】。',
+			hengkongchushi_qiyuyong:'弃牌并使用底牌',
+			hengkongchushi_moyuqi:'摸牌并弃置底牌',
+			wenhuazhian:'文化之暗',
+			wenhuazhian_info:'彩虹社势力出牌阶段限一次，对其他角色造成伤害时可以让进行一次判定，如果判定结果为♣，将判定牌放在牌堆底，然后其摸一张牌',
+			
         }
     }
 }
