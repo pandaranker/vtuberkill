@@ -1657,8 +1657,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var X = game.countPlayer(function(cur) {
 						return cur.hp > player.hp;
 					})
-					player.chooseTarget("你可以与一名与你手牌数差不大于" + X + "的角色交换手牌",function(card,player,target){
-						return Math.abs(player.countCards('h') - target.countCards('h')) <= X
+					player.storage.Xvalue=X;
+					player.chooseTarget("你可以与一名与你手牌数差不大于" + player.storage.Xvalue + "的角色交换手牌",function(card,player,target){
+						return Math.abs(player.countCards('h') - target.countCards('h')) <= player.storage.Xvalue
 							// && target != player;
 					}).set('ai',function(target){
 						var att=get.attitude(_status.event.player,target);
@@ -1668,6 +1669,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return att/3;
 					});
 					"step 2"
+					delete player.storage.Xvalue;
 					if(result.bool){
 						event.tar = result.targets[0];
 						player.logSkill('dianyinchuancheng', event.tar);
