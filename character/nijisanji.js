@@ -895,6 +895,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						if(event.cards.length>0){
 							//player.$throw(cards,1000);
+							//player.lose(event.cards,ui.special,'visible');
 							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
 								var value=get.value(button.link);
 								if(_status.event.reverse) return value;
@@ -906,6 +907,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(event.cards.length>0){
 							//player.lose(event.cards,ui.special);
 							//player.$throw(cards,1000);
+							//player.lose(event.cards,ui.special,'visible');
 							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆底（先选择的在下）',event.cards]).set('ai',function(button){
 								var value=get.value(button.link);
 								if(_status.event.reverse) return value;
@@ -914,44 +916,77 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					"step 4"
-					if(result.bool&&result.links&&result.links.length) cards=result.links.slice(0);
+					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
+					game.delay();
+					'step 5'
+					var cards=event.linkcards;
+					//player.$throw(cards,1000);,'visible'
+					game.log(player,'将',cards,'置于牌堆顶');
+					player.lose(cards,ui.special);
+					'step 6'
+					game.delay();
+					'step 7'
+					var cards=event.linkcards;
 					if(event.intop){
-						player.$throw(cards,1000);
 						while(cards.length>0){
 							var card=cards.pop();
-							if(get.position(card,true)=='h'||get.position(card,true)=='e'){
-								game.broadcastAll(function(player){
-									card.fix();
-									ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
-								},card)
+							card.fix();
+							ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+							game.updateRoundNumber();
 								//game.log(player,'将',card,'置于牌堆顶');
-							}
 						}
-						game.updateRoundNumber();
 					}
 					else{
-						player.$throw(cards.length);
 						while(cards.length>0){
 							var card=cards.pop();
-							if(get.position(card,true)=='h'||get.position(card,true)=='e'){
-								game.broadcastAll(function(player){
-									card.fix();
-									// player.lose(card,ui.special,'toStorage');
-									// player.$throw(card,100);
-									ui.cardPile.appendChild(card);
-								},card)
-								game.updateRoundNumber();
-								//game.log(player,'将',card,'置于牌堆底');
-							}
+							card.fix();
+							// player.lose(card,ui.special,'toStorage');
+							// player.$throw(card,100);
+							ui.cardPile.appendChild(card);
+							game.updateRoundNumber();
+							//game.log(player,'将',card,'置于牌堆底');
 						}
-						game.updateRoundNumber();
 					}
-					"step 5"
-					//player.update();
-					game.broadcast(function(){
-						ui.updatehl();
-					});
-					game.updateRoundNumber();
+					// event.cards[0].fix();
+					// event.cards[1].fix();
+					// event.cards[2].fix();
+					// ui.cardPile.insertBefore(event.cards[0],ui.cardPile.firstChild);
+					// game.updateRoundNumber();
+					// "step 5"
+					// var cards=event.linkcards;
+					// if(event.intop){
+					// 	while(cards.length>0){
+					// 		var card=cards.pop();
+					// 		if(get.position(card,true)=='h'||get.position(card,true)=='e'){
+					// 			game.broadcastAll(function(player){
+					// 				card.fix();
+					// 				ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+					// 			},card)
+					// 			//game.log(player,'将',card,'置于牌堆顶');
+					// 		}
+					// 	}
+					// }
+					// else{
+					// 	while(cards.length>0){
+					// 		var card=cards.pop();
+					// 		if(get.position(card,true)=='h'||get.position(card,true)=='e'){
+					// 			game.broadcastAll(function(player){
+					// 				card.fix();
+					// 				// player.lose(card,ui.special,'toStorage');
+					// 				// player.$throw(card,100);
+					// 				ui.cardPile.appendChild(card);
+					// 			},card)
+					// 			game.updateRoundNumber();
+					// 			//game.log(player,'将',card,'置于牌堆底');
+					// 		}
+					// 	}
+					// }
+					// "step 6"
+					// //player.update();
+					// game.broadcast(function(){
+					// 	ui.updatehl();
+					// });
+					// game.updateRoundNumber();
 				},
 				group:['chaoqianyishi_ready'],
 				subSkill:{
