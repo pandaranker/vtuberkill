@@ -955,6 +955,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					"step 1"
 					if(result.bool&&result.targets.length>0){
+						player.logSkill('jiajiupaidui',result.targets);
 						event.targets=result.targets;
 						event.discardNum=result.targets.length;
 					}

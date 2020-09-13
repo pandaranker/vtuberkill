@@ -533,7 +533,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			mozhaotuji:{
-				group:['mozhaotuji_DrawOrStop','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
+				group:['mozhaotuji_DrawOrStop','mozhaotuji_Clear','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
 				/**转化阶段 */
 				contentx:function(trigger,player){
 					'step 0'
@@ -577,6 +577,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else
 								return false;
 						},
+						priority: 14,
 						forced:true,
 						content:function(){
 							'step 0'
@@ -584,7 +585,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.draw(1);
 							else
 								player.addTempSkill('mozhaotujiStop');
-							'step 1'
+							// 'step 1'
+							// player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
+							// player.getHistory('respond').splice(0,player.getHistory('respond').length);
+						},
+					},
+					Clear:{
+						trigger:{player:'phaseUseAfter'},
+						direct:true,
+						priority: 1,
+						filter:function(event,player){
+							return true;
+						},
+						forced:true,
+						content:function(){
 							player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
 							player.getHistory('respond').splice(0,player.getHistory('respond').length);
 						},
@@ -685,6 +699,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					player.logSkill('fengxue');
 					trigger.cancel();
 					'step 1'
 					event.players=[];
@@ -771,6 +786,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.chooseButton=chooseButton;
 					'step 7'
 					if(result.links[0]){
+						game.log(player,'选择了',get.translation(get.suit(result.links[0])+'2'));
 						event.cards.forEach(card => {
 							if(get.suit(card)==get.suit(result.links[0])){
 								event.gains.push(card);
@@ -785,6 +801,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.cardsDiscard(event.discards);
 					}
 					if(event.gains.length){
+						//game.log(player,'获得了',event.gains);
 						player.gain(event.gains,'gain2');
 					}
 					'step 8'

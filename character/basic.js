@@ -264,26 +264,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return lib.filter.targetEnabled2(event.card, player, cur)
 									&& player.inRange(cur)
 									&& !event.targets.contains(cur)
+									&& player.canUse(event.card,cur);
 							})
 						},
 						content:function(){
 							'step 0'
+							player.storage.blackTargets=trigger.targets;
+							player.storage.card=trigger.card;
 							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
-								if (trigger.targets.contains(target)) return false;
-								return lib.filter.targetEnabled2(trigger.card, player, target)
+								if (player.storage.blackTargets.contains(target)) return false;
+								return lib.filter.targetEnabled2(player.storage.card, player, target)
 									&& player.inRange(target)
-									&& !trigger.targets.contains(target)
+									&& !player.storage.blackTargets.contains(target)
 							}).set('ai',function(target){
-								var trigger=_status.event.getTrigger();
+								// var trigger=_status.event.getTrigger();
 								var player=_status.event.player;
-								return get.effect(target,trigger.card,player,player);
+								return get.effect(target,card,player,player);
 							}).set('targets',trigger.targets).set('card',trigger.card);
 							'step 1'
+							delete player.storage.card;
+							delete player.storage.blackTargets;
 							if(result.bool && result.targets.length){
 								game.delayx();
-								console.log(result.targets);
 								player.logSkill('kuangbaoshuangren', result.targets);
-								trigger.targets.addArray(result.targets);
+								trigger.targets.unshift(result.targets[0]);
 							}
 						},
 					},
@@ -1305,7 +1309,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			dunzou_enable:{
-				trigger:{player:'phaseBegin'},
+				trigger:{global:'phaseEnd'},
 				mark:true,
 				direct:true,
 				filter:function(event,player){
@@ -1317,7 +1321,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:'移除游戏外'
 				},
 				content:function(){
-					_status.currentPhase=player;
 					player.removeSkill('dunzou_enable');
 				}
 			},
