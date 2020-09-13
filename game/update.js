@@ -1,9 +1,9 @@
 window.noname_update={
 	version:'1.9.100.27',
-	update:'1.9.100.27.3',
+	update:'1.9.100.27.4',
 	changeLog:[
 		'需知:当前部分人物的AI未编写完成，请尽量在联机模式下测试',
-		'美兔看不见手牌BUG修改'
+		'9.12日测试BUG修改'
 	],
 	files:[
 		'character/hololive.js',
