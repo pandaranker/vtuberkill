@@ -1127,7 +1127,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:'辉夜月',
 			KaguyaLuna_info:'辉夜月',
 			jiajiupaidui:'假酒派对',
-			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色弃置合计两张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
+			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
 			kuangzuiluanwu:'狂醉乱舞',
 			kuangzuiluanwu_info:'限定技，出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		},
