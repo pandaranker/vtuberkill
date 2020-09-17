@@ -1241,7 +1241,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					var list = [];
 					//if (player.countCards('he') >= 2) list.push('弃置两张牌');
-					if (player.countCards('h')) list.push('弃置牌并发动技能');
+					if (player.countCards('he')) list.push('弃置牌并发动技能');
 					if (list.length) {
 						player.addTempSkill('yinliu_used');
 						player.chooseControl(list);
@@ -1262,6 +1262,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					} 
 					'step 3'
 					player.discard(event.cards);
+					'step 4'
 					game.delayx();
 					if(player.countCards('h')==0){
 						player.addTempSkill('yinliu_end');
