@@ -276,11 +276,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return lib.filter.targetEnabled2(player.storage.card, player, target)
 									&& player.inRange(target)
 									&& !player.storage.blackTargets.contains(target)
-							}).set('ai',function(target){
-								// var trigger=_status.event.getTrigger();
-								var player=_status.event.player;
-								return get.effect(target,card,player,player);
 							}).set('targets',trigger.targets).set('card',trigger.card);
+							// .set('ai',function(target){
+							// 	// var trigger=_status.event.getTrigger();
+							// 	var player=_status.event.player;
+							// 	return get.effect(target,card,player,player);
+							// })
 							'step 1'
 							delete player.storage.card;
 							delete player.storage.blackTargets;
