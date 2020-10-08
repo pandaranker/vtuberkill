@@ -1237,7 +1237,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     }
                 }
             },
-            zhongjian:{
+			zhongjian:{
+				unique:true,
+				group:['zhongjian1'],
+				zhuSkill:true,
+			},
+            zhongjian1:{
+				unique:true,
                 zhuSkill:true,
                 //trigger:{global:'chooseToUse'},
 				enable:'chooseToUse',
@@ -1253,14 +1259,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				// },
 				// ignoreMod:true,
 				filterCard:function(card,player,event){
+					if(!player.hasZhuSkill('zhongjian')) return false;
 					event=event||_status.event;
 					var filter=event._backup.filterCard;
 					if(filter({name:'wuxie'},player,event)) return true;
 					return false;
 				},
 				filter:function(event,player){
+					if(!player.hasZhuSkill('zhongjian')) return false;
                     var filter=event.filterCard;
-                    if(player.hasSkill('zhongjian_tag')) return false;
+                    if(player.hasSkill('zhongjian1_tag')) return false;
                     if(!filter({name:'wuxie'},player,event)) return false;
                     // var time=player.chooseTarget('命令一名杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
                     //     return target.group=='holo'
@@ -1283,11 +1291,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     event.dropTarget.useCard(result.cards,{name:'wuxie',isCard:false});
                     event.getParent().getParent().state=!event.getParent().getParent().state;
                     event.getParent().getParent().goto(2);
-                    player.addTempSkill('zhongjian_tag','roundStart');
+                    player.addTempSkill('zhongjian1_tag','roundStart');
                     //player.removeSkill('zhongjian','roundStart');
                 },
 				hiddenCard:function(player,name){
-					return name=='wuxie'&&!player.hasSkill('zhongjian_tag');
+					return name=='wuxie'&&!player.hasSkill('zhongjian1_tag')&&player.hasZhuSkill('zhongjian');
                 },
                 subSkill:{
                     tag:{
@@ -1340,6 +1348,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             jinyuan:'近援',
             jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
             zhongjian:'中坚',
+            zhongjian1:'中坚',
             zhongjian_info:'主公技，每轮限一次，当你需要使用【无懈可击】时，可以令一名Hololive角色将一张牌当【无懈可击】使用。',
         },
 	};
