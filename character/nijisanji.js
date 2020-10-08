@@ -938,7 +938,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 5'
 					var cards=event.linkcards;
 					//player.$throw(cards,1000);,'visible'
-					game.log(player,'将',cards,'置于牌堆顶');
+					game.log(player,'将',cards,'置于牌堆');
 					player.lose(cards,ui.special);
 					'step 6'
 					game.delay();
@@ -964,46 +964,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							//game.log(player,'将',card,'置于牌堆底');
 						}
 					}
-					// event.cards[0].fix();
-					// event.cards[1].fix();
-					// event.cards[2].fix();
-					// ui.cardPile.insertBefore(event.cards[0],ui.cardPile.firstChild);
-					// game.updateRoundNumber();
-					// "step 5"
-					// var cards=event.linkcards;
-					// if(event.intop){
-					// 	while(cards.length>0){
-					// 		var card=cards.pop();
-					// 		if(get.position(card,true)=='h'||get.position(card,true)=='e'){
-					// 			game.broadcastAll(function(player){
-					// 				card.fix();
-					// 				ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
-					// 			},card)
-					// 			//game.log(player,'将',card,'置于牌堆顶');
-					// 		}
-					// 	}
-					// }
-					// else{
-					// 	while(cards.length>0){
-					// 		var card=cards.pop();
-					// 		if(get.position(card,true)=='h'||get.position(card,true)=='e'){
-					// 			game.broadcastAll(function(player){
-					// 				card.fix();
-					// 				// player.lose(card,ui.special,'toStorage');
-					// 				// player.$throw(card,100);
-					// 				ui.cardPile.appendChild(card);
-					// 			},card)
-					// 			game.updateRoundNumber();
-					// 			//game.log(player,'将',card,'置于牌堆底');
-					// 		}
-					// 	}
-					// }
-					// "step 6"
-					// //player.update();
-					// game.broadcast(function(){
-					// 	ui.updatehl();
-					// });
-					// game.updateRoundNumber();
 				},
 				group:['chaoqianyishi_ready'],
 				subSkill:{

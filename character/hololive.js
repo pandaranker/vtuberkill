@@ -1114,6 +1114,92 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     event.finish();
                 }
             },
+            yuanlv:{
+                trigger:{player:'phaseEnd'},
+				filter:function(event){
+					if(player.storage.yuanlv!=null&&player.storage.yuanlv) return true;
+					return false;
+                },
+                content:function(){
+                    'step 0'
+                    player.draw(player.maxHp);
+                    'step 1'
+                    player.chooseCard(player.hp,'he','选择放置到牌堆底部的牌',true);
+                    'step 2'
+					if(result.bool==true&&result.cards!=null){
+						event.cards=result.cards
+					}
+                    if(event.cards.length>0){
+                        //player.lose(event.cards,ui.special);
+                        //player.$throw(cards,1000);
+                        //player.lose(event.cards,ui.special,'visible');
+                        player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆底（先选择的在下）',event.cards]).set('ai',function(button){
+                            var value=get.value(button.link);
+                            if(_status.event.reverse) return value;
+                            return -value;
+                        }).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+                    }
+					"step 3"
+					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
+					game.delay();
+					'step 4'
+					var cards=event.linkcards;
+					//player.$throw(cards,1000);,'visible'
+					//game.log(player,'将',cards,'置于牌堆顶');
+					player.lose(cards,ui.special);
+					'step 5'
+                    game.delay();
+                    'step 6'
+					var cards=event.linkcards;
+                    while(cards.length>0){
+                        var card=cards.pop();
+                        card.fix();
+                        // player.lose(card,ui.special,'toStorage');
+                        // player.$throw(card,100);
+                        ui.cardPile.appendChild(card);
+                        game.updateRoundNumber();
+                        //game.log(player,'将',card,'置于牌堆底');
+                    }
+                },
+				group:['yuanlv_ready'],
+				subSkill:{
+					ready:{
+						trigger:{player:['damageAfter','loseHpAfter','useCardAfter']},
+						direct:true,
+						filter:function(event,player,name){
+							if(name=='useCardAfter'){
+								var indexi=0
+								while(indexi<event.cards.length){
+									if(get.type(event.cards[indexi])=='trick')
+										return true;
+									indexi++;
+								}
+								return false;
+							}
+							else 
+								return true;
+						},
+						content:function(){
+							if(!player.hasSkill('yuanlv_tag'))
+								player.addTempSkill('yuanlv_tag');
+						}
+					},
+					tag:{
+						mark:true,
+						intro:{
+							content:function(){
+								return '结束时触发技能'+get.translation('yuanlv')
+							}
+						}
+					}
+				}
+            },
+            jinyuan:{
+
+            },
+            zhongjian:{
+
+            }
 		},
 		translate:{
 			TokinoSora:'时乃空',
