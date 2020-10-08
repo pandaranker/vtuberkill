@@ -15,7 +15,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             /**萝卜子 */
             RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
             /**白上吹雪 */
-            ShirakamiFubuki:['female','holo',4,['baihuqingguo','huyanluanyu']],
+            ShirakamiFubuki:['female','holo',3,['yuanlv','jinyuan','zhongjian'],['zhu']],
         },
         characterIntro:{
             TokinoSora:'混沌的尽头，少女的回旋曲，杏社起始同时也是终末的清楚担当，全杏社圆桌骑士之首，空友之母，反抗军的破坏者、狮心之人、大杏社的卡丽熙、hololive真主、永不恐惧者、阿芙乐尔公主，时乃空是也',
@@ -136,7 +136,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         player.storage.skillCardID=[];
                     }
                     event.players=game.filterPlayer(function(current){
-						return current.group=='shu'&&(current!=player);
+						return current.group=='holo'&&(current!=player);
                     });
 					event.players.sortBySeat(player);
                     'step 0'
@@ -1115,25 +1115,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 }
             },
             yuanlv:{
-                trigger:{player:'phaseEnd'},
-				filter:function(event){
-					if(player.storage.yuanlv!=null&&player.storage.yuanlv) return true;
-					return false;
+                trigger:{global:'phaseEnd'},
+				filter:function(event,player){
+					if(player.hasSkill('yuanlv_tag')){
+						return true;
+					}
+					else
+						return false;
                 },
                 content:function(){
                     'step 0'
                     player.draw(player.maxHp);
                     'step 1'
-                    player.chooseCard(player.hp,'he','选择放置到牌堆底部的牌',true);
+                    player.chooseCard(player.hp,'he','选择放置到牌堆顶部的牌',true);
                     'step 2'
 					if(result.bool==true&&result.cards!=null){
 						event.cards=result.cards
 					}
                     if(event.cards.length>0){
-                        //player.lose(event.cards,ui.special);
                         //player.$throw(cards,1000);
                         //player.lose(event.cards,ui.special,'visible');
-                        player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆底（先选择的在下）',event.cards]).set('ai',function(button){
+                        player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
                             var value=get.value(button.link);
                             if(_status.event.reverse) return value;
                             return -value;
@@ -1154,11 +1156,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     while(cards.length>0){
                         var card=cards.pop();
                         card.fix();
-                        // player.lose(card,ui.special,'toStorage');
-                        // player.$throw(card,100);
-                        ui.cardPile.appendChild(card);
+                        ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
                         game.updateRoundNumber();
-                        //game.log(player,'将',card,'置于牌堆底');
+                            //game.log(player,'将',card,'置于牌堆顶');
                     }
                 },
 				group:['yuanlv_ready'],
@@ -1195,10 +1195,110 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
             },
             jinyuan:{
-
+                enable:'phaseUse',
+                usable:1,
+                filter:function(event,player){
+                    return player.countCards('he')>0;
+                },
+				filterTarget:function(card,player,target){
+					return player!=target;
+				},
+                content:function(){
+                    'step 0'
+                    player.viewHandcards(target);
+                    game.delayx();
+                    'step 1'
+                    event.nowHandCards=target.getCards('h');
+                    player.chooseCard('he',true,'选择给予的牌').set('ai',function(card){
+                        return 5-get.value(card);
+                    });
+                    'step 2'
+                    event.cardUsable=true;
+                    console.log(event.card,result.card)
+                    event.card=result.cards[0];
+                    if(event.nowHandCards.length>0)
+                    event.nowHandCards.forEach(element => {
+                        if(get.suit(element)==get.suit(result.cards[0])){
+                            event.cardUsable=false;
+                        }
+                    });
+                    if(event.cardUsable){
+                        var bool=game.hasPlayer(function(current){
+                            return target.canUse(result.cards[0],current);
+                        });
+                        if(!bool){
+                            event.cardUsable=false;
+                        }
+                    }
+                    'step 3'
+					target.gain(event.card,player,'give');
+                    if(event.cardUsable){
+                        target.chooseUseTarget(event.card,'可选择一个目标直接使用该牌');
+                    }
+                }
             },
             zhongjian:{
-
+                zhuSkill:true,
+                //trigger:{global:'chooseToUse'},
+				enable:'chooseToUse',
+				//popup:false,
+                forced:false,
+				selectCard:0,
+                // viewAs:function(cards,player){
+				// 	var name=false;
+				// 	var nature=null;
+				// 	name='wuxie';
+				// 	if(name) return {name:name,nature:nature,isCard:true};
+				// 	return null;
+				// },
+				// ignoreMod:true,
+				filterCard:function(card,player,event){
+					event=event||_status.event;
+					var filter=event._backup.filterCard;
+					if(filter({name:'wuxie'},player,event)) return true;
+					return false;
+				},
+				filter:function(event,player){
+                    var filter=event.filterCard;
+                    if(player.hasSkill('zhongjian_tag')) return false;
+                    if(!filter({name:'wuxie'},player,event)) return false;
+                    // var time=player.chooseTarget('命令一名杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
+                    //     return target.group=='holo'
+                    // });
+                    // console.log(time);
+					return true;
+                },
+                content:function(){
+                    "step 0"
+                    player.chooseTarget('命令一名杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
+                        return target.group=='holo'&&target.countCards('he')>0
+                    });
+                    "step 1"
+                    event.dropTarget=result.targets[0];
+                    event.dropTarget.chooseCard('he',1,true);
+                    "step 2"
+                    // event.dropTarget.$throw(result.cards);
+                    // event.dropTarget.lose(result.cards,ui.discardPile);
+                    //console.log(event.getParent().getParent().getParent());
+                    event.dropTarget.useCard(result.cards,{name:'wuxie',isCard:false});
+                    event.getParent().getParent().state=!event.getParent().getParent().state;
+                    event.getParent().getParent().goto(2);
+                    player.addTempSkill('zhongjian_tag','roundStart');
+                    //player.removeSkill('zhongjian','roundStart');
+                },
+				hiddenCard:function(player,name){
+					return name=='wuxie'&&!player.hasSkill('zhongjian_tag');
+                },
+                subSkill:{
+                    tag:{
+                        mark:true,
+						intro:{
+							content:function(){
+								return '一轮后可以再次使用'+get.translation('zhongjian')
+							}
+                        },
+                    }
+                }
             }
 		},
 		translate:{
@@ -1235,6 +1335,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             baihuqingguo_info:'其他角色的出牌阶段开始时，你可弃一张牌，若如此做，该角色于此阶段使用的牌只能以你或其自己为目标。',
             huyanluanyu:'狐言乱语',
             huyanluanyu_info:'每当你受到1点伤害后，（记你此时手牌数为X）你可令手牌数多于X的角色各交给你一张牌，然后你交给手牌数少于X的角色各一张牌。',
+            yuanlv:'远虑',
+            yuanlv_info:'你使用过锦囊牌或受到过伤害的回合结束时，可以摸等同你体力上限的牌，然后将等同你体力值的牌以任意顺序置于牌堆顶',
+            jinyuan:'近援',
+            jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
+            zhongjian:'中坚',
+            zhongjian_info:'主公技，每轮限一次，当你需要使用【无懈可击】时，可以令一名Hololive角色将一张牌当【无懈可击】使用。',
         },
 	};
 });
