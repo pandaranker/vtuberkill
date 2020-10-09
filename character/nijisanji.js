@@ -1353,19 +1353,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 2'
 							if(result.bool){
 								event.useshowCards=result.cards;
-								player.chooseTarget('选择使用目标',function(card,player,target){
-									return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},target);
-								}).ai=function(target){
-									if(!check) return 0;
-									return get.effect(target,{name:player.storage.quanxinquanyi_saycards[0][2]},_status.event.player);
-								}
+								player.chooseUseTarget(event.useshowCards,{name:player.storage.quanxinquanyi_saycards[0][2]},true,false);
+								// player.chooseTarget('选择使用目标',function(card,player,target){
+								// 	return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},target);
+								// }).ai=function(target){
+								// 	if(!check) return 0;
+								// 	return get.effect(target,{name:player.storage.quanxinquanyi_saycards[0][2]},_status.event.player);
+								// }
 							}
 							else{
 								event.goto(4);
 							}
 							'step 3'
 							if(result.bool){
-								player.useCard(event.useshowCards,{name:player.storage.quanxinquanyi_saycards[0][2],isCard:true},result.targets);
 							}
 							'step 4'
 							player.removeSkill('quanxinquanyi_showcards');
