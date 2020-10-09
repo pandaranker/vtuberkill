@@ -735,6 +735,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.chooseButton=chooseButton;
 					'step 3'
 					if(!result.links[0]){
+						ui.clear();
 						event.finish();
 					}
 					else{
@@ -1156,6 +1157,50 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			quanxinquanyi:{
+				group:['quanxinquanyi_discard',],
+				subSkill:{
+					discard:{
+						trigger:{global:'loseAfter'},
+						filter:function(event,player){
+							if(event.type!='discard') return false;
+							if(event.player==player) return false;
+							for(var i=0;i<event.cards2.length;i++){
+								if(get.suit(event.cards2[i],event.player)=='club'&&get.position(event.cards2[i],true)=='d'){
+									return true;
+								}
+							}
+							return false;
+						},
+						direct:true,
+						//frequent:'check',
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							var cards=[];
+							for(var i=0;i<trigger.cards2.length;i++){
+								if(get.suit(trigger.cards2[i],trigger.player)=='club'&&get.position(trigger.cards2[i],true)=='d'){
+									cards.push(trigger.cards2[i]);
+								}
+							}
+							if(cards.length){
+								player.chooseButton(['落英：选择要获得的牌',cards],[1,cards.length]).set('ai',function(button){
+									return get.value(button.link,_status.event.player,'raw');
+								});
+							}
+							"step 2"
+							if(result.bool){
+								player.logSkill(event.name);
+								player.gain(result.links,'gain2','log');
+							}
+						},
+					},
+				}
+			},
+			bingdielei:{
+
+			}
         },
         translate:{
 

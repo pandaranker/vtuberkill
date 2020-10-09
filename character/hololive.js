@@ -1288,10 +1288,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     // event.dropTarget.$throw(result.cards);
                     // event.dropTarget.lose(result.cards,ui.discardPile);
                     //console.log(event.getParent().getParent().getParent());
-                    event.dropTarget.useCard(result.cards,{name:'wuxie',isCard:false});
                     event.getParent().getParent().state=!event.getParent().getParent().state;
                     event.getParent().getParent().goto(2);
                     player.addTempSkill('zhongjian1_tag','roundStart');
+                    event.dropTarget.useCard(result.cards,{name:'wuxie',isCard:false});
                     //player.removeSkill('zhongjian','roundStart');
                 },
 				hiddenCard:function(player,name){
