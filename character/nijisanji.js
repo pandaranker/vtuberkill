@@ -1181,7 +1181,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.addTempSkill('quanxinquanyi_discard','roundStart');
 							player.addSkill('quanxinquanyi_end','roundStart'); //为了使新加的技能不在当前roundStart被触发
 							'step 2'
-							player.storage.quanxinquanyi_showcards = player.storage.quanxinquanyi_showcards.concat(event.showCards);
+							player.storage.quanxinquanyi_showcards = event.showCards;
 							//player.showCards(player.storage.quanxinquanyi_showcards,'全新全异（展示）');
 							player.syncStorage('quanxinquanyi_showcards');
 							player.markSkill('quanxinquanyi_showcards');
@@ -1205,7 +1205,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							game.broadcastAll('closeDialog', event.videoId);
 							if (result.bool) {
 								player.addSkill('quanxinquanyi_saycards');
-								player.storage.quanxinquanyi_saycards = player.storage.quanxinquanyi_saycards.concat(result.links);
+								player.storage.quanxinquanyi_saycards = result.links;
 								player.showCards(player.storage.quanxinquanyi_saycards,'全新全异（声明）');
 								player.syncStorage('quanxinquanyi_saycards');
 								player.markSkill('quanxinquanyi_saycards');
