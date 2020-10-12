@@ -1323,7 +1323,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					endRound:{
 						trigger:{global:'roundStart'},
-						priority:25,
+						priority:999,
 						prompt:function(){
 							return '是否将一张亮出牌当作声明牌使用？(若不满足使用声明牌条件将直接结算)'
 						},
@@ -1353,7 +1353,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 2'
 							if(result.bool){
 								event.useshowCards=result.cards;
-								player.chooseUseTarget(event.useshowCards,{name:player.storage.quanxinquanyi_saycards[0][2]},true,false);
+								player.chooseUseTarget(event.useshowCards[0],{name:player.storage.quanxinquanyi_saycards[0][2]},true,false);
 								// player.chooseTarget('选择使用目标',function(card,player,target){
 								// 	return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},target);
 								// }).ai=function(target){
