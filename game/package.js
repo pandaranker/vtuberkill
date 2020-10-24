@@ -94,6 +94,7 @@ window.noname_package={
 		zhanhuo_bg:'战火',
 		huangtian_bg:'黄天',
 		september_bg:'九月',
+		mea_bg:'Mea',
 		yinxiang_bg:'印象',
 		zhanyun_bg:'战云',
 		beipan_bg:'背叛',

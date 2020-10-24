@@ -79,7 +79,7 @@ window.config={
 	hp_style:'default',
 
 	image_character:'default',
-	image_background:'yinxiang_bg',
+	image_background:'mea_bg',
 
 	asset_image:true,
 	asset_font:true,
