@@ -862,6 +862,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if (result.bool && result.cards.length) {
+						event.starget.showCards(result.cards);
 						event.card = result.cards[0];
 						var num = get.number(event.card) + get.number(trigger.card);
 						if (num < 12) {
@@ -869,7 +870,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							// trigger.getParent().triggeredTargets2.length=0;
 							trigger.cancel();
 						}
-						if (num >= 12 && ['basic', 'trick'].contains(get.type(event.card))) {
+						if (num >= 12) {
 							player.storage.zhongxinghezou.push({
 								source: trigger.card.cardid,
 								user:event.starget,
@@ -878,6 +879,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 						}
 						if (num == 12) {
+							player.draw();
 							event.starget.recover();
 						}
 					}
@@ -901,9 +903,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.storage.zhongxinghezou.forEach(function(item) {
 								if (item.source == trigger.card.cardid) {
 									item.targets.forEach(function(tar) {
-										if (get.type(item.card) == 'trick' 
-										|| ['sha', 'jiu', 'tao'].contains(get.name(item.card))) {
-											player.useCard({name: get.name(item.card), iscard: true}, tar);
+										if (item.user.canUse(item.card,tar)) {
+											item.user.useCard(item.card, tar);
 										}
 									})
 									player.storage.zhongxinghezou.remove(item);
@@ -1734,7 +1735,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Siro: '电脑少女小白',
 			zhongxinghezou: '众星合奏',
-			zhongxinghezou_info: '你使用实体牌指定目标后，可令目标外的角色弃置一张牌。若两牌点数之和：小于12，此牌无效；不小于12，此牌结算后，你视为对同目标使用弃置的基本牌或普通锦囊牌；等于12，弃置牌的角色回复1点体力。',
+			zhongxinghezou_info: '每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12，你获得亮出牌令你使用的牌无效；不小于12，你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12，你获得亮出牌并令亮出牌的角色回复1点体力。',
 
 			HanazonoSerena: '花園セレナ',
 			maoliang: '猫粮',
