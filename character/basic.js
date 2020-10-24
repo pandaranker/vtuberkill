@@ -848,14 +848,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					event.ctargets = trigger.targets;
 					player.chooseTarget(get.prompt2('zhongxinghezou'),function(card,player,target){
-						return !_status.event.targets.contains(target) && target.countCards('he');
+						return !_status.event.targets.contains(target) && target.countCards('h');
 					}).set('ai',function(target){
 						return 2-get.attitude(_status.event.player,target);
 					}).set('targets',trigger.targets);
 					'step 1'
 					if (result.bool) {
 						event.starget = result.targets[0];
-						event.starget.chooseToDiscard(true, 'he');
+						event.starget.chooseCard(true, 'h');
 					}
 					else {
 						event.finish();
@@ -872,6 +872,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if (num >= 12 && ['basic', 'trick'].contains(get.type(event.card))) {
 							player.storage.zhongxinghezou.push({
 								source: trigger.card.cardid,
+								user:event.starget,
 								card: event.card,
 								targets: event.ctargets,
 							});
@@ -1773,7 +1774,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying: '迷离剑影',
 			milijianying_info: '锁定技。你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
-			dianyinchuancheng_info: '当你受到1点伤害后，你可以与一名与你手牌数差不大于X的角色交换手牌，然后手牌较少的一方将手牌调整至较多一方的数量。（X为场上体力值大于你的角色）',
+			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
 		},
 	};
 });
