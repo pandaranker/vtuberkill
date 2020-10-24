@@ -13719,7 +13719,7 @@
 								game.log(player,str,card);
 							}
 						}
-						if(card.name=='wuxie'){
+						if(card.name=='wuxie'&&event.getTrigger()){
 							game.logv(player,[card,cards],[event.getTrigger().card]);
 						}
 						else{

@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**家长麦 */
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
-			MitoTsukino:['female','nijisanji',3,['chaoqianyishi','hengkongchushi','wenhuazhian'],['zhu']],
+			MitoTsukino:['female','nijisanji',3,['quanxinquanyi','bingdielei','wenhuazhian'],['zhu']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王',
@@ -735,6 +735,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.chooseButton=chooseButton;
 					'step 3'
 					if(!result.links[0]){
+						ui.clear();
 						event.finish();
 					}
 					else{
@@ -1156,6 +1157,245 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			quanxinquanyi:{
+				group:['quanxinquanyi_begin'],
+				subSkill:{
+					begin:{
+						trigger:{global:'roundStart'},
+						filter:function(event,player){
+							if(player.countCards('h')<1) return false;
+							return true;
+						},
+						content:function(){
+							'step 0'
+							delete player.storage.quanxinquanyi_showcards;
+							delete player.storage.quanxinquanyi_saycards;
+							var maxCard=player.maxHp-player.hp;
+							if(maxCard==0) maxCard=1;
+							player.chooseCard('h','选择要展示的手牌',[1,maxCard],true);
+							'step 1'
+							player.showCards(result.cards);
+							event.showCards=result.cards;
+							player.addSkill('quanxinquanyi_showcards');
+							player.addSkill('quanxinquanyi_losecard','roundStart');
+							player.addTempSkill('quanxinquanyi_discard','roundStart');
+							player.addSkill('quanxinquanyi_end','roundStart'); //为了使新加的技能不在当前roundStart被触发
+							'step 2'
+							player.storage.quanxinquanyi_showcards = event.showCards;
+							//player.showCards(player.storage.quanxinquanyi_showcards,'全新全异（展示）');
+							player.syncStorage('quanxinquanyi_showcards');
+							player.markSkill('quanxinquanyi_showcards');
+							'step 3'
+							event.videoId = lib.status.videoId++;
+							var list=[];
+							for(var i=0;i<lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								if(name=='wuxie') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							//ui.create.dialog('声明一张牌',[list,'vcard']);
+							game.broadcastAll(function(id, list){
+								var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
+								dialog.videoId = id;
+							}, event.videoId, list);
+							'step 4'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							'step 5'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool) {
+								player.addSkill('quanxinquanyi_saycards');
+								player.storage.quanxinquanyi_saycards = result.links;
+								player.showCards(player.storage.quanxinquanyi_saycards,'全新全异（声明）');
+								player.syncStorage('quanxinquanyi_saycards');
+								player.markSkill('quanxinquanyi_saycards');
+							}
+						}
+					},
+					end:{
+						trigger:{global:'phaseBefore'},
+						direct:true,
+						content:function(){
+							player.addSkill('quanxinquanyi_endRound');
+							player.removeSkill('quanxinquanyi_end');
+						}
+					},
+					showcards:{
+						init: function(player) {
+							if (!player.storage.quanxinquanyi_showcards) {
+								player.storage.quanxinquanyi_showcards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '新',
+						intro: {
+							content: 'cards',
+							name:'全新全异（亮出）',
+							// onunmark:function(storage,player){
+							// 	if(storage&&storage.length){
+							// 		player.$throw(storage,1000);
+							// 		game.cardsDiscard(storage);
+							// 		game.log(storage,'被置入了弃牌堆');
+							// 		storage.length=0;
+							// 	}
+							// },
+						}
+					},
+					saycards:{
+						init: function(player) {
+							if (!player.storage.quanxinquanyi_saycards) {
+								player.storage.quanxinquanyi_saycards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '异',
+						intro: {
+							content: function(storage,player){
+								if(!player.storage.saycardsInD)
+									return '声明了'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+',当前未进入弃牌堆，本轮结束时可用一张亮出牌使用'
+								else
+									return '声明了'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+',当前已经有声明牌进入弃牌堆'
+							},
+							name:'全新全异（声明）',
+							// onunmark:function(storage,player){
+							// 	if(storage&&storage.length){
+							// 		player.$throw(storage,1000);
+							// 		game.cardsDiscard(storage);
+							// 		game.log(storage,'被置入了弃牌堆');
+							// 		storage.length=0;
+							// 	}
+							// },
+						}
+					},
+					discard:{
+						trigger:{global:'loseAfter'},
+						filter:function(event,player){
+							if(event.type!='discard') return false;
+							for(var i=0;i<event.cards2.length;i++){
+								for(var j=0;j<player.storage.quanxinquanyi_showcards.length;j++){
+									if(event.cards2[i]==player.storage.quanxinquanyi_showcards[j]&&get.position(event.cards2[i],true)=='d'){
+										return true;
+									}
+								}
+							}
+							return false;
+						},
+						direct:true,
+						//frequent:'check',
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							var cards=[];
+							for(var i=0;i<trigger.cards2.length;i++){
+								for(var j=0;j<player.storage.quanxinquanyi_showcards.length;j++){
+									if(trigger.cards2[i]==player.storage.quanxinquanyi_showcards[j]&&get.position(trigger.cards2[i],true)=='d'){
+										cards.push(trigger.cards2[i]);
+									}
+								}
+							}
+							if(cards.length){
+								player.markSkill(event.name);
+								player.logSkill(event.name);
+								player.addTempSkill('bingdielei_anotherPhase');
+							}
+						},
+					},
+					losecard:{
+						trigger:{global:'loseAfter'},
+						filter:function(event,player){
+							if(event.type!='use'&&event.type!='discard') return false;
+							for(var i=0;i<event.cards2.length;i++){
+								console.log(event);
+								if(event.cards2[i].name==player.storage.quanxinquanyi_saycards[0][2]){
+									return true;
+								}
+							}
+							return false;
+						},
+						direct:true,
+						//frequent:'check',
+						content:function(){
+							player.storage.saycardsInD=true;
+						}
+					},
+					endRound:{
+						trigger:{global:'roundStart'},
+						priority:999,
+						prompt:function(){
+							return '是否将一张亮出牌当作声明牌使用？(若不满足使用声明牌条件将直接结算)'
+						},
+						filter:function(event,player){
+							return player.storage.quanxinquanyi_saycards;
+						},
+						content:function(){
+							'step 0'
+							if(player.storage.saycardsInD){
+								event.goto(4);
+							}
+							else{
+								var bool=game.hasPlayer(function(current){
+									return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},current);
+								});
+								if(!bool){
+									event.goto(4);
+								}
+							}
+							'step 1'
+							player.chooseCard('选择一张亮出牌',1,
+								function(card){
+									var cuplayer=_status.event.player;
+									return cuplayer.storage.quanxinquanyi_showcards.contains(card)
+								}
+							)
+							'step 2'
+							if(result.bool){
+								event.useshowCards=result.cards;
+								player.chooseUseTarget(event.useshowCards[0],{name:player.storage.quanxinquanyi_saycards[0][2]},true,false);
+								// player.chooseTarget('选择使用目标',function(card,player,target){
+								// 	return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},target);
+								// }).ai=function(target){
+								// 	if(!check) return 0;
+								// 	return get.effect(target,{name:player.storage.quanxinquanyi_saycards[0][2]},_status.event.player);
+								// }
+							}
+							else{
+								event.goto(4);
+							}
+							'step 3'
+							if(result.bool){
+							}
+							'step 4'
+							player.removeSkill('quanxinquanyi_showcards');
+							player.removeSkill('quanxinquanyi_saycards');
+							player.removeSkill('quanxinquanyi_endRound');
+						}
+					}
+				}
+			},
+			bingdielei:{
+				subSkill:{
+					anotherPhase:{
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						forced:true,
+						//prompt:'是否发动'+get.translate('bingdielei')+',获得一个额外的回合',
+						intro: {
+							content:'当前回合结束后获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						content:function(){
+							player.markSkill(event.name);
+							game.delayx();
+							player.logSkill(event.name);
+							player.insertPhase();
+						}
+					}
+				}
+			}
         },
         translate:{
 
@@ -1196,8 +1436,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hengkongchushi_qiyuyong:'弃牌并使用底牌',
 			hengkongchushi_moyuqi:'摸牌并弃置底牌',
 			wenhuazhian:'文化之暗',
-			wenhuazhian_info:'彩虹社势力出牌阶段限一次，对其他角色造成伤害时可以让进行一次判定，如果判定结果为♣，将判定牌放在牌堆底，然后其摸一张牌',
-			
+			wenhuazhian_info:'彩虹社势力出牌阶段限一次，对其他角色造成伤害时可以进行一次判定，如果判定结果为♣，将判定牌放在牌堆底，然后其摸一张牌',
+			quanxinquanyi:'全新全异',
+			quanxinquanyi_info:'一轮开始时，你可以亮出至多X张手牌并声明一种通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你将一张亮出牌当本轮声明牌使用。（X为你已损失的体力值且至少为1）',
+			bingdielei:'并蒂恶蕾',
+			bingdielei_info:'回合结束时，若本回合你弃置过【全新全异】亮出的牌，获得一个额外的回合。',
         }
     }
 }

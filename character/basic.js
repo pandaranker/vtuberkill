@@ -311,7 +311,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					var evt=_status.event.getParent('phase');
 					if(evt){
-						game.resetSkills();
+						//game.resetSkills();
 						_status.event=evt;
 						_status.event.finish();
 						// _status.event.untrigger(true);
@@ -1298,7 +1298,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					global:'useCardAfter',
 				},
 				filter: function(event, player) {
-					console.log(_status.currentPhase);
+					//console.log(_status.currentPhase);
 					return 	player!=_status.currentPhase &&
 							// event.player != player &&
 							event.card && 
