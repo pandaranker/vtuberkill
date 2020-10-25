@@ -868,6 +868,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if (num < 12) {
 							// trigger.targets.length=0;
 							// trigger.getParent().triggeredTargets2.length=0;
+							player.gain(result.cards,event.starget,'give');
 							trigger.cancel();
 						}
 						if (num >= 12) {
