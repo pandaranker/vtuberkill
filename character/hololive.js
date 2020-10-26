@@ -1278,8 +1278,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 },
                 content:function(){
                     "step 0"
-                    player.chooseTarget('命令一名杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
-                        return target.group=='holo'&&target.countCards('he')>0
+                    player.chooseTarget('命令一名其他杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
+                        return player!=target&&target.group=='holo'&&target.countCards('he')>0
                     });
                     "step 1"
                     event.dropTarget=result.targets[0];
@@ -1312,7 +1312,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		translate:{
 			TokinoSora:'时乃空',
 			taiyangzhiyin:'太阳之音',
-			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标（无距离限制）；或摸一张牌。',
+			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
             renjiazhizhu:'仁家之主',
             renjiazhizhu_info:'主公技。你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
             renjiazhizhu_tag:'仁家之主',
@@ -1349,7 +1349,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
             zhongjian:'中坚',
             zhongjian1:'中坚',
-            zhongjian_info:'主公技，每轮限一次，当你需要使用【无懈可击】时，可以令一名Hololive角色将一张牌当【无懈可击】使用。',
+            zhongjian_info:'主公技，每轮限一次，当你需要使用【无懈可击】时，可以令一名同势力的其他角色将一张牌当【无懈可击】使用。            ',
         },
 	};
 });

@@ -1158,7 +1158,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			quanxinquanyi:{
-				group:['quanxinquanyi_begin'],
+				group:['quanxinquanyi_begin','quanxinquanyi_playeLosecard'],
 				subSkill:{
 					begin:{
 						trigger:{global:'roundStart'},
@@ -1168,7 +1168,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							delete player.storage.quanxinquanyi_showcards;
+							//delete player.storage.quanxinquanyi_showcards;
 							delete player.storage.quanxinquanyi_saycards;
 							var maxCard=player.maxHp-player.hp;
 							if(maxCard==0) maxCard=1;
@@ -1181,7 +1181,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.addTempSkill('quanxinquanyi_discard','roundStart');
 							player.addSkill('quanxinquanyi_end','roundStart'); //为了使新加的技能不在当前roundStart被触发
 							'step 2'
-							player.storage.quanxinquanyi_showcards = event.showCards;
+							player.storage.quanxinquanyi_showcards.addArray(event.showCards);
 							//player.showCards(player.storage.quanxinquanyi_showcards,'全新全异（展示）');
 							player.syncStorage('quanxinquanyi_showcards');
 							player.markSkill('quanxinquanyi_showcards');
@@ -1271,11 +1271,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					discard:{
 						trigger:{global:'loseAfter'},
+						priority:99,
 						filter:function(event,player){
 							if(event.type!='discard') return false;
 							for(var i=0;i<event.cards2.length;i++){
 								for(var j=0;j<player.storage.quanxinquanyi_showcards.length;j++){
 									if(event.cards2[i]==player.storage.quanxinquanyi_showcards[j]&&get.position(event.cards2[i],true)=='d'){
+										console.log(event.cards2[i]);
 										return true;
 									}
 								}
@@ -1303,12 +1305,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						},
 					},
+					playeLosecard:{
+						trigger:{player:'loseAfter'},
+						direct:true,
+						filter:function(event,player){
+							if(player.storage.quanxinquanyi_showcards&&player.storage.quanxinquanyi_showcards.length>0)
+								return true;
+							else 
+								return false;
+						},
+						content:function(){
+							if(player.storage.quanxinquanyi_showcards)
+								for(var i=0;i<trigger.cards2.length;i++){
+									if(player.storage.quanxinquanyi_showcards.contains(trigger.cards2[i])){
+										player.storage.quanxinquanyi_showcards.remove(trigger.cards2[i])
+									}
+								}
+						}
+					},
 					losecard:{
 						trigger:{global:'loseAfter'},
 						filter:function(event,player){
 							if(event.type!='use'&&event.type!='discard') return false;
 							for(var i=0;i<event.cards2.length;i++){
-								console.log(event);
 								if(event.cards2[i].name==player.storage.quanxinquanyi_saycards[0][2]){
 									return true;
 								}
@@ -1368,7 +1387,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 							}
 							'step 4'
-							player.removeSkill('quanxinquanyi_showcards');
+							//player.removeSkill('quanxinquanyi_showcards');
 							player.removeSkill('quanxinquanyi_saycards');
 							player.removeSkill('quanxinquanyi_endRound');
 						}
@@ -1440,7 +1459,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quanxinquanyi:'全新全异',
 			quanxinquanyi_info:'一轮开始时，你可以亮出至多X张手牌并声明一种通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你将一张亮出牌当本轮声明牌使用。（X为你已损失的体力值且至少为1）',
 			bingdielei:'并蒂恶蕾',
-			bingdielei_info:'回合结束时，若本回合你弃置过【全新全异】亮出的牌，获得一个额外的回合。',
+			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
         }
     }
 }
