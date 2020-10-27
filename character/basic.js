@@ -1310,7 +1310,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function () {
 					player.addTempSkill('dunzou_enable',{target:'phaseBegin'});//移除游戏
-					player.out('dunzou_enable');
+					game.broadcastAll(function(splayer){
+						splayer.out('dunzou_enable');
+					},player)
 				},
 			},
 			dunzou_enable:{
@@ -1318,7 +1320,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				direct:true,
 				filter:function(event,player){
-					player.in('dunzou_enable');
+					game.broadcastAll(function(splayer){
+						splayer.in('dunzou_enable');
+					},player)
 					//
 					return true;
 				},

@@ -867,7 +867,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						player.storage.outPlayers.push(trigger.player);
 						trigger.player.addTempSkill('cangxiong_diao',{target:'phaseBegin'});//移除游戏
-						trigger.player.out('cangxiong_diao');
+						game.broadcastAll(function(splayer){
+								splayer.out('cangxiong_diao');
+							},trigger.player
+						)
 					}
 				},
 				subSkill:{
@@ -876,7 +879,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						mark:true,
 						direct:true,
 						filter:function(event,player){
-							player.in('cangxiong_diao');
+							game.broadcastAll(function(splayer){
+									splayer.in('cangxiong_diao');
+								},player
+							)
+							//player.in('cangxiong_diao');
 							//
 							return true;
 						},
@@ -1231,6 +1238,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						marktext: '新',
 						intro: {
 							content: 'cards',
+							onunmark:'throw',
 							name:'全新全异（亮出）',
 							// onunmark:function(storage,player){
 							// 	if(storage&&storage.length){
@@ -1254,9 +1262,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						intro: {
 							content: function(storage,player){
 								if(!player.storage.saycardsInD)
-									return '声明了'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+',当前未进入弃牌堆，本轮结束时可用一张亮出牌使用'
+									return '声明了【'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+'】,当前未进入弃牌堆，本轮结束时可用一张亮出牌使用'
 								else
-									return '声明了'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+',当前已经有声明牌进入弃牌堆'
+									return '声明了【'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+'】,当前已经有声明牌进入弃牌堆'
 							},
 							name:'全新全异（声明）',
 							// onunmark:function(storage,player){
@@ -1277,7 +1285,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							for(var i=0;i<event.cards2.length;i++){
 								for(var j=0;j<player.storage.quanxinquanyi_showcards.length;j++){
 									if(event.cards2[i]==player.storage.quanxinquanyi_showcards[j]&&get.position(event.cards2[i],true)=='d'){
-										console.log(event.cards2[i]);
+										//console.log(event.cards2[i]);
 										return true;
 									}
 								}
@@ -1318,7 +1326,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.storage.quanxinquanyi_showcards)
 								for(var i=0;i<trigger.cards2.length;i++){
 									if(player.storage.quanxinquanyi_showcards.contains(trigger.cards2[i])){
-										player.storage.quanxinquanyi_showcards.remove(trigger.cards2[i])
+										game.broadcastAll(
+											function(splayer,card){
+												splayer.storage.quanxinquanyi_showcards.remove(card)
+											},player,trigger.cards2[i]
+										);
+										player.syncStorage('quanxinquanyi_showcards');
 									}
 								}
 						}

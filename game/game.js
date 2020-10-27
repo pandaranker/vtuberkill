@@ -7809,7 +7809,7 @@
 					if(lib.device){
 						if(navigator.notification){
 							navigator.notification.confirm(
-								'游戏似乎未正常载入，是否重置游戏？',
+								'游戏似乎未正常载入，是否重置游戏？(多次点击重置后如果无反应，请刷新页面)',
 								function(index){
 									if(index==2){
 										localStorage.removeItem('noname_inited');
@@ -7836,14 +7836,14 @@
 							);
 						}
 						else{
-							if(confirm('游戏似乎未正常载入，是否重置游戏？')){
+							if(confirm('游戏似乎未正常载入，是否重置游戏？(多次点击重置后如果无反应，请刷新页面)')){
 								localStorage.removeItem('noname_inited');
 								window.location.reload();
 							}
 						}
 					}
 					else{
-						if(confirm('游戏似乎未正常载入，是否重置游戏？')){
+						if(confirm('游戏似乎未正常载入，是否重置游戏？(多次点击重置后如果无反应，请刷新页面)')){
 							var onlineKey=localStorage.getItem(lib.configprefix+'key');
 							localStorage.clear();
 							if(onlineKey){

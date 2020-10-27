@@ -1278,12 +1278,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 },
                 content:function(){
                     "step 0"
-                    player.chooseTarget('命令一名其他杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
+                    player.chooseTarget('命令一名其他杏势力角色将一张牌视为无懈可击',{},function(card,player,target){
                         return player!=target&&target.group=='holo'&&target.countCards('he')>0
                     });
                     "step 1"
-                    event.dropTarget=result.targets[0];
-                    event.dropTarget.chooseCard('he',1,true);
+                    if(result.bool){
+                        event.dropTarget=result.targets[0];
+                        event.dropTarget.chooseCard('he',1,true);
+                    }
+                    else{
+                        player.addTempSkill('zhongjian1_tag','roundStart');
+                        event.finish()
+                    }
                     "step 2"
                     // event.dropTarget.$throw(result.cards);
                     // event.dropTarget.lose(result.cards,ui.discardPile);
