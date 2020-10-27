@@ -883,6 +883,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									splayer.in('cangxiong_diao');
 								},player
 							)
+							player.in('cangxiong_diao');
 							//player.in('cangxiong_diao');
 							//
 							return true;
@@ -891,6 +892,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							content:'移除游戏外'
 						},
 						content:function(){
+							game.broadcastAll(function(splayer){
+								_status.dying.remove(splayer);
+							},player)
 							player.removeSkill('cangxiong_diao');
 						}
 					},

@@ -1335,6 +1335,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:'移除游戏外'
 				},
 				content:function(){
+					game.broadcastAll(function(splayer){
+						_status.dying.remove(splayer);
+					},player)
 					player.removeSkill('dunzou_enable');
 				}
 			},
