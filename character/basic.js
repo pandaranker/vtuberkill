@@ -1159,9 +1159,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if (!game.hasPlayer(function(cur) {
 						return cur != player && cur != trigger.player;
 					})) event.finish();
-					player.chooseTarget('转移给一名其它角色', function(card, player, target) {
-						return player != target && target != trigger.player;
-					})
+					else
+					game.broadcastAll(
+						function(player,tplayer){
+							player.chooseTarget('转移给一名其它角色', function(card, player, target) {
+								return player != target && target != tplayer;
+							})
+						},player,trigger.player
+					)
 					'step 1'
 					if (result.bool) {
 						var target=result.targets[0];
