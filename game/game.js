@@ -27,11 +27,11 @@
 		configprefix:'noname_0.9_',
 		versionOL:27,
 		updateURLS:{
-			coding:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
+			coding:'https://v8gamemaker.coding.net/public/vtuberkill/vtuberkill_github/raw/',
 			github:'https://raw.githubusercontent.com/libccy/noname',
 		},
 		updateURL:'https://raw.githubusercontent.com/libccy/noname',
-		mirrorURL:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
+		mirrorURL:'https://v8gamemaker.coding.net/public/vtuberkill/vtuberkill_github/raw/',//'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
 		hallURL:'www.vtuberkill.com',
 		assetURL:'',
 		changeLog:[],
@@ -39769,7 +39769,7 @@
 							updatepx.style.whiteSpace='nowrap';
 							updatepx.style.marginTop='8px';
 							var buttonx=ui.create.node('button','访问项目主页',function(){
-								window.open('https://github.com/libccy/noname');
+								window.open('https://v8gamemaker.coding.net/public/vtuberkill/vtuberkill_github/git/files');
 							});
 							updatepx.appendChild(buttonx);
 							ui.updateUpdate=function(){
