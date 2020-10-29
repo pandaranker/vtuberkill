@@ -5,6 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"sololive",
 		connect:true,
+		connectBanned:['KiryuuCoco'],
 		character:{
 			KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei', 'esuyingye']],
 		},
