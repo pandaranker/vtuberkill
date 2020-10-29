@@ -100,6 +100,7 @@ window.noname_source_list=[
 	'theme/woodden/wood.png',
 	'theme/woodden/wood2.jpg',
 	'theme/woodden/wood2.png',
+	'theme/style/card/cardSpecialEffects.css',
 	'theme/style/card/custom.css',
 	'theme/style/card/default.css',
 	'theme/style/card/music.css',
