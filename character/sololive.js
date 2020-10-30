@@ -5,7 +5,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"sololive",
 		connect:true,
-		connectBanned:['KiryuuCoco'],
 		character:{
 			KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei', 'esuyingye']],
 		},
@@ -21,7 +20,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(event.target==player)				return false;
 					if(event.target.countCards('he')==0)	return false;
-					return event.card.name=='sha';
+					return event.card.name =='sha';
 				},
 				content:function(){	
 					'step 0'
@@ -38,8 +37,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else							
 					{
-						target.discardPlayerCard('参加“早安可可”录制，需要弃置一张牌',target,'he').set('ai',function(button){
-							var name=button.link.viewAs||button.link.name;
+						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
+							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
 						});				
@@ -123,7 +122,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}).set('nh',nh);
 					'step 1'
 					if(result.cards){
-						if(get.type(result.card)=='equip'){
+						var getC = result.cards[0];
+						console.log(getC);
+						if(get.type(getC) =='equip'){
+							console.log(result.cards);
 							player.logSkill('esuyingye');
 							player.addTempSkill('esuyingye_addDam');
 							var buff = '.player_buff';
@@ -141,8 +143,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							source: 'damageBegin',
 						},
 						content: function() {
-							player.removeSkill('esuyingye_addDam');
 							trigger.num++;
+							player.removeSkill('esuyingye_addDam');						
 						},
 						onremove: function(player, skill) {
 							game.broadcastAll(function(player){
