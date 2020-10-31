@@ -30,7 +30,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(trigger.getParent().card.nature)		//如果此杀为属性杀
 					{				
 						player.line(target,'green');
-						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
+						target.chooseCard('成为“早安可可”的目标时，需要交给'+get.translation(player)+'一张牌','he',true).set('ai',function(card){
 							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);											
@@ -38,8 +38,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else							
 					{
-						target.discardPlayerCard('参加“早安可可”录制，需要弃置一张牌',target,'he').set('ai',function(button){
-							var name=button.link.viewAs||button.link.name;
+						target.chooseToDiscard('成为“早安可可”的目标，需要弃置一张牌','he').set('ai',function(card){
+							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
 						});				
