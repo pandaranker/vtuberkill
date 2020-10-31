@@ -583,6 +583,7 @@ window.noname_asset_list=[
 	'image/character/KaguraMea.jpg',
 	'image/character/kaguraNaNa.jpg',
 	'image/character/KaguyaLuna.jpg',
+	'image/character/KiryuuCoco.jpg',
 	'image/character/KizunaAI.jpg',
 	'image/character/MiraiAkari.jpg',
 	'image/character/MitoTsukino.jpg',
