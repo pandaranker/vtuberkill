@@ -29,15 +29,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(trigger.getParent().card.nature)		//如果此杀为属性杀
 					{				
 						player.line(target,'green');
-						target.chooseCard('参加“早安可可”录制，选择一张牌交给'+get.translation(player),'he',true).set('ai',function(card){
-							if(card.name=='shan')	return 30;
-							if(card.nature) 		return 50;
+						target.chooseCard('成为“早安可可”的目标时，需要交给'+get.translation(player)+'一张牌','he',true).set('ai',function(card){
+							var name = card.name;
+							if(name=='shan') return 30;
 							return 100-get.value(card);											
 						});											
 					}
 					else							
 					{
-						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
+						target.chooseToDiscard('成为“早安可可”的目标，需要弃置一张牌','he').set('ai',function(card){
 							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
@@ -123,9 +123,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.cards){
 						var getC = result.cards[0];
-						console.log(getC);
 						if(get.type(getC) =='equip'){
-							console.log(result.cards);
 							player.logSkill('esuyingye');
 							player.addTempSkill('esuyingye_addDam');
 							var buff = '.player_buff';
@@ -155,12 +153,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-
-								
-					
-					
 			
-					
 				
 				
 			
