@@ -4,7 +4,7 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
-		connectBanned:['NekomiyaHinata','SisterClearie'],
+		//connectBanned:['NekomiyaHinata','SisterClearie'],
 		connect:true,
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
