@@ -17,33 +17,60 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		skill:{
 			//猫宫
 			yuchong:{
+				group:['yuchong_unbeDis','yuchong_unRes'],
 			//	group:['yuchong_dist' , 'yuchong_uneq'],
 			//	subSkill: 
 			//	{			
 			//		dist:{			
-						mod:{
+			//			mod:{
 								//距离变化
-								attackFrom:function(from,to,distance){
-									if(from.getEquip(1))
-									{
-										return distance-1; 
-									}                
-								},
-								globalTo:function(from,to,distance){
-									if(to.getEquip(1))
-									{
-										return distance+1;
-									}
-								},
+			//					attackFrom:function(from,to,distance){
+			//						if(from.getEquip(1))
+			//						{
+			//							return distance-1; 
+			//						}                
+			//					},
+			//					globalTo:function(from,to,distance){
+			//						if(to.getEquip(1))
+			//						{
+			//							return distance+1;
+			//						}
+			//					},
 								//无法弃置
-								canBeDiscarded:function(card,player,target,name,now){
-									if(get.subtype(card)=='equip1')
-									{
+				subSkill:{
+					unbeDis:{
+						mod:{
+							canBeDiscarded:function(card,player,target,name,now){
+								if(get.subtype(card)=='equip1'){
 										return false;
 									}
 								},
 							}
-						
+					},
+					unRes:{
+						mod:{
+							cardname:function(card,player){
+								if(player.getEquip(1)){
+									if(get.subtype(card)=='equip1'){  
+										return 'sha';
+									}
+								}
+							},
+						},
+						trigger:{player:['useCard1']},
+						firstDo:true,
+						forced:	true,
+						filter:function(event,player){
+							if(!player.getEquip(1))		return false;
+							return get.subtype(event.cards[0])=='equip1';
+						},
+						content:function(){
+					//		card.name=='sha';
+							console.log(trigger);
+							trigger.directHit.add(trigger.targets[0]);
+						},
+					}
+				}
 			//		},
 					//无视防具
 					/*uneq:{
@@ -343,11 +370,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		translate:{
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '锁定技。你装备区内的武器牌不能被弃置。你在装备武器时，其他角色计算与你的距离+1，你的攻击距离+1。',
+			yuchong_info: '锁定技。你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不可被响应的杀。',
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可以弃一张牌令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
-			zhimao_info: '当你成为非延时性锦囊牌的目标时，若来源在你攻击范围外，你可选择一项：取消之并摸一张牌；获得其武器牌，视为向其使用一张无距离限制的【杀】。',
+			zhimao_info: '当你成为非延时性锦囊牌的目标时，若来源在你攻击范围外，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 			SisterClearie:'修女·克蕾雅',
 			zhenxin: '真信之诚',
 			zhenxin_info: '锁定技。防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
