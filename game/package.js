@@ -8,6 +8,7 @@ window.noname_package={
 		hololive:'hololive',
 		basic: 'v杀基础包',
 		sololive: '测试中勿选',
+		yuzu: '测试中可选',
 		// moyu: '摸鱼',
 		nijisanji:'nijisanji',
 		vtuber:'vtuber',
