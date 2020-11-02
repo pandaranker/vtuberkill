@@ -1260,6 +1260,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				// ignoreMod:true,
 				filterCard:function(card,player,event){
 					if(!player.hasZhuSkill('zhongjian')) return false;
+                    if(player.hasSkill('zhongjian1_tag')) return false;
 					event=event||_status.event;
 					var filter=event._backup.filterCard;
 					if(filter({name:'wuxie'},player,event)) return true;
@@ -1287,17 +1288,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         event.dropTarget.chooseCard('he',1,true);
                     }
                     else{
-                        player.addTempSkill('zhongjian1_tag','roundStart');
                         event.finish()
                     }
                     "step 2"
                     // event.dropTarget.$throw(result.cards);
                     // event.dropTarget.lose(result.cards,ui.discardPile);
                     //console.log(event.getParent().getParent().getParent());
+                    player.addTempSkill('zhongjian1_tag','roundStart');
+                    event.cards=result.cards
+                    "step 3"
                     event.getParent().getParent().state=!event.getParent().getParent().state;
                     event.getParent().getParent().goto(2);
-                    player.addTempSkill('zhongjian1_tag','roundStart');
-                    event.dropTarget.useCard(result.cards,{name:'wuxie',isCard:false});
+                    event.dropTarget.useCard(event.cards,{name:'wuxie',isCard:false});
                     //player.removeSkill('zhongjian','roundStart');
                 },
 				hiddenCard:function(player,name){
