@@ -4,7 +4,6 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
-		connectBanned:['NekomiyaHinata','SisterClearie'],
 		connect:true,
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
@@ -65,9 +64,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return get.subtype(event.cards[0])=='equip1';
 						},
 						content:function(){
-					//		card.name=='sha';
-							console.log(trigger);
-							trigger.directHit.add(trigger.targets[0]);
+							for(var i=0;i<trigger.targets.length;i++){
+								trigger.directHit.add(trigger.targets[0]);
+							}						
 						},
 					}
 				}
@@ -232,8 +231,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.hp>event.player.hp;
 						},
 						content:function(){
-							console.log(trigger.getParent());
-							trigger.num--;
+							trigger.num=0;
 						},
 					},
 					//防止体力值大于你的角色每回合对你造成的第一次伤害
@@ -244,10 +242,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:24,
 						filter:function(event,player){
 							if(event.player!=player)	return false;
+							if(!event.source.hp)		return false
 							return player.hp<event.source.hp;
 						},
 						content:function(){
-							trigger.num--;
+							trigger.num=0;
 						},
 					}
 				}
@@ -266,6 +265,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return target && get.attitude(player, target) > 0;
 						},
 						filter:function(event,player){
+							if(		!game.hasPlayer(function(cur) {
+								return cur.hasSkill('zhuwei');
+							}))									return false;
 							if(player.hasSkill('zhuwei'))		return false;
 							return	!game.hasPlayer(function(cur) {
 								return cur.countCards('h') < event.player.countCards('h');
@@ -283,12 +285,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'zhuwei_putAfter'},
 						forced:false,
 						filter:function(event,player){
-							console.log(event);
-							return player.countCards('e')||event.player.countCards('e');
+							var canbeM=0;
+							for(var i=1;i<7;i++){
+								if(!(player.getEquip(i)&&event.player.getEquip(i)))
+								canbeM++;
+							}
+							return canbeM>0&&(player.countCards('e')||event.player.countCards('e'));
 						},	
 						content:function(){
 							'step 0'
-							console.log(this.trigger);
 							next=player.chooseTarget(2,function(card,player,target){
 								if(ui.selected.targets.length){
 									var from=ui.selected.targets[0];
@@ -306,12 +311,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return (target== player||target== trigger.player)&&target.countCards('e')>0;
 								}
 							});
-							/*next.set('filterButton',function(button){
-								if(event.customFilterButton){
-									if (!event.customFilterButton(button))
-										return false;
-								}}
-							);*/
 							next.set('multitarget',true);
 							next.set('targetprompt',['被移走','移动目标']);
 							next.set('prompt',event.prompt||'移动场上的一张装备牌');
