@@ -1,11 +1,12 @@
 window.noname_update={
-	version:'1.9.100.30',
+	version:'1.9.100.31',
 	update:'1.9.100.30.1',
 	changeLog:[
 		'需知:当前部分人物的AI未编写完成，请尽量在联机模式下测试',
 		'建议清除一次缓存',
 		'如果出现无法联机bug请手动清除浏览器缓存',
-		'添加测试人物猫宫日向与修女'
+		'添加测试人物猫宫日向与修女',
+		'修复部分bug'
 	],
 	files:[
 		'character/hololive.js',
