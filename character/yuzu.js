@@ -9,10 +9,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
+			MinatoAqua:['female','holo',3,['kuali','youyi']],
 		},
 		characterIntro:{
 			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
 			SisterClearie:	'“今日也愿神加护于你……”',
+			MinatoAqua:'“理解理解~”',
 		},
 		skill:{
 			//猫宫
@@ -197,7 +199,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.gain(target.getEquip(1),target,'give','bySelf');
 								player.useCard({name:'sha',isCard:true},target).animate=false;
 							}	
-							else{
+							else if(result.index==0){
 								player.draw();
 								trigger.cancel();
 							}						
@@ -259,18 +261,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					put:{
 						trigger:{player:'phaseEnd'},
 						forced:false,
+						priority:24,
 						check: function(event, player) {
-							var target = game.findPlayer(function(cur) {
+							var target = game.findPlayer(function(cur){
 								return cur.hasSkill('zhuwei');
 							});
 							return target && get.attitude(player, target) > 0;
 						},
 						filter:function(event,player){
-							if(		!game.hasPlayer(function(cur) {
+							if(		!game.hasPlayer(function(cur){
 								return cur.hasSkill('zhuwei');
 							}))									return false;
 							if(player.hasSkill('zhuwei'))		return false;
-							return	!game.hasPlayer(function(cur) {
+							return	!game.hasPlayer(function(cur){
 								return cur.countCards('h') < event.player.countCards('h');
 							});
 						},
@@ -286,30 +289,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'zhuwei_putAfter'},
 						forced:false,
 						filter:function(event,player){
-							var canbeM=0;
-							for(var i=1;i<7;i++){
-								if(!(player.getEquip(i)&&event.player.getEquip(i)))
-								canbeM++;
-							}
-							return canbeM>0&&(player.countCards('e')||event.player.countCards('e'));
+							var canbeM=function(a,b){
+									var es=a.getCards('e');
+									for(var i=0;i<es.length;i++){
+										if(b.isEmpty(get.subtype(es[i]))) return true;
+										return true;
+									}
+								}
+							return canbeM(player,event.player)||canbeM(event.player,player);
 						},	
 						content:function(){
 							'step 0'
+							var canbeM=function(a,b){
+								var es=a.getCards('e');
+								for(var i=0;i<es.length;i++){
+									if(b.isEmpty(get.subtype(es[i]))) return true;
+									return true;
+								}
+							}
 							next=player.chooseTarget(2,function(card,player,target){
 								if(ui.selected.targets.length){
 									var from=ui.selected.targets[0];
 									if(target.isMin()) return false;
-									if(from==trigger.player&&player!=target)		return false;
-									if(from==player&&trigger.player!=target)		return false;
-									var es=from.getCards('e');
-									for(var i=0;i<es.length;i++){
-										if(target.isEmpty(get.subtype(es[i]))) return true;
-										return true;
-									}
+									if(from==trigger.playe)		return target== player;
+									if(from==player)		return target== trigger.player;
 									return false;
 								}
 								else{
-									return (target== player||target== trigger.player)&&target.countCards('e')>0;
+									if(canbeM(player,trigger.player))
+									return target== player;
+									if(canbeM(trigger.player,player))
+									return target== trigger.player;
 								}
 							});
 							next.set('multitarget',true);
@@ -357,14 +367,238 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
+				},			
+			},
+			//夸
+			kuali:{
+				init:function (player){
+					player.storage.kuali=0;
 				},
+				group:['kuali_zhuDong','kuali_jieshu'],
+				subSkill:{
+					zhuDong:{
+						enable:"phaseUse",
+						usable:1,
+						filter:function(event,player){
+							return game.hasPlayer(function(cur){
+								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>player.countCards('h'))
+								||(cur.hp%player.hp==0&&cur.hp>player.hp);
+							});
+						},
+						content:function(){
+							'step 0'
+							player.storage.kuali++;
+							player.chooseControlList(
+								['选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',
+								'摸体力为你整数倍（大于1）的角色数的牌，然后失去1点体力'],
+								true,function(event,player){
+									return _status.event.index;
+								});
+							'step 1'
+							if(result.index==0){
+								player.chooseTarget('选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+									if(target==player) 				return false;
+									return target.countCards('h')%player.countCards('h')==0&&target.countCards('h')>player.countCards('h');
+								});						
+							}
+							if(result.index==1){
+								var num=-1;
+								game.hasPlayer(function(cur){
+									if(cur.hp%player.hp==0)
+									num++;
+								});
+								player.draw(num);
+								player.loseHp();
+								event.finish();
+							}
+							'step 2'
+							if(result.bool&&result.targets.length)
+							{
+								var num=0;
+								num=Number(result.targets.length);
+								player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
+								player.recover(num);
+							}
+						},
+					},
 				
-				
-				
-			}
+			
+					jieshu:{
+						trigger:{player:'phaseEnd'},
+						usable:1,
+						priority:40,
+						filter:function(event,player){
+								if(player.storage.kuali!=0){
+									player.storage.kuali=0;
+									return false;
+								}
+								return game.hasPlayer(function(cur){
+									return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>player.countCards('h'))
+										||(cur.hp%player.hp==0&&cur.hp>player.hp);
+									});
+							},
+						content:function(){
+								'step 0'
+									player.chooseControlList(
+										['选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',
+										'摸体力为你整数倍（大于1）的角色数的牌，然后失去1点体力'],
+										true,function(event,player){
+											return _status.event.index;
+										});
+								'step 1'
+									if(result.index==0){
+										player.chooseTarget('选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+											if(target==player) 				return false;
+											return target.countCards('h')%player.countCards('h')==0&&target.countCards('h')>player.countCards('h');
+										});						
+									}
+									if(result.index==1){
+										var num=-1;
+										game.hasPlayer(function(cur){
+											if(cur.hp%player.hp==0)
+											num++;
+										});
+										player.draw(num);
+										player.loseHp();
+										event.finish();
+									}
+								'step 2'
+									if(result.bool&&result.targets.length)
+									{
+										var num=0;
+										num=Number(result.targets.length);
+										player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
+										player.recover(num);
+									}
+								},
+						},
+					},
+			},
+			youyi:{
+				trigger:{
+					global: 'phaseBegin'
+				},
+				round:1,
+				priority:80,
+				filter:function(event, player){	
+					return event.player!=player;
+				},
+				content:function(){
+					'step 0'
+					var next=player.chooseCard(get.prompt2('youyi'));
+					next.set('ai',function(card){
+						if(get.type(card)=='basic') return 1;
+						return get.value(card);
+					});
+					'step 1'
+					if(result.bool){
+						player.logSkill('youyi');
+						player.showCards(result.cards);
+					}
+					'step 2'
+						trigger.player.gain(result.cards,player,'giveAuto');
+						trigger.player.markSkill('youyi');
+						trigger.player.addTempSkill('youyishiyue','phaseAfter');
+						trigger.player.addTempSkill('youyishiyue_lose','phaseEnd');
+						trigger.player.addTempSkill('youyishiyue_rec','phaseAfter');
+						player.storage.youyi=result.cards[0];
+				},
+				group:['youyi_dam'],
+				subSkill:{				
+					dam:{
+						trigger:{global:'damageBegin'},
+						filter:function(event,player){
+						if(event.source==player||!event.source)	return false;
+							return event.source.hasSkill('youyishiyue');
+						},
+						prompt:'是否收回“誓约”牌',
+						content:function(){
+						trigger.num=0;
+						player.gain(player.storage.youyi,this.trigger.source,'give2');
+						trigger.source.removeSkill('youyishiyue');
+						trigger.source.updateMarks();
+						}
+					},
+				},
+			},
+			youyishiyue:{
+				marktext:"誓约",
+				locked:true,
+				intro:{
+					content:'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。',
+					content:function (storage,player,skill){
+						var su,na,nu;
+						game.hasPlayer(function(cur){
+							if(cur.hasSkill('youyi')){
+								su=get.suit(cur.storage.youyi);
+								na=get.name(cur.storage.youyi);
+								nu=cur.storage.youyi.number;
+							}
+						});
+						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'。当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。（若此牌离开你的区域，此状态结束）';
+					},
+				},
+				mark:true,
+				group:['youyishiyue_lose','youyishiyue_rec'],
+				subSkill:{
+					lose:{
+						trigger:{player:['loseAfter','respondAfter']},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							var shi;
+							var bo=game.hasPlayer(function(cur){
+								if(cur.hasSkill('youyi')){
+									shi=cur.storage.youyi;
+									return true;
+								}
+								else{
+									return false;
+								}
+							});
+							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
+							if(event.getParent().card.name=='shandian')											return false;
+							console.log(shi);
+							console.log(event.getParent());
+							return event.getParent().cards[0]==shi;
+						},
+						content:function(){
+							player.removeSkill('youyishiyue');
+							player.updateMarks();
+						},
+					},
+					rec:{
+						trigger:{player:'phaseEnd'},
+						forced:false,
+						priority:80,
+						filter:function(event,player){
+							return game.hasPlayer(function(cur){
+								return cur.hasSkill('youyi');
+							})
+						},
+						content:function(){
+							var shi;
+							var aqua;
+							game.hasPlayer(function(cur){
+								if(cur.hasSkill('youyi')){
+									aqua = cur
+									shi = cur.storage.youyi;
+								}
+							});
+							player.chooseToDiscard('弃置誓约牌','he',function(card,player){
+								return card=shi;
+							});
+							player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
+								return target==player||target==aqua;
+							});
+						},
+					},
 			
 			
-				
+				},
+			},
+						
 			
 		}, 
 		translate:{
@@ -380,7 +614,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhenxin_info: '锁定技。防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
 			zhuwei: '助危之心',
 			zhuwei_info: '其他角色的结束阶段，若其手牌为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
-			
+			MinatoAqua:'湊阿库娅',
+			kuali:'夸力满满',
+			kuali_info:'出牌/结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
+			youyi:'友谊誓约',
+			youyi_info:'每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
+			youyishiyue:'友谊誓约',
+			youyishiyue_info:'友谊誓约生效中',
 		},
 	};
 });
