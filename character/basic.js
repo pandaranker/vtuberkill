@@ -430,6 +430,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if (result.bool) {
 						event.card = result.links[0];
 						var str = "豪赌展示<br>";
+						game.log(player,'选择了',event.chi);
 						if (event.chi.contains(get.number(event.card))) str += "你与其交换手牌<br>";
 						if (event.chi.contains(get.type(event.card))) str += "你弃置其两张牌<br>";
 						if (event.chi.contains(get.suit(event.card))) str += "你获得其一张牌<br>";

@@ -5,7 +5,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"sololive",
 		connect:true,
-		connectBanned:['KiryuuCoco'],
 		character:{
 			KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei', 'esuyingye']],
 		},
@@ -21,7 +20,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(event.target==player)				return false;
 					if(event.target.countCards('he')==0)	return false;
-					return event.card.name=='sha';
+					return event.card.name =='sha';
 				},
 				content:function(){	
 					'step 0'
