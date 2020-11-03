@@ -1,5 +1,5 @@
 window.noname_asset_list=[
-	'v1.9.191.2',
+	'v1.9.191.4',
 	'audio/background/aozhan_chaoming.mp3',
 	'audio/background/aozhan_online.mp3',
 	'audio/background/aozhan_rewrite.mp3',
@@ -10,6 +10,7 @@ window.noname_asset_list=[
 	'audio/background/music_jifeng.mp3',
 	'audio/background/music_phliosophy.mp3',
 	'audio/background/music_jilve.mp3',
+	'audio/background/music_minatoAqua1.mp3',
 	'audio/card/default.mp3',
 	
 	'audio/card/female/caomu.mp3',
@@ -193,6 +194,18 @@ window.noname_asset_list=[
 	'image/background/tw4_bg.jpg',
 	'image/background/yinxiang_bg.jpg',
 	'image/background/wuming_bg.jpg',
+	'image/background/hb1_bg.jpg',
+	'image/background/ak1_bg.jpg',
+	'image/background/ak2_bg.jpg',
+	'image/background/ak3_bg.jpg',
+	'image/background/ak4_bg.jpg',
+	'image/background/xm1_bg.jpg',
+	'image/background/xm2_bg.jpg',
+	'image/background/xm3_bg.jpg',
+	'image/background/alice1_bg.jpg',
+	'image/background/alice2_bg.jpg',
+	'image/background/alice3_bg.jpg',
+	'image/background/alice4_bg.jpg',
 
 	'image/card/minguangkai.png',
 	'image/card/db_atk1.jpg',

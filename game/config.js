@@ -31,8 +31,8 @@ window.config={
 	hoveration:1000,
 	doubleclick_intro:true,
 	cheat:false,
-	volumn_background:8,
-	volumn_audio:8,
+	volumn_background:1,
+	volumn_audio:5,
 
 	connect_avatar:'KizunaAI',
 	connect_nickname:'无名玩家',
@@ -49,7 +49,7 @@ window.config={
 	right_info:true,
 	longpress_info:true,
 	long_info:true,
-	background_music:'music_default',
+	background_music:'music_minatoAqua1',
 	background_audio:true,
 	background_speak:true,
 	glow_phase:'yellow',
@@ -79,7 +79,7 @@ window.config={
 	hp_style:'default',
 
 	image_character:'default',
-	image_background:'tw1_bg',
+	image_background:'ak1_bg',
 
 	asset_image:true,
 	asset_font:true,

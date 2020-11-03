@@ -168,15 +168,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             var id=info.shift();
                             lib.cardOL[id].init(info);
                             //console.log(player.storage.changecardList);
+                            player.gain(result.cards,event.players[event.playersIndex],'giveAuto');
                         }
                         else{
                             console.log(result.cards[0],1);
+                            player.gain(result.cards,event.players[event.playersIndex],'giveAuto');
                             result.cards[0].number=11;
                             result.cards[0].specialEffects=['card_hightlight'];
                             // player.storage.skillCard.push(
                             //     {Old:result.cards[0].childNodes[1].childNodes[2].data,Class:result.cards[0].childNodes[1].childNodes[2]}
                             // );
-                            // result.cards[0].childNodes[1].childNodes[2].data='J';
+                            result.cards[0].childNodes[1].childNodes[2].data='J';
                             var newcard=get.cardInfo(result.cards[0]);//取得card对象
                             result.cards[0]=get.infoCard(newcard);
                             console.log(result);
@@ -184,7 +186,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             player.storage.newcards.push(result.cards[0]);
                             // console.log(player.storage.newcards);
                         }
-                        player.gain(result.cards,event.players[event.playersIndex],'giveAuto');
                         //console.log(result.cards);
                         player.storage.skillCardID.push(result.cards[0].cardid);
                     }
