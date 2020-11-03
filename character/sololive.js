@@ -263,7 +263,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			UsadaPekora:'兔田佩克拉',
 			pekoyu:'peko文学',
 			pekoyu_info:'一回合限七次。每当你使用【杀】未被【闪】响应或使用锦囊牌未被【无懈可击】响应，你可以摸一张牌，然后弃一张牌。若此技能弃置了【酒】，你可以指定一名角色摸两张牌。',
-			hongshaoturou:'野兔烹饪',
+			hongshaoturou:'自煲自足',
 			hongshaoturou_info:'出牌阶段限一次，将你的武将牌横置，在回合结束时受到1点火焰伤害。若你如此做，在本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 		},
 	};
