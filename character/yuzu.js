@@ -291,22 +291,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							var canbeM=function(a,b){
 									var es=a.getCards('e');
+									var c=0;
 									for(var i=0;i<es.length;i++){
-										if(b.isEmpty(get.subtype(es[i]))) return true;
-										return true;
+										if(b.isEmpty(get.subtype(es[i]))) c++;
 									}
+									return c;
 								}
+//								console.log(canbeM(player,event.player));
+//								console.log(canbeM(event.player,player));
 							return canbeM(player,event.player)||canbeM(event.player,player);
 						},	
 						content:function(){
 							'step 0'
 							var canbeM=function(a,b){
 								var es=a.getCards('e');
+								var c=0;
 								for(var i=0;i<es.length;i++){
-									if(b.isEmpty(get.subtype(es[i]))) return true;
-									return true;
+									if(b.isEmpty(get.subtype(es[i]))) c++;
 								}
+								return c;
 							}
+//							console.log(canbeM(player,trigger.player));
+							console.log(canbeM(trigger.player,player));
 							next=player.chooseTarget(2,function(card,player,target){
 								if(ui.selected.targets.length){
 									var from=ui.selected.targets[0];
@@ -316,10 +322,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 								else{
-									if(canbeM(player,trigger.player))
-									return target== player;
-									if(canbeM(trigger.player,player))
-									return target== trigger.player;
+									if((canbeM(player,trigger.player)>0&&target== player)||(canbeM(trigger.player,player)>0&&target== trigger.player))
+									return true;
 								}
 							});
 							next.set('multitarget',true);
