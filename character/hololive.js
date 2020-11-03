@@ -160,7 +160,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             player.storage.changecardList=[];
                         }
                         player.storage.changecardList.push({result:result,card:result.cards[0],oldData:result.cards[0].number});
-                        if(game.onlineID){
+                        if(game.online){
                             result.cards[0].number=11;
                             result.cards[0].specialEffects=['card_hightlight'];
                             var newcard=get.cardInfoOL(result.cards[0]);//取得card对象
@@ -171,7 +171,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             player.gain(result.cards,event.players[event.playersIndex],'giveAuto');
                         }
                         else{
-                            console.log(result.cards[0],1);
+                            //console.log(result.cards[0],1);
                             player.gain(result.cards,event.players[event.playersIndex],'giveAuto');
                             result.cards[0].number=11;
                             result.cards[0].specialEffects=['card_hightlight'];
@@ -181,7 +181,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             result.cards[0].childNodes[1].childNodes[2].data='J';
                             var newcard=get.cardInfo(result.cards[0]);//取得card对象
                             result.cards[0]=get.infoCard(newcard);
-                            console.log(result);
+                            //console.log(result);
                             if(player.storage.newcards==null) player.storage.newcards=[];
                             player.storage.newcards.push(result.cards[0]);
                             // console.log(player.storage.newcards);
@@ -221,7 +221,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                                 player.storage.changecardList.forEach((element,index)=>{
                                     element.card.number=element.oldData;
                                     element.card.specialEffects=null;
-                                    if(game.onlineID){
+                                    if(game.online){
                                         var newcard=get.cardInfoOL(element.card);
                                         var info=JSON.parse(newcard.slice(13));
                                         var id=info.shift();
