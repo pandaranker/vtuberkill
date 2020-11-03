@@ -8,11 +8,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei', 'esuyingye']],
+			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
 		},
 		characterIntro:{
 			KiryuuCoco: '“全都给你们扬了！”',
+			UsadaPekora: '“哈↑哈↑哈↑哈”',
 		},
 		skill:{
+			//龙皇
 			zaoankeke:{
 				trigger:{player:'useCardToPlayered'},
 				forced:true,
@@ -30,7 +33,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(trigger.getParent().card.nature)		//如果此杀为属性杀
 					{				
 						player.line(target,'green');
-						target.chooseCard('成为“早安可可”的目标时，需要交给'+get.translation(player)+'一张牌','he',true).set('ai',function(card){
+						target.chooseCard('参加“早安可可”录制，需要交给'+get.translation(player)+'一张牌','he',true).set('ai',function(card){
 							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);											
@@ -38,7 +41,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else							
 					{
-						target.chooseToDiscard('成为“早安可可”的目标，需要弃置一张牌','he').set('ai',function(card){
+						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
 							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
@@ -154,7 +157,97 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			
+			//兔宝
+			pekoyu:{
+				trigger:{player:'useCardAfter'},
+				forced:false,
+				usable:7,
+				priority:111,
+				filter:function(event,player){
+					console.log(event);
+					if(!(event.card.name =='sha'||get.type(event.card)=='trick'))	return false;
+					console.log(event.respondTo);
+					console.log(event.result.wuxied);
+					if(!(event.result.bool == false || event.result.wuxied))		return true;			
+				},
+				content: function() {
+					'step 0'
+					player.draw(),
+					player.chooseToDiscard('然后，弃置一张牌','h').set('ai',function(card){
+						var name = card.name;
+						if(name=='jiu') 			return 120;
+						if(get.type(card)=='trick')	return 40;
+						return 100-get.value(card);													
+					});
+					'step 1'
+					if(result.cards){
+						console.log(result.cards[0]);
+						if(result.cards[0].name=='jiu'||
+							(player.hasMark('hongshaoturou')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
+						player.chooseTarget('选择一名角色，令其摸两张牌').set('ai',function(target){
+							var player=_status.event.player;
+							return get.attitude(player,target)*(target.isDamaged()?2:1);
+						});
+					}
+					'step 2'
+					if(result.bool&&result.targets.length){
+						var target=result.targets[0];
+						player.line(target,'thunder');
+						target.draw(2);
+					}
+				}
+			},
+			hongshaoturou:{
+				enable:"phaseUse",
+				usable:1,
+				content:function(){
+					player.link();
+					player.addMark('hongshaoturou',1,false);
+					player.addTempSkill('hongshaoturou_viewAs','phaseAfter');
+					player.addTempSkill('hongshaoturou_shao','phaseAfter');
+					var buff = '.player_buff';
+							game.broadcastAll(function(player, buff){
+								player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
+							}, player, buff);
+				},			
+			},
+			hongshaoturou_viewAs:{
+				mod:{
+					cardname:function(card,player){
+						if(card.name=='shan'||card.name=='tao')														return 'jiu';
+						if(get.subtype(card)=='equip3'||get.subtype(card)=='equip4'||get.subtype(card)=='equip6')	return 'tiesuo';
+					},
+				},
+				trigger:{player:['useCard1','respond','loseBeign']},
+				firstDo:true,
+				forced:	true,
+				filter:function(event,player){
+					return event.card.name=='jiu'&&!event.skill&&
+					event.cards.length==1&&(event.cards[0].name=='tao'||event.cards[0].name=='shan');
+				},
+				content:function(){
+					card.name=='jiu';
+				},
+			},
+			hongshaoturou_shao:{
+				trigger:{player:['phaseEnd']},
+				forced:	true,
+				onremove: function(player, skill) {
+					game.broadcastAll(function(player){
+						player.node.hongshaoturou.delete();
+						delete player.node.hongshaoturou;
+					}, player);
+				},
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					player.damage('fire');
+					player.removeSkill('hongshaoturou_shao');	
+				}
+			}
+								
+					
 				
 				
 			
@@ -167,7 +260,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jierizhanbei_info: '锁定技。你使用过装备牌的回合内手牌上限视为5.回合结束时，若本回合你没有使用过装备牌，你随机从牌堆内获得一张装备牌。',
 			esuyingye: '恶俗营业',
 			esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
-			
+			UsadaPekora:'兔田佩克拉',
+			pekoyu:'peko文学',
+			pekoyu_info:'一回合限七次。每当你使用【杀】未被【闪】响应或使用锦囊牌未被【无懈可击】响应，你可以摸一张牌，然后弃一张牌。若此技能弃置了【酒】，你可以指定一名角色摸两张牌。',
+			hongshaoturou:'野兔烹饪',
+			hongshaoturou_info:'出牌阶段限一次，将你的武将牌横置，在回合结束时受到1点火焰伤害。若你如此做，在本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 		},
 	};
 });

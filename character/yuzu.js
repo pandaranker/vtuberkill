@@ -311,7 +311,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(ui.selected.targets.length){
 									var from=ui.selected.targets[0];
 									if(target.isMin()) return false;
-									if(from==trigger.playe)		return target== player;
+									if(from==trigger.player)		return target== player;
 									if(from==player)		return target== trigger.player;
 									return false;
 								}
@@ -381,24 +381,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						usable:1,
 						filter:function(event,player){
 							return game.hasPlayer(function(cur){
-								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>player.countCards('h'))
-								||(cur.hp%player.hp==0&&cur.hp>player.hp);
+								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
+								||(cur.hp%player.hp==0&&cur.hp>0);
 							});
 						},
 						content:function(){
 							'step 0'
 							player.storage.kuali++;
 							player.chooseControlList(
-								['选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',
-								'摸体力为你整数倍（大于1）的角色数的牌，然后失去1点体力'],
+								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
+								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
 								true,function(event,player){
 									return _status.event.index;
 								});
 							'step 1'
 							if(result.index==0){
-								player.chooseTarget('选择任意名手牌数为你整数倍（大于1）的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+								player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
 									if(target==player) 				return false;
-									return target.countCards('h')%player.countCards('h')==0&&target.countCards('h')>player.countCards('h');
+									return target.countCards('h')%player.countCards('h')==0;
 								});						
 							}
 							if(result.index==1){
@@ -514,6 +514,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						prompt:'是否收回“誓约”牌',
 						content:function(){
 						trigger.num=0;
+						player.line(trigger.source,'thunder');
 						player.gain(player.storage.youyi,this.trigger.source,'give2');
 						trigger.source.removeSkill('youyishiyue');
 						trigger.source.updateMarks();
@@ -522,10 +523,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			youyishiyue:{
-				marktext:"誓约",
+				marktext:"誓",
 				locked:true,
 				intro:{
-					content:'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。',
 					content:function (storage,player,skill){
 						var su,na,nu;
 						game.hasPlayer(function(cur){
@@ -558,7 +558,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							});
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
-							if(event.getParent().card.name=='shandian')											return false;
+			//				if(event.getParent().card.name=='shandian')											return false;
 							console.log(shi);
 							console.log(event.getParent());
 							return event.getParent().cards[0]==shi;

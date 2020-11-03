@@ -600,6 +600,7 @@ window.noname_asset_list=[
 	'image/character/SisterClearie.jpg',
 	'image/character/SuzukaUtako.jpg',
 	'image/character/TokinoSora.jpg',
+	'image/character/UsadaPekora.jpg',
 	'image/character/UshimiIchigo.jpg',
 	'image/character/XiaDi.jpg',
 	'image/character/XiaoxiXiaotao.jpg',
