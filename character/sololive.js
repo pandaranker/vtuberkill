@@ -226,7 +226,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.cards.length==1&&(event.cards[0].name=='tao'||event.cards[0].name=='shan');
 				},
 				content:function(){
-					card.name=='jiu';
 				},
 			},
 			hongshaoturou_shao:{
