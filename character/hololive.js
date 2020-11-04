@@ -1171,7 +1171,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(name=='useCardAfter'){
 								var indexi=0
 								while(indexi<event.cards.length){
-									if(get.type(event.cards[indexi])=='trick')
+									if(get.type(event.cards[indexi])=='trick'||get.type(event.cards[indexi])=='delay')
 										return true;
 									indexi++;
 								}
@@ -1181,18 +1181,47 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return true;
 						},
 						content:function(){
-							if(!player.hasSkill('yuanlv_tag'))
-								player.addTempSkill('yuanlv_tag');
+                            if(trigger.name=='useCard'){
+                                if(!player.hasSkill('yuanlv_tag')&&!player.hasSkill('yuanlv_trickUsed')){
+                                    player.addTempSkill('yuanlv_tag');
+                                    player.addTempSkill('yuanlv_trickUsed','roundStart');
+                                }
+                            }
+                            else{
+                                if(!player.hasSkill('yuanlv_tag')&&!player.hasSkill('yuanlv_damaged')){
+                                    player.addTempSkill('yuanlv_tag');
+                                    player.addTempSkill('yuanlv_damaged','roundStart');
+                                }
+                            }
 						}
 					},
 					tag:{
 						mark:true,
+                        markText:'虑',
 						intro:{
 							content:function(){
 								return '结束时触发技能'+get.translation('yuanlv')
 							}
 						}
-					}
+                    },
+                    damaged:{
+						mark:true,
+                        markText:'伤',
+						intro:{
+							content:function(){
+								return '本轮已经通过失去体力触发'+get.translation('yuanlv')
+							}
+						}
+                    },
+                    trickUsed:{
+						mark:true,
+                        markText:'锦',
+						intro:{
+							content:function(){
+								return '本轮已经通过使用锦囊触发'+get.translation('yuanlv')
+							}
+						}
+                    }
 				}
             },
             jinyuan:{
@@ -1244,13 +1273,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				zhuSkill:true,
 			},
             zhongjian1:{
-				unique:true,
                 zhuSkill:true,
-                //trigger:{global:'chooseToUse'},
-				enable:'chooseToUse',
+                trigger:{global:'useCard2'},
+				//enable:'chooseToUse',
 				//popup:false,
-                forced:false,
-				selectCard:0,
+                //forced:false,
+				//selectCard:0,
                 // viewAs:function(cards,player){
 				// 	var name=false;
 				// 	var nature=null;
@@ -1259,19 +1287,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				// 	return null;
 				// },
 				// ignoreMod:true,
-				filterCard:function(card,player,event){
-					if(!player.hasZhuSkill('zhongjian')) return false;
-                    if(player.hasSkill('zhongjian1_tag')) return false;
-					event=event||_status.event;
-					var filter=event._backup.filterCard;
-					if(filter({name:'wuxie'},player,event)) return true;
-					return false;
-				},
+				// filterCard:function(card,player,event){
+				// 	if(!player.hasZhuSkill('zhongjian')) return false;
+                //     if(player.hasSkill('zhongjian1_tag')) return false;
+				// 	event=event||_status.event;
+				// 	var filter=event._backup.filterCard;
+				// 	if(filter({name:'wuxie'},player,event)) return true;
+				// 	return false;
+				// },
 				filter:function(event,player){
+                    console.log(event);
 					if(!player.hasZhuSkill('zhongjian')) return false;
-                    var filter=event.filterCard;
+                    //var filter=event.filterCard;
                     if(player.hasSkill('zhongjian1_tag')) return false;
-                    if(!filter({name:'wuxie'},player,event)) return false;
+                    if(get.type(event.card)!=='trick') return false;
+                    //if(!filter({name:'wuxie'},player,event)) return false;
                     // var time=player.chooseTarget('命令一名杏势力角色将一张牌视为无懈可击',{},true,function(card,player,target){
                     //     return target.group=='holo'
                     // });
@@ -1280,13 +1310,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 },
                 content:function(){
                     "step 0"
-                    player.chooseTarget('命令一名其他杏势力角色将一张牌视为无懈可击',{},function(card,player,target){
+                    if(player.hasSkill('zhongjian1_tag')){
+                        event.finish()
+                    }
+                    else
+                    player.chooseTarget('命令一名其他杏势力角色本回合所有牌视为无懈可击',{},function(card,player,target){
                         return player!=target&&target.group=='holo'&&target.countCards('he')>0
                     });
                     "step 1"
                     if(result.bool){
                         event.dropTarget=result.targets[0];
-                        event.dropTarget.chooseCard('he',1,true);
+                        //event.dropTarget.chooseCard('he',1,true);
+                        event.dropTarget.addTempSkill('zhongjian1_zhuanhua')
                     }
                     else{
                         event.finish()
@@ -1296,16 +1331,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     // event.dropTarget.lose(result.cards,ui.discardPile);
                     //console.log(event.getParent().getParent().getParent());
                     player.addTempSkill('zhongjian1_tag','roundStart');
-                    event.cards=result.cards
-                    "step 3"
-                    event.getParent().getParent().state=!event.getParent().getParent().state;
-                    event.getParent().getParent().goto(2);
-                    event.dropTarget.useCard(event.cards,{name:'wuxie',isCard:false});
+                    // event.cards=result.cards
+                    // "step 3"
+                    //event.getParent().getParent().state=!event.getParent().getParent().state;
+                    // console.log(event.getParent().getParent());
+                    // event.getParent().getParent().goto(0);
+                    // event.dropTarget.useCard(event.cards,{name:'wuxie',isCard:false});
                     //player.removeSkill('zhongjian','roundStart');
                 },
-				hiddenCard:function(player,name){
-					return name=='wuxie'&&!player.hasSkill('zhongjian1_tag')&&player.hasZhuSkill('zhongjian');
-                },
+				// hiddenCard:function(player,name){
+				// 	return name=='wuxie'&&!player.hasSkill('zhongjian1_tag')&&player.hasZhuSkill('zhongjian');
+                // },
                 subSkill:{
                     tag:{
                         mark:true,
@@ -1313,6 +1349,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							content:function(){
 								return '一轮后可以再次使用'+get.translation('zhongjian')
 							}
+                        },
+                    },
+                    zhuanhua:{
+                        mark:true,
+						intro:{
+							content:function(){
+								return '所有手牌视为【无懈可击】'
+							}
+                        },
+                        mod:{
+                            cardname:function(card,player){
+                                return 'wuxie';
+                            },
                         },
                     }
                 }
@@ -1353,12 +1402,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             huyanluanyu:'狐言乱语',
             huyanluanyu_info:'每当你受到1点伤害后，（记你此时手牌数为X）你可令手牌数多于X的角色各交给你一张牌，然后你交给手牌数少于X的角色各一张牌。',
             yuanlv:'远虑',
-            yuanlv_info:'你使用过锦囊牌或受到过伤害的回合结束时，可以摸等同你体力上限的牌，然后将等同你体力值的牌以任意顺序置于牌堆顶',
+            yuanlv_info:'你使用过锦囊牌或受到过伤害的回合结束时，可以摸等同你体力上限的牌，然后将等同你体力值的牌以任意顺序置于牌堆顶。每轮每项限一次。',
             jinyuan:'近援',
             jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
             zhongjian:'中坚',
             zhongjian1:'中坚',
-            zhongjian_info:'主公技，每轮限一次，当你需要使用【无懈可击】时，可以令一名同势力的其他角色将一张牌当【无懈可击】使用。            ',
+            zhongjian_info:'主公技。每轮限一次。回合外，当一张通常锦囊牌指定目标后，你可以选择一名同势力其他角色，该角色的手牌在本回合视为【无懈可击】。',
         },
 	};
 });

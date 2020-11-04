@@ -875,18 +875,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					diao:{
-						trigger:{player:'phaseBegin'},
+						trigger:{global:'phaseAfter'},
 						mark:true,
 						direct:true,
 						filter:function(event,player){
-							game.broadcastAll(function(splayer){
-									splayer.in('cangxiong_diao');
-								},player
-							)
-							player.in('cangxiong_diao');
+							if(event.name=='phase'&&event.player.next!==player){
+								return false;
+							}
+							else{
+								game.broadcastAll(function(splayer){
+										splayer.in('cangxiong_diao');
+									},player
+								)
+							}
+							return true;
+							//player.in('cangxiong_diao');
 							//player.in('cangxiong_diao');
 							//
-							return true;
+
 						},
 						intro:{
 							content:'移除游戏外'
