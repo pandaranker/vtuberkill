@@ -276,7 +276,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}))									return false;
 							if(player.hasSkill('zhuwei'))		return false;
 							return	!game.hasPlayer(function(cur){
-								return cur.countCards('h') < event.player.countCards('h');
+								return cur.countCards('h') < event.player.countCards('h')||cur.hp < event.player.hp;
 							});
 						},
 						content:function(){
@@ -567,7 +567,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
 							if(!(event.getParent().cards||event.card))											return false
-							if(get.name(event.getParent().card) =='shandian')									return false;
+		//					if(get.name(event.getParent().card) =='shandian')									return false;
 							console.log(shi);
 							console.log(event.getParent());
 							for(var i=0;i<event.getParent().cards.length;i++){
@@ -641,7 +641,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					'step 0'
-					player.draw(2),
+					player.draw(),
 					player.chooseToDiscard('然后，弃置一张牌','h').set('ai',function(card){
 						var name = card.name;
 						if(name=='jiu') 			return 120;
@@ -729,7 +729,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhenxin: '真信之诚',
 			zhenxin_info: '锁定技。防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
 			zhuwei: '助危之心',
-			zhuwei_info: '其他角色的结束阶段，若其手牌为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
+			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			MinatoAqua:'湊阿库娅',
 			kuali:'夸力满满',
 			kuali_info:'出牌/结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
@@ -739,7 +739,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			youyishiyue_info:'友谊誓约生效中',
 			UsadaPekora:'兔田佩克拉',
 			pekoyu:'嚣张咚鼓',
-			pekoyu_info:'回合内，当你的非装备牌生效后，若此花色牌本回合未被使用过，你可以摸两张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸一张牌。',
+			pekoyu_info:'回合内，当你的非装备牌生效后，若此花色牌本回合未被使用过，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou:'自煲自足',
 			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 		},
