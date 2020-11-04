@@ -1,12 +1,12 @@
 window.noname_update={
 	version:'1.9.100.36',
-	update:'1.9.100.35.1',
+	update:'1.9.100.36.2',
 	changeLog:[
 		'庆祝凑阿库娅获得第二届V萌冠军',
 		'添加冠亚军背景图，暂挂阿夸主题背景音',
 		'如果出现无法联机bug请手动清除浏览器缓存',
 		'测试人物请勿联机选择',
-		'修复青龙刀bug，空妈主公技bug',
+		'修改白上吹雪技能，修改家长麦bug',
 	],
 	files:[
 		'character/hololive.js',
