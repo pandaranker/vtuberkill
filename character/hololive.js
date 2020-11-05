@@ -1296,7 +1296,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				// 	return false;
 				// },
 				filter:function(event,player){
-                    console.log(event);
 					if(!player.hasZhuSkill('zhongjian')) return false;
                     //var filter=event.filterCard;
                     if(player.hasSkill('zhongjian1_tag')) return false;
