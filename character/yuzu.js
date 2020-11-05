@@ -938,18 +938,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					var dream = player.storage.kuase_date ;
-					game.hasPlayer(function(cur){
-						dream += (cur.hp-cur.storage.shenghuang_put);
-						var damT = cur.getHistory('damage');
-						var dam = 0;
-						damT.forEach(function(da){
-							if(da.num){
-								dam += da.num;
-							}
-						});
-						dream += dam;			
-						console.log(dream);
-					});
+		//			game.hasPlayer(function(cur){
+		//				dream += (cur.hp-cur.storage.shenghuang_put);
+		//				var damT = cur.getHistory('damage');
+		//				var dam = 0;
+		//				damT.forEach(function(da){
+		//					if(da.num){
+		//						dam += da.num;
+		//					}
+		//				});
+		//				dream += dam;			
+		//				console.log(dream);
+		//			});
 					player.draw(dream);
 					player.phaseUse();
 					player.awakenSkill('kuase');
