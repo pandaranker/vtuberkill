@@ -56,6 +56,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['jierizhanbei_useE' , 'jierizhanbei_getE'],
 				subSkill:{
 					useE:{
+								init:function(player){
+									player.storage.jierizhanbei=0;
+								},
 								trigger:{player:'useCard'},
 								forced:true,
 								priority:17,
@@ -64,7 +67,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return get.type(event.card)=='equip';
 								},
 								content:function(){
-									console.log(player.storage.jierizhanbei);
 									player.storage.jierizhanbei++;
 								},
 								mod:{

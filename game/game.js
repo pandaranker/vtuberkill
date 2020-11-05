@@ -9739,7 +9739,7 @@
 			shu:'蜀',
 			wu:'吴',
 			qun:'群',
-			shen:'神',
+			shen:'皇',
 			western:'西',
 			key:'N',
 			holo:'杏',
