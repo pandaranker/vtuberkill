@@ -22718,6 +22718,7 @@
 					}
 					else if(typeof card=='object'){
 						card=[card.suit,card.number,card.name,card.nature];
+						card[5]=card.specialEffects
 					}
 					var cardnum=card[1]||'';
 					if([1,11,12,13].contains(cardnum)){
@@ -23015,6 +23016,22 @@
 						}
 						break;
 					}
+					let cardSpecialEffects=[];
+					if(Array.isArray(card[5])){
+						cardSpecialEffects.addArray(card[5]);
+					}
+					if(this.node.image.parentNode.classList.length>0)
+						this.node.image.parentNode.classList.forEach(element => {
+							if(element.indexOf("card_")!=-1){
+								this.node.image.parentNode.classList.remove(element);
+							}
+						});
+					if(cardSpecialEffects.length){
+						for(var i=0;i<cardSpecialEffects.length;i++){
+							this.node.image.parentNode.classList.add(cardSpecialEffects[i]);
+						}
+						this.specialEffects=cardSpecialEffects;
+					}
 					if(_status.connectMode&&!game.online&&lib.cardOL&&!this.cardid){
 						this.cardid=get.id();
 						lib.cardOL[this.cardid]=this;
@@ -23047,15 +23064,6 @@
 							}
 							tagstr+='</span>';
 							this.node.range.innerHTML+=tagstr;
-						}
-					}
-					var cardSpecialEffects=[];
-					if(Array.isArray(card[5])){
-						cardSpecialEffects.addArray(card[5]);
-					}
-					if(cardSpecialEffects.length){
-						for(var i=0;i<cardSpecialEffects.length;i++){
-							this.node.image.classList.add(cardSpecialEffects[i]);
 						}
 					}
 					return this;
@@ -29876,6 +29884,8 @@
 				number=name.number;
 				suit=name.suit;
 				name=name.name;
+				specialEffects=name.specialEffects;
+				tags=name.tags;
 			}
 			if(typeof name!='string'){
 				name='sha';
@@ -29911,7 +29921,7 @@
 				card=ui.create.card(ui.special);
 			}
 			card.storage.vanish=true;
-			return card.init([suit,number,name,nature]);
+			return card.init([suit,number,name,nature,tags,specialEffects]);
 		},
 		createCard2:function(){
 			var card=game.createCard.apply(this,arguments);
@@ -32770,7 +32780,7 @@
 			else if(Array.isArray(card)){
 				node.cards=card[1];
 				card=card[0];
-				var info=[card.suit||'',card.number||'',card.name||'',card.nature||''];
+				var info=[card.suit||'',card.number||'',card.name||'',card.nature||'',card.tags||'',card.specialEffects||''];
 				if(!Array.isArray(node.cards)||!node.cards.length){
 					node.cards=[ui.create.card(node,'noclick',true).init(info)];
 				}
