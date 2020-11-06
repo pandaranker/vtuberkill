@@ -4,19 +4,21 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
-		//connectBanned:['NekomiyaHinata','SisterClearie'],
 		connect:true,
+	//	connectBanned:['sp_MinatoAqua'],
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
+			sp_MinatoAqua:['female','皇',2,['shenghuang','renzhan', 'kuase']],
 		},
 		characterIntro:{
 			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
 			SisterClearie:	'“今日也愿神加护于你……”',
 			MinatoAqua:'“余裕余裕~”',
 			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
+			sp_MinatoAqua:'',
 		},
 		skill:{
 			//猫宫
@@ -276,7 +278,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}))									return false;
 							if(player.hasSkill('zhuwei'))		return false;
 							return	!game.hasPlayer(function(cur){
-								return cur.countCards('h') < event.player.countCards('h')||cur.hp < event.player.hp;
+								return cur.countCards('h') < event.player.countCards('h');
+							})||!game.hasPlayer(function(cur){
+								return cur.hp < event.player.hp
 							});
 						},
 						content:function(){
@@ -312,7 +316,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 									return c;
 								}
-								console.log(canbeM(object,player));
 								next=player.chooseTarget(function(card,player,target){
 										if((canbeM(player,object)>0&&target== player)||(canbeM(object,player)>0&&target== object))
 										return true;
@@ -330,7 +333,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								event.targets=result.targets;
 							}
 							else{
-								event.finish();
+								_status.event.finish();
 							}
 							'step 2'
 							game.delay();
@@ -353,7 +356,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								});
 							}
 							else{
-								event.finish();
+								_status.event.finish();
 							}
 							'step 4'
 							if(result.bool&&result.links.length){
@@ -407,7 +410,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								});
 								player.draw(num);
 								player.loseHp();
-								event.finish();
+								_status.event.finish();
 							}
 							'step 2'
 							if(result.bool&&result.targets.length)
@@ -526,13 +529,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:"誓",
 				locked:true,
 				intro:{
+					name:'誓约牌',
 					content:function (storage,player,skill){
-						var su,na,nu;
+						var su,na,nu,shi;
 						game.hasPlayer(function(cur){
 							if(cur.hasSkill('youyi')){
-								su=get.suit(cur.storage.youyi);
-								na=get.name(cur.storage.youyi);
-								nu=cur.storage.youyi.number;
+								shi=cur.storage.youyi;
+								su=get.suit(shi);
+								na=get.name(shi);
+								nu=shi.number;
 							}
 						});
 						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。（若此牌离开你的区域，此状态结束）';
@@ -550,7 +555,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['youyishiyue_lose','youyishiyue_rec'],
 				subSkill:{
 					lose:{
-						trigger:{player:['loseAfter','respondAfter']},
+						trigger:{player:['loseAfter']},
 						forced:true,
 						silent:true,
 						firstDo:true,
@@ -565,9 +570,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 							});
+							if(!(event.getParent().cards||event.card))											return false;
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
-							if(!(event.getParent().cards||event.card))											return false
-		//					if(get.name(event.getParent().card) =='shandian')									return false;
+							if(event.getParent().card!=null&&get.name(event.getParent().card) =='shandian')		return false;
 							console.log(shi);
 							console.log(event.getParent());
 							for(var i=0;i<event.getParent().cards.length;i++){
@@ -614,6 +619,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//兔宝
 			pekoyu:{
+	//			marktext:"peko",
+	//			locked:true,
+	//			intro:{
+	//				name:'嚣张咚鼓',
+	//				content:function (storage,player,skill){
+	//					game.hasPlayer(function(cur){
+	//					});
+	//					return '本回合';
+	//				},
+	//			},
+	//			mark:true,
 				trigger:{player:'useCardAfter'},
 				forced:false,
 				priority:111,
@@ -633,7 +649,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							else break;
 						}
-					console.log(ark);
 					for(var i=0;i<ark.length;i++){
 						if(get.suit(event.card)==ark[i])							return false
 					}
@@ -699,7 +714,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			hongshaoturou_shao:{
 				trigger:{player:['phaseEnd']},
-				forced:	true,
+				marktext: '炎',
+				mark: true,
+				forced: true,
+				intro: {
+					content:'当前回合结束后受到一点火焰伤害',
+					name:'自煲自足',
+				},
 				onremove: function(player, skill) {
 					game.broadcastAll(function(player){
 						player.node.hongshaoturou.delete();
@@ -713,8 +734,273 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.damage('fire');
 					player.removeSkill('hongshaoturou_shao');	
 				}
-			}
-							
+			},
+			//圣皇夸
+			shenghuang:{
+				init:function(player){
+					player.storage.shenghuang=0;
+					if(get.zhu(player)==player) player.maxHp--;
+				},
+				global:['shenghuang_put', 'shenghuang_rec'],
+				group:['shenghuang_draw', 'shenghuang_lose', 'shenghuang_ret'],
+				subSkill:{
+					put:{
+						trigger:{global:'phaseBegin'},
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:777,
+						filter:function (event,player){
+							return player.hp;
+						},
+						content:function(){
+							player.storage.shenghuang_put = player.hp;
+						}
+					},
+					draw:{
+						init:function(player){
+							if(get.zhu(player)==player&&game.players.length>4)
+							{player.storage.shenghuang_draw=5;}
+							else
+							{player.storage.shenghuang_draw=4;}
+							if(player.hasSkill('shenghuang_draw'))  player.markSkill('shenghuang_draw');
+						},
+						marktext: '圣',
+						mark: true,
+						intro: {
+							content:function (storage,player,skill){
+								return '剩余'+storage+'张数值为2的体力卡';
+							},
+							name:'剩余体力卡',
+						},
+						forced:true,
+						priority:777,
+						skillAnimation:true,
+						animationColor:'gray',
+						trigger:{
+							player:"dying",
+						},
+						filter:function (event,player){
+							return player.storage.shenghuang_draw>0
+						},
+						content:function(){
+							player.maxHp=2;
+							player.recover(player.maxHp-player.hp);
+							player.storage.shenghuang_draw--;
+							if(!player.storage.shenghuang_draw){
+								player.unmarkSkill('shenghuang_draw');
+								player.removeSkill('shenghuang_draw');
+							}
+						},
+					},
+					lose:{
+						marktext: '愈',
+						intro: {
+							content:'当前回合已弃置了牌，在本回合结束时，其他角色将体力回复至回合开始时的状态。',
+							name:'圣皇之愈',
+						},
+						trigger:{player:'loseAfter'},
+						forced:true,
+						priority:777,
+						filter:function(event,player){
+							if(!(event.getParent().cards||event.card))									return false;
+							if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
+							return event.getParent().cards.length;
+						},
+						content:function(){
+							player.storage.shenghuang++;
+							player.markSkill('shenghuang_lose');
+						},
+					},
+					ret:{
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:888,
+						trigger:{global:'phaseAfter'},
+						filter:function(event,player){
+							return player.storage.shenghuang;
+						},
+						content:function(){
+							player.storage.shenghuang=0;
+							player.unmarkSkill('shenghuang_lose');
+						}
+					},
+					rec:{
+						forced:true,
+						priority:777,
+						trigger:{global:'phaseEnd'},
+						filter:function(event,player){
+							if(player.hasSkill('shenghuang'))					return false;
+							if(player.storage.shenghuang_put == undefined)		return false;
+							if(!game.hasPlayer(function(cur){
+								return cur.hasSkill('shenghuang')&&cur.storage.shenghuang>0;
+							}))													return false;
+							return player.storage.shenghuang_put > player.hp;
+						},
+						content:function(){
+							var vq=player.storage.shenghuang_put-player.hp;
+							console.log(vq);
+							if(vq>0){
+								player.recover(vq);
+							}
+						},
+					}
+				},
+			},
+			renzhan:{
+				priority:777,
+				trigger:{global:'damageEnd'},
+				forced:false,
+				usable:1,
+	//			skillAnimation:true,
+	//			animationColor:'wood',
+				init:function(player){
+					player.storage.renzhan = [];
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)<0&&get.effect(event.player,{name:'sha'},player,player)>0;
+				},
+				filter:function(event,player){
+					return event.player!=player&&event.player.hp>0;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+	//				console.log(this.trigger.player.getHistory('dying'));
+					player.loseHp();
+					var card=get.cards()[0];
+					var cards=[];
+					cards.push(card);
+					while(get.name(card)!='sha'){
+						card=get.cards()[0];
+						cards.push(card);
+					}
+					player.storage.renzhan = cards;
+					console.log(cards);
+					player.showCards(player.storage.renzhan,'瞬息刃斩亮出牌堆');
+					game.delay(2);
+					player.chooseControlList(
+						['获得这些牌',
+						'获得其中的【杀】并对一名角色使用任意张【杀】'],
+						true,function(event,player){
+							return _status.event.index;
+						});
+					'step 1'
+					if(result.index==0)	
+					{
+						cards = player.storage.renzhan;
+						game.log(player,'获得了', cards);
+						player.gain(cards);
+						_status.event.finish();
+					}
+					else if(result.index==1)
+					{
+						var cards = [];
+						player.storage.renzhan.forEach(function(card){
+							if(get.name(card)!='sha')	return;
+							cards.push(card);
+						});
+						player.storage.renzhan = cards;
+						player.showCards(player.storage.renzhan,'获得其中的【杀】');
+						game.delay(2);
+						player.gain(cards);
+					}
+					'step 2'
+					player.chooseCardTarget({
+						selectCard:[1,Infinity],
+						filterCard:function(card,player){
+							return get.name(card)=='sha';
+						},
+						filterTarget:function(card,player,target){
+							return player!=target;
+						},
+						position:'h',
+						targetprompt: ['RUA'],
+						prompt:'对一名角色使用任意张【杀】',
+						ai2:function(target){
+							var att=get.attitude(player,target);
+							return 10-att;
+						},
+					});
+					'step 3'
+					if(result.bool){
+						var target = result.targets[0];
+						var shas = result.cards;
+						player.logSkill('renzhan',target);
+						shas.forEach(function(card){
+		//					if(target.getHistory('dying'))	return;
+							if(target.isDead)	return;
+							player.chooseUseTarget(card,target,'noanimate','nopopup','nodistance', true);
+						});
+					}
+					else{
+						_status.event.finish();
+					}
+				},
+			},
+			kuase:{
+				unique:true,
+				limited:true,
+				skillAnimation:true,
+				priority:888,
+				animationStr:'夸色☆超级梦想',
+				trigger:{global:'phaseAfter'},
+				filter:function(event,player){
+					return player.storage.kuase_date;
+				},
+				content:function(){
+					var dream = player.storage.kuase_date ;
+		//			game.hasPlayer(function(cur){
+		//				dream += (cur.hp-cur.storage.shenghuang_put);
+		//				var damT = cur.getHistory('damage');
+		//				var dam = 0;
+		//				damT.forEach(function(da){
+		//					if(da.num){
+		//						dam += da.num;
+		//					}
+		//				});
+		//				dream += dam;			
+		//				console.log(dream);
+		//			});
+					player.draw(dream);
+					player.phaseUse();
+					player.awakenSkill('kuase');
+				},
+				group:['kuase_date','kuase_ret'],
+				subSkill:{
+					date:{
+						init:function(player){
+							player.storage.kuase_date = 0;
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:777,
+						trigger:{global:'recoverAfter'},
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							console.log(player.storage.kuase_date);
+							player.storage.kuase_date += trigger.num;
+						},
+					},
+					ret:{
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:666,
+						trigger:{global:'phaseAfter'},
+						filter:function(event,player){
+							return player.storage.kuase_date;
+						},
+						content:function(){
+							player.storage.kuase_date=0;
+						}
+					}
+				}
+			},
 			
 		}, 
 		translate:{
@@ -742,6 +1028,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pekoyu_info:'回合内，当你的非装备牌生效后，若此花色牌本回合未被使用过，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou:'自煲自足',
 			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
+			sp_MinatoAqua:'皇·湊阿库娅',
+			shenghuang: '圣皇之愈',
+			shenghuang_info: '锁定技。当你进入濒死状态时，更换新的体力牌。你失去过牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
+			renzhan: '瞬息刃斩',
+			renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
+			kuase: '夸色梦想',
+			kuase_info: '限定技，一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
 		},
 	};
 });

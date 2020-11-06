@@ -1,6 +1,6 @@
 window.noname_update={
-	version:'1.9.100.38',
-	update:'1.9.100.38.1',
+	version:'1.9.100.40',
+	update:'1.9.100.40.1',
 	changeLog:[
 		'庆祝凑阿库娅获得第二届V萌冠军',
 		'添加冠亚军背景图，暂挂阿夸主题背景音',
