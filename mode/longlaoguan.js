@@ -24,12 +24,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				event.finish();
 			}
 			else if(!_status.connectMode){
-				game.prepareArena(3);
+				game.prepareArena(4);
 			}
 			"step 1"
 			if(_status.connectMode){
 				game.waitForPlayer(function(){
-						lib.configOL.number=3;
+						lib.configOL.number=4;
 				});
 			}
 			"step 2"
@@ -719,10 +719,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-			zhu:"主",
-			fan:"反",
+			zhu:"龙",
+			fan:"军",
 			zhu2:"龙皇",
-			fan2:"推车人",
+			fan2:"反抗军",
 			random2:"随机",
 			_feiyang:"飞扬",
 			_bahu:"跋扈",

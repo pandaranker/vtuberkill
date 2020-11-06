@@ -5704,12 +5704,6 @@
 				name:'龙牢关',
 				connect:{
 					update:function(config,map){},
-					connect_double_character:{
-						name:'双将模式',
-						init:false,
-						frequent:true,
-						restart:true,
-					},
 					connect_change_card:{
 						name:'启用手气卡',
 						init:false,
@@ -5846,21 +5840,16 @@
 						}
 					},
 					choice_zhu:{
-						name:'地主候选武将数',
-						init:'3',
+						name:'龙皇候选武将数',
+						init:'1',
 						restart:true,
 						item:{
-							'3':'三',
-							'4':'四',
-							'5':'五',
-							'6':'六',
-							'8':'八',
-							'10':'十',
+							'1':'一',
 						},
 					},
 					choice_fan:{
-						name:'农民候选武将数',
-						init:'3',
+						name:'反抗军候选武将数',
+						init:'5',
 						restart:true,
 						item:{
 							'3':'三',
@@ -10704,7 +10693,7 @@
 					}
 					while(player!=end);
 					event.changeCard=get.config('change_card');
-					if(_status.connectMode||lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'){
+					if(_status.connectMode||lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'&&lib.config.mode!='longlaoguan'){
 						event.changeCard='disabled';
 					}
 					"step 1"
@@ -20814,7 +20803,7 @@
 							});
 						}
 					}
-					else if(mode=='doudizhu'){
+					else if(mode=='doudizhu'||mode=='longlaoguan'){
 						targets=game.filterPlayer(function(target){
 							if(func&&!func(target)) return false;
 							return target.identity!=player.identity;
@@ -20881,7 +20870,7 @@
 							});
 						}
 					}
-					else if(mode=='doudizhu'){
+					else if(mode=='doudizhu'||mode=='longlaoguan'){
 						targets=game.filterPlayer(function(target){
 							if(func&&!func(target)) return false;
 							return target.identity==player.identity;
@@ -20911,7 +20900,7 @@
 						if(player.identity=='unknown'||player.identity=='ye') return false;
 						return this.identity==player.identity;
 					}
-					if(get.mode()=='doudizhu'){
+					if(get.mode()=='doudizhu'||get.mode()=='longlaoguan'){
 						return this.identity==player.identity;
 					}
 					if(this.side!=undefined&&typeof player.side=='boolean'){
@@ -27833,7 +27822,7 @@
 						game.players[i].init(players[i].name,players[i].name2);
 						game.players[i].setIdentity(players[i].identity);
 					}
-					else if(lib.config.mode=='doudizhu'||lib.config.mode=='single'){
+					else if(lib.config.mode=='doudizhu'||lib.config.mode=='longlaoguan'||lib.config.mode=='single'){
 						game.players[i].init(players[i].name,players[i].name2);
 						game.players[i].setIdentity(players[i].identity);
 					}
@@ -40325,7 +40314,7 @@
 						var nodeturnover=ui.create.div('.menubutton','翻面',row1,clickrow1);
 						var noderevive=ui.create.div('.menubutton','复活',row1,clickrow1);
 						var nodereplace=ui.create.div('.menubutton','换人',row1,clickrow1);
-						if(lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'){
+						if(lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'&&lib.config.mode!='longlaoguan'){
 							nodereplace.classList.add('unselectable');
 						}
 
@@ -45730,7 +45719,7 @@
 					if(game.online){
 						if(game.onlinezhu){
 							if(!this.playerid&&game.connectPlayers){
-								if(lib.configOL.mode=='versus'||lib.configOL.mode=='doudizhu') return;
+								if(lib.configOL.mode=='versus'||lib.configOL.mode=='doudizhu'||lib.configOL.mode=='longlaoguan') return;
 								if(lib.configOL.mode=='identity'&&lib.configOL.identity_mode=='zhong') return;
 								if(!this.classList.contains('unselectable2')&&lib.configOL.number<=2) return;
 								this.classList.toggle('unselectable2')
@@ -45796,7 +45785,7 @@
 						}
 					}
 					else{
-						if(lib.configOL.mode=='versus'||lib.configOL.mode=='doudizhu'||lib.configOL.mode=='single') return;
+						if(lib.configOL.mode=='versus'||lib.configOL.mode=='doudizhu'||lib.configOL.mode=='longlaoguan'||lib.configOL.mode=='single') return;
 						if(lib.configOL.mode=='identity'&&(lib.configOL.identity_mode=='zhong'||lib.configOL.identity_mode=='purple')) return;
 						if(!this.classList.contains('unselectable2')&&lib.configOL.number<=2) return;
 						this.classList.toggle('unselectable2')
@@ -48047,6 +48036,7 @@
 		},
 		modetrans:function(config,server){
 			if(config.mode=='doudizhu') return '欢乐斗地主';
+			if(config.mode=='longlaoguan') return '龙牢关';
 			if(config.mode=='versus'){
 				switch(config.versus_mode){
 					case '1v1':return '单人对决';
