@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**家长麦 */
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
-			MitoTsukino:['female','nijisanji',3,['quanxinquanyi','bingdielei','wenhuazhian'],['zhu']],
+			MitoTsukino:['female','nijisanji',3,['quanxinquanyi','bingdielei','qiujinzhiling'],['zhu']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王',
@@ -1147,7 +1147,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'damageSource'},
 				usable:1,
 				filter:function(event,player){
-					if(player==event.source||!event.source||event.source.group!='wu') return false;
+					if(player==event.source||!event.source||event.source.group!='nijisanji') return false;
 					return player.hasZhuSkill('wenhuazhian',event.source);
 				},
 				direct:true,
@@ -1350,6 +1350,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'loseAfter'},
 						filter:function(event,player){
 							if(event.type!='use'&&event.type!='discard') return false;
+							if(player.hasZhuSkill('qiujinzhiling')&&event.player.group==player.group) return false;
 							for(var i=0;i<event.cards2.length;i++){
 								if(event.cards2[i].name==player.storage.quanxinquanyi_saycards[0][2]){
 									return true;
@@ -1437,6 +1438,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
+			},
+			qiujinzhiling:{
+				unique:true,
+				zhuSkill:true,
 			}
         },
         translate:{
@@ -1483,6 +1488,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quanxinquanyi_info:'一轮开始时，你可以亮出至多X张手牌并声明一种通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你将一张亮出牌当本轮声明牌使用。（X为你已损失的体力值且至少为1）',
 			bingdielei:'并蒂恶蕾',
 			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
+			qiujinzhiling:'囚禁指令',
+			qiujinzhiling_info:'主公技，锁定技。其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
         }
     }
 }
