@@ -988,12 +988,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				content:function(){
-                    player.recover(trigger.num);
-                    console.log(trigger);
-                    if(trigger.cards){
-                        player.gain(trigger.cards,'gain2')
+                    'step 0'
+                    trigger.source.chooseControl(true).set('choiceList',[
+                        '令'+get.translation(player)+'回复'+trigger.num+'点生命',
+                        '将'+get.translation(trigger.cards)+'交给'+get.translation(player),
+                    ])
+                    'step 1'
+                    if(result.index==0){
+                        player.recover(trigger.num);
+                        trigger.cancel();
                     }
-                    trigger.cancel();
+                    else{
+                        if(trigger.cards){
+                            player.gain(trigger.cards,'gain2')
+                        }
+                    }
                 },
                 group:'ranyouxielou_fire',
                 subSkill:{
@@ -1001,6 +1010,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         trigger:{global:'damageBegin3'},
                         forced:true,
                         filter:function(event,player){
+                            if(event.player==player) return false;
                             if(event.player&&player.inRange(event.player)&&event.nature=='fire') {
                                 if(player.countCards('h')>=player.getHandcardLimit())
                                 return true;
