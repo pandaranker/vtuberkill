@@ -5700,6 +5700,179 @@
 					},
 				}
 			},
+			longlaoguan:{
+				name:'龙牢关',
+				connect:{
+					update:function(config,map){},
+					connect_double_character:{
+						name:'双将模式',
+						init:false,
+						frequent:true,
+						restart:true,
+					},
+					connect_change_card:{
+						name:'启用手气卡',
+						init:false,
+						frequent:true,
+						restart:true,
+					},
+				},
+				config:{
+					update:function(config,map){
+						if(config.double_character){
+							map.double_hp.show();
+						}
+						else{
+							map.double_hp.hide();
+						}
+					},
+					double_character:{
+						name:'双将模式',
+						init:false,
+						frequent:true,
+						restart:true,
+					},
+					double_hp:{
+						name:'双将体力上限',
+						init:'pingjun',
+						item:{
+							hejiansan:'和减三',
+							pingjun:'平均值',
+							zuidazhi:'最大值',
+							zuixiaozhi:'最小值',
+							zonghe:'相加',
+						},
+						restart:true,
+					},
+					free_choose:{
+						name:'自由选将',
+						init:true,
+						onclick:function(bool){
+							game.saveConfig('free_choose',bool,this._link.config.mode);
+							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
+							if(!ui.cheat2&&get.config('free_choose')) ui.create.cheat2();
+							else if(ui.cheat2&&!get.config('free_choose')){
+								ui.cheat2.close();
+								delete ui.cheat2;
+							}
+						}
+					},
+					change_identity:{
+						name:'自由选择身份和座位',
+						init:true,
+						onclick:function(bool){
+							game.saveConfig('change_identity',bool,this._link.config.mode);
+							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
+							var dialog;
+							if(ui.cheat2&&ui.cheat2.backup) dialog=ui.cheat2.backup;
+							else dialog=_status.event.dialog;
+							if(!_status.brawl||!_status.brawl.noAddSetting){
+								if(!dialog.querySelector('table')&&get.config('change_identity')) _status.event.getParent().addSetting(dialog);
+								else _status.event.getParent().removeSetting(dialog);
+							}
+							ui.update();
+						}
+					},
+					change_choice:{
+						name:'开启换将卡',
+						init:true,
+						onclick:function(bool){
+							game.saveConfig('change_choice',bool,this._link.config.mode);
+							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
+							if(!ui.cheat&&get.config('change_choice')) ui.create.cheat();
+							else if(ui.cheat&&!get.config('change_choice')){
+								ui.cheat.close();
+								delete ui.cheat;
+							}
+						}
+					},
+					change_card:{
+						name:'开启手气卡',
+						init:'disabled',
+						item:{
+							disabled:'禁用',
+							once:'一次',
+							twice:'两次',
+							unlimited:'无限',
+						},
+					},
+					continue_game:{
+						name:'显示再战',
+						init:false,
+						onclick:function(bool){
+							game.saveConfig('continue_game',bool,this._link.config.mode);
+							if(get.config('continue_game')){
+								if(!ui.continue_game&&_status.over&&!_status.brawl){
+									ui.continue_game=ui.create.control('再战',game.reloadCurrent);
+								}
+							}
+							else if(ui.continue_game){
+								ui.continue_game.close();
+								delete ui.continue_game;
+							}
+						},
+						intro:'游戏结束后可选择用相同的武将再进行一局游戏'
+					},
+					dierestart:{
+						name:'死亡后显示重来',
+						init:true,
+						onclick:function(bool){
+							game.saveConfig('dierestart',bool,this._link.config.mode);
+							if(get.config('dierestart')){
+								if(!ui.restart&&game.me.isDead()&&!_status.connectMode){
+									ui.restart=ui.create.control('restart',game.reload);
+								}
+							}
+							else if(ui.restart){
+								ui.restart.close();
+								delete ui.restart;
+							}
+						}
+					},
+					revive:{
+						name:'死亡后显示复活',
+						init:false,
+						onclick:function(bool){
+							game.saveConfig('revive',bool,this._link.config.mode);
+							if(get.config('revive')){
+								if(!ui.revive&&game.me.isDead()){
+									ui.revive=ui.create.control('revive',ui.click.dierevive);
+								}
+							}
+							else if(ui.revive){
+								ui.revive.close();
+								delete ui.revive;
+							}
+						}
+					},
+					choice_zhu:{
+						name:'地主候选武将数',
+						init:'3',
+						restart:true,
+						item:{
+							'3':'三',
+							'4':'四',
+							'5':'五',
+							'6':'六',
+							'8':'八',
+							'10':'十',
+						},
+					},
+					choice_fan:{
+						name:'农民候选武将数',
+						init:'3',
+						restart:true,
+						item:{
+							'3':'三',
+							'4':'四',
+							'5':'五',
+							'6':'六',
+							'8':'八',
+							'10':'十',
+						},
+					},
+				}
+			},
 			single:{
 				name:'单挑',
 				connect:{
