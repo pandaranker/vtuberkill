@@ -555,7 +555,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['youyishiyue_lose','youyishiyue_rec'],
 				subSkill:{
 					lose:{
-						trigger:{player:['loseAfter','respondAfter']},
+						trigger:{player:['loseAfter']},
 						forced:true,
 						silent:true,
 						firstDo:true,
@@ -619,6 +619,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//兔宝
 			pekoyu:{
+	//			marktext:"peko",
+	//			locked:true,
+	//			intro:{
+	//				name:'嚣张咚鼓',
+	//				content:function (storage,player,skill){
+	//					game.hasPlayer(function(cur){
+	//					});
+	//					return '本回合';
+	//				},
+	//			},
+	//			mark:true,
 				trigger:{player:'useCardAfter'},
 				forced:false,
 				priority:111,
@@ -638,7 +649,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							else break;
 						}
-					console.log(ark);
 					for(var i=0;i<ark.length;i++){
 						if(get.suit(event.card)==ark[i])							return false
 					}
@@ -729,7 +739,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenghuang:{
 				init:function(player){
 					player.storage.shenghuang=0;
-					if(get.zhu(player)) player.maxHp--;
+					if(get.zhu(player)==player) player.maxHp--;
 				},
 				global:['shenghuang_put', 'shenghuang_rec'],
 				group:['shenghuang_draw', 'shenghuang_lose', 'shenghuang_ret'],
@@ -749,7 +759,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					draw:{
 						init:function(player){
-							if(get.zhu(player)&&game.players.length>4)
+							if(get.zhu(player)==player&&game.players.length>4)
 							{player.storage.shenghuang_draw=5;}
 							else
 							{player.storage.shenghuang_draw=4;}
@@ -806,10 +816,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						silent:true,
 						popup:false,
-						priority:777,
+						priority:888,
 						trigger:{global:'phaseAfter'},
 						filter:function(event,player){
-							return player.hasMark('shenghuang_lose');
+							return player.storage.shenghuang;
 						},
 						content:function(){
 							player.storage.shenghuang=0;
@@ -857,6 +867,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:'player',
 				content:function(){
 					'step 0'
+	//				console.log(this.trigger.player.getHistory('dying'));
 					player.loseHp();
 					var card=get.cards()[0];
 					var cards=[];
@@ -918,6 +929,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var shas = result.cards;
 						player.logSkill('renzhan',target);
 						shas.forEach(function(card){
+		//					if(target.getHistory('dying'))	return;
+							if(target.isDead)	return;
 							player.chooseUseTarget(card,target,'noanimate','nopopup','nodistance', true);
 						});
 					}
@@ -934,7 +947,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				animationStr:'夸色☆超级梦想',
 				trigger:{global:'phaseAfter'},
 				filter:function(event,player){
-					return true;
+					return player.storage.kuase_date;
 				},
 				content:function(){
 					var dream = player.storage.kuase_date ;
@@ -969,7 +982,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},
 						content:function(){
-							console.log(trigger);
 							console.log(player.storage.kuase_date);
 							player.storage.kuase_date += trigger.num;
 						},
@@ -1022,7 +1034,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			renzhan: '瞬息刃斩',
 			renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
 			kuase: '夸色梦想',
-			kuase_info: '限定技，一个回合结束时，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
+			kuase_info: '限定技，一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
 		},
 	};
 });
