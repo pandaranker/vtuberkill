@@ -4,16 +4,9 @@
 	var bannedKeys=[];
 	var bannedIps=[];
 
-	var rooms=[{},{},{},{},{},{},{},{}];
-	var systemEvent={
-		content:'联机群号:623566610(客户端获取)',
-		avatar:'armor',
-		nickname:'系统管理员',
-		title:'系统公告',
-	};
-	var events=[systemEvent];
+	var rooms=[{},{},{},{},{},{}];
+	var events=[];
 	var clients={};
-	var bannedKeyWords=['http'];
 	var messages={
 		enter:function(index,nickname,avatar,config,mode){
 			this.nickname=nickname;
@@ -80,10 +73,9 @@
 			}
 		},
 		key:function(id){
-			this.onlineKey=id;
 			clearTimeout(this.keyCheck);
 			delete this.keyCheck;
-			if(typeof id!='string'||bannedKeys.indexOf(id)!=-1){
+			if(bannedKeys.indexOf(id)!=-1){
 				bannedIps.push(this._socket.remoteAddress);
 				console.log(id, this._socket.remoteAddress);
 				this.close();
@@ -91,7 +83,7 @@
 			}
 		},
 		events:function(cfg,id,type){
-			if(bannedKeys.indexOf(id)!=-1||typeof id!='string'){
+			if(bannedKeys.indexOf(id)!=-1){
 				bannedIps.push(this._socket.remoteAddress);
 				console.log(id, this._socket.remoteAddress);
 				this.close();
@@ -132,18 +124,13 @@
 					else if(cfg.utc<=time){
 						this.sendl('eventsdenied','time');
 					}
-					else if(util.isBanned(cfg.content)){
-						this.sendl('eventsdenied','ban');
-					}
 					else{
 						cfg.nickname=cfg.nickname||'无名玩家';
 						cfg.avatar=cfg.nickname||'caocao';
 						cfg.creator=id;
 						cfg.id=util.getid();
 						cfg.members=[id];
-						events.splice(0,1);
 						events.unshift(cfg);
-						events.unshift(systemEvent);
 						changed=true;
 					}
 				}
@@ -195,12 +182,6 @@
 		},
 	};
 	var util={
-		isBanned:function(str){
-			for(var i of bannedKeyWords){
-				if(str.indexOf(i)!=-1) return true;
-			}
-			return false;
-		},
 		sendl:function(){
 			var args=[];
 			for(var i=0;i<arguments.length;i++){
@@ -247,7 +228,7 @@
 		getclientlist:function(){
 			var clientlist=[];
 			for(var i in clients){
-				clientlist.push([clients[i].nickname,clients[i].avatar,!clients[i].room,clients[i].status,clients[i].wsid,clients[i].onlineKey]);
+				clientlist.push([clients[i].nickname,clients[i].avatar,!clients[i].room,clients[i].status,clients[i].wsid]);
 			}
 			return clientlist;
 		},

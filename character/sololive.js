@@ -4,8 +4,8 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"sololive",
-		connect:true,
 		connectBanned:['KiryuuCoco'],
+		connect:true,
 		character:{
 			KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei', 'esuyingye']],
 		},
@@ -13,6 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KiryuuCoco: '“全都给你们扬了！”',
 		},
 		skill:{
+			//龙皇
 			zaoankeke:{
 				trigger:{player:'useCardToPlayered'},
 				forced:true,
@@ -21,7 +22,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(event.target==player)				return false;
 					if(event.target.countCards('he')==0)	return false;
-					return event.card.name=='sha';
+					return event.card.name =='sha';
 				},
 				content:function(){	
 					'step 0'
@@ -30,16 +31,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(trigger.getParent().card.nature)		//如果此杀为属性杀
 					{				
 						player.line(target,'green');
-						target.chooseCard('参加“早安可可”录制，选择一张牌交给'+get.translation(player),'he',true).set('ai',function(card){
-							if(card.name=='shan')	return 30;
-							if(card.nature) 		return 50;
+						target.chooseCard('参加“早安可可”录制，需要交给'+get.translation(player)+'一张牌','he',true).set('ai',function(card){
+							var name = card.name;
+							if(name=='shan') return 30;
 							return 100-get.value(card);											
 						});											
 					}
 					else							
 					{
-						target.discardPlayerCard('参加“早安可可”录制，需要弃置一张牌',target,'he').set('ai',function(button){
-							var name=button.link.viewAs||button.link.name;
+						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
+							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
 						});				
@@ -123,7 +124,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}).set('nh',nh);
 					'step 1'
 					if(result.cards){
-						if(get.type(result.card)=='equip'){
+						var getC = result.cards[0];
+						if(get.type(getC) =='equip'){
 							player.logSkill('esuyingye');
 							player.addTempSkill('esuyingye_addDam');
 							var buff = '.player_buff';
@@ -141,8 +143,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							source: 'damageBegin',
 						},
 						content: function() {
-							player.removeSkill('esuyingye_addDam');
 							trigger.num++;
+							player.removeSkill('esuyingye_addDam');						
 						},
 						onremove: function(player, skill) {
 							game.broadcastAll(function(player){
@@ -153,11 +155,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-
-								
-					
-					
-			
+							
 					
 				
 				
@@ -171,7 +169,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jierizhanbei_info: '锁定技。你使用过装备牌的回合内手牌上限视为5.回合结束时，若本回合你没有使用过装备牌，你随机从牌堆内获得一张装备牌。',
 			esuyingye: '恶俗营业',
 			esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
-			
 		},
 	};
 });
