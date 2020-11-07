@@ -483,11 +483,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				priority:80,
 				filter:function(event, player){	
-					return event.player!=player&&player.countCards('h');
+					return event.player!=player&&player.countCards('he');
 				},
 				content:function(){
 					'step 0'
-					var next=player.chooseCard(get.prompt2('youyi'));
+					var next=player.chooseCard(get.prompt2('youyi'),'he');
 					next.set('ai',function(card){
 						if(get.name(card)=='shan') return 90;
 						return 80-get.value(card);
@@ -498,13 +498,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.showCards(result.cards);
 					}
 					'step 2'
-					var target = trigger.player;
+					if(result.cards){
+						var target = trigger.player;
 						target.gain(result.cards,player,'giveAuto');
 						target.markSkill('youyi');
 						target.addTempSkill('youyishiyue','phaseAfter');
 						target.addTempSkill('youyishiyue_lose','phaseEnd');
 						target.addTempSkill('youyishiyue_rec','phaseAfter');
 						player.storage.youyi=result.cards[0];
+					}
 				},
 				group:['youyi_dam'],
 				subSkill:{				
@@ -540,7 +542,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								nu=shi.number;
 							}
 						});
-						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。（若此牌离开你的区域，此状态结束）';
+						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 /n （若此牌离开你的区域，此状态结束）';
 					},
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
@@ -570,13 +572,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 							});
-							if(!(event.getParent().cards||event.card))											return false;
+							if(!(event.getParent().cards||event.cards))											return false;
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
 							if(event.getParent().card!=null&&get.name(event.getParent().card) =='shandian')		return false;
-							console.log(shi);
-							console.log(event.getParent());
-							for(var i=0;i<event.getParent().cards.length;i++){
-								if(event.getParent().cards[i]==shi)		return true;
+		//					console.log(event);
+							if(event.cards){
+								for(var i=0;i<event.cards.length;i++){
+									if(event.cards[i]==shi)		return true;
+								}
+							}
+							else if(event.getParent().cards){
+								for(var i=0;i<event.getParent().cards.length;i++){
+									if(event.getParent().cards[i]==shi)		return true;
+								}
 							}
 						},
 						content:function(){
@@ -760,9 +768,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					draw:{
 						init:function(player){
 							if(get.zhu(player)==player&&game.players.length>4)
-							{player.storage.shenghuang_draw=5;}
-							else
 							{player.storage.shenghuang_draw=4;}
+							else
+							{player.storage.shenghuang_draw=3;}
 							if(player.hasSkill('shenghuang_draw'))  player.markSkill('shenghuang_draw');
 						},
 						marktext: '圣',
@@ -796,7 +804,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					lose:{
 						marktext: '愈',
 						intro: {
-							content:'当前回合已弃置了牌，在本回合结束时，其他角色将体力回复至回合开始时的状态。',
+							content:'当前回合已失去了黑色牌，在本回合结束时，其他角色将体力回复至回合开始时的状态。',
 							name:'圣皇之愈',
 						},
 						trigger:{player:'loseAfter'},
@@ -804,8 +812,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:777,
 						filter:function(event,player){
 							if(!(event.getParent().cards||event.card))									return false;
-							if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
-							return event.getParent().cards.length;
+		//					if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
+							var cards = event.getParent().cards;
+							var bc=0;
+							for(var i=0;i<cards.length;i++){
+								console.log('OK');
+								console.log(get.color(cards[i]));
+								if(get.color(cards[i]) == 'black')	bc++;
+							}
+							console.log(bc);
+							return bc;
 						},
 						content:function(){
 							player.storage.shenghuang++;
@@ -913,6 +929,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						next.set('targetprompt',['RUA']);
 						next.set('prompt','指定一名角色，对其使用任意张【杀】');
 						next.set('forced',false);
+						next.set('ai',function(target){
+							var att=get.attitude(player,target);
+							return 50-att;
+						});
 					}, player)
 					console.log('OK');
 					'step 3'
@@ -976,6 +996,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:888,
 				animationStr:'夸色☆超级梦想',
 				trigger:{global:'phaseAfter'},
+				prompt:function(){
+					var player=_status.event.player;
+					return '是否发动“阿库娅色☆超级梦想” \n （本回合所有角色回复体力之和为'+player.storage.kuase_date+'点）';
+				},
 				filter:function(event,player){
 					return player.storage.kuase_date;
 				},
@@ -994,6 +1018,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		//				console.log(dream);
 		//			});
 					player.draw(dream);
+					player.getStat().card.sha=0;
 					player.phaseUse();
 					player.awakenSkill('kuase');
 				},
@@ -1060,7 +1085,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
-			shenghuang_info: '锁定技。当你进入濒死状态时，更换新的体力牌。你失去过牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
+			shenghuang_info: '锁定技。当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
 			renzhan: '瞬息刃斩',
 			renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
 			kuase: '夸色梦想',
