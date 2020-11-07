@@ -934,9 +934,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 4'
 					var target = _status.event.target;
-					if(target.storage.renzhan2)				break;
-					if(target.isOut()||target.isDead())		break;
-					player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+					}
 					'step 5'
 					var target = _status.event.target;
 					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
