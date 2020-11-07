@@ -315,8 +315,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										if(b.isEmpty(get.subtype(es[i]))) c++;
 									}
 									return c;
-								}
-								next=player.chooseTarget(function(card,player,target){
+								};
+								var next=player.chooseTarget(function(card,player,target){
 										if((canbeM(player,object)>0&&target== player)||(canbeM(object,player)>0&&target== object))
 										return true;
 								});
@@ -483,14 +483,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				priority:80,
 				filter:function(event, player){	
-					return event.player!=player;
+					return event.player!=player&&player.countCards('h');
 				},
 				content:function(){
 					'step 0'
 					var next=player.chooseCard(get.prompt2('youyi'));
 					next.set('ai',function(card){
-						if(get.type(card)=='basic') return 1;
-						return get.value(card);
+						if(get.name(card)=='shan') return 90;
+						return 80-get.value(card);
 					});
 					'step 1'
 					if(result.bool){
@@ -867,7 +867,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:'player',
 				content:function(){
 					'step 0'
-	//				console.log(this.trigger.player.getHistory('dying'));
 					player.loseHp();
 					var card=get.cards()[0];
 					var cards=[];
@@ -907,36 +906,96 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.gain(cards);
 					}
 					'step 2'
-					player.chooseCardTarget({
-						selectCard:[1,Infinity],
-						filterCard:function(card,player){
-							return get.name(card)=='sha';
-						},
-						filterTarget:function(card,player,target){
+		//			{
+		//				selectCard:[1,Infinity],
+		//				filterCard:function(card,player){
+		//					return get.name(card)=='sha';
+		//				},
+		//				filterTarget:function(card,player,target){
+		//					return player!=target;
+		//				},
+		//				position:'h',
+		//				targetprompt: ['RUA'],
+		//				prompt:'指定一名角色，对其使用任意张【杀】',
+					game.broadcastAll(function(player){
+						var next=player.chooseTarget(function(card,player,target){
 							return player!=target;
-						},
-						position:'h',
-						targetprompt: ['RUA'],
-						prompt:'对一名角色使用任意张【杀】',
-						ai2:function(target){
-							var att=get.attitude(player,target);
-							return 10-att;
-						},
-					});
+						});
+						next.set('targetprompt',['RUA']);
+						next.set('prompt','指定一名角色，对其使用任意张【杀】');
+						next.set('forced',false);
+					}, player)
+					console.log('OK');
 					'step 3'
 					if(result.bool){
+						console.log(result);
+						_status.event.target = result.targets[0];
 						var target = result.targets[0];
-						var shas = result.cards;
+						console.log(target);
+		//				var shas = result.cards;
+						game.log(player,'刃斩的目标为',target);
+						target.addTempSkill('renzhan2','phaseEnd');
+						target.storage.renzhan2 = 0;
+						console.log('OK');
+						console.log(player.hasCard('sha','h'));
 						player.logSkill('renzhan',target);
-						shas.forEach(function(card){
-		//					if(target.getHistory('dying'))	return;
-							if(target.isDead)	return;
-							player.chooseUseTarget(card,target,'noanimate','nopopup','nodistance', true);
-						});
+						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
+		//				game.broadcastAll(function(target, player, shas){
+		//					for(var i=0;i<shas.length;i++){
+		//					console.log(target.isDead());
+		//					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+		//						player.chooseUseTarget(shas[i],target,'noanimate','nopopup','nodistance', true);
+		//					}
+		//				}}, target, player, shas);
+		//				shas.forEach(function(card){
+		//					if(!player.hasCard(function(car){return car==card;},'h'))		return;
+		//					if(target.isDead()||target.isOut())				return;
+		//					if(target.storage.renzhan2)		return;
+		//					player.chooseUseTarget(card,target,'noanimate','nopopup','nodistance', true);					
+		//				});
+		//				for(var i=0;;i++)
+		//				{
+
+		//				}
 					}
 					else{
 						_status.event.finish();
 					}
+					'step 4'
+					var target = _status.event.target;
+					if(target.storage.renzhan2)				break;
+					if(target.isOut()||target.isDead())		break;
+					player.chooseToUse('可以对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+					'step 5'
+					var target = _status.event.target;
+					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+						event.goto(4);
+					}
+					else if(target.isAlive()){
+						target.unmarkSkill('renzhan2');
+						target.removeSkill('renzhan2');
+					}
+				},
+			},
+			renzhan2:{
+				marktext:"危",
+				locked:true,
+				intro:{
+					name:'危',
+					content:'成为瞬息刃斩的目标',
+				},
+				mark:true,
+				firstDo:true,
+				silent:true,
+				forced:true,
+				popup:false,
+				trigger:{player:'dying'},
+				filter:function(event,player){
+					return player.isAlive();
+				},
+				content:function(){
+					console.log('OK');
+					player.storage.renzhan2++;
 				},
 			},
 			kuase:{
