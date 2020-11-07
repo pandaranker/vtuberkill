@@ -933,19 +933,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						_status.event.finish();
 					}
 					'step 4'
-					var target = _status.event.target;
-					if(target.storage.renzhan2)				break;
-					if(target.isOut()||target.isDead())		break;
-					player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+						var target = _status.event.target;
+						if(!(target.storage.renzhan2||target.isOut()||target.isDead())){
+							player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+						}
 					'step 5'
-					var target = _status.event.target;
-					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
-						event.goto(4);
+					if(result.bool){
+						var target = _status.event.target;
+						if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+							event.goto(4);
+						}
 					}
-					else if(target.isAlive()){
-						target.unmarkSkill('renzhan2');
-						target.removeSkill('renzhan2');
-					}
+					target.unmarkSkill('renzhan2');
+					target.removeSkill('renzhan2');
 				},
 			},
 			renzhan2:{
