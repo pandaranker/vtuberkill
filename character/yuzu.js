@@ -906,17 +906,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.gain(cards);
 					}
 					'step 2'
-		//			{
-		//				selectCard:[1,Infinity],
-		//				filterCard:function(card,player){
-		//					return get.name(card)=='sha';
-		//				},
-		//				filterTarget:function(card,player,target){
-		//					return player!=target;
-		//				},
-		//				position:'h',
-		//				targetprompt: ['RUA'],
-		//				prompt:'指定一名角色，对其使用任意张【杀】',
 					game.broadcastAll(function(player){
 						var next=player.chooseTarget(function(card,player,target){
 							return player!=target;
@@ -932,7 +921,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						_status.event.target = result.targets[0];
 						var target = result.targets[0];
 						console.log(target);
-		//				var shas = result.cards;
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('renzhan2','phaseEnd');
 						target.storage.renzhan2 = 0;
@@ -940,23 +928,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						console.log(player.hasCard('sha','h'));
 						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
-		//				game.broadcastAll(function(target, player, shas){
-		//					for(var i=0;i<shas.length;i++){
-		//					console.log(target.isDead());
-		//					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
-		//						player.chooseUseTarget(shas[i],target,'noanimate','nopopup','nodistance', true);
-		//					}
-		//				}}, target, player, shas);
-		//				shas.forEach(function(card){
-		//					if(!player.hasCard(function(car){return car==card;},'h'))		return;
-		//					if(target.isDead()||target.isOut())				return;
-		//					if(target.storage.renzhan2)		return;
-		//					player.chooseUseTarget(card,target,'noanimate','nopopup','nodistance', true);					
-		//				});
-		//				for(var i=0;;i++)
-		//				{
-
-		//				}
 					}
 					else{
 						_status.event.finish();
@@ -965,7 +936,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var target = _status.event.target;
 					if(target.storage.renzhan2)				break;
 					if(target.isOut()||target.isDead())		break;
-					player.chooseToUse('可以对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+					player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
 					'step 5'
 					var target = _status.event.target;
 					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
