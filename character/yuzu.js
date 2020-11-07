@@ -5,13 +5,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
 		connect:true,
-	//	connectBanned:['sp_MinatoAqua'],
+		connectBanned:['sp_MinatoAqua'],
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
-			sp_MinatoAqua:['female','皇',2,['shenghuang','renzhan', 'kuase']],
+			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 		},
 		characterIntro:{
 			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
