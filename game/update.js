@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.43',
+	version:'1.9.100.45',
 	update:'1.9.100.42.2',
 	changeLog:[
 		'庆祝凑阿库娅获得第二届V萌冠军',
@@ -7,6 +7,7 @@ window.noname_update={
 		'如果出现无法联机bug请手动清除浏览器缓存',
 		'测试人物请勿联机选择',
 		'修改萝卜子二技能，月之美兔三技能，时乃空主公单机bug，修女克蕾雅移装备bug，阿夸二技能bug',
+		'新增测试人物Yomemi',
 	],
 	files:[
 		'character/hololive.js',

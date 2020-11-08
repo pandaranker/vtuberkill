@@ -602,23 +602,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							})
 						},
 						content:function(){
-							var shi;
-							var aqua;
-							game.hasPlayer(function(cur){
-								if(cur.hasSkill('youyi')){
-									aqua = cur
-									shi = cur.storage.youyi;
-								}
-							});
 							//弃“誓约”牌回复
-							game.broadcastAll(function(player, aqua, shi){
-								player.chooseToDiscard('弃置誓约牌','he',function(card,player){
-									return card=shi;
+							'step 0'
+							game.broadcastAll(function(player){
+								var shi;
+								var aqua;
+								game.hasPlayer(function(cur){
+									if(cur.hasSkill('youyi')){
+										aqua = cur
+										shi = cur.storage.youyi;
+									}
 								});
+								_status.event.card = shi;
+			//					player.choosePlayerCard('弃置誓约牌','hej',function(card,player){
+			//						return card=shi;
+			//					});
 								player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
 									return target==player||target==aqua;
 								});
-							}, player, aqua, shi);
+							}, player);
+							'step 1'
+							if(result.bool){
+								var shi = _status.event.card;
+								result.targets[0].recover();
+								player.lose(shi,'toStorage');
+							}
 						},
 					},
 			
@@ -676,7 +684,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						console.log(result.cards[0]);
 						if(result.cards[0].name=='jiu'||
 							(player.hasMark('hongshaoturou')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
-						player.chooseTarget('选择一名角色，令其摸一张牌').set('ai',function(target){
+						player.chooseTarget('选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
 							return get.attitude(player,target)*(target.isDamaged()?2:1);
 						});
@@ -966,6 +974,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					target.unmarkSkill('renzhan2');
 					target.removeSkill('renzhan2');
+				},
+				ai:{
+					　　maixie:true,
 				},
 			},
 			renzhan2:{

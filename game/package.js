@@ -12,6 +12,7 @@ window.noname_package={
 		// moyu: '摸鱼',
 		nijisanji:'nijisanji',
 		vtuber:'vtuber',
+		Eilene:'Eilene一家',
 		// sp:'SP',
 		// extra:'神将',		
 		// mobile:'移动版',

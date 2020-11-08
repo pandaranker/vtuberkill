@@ -617,6 +617,7 @@ window.noname_asset_list=[
 	'image/character/UshimiIchigo.jpg',
 	'image/character/XiaDi.jpg',
 	'image/character/XiaoxiXiaotao.jpg',
+	'image/character/Yomemi.jpg',
 	'image/character/YozoraMel.jpg',
 	
 	'image/character/sp_MinatoAqua.jpg',
