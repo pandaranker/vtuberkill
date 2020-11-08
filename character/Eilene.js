@@ -7,7 +7,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
 		},
 		 characterIntro:{
-			Yomemi:'',
+			Yomemi:' ',
 		 },
 		 skill:{
 			mokuai:{
@@ -15,7 +15,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='sha')
 							return range[1]+=Math.floor(player.countCards('e')/2);
-						/*更改牌能指定的目标数量的范围(card为要判断的牌，player为你,range为上次判断后的牌的目标数量的区间)*/
 					},
 				}
 			},
@@ -67,7 +66,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							target.chooseToDiscard('请弃置花色分别为'+get.translation(suits)+'的牌\n（目前为'+get.translation(suits[time])+'）', 1, function(card){
 								return get.suit(card) == suits[time];
 							})
-	//					}
 					}, _status.event.target, _status.event.suits);
 					_status.event.suits++;
 					'step 2'
@@ -77,8 +75,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else if(!result.bool){
 						event.target.damage(1);
 					}
-				}
-			}
+				},
+			},
 		 },
 		 translate:{
 			Yomemi:'嫁实',
