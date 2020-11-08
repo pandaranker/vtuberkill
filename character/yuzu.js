@@ -602,23 +602,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							})
 						},
 						content:function(){
-							var shi;
-							var aqua;
-							game.hasPlayer(function(cur){
-								if(cur.hasSkill('youyi')){
-									aqua = cur
-									shi = cur.storage.youyi;
-								}
-							});
 							//弃“誓约”牌回复
-							game.broadcastAll(function(player, aqua, shi){
+							game.broadcastAll(function(player){
+								var shi;
+								var aqua;
+								game.hasPlayer(function(cur){
+									if(cur.hasSkill('youyi')){
+										aqua = cur
+										shi = cur.storage.youyi;
+									}
+								});
 								player.chooseToDiscard('弃置誓约牌','he',function(card,player){
 									return card=shi;
 								});
 								player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
 									return target==player||target==aqua;
 								});
-							}, player, aqua, shi);
+							}, player);
 						},
 					},
 			
