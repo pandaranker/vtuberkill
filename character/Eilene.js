@@ -12,17 +12,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		 skill:{
 			mokuai:{
 				mod:{
+					cardEnabled:function(card,player,now){
+						if(!player.countCards('e')&&get.name(card)=='sha')		return false;
+					},
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='sha')
-							return range[1]+=Math.floor(player.countCards('e')/2);
+							return range[1]=Math.floor(player.countCards('e'));
 					},
-				}
+				},
+				forced:true,
+				priority:220,
+				trigger:{player:'recoverBegin'},
+				filter:function(event,player){
+						return true;
+				},
+				content:function(){
+					console.log('OK')
+					trigger.num = player.countCards('e');
+				},
 			},
 			yaoji:{
 				enable:"phaseUse", 
 				usable:1,
 				filter:function(event,player){
-					return player.countCards('he')>0
+					return player.countCards('e')>0
 				},
 				filterCard:function(card){
 					return true;
@@ -35,7 +48,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				selectTarget:function(){
 					var player = _status.event.player;
 					var min = 1;
-					var max = min+Math.floor(player.countCards('e')/2);
+					var max = Math.floor(player.countCards('e'));
 					return [min,max];
 				},
 				discard:true,
