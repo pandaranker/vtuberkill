@@ -18,6 +18,7 @@ window.noname_source_list=[
 	'character/moyu.js',
 	'character/nijisanji.js',
 	'character/diy.js',
+	'character/Eilene.js',
 	'character/extra.js',
 	'character/gujian.js',
 	'character/gwent.js',
