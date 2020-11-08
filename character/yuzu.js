@@ -967,6 +967,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					target.unmarkSkill('renzhan2');
 					target.removeSkill('renzhan2');
 				},
+				ai:{
+					　　maixie:true,
+				},
 			},
 			renzhan2:{
 				marktext:"危",

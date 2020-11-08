@@ -7,6 +7,7 @@ window.noname_update={
 		'如果出现无法联机bug请手动清除浏览器缓存',
 		'测试人物请勿联机选择',
 		'修改萝卜子二技能，月之美兔三技能，时乃空主公单机bug，修女克蕾雅移装备bug，阿夸二技能bug',
+		'新增测试人物Yomemi',
 	],
 	files:[
 		'character/hololive.js',

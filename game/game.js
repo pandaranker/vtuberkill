@@ -9451,6 +9451,7 @@
 							case 'nijisanji':h++;if(lib.config.banned.contains(i)) sh++;break;
 							case 'upd8':j++;if(lib.config.banned.contains(i)) sj++;break;
 							case 'dotlive':k++;if(lib.config.banned.contains(i)) sk++;break;
+							case 'Eilene':l++;if(lib.config.banned.contains(i)) sl++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -9908,6 +9909,7 @@
 			dotlive:'点',
 			nijisanji:'虹',
 			upd8:'U',
+			Eilene:'艾琳',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -9919,6 +9921,7 @@
 			upd82:'Upd8',
 			dotlive2:'.live',
 			nijisanji2:'Nijisanji',
+			Eilene2:'艾琳一家',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -9941,6 +9944,7 @@
 			nijisanjiColor:"#b0d0e2",
 			dotliveColor:"#b2d9a9",
 			upd8Color:"#ffe14c",
+			EileneColor:'#DB7093',
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -24663,7 +24667,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 10;
+					if(!lib.character[name]) return 11;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -24675,6 +24679,7 @@
 					if(lib.character[name][1]=='nijisanji') return 7;
 					if(lib.character[name][1]=='dotlive') return 8;
 					if(lib.character[name][1]=='upd8') return 9;
+					if(lib.character[name][1]=='Eilene') return 10;
 					return 10;
 				}
 				var del=groupSort(a)-groupSort(b);
@@ -26491,7 +26496,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','dotlive','udp8','key'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','dotlive','udp8','Eilene','key'],
 		nature:['fire','thunder','poison','kami'],
 		linked:['fire','thunder','kami'],
 		groupnature:{
@@ -26506,6 +26511,7 @@
 			udp8:'metal',
 			dotlive:'wood',
 			nijisanji:'water',
+			Eilene:'thunder',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 	};
@@ -35989,7 +35995,8 @@
 							if(info[name][1]=='nijisanji') return 7;
 							if(info[name][1]=='dotlive') return 8;
 							if(info[name][1]=='upd8') return 9;
-							return 10;
+							if(info[name][1]=='Eilene') return 10;
+							return 11;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -40965,7 +40972,7 @@
 				},true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','dotlive','upd8',function(link,node){//
+				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','dotlive','upd8','Eilene',function(link,node){//
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -41392,7 +41399,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['wei','shu','wu','qun','holo','key','nijisanji','dotlive','upd8'];//'wei','shu','wu',
+					var groups=['wei','shu','wu','qun','holo','key','nijisanji','dotlive','upd8','Eilene'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -41619,7 +41626,8 @@
 						if(lib.character[name][1]=='nijisanji') return 5;
 						if(lib.character[name][1]=='dotlive') return 6;
 						if(lib.character[name][1]=='upd8') return 7;
-						return 8
+						if(lib.character[name][1]=='Eilene') return 8;
+						return 9;
 					}
 				}
 				list.sort(function(a,b){
@@ -50684,7 +50692,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','dotlive','upd8'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','dotlive','upd8','Eilene'];
 		},
 		types:function(){
 			var types=[];
