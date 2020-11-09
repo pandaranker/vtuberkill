@@ -12,12 +12,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		 skill:{
 			mokuai:{
 				mod:{
-					cardEnabled:function(card,player,now){
-						if(!player.countCards('e')&&get.name(card)=='sha')		return false;
-					},
+	//				cardEnabled:function(card,player,now){
+	//					if(!player.countCards('e')&&get.name(card)=='sha')		return false;
+	//				},
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='sha')
-							return range[1]=Math.floor(player.countCards('e'));
+							return range[1]=Math.floor(player.countCards('e'))||1;
 					},
 				},
 				forced:true,
@@ -28,14 +28,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					console.log('OK')
-					trigger.num = player.countCards('e');
+					trigger.num = player.countCards('e')||1;
 				},
 			},
 			yaoji:{
 				enable:"phaseUse", 
 				usable:1,
 				filter:function(event,player){
-					return player.countCards('e')>0
+					return player.countCards('he')>0
 				},
 				filterCard:function(card){
 					return true;
@@ -48,7 +48,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				selectTarget:function(){
 					var player = _status.event.player;
 					var min = 1;
-					var max = Math.floor(player.countCards('e'));
+					var max = Math.floor(player.countCards('e'))||1;
 					return [min,max];
 				},
 				discard:true,
@@ -94,7 +94,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		 translate:{
 			Yomemi:'嫁实',
 			mokuai:'模块搭载',
-			mokuai_info:'锁定技。你的装备区每有两张牌，你的【杀】和“致命药剂”便可多指定一个目标。',
+			mokuai_info:'锁定技。你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
 			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张牌，然后亮出牌堆顶等于其类型数的牌。目标角色需依次选择：弃置与这些亮出牌的等量且花色相同的牌；或受到你造成的1点伤害。',
 		 },
