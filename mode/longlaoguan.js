@@ -190,6 +190,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.over(false);
 					}
 				}
+				else if(game.zhu.storage.state!='second'){
+					game.zhu.storage.state='second'
+				}
 				else {
 					if(game.me==game.zhu){
 						game.over(false);
@@ -202,6 +205,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			checkOnlineResult:function(player){
 				if(game.zhu.isAlive()){
 					return player.identity=='zhu';
+				}
+				else if(game.zhu.storage.state!='second'){
+					game.zhu.storage.state='second';
+					return false;
 				}
 				else return player.identity=='fan';
 			},
@@ -845,7 +852,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		characterPack:{
 			mode_longlaoguan:{
-				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','Ajatar']],
+				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','ajatar']],
 				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'jierizhanbei','esuyingye']]
 			}
 		},
@@ -999,18 +1006,25 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			Ajatar:{
-				trigger:{player:'die'},
+			ajatar:{
+				trigger:{player:'dieBefore'},
 				direct:true,
 				forced:true,
 				forceDie:true,
-				skillAnimation:true,
+				//skillAnimation:true,
 				animationColor:'gray',
 				filter:function(event){
 					return true;
 				},
 				content:function(){
+					'step 0'
+					player.awakenSkill('ajatar');
+					'step 1'
+					trigger.cancel();
+					'step 2'
 					player.init('AjatarCoco');
+					//player.revive(1);
+					player.storage.state='second';
 				},
 			},
 			/** 恶龙技能 */
