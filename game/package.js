@@ -7,7 +7,7 @@ window.noname_package={
 		// yijiang:'一将成名',
 		hololive:'hololive',
 		basic: 'v杀基础包',
-		sololive: '测试中勿选',
+		//sololive: '测试中勿选',
 		yuzu: '测试中可选',
 		// moyu: '摸鱼',
 		nijisanji:'nijisanji',
@@ -56,7 +56,7 @@ window.noname_package={
 		connect:'联机',
 		boss:'挑战',
 		doudizhu:'斗地主',
-		//longlaoguan:'龙牢关', 
+		longlaoguan:'龙牢关', 
 		single:'单挑',
 	},
 	submode:{
