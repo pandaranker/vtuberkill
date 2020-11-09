@@ -542,7 +542,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								nu=shi.number;
 							}
 						});
-						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 /n （若此牌离开你的区域，此状态结束）';
+						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 \n （若此牌离开你的区域，此状态结束）';
 					},
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
@@ -635,17 +635,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//兔宝
 			pekoyu:{
-	//			marktext:"peko",
-	//			locked:true,
-	//			intro:{
-	//				name:'嚣张咚鼓',
-	//				content:function (storage,player,skill){
-	//					game.hasPlayer(function(cur){
-	//					});
-	//					return '本回合';
-	//				},
-	//			},
-	//			mark:true,
+				init:function(player){
+					player.storage.pekoyu=[];
+				},
+				marktext:"peko",
+				locked:true,
+				intro:{
+					name:'嚣张咚鼓',
+					content:function (storage,player,skill){
+						if(storage.length){
+							return '本回合已通过花色为'+ get.translation(storage) +'的牌发动了技能';
+						}
+						else{
+							return '本回合尚未发动技能';
+						}
+					},
+				},
 				trigger:{player:'useCardAfter'},
 				forced:false,
 				priority:111,
@@ -653,11 +658,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.isPhaseUsing()) return false;
 					if(!(get.type(event.card) =='basic'||get.type(event.card)=='trick'))	return false;
 					if(event.result.bool == false || event.result.wuxied)					return false;
-					console.log(player.getLastUsed(1));
-					var evt=player.getLastUsed(1);
+					if(!player.storage.pekoyu.length)										return true;
+			//		console.log(player.getLastUsed(1));
+		/*			var evt=player.getLastUsed(1);
 					if(!evt||!evt.card) return true;
 						var ark=[get.suit(evt.card)];
-						console.log(ark);
 						for(var i=2;;i++){
 							var evt=player.getLastUsed(1);
 							if(!evt||!evt.card){
@@ -668,10 +673,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<ark.length;i++){
 						if(get.suit(event.card)==ark[i])							return false
 					}
+		*/			console.log(player.storage.pekoyu);
+					for(var i=0;i<player.storage.pekoyu.length;i++){
+						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
+					}
 					return !(event.result.bool == false || event.result.wuxied);			
 				},
 				content: function() {
 					'step 0'
+					console.log(trigger.card);
+					player.storage.pekoyu.add(get.suit(trigger.card));
+					console.log(player.storage.pekoyu);
 					player.draw(),
 					player.chooseToDiscard('然后，弃置一张牌','h').set('ai',function(card){
 						var name = card.name;
@@ -681,8 +693,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.cards){
-						console.log(result.cards[0]);
-						if(result.cards[0].name=='jiu'||
+						if(get.name(result.cards[0],'player')=='jiu'||
 							(player.hasMark('hongshaoturou')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
 						player.chooseTarget('选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
@@ -695,7 +706,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.line(target,'thunder');
 						target.draw(2);
 					}
-				}
+				},
+				group:['pekoyu_update', 'pekoyu_back'],
+				subSkill:{
+					update:{
+						trigger:{player:'phaseBegin'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.markSkill('pekoyu');
+						}
+					},
+					back:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.unmarkSkill('pekoyu');
+							player.storage.pekoyu = [];
+						}
+					},
+				},
 			},
 			hongshaoturou:{
 				enable:"phaseUse",
@@ -1091,7 +1124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			youyishiyue_info:'友谊誓约生效中',
 			UsadaPekora:'兔田佩克拉',
 			pekoyu:'嚣张咚鼓',
-			pekoyu_info:'回合内，当你的非装备牌生效后，若此花色牌本回合未被使用过，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
+			pekoyu_info:'回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou:'自煲自足',
 			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 			sp_MinatoAqua:'皇·湊阿库娅',
