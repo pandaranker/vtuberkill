@@ -857,11 +857,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var cards = event.getParent().cards;
 							var bc=0;
 							for(var i=0;i<cards.length;i++){
-								console.log('OK');
 								console.log(get.color(cards[i]));
 								if(get.color(cards[i]) == 'black')	bc++;
 							}
-							console.log(bc);
 							return bc;
 						},
 						content:function(){
@@ -994,10 +992,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						_status.event.finish();
 					}
 					'step 4'
-					var target = _status.event.target;
+					if(result.bool){var target = _status.event.target;
 					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
 						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
-					}
+					}}
 					'step 5'
 					if(result.bool){
 						var target = _status.event.target;

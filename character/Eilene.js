@@ -70,15 +70,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<cards.length;i++){
 						suits.push(get.suit(cards[i]));
 					}
-					console.log(suits);
 					_status.event.suits = suits;
 					_status.event.time = 0;
 					'step 1'
 					var time = _status.event.time;
 					game.broadcastAll(function(target, suits){
-							target.chooseToDiscard('请弃置花色分别为'+get.translation(suits)+'的牌\n（目前为'+get.translation(suits[time])+'）', 1, function(card){
-								return get.suit(card) == suits[time];
-							})
+						console.log(suits);
+						var suit = suits[time];
+						target.chooseToDiscard('请弃置花色分别为'+get.translation(suits)+'的牌\n（目前为'+get.translation(suit)+'）', 1, function(card){
+							return get.suit(card) == suit;
+						})
 					}, _status.event.target, _status.event.suits);
 					_status.event.time++;
 					'step 2'
