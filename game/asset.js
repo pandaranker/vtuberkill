@@ -621,6 +621,7 @@ window.noname_asset_list=[
 	'image/character/YozoraMel.jpg',
 	
 	'image/character/sp_MinatoAqua.jpg',
+	'image/character/sp_MononobeAlice.jpg',
 	
 	'image/emotion/shibing_emotion/1.gif',
 	'image/emotion/shibing_emotion/2.gif',
