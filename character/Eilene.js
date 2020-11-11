@@ -93,7 +93,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		 },
 		 translate:{
-			Yomemi:'嫁实',
+			Yomemi:'ヨメミ',
 			mokuai:'模块搭载',
 			mokuai_info:'锁定技。你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',

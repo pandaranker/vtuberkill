@@ -788,7 +788,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenghuang:{
 				init:function(player){
 					player.storage.shenghuang=0;
-					if(get.zhu(player)==player) player.maxHp--;
+					if(get.zhu(player)==player&&game.players.length>4) player.maxHp--;
 				},
 				global:['shenghuang_put', 'shenghuang_rec'],
 				group:['shenghuang_draw', 'shenghuang_lose', 'shenghuang_ret'],
@@ -991,10 +991,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						_status.event.finish();
 					}
 					'step 4'
-					if(result.bool){var target = _status.event.target;
-					if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+					if(result.bool){
+						var target = _status.event.target;
+						if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
 						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
 					}}
+					else{
+						event.finish();
+					}
 					'step 5'
 					if(result.bool){
 						var target = _status.event.target;
