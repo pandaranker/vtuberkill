@@ -235,7 +235,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						usable:1,
 						priority:12,
 						filter:function(event,player){
-							console.log(event);
 							if(event.player==player)	return false;
 							return player.hp>event.player.hp;
 						},
@@ -683,7 +682,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					'step 0'
-					console.log(trigger.card);
 					player.storage.pekoyu.add(get.suit(trigger.card));
 					console.log(player.storage.pekoyu);
 					player.draw(),
@@ -860,7 +858,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var cards = event.getParent().cards;
 							var bc=0;
 							for(var i=0;i<cards.length;i++){
-								console.log(get.color(cards[i]));
 								if(get.color(cards[i]) == 'black')	bc++;
 							}
 							return bc;
@@ -898,7 +895,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							var vq=player.storage.shenghuang_put-player.hp;
-							console.log(vq);
 							if(vq>0){
 								player.recover(vq);
 							}
@@ -1083,7 +1079,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},
 						content:function(){
-							console.log(player.storage.kuase_date);
 							player.storage.kuase_date += trigger.num;
 						},
 					},
@@ -1162,7 +1157,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'useCardAfter'},
 						forced:true,
 						silent:true,
-						priority:13,
+						priority:544,
 						content:function(){
 							if(!player.storage.xianjing.length){
 								player.storage.xianjing.add(get.suit(trigger.card));
@@ -1201,8 +1196,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							var suits = [];
 							game.getGlobalHistory('cardMove',function(evt){
-								console.log(evt.name);
-								if(evt.name=='cardsDiscard'||evt.name=='lose'){
+			//					console.log(evt);
+								if(evt.name=='cardsDiscard'||(evt.name=='lose'&&evt.getParent().name=='discard')){
 										for(var i=0;i<evt.cards.length;i++){
 											suits.add(get.suit(evt.cards[i]));
 										}
@@ -1252,7 +1247,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-			cha: {
+	/*		cha: {
 				init: function(player) {
 					if (!player.storage.yong) {
 						player.storage.yong = [];
@@ -1263,7 +1258,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext: '茶',
 				intro: {
 					content: 'cards',
-	/*				onunmark:function(storage,player){
+					onunmark:function(storage,player){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);
 							game.cardsDiscard(storage);
@@ -1271,52 +1266,172 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							storage.length=0;
 						}
 					},
-				*/}
-			},
+				}
+			},*/
 			chahui:{
 				forced:false,
-				priority:555,
-				trigger:{global:'phaseUseBefore'},
+				priority:543,
+				trigger:{player:'useCardAfter'},
 				filter:function(event,player){
-					if(!player.countCards('h'))		return false;
-					return event.player.hasSkill('xiaotuzi');
+					if(!player.isPhaseUsing()) return false;
+					return game.hasPlayer(function(cur){
+						return cur.hasSkill('xiaotuzi')&&cur.countCards('h');
+					});
 				},
 				content:function(){
-					var handCard = player.getCards('h')
-					player.showCards(handCard,'亮出手牌');
-					player.addTempSkill('cha','phaseAfter');
-					player.storage.cha = handCard;
-					player.syncStorage('cha');
-					player.markSkill('cha');
-	//				trigger.player.get.copy(handCard);
+					'step 0'
+					game.broadcastAll(function(player){
+						var next = player.chooseTarget(function(card, player, target){
+							return target!=player&&target.hasSkill('xiaotuzi');
+						});
+						next.set('prompt','指定一名小兔子，令其出一张牌');
+						next.set('forced',false);
+						next.set('ai',function(target){
+							var att=get.attitude(player,target);
+							return att;
+						});
+					}, player);
+					'step 1'
+					if(result.bool){
+						_status.event.target = result.targets[0];
+						game.broadcastAll(function(target){
+							var next = target.chooseCard('h',1,'是否紧跟爱丽丝之后使用一张牌');
+							next.set('forced',false);
+							next.set('ai',function(card){
+								if(get.name(card)=='shan')	return 10;
+								var player;
+								game.hasPlayer(function(cur){
+									if(cur.hasSkill('chahui'))	player = cur;
+								});
+								console.log(player);
+								if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(card)=='spade')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(card)=='diamond')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(card)=='club')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(card)=='heart')
+								){
+									return 100;
+								}
+							});
+						}, _status.event.target);
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						event.card = result.cards[0];
+						if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(event.card)=='spade')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(event.card)=='diamond')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(event.card)=='club')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(event.card)=='heart')
+						){
+							console.log(event.card);
+							player.gain(event.card);
+							game.log(player, '获得了', event.card)
+							player.chooseUseTarget(event.card, true);
+						}
+						else{
+							_status.event.target.chooseUseTarget(event.card, true);
+						}
+					}
+					else{
+						event.finish();
+					}
 				},
-	//			group:['chahui_useC', 'chahui_end'],
-	//			subSkill:{}
 			},
 			xiaotuzi:{
 				forced:false,
 				marktext:"🐇",
 				mark:true,
 				locked:true,
-				priority:555,
+				priority:543,
 				intro:{
 					name:'小兔子标记',
-					content:'',
+					content:'成为了爱丽丝的小兔子',
 				},
-				trigger:{global:'phaseUseBefore'},
+				trigger:{player:'useCardAfter'},
 				filter:function(event,player){
-					if(!player.countCards('h'))		return false;
-					return event.player.hasSkill('chahui');
+					if(!player.isPhaseUsing()) return false;
+					return game.hasPlayer(function(cur){
+						return cur.hasSkill('chahui')&&cur.countCards('h');
+					});
 				},
 				content:function(){
-					var handCard = player.getCards('h')
-					player.showCards(handCard,'亮出手牌');
-					player.addTempSkill('cha','phaseAfter');
-					player.storage.cha = handCard;
-					player.syncStorage('cha');
-					player.markSkill('cha');
-	//				trigger.player.get.copy(handCard);
-				},	
+					'step 0'
+					game.broadcastAll(function(player){
+						var next = player.chooseTarget(function(card, player, target){
+							return target!=player&&target.hasSkill('chahui');
+						});
+						next.set('prompt','指定爱丽丝，令其出一张牌');
+						next.set('forced',false);
+						next.set('ai',function(target){
+							var att=get.attitude(player,target);
+							return att;
+						});
+					}, player);
+					'step 1'
+					if(result.bool){
+						_status.event.target = result.targets[0];
+						game.broadcastAll(function(target){
+							var next = target.chooseCard('h',1,'是否紧跟小兔子之后使用一张牌');
+							next.set('forced',false);
+							next.set('ai',function(card){
+								if(get.name(card)=='shan')	return 10;
+								var player;
+								game.hasPlayer(function(cur){
+									if(cur.hasSkill('chahui'))	player = cur;
+								});
+								console.log(player);
+								if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(card)=='spade')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(card)=='diamond')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(card)=='club')
+								||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(card)=='heart')
+								){
+									return 100;
+								}
+							});
+						}, _status.event.target);
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						event.card = result.cards[0];
+						if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(event.card)=='spade')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(event.card)=='diamond')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(event.card)=='club')
+						||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(event.card)=='heart')
+						){
+							console.log(event.card);
+							player.gain(event.card);
+							game.log(player, '获得了', event.card)
+							player.chooseUseTarget(event.card, true);
+						}
+						else{
+							_status.event.target.chooseUseTarget(event.card, true);
+						}
+					}
+					else{
+						event.finish();
+					}
+				},
+				group:['xiaotuzi_lose'],
+				subSkill:{
+					lose:{
+						trigger:{global:'dieBegin'},
+						filter:function(event,player){
+							return event.player.hasSkill('xianjing');
+						},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.unmarkSkill('xiaotuzi');
+							player.removeSkill('xiaotuzi');
+						},
+					},
+				},
 			},
 			duandai:{
 				init:function(player){
@@ -1333,6 +1448,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				animationStr:'嚣张缎带',
 				trigger:{player:'phaseEnd'},
 				filter:function(event,player){
+					if(player.hp == player.maxHp)	return false;
 					return player.storage.duandai;
 				},
 				content:function(){
@@ -1381,10 +1497,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xianjing: '仙境奇遇',
 			xianjing_info: '当你使用一张牌后，若与本回合被使用的上一张牌在Alice序列（♥️、♠️、♦️、♣️、♥️......）中连续，你可以令一名角色摸一张牌。一个回合结束时，若此回合进入弃牌堆的牌包含所有花色，你可选择一项：令一名其他角色获得“小兔子”标记，或令所有“小兔子”各摸一张牌。',
 			chahui: '茶会交流',
-			chahui_info: '(制作中）出牌阶段开始时，一名小兔子可以亮出所有手牌直到阶段结束，本阶段你可将其亮出的手牌当你的手牌使用或打出。小兔子的出牌阶段开始时你也可对其如此做。',
+			chahui_info: '你于出牌阶段使用牌后，可以令一名小兔子选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用，否则结束出牌阶段。小兔子于出牌阶段使用牌后也可以对你如此做。',
 			duandai: '嚣张缎带',
 			duandai_info: '回合结束时，若本回合你使用牌完成过一组Alice序列，你可以回复所有体力。',
 			xiaotuzi: '小兔子',
+			xiaotuzi_info: '成为了爱丽丝的小兔子',
 			cha: '茶会',
 		},
 	};
