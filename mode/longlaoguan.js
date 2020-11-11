@@ -1,4 +1,5 @@
 'use strict';
+
 game.import('mode',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'longlaoguan',
@@ -190,6 +191,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.over(false);
 					}
 				}
+				else if(game.zhu.storage.state!='second'){
+					game.zhu.storage.state='second'
+				}
 				else {
 					if(game.me==game.zhu){
 						game.over(false);
@@ -202,6 +206,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			checkOnlineResult:function(player){
 				if(game.zhu.isAlive()){
 					return player.identity=='zhu';
+				}
+				else if(game.zhu.storage.state!='second'){
+					game.zhu.storage.state='second';
+					return false;
 				}
 				else return player.identity=='fan';
 			},
@@ -777,14 +785,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			KiryuuCoco:'桐生可可',
 			KiryuuCoco_info:'桐生可可',
+			AjatarCoco:'恶龙可可',
+			AjatarCoco_info:'恶龙可可',
 			zaoankeke: '早安一刀',
 			zaoankeke_info: '锁定技。当你使用【杀】指定目标后，目标需弃置一张牌；若此【杀】为属性杀，则改为交给你一张牌。',
 			jierizhanbei: '扳手战备',
 			jierizhanbei_info: '锁定技。你使用过装备牌的回合内手牌上限视为5.回合结束时，若本回合你没有使用过装备牌，你随机从牌堆内获得一张装备牌。',
 			esuyingye: '滥觞之至',
 			esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
-			Ajatar:'Ajatar',
-			Ajatar_info: '死亡时，进入恶龙形态',
+			elongkeke:'恶龙可可',
+			elongkeke_info: '死亡时，进入恶龙形态',
+			yanzheshengdun:'演者圣盾',
+			yanzheshengdun_info:'进入此形态后，你随机获得一个本局未出现的Hololive武将的所有技能，然后增加该武将的体力上限与体力值。',
 			// _feiyang:"飞扬",
 			// _bahu:"跋扈",
 			// _feiyang_info:"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
@@ -845,7 +857,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		characterPack:{
 			mode_longlaoguan:{
-				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','Ajatar']],
+				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke']],
 				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'jierizhanbei','esuyingye']]
 			}
 		},
@@ -964,7 +976,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var nh=_status.event.nh;
 						if(name=='lebu'&&nh>trigger.player.hp) return 150;
 						if(name=='bingliang'&&nh<trigger.player.hp) return 150;
-						return 100-get.value(card);													
+						return 100-get.value(button.link);													
 					}).set('nh',nh);
 					'step 1'
 					if(result.cards){
@@ -999,20 +1011,58 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			Ajatar:{
-				trigger:{player:'die'},
-				direct:true,
+			elongkeke:{
+				trigger:{player:'dieBefore'},
 				forced:true,
 				forceDie:true,
 				skillAnimation:true,
-				animationColor:'gray',
+				animationColor:'thunder',
 				filter:function(event){
 					return true;
 				},
 				content:function(){
-					player.init('AjatarCoco');
+					'step 0'
+					trigger.cancel();
+					player.revive(1);
+					'step 1'
+					player.markSkill('elongkeke');
+					game.delayx();
+					'step 2'
+					var libCharacter={};
+					var list=[];
+					// for(var i=0;i<lib.configOL.characterPack.length;i++){
+					// 	var pack=lib.characterPack[lib.configOL.characterPack[i]];
+					// 	for(var j in pack){
+					// 		if(j=='zuoci') continue;
+					// 		if(lib.character[j]) libCharacter[j]=pack[j];
+					// 	}
+					// }
+					for(var i in lib.character){
+						//if(lib.filter.characterDisabled(i,libCharacter)) continue;
+						//if(i.indexOf('lingju')!=-1) continue;
+						if(i=='KiryuuCoco'||i=='AjatarCoco') continue;
+						var group=lib.character[i][1];
+						if(group=='shen') continue;
+						if(group=='holo'){
+							if(game.filterPlayer(function(current){
+								if(current.name==i){
+									return true;
+								} 
+							}).length>0) continue;
+							list.push(i)
+						}
+					}
+					var newPerson=list.randomGets(1);
+					player.init('AjatarCoco',newPerson);
+					player.storage.state='second';
+					game.zhu.maxHp=1+Number(lib.character[newPerson][2]);
+					game.zhu.hp=1+Number(lib.character[newPerson][2]);
+					'step 3'
+					game.zhu.update();
 				},
 			},
+
+			
 			/** 恶龙技能 */
 			yanzheshengdun:{
 				
@@ -1122,7 +1172,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.outlist[i].hp+=1;
 						}
 						event.outlist[i].storage.reviving++;
-						if(event.outlist[i].storage.reviving>5){
+						if(event.outlist[i].storage.reviving>4){
 							event.outlist[i].storage.reviving=null;
 							game.broadcastAll(function(splayer){
 								splayer.in('reviving');

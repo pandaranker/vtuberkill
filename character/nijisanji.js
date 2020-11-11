@@ -12,12 +12,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
 			MitoTsukino:['female','nijisanji',3,['quanxinquanyi','bingdielei','qiujinzhiling'],['zhu']],
+			/**宇志海莓 */
+			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
+			/**铃鹿诗子 */
+			SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
+			/**樋口枫 */
+			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王',
+			HiguchiKaede: '樋口枫者，关西之游侠也，姿色天然占尽风流，善以琴杀人，来去翩翩，有宾客枫组三千，V始二十年，月之美兔兴于西北，自封委员长、上将军，建国曰彩虹，枫率宾客从之，枫尝与杏之福禄将军萝卜子交好，惺惺相惜，成V界之佳话',
 			ShizukaRin:'静凛者，皇族也，因父败于樱巫女被贬为庶人，遂恨朝廷，先随绊爱征战，绊爱初建国，不慕名利，往杏国扶之，先取天水后取临沂，成杏国之伟业，元昭欲拜之国师，又避之，尝与美兔弈棋，战百余合，喜曰：美兔知我矣！遂安于彩虹',
 			IenagaMugi:'家长麦',
 			MitoTsukino:'彩虹社的红龙、英才教育者，虹社的统领者、lonely eater、全人类之委员长、脑控宗师、月之小丑、双生暗影、行为艺术家、至高魔主、怒涛聚集、海洋王者、永不沉寂者、彩虹社永远滴真神，月之美兔是也',
+			UshimiIchigo: "8岁的小学三年级学生，居住在海边的小镇上。本体为草莓奶昔色海蛞蝓的小姑娘。性格泼辣，有些假小子。每天放学以后就潜入深海。喜食粉色的裙带菜和各种草莓味的点心。",
         },
         skill:{
             fuheijs:{
@@ -1442,7 +1450,435 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiujinzhiling:{
 				unique:true,
 				zhuSkill:true,
-			}
+			},
+			zhenyin: {
+				trigger: {
+					source: 'damageEnd',
+					player: 'useCardToPlayered',
+				},
+				filter: function(event, player) {
+					if (!player.hasSkill('saqi_use')) {
+						return event.name == 'damage' && event.player.countCards('ej');
+					}
+					else {
+						return event.name == 'useCardToPlayered' 
+							&& event.targets.length == 1
+							&& event.targets[0].countCards('ej');
+					}
+				},
+				content: function() {
+					'step 0'
+					event.A = trigger.name == 'damage' ? 
+						trigger.player :
+						trigger.targets[0];
+					event.B = event.A.next;
+					if (!event.A.countCards('ej')) event.finish();
+					player.choosePlayerCard('ej', event.A);
+					'step 1'
+					if (result.bool) {
+						var card = result.links[0];
+						var dam = false;
+						if(get.position(card)=='e'){
+							var c = event.B.getEquip(get.subtype(card));
+							if (c) {
+								dam = true;
+								game.log(c, '掉落了');
+							}
+							re = event.B.equip(card);
+						}
+						else {
+							var cname = card.viewAs ? card.viewAs : get.name(card);
+							event.B.getCards('j').forEach(function(c) {
+								if (get.name(c) == cname) {
+									game.log(c, '掉落了');
+									game.cardsDiscard(c);
+									dam = true;
+								}
+							})
+							event.B.addJudge({name: cname}, [card]);
+						}
+						event.A.$give(card, event.B)
+						if (dam) event.B.damage('nocard');
+						game.delay();
+					}
+				}
+			},
+			saqi: {
+				init: function(player) {
+					if (!player.storage.saqi_use) {
+						player.storage.saqi_use = [];
+					}
+				},
+				trigger: {player: 'phaseZhunbeiBegin'},
+				content: function() {
+					'step 0'
+					var list = [];
+					list.push('减少上限');
+					if (player.maxHp < 5) list.push('增加上限');
+					player.chooseControl(list).ai = function() {
+						if (list.length == 2) {
+							if (player.maxHp > player.hp) {
+								return 0;
+							}
+							else return 1;
+						}
+						else return 0;
+					};
+					'step 1'
+					if (result.control == '增加上限') {
+						player.gainMaxHp();
+					}
+					else {
+						player.loseMaxHp();
+						player.addTempSkill('saqi_use', {
+							player: 'phaseBegin',
+						});
+						player.addTempSkill('saqi_ban');
+					}
+				},
+				prompt: function() {
+					var str = "是否发动飒气并选择<br>";
+					var add = (_status.event.player.maxHp < 5);
+					var item1 = '减少体力上限<br>';
+					var item2 = '增加体力上限<br>';
+					if (!add) return str + item1;
+					else return str + '1. ' + item1 + '2. ' + item2;
+				},
+				global: 'saqi_banG',
+				subSkill: {
+					use: {
+						mark: true,
+						locked: true,
+						direct: true,
+						marktext: '飒',
+						intro: {
+							content: function(storage, player, skill) {
+								var str = "发动“震音”的条件改为“你使用牌指定唯一目标后”。<br>";
+								if (storage && storage.length) {
+									str += "其他角色本回合无法使用的花色：" + 
+										get.translation(storage);
+								}
+								return str;
+							}
+						},
+						trigger: {
+							player: 'useCardAfter',
+						},
+						content: function() {
+							var suit = get.suit(trigger.card);
+							if (player.hasSkill('saqi_ban') && suit && suit != 'none') {
+								if (player.storage.saqi_use.indexOf(suit) == -1) {
+									player.storage.saqi_use.push(suit);
+									player.markSkill('saqi_use');
+								}
+							}
+						}
+					},
+					banG: {
+						mod: {
+							cardEnabled: function(card, player) {
+								var cur = game.findPlayer(function(p) {
+									return p.hasSkill('saqi_ban');
+								})
+								if (cur && cur != player && 
+									cur.storage.saqi_use.indexOf(get.suit(card)) != -1) {
+									return false;
+								}
+							},
+							cardSavable:function(card, player){
+								var cur = game.findPlayer(function(p) {
+									return p.hasSkill('saqi_ban');
+								})
+								if (cur && cur != player && 
+									cur.storage.saqi_use.indexOf(get.suit(card)) != -1) {
+									return false;
+								}
+							}
+						},
+					},
+					ban: {
+						onremove: function(player) {
+							player.storage.saqi_use = [];
+							player.markSkill('saqi_use');
+						},
+					}
+				}
+			},
+			meici: {
+				group: ['meici_set', 'meici_use'],
+				subSkill: {
+					mark: {
+						mark: true,
+						intro: {
+							content: "本回合使用锦囊牌时，将被观看手牌并重铸其中一张",
+						},
+						onunmark: function(player) {
+							player.unmarkSkill('meici_mark');
+						}
+					},
+					set: {
+						direct: true,
+						trigger: {
+							global: 'phaseBegin',
+						},
+						filter: function(event, player) {
+							return event.player != player && !game.findPlayer(function(cur) {
+								return cur.getCards('h') > event.player.getCards('h');
+							});
+						},
+						content: function() {
+							player.logSkill('meici', trigger.player);
+							game.delayx();
+							trigger.player.addTempSkill('meici_mark');
+							trigger.player.markSkill('meici_mark');
+						}
+					},
+					use: {
+						popup: false,
+						trigger: {
+							global: 'useCardAfter'
+						},
+						filter: function(event, player) {
+							return event.player.hasSkill('meici_mark')
+								&& ['trick', 'delay'].contains(get.type(event.card));
+						},
+						content: function() {
+							'step 0'
+							game.delay(0.5);
+							player.logSkill('meici', trigger.player);
+							player.choosePlayerCard("重铸其一张手牌", trigger.player, 'h').set('visible', true);
+							'step 1'
+							if (result.bool && result.cards.length) {
+								trigger.player.lose(result.cards, ui.discardPile);
+								trigger.player.$throw(result.cards);
+								game.log(trigger.player, '将', result.cards, '置入了弃牌堆');
+								trigger.player.draw();
+								if (get.type(result.cards[0]) == 'basic') {
+									player.chooseCard("重铸一张牌", 'he');
+								}
+							}
+							'step 2'
+							if (result.bool && result.cards.length) {
+								player.lose(result.cards, ui.discardPile);
+								player.$throw(result.cards);
+								player.draw();
+								game.log(player, '将', result.cards, '置入了弃牌堆');
+							}
+						}
+					}
+				}
+			},
+			danlian: {
+				trigger: {
+					global: 'phaseEnd'
+				},
+				filter: function(event, player) {
+					var cards = [];
+					game.getGlobalHistory('cardMove',function(evt){
+						if (evt.name == 'lose' && evt.parent.name != 'useCard') {
+							cards.addArray(evt.cards.filterInD('d'));
+						}
+					});
+					var suit = [];
+					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
+					if (!player.hasSkill('danlian_club')) suit.push('club');
+					return cards.length >= event.player.hp && 
+						cards.filter(function(card) {
+							return suit.contains(get.suit(card));
+						}).length &&
+						event.player.isAlive();
+				},
+				content: function() {
+					'step 0'
+					var cards = [];
+					var suit = [];
+					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
+					if (!player.hasSkill('danlian_club')) suit.push('club');
+					game.getGlobalHistory('cardMove', function(evt) {
+						if (evt.name == 'lose' && evt.parent.name != 'useCard') {
+							cards.addArray(evt.cards.filterInD('d').filter(function(card) {
+								return suit.contains(get.suit(card));
+							}));
+						}
+					});
+					if (cards) player.chooseCardButton("选择一张牌", cards);
+					else event.finish();
+					'step 1'
+					if (result.bool) {
+						console.log(result);
+						event.card = result.links[0];
+						var pStr = get.suit(event.card) == 'diamond' ?
+							"选择乐不思蜀的目标" : "选择决斗的目标";
+						event.cardName = get.suit(event.card) == 'diamond' ? 
+							'lebu' : 'juedou';
+						
+						game.broadcastAll(function(player, user, pStr, cardName) {
+							player.chooseTarget(pStr, function(card, player, target) {
+								return user.canUse(cardName, target)
+									&& target != player
+									&& target != user;
+							}).set('ai', function(target) {
+								return -get.attitude(player, target);
+							});
+						}, player, trigger.player, pStr, event.cardName)
+					}
+					else event.finish();
+					'step 2'
+					if (result.bool && result.targets.length) {
+						var target = result.targets[0];
+						trigger.player.useCard({name: event.cardName}, target, [event.card]);
+						player.addTempSkill('danlian_' + get.suit(event.card), 'roundStart');
+					}
+					game.delay(0.5);
+				},
+				subSkill: {
+					diamond: {},
+					club: {},
+				}
+			},
+			kuangbaoshuangren: {
+				group: ['kuangbaoshuangren_red', 'kuangbaoshuangren_black'],
+				subSkill: {
+					red: {
+						mod: {
+							targetInRange:function(card,player){
+								if(_status.currentPhase==player && card.name=='sha' && get.color(card) == 'red') return true;
+							},
+							cardUsable:function (card,player,num){
+								if(card.name=='sha' && get.color(card) == 'red') return Infinity;
+							},
+						},
+						trigger: {
+							source:'damageEnd'
+						},
+						filter:function(event,player){
+							return event.card&&event.card.name=='sha'&&event.notLink()
+								&& get.color(event.card) == 'red'
+								&& event.player.getCards('e',{subtype:['equip3','equip4','equip6']}).length > 0
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							var att=(get.attitude(player,trigger.player)<=0);
+							var next=player.chooseButton();
+							next.set('att',att);
+							next.set('createDialog',['是否发动狂暴双刃，弃置'+get.translation(trigger.player)+'的一张坐骑牌？',trigger.player.getCards('e',{subtype:['equip3','equip4','equip6']})]);
+							next.set('ai',function(button){
+								if(_status.event.att) return get.buttonValue(button);
+								return 0;
+							});
+							"step 1"
+							if(result.bool && result.links.length){
+								player.logSkill('kuangbaoshuangren',trigger.player);
+								trigger.player.discard(result.links[0]);
+							}
+						}
+					},
+					black: {
+						trigger: {
+							player: 'useCard2',
+							// player: 'useCardToPlayered'
+						},
+						forced: true,
+						direct:true,
+						filter:function(event,player) {
+							// if (event.getParent().triggeredTargets3.length > 1) return false;
+							if (!event.card || !(event.card.name == 'sha') 
+								|| !(get.color(event.card) == 'black')) {
+								return false;
+							}
+							return game.hasPlayer(function(cur) {
+								return lib.filter.targetEnabled2(event.card, player, cur)
+									&& player.inRange(cur)
+									&& !event.targets.contains(cur)
+									&& player.canUse(event.card,cur);
+							})
+						},
+						content:function(){
+							'step 0'
+							player.storage.blackTargets=trigger.targets;
+							player.storage.card=trigger.card;
+							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
+								if (player.storage.blackTargets.contains(target)) return false;
+								return lib.filter.targetEnabled2(player.storage.card, player, target)
+									&& player.inRange(target)
+									&& !player.storage.blackTargets.contains(target)
+							}).set('targets',trigger.targets).set('card',trigger.card);
+							// .set('ai',function(target){
+							// 	// var trigger=_status.event.getTrigger();
+							// 	var player=_status.event.player;
+							// 	return get.effect(target,card,player,player);
+							// })
+							'step 1'
+							delete player.storage.card;
+							delete player.storage.blackTargets;
+							if(result.bool && result.targets.length){
+								game.delayx();
+								player.logSkill('kuangbaoshuangren', result.targets);
+								trigger.targets.unshift(result.targets[0]);
+							}
+						},
+					},
+				}
+			},
+			guangsuxiabo: {
+				init: function(player) {
+					player.storage.hp = 0;
+					player.storage.loseCount = 0;
+				},
+				trigger: {
+					global: ['phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd'],
+				},
+				filter: function(event, player) {
+					return player.storage.hp || player.storage.loseCount > 2;
+				},
+				content: function() {
+					'step 0'
+					player.draw();
+					'step 1'
+					var evt=_status.event.getParent('phase');
+					if(evt){
+						//game.resetSkills();
+						_status.event=evt;
+						_status.event.finish();
+						// _status.event.untrigger(true);
+					}
+				},
+
+				group: ['guangsuxiabo_clear', 'guangsuxiabo_cnt1', 'guangsuxiabo_cnt2'],
+				subSkill: {
+					clear: {
+						forced: true,
+						silent: true,
+						trigger: {
+							global: ['phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin'],
+						},
+						content: function() {
+							player.storage.hp = player.storage.loseCount = 0;
+						}
+					},
+					cnt1: {
+						forced: true,
+						silent: true,
+						trigger: {
+							player: 'loseEnd',
+						},
+						content: function() {
+							player.storage.loseCount += trigger.cards2.length;
+						}
+					},
+					cnt2: {
+						forced: true,
+						silent: true,
+						trigger: {
+							player: 'damageEnd',
+						},
+						content: function() {
+							player.storage.hp = 1;
+						}
+					},
+				},
+			},
         },
         translate:{
 
@@ -1490,6 +1926,25 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
 			qiujinzhiling:'囚禁指令',
 			qiujinzhiling_info:'主公技，锁定技。其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
+			
+			SuzukaUtako: '铃鹿诗子',
+			meici: '美词',
+			meici_info: '其他角色的回合开始时，若其手牌为全场最多，其本回合使用锦囊牌后，你可以观看其手牌并重铸其中一张，若因此重铸了基本牌，你也可重铸一张牌。',
+			danlian: '耽恋',
+			danlian_info: '一个回合结束时，若本回合不因使用而进入弃牌堆的牌不小于当前回合角色的体力值，你可选择其中一张♦或♣牌并选择另一名其他角色，当前回合角色将♦牌当【乐不思蜀】，♣牌当【决斗】对你选择的角色使用。每轮每种花色限一次。',
+			
+			HiguchiKaede: '樋口枫',
+			zhenyin: '震音',
+			zhenyin_info: '你造成伤害后，可以将目标装备区或判定区的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
+			saqi: '飒气',
+			saqi_info: '准备阶段，你可以增加（至多到 5 ）或扣减 1 点体力上限，若选择扣减，你获得以下效果直到你的下回合开始：你使用牌结算后，所有其他角色本回合无法使用该花色的牌；发动“震音”的条件改为“你使用牌指定唯一目标后”。',
+			
+			UshimiIchigo: '宇志海莓',
+			kuangbaoshuangren: '狂暴双刃',
+			kuangbaoshuangren_info: '锁定技。你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
+			guangsuxiabo: '光速下播',
+			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
+
         }
     }
 }

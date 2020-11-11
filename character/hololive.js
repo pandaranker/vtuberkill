@@ -16,8 +16,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
             /**白上吹雪 */
             ShirakamiFubuki:['female','holo',3,['yuanlv','jinyuan','zhongjian'],['zhu']],
+			/**aki */
+            AkiRosenthal: ['female', 'holo', 3, ['meiwu', 'huichu']],
+            /**星街慧星 */
+            HoshimatiSuisei:['female','holo',4,['yemuxingyong', 'xinghejianduei']],
+            /**樱巫女 */
+			SakuraMiko: ['female', 'holo', 4, ['haodu']],
         },
+		characterSort:{
+			hololive:{
+                hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
+                hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
+			}
+		},
         characterIntro:{
+			SakuraMiko: '樱巫女（V始三年）者，神社之巫女也，性坚毅，素有樱火龙之称，子云，食色性也，圣人如此，miko亦然，miko喜黄油，常于配信误启之，虽贵为巫女，护东南诸郡安宁，然不识诗书，有《FAQ》、《倪哥》为众人笑，V始十九年，朝廷窜东南，miko力拒之，自封自由领，不受诸侯管制',
+			HoshimatiSuisei:'星街彗星（V始三年），北海人也，少时贫寒，彗酱一心求学，从当世之先达元昭执经叩问，元昭深器之，彗酱豆蔻之年即通晓诸经，人莫不言之曰天道酬勤，六边形战士之名世人皆知。V始十三年绊爱首义，彗酱自投笔从戎，有tst之神兵，杏国拜之曰上将军',
             TokinoSora:'混沌的尽头，少女的回旋曲，杏社起始同时也是终末的清楚担当，全杏社圆桌骑士之首，空友之母，反抗军的破坏者、狮心之人、大杏社的卡丽熙、hololive真主、永不恐惧者、阿芙乐尔公主，时乃空是也',
             YozoraMel:'夜空梅露',
             AkaiHaato:'赤井心，京师名医之后也，嗜食成性，有《药膳经》流于世，其药多先夺人命后生之，用者莫不谈之色变，食尤喜沙琪玛，每日贡食入府，左右皆呼“哈恰玛恰玛”，后元昭起势，心随夏色祭往拜之，从军十年活人兆计，后拜土澳公主，总领土澳事宜。',
@@ -1361,20 +1375,428 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         },
                     }
                 }
-            }
+            },
+			meiwu: {
+				// popup: false,
+				direct: true,
+				trigger: {
+					target: 'useCardToTarget',
+				},
+				usable: 1,
+				filter: function(event, player) {
+					return get.color(event.card) == 'black' && event.targets.length == 1
+				},
+				content: function() {
+					'step 0'
+					if (!game.hasPlayer(function(cur) {
+						return cur != player && cur != trigger.player;
+					})) event.finish();
+					else
+					game.broadcastAll(
+						function(player,tplayer){
+							player.chooseTarget('转移给一名其它角色', function(card, player, target) {
+								return player != target && target != tplayer;
+							})
+						},player,trigger.player
+					)
+					'step 1'
+					if (result.bool) {
+						var target=result.targets[0];
+						player.logSkill(event.name, target);
+						var evt = trigger.getParent();
+						evt.triggeredTargets2.remove(player);
+						evt.targets.remove(player);
+						evt.targets.push(target);
+						player.storage.meiwu_trace = {
+							cardid: trigger.card.cardid,
+							target: target,
+						};
+					}
+				},
+				group: ['meiwu_trace'],
+				subSkill: {
+					trace: {
+						direct: true,
+						trigger: {
+							global: 'useCardAfter',
+						},
+						filter: function(event, player) {
+							if (!player.storage.meiwu_trace) return false;
+							return player.storage.meiwu_trace.cardid == event.card.cardid &&
+								(event.result.bool == false || event.result.wuxied);
+						},
+						content: function() {
+							'step 0'
+							player.chooseCard(true, 'he', "交给其一张牌");
+							'step 1'
+							if (result.bool && result.cards.length) {
+								var target = player.storage.meiwu_trace.target;
+								player.$giveAuto(result.cards, target);
+								target.gain(result.cards, player);
+							}
+						}
+					},
+				}
+			},
+			huichu: {
+				trigger: {
+					global: 'phaseBegin',
+				},
+				filter: function(event, player) {
+					return player.countCards('h')
+						&& !game.hasPlayer(function(cur) {
+							return cur.hp < event.player.hp;
+						});
+				},
+				content: function() {
+					'step 0'
+					player.showHandcards();
+					event.chk = player.countCards('h') == player.countCards('h', {suit: 'heart'});
+					'step 1'
+					if (event.chk) {
+						trigger.player.recover();
+					}
+					'step 2'
+					if (!event.chk) {
+						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]);
+					}
+					'step 3'
+					if (!event.chk && result.bool && result.cards.length) {
+						player.lose(result.cards, ui.discardPile);
+						player.$throw(result.cards);
+						game.log(player, '将', result.cards, '置入了弃牌堆');
+						player.draw(result.cards.length);
+					}
+				}
+			},
+
+			haodu: {
+				enable: 'phaseUse',
+				filterCard: true,
+				selectCard: [1, Infinity],
+				position: 'h',
+				selectTarget: 1,
+				discard:false,
+				lose:false,
+				filter: function(event, player) {
+					return player.countCards('h') && !player.hasSkill('haodu_lose')
+						&& (player.getStat('skill').haodu||0) < player.maxHp - player.hp + 1;
+				},
+				filterTarget: function(card, player, target) {
+					return player != target;
+				},
+				content: function() {
+					'step 0'
+					target.gain(cards,player,'giveAuto');
+					'step 1'
+					event.videoId = lib.status.videoId++;
+					var typelist = [
+							['基本','','sha', 'basic', 'div1'], 
+							['锦囊', '', 'wuzhong', 'trick', 'delay', 'div1'], 
+							['装备', '', 'renwang', 'equip', 'div1']
+						];
+					var suitlist = [
+							['heart', '', 'heart', 'heart', 'div2'],
+							['diamond', '', 'diamond', 'diamond', 'div2'],
+							['club', '', 'club', 'club', 'div2'],
+							['spade', '', 'spade', 'spade', 'div2']
+						];
+					var numberlist = [];
+					for (var i = 1; i <= 13; ++i) {
+						var c = i;
+						if (i == 1) c = 'A';
+						else if (i == 10) c = 'X'
+						else if (i == 11) c = 'J';
+						else if (i == 12) c = 'Q';
+						else if (i == 13) c = 'K';
+						else c = i;
+						numberlist.push(['', i, c, i, 'div3']);
+					}
+					game.broadcastAll(function(id, typelist, suitlist, numberlist){
+						var dialog=ui.create.dialog('豪赌 选择');
+						dialog.addText('类型');
+						dialog.add([typelist, 'vcard']);
+						dialog.addText('花色');
+						dialog.add([suitlist, 'vcard']);
+						dialog.addText('点数');
+						dialog.add([numberlist, 'vcard']);
+						dialog.videoId = id;
+					}, event.videoId, typelist, suitlist, numberlist);
+					'step 2'
+					var next = player.chooseButton(3 ,true);
+					next.set('dialog',event.videoId);
+					next.set('filterButton',function(button) {
+						for(var i = 0;i < ui.selected.buttons.length; i++){
+							var now = button.link, pre = ui.selected.buttons[i].link;
+							if (now[now.length - 1] == pre[pre.length - 1]) return false;
+						}
+						return true;
+					});
+					'step 3'
+					game.broadcastAll('closeDialog', event.videoId);
+					if (result.bool) {
+						event.chi = [];
+						result.links.forEach(function(card) {
+							for (var i = 3; i < card.length - 1; ++i) event.chi.push(card[i]);
+						})
+					}
+					else event.finish();
+					'step 4'
+					player.choosePlayerCard(target, 'h', true);
+					'step 5'
+					if (result.bool) {
+						event.card = result.links[0];
+						var str = "豪赌展示<br>";
+						game.log(player,'选择了',event.chi);
+						if (event.chi.contains(get.number(event.card))) str += "你与其交换手牌<br>";
+						if (event.chi.contains(get.type(event.card))) str += "你弃置其两张牌<br>";
+						if (event.chi.contains(get.suit(event.card))) str += "你获得其一张牌<br>";
+						player.showCards(event.card, str);
+						game.delay(2);
+					}
+					else event.finish();
+					'step 6'
+					if (event.chi.contains(get.number(event.card))) {
+						player.line(target, 'grean');
+						player.swapHandcards(target);
+					}
+					'step 7'
+					if (event.chi.contains(get.type(event.card))) {
+						game.delayx();
+						if (target.countDiscardableCards(player, 'he')) {
+							player.line(target, 'grean');
+							player.discardPlayerCard("弃置其两张牌", target, 2, 'he', true);
+						}
+					}
+					'step 8'
+					if (event.chi.contains(get.suit(event.card))) {
+						game.delayx();
+						if(target.countGainableCards(player, 'he')){
+							player.line(target, 'grean');
+							player.gainPlayerCard("获得其一张牌", 'he', target, true);
+						}
+					}
+				},
+				subSkill: {
+					lose: {},
+				}
+			},
+			yong: {
+				init: function(player) {
+					if (!player.storage.yong) {
+						player.storage.yong = [];
+					}
+				},
+				locked:true,
+				notemp:true,
+				marktext: '咏',
+				intro: {
+					content: 'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
+							storage.length=0;
+						}
+					},
+				}
+			},
+			yemuxingyong: {
+				group: ['yong', 'yemuxingyong_gain', 'yemuxingyong_use'],
+				subSkill: {
+					gain: {
+						round: 1,
+						trigger: {
+							global: 'phaseDiscardAfter',
+						},
+						filter: function(event, player) {
+							if(event.player.isIn()){
+								var find = false;
+								event.player.getHistory('lose',function(evt){
+									return evt.type=='discard'&&evt.getParent('phaseDiscard')==event&&evt.hs.filterInD('d').length>0;
+								}).forEach(function(arr) {
+									if (arr.cards != undefined) arr.cards.forEach(function(c) {
+										find = true;
+									})
+								});
+								return find;
+							}
+							return false;
+						},
+						check: function(event, player) {
+							return true;
+						},
+						content: function() {
+							"step 0"
+							var cards=[];
+							game.getGlobalHistory('cardMove',function(evt){
+								if(evt.name=='cardsDiscard'&&evt.getParent('phaseDiscard')==trigger) cards.addArray(evt.cards.filterInD('d'));
+							});
+							game.countPlayer2(function(current){
+								current.getHistory('lose',function(evt){
+									if(evt.type!='discard'||evt.getParent('phaseDiscard')!=trigger) return;
+									cards.addArray(evt.cards.filterInD('d'));
+								})
+							});
+							event.cards = cards;
+							if (event.cards.length) {
+								game.cardsGotoSpecial(event.cards);
+							}
+							else {
+								event.finish();
+							}
+							'step 1'
+							player.storage.yong = player.storage.yong.concat(event.cards);
+							player.showCards(player.storage.yong,'夜幕星咏');
+							player.syncStorage('yong');
+							player.markSkill('yong');
+							"step 2"
+							event.players=game.filterPlayer(function(current){
+								return current!=player && current.countCards('he') > 0;
+							});
+							event.players.sortBySeat(player);
+							"step 3"
+							if(event.players.length){
+								event.current=event.players.shift();
+								event.current.animate('target');
+								player.line(event.current,'green');
+								if (event.current.countCards('he') && player.isAlive()) {
+									event.current.chooseCard({color:'black'},'he', 
+									'可将一张黑色牌置于' + get.translation(player)+ '武将牌上').set('ai',function(card){
+										if(get.attitude(_status.event.player,_status.event.target) > 1) return 7-get.value(card);
+										return -1;
+									}).set('target', player);;
+								}
+							}
+							else{
+								player.showCards(player.storage.yong, "咏");
+								game.delayx();
+								event.finish();
+							}
+							"step 4"
+							if (result.bool) {
+								var card = result.cards[0];
+								event.current.lose(card, ui.special, 'toStorage');
+								player.storage.yong.push(card);
+								event.current.$give(card, player, false);
+								player.syncStorage('yong');
+								player.markSkill('yong');
+							}
+							event.goto(3);
+						},
+					},
+					use: {
+						enable: 'phaseUse',
+						filter: function(event, player) {
+							if (!player.storage.yong.length) {
+								return false;
+							}
+							return true;
+						},
+						content: function() {
+							'step 0'
+							player.chooseButton(['选择一张咏', player.storage.yong], 1);
+							'step 1'
+							if (result.bool) {
+								var card = result.links[0];
+								player.gain(result.links, 'fromStorage');
+								player.storage.yong.remove(card);
+								player.syncStorage('yong');
+								player.markSkill('yong');
+								player.$give(card, player, false);
+								if (!player.storage.yong.length) {
+									player.unmarkSkill('yong');
+								}
+							}
+							else event.finish();
+							'step 2'
+							var chk = player.countCards('h') >= 2;
+							chk &= lib.filter.cardUsable({name:'jiu'},player, 
+									event.getParent('chooseToUse'))
+									&& player.canUse('jiu', player);
+							game.players.forEach(function(p) {
+								if (p != player && player.canUse('guohe', p)) chk = true; 
+							})
+							if (!chk) event.finish();
+							'step 3'
+							player.chooseCardTarget({
+								prompt: "选择两张手牌并对自己使用一张酒或对其它角色使用一张过河拆桥",
+								position: 'h',
+								selectCard: 2, 
+								forced: true,
+								filterTarget: function(card, player, target) {
+									if (player == target) {
+										return lib.filter.cardUsable({name:'jiu'},player, _status.event.getParent('chooseToUse'))
+											&& player.canUse('jiu', player);
+									}
+									else {
+										return player.canUse('guohe', target);
+									}
+								}
+							})
+							'step 4'
+							if (result.bool && result.targets.length && result.cards.length) {
+								var tar = result.targets[0];
+								if (tar == player) player.useCard({name: 'jiu'}, tar, result.cards);
+								else player.useCard({name: 'guohe'}, tar, result.cards);
+							}
+						}
+					},
+				}
+			},
+			xinghejianduei: {
+				skillAnimation:true,
+				animationColor:'thunder',
+				juexingji:true,
+				unique:true,
+				trigger:{
+					global: 'roundStart'
+				},
+				filter:function(event,player){
+					return !player.storage.xinghejianduei && player.hp <= game.roundNumber;
+				},
+				forced:true,
+				content: function() {
+					player.loseMaxHp();
+					player.draw(event.num=game.countPlayer());
+					// player.draw(10 - player.countCards('h'));
+					player.addSkill('xinghejianduei_juexing');
+					player.awakenSkill(event.name);
+					player.storage[event.name]=true;
+				},
+				subSkill: {
+					juexing: {
+						mod: {
+							maxHandcardBase:function(player,num){
+								return num + player.storage.yong.length;
+							},
+							attackFrom:function(from,to,distance){
+								return distance-from.storage.yong.length;
+							},
+						}
+					}
+				}
+			},
+
 		},
 		translate:{
+            hololive_1:'一期生',
+            hololive_wuyin:'无印',
+
 			TokinoSora:'时乃空',
 			taiyangzhiyin:'太阳之音',
 			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
             renjiazhizhu:'仁家之主',
             renjiazhizhu_info:'主公技。你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
             renjiazhizhu_tag:'仁家之主',
+
             YozoraMel:'夜空梅露',
             juhun:'聚魂',
             juhun_info:'锁定技。一回合一次，当一名角色受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。当你的手牌数为全场最多时，摸牌阶段你少摸一张牌。',
             meilu:'没露',
             meilu_info:'锁定技。准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
+
             AkaiHaato:'赤井心',
             liaolishiyan:'料理实验',
             liaolishiyan_info:'摸牌阶段，你可改为展示并获得牌堆顶的两张牌，然后根据其中的花色执行对应效果：♦~重铸一张牌，♣~弃置一张牌，♥~令赤井心回复 1 点体力，♠~失去 1 点体力。出牌阶段限一次，你可以重铸与当回合“料理实验”花色相同的两张牌令一名角色执行对应效果。',
@@ -1382,16 +1804,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             liaolishiyan2_info:'出牌阶段限一次，你可以重铸与当回合“料理实验”花色相同的两张牌令一名角色执行对应效果。♦~重铸一张牌，♣~弃置一张牌，♥~令赤井心回复 1 点体力，♠~失去 1 点体力。',
             momizhiyan:'抹蜜之言',
             momizhiyan_info:'当你使用牌指定目标后，你可弃置一张牌令其中一名目标执行弃置牌花色在“料理实验”的对应效果。每回合限一次。',
+
             NatsuiroMatsuri:'夏色祭',
             huxi1:'呼吸',
             huxi1_info:'出牌阶段限一次，你可以令攻击范围内的一名其他角色与你同时展示一张手牌并交换，若你获得了红色牌，你可以摸一张牌并令你本回合使用的下一张牌不受距离与次数限制；若没有人获得红色牌，你失去 1 点体力。',
             lianmeng:'连梦',
             lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
+
             RobokoSan:'萝卜子',
             gaonengzhanxie:'高能战械',
             gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
             ranyouxielou_info:'锁定技，你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
+
             ShirakamiFubuki:'白上吹雪',
             baihuqingguo:'白狐倾国',
             baihuqingguo_info:'其他角色的出牌阶段开始时，你可弃一张牌，若如此做，该角色于此阶段使用的牌只能以你或其自己为目标。',
@@ -1404,6 +1829,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             zhongjian:'中坚',
             zhongjian1:'中坚',
             zhongjian_info:'主公技。每轮限一次。回合外，当一张通常锦囊牌指定目标后，你可以选择一名同势力其他角色，该角色的手牌在本回合视为【无懈可击】。',
+
+			AkiRosenthal: '亚琦罗森塔尔',
+			meiwu: '魅舞',
+			meiwu_info: '当你于一回合内首次成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。',
+			huichu: '慧厨',
+            huichu_info: '体力值最少的角色回合开始时，你可以展示所有手牌，若均为♥，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
+            
+            
+			HoshimatiSuisei:'星街彗星',
+			yemuxingyong: '夜幕星咏',
+			yemuxingyong_info: '每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为“咏”。然后其他角色也可将一张黑色牌置于你武将牌上。出牌阶段，你可获得一张“咏”，然后立即将两张手牌当【过河拆桥】或【酒】使用。',
+			yong: '咏',
+			xinghejianduei:'星河舰队',
+            xinghejianduei_info:'觉醒技。一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加“咏”的数量。',
+
+			SakuraMiko: '樱巫女',
+			haodu: '豪赌',
+			haodu_info: '出牌阶段X+1次（X为已损失体力），你可以将至少一张手牌交给一名其他角色并声明点数、花色、类型，然后你展示其一张手牌。根据与声明相同的项依次执行对应效果：点数，你与其交换手牌；类型，你弃置其两张牌；花色，你获得其一张牌。',
         },
 	};
 });
