@@ -1098,6 +1098,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		translate:{
+			vtuber_upd8:'UPD8',
             KizunaAI:'绊爱',
 			KizunaAI_info:'绊爱',
             ailian:'爱链',
