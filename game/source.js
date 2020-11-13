@@ -82,6 +82,7 @@ window.noname_source_list=[
 	'mode/brawl.js',
 	'mode/versus.js',
 	'mode/connect.js',
+	'mode/longlaoguan.js',
 	'extension/boss/extension.js',
 	'extension/cardpile/extension.js',
 	'extension/coin/extension.js',
