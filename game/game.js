@@ -1221,7 +1221,7 @@
 							music:'音乐',
 							simple:'原版',
 							ol:'手杀',
-							cardSpecialEffects:'卡面特效',
+							specialEffects:'卡面特效',
 							// new:'新版',
 							custom:'自定',
 							default:'默认',
@@ -23182,9 +23182,9 @@
 						}
 						break;
 					}
-					let cardSpecialEffects=[];
+					var specialEffects=[];
 					if(Array.isArray(card[5])){
-						cardSpecialEffects.addArray(card[5]);
+						specialEffects.addArray(card[5]);
 					}
 					if(this.node.image.parentNode.classList.length>0)
 						this.node.image.parentNode.classList.forEach(element => {
@@ -23192,11 +23192,11 @@
 								this.node.image.parentNode.classList.remove(element);
 							}
 						});
-					if(cardSpecialEffects.length){
-						for(var i=0;i<cardSpecialEffects.length;i++){
-							this.node.image.parentNode.classList.add(cardSpecialEffects[i]);
+					if(specialEffects.length){
+						for(var i=0;i<specialEffects.length;i++){
+							this.node.image.parentNode.classList.add(specialEffects[i]);
 						}
-						this.specialEffects=cardSpecialEffects;
+						this.specialEffects=specialEffects;
 					}
 					if(_status.connectMode&&!game.online&&lib.cardOL&&!this.cardid){
 						this.cardid=get.id();
@@ -30056,7 +30056,7 @@
 					specialEffects=name.specialEffects;
 				}
 				else
-					specialEffects=null;
+					specialEffects=[];
 				tags=name.tags;
 			}
 			if(typeof name!='string'){
