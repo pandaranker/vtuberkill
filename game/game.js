@@ -30052,7 +30052,11 @@
 				number=name.number;
 				suit=name.suit;
 				name=name.name;
-				specialEffects=name.specialEffects;
+				if(name.specialEffects){
+					specialEffects=name.specialEffects;
+				}
+				else
+					specialEffects=null;
 				tags=name.tags;
 			}
 			if(typeof name!='string'){
