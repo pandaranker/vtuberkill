@@ -1788,14 +1788,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			taiyangzhiyin:'太阳之音',
 			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
             renjiazhizhu:'仁家之主',
-            renjiazhizhu_info:'主公技。你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
+            renjiazhizhu_info:'<font color=#ff4>主公技</font> 你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
             renjiazhizhu_tag:'仁家之主',
 
             YozoraMel:'夜空梅露',
             juhun:'聚魂',
-            juhun_info:'锁定技。一回合一次，当一名角色受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。当你的手牌数为全场最多时，摸牌阶段你少摸一张牌。',
+            juhun_info:'<font color=#f66>锁定技</font> 一回合一次，当一名角色受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。当你的手牌数为全场最多时，摸牌阶段你少摸一张牌。',
             meilu:'没露',
-            meilu_info:'锁定技。准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
+            meilu_info:'<font color=#f66>锁定技</font> 准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
 
             AkaiHaato:'赤井心',
             liaolishiyan:'料理实验',
@@ -1813,9 +1813,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
             RobokoSan:'萝卜子',
             gaonengzhanxie:'高能战械',
-            gaonengzhanxie_info:'锁定技，你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
+            gaonengzhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
             ranyouxielou:'燃油泄漏',
-            ranyouxielou_info:'锁定技，你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
+            ranyouxielou_info:'<font color=#f66>锁定技</font> 你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
 
             ShirakamiFubuki:'白上吹雪',
             baihuqingguo:'白狐倾国',
@@ -1828,7 +1828,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
             zhongjian:'中坚',
             zhongjian1:'中坚',
-            zhongjian_info:'主公技。每轮限一次。回合外，当一张通常锦囊牌指定目标后，你可以选择一名同势力其他角色，该角色的手牌在本回合视为【无懈可击】。',
+            zhongjian_info:'<font color=#ff4>主公技</font> 每轮限一次。回合外，当一张通常锦囊牌指定目标后，你可以选择一名同势力其他角色，该角色的手牌在本回合视为【无懈可击】。',
 
 			AkiRosenthal: '亚琦罗森塔尔',
 			meiwu: '魅舞',
@@ -1842,7 +1842,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yemuxingyong_info: '每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为“咏”。然后其他角色也可将一张黑色牌置于你武将牌上。出牌阶段，你可获得一张“咏”，然后立即将两张手牌当【过河拆桥】或【酒】使用。',
 			yong: '咏',
 			xinghejianduei:'星河舰队',
-            xinghejianduei_info:'觉醒技。一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加“咏”的数量。',
+            xinghejianduei_info:'<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加“咏”的数量。',
 
 			SakuraMiko: '樱巫女',
 			haodu: '豪赌',

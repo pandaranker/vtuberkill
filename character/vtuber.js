@@ -1109,7 +1109,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             qixu3:'杀启虚',
             qixu4:'启虚',
             qixu5:'闪启虚',
-            qixu_info:'主公技。当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
+            qixu_info:'<font color=#ff4>主公技</font> 当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
 			
 			InuyamaTamaki:'犬山玉姬',
 			InuyamaTamaki_info:'犬山玉姬',
@@ -1130,7 +1130,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiajiupaidui:'假酒派对',
 			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
 			kuangzuiluanwu:'狂醉乱舞',
-			kuangzuiluanwu_info:'限定技，出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
+			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		},
 	};
 });

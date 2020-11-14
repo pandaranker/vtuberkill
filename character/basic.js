@@ -868,7 +868,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			luecai: '掠财',
 			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为“财布”。准备阶段，若你的武将牌上有“财布”，你可以移去任意数量的”财布“摸等量的牌。',
 			xiaoyan: '嚣言',
-			xiaoyan_info: '锁定技。你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
+			xiaoyan_info: '<font color=#f66>锁定技</font> 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
 			caibu: '财布',
 
 
@@ -883,7 +883,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。', 
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
-			xinluezhili_info: '主公技。当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
+			xinluezhili_info: '<font color=#ff4>主公技</font> 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
 
 			Siro: '电脑少女小白',
 			zhongxinghezou: '众星合奏',
@@ -896,7 +896,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			enfan: '恩返',
 			enfan_info: '发动过“啾猫”的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力',
 			shiqi: '势起',
-			shiqi_info: '锁定技。准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
+			shiqi_info: '<font color=#f66>锁定技</font> 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
 
 			XiaDi: '下地',
 			yinliu: '引流',
@@ -909,7 +909,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
-			milijianying_info: '锁定技。你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
+			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
 		},

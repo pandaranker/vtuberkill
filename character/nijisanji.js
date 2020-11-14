@@ -1888,13 +1888,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             fuheijs:'腹黑JS',
             fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
             leiyan:'雷言',
-            leiyan_info:'锁定技。你的［雷杀］可以指定1-3个目标，并无视角色防具',
+            leiyan_info:'<font color=#f66>锁定技</font> 你的［雷杀］可以指定1-3个目标，并无视角色防具',
             xiaozhangduandai:'嚣张缎带',
             xiaozhangduandai_info:'觉醒技。当你处于濒死状态时，立即恢复3点体力，摸3张牌并获得技能（咏春）',
             yongchun:'咏春',
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
-			tinenghuifu1_info:'锁定技。当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
+			tinenghuifu1_info:'<font color=#f66>锁定技</font> 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
 			dianmingguzhen:'电鸣鼓震',
 			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
 
@@ -1925,7 +1925,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bingdielei:'并蒂恶蕾',
 			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
 			qiujinzhiling:'囚禁指令',
-			qiujinzhiling_info:'主公技，锁定技。其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
+			qiujinzhiling_info:'<font color=#ff4>主公技</font> <font color=#f66>锁定技</font> 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
 			
 			SuzukaUtako: '铃鹿诗子',
 			meici: '美词',
@@ -1941,7 +1941,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			UshimiIchigo: '宇志海莓',
 			kuangbaoshuangren: '狂暴双刃',
-			kuangbaoshuangren_info: '锁定技。你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
+			kuangbaoshuangren_info: '<font color=#f66>锁定技</font> 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
 			guangsuxiabo: '光速下播',
 			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
 

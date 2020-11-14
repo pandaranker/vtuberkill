@@ -198,7 +198,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.cancel();
 					}
 					'step 1'
-					var target = trigger.player;				
+					var target = trigger.player;
 			//			if(target.getEquip(1)){
 							if(result.index==1){
 								player.line(target);
@@ -501,7 +501,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(result.cards){
 						var target = trigger.player;
-						target.gain(result.cards,player,'giveAuto');
+						player.$giveAuto(result.cards,target);
+						target.gain(result.cards,player);
 						target.markSkill('youyi');
 						target.addTempSkill('youyishiyue','phaseAfter');
 						target.addTempSkill('youyishiyue_lose','phaseEnd');
@@ -513,17 +514,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{				
 					dam:{
 						trigger:{global:'damageBegin'},
+						priority:80,
+						check:function(event,player){
+							return (get.attitude(player,event.player)>0);
+						},	
 						filter:function(event,player){
-						if(event.source==player||!event.source)	return false;
+							if(event.source==player||!event.source)	return false;
 							return event.source.hasSkill('youyishiyue');
 						},
 						prompt:'是否收回“誓约”牌',
-						content:function(){
-						trigger.num=0;
-						player.line(trigger.source,'thunder');
-						player.gain(player.storage.youyi,this.trigger.source,'give2');
-						trigger.source.removeSkill('youyishiyue');
-						trigger.source.updateMarks();
+							content:function(){
+							trigger.num=0;
+							player.line(trigger.source,'thunder');
+							trigger.source.$giveAuto(result.cards,player);
+							player.gain(player.storage.youyi,trigger.source);
+							trigger.source.removeSkill('youyishiyue');
+							trigger.source.updateMarks();
 						}
 					},
 				},
@@ -575,7 +581,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							if(!(event.getParent().cards||event.cards))											return false;
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
-							if(event.getParent().card!=null&&get.name(event.getParent().card) =='shandian')		return false;
+							if(event.getParent().card!=null&&(get.name(event.getParent().card) =='shandian'||get.name(event.getParent().card) =='fulei'))		return false;
 		//					console.log(event);
 							if(event.cards){
 								for(var i=0;i<event.cards.length;i++){
@@ -626,7 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 								var shi = _status.event.card;
 								result.targets[0].recover();
-								player.lose(shi,'toStorage');
+								player.lose(shi);
 							}
 						},
 					},
@@ -665,7 +671,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!evt||!evt.card) return true;
 						var ark=[get.suit(evt.card)];
 						for(var i=2;;i++){
-							var evt=player.getLastUsed(1);
+							var evt=player.getLastUsed(i);
 							if(!evt||!evt.card){
 								ark.push(get.suit(evt.card));
 							}
@@ -694,7 +700,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.cards){
 						if(get.name(result.cards[0],'player')=='jiu'||
-							(player.hasMark('hongshaoturou')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
+							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
 						player.chooseTarget('选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
 							return get.attitude(player,target)*(target.isDamaged()?2:1);
@@ -742,7 +748,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							game.broadcastAll(function(player, buff){
 								player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
 							}, player, buff);
-				},			
+				},	
+				onremove: function(player, skill) {
+					player.removeSkill('hongshaoturou_shao');
+				},		
 			},
 			hongshaoturou_viewAs:{
 				mod:{
@@ -772,8 +781,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				onremove: function(player, skill) {
 					game.broadcastAll(function(player){
-						player.node.hongshaoturou.delete();
-						delete player.node.hongshaoturou;
+						if(player.node.hongshaoturou){
+							player.node.hongshaoturou.delete();
+							delete player.node.hongshaoturou;
+						}
 					}, player);
 				},
 				filter:function(event,player){
@@ -975,7 +986,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					console.log('OK');
 					'step 3'
 					if(result.bool){
-						console.log(result);
 						_status.event.target = result.targets[0];
 						var target = result.targets[0];
 						console.log(target);
@@ -1251,27 +1261,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-	/*		cha: {
-				init: function(player) {
-					if (!player.storage.yong) {
-						player.storage.yong = [];
-					}
-				},
-				locked:true,
-				notemp:true,
-				marktext: '茶',
-				intro: {
-					content: 'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							game.log(storage,'被置入了弃牌堆');
-							storage.length=0;
-						}
-					},
-				}
-			},*/
 			chahui:{
 				forced:false,
 				priority:543,
@@ -1307,7 +1296,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								game.hasPlayer(function(cur){
 									if(cur.hasSkill('chahui'))	player = cur;
 								});
-								console.log(player);
 								if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(card)=='spade')
 								||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(card)=='diamond')
 								||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(card)=='club')
@@ -1350,7 +1338,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				locked:true,
 				priority:543,
 				intro:{
-					name:'小兔子标记',
+					name:'<font color=#ee2>小兔子标记</font>',
 					content:'成为了爱丽丝的小兔子',
 				},
 				trigger:{player:'useCardAfter'},
@@ -1376,25 +1364,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						_status.event.target = result.targets[0];
-						game.broadcastAll(function(target){
+						game.broadcastAll(function(target,trigger){
 							var next = target.chooseCard('h',1,'是否紧跟小兔子之后使用一张牌');
 							next.set('forced',false);
 							next.set('ai',function(card){
 								if(get.name(card)=='shan')	return 10;
-								var player;
-								game.hasPlayer(function(cur){
-									if(cur.hasSkill('chahui'))	player = cur;
-								});
-								console.log(player);
-								if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(card)=='spade')
-								||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(card)=='diamond')
-								||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(card)=='club')
-								||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(card)=='heart')
+								if((get.suit(trigger.card)=='heart' && get.suit(card)=='spade')
+								||(get.suit(trigger.card)=='spade' && get.suit(card)=='diamond')
+								||(get.suit(trigger.card)=='diamond' && get.suit(card)=='club')
+								||(get.suit(trigger.card)=='club' && get.suit(card)=='heart')
 								){
 									return 100;
 								}
 							});
-						}, _status.event.target);
+						}, _status.event.target, trigger);
 					}
 					else{
 						event.finish();
@@ -1402,10 +1385,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(result.bool){
 						event.card = result.cards[0];
-						if((player.storage.xianjing[player.storage.xianjing.length-1]=='heart' && get.suit(event.card)=='spade')
-						||(player.storage.xianjing[player.storage.xianjing.length-1]=='spade' && get.suit(event.card)=='diamond')
-						||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(event.card)=='club')
-						||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(event.card)=='heart')
+						if((get.suit(trigger.card)=='heart' && get.suit(event.card)=='spade')
+						||(get.suit(trigger.card)=='spade' && get.suit(event.card)=='diamond')
+						||(get.suit(trigger.card)=='diamond' && get.suit(event.card)=='club')
+						||(get.suit(trigger.card)=='club' && get.suit(event.card)=='heart')
 						){
 							console.log(event.card);
 							player.gain(event.card);
@@ -1460,20 +1443,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.duandai = 0;
 					player.unmarkSkill('duandai');
 				}
-			}
+			},
 			
 		}, 
 		translate:{
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '锁定技。你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不可被响应的杀。',
+			yuchong_info: '<font color=#f66>锁定技</font> 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不可被响应的杀。',
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可以弃一张牌令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
 			zhimao_info: '当你成为非延时性锦囊牌的目标时，若来源在你攻击范围外，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 			SisterClearie:'修女·克蕾雅',
 			zhenxin: '真信之诚',
-			zhenxin_info: '锁定技。防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
+			zhenxin_info: '<font color=#f66>锁定技</font> 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
 			zhuwei: '助危之心',
 			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			MinatoAqua:'湊阿库娅',
@@ -1491,11 +1474,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
-			shenghuang_info: '锁定技。当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
+			shenghuang_info: '<font color=#f66>锁定技</font> 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
 			renzhan: '瞬息刃斩',
 			renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
 			kuase: '夸色梦想',
-			kuase_info: '限定技，一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
+			kuase_info: '<font color=#f5c>限定技</font> 一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
 			
 			sp_MononobeAlice: '皇·物述有栖',
 			xianjing: '仙境奇遇',
@@ -1505,8 +1488,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duandai: '嚣张缎带',
 			duandai_info: '回合结束时，若本回合你使用牌完成过一组Alice序列，你可以回复所有体力。',
 			xiaotuzi: '小兔子',
-			xiaotuzi_info: '成为了爱丽丝的小兔子',
-			cha: '茶会',
+			xiaotuzi_info: '成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用',
 		},
 	};
 });
