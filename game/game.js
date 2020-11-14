@@ -30046,18 +30046,14 @@
 			}
 			game.saveConfig('recentCharacter',list,true);
 		},
-		createCard:function(name,suit,number,nature){
+		createCard:function(name,suit,number,nature,tags,specialEffects){
 			if(typeof name=='object'){
 				nature=name.nature;
 				number=name.number;
 				suit=name.suit;
 				name=name.name;
-				if(name.specialEffects){
-					specialEffects=name.specialEffects;
-				}
-				else
-					specialEffects=[];
 				tags=name.tags;
+				specialEffects=name.specialEffects;
 			}
 			if(typeof name!='string'){
 				name='sha';
