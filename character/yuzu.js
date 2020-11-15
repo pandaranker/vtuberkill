@@ -11,6 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
+			Paryi:['male','qun',4,['tiantang','haoren']],
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
 		},
@@ -19,6 +20,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SisterClearie:	'“今日也愿神加护于你……”',
 			MinatoAqua:'“余裕余裕~”',
 			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
+			Paryi:'kimo~',
 			sp_MinatoAqua:'',
 			sp_MononobeAlice:'',
 		},
@@ -383,8 +385,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						usable:1,
 						filter:function(event,player){
 							return game.hasPlayer(function(cur){
-								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
-								||(cur.hp%player.hp==0&&cur.hp>0);
+								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)||(cur.hp%player.hp==0);
 							});
 						},
 						content:function(){
@@ -794,6 +795,181 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.damage('fire');
 					player.removeSkill('hongshaoturou_shao');	
 				}
+			},
+			//帕里
+			paryi:{
+				marktext:"P",
+				locked:true,
+				intro:{
+					name:'帕里家常',
+					content:function (storage,player,skill){
+						return '已经历了'+storage+'次【天堂之扉】';
+					},
+				},
+			},
+			tiantang:{
+				priority:987,
+				global:'paryi',
+				trigger:{
+					global: 'phaseBegin'
+				},
+				priority:81,
+				filter:function(event, player){
+					if((!(player.storage.haoren===true))&&event.player==player)	return false;
+					if(player.countCards('he')<(event.player.storage.paryi||1))	return false;
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var num = trigger.player.storage.paryi||1;
+					player.chooseToDiscard(num,'he');
+					'step 1'
+					if(result.bool){
+						if(!(player.storage.haoren===true)){
+							player.storage.haoren++;
+						}
+						player.markSkill('haoren');
+						var target = trigger.player;
+						if(target.storage.paryi>0){
+							target.storage.paryi++;
+						}
+						else{
+							target.storage.paryi=1;
+						}
+						target.markSkill('paryi');
+						target.syncStorage('paryi');
+						event.videoId = lib.status.videoId++;
+						var suitlist = [
+							['heart', '', 'heart', 'heart', 'div2'],
+							['diamond', '', 'diamond', 'diamond', 'div2'],
+							['club', '', 'club', 'club', 'div2'],
+							['spade', '', 'spade', 'spade', 'div2']
+						];
+						game.broadcastAll(function(id, suitlist){
+							var dialog=ui.create.dialog('天堂之扉 声明');
+							dialog.addText('花色');
+							dialog.add([suitlist, 'vcard']);
+							dialog.videoId = id;
+						}, event.videoId, suitlist);
+					}
+					else event.finish();
+					'step 2'
+					var next = player.chooseButton(1 ,true);
+					next.set('dialog',event.videoId);
+					'step 3'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+						player.storage.tiantang = result.links[0][2];
+						game.log('帕里声明了'+get.translation(player.storage.tiantang));
+						var target = trigger.player;
+						var list= [['观看并弃置声明花色牌'],['摸两张牌']];;
+						if(!target.countCards('he'))	list.shift();
+						event.videoId = lib.status.videoId++;
+						game.broadcastAll(function(id, choicelist){
+							var dialog=ui.create.dialog('选择一项');
+							choicelist.forEach(element=>{
+								dialog.add([element,'vcard']);
+							})
+							dialog.videoId = id;
+						}, event.videoId, list);
+					}
+					else event.finish();
+					'step 4'
+					player.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('tiantang'));
+					'step 5'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+                        result.links.forEach(element => {
+                            if(element[2]=='观看并弃置声明花色牌'){
+                        		var next=player.discardPlayerCard("弃置一张声明花色的牌", trigger.player, 'he').set('visible', true);
+								next.set('filterButton',function(card){
+									return get.suit(card.link)==player.storage.tiantang;
+								});
+								var fC=0;
+								trigger.player.getCards('he').forEach(function(tB){
+									if(get.suit(tB)==player.storage.tiantang)	fC++;
+								})
+								if(fC){
+									next.set('forced',true);
+								}
+								trigger.player.phaseUse();
+								if(player.storage.haoren===true){
+									trigger.player.addTempSkill('tiantangzhifei_yisheng','phaseUseEnd');
+									trigger.player.addTempSkill('yinliu','phaseUseEnd');
+								}
+                            }
+                            if(element[2]=='摸两张牌'){
+								trigger.player.draw(2);
+								trigger.player.addTempSkill('tiantangzhifei_xianzhi','phaseEnd');
+								trigger.player.storage.tiantangzhifei_xianzhi=player.storage.tiantang;
+                            }
+                        });
+					}
+				},
+			},
+			tiantangzhifei:{
+				group:['tiantangzhifei_yisheng','tiantangzhifei_xianzhi'],
+				subSkill:{
+					yisheng:{
+						marktext:"流",
+						locked:true,
+						intro:{
+							name:'回流',
+							content:function (storage,player,skill){
+								return '暂时获得技能【引流】';
+							},
+						},
+						mark:true,
+					},
+					xianzhi:{
+						marktext:"断",
+						locked:true,
+						intro:{
+							name:'断臂',
+							content:function (storage,player,skill){
+								return '只能使用花色为'+get.translation(storage)+'的牌';
+							},
+						},
+						mark:true,
+						mod:{
+							cardEnabled:function(card,player,now){
+								return game.hasPlayer(function(cur){
+									if(cur.hasSkill('tiantang')){
+										return get.suit(card)==cur.storage.tiantang;
+									}
+								});
+								
+							},
+						},
+					},
+				}
+			},
+			haoren:{
+				skillAnimation:true,
+				unique:true,
+				juexingji:true,
+				forced:true,
+				init:function(player){
+					player.storage.haoren=0;
+				},
+				marktext:"井",
+				locked:true,
+				intro:{
+					name:'挖井人',
+					content:function (storage,player,skill){
+						return '已发动了'+storage+'次【天堂之扉】';
+					},
+				},
+				trigger:{player:'tiantangAfter'},
+				filter:function(event,player){
+					return player.storage.haoren>game.countPlayer();
+				},
+				content:function(){
+					player.loseMaxHp();
+					player.storage.haoren=true;
+					player.awakenSkill('haoren');
+					player.unmarkSkill('haoren');
+				},
 			},
 			//圣皇夸
 			shenghuang:{
@@ -1317,7 +1493,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						||(player.storage.xianjing[player.storage.xianjing.length-1]=='diamond' && get.suit(event.card)=='club')
 						||(player.storage.xianjing[player.storage.xianjing.length-1]=='club' && get.suit(event.card)=='heart')
 						){
-							console.log(event.card);
 							player.gain(event.card);
 							game.log(player, '获得了', event.card)
 							player.chooseUseTarget(event.card, true);
@@ -1390,7 +1565,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						||(get.suit(trigger.card)=='diamond' && get.suit(event.card)=='club')
 						||(get.suit(trigger.card)=='club' && get.suit(event.card)=='heart')
 						){
-							console.log(event.card);
 							player.gain(event.card);
 							game.log(player, '获得了', event.card)
 							player.chooseUseTarget(event.card, true);
@@ -1471,6 +1645,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pekoyu_info:'回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou:'自煲自足',
 			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
+			Paryi:'帕里',
+			tiantang:'天堂之扉',
+			tiantang_info:'其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
+			haoren:'好人一生',
+			haoren_info:'<font color=#fcd>觉醒技</font> 你发动“天堂之扉”后，若发动次数大于存活人数，你扣减1点体力上限，将“天堂之扉”的“其他”改为“一名”；且在“天堂之扉”的额外出牌阶段内，当前回合角色获得“引流”。',
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
