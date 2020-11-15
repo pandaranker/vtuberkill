@@ -75,7 +75,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//		var time = _status.event.time;
 					game.broadcastAll(function(target, suits){
 						console.log(suits);
-						var next=target.discardPlayerCard("弃置一张与亮出牌花色相同的牌", target, 'he');
+						var next=target.discardPlayerCard("弃置与亮出牌花色和数量相同的牌", target, 'he');
 						next.set('selectButton',suits.length);
 						next.set('filterButton',function(card){
 							if(ui.selected.buttons.length){

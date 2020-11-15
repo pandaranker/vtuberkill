@@ -880,7 +880,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
                         result.links.forEach(element => {
-                            if(element[2]=='观看并弃一张声明花色的牌'){
+                            if(element[2]=='观看并弃置声明花色牌'){
                         		var next=player.discardPlayerCard("弃置一张声明花色的牌", trigger.player, 'he').set('visible', true);
 								next.set('filterButton',function(card){
 									return get.suit(card.link)==player.storage.tiantang;
