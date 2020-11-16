@@ -80,7 +80,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			game.gameDraw(game.zhu||_status.firstAct||game.me);
 			if(_status.connectMode&&lib.configOL.change_card) game.replaceHandcards(game.players.slice(0));
-			game.phaseLoop(game.zhu||_status.firstAct||game.me);
+			game.phaseLoopLonglaoguan(game.zhu||_status.firstAct||game.me);
 			game.zhu.showGiveup();
 		},
 		game:{
@@ -775,6 +775,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 				});
 			},
+			phaseLoopLonglaoguan:function(player){
+				var next=game.createEvent('phaseLoop');
+				next.player=game.zhu.next;
+				next.setContent(function(){
+					"step 0"
+					for(var i=0;i<lib.onphase.length;i++){
+						lib.onphase[i]();
+					}
+					player.phase();
+					"step 1"
+					if(!game.players.contains(event.player.next)){
+						event.player=game.findNext(event.player.next);
+					}
+					else{
+						event.player=event.player.next;
+					}
+					if(game.zhu.storage.changeState){
+						event.player=game.zhu;
+						game.zhu.storage.changeState=false;
+					}
+					event.goto(0);
+				});
+			}
 		},
 		translate:{
 			zhu:"龙",
@@ -797,6 +820,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			elongkeke_info: '死亡时，进入恶龙形态',
 			yanzheshengdun:'演者圣盾',
 			yanzheshengdun_info:'进入此形态后，你随机获得一个本局未出现的Hololive武将的所有技能，然后增加该武将的体力上限与体力值。',
+			zhengzhengrishang:'蒸蒸日上',
+			zhengzhengrishang_info:'锁定技，摸牌阶段结束时，你改为将手牌调整至全场唯一最多。若已为最多，则改为获得一张【逼宫】',
+			yugaimizhang:'欲盖弥彰',
+			yugaimizhang_info:'锁定技，你的手牌上限始终为5。一轮开始时，亮出牌堆顶牌，本轮内你成为此花色牌目标的回合结束时，你可以使用一张牌，此牌可以额外指定任意目标。',
+			zuoyututan:'坐於涂炭',
+			zuoyututan_info:'锁定技，转换技，一轮开始时，①.以宝物，防御马，进攻马，防具，武器的顺序废除所有反抗军的一个装备栏。②.所有反抗军手牌上限-1。'
 			// _feiyang:"飞扬",
 			// _bahu:"跋扈",
 			// _feiyang_info:"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
@@ -1018,7 +1047,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				skillAnimation:true,
 				animationColor:'thunder',
 				filter:function(event){
+					event.player.setAvatar('KiryuuCoco','AjatarCoco');
 					return true;
+				},
+				contentBefore:function(){
 				},
 				content:function(){
 					'step 0'
@@ -1030,16 +1062,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					var libCharacter={};
 					var list=[];
-					// for(var i=0;i<lib.configOL.characterPack.length;i++){
-					// 	var pack=lib.characterPack[lib.configOL.characterPack[i]];
-					// 	for(var j in pack){
-					// 		if(j=='zuoci') continue;
-					// 		if(lib.character[j]) libCharacter[j]=pack[j];
-					// 	}
-					// }
 					for(var i in lib.character){
-						//if(lib.filter.characterDisabled(i,libCharacter)) continue;
-						//if(i.indexOf('lingju')!=-1) continue;
 						if(i=='KiryuuCoco'||i=='AjatarCoco') continue;
 						var group=lib.character[i][1];
 						if(group=='shen') continue;
@@ -1059,34 +1082,89 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.zhu.hp=1+Number(lib.character[newPerson][2]);
 					'step 3'
 					game.zhu.update();
-				},
-			},
-
-			
-			/** 恶龙技能 */
-			yanzheshengdun:{
-				
-			},
-			/**从反抗军先锋开始，所以跳过初始第一回合 */
-			_skipFirstPhase:{
-				trigger:{global:'phaseBefore'},
-				forced:true,
-				silent:true,
-				popup:false,
-				filter:function(event,player){
-					return (event.player==game.zhu)&&(game.phaseNumber==0);
-				},
-				content:function(){
+					game.zhu.storage.changeState=true;
+					'step 4'
 					var evt=_status.event.getParent('phase');
 					if(evt){
 						//game.resetSkills();
 						_status.event=evt;
-						game.phaseNumber=0;
 						_status.event.finish();
 						// _status.event.untrigger(true);
 					}
 				},
 			},
+			
+			/** 恶龙技能 */
+			yanzheshengdun:{
+				
+			},
+			zhengzhengrishang:{
+				trigger:{player:'phaseDrawEnd'},
+				frequent:true,
+				filter:function(event,player){
+					return player==game.zhu;
+				},
+				content:function(){
+					'step 0'
+					if(player.isMaxHandcard(false)){
+						event.finish();
+					}
+					else{
+						event.maxHandcardPlayer=game.filterPlayer(function(current){
+							return current.isMaxHandcard;
+						});
+					}
+					'step 1'
+					let getcard = event.maxHandcardPlayer[0].countCards('h')-player.countCards('h');
+					player.draw(getcard);
+				},
+				ai:{
+					threaten:1.3
+				}
+			},
+			yugaimizhang:{
+				trigger:{global:'roundStart'},
+				forced: true,
+				content:function(){
+
+				},
+				group:['yugaimizhang_limit','yugaimizhang_show'],
+				subSkill:{
+					limit:{
+						mod:{
+							maxHandcard:function (player,num){
+								return 5;
+							},
+						}
+					},
+					show:{
+
+					}
+				}
+			},
+			zuoyututan:{
+
+			},
+			// /**从反抗军先锋开始，所以跳过初始第一回合 */
+			// _skipFirstPhase:{
+			// 	trigger:{global:'phaseBefore'},
+			// 	forced:true,
+			// 	silent:true,
+			// 	popup:false,
+			// 	filter:function(event,player){
+			// 		return (event.player==game.zhu)&&(game.phaseNumber==0);
+			// 	},
+			// 	content:function(){
+			// 		var evt=_status.event.getParent('phase');
+			// 		if(evt){
+			// 			//game.resetSkills();
+			// 			_status.event=evt;
+			// 			game.phaseNumber=0;
+			// 			_status.event.finish();
+			// 			// _status.event.untrigger(true);
+			// 		}
+			// 	},
+			// },
 			/**使用技能实现给龙皇插入回合 */
 			_anotherPhase:{
 				trigger:{player:'phaseEnd'},
