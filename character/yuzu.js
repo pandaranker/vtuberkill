@@ -441,16 +441,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(history[i].targets[j]==player.storage.hangaohouxu[1])	heaG=0;
 						}
 					}
-					if(diaG&&player.getCards('h').contains(player.storage.hangaohouxu[0])){
-						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
-							return get.suit(ca)=='diamond';
-						}),'giveAuto');
-					}
 					if(heaG){
 						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
 							return get.suit(ca)=='heart';
 						}),'giveAuto');
 					}
+					if(diaG&&!player.getCards('h').contains(player.storage.hangaohouxu[0])){
+						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
+							return get.suit(ca)=='diamond';
+						}),'giveAuto');
+					}
+					player.removeSkill('hangaohouxu');
 				}
 			},
 			yinglve:{
@@ -472,7 +473,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='shunshou'){
-							return range[1]=range[1]+player.countDisabled();
+							return range[1]=player.countDisabled()||range[1];
 						}
 					},
 					maxHandcard:function(player,num){
