@@ -49,6 +49,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				["heart","8","bigong"],
 			];
 			lib.card.list.addArray(list);
+			ui.create.cardsAsync();
 			game.fixedPile=true;
 			if(_status.connectMode){
 				game.waitForPlayer(function(){
@@ -871,6 +872,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			bigong_info: '对一名反抗军使用，令其选择一项：本轮内失去所有技能，或交给桐生可可两张不同类型的牌，使用后移出游戏。',
 			bigong_clear: '逼宫后续',
 			chuanjia_po: 'fuck',
+
+			mode_longlaoguan_card_config:'龙牢关卡牌',
 		},
 		element:{
 			player:{
@@ -930,6 +933,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke']],
 				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'zhengzhengrishang','yugaimizhang']]
 			}
+		},
+		cardPack:{
+			mode_longlaoguan:['dulun','chuanjia','zhinengdulun','longjiao','longwei','takeover','bigong']
 		},
 		get:{
 			attitude:function(from,to){
