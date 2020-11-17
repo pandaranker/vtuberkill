@@ -30063,10 +30063,10 @@
 				noclick=true;
 				suit=null;
 			}
-			if(!suit&&lib.card[name].cardcolor){
+			if(!suit&&lib.card[name]&&lib.card[name].cardcolor){
 				suit=lib.card[name].cardcolor;
 			}
-			if(!nature&&lib.card[name].cardnature){
+			if(!nature&&lib.card[name]&&lib.card[name].cardnature){
 				nature=lib.card[name].cardnature;
 			}
 			if(typeof suit!='string'){
