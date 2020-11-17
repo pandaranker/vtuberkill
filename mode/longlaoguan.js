@@ -784,6 +784,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						lib.onphase[i]();
 					}
 					player.phase();
+					if(_status.roundStart!=game.zhu){
+						_status.roundStart=game.zhu;
+					}
 					"step 1"
 					if(!game.players.contains(event.player.next)){
 						event.player=game.findNext(event.player.next);
@@ -895,6 +898,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(from.identity==to.identity) return 10;
 				return -10;
 			},
+		},
+		card:{
+			
 		},
 		skill:{
 			/** 龙皇技能*/
