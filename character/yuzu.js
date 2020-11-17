@@ -12,6 +12,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
 			Paryi:['male','qun',4,['tiantang','haoren']],
+			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
+
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
 		},
@@ -21,6 +23,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MinatoAqua:'“余裕余裕~”',
 			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
 			Paryi:'kimo~',
+			Civia:'“听我说，DD会带来世界和平~”',
+
 			sp_MinatoAqua:'',
 			sp_MononobeAlice:'',
 		},
@@ -971,6 +975,139 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.unmarkSkill('haoren');
 				},
 			},
+			//Civia
+			kuangxin:{
+				trigger:{global:'useCardToPlayered'},
+				usable:1,
+				filter:function(event,player){
+					if(event.targets.length!=1)		return false;
+					if(event.targets[0]==player)	return false;
+					return get.tag(event.card,'damage')&&event.targets[0].countCards('h')&&player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					player.choosePlayerCard(trigger.targets[0],'h',true).set('visible', true);
+					game.log(player,'观看了',trigger.targets[0],'的手牌')
+					'step 1'
+					if(result.bool){
+						event.card = result.cards[0];
+						player.choosePlayerCard(player,'h',true);
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						trigger.targets[0].gain(result.cards[0],player,'giveAuto');
+						player.gain(event.card,trigger.targets[0],'giveAuto');
+						trigger.targets[0].addTempSkill('kuangxin2','phaseEnd');
+						trigger.targets[0].storage.kuangxin2.add(trigger.card);
+						trigger.targets[0].storage.kuangxin2.add(player);
+						player.storage.kuangxin_draw.add(trigger.card);
+						player.storage.kuangxin_draw.add(trigger.targets[0]);
+					}
+				},
+				group:['kuangxin_draw','kuangxin_back'],
+				subSkill:{
+					draw:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=[];
+						},
+						trigger:{global:'useCardAfter'},
+						forced:true,
+						priority:66,
+						filter:function(event,player){
+							if(!(player.storage.kuangxin_draw.contains(event.targets[0])&&player.storage.kuangxin_draw.contains(event.card)))	return false
+							if(!event.targets[0].storage.kuangxin2)		return false;
+							return event.targets[0].storage.kuangxin2.contains(player);
+						},
+						content:function(){
+							player.draw();
+							player.storage.kuangxin_draw[1].draw();
+						},
+					},
+					back:{
+						trigger:{global:'phaseEnd'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.kuangxin_draw)
+							player.storage.kuangxin_draw=[];
+						},
+
+					}
+				},
+			},
+			kuangxin2:{
+				firstDo:true,
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
+				trigger:{
+	//				player:['damageCancelled','damageZero'],
+	//				target:['shaMiss','useCardToExcluded'],
+					player:['damage'],
+				},
+				charlotte:true,
+				filter:function(event,player){
+					return player.storage.kuangxin2&&event.card&&player.storage.kuangxin2.contains(event.card);
+				},
+				silent:true,
+				forced:true,
+				popup:false,
+				priority:14,
+				content:function(){
+	//				player.draw();
+	//				console.log(player.storage.kuangxin2);
+	//				player.storage.kuangxin2[1].draw();
+	//				player.storage.kuangxin2.remove(trigger.card);
+	//				if(!player.storage.kuangxin2.length) 
+					player.removeSkill('kuangxin2');
+				},
+			},
+			danyan:{
+				trigger:{player:'loseEnd'},
+				priority:22,
+				filter:function(event,player){
+					console.log(event);
+					return event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard');
+				},
+				content:function(){
+					'step 0'
+					event.cards = trigger.cards;
+					var next=player.chooseCardButton(1,'选择使用的牌',event.cards);
+		//			next.set('filterButton',function(button){
+		//				return player.canUse(button.link,false);
+		//			});;
+					'step 1'
+					if(result.bool){
+						var card = result.links[0];
+						player.chooseUseTarget(card,true,'noanimate','nopopup');
+					}
+
+				},
+			},
+			qingjie:{
+				mod:{
+					globalFrom:function(from,to,distance){
+						if(distance>1&&!(to.getEquip(3)||to.getEquip(4)))	return 1;
+					},
+					globalTo:function(from,to,distance){
+						var dist = distance;
+						if(to.countCards('h')>from.countCards('h'))
+						{
+							dist+=to.countCards('h')-from.countCards('h');
+						}
+	//					if(to.hp>from.hp){
+	//						dist+=to.hp-from.hp;
+	//					}
+						return dist;
+					},
+				},
+			},
+
 			//圣皇夸
 			shenghuang:{
 				init:function(player){
@@ -1633,23 +1770,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhenxin_info: '<font color=#f66>锁定技</font> 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
 			zhuwei: '助危之心',
 			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
-			MinatoAqua:'湊阿库娅',
-			kuali:'夸力满满',
-			kuali_info:'出牌/结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
-			youyi:'友谊誓约',
-			youyi_info:'每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
-			youyishiyue:'友谊誓约',
-			youyishiyue_info:'友谊誓约生效中',
-			UsadaPekora:'兔田佩克拉',
-			pekoyu:'嚣张咚鼓',
-			pekoyu_info:'回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
-			hongshaoturou:'自煲自足',
-			hongshaoturou_info:'出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
-			Paryi:'帕里',
-			tiantang:'天堂之扉',
-			tiantang_info:'其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
-			haoren:'好人一生',
-			haoren_info:'<font color=#fcd>觉醒技</font> 你发动“天堂之扉”后，若发动次数大于存活人数，你扣减1点体力上限，将“天堂之扉”的“其他”改为“一名”；且在“天堂之扉”的额外出牌阶段内，当前回合角色获得“引流”。',
+			MinatoAqua: '湊阿库娅',
+			kuali: '夸力满满',
+			kuali_info: '出牌/结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
+			youyi: '友谊誓约',
+			youyi_info: '每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
+			youyishiyue: '友谊誓约',
+			youyishiyue_info: '友谊誓约生效中',
+			UsadaPekora: '兔田佩克拉',
+			pekoyu: '嚣张咚鼓',
+			pekoyu_info: '回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
+			hongshaoturou: '自煲自足',
+			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
+			Paryi: '帕里',
+			tiantang: '天堂之扉',
+			tiantang_info: '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
+			haoren: '好人一生',
+			haoren_info: '<font color=#fcd>觉醒技</font> 你发动“天堂之扉”后，若发动次数大于存活人数，你扣减1点体力上限，将“天堂之扉”的“其他”改为“一名”；且在“天堂之扉”的额外出牌阶段内，当前回合角色获得“引流”。',
+			Civia: '希薇娅',
+			kuangxin: '旷心',
+			kuangxin2: '旷心',
+			kuangxin_info: '每回合限一次。其他角色成为【杀】或伤害类锦囊牌的唯一目标时，你可以观看其手牌并用一张手牌交换其中一张牌，此牌结算后，若其未受到此牌造成的伤害，你与其各摸一张牌。',
+			danyan: '弹言',
+			danyan_info: '你的牌因弃置而进入弃牌堆时,你可以使用其中的一张牌。',
+			qingjie: '轻捷',
+			qingjie_info: '<font color=#f66>锁定技</font> 你你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
