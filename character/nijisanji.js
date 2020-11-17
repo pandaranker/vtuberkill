@@ -18,6 +18,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
 			/**樋口枫 */
 			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
+			/**修女克蕾雅 */
+			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王',
@@ -25,8 +27,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShizukaRin:'静凛者，皇族也，因父败于樱巫女被贬为庶人，遂恨朝廷，先随绊爱征战，绊爱初建国，不慕名利，往杏国扶之，先取天水后取临沂，成杏国之伟业，元昭欲拜之国师，又避之，尝与美兔弈棋，战百余合，喜曰：美兔知我矣！遂安于彩虹',
 			IenagaMugi:'家长麦',
 			MitoTsukino:'彩虹社的红龙、英才教育者，虹社的统领者、lonely eater、全人类之委员长、脑控宗师、月之小丑、双生暗影、行为艺术家、至高魔主、怒涛聚集、海洋王者、永不沉寂者、彩虹社永远滴真神，月之美兔是也',
-			UshimiIchigo: "8岁的小学三年级学生，居住在海边的小镇上。本体为草莓奶昔色海蛞蝓的小姑娘。性格泼辣，有些假小子。每天放学以后就潜入深海。喜食粉色的裙带菜和各种草莓味的点心。",
-        },
+			UshimiIchigo: "8岁的小学三年级学生，居住在海边的小镇上。本体为草莓奶昔色海蛞蝓的小姑娘。性格泼辣，有些假小子。每天放学以后就潜入深海。喜食粉色的裙带菜和各种草莓味的点心。",			
+			SisterClearie:	'“今日也愿神加护于你……”',
+		},
         skill:{
             fuheijs:{
 				enable:"phaseUse",
@@ -1879,6 +1882,154 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+
+			//修女
+			zhenxin:{
+				group:['zhenxin_from' , 'zhenxin_to'],
+				subSkill:{
+					//防止每回合你第一次对体力值小于你的角色造成的伤害
+					from:{
+						trigger:{source: 'damageBefore' },
+						forced:true,
+						usable:1,
+						priority:12,
+						filter:function(event,player){
+							if(event.player==player)	return false;
+							return player.hp>event.player.hp;
+						},
+						content:function(){
+							trigger.num=0;
+						},
+					},
+					//防止体力值大于你的角色每回合对你造成的第一次伤害
+					to:{
+						trigger:{player: 'damageBefore' },
+						forced:true,
+						usable:1,
+						priority:24,
+						filter:function(event,player){
+							if(event.player!=player)	return false;
+							if(!event.source.hp)		return false
+							return player.hp<event.source.hp;
+						},
+						content:function(){
+							trigger.num=0;
+						},
+					}
+				}
+			},
+			zhuwei:{
+				global:'zhuwei_put',
+				group:['zhuwei_moveC'],
+				subSkill:{
+					put:{
+						trigger:{player:'phaseEnd'},
+						forced:false,
+						priority:24,
+						check: function(event, player) {
+							var target = game.findPlayer(function(cur){
+								return cur.hasSkill('zhuwei');
+							});
+							return target && get.attitude(player, target) > 0;
+						},
+						filter:function(event,player){
+							if(		!game.hasPlayer(function(cur){
+								return cur.hasSkill('zhuwei');
+							}))									return false;
+							if(player.hasSkill('zhuwei'))		return false;
+							return	!game.hasPlayer(function(cur){
+								return cur.countCards('h') < event.player.countCards('h');
+							})||!game.hasPlayer(function(cur){
+								return cur.hp < event.player.hp
+							});
+						},
+						content:function(){
+							player.draw();
+							var target = game.findPlayer(function(cur) {
+								return cur.hasSkill('zhuwei');
+							});
+							target.draw();
+						},
+					},
+					moveC:{
+						trigger:{global:'zhuwei_putAfter'},
+						forced:false,
+						filter:function(event,player){
+							var canbeM=function(a,b){
+									var es=a.getCards('e');
+									var c=0;
+									for(var i=0;i<es.length;i++){
+										if(b.isEmpty(get.subtype(es[i]))) c++;
+									}
+									return c;
+								}
+							return canbeM(player,event.player)||canbeM(event.player,player);
+						},	
+						content:function(){
+							'step 0'
+							game.broadcastAll(function(player, object){
+								var canbeM=function(a,b){
+									var es=a.getCards('e');
+									var c=0;
+									for(var i=0;i<es.length;i++){
+										if(b.isEmpty(get.subtype(es[i]))) c++;
+									}
+									return c;
+								};
+								var next=player.chooseTarget(function(card,player,target){
+										if((canbeM(player,object)>0&&target== player)||(canbeM(object,player)>0&&target== object))
+										return true;
+								});
+								next.set('multitarget',true);
+								next.set('targetprompt',['被移走']);
+								next.set('prompt',event.prompt||'你或其场上的一张装备牌');
+								next.set('forced',false);
+							}, player, trigger.player)
+							'step 1'
+							if(result.bool){
+								if(result.targets[0]==trigger.player)	result.targets.push(player);
+								if(result.targets[0]==player)	result.targets.push(trigger.player);
+								player.line2(result.targets,'green');
+								event.targets=result.targets;
+							}
+							else{
+								_status.event.finish();
+							}
+							'step 2'
+							game.delay();
+							'step 3'
+							if(targets.length==2){
+								player.choosePlayerCard('e',true,function(button){
+									var player=_status.event.player;
+									var targets0=_status.event.targets0;
+									var targets1=_status.event.targets1;
+									if(get.attitude(player,targets0)>get.attitude(player,targets1)){
+										if(get.value(button.link,targets0)<0) return 10;
+										return 0;
+									}
+									else{
+										return get.equipValue(button.link);
+									}
+								},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
+									var targets1=_status.event.targets1;
+									return targets1.isEmpty(get.subtype(button.link));
+								});
+							}
+							else{
+								_status.event.finish();
+							}
+							'step 4'
+							if(result.bool&&result.links.length){
+								var link=result.links[0];
+								event.targets[1].equip(link);
+								event.targets[0].$give(link,event.targets[1]);
+								game.delay();
+								event.result={bool:true};
+							}
+						}
+					}
+				},			
+			},
         },
         translate:{
 
@@ -1944,6 +2095,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuangbaoshuangren_info: '<font color=#f66>锁定技</font> 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
 			guangsuxiabo: '光速下播',
 			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
+			
+			SisterClearie:'修女·克蕾雅',
+			zhenxin: '真信之诚',
+			zhenxin_info: '<font color=#f66>锁定技</font> 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
+			zhuwei: '助危之心',
+			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 
         }
     }
