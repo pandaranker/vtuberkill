@@ -28,6 +28,28 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				game.prepareArena(4);
 			}
 			"step 1"
+			var list=[
+				//3张独轮车
+				["spade","5","dulun"],
+				["club","9","dulun"],
+				["diamond","11","dulun"],
+				//2张穿甲
+				["heart","13","chuanjia"],
+				["club","5","chuanjia"],
+				//
+				["diamond","1","zhinengdulun"],
+				//
+				["spade","2","longjiao"],
+				//
+				["spade","6","longwei"],
+				//
+				["heart","10","takeover"],
+				//2张逼宫
+				["club","9","bigong"],
+				["heart","8","bigong"],
+			];
+			lib.card.list.addArray(list);
+			game.fixedPile=true;
 			if(_status.connectMode){
 				game.waitForPlayer(function(){
 						lib.configOL.number=4;
@@ -777,7 +799,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			phaseLoopLonglaoguan:function(player){
 				var next=game.createEvent('phaseLoop');
-				next.player=game.zhu.next;
+				next.player=player;
 				next.setContent(function(){
 					"step 0"
 					for(var i=0;i<lib.onphase.length;i++){
@@ -828,11 +850,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			yugaimizhang:'欲盖弥彰',
 			yugaimizhang_info:'锁定技，你的手牌上限始终为5。一轮开始时，亮出牌堆顶牌，本轮内你成为此花色牌目标的回合结束时，你可以使用一张牌，此牌可以额外指定任意目标。',
 			zuoyututan:'坐於涂炭',
-			zuoyututan_info:'锁定技，转换技，一轮开始时，①.以宝物，防御马，进攻马，防具，武器的顺序废除所有反抗军的一个装备栏。②.所有反抗军手牌上限-1。'
+			zuoyututan_info:'锁定技，转换技，一轮开始时，①.以宝物，防御马，进攻马，防具，武器的顺序废除所有反抗军的一个装备栏。②.所有反抗军手牌上限-1。',
 			// _feiyang:"飞扬",
 			// _bahu:"跋扈",
 			// _feiyang_info:"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
 			// _bahu_info:"锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你可以多使用一张【杀】。",
+			dulun: '独轮车',
+			dulun_info: '出牌阶段，对一名反抗军使用，其可以立即使用一张不可被响应的【杀】或摸一张牌。',
+			chuanjia: '穿甲弹',
+			chuanjia_info: '出牌阶段，对桐生可可使用，本回合其成为【杀】的目标后需弃置装备区内的一张牌。',
+			zhinengdulun: '智能独轮车',
+			zhinengdulun_info: '回合开始时，你视为使用一张【独轮车】。',
+			longjiao: '龙角',
+			longjiao_info: '反抗军无法装备。每回合可以额外使用一张【杀】。在反抗军的回合进入弃牌堆时，改为置于牌堆顶。',
+			longwei: '龙尾',
+			longwei_info: '反抗军无法装备。若为桐生可可形态，则获得“欲盖弥彰”，若为恶龙形态，则获得“滥觞之至”。在反抗军的回合进入弃牌堆时，改为洗入牌堆。',
+			takeover: '所向无前',
+			takeover_info: '为所有反抗军装备【智能独轮车】，使用后移出游戏。',
+			bigong: '逼宫',
+			bigong_info: '对一名反抗军使用，令其选择一项：本轮内失去所有技能，或交给桐生可可两张不同类型的牌，使用后移出游戏。',
+			bigong_clear: '逼宫后续',
+			chuanjia_po: 'fuck',
 		},
 		element:{
 			player:{
@@ -890,7 +928,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		characterPack:{
 			mode_longlaoguan:{
 				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke']],
-				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'jierizhanbei','esuyingye']]
+				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'zhengzhengrishang','yugaimizhang']]
 			}
 		},
 		get:{
@@ -900,7 +938,312 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		card:{
-			
+			dulun:{
+				audio:true,
+				fullskin:true,
+				type:'trick',
+				enable:function(){
+					return game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							return true;
+						}
+					});
+				},
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return target.identity=='fan';
+				},
+				content:function(){
+					'step 0'
+                    var list= [['使用无法响应的杀'],['摸一张牌']];;
+		//			if(!target.hasSha())	list.shift();
+					event.videoId = lib.status.videoId++;
+					player.line(target,'green')
+					_status.event.target = target;
+					game.broadcastAll(function(id, choicelist){
+                        var dialog=ui.create.dialog('选择一项');
+                        choicelist.forEach(element=>{
+                            dialog.add([element,'vcard']);
+                        })
+						dialog.videoId = id;
+					}, event.videoId, list);
+		//			target.storage.onlink.push(trigger.card.cardid);
+					'step 1'
+					var target = _status.event.target;
+					target.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('dulunche'));
+					'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+                    if(result.bool){
+						var fan = _status.event.target;
+                        result.links.forEach(element => {
+                            if(element[2]=='使用无法响应的杀'){
+                                game.log(target,'的下一张杀无法被响应');
+								fan.addTempSkill('dulun_sha');
+								fan.chooseCardTarget({
+									filterCard:{name:'sha'},
+									selectCard:1,
+									filterTarget:function(card,fan,target){
+										return target!=fan;
+									},
+									ai1:function(card){
+										if(card.nature) return 80;
+										return true;
+									},
+									ai2:function(target){
+										var att=get.attitude(_status.event.target,target);
+										return 10-att;
+									},
+								});
+                            }
+                            if(element[2]=='摸一张牌'){
+                                fan.draw();
+                            }
+                        });
+					}
+					'step 3'
+					if(result.targets){
+						var fan = _status.event.target;
+						fan.useCard(result.cards[0],result.targets[0]);
+						fan.getStat().card.sha--;
+					}
+				},
+				ai:{
+					basic:{
+						useful:[1,4],
+						value:[1,4],
+					},
+					order:function(item){
+						if(_status.event.player.hasSkillTag('presha',true,null,true)) return 10;
+						if(lib.linked.contains(get.nature(item))) return 3.1;
+						return 3;
+					},
+					tag:{
+						respond:1,
+						respondSha:1,
+					}
+				},
+			},
+			chuanjia:{
+				audio:true,
+				fullskin:true,
+				type:'trick',
+				enable:function(){
+					return game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							return true;
+						}
+					});
+				},
+				range:{attack:1},
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return player!=target&&target==game.zhu;
+				},
+				content:function(){
+					target.addTempSkill('chuanjia_po','phaseAfter');
+					target.markSkill('chuanjia_po');
+				},
+				ai:{
+					basic:{
+						useful:[5,0],
+						value:[5,0],
+					},
+					order:function(item){
+						if(_status.event.player.hasSkillTag('presha',true,null,true)) return 10;
+						if(lib.linked.contains(get.nature(item))) return 3.1;
+						return 3;
+					},
+					tag:{
+						respond:1,
+						unequip_ai:1,
+					}
+				},
+			},
+			zhinengdulun:{
+				audio:true,
+				fullskin:true,
+				filterTarget:function(card,player,target){
+					return target.identity=='fan';
+				},
+				toself:true,
+				type:"equip",
+				subtype:"equip5",
+				skills:['zhinengdulun'],
+				ai:{
+					basic:{
+						equipValue:10,
+					},
+				},
+			},
+			longjiao:{
+				audio:true,
+				fullskin:true,
+				filterTarget:function(card,player,target){
+					return target==game.zhu&&target.identity!='fan';
+				},
+				toself:true,
+				type:"equip",
+				subtype:"equip1",
+				distance:{attackFrom:-3},
+				skills:['longjiao'],
+				global: 'g_longjiao',
+				ai:{
+					basic:{
+						equipValue:7,
+					},
+				},
+			},
+			longwei:{
+				audio:true,
+				fullskin:true,
+				filterTarget:function(card,player,target){
+					return target==game.zhu&&target.identity!='fan';
+				},
+				toself:true,
+				type:"equip",
+				subtype:"equip5",
+				skills:['longwei'],
+				global: 'g_longwei',
+				ai:{
+					basic:{
+						equipValue:7,
+					},
+				},
+			},
+			takeover:{
+				audio:true,
+				fullskin:true,
+				enable:function(){
+					return game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							return true;
+						}
+					});
+				},
+		//		chongzhu:function(){
+		//			return game.countPlayer()<=2;
+		//		},
+				singleCard:true,
+				type:'trick',
+				enable:true,
+				cardcolor:'red',
+				selectTarget:-1,
+				filterTarget:true,
+				contentBefore:function(){
+					if(!targets.length){
+						event.finish();
+						return;
+					}
+					var fans = 0;
+					game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							fans++;
+						}
+					})
+					if(fans==0){
+						event.finish();
+						return;
+					}
+				},
+				content:function(){
+					var card = this.card;
+					game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							var che = game.createCard('zhinengdulun',card.suit,card.number);
+							cur.equip(che);
+						}
+					});
+				},
+				contentAfter:function(){
+					game.log(card,'已移出游戏');
+					game.cardsGotoSpecial(this.card);
+				},
+				ai:{
+					order:7,
+					useful:4,
+					value:10,
+				},
+			},
+			bigong:{
+				audio:true,
+				fullskin:true,
+				enable:function(){
+					return game.hasPlayer(function(cur){
+						if(cur.identity=='fan'){
+							return true;
+						}
+					});
+				},
+		//		chongzhu:function(){
+		//			return game.countPlayer()<=2;
+		//		},
+				singleCard:true,
+				type:'trick',
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return target.identity =='fan';
+				},
+				content:function(){
+					'step 0'
+					_status.event.target = target;
+					var list= [['本轮内失去所有技能'],['交给桐生可可两张不同类型的牌']];
+					event.videoId = lib.status.videoId++;
+					player.line(target,'green')
+					_status.event.target = target;
+					game.broadcastAll(function(id, choicelist){
+                        var dialog=ui.create.dialog('选择一项');
+                        choicelist.forEach(element=>{
+                            dialog.add([element,'vcard']);
+                        })
+						dialog.videoId = id;
+					}, event.videoId, list);
+					'step 1'
+					var target = _status.event.target;
+					target.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('dulunche'));
+					'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+                    if(result.bool){
+						var target = _status.event.target;
+                        result.links.forEach(element => {
+                            if(element[2]=='本轮内失去所有技能'){
+                                game.log(target,'失去了所有技能');
+								target.clearSkills();
+								target.addTempSkill('bigong_clear',{global:'roundStart'});
+                            }
+                            if(element[2]=='交给桐生可可两张不同类型的牌'){
+								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌',2,target.getCards('he'),true);
+								next.set('filterButton',function(button){
+									if(ui.selected.buttons.length){
+										var from=ui.selected.buttons[0];
+										var type=get.type(button.link);
+										if(type!=get.type(from.link)) return true;
+										return false;
+									}
+									else{
+										return true;
+									}
+								});
+                            }
+                        });
+					}
+					'step 3'
+					if(result.buttons.length){
+						game.zhu.gain(result.buttons,_status.event.target);
+					}
+				},
+				contentAfter:function(){
+					game.log(card,'已移出游戏');
+					game.cardsGotoSpecial(this.card);
+				},
+				ai:{
+					order:7,
+					useful:4,
+					value:10,
+					tag:{
+						draw:2
+					},
+				},
+			},
 		},
 		skill:{
 			/** 龙皇技能*/
@@ -1097,6 +1440,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						_status.event.finish();
 						// _status.event.untrigger(true);
 					}
+					lib.inpile.add('takeover')
+					var takecard=game.createCard2('takeover','heart',10)
+					ui.cardPile.insertBefore(takecard,ui.cardPile.childNodes[get.rand(0,ui.cardPile.childElementCount-1)]);
 				},
 			},
 			
@@ -1113,11 +1459,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(player.isMaxHandcard(false)){
+						var takecard=game.createCard2('bigong','heart',1);
+						player.gain(takecard);
 						event.finish();
 					}
 					else{
 						event.maxHandcardPlayer=game.filterPlayer(function(current){
-							return current.isMaxHandcard;
+							return current.isMaxHandcard(false);
 						});
 					}
 					'step 1'
@@ -1131,10 +1479,24 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			yugaimizhang:{
 				trigger:{global:'roundStart'},
 				forced: true,
+				mark:true,
 				content:function(){
-
+					'step 0'
+					event.card=get.cards()[0];
+					if(player.storage.yugaimizhang==undefined) player.storage.yugaimizhang=[];
+					if(player.storage.yugaimizhang.length>0){
+						game.cardsDiscard(player.storage.yugaimizhang);
+						player.storage.yugaimizhang=[];
+					}
+					player.storage.yugaimizhang=[event.card];
+					player.syncStorage('yugaimizhang');
+					//event.trigger("addCardToStorage");
+					game.cardsGotoSpecial(event.card);
+					player.showCards(player.storage.yugaimizhang,'欲盖弥彰')
+					//player.markSkill('yugaimizhang');
+					'step 1'
 				},
-				group:['yugaimizhang_limit','yugaimizhang_show'],
+				group:['yugaimizhang_limit','yugaimizhang_target'],
 				subSkill:{
 					limit:{
 						mod:{
@@ -1143,34 +1505,251 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							},
 						}
 					},
-					show:{
-
+					target:{
+						trigger:{global:'useCard2'},
+						direct:true,
+						filter:function(event,player){
+							if(player.countCards('h')==0) return false;
+							if(player.storage.yugaimizhang&&player.storage.yugaimizhang.length==0){
+								return false
+							}
+							if(event.targets&&event.targets[0]==player&&get.suit(event.cards)==get.suit(game.zhu.storage.yugaimizhang))
+								return true; 
+							else 
+								return false;
+						},
+						content:function(){
+							if(!player.hasSkill('yugaimizhang_use'))
+								player.addTempSkill('yugaimizhang_use');
+						}
+					},
+					use:{
+						trigger:{global:'phaseEnd'},
+						content:function(){
+							'step 0'
+							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1,function(button){
+								return get.value(button.link,_status.event.player);
+							});
+							'step 1'
+							if(result.bool){
+								event.usecard=result.links[0];
+								var bool=game.hasPlayer(function(current){
+									return player.canUse(event.usecard,current);
+								});
+								if(bool){
+									//player.chooseTarget(result.links[0],true,false);
+									var targetNumber=Infinity;
+									if(get.type(event.usecard)=='delay'||get.type(event.usecard)=='equip'){
+										targetNumber=1;
+									}
+									player.chooseTarget('选择使用目标',[1,Infinity],function(card,player,target){
+										return player.canUse(event.usecard,target);
+									})
+								}
+							}
+							else{
+								event.finish()
+							}
+							'step 2'
+							player.useCard(event.usecard, result.targets)
+						}
+					}
+				},
+				intro:{
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							delete player.storage.yugaimizhang;
+						}
 					}
 				}
 			},
 			zuoyututan:{
 
 			},
-			// /**从反抗军先锋开始，所以跳过初始第一回合 */
-			// _skipFirstPhase:{
-			// 	trigger:{global:'phaseBefore'},
-			// 	forced:true,
-			// 	silent:true,
-			// 	popup:false,
-			// 	filter:function(event,player){
-			// 		return (event.player==game.zhu)&&(game.phaseNumber==0);
-			// 	},
-			// 	content:function(){
-			// 		var evt=_status.event.getParent('phase');
-			// 		if(evt){
-			// 			//game.resetSkills();
-			// 			_status.event=evt;
-			// 			game.phaseNumber=0;
-			// 			_status.event.finish();
-			// 			// _status.event.untrigger(true);
-			// 		}
-			// 	},
-			// },
+
+			/**卡牌技能 */
+			
+			g_longjiao:{
+				trigger:{player:['loseAfter']},
+				forced:true,
+				filter:function(event,player){
+					if(player.isPhaseUsing()) return false;
+					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
+					for(var i=0;i<event.cards.length;i++){
+						if(event.cards[i].name=='longjiao') return true;
+					}
+					return false;
+				},
+				content:function(){
+					for(var i=0;i<trigger.cards.length;i++){
+						if(trigger.cards[i].name=='longjiao') event.card=trigger.cards[i];
+					}
+					ui.cardPile.insertBefore(event.card,ui.cardPile.firstChild);
+					var cards=get.cards(ui.cardPile.childElementCount+1);
+					for(var i=0;i<cards.length;i++){
+						ui.cardPile.insertBefore(cards[i],ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
+					}
+				}
+			},
+			g_longwei:{
+				trigger:{player:['loseAfter']},
+				forced:true,
+				filter:function(event,player){
+					if(player.isPhaseUsing()) return false;
+					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
+					for(var i=0;i<event.cards.length;i++){
+						if(event.cards[i].name=='longwei') return true;
+					}
+					return false;
+				},
+				content:function(){
+					for(var i=0;i<trigger.cards.length;i++){
+						if(trigger.cards[i].name=='longwei') event.card=trigger.cards[i];
+					}
+					ui.cardPile.insertBefore(event.card,ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
+				},
+			},
+			dulun_sha:{
+				firstDo:true,
+				forced:true,
+				trigger:{player:'useCardToPlayered'},
+				ilter:function(event,player){
+					return event.card.name=='sha';
+				},
+				logTarget:'target',
+				content:function(){
+					trigger.getParent().directHit.add(trigger.target);
+					player.removeSkill('dulun_sha');
+				}
+			},
+			bigong_clear:{
+				marktext:'悲',
+				locked:true,
+				notemp:true,
+				mark: true,
+				intro: {
+					content: '失去了所有技能',
+				},
+				forced:true,
+				trigger:{global:'roundStart'},
+				content:function(){
+					player.unmarkSkill('bigong_clear');
+					player.removeSkill('bigong_clear');
+				},
+				onremove:function(player) {
+					var hp = player.hp
+					player.init(get.name(player));
+					player.hp = hp;
+					player.update();
+				},
+			},
+			chuanjia_po:{
+				audio:true,
+				marktext:'f**k',
+				locked:true,
+				notemp:true,
+				mark: true,
+				intro: {
+					content: '被破防',
+				},
+				trigger:{
+					target:'useCardToPlayered',
+				},
+				forced:true,
+				priority:444,
+				filter:function(event,player){
+					if(!get.name(event.card,event.player)=='sha')	return false;
+					console.log('OK');
+					return player.countCards('e');
+				},
+				content:function (){
+					player.discardPlayerCard('被穿甲弹破防……', player, true, 'e');
+				},
+				ai:{
+					neg:true,
+					effect:{
+						target:function (card,player,target,current){
+							if(get.name(card,player)=='sha') return [0,-4];
+						},
+					},
+				},
+			},
+			zhinengdulun:{
+				audio:true,
+				trigger:{
+					player:"phaseBegin",
+				},
+				forced:true,
+				equipSkill:true,
+				content:function (){
+					player.useCard({name:'dulun',isCard:true},player);
+				},
+				ai:{
+					hreaten:4,
+				},
+			},
+			longjiao:{
+				audio:true,
+				equipSkill:true,
+				mod:{
+					cardUsable:function(card,player,num){
+						if(get.name(card)=='sha') 
+							return num+1;
+					},
+					cardEnabled:function(card,player){
+                        if(card.name=='sha'&&(player.getStat().card.sha>2)) 
+                            return false
+					},
+				},
+				ai:{
+					hreaten:1,
+				},
+			},
+			longwei:{
+				init:function (player){//获得技能时发动
+					if(get.name(player)=='KiryuuCoco')
+					player.addSkill('yugaimizhang');
+					if(get.name(player)=='AjatarCoco')
+					player.addSkill('esuyingye');
+				},
+				onremove:function(player){//失去技能时发动
+					if(get.name(player)=='KiryuuCoco')
+					player.removeSkill('yugaimizhang');
+					if(get.name(player)=='AjatarCoco')
+					player.addSkill('esuyingye');
+				},
+				audio:true,
+				frequent:true,
+				equipSkill:true,
+				content:function (){
+				},
+				ai:{
+					hreaten:1,
+				},
+			},
+			/**从反抗军先锋开始，所以跳过初始第一回合 */
+			_skipFirstPhase:{
+				trigger:{global:'phaseBefore'},
+				forced:true,
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return (event.player==game.zhu)&&(game.phaseNumber==0);
+				},
+				content:function(){
+					var evt=_status.event.getParent('phase');
+					if(evt){
+						//game.resetSkills();
+						_status.event=evt;
+						game.phaseNumber=0;
+						_status.event.finish();
+						// _status.event.untrigger(true);
+					}
+				},
+			},
 			/**使用技能实现给龙皇插入回合 */
 			_anotherPhase:{
 				trigger:{player:'phaseEnd'},
