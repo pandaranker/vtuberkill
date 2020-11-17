@@ -1,6 +1,6 @@
 window.noname_update={
-	version:'1.9.100.56',
-	update:'1.9.100.56.2',
+	version:'1.9.100.57',
+	update:'1.9.100.57.2',
 	changeLog:[
 		'庆祝凑阿库娅获得第二届V萌冠军',
 		'添加冠亚军背景图，暂挂阿夸主题背景音',
@@ -10,6 +10,7 @@ window.noname_update={
 		'优化技能描述',
 	],
 	files:[
+		'image/character/kaguraNaNa.jpg',
 		'character/hololive.js',
 		'character/basic.js',
 		'character/moyu.js',
