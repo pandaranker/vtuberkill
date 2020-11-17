@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.58',
+	version:'1.9.100.59',
 	update:'1.9.100.57.2',
 	changeLog:[
 		'庆祝凑阿库娅获得第二届V萌冠军',
