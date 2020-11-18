@@ -41,6 +41,46 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(lib.configOL.number<4){
 					lib.configOL.number=4;
 				}
+				var list=[
+					//3张独轮车
+					["spade","5","dulun"],
+					["club","9","dulun"],
+					["diamond","11","dulun"],
+					//2张穿甲
+					["heart","13","chuanjia"],
+					["club","5","chuanjia"],
+					//
+					["diamond","1","zhinengdulun"],
+					//
+					["spade","2","longjiao"],
+					//
+					["spade","6","longwei"],
+					//
+					//["heart","10","takeover"],
+					//2张逼宫
+					["club","9","bigong"],
+					["heart","8","bigong"],
+				];
+				lib.card.list.addArray(list);
+				game.fixedPile=true;
+				game.broadcastAll(function(pack1,pack2){
+					lib.connectCardPack.add('mode_longlaoguan');
+					console.log(lib.connectCardPack);
+					lib.characterPack.mode_longlaoguan=pack1;
+					lib.card=pack2;
+					for(var i in pack1){
+						lib.character[i]=pack1[i];
+						if(!lib.character[i][4]){
+							lib.character[i][4]=[];
+						}
+						if(!lib.translate[i]){
+							lib.translate[i]=lib.translate[i.slice(3)];
+						}
+					}
+				},lib.characterPack.mode_longlaoguan,lib.card);
+				game.randomMapOL();
+			}
+			else{
 				game.broadcastAll(function(pack1,pack2){
 					lib.characterPack.mode_longlaoguan=pack1;
 					lib.cardPack.mode_longlaoguan=pack2
@@ -59,7 +99,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						//
 						["spade","6","longwei"],
 						//
-						["heart","10","takeover"],
+						//["heart","10","takeover"],
 						//2张逼宫
 						["club","9","bigong"],
 						["heart","8","bigong"],
@@ -80,9 +120,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},lib.characterPack.mode_longlaoguan,lib.cardPack.mode_longlaoguan);
-				game.randomMapOL();
-			}
-			else{
 				for(var i=0;i<game.players.length;i++){
 					game.players[i].getId();
 				}
@@ -1016,6 +1053,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				type:'trick',
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -1101,6 +1139,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				type:'trick',
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -1136,6 +1175,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			zhinengdulun:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target.identity=='fan';
 				},
@@ -1152,6 +1192,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			longjiao:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target==game.zhu&&target.identity!='fan';
 				},
@@ -1170,6 +1211,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			longwei:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target==game.zhu&&target.identity!='fan';
 				},
@@ -1187,6 +1229,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			takeover:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -1241,6 +1284,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			bigong:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -1346,7 +1390,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else							
 					{
-						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he').set('ai',function(card){
+						target.chooseToDiscard('参加“早安可可”录制，需要弃置一张牌','he',true).set('ai',function(card){
 							var name = card.name;
 							if(name=='shan') return 30;
 							return 100-get.value(card);													
@@ -1791,15 +1835,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			longwei:{
 				init:function (player){//获得技能时发动
 					if(get.name(player)=='KiryuuCoco')
-					player.addSkill('yugaimizhang');
+						player.addSkill('yugaimizhang');
 					if(get.name(player)=='AjatarCoco')
-					player.addSkill('esuyingye');
+						player.addSkill('esuyingye');
 				},
 				onremove:function(player){//失去技能时发动
 					if(get.name(player)=='KiryuuCoco')
-					player.removeSkill('yugaimizhang');
+						player.removeSkill('yugaimizhang');
 					if(get.name(player)=='AjatarCoco')
-					player.addSkill('esuyingye');
+						player.removeSkill('esuyingye');
 				},
 				audio:true,
 				frequent:true,
