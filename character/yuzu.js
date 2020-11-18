@@ -9,6 +9,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			Paryi:['male','qun',4,['tiantang','haoren']],
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
+			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -369,6 +370,114 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//						dist+=to.hp-from.hp;
 	//					}
 						return dist;
+					},
+				},
+			},
+			//Echo
+			hangao:{
+				trigger:{player:'phaseJieshuBegin'},
+				priority:42,
+				filter:function(event,player){
+					var gao = player.getCards('he').filter(function(ca){
+						return get.suit(ca)=='spade';
+					});
+					return gao.length;
+				},
+				content:function(){
+					'step 0'
+					game.broadcastAll(function(player){
+						player.chooseCardTarget({
+							position:'he',
+							filterCard:function(card){
+							return get.suit(card)=='spade';
+							},
+							filterTarget:function(card,player,target){
+								return target!=player;
+							}
+						});
+					}, player);
+					'step 1'
+					if(result.bool){
+						var target = result.targets[0]
+						player.logSkill('hangao',target);
+						target.gain(player,result.cards[0],'giveAuto');
+						target.addTempSkill('hangaohouxu',{target:'phaseEnd'});
+						target.storage.hangaohouxu.add(result.cards[0]);
+						target.storage.hangaohouxu.add(player);
+						target.syncStorage('hangaohouxu');
+					}
+				},
+			},
+			hangaohouxu:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
+				marktext:"♠",
+				locked:true,
+				intro:{
+					name:'函告',
+	//				content:'cards',
+					content:function (storage,player,skill){
+						return '在回合结束时展示手牌';
+					},
+				},
+				mark:true,
+				forced:true,
+				priority:42,
+				trigger:{player:'phaseEnd'},
+				filter:function(event,player){
+					return player.storage.hangaohouxu[1].isAlive()&&!player.storage.hangaohouxu[1].isOut();
+				},
+				content:function(){
+					player.showCards(player.getCards('h'),'函告后续');
+					game.delay(0.5);
+					var history=player.getHistory('useCard');
+					var heaG=1,diaG=1;
+					for(var i=0;i<history.length;i++){
+						if(history[i].card==player.storage.hangaohouxu[0])	diaG=0;
+						if(!history[i].targets) continue;
+						for(var j=0;j<history[i].targets.length;j++){
+							if(history[i].targets[j]==player.storage.hangaohouxu[1])	heaG=0;
+						}
+					}
+					if(heaG){
+						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
+							return get.suit(ca)=='heart';
+						}),'giveAuto');
+					}
+					if(diaG&&!player.getCards('h').contains(player.storage.hangaohouxu[0])){
+						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
+							return get.suit(ca)=='diamond';
+						}),'giveAuto');
+					}
+					player.removeSkill('hangaohouxu');
+				}
+			},
+			yinglve:{
+				enable:'phaseUse',
+				usable:1,
+				filter:function(event,player){
+					return player.countDisabled()!=5;
+				},
+				content:function(){
+					'step 0'
+					player.chooseToDisable().set('ai',function(event,player,list){
+						if(list.contains('equip2')) 											return 'equip2';
+						if(list.contains('equip1')&&player.countCards('h',{name:'sha'})>2)		return 'equip1';
+						if(list.contains('equip5')&&player.countCards('h',{type:'trick'})>=1)	return 'equip5';
+					});
+					'step 1'
+					player.chooseUseTarget('###视为使用一张没有距离限制的【顺手牵羊】',{name:'shunshou'},true,'nodistance');
+				},
+				mod:{
+					selectTarget:function(card,player,range){
+						if(get.name(card)=='shunshou'){
+							return range[1]=player.countDisabled()||range[1];
+						}
+					},
+					maxHandcard:function(player,num){
+						return num+player.countDisabled();
 					},
 				},
 			},
@@ -1036,6 +1145,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			danyan_info: '你的牌因弃置而进入弃牌堆时,若本回合你没有造成过伤害,你可以使用其中的一张牌。',
 			qingjie: '轻捷',
 			qingjie_info: '<font color=#f66>锁定技</font> 你你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
+			SpadeEcho: '黑桃影',
+			hangao: '函告',
+			hangao_info: '结束阶段，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
+			yinglve: '影掠',
+			yinglve_info: '出牌阶段限一次，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你每有一个废除的装备栏，手牌上限和【顺手牵羊】可指定的目标数便+1。',
+			feichu_equip1:'废除',
+			feichu_equip2:'废除',
+			feichu_equip3:'废除',
+			feichu_equip4:'废除',
+			feichu_equip5:'废除',
+
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
