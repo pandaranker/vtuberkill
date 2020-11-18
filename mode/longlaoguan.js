@@ -28,29 +28,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				game.prepareArena(4);
 			}
 			"step 1"
-			var list=[
-				//3张独轮车
-				["spade","5","dulun"],
-				["club","9","dulun"],
-				["diamond","11","dulun"],
-				//2张穿甲
-				["heart","13","chuanjia"],
-				["club","5","chuanjia"],
-				//
-				["diamond","1","zhinengdulun"],
-				//
-				["spade","2","longjiao"],
-				//
-				["spade","6","longwei"],
-				//
-				["heart","10","takeover"],
-				//2张逼宫
-				["club","9","bigong"],
-				["heart","8","bigong"],
-			];
-			lib.card.list.addArray(list);
-			ui.create.cardsAsync();
-			game.fixedPile=true;
+			// for(var i in lib.cardPack.mode_longlaoguan){
+			// 	lib.card[i]=lib.cardPack.mode_longlaoguan[i];
+			// }
 			if(_status.connectMode){
 				game.waitForPlayer(function(){
 						lib.configOL.number=4;
@@ -61,6 +41,45 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(lib.configOL.number<4){
 					lib.configOL.number=4;
 				}
+				game.broadcastAll(function(pack1,pack2){
+					lib.characterPack.mode_longlaoguan=pack1;
+					lib.cardPack.mode_longlaoguan=pack2
+					var list=[
+						//3张独轮车
+						["spade","5","dulun"],
+						["club","9","dulun"],
+						["diamond","11","dulun"],
+						//2张穿甲
+						["heart","13","chuanjia"],
+						["club","5","chuanjia"],
+						//
+						["diamond","1","zhinengdulun"],
+						//
+						["spade","2","longjiao"],
+						//
+						["spade","6","longwei"],
+						//
+						["heart","10","takeover"],
+						//2张逼宫
+						["club","9","bigong"],
+						["heart","8","bigong"],
+					];
+					lib.card.list.addArray(list);
+					ui.create.cardsAsync();
+					game.fixedPile=true;
+					for(var i in pack1){
+						// if(!lib.configOL.onlyguozhan){
+						// 	if(lib.character[i.slice(3)]) continue;
+						// }
+						lib.character[i]=pack1[i];
+						if(!lib.character[i][4]){
+							lib.character[i][4]=[];
+						}
+						if(!lib.translate[i]){
+							lib.translate[i]=lib.translate[i.slice(3)];
+						}
+					}
+				},lib.characterPack.mode_longlaoguan,lib.cardPack.mode_longlaoguan);
 				game.randomMapOL();
 			}
 			else{
@@ -703,14 +722,24 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.list2.push(i);
 					}
 					_status.characterlist=event.list.slice(0);
-					game.zhu.init('KiryuuCoco');
-					game.zhu.update();
-					game.broadcast(function(zhu,name,name2){
-						if(game.zhu!=game.me){
-							zhu.init(name,name2);
+					'step 1'
+					//game.zhu.init('KiryuuCoco')
+					game.broadcastAll(function(player,name){
+						for(var i in lib.playerOL){
+							if(lib.playerOL[i]==player)
+							lib.playerOL[i].init(name,null)
 						}
-					},game.zhu,game.zhu.name,game.zhu.name2);
-					"step 1"
+					},game.zhu,'KiryuuCoco')
+					// game.broadcastAll(function(zhu,name){
+					// 	zhu.init(name);
+					// 	zhu.update();
+					// },game.zhu,'KiryuuCoco')
+					// game.broadcast(function(zhu,name,name2){
+					// 	if(game.zhu!=game.me){
+					// 		zhu.init(name,name2);
+					// 	}
+					// },game.zhu,game.zhu.name,game.zhu.name2);
+					"step 2"
 					var list=[];
 					var selectButton=(lib.configOL.double_character?2:1);
 
@@ -729,10 +758,23 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var next=game.zhu.next.chooseButton(true);
 					next.set('selectButton',(lib.configOL.double_character?2:1));
 					next.set('createDialog',['选择角色',[list,'character']]);
-					next.set('callback',function(player,result){
-						player.init(result.links[0],result.links[1]);
-					});
-					"step 2"
+					// next.set('callback',function(player,result){
+					// 	for(var i in lib.playerOL){
+					// 		if(lib.playerOL[i]==player)
+					// 		lib.playerOL[i].init(result.links[0],result.links[1])
+					// 	}
+					// 	// game.broadcast(function(result,player){
+					// 	// 	player.init(result.links[0],result.links[1]);
+					// 	// 	player.update()
+					// 	// },result,player)
+					// });
+					"step 3"
+					game.broadcastAll(function(player,result){
+						for(var i in lib.playerOL){
+							if(lib.playerOL[i]==player)
+							lib.playerOL[i].init(result.links[0],result.links[1])
+						}
+					},game.zhu.next,result)
 					for(var i in result){
 						if(result[i]&&result[i].links){
 							for(var j=0;j<result[i].links.length;j++){
@@ -745,10 +787,23 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var next=game.zhu.next.next.chooseButton(true);
 					next.set('selectButton',(lib.configOL.double_character?2:1));
 					next.set('createDialog',['选择角色',[list,'character']]);
-					next.set('callback',function(player,result){
-						player.init(result.links[0],result.links[1]);
-					});
-					"step 3"
+					// next.set('callback',function(player,result){
+					// 	for(var i in lib.playerOL){
+					// 		if(lib.playerOL[i]==player)
+					// 		lib.playerOL[i].init(result.links[0],result.links[1])
+					// 	}
+					// 	// game.broadcast(function(result,player){
+					// 	// 	player.init(result.links[0],result.links[1]);
+					// 	// 	player.update()
+					// 	// },result,player)
+					// });
+					"step 4"
+					game.broadcastAll(function(player,result){
+						for(var i in lib.playerOL){
+							if(lib.playerOL[i]==player)
+							lib.playerOL[i].init(result.links[0],result.links[1])
+						}
+					},game.zhu.next.next,result)
 					for(var i in result){
 						if(result[i]&&result[i].links){
 							for(var j=0;j<result[i].links.length;j++){
@@ -773,10 +828,23 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var next=game.zhu.next.next.next.chooseButton(true);
 					next.set('selectButton',(lib.configOL.double_character?2:1));
 					next.set('createDialog',['选择角色',[list,'character']]);
-					next.set('callback',function(player,result){
-						player.init(result.links[0],result.links[1]);
-					});
-					"step 4"
+					// next.set('callback',function(player,result){
+					// 	for(var i in lib.playerOL){
+					// 		if(lib.playerOL[i]==player)
+					// 		lib.playerOL[i].init(result.links[0],result.links[1])
+					// 	}
+					// 	// game.broadcast(function(result,player){
+					// 	// 	player.init(result.links[0],result.links[1]);
+					// 	// 	player.update()
+					// 	// },result,player)
+					// });
+					"step 5"
+					game.broadcastAll(function(player,result){
+						for(var i in lib.playerOL){
+							if(lib.playerOL[i]==player)
+							lib.playerOL[i].init(result.links[0],result.links[1])
+						}
+					},game.zhu.next.next.next,result)
 					for(var i in result){
 						if(result[i]&&result[i].links){
 							for(var j=0;j<result[i].links.length;j++){
@@ -1431,7 +1499,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					var newPerson=list.randomGets(1);
-					player.init('AjatarCoco',newPerson);
+					game.broadcastAll(function(player,name){
+						for(var i in lib.playerOL){
+							if(lib.playerOL[i]==player)
+							lib.playerOL[i].init('AjatarCoco',name)
+						}
+					},game.zhu,newPerson)
+					//player.init('AjatarCoco',newPerson);
 					player.storage.state='second';
 					game.zhu.maxHp=1+Number(lib.character[newPerson][2]);
 					game.zhu.hp=1+Number(lib.character[newPerson][2]);
