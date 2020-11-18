@@ -1500,10 +1500,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					var newPerson=list.randomGets(1);
 					game.broadcastAll(function(player,name){
-						for(var i in lib.playerOL){
-							if(lib.playerOL[i]==player)
-							lib.playerOL[i].init('AjatarCoco',name)
-						}
+						// for(var i in lib.playerOL){
+						// 	if(lib.playerOL[i]==game.zhu)
+							player.init('AjatarCoco',name)
+						//}
 					},game.zhu,newPerson)
 					//player.init('AjatarCoco',newPerson);
 					player.storage.state='second';
