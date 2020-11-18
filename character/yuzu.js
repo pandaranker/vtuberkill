@@ -7,9 +7,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		connectBanned:['sp_MinatoAqua', 'sp_MononobeAlice'],
 		character:{
-			Paryi:['male','qun',4,['tiantang','haoren']],
+			Paryi:['male','paryi',4,['tiantang','haoren']],
+	//		TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
+	//		Artia:['female','holo',3,['shuangzhi','shenghua']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -25,7 +27,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		skill:{
 			
-
 			//帕里
 			paryi:{
 				marktext:"P",
@@ -130,8 +131,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 									trigger.player.phaseUse();
 								}, player, trigger)
+								trigger.player.addTempSkill('tiantangzhifei_yisheng','phaseUseEnd');
 								if(player.storage.haoren===true){
-									trigger.player.addTempSkill('tiantangzhifei_yisheng','phaseUseEnd');
+									trigger.player.markSkill('tiantangzhifei_yisheng');
 									trigger.player.addTempSkill('yinliu','phaseUseEnd');
 								}
                             }
@@ -139,8 +141,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								trigger.player.draw(2);
 								trigger.player.addTempSkill('tiantangzhifei_xianzhi','phaseEnd');
 								trigger.player.storage.tiantangzhifei_xianzhi=player.storage.tiantang;
+								trigger.player.syncStorage('tiantangzhifei_xianzhi')
                             }
                         });
+					}
+					else{
+						event.finish();
+					}
+					'step 6'
+					if(player.hasSkill('tiantangzhifei_yisheng')){
+						var stat=player.getStat();
+						stat.card={};
+						for(var i in stat.skill){
+							var bool=false;
+							var info=lib.skill[i];
+							if(info.enable!=undefined){
+								if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+								else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+							}
+							if(bool) stat.skill[i]=0;
+						}
 					}
 				},
 			},
@@ -156,7 +176,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return '暂时获得技能【引流】';
 							},
 						},
-						mark:true,
 					},
 					xianzhi:{
 						marktext:"断",
@@ -171,11 +190,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						mod:{
 							cardEnabled:function(card,player,now){
 								return get.suit(card)==player.storage.tiantangzhifei_xianzhi;
-								return game.hasPlayer(function(cur){
-									if(cur.hasSkill('tiantang')){
-										return get.suit(card)==cur.storage.tiantang;
-									}
-								});
 								
 							},
 						},
@@ -209,6 +223,69 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.unmarkSkill('haoren');
 				},
 			},
+			//ggl
+			shengya:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=true;
+				},
+				marktext:"卒",
+				locked:true,
+				intro:{
+					name:'puripuri……',
+					content:function (storage,player,skill){
+						return '失去【职业生涯】技能直到回合结束';
+					},
+				},
+				trigger:{player:'useCardAfter'},
+				priority: 998,
+				forced:	true,
+				filter:function(event,player){
+					return player.isPhaseUsing()&&get.color(event.card)=='red';
+				},
+				content:function(){
+					event.cards=get.cards(1);
+					game.cardsGotoOrdering(event.cards);
+					player.showCards(event.cards);
+					game.delay(1);
+					player.gain(event.cards);
+					if(get.suit(event.cards[0])=='club'){
+						player.loseHp();
+						player.storage.shengya = false;
+						player.markSkill('shengya')
+					}
+				},
+				group:'shengya_init',
+				subSkill:{
+					init:{
+						trigger:{player:'phaseEnd'},
+						silent: true,
+						forced:	true,
+						priority: 998,
+						content:function(){
+							if(!player.storage.shengya){
+								player.storage.shengya=true;
+								player.unmarkSkill('shengya')
+							}
+						},
+					},
+				}
+
+
+			},
+			liangshan:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=true;
+				},
+				marktext:"高",
+				locked:true,
+				intro:{
+					name:'高槻律的头顶',
+					content:'cards',
+				},
+
+
+
+			},
 			//Civia
 			kuangxin:{
 				trigger:{global:'useCardToPlayered'},
@@ -230,7 +307,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						event.card = result.cards[0];
-						player.choosePlayerCard(player,'h',true);
+						game.broadcastAll(function(player){
+							player.choosePlayerCard(player,'h',true);
+						}, player);
 					}
 					else{
 						event.finish();
@@ -480,6 +559,145 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return num+player.countDisabled();
 					},
 				},
+			},
+			//Artia
+			shuangzhi:{
+				marktext:"冻",
+				locked:true,
+				intro:{
+					name:'殇冻',
+					content:function (storage,player,skill){
+						return '受到伤害时加一';
+					},
+				},
+				check:function(event,player){
+					return event.player==player;
+				},
+				trigger:{global:'loseAfter'},
+				priority:222,
+				filter:function(event,player){
+					return event.player.isAlive()&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length>1;
+				},
+				content:function(){
+					'step 0'
+					var list = ['受到1点无来源伤害','受到的伤害+1直到其回合开始']
+					var next = trigger.player.chooseControlList(['选择其中的一项',list],true,function(){
+						return _status.event.choice;
+					});
+					'step 1'
+					if(result.index==0){
+						trigger.player.damage();
+					}
+					else{
+						trigger.player.markSkill('shuangzhi');
+					}
+				},
+				group:['shuangzhi_init','shuangzhi_addDam'],
+				subSkill:{
+					init:{
+						trigger:{global:'phaseBefore'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							console.log(event.player.hasMark('shuangzhi'));
+							return event.player.hasMark('shuangzhi');
+						},
+						content:function(){
+							trigger.player.unmarkSkill('shuangzhi');
+						}
+					},
+					addDam:{
+						trigger:{global:'damageBegin1'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return event.player.hasMark('shuangzhi');
+						},
+						content:function(){
+							console.log('OK');
+							console.log(trigger);
+							trigger.num++;
+						},
+					},
+				},
+			},
+			shenghua:{
+				trigger:{global:'roundStart'},
+				priority:222,
+				round:1,
+				filter:function(event,player){
+					return game.players.length-1;
+				},
+				content:function(){
+					'step 0'
+					game.broadcastAll(function(player){
+						var next=player.chooseTarget(2,function(card,player,target){
+							return true;
+						});
+						next.set('targetprompt',['失去体力','回复体力']);
+						next.set('prompt','指定两名角色，分别回复一点体力和失去一点体力');
+						next.set('forced',false);
+					}, player)
+					'step 1'
+					if(result.bool){
+						result.targets[0].loseHp();
+						result.targets[0].addTempSkill('shenghua_lose','roundStart');
+						result.targets[1].recover();
+						result.targets[1].addTempSkill('shenghua_gain','roundStart');
+					}
+				},
+			},
+			shenghua_lose:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
+				marktext:"生",
+				locked:true,
+				intro:{
+					name:'生化之握-',
+					content:function (storage,player,skill){
+						return '在轮次结束时回复体力';
+					},
+				},
+				mark:true,
+				forced:true,
+				priority:420,
+				onremove:function(player){
+					if(player.maxHp-player.hp){
+						game.log('希握后续效果');
+					}
+					game.delay(0.5);
+					player.recover();
+				},
+				content:function(){
+				}
+			},
+			shenghua_gain:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
+				marktext:"生",
+				locked:true,
+				intro:{
+					name:'生化之握+',
+					content:function (storage,player,skill){
+						return '在轮次结束时失去体力';
+					},
+				},
+				mark:true,
+				forced:true,
+				priority:420,
+				onremove:function(player){
+					game.log('希握后续效果');
+					game.delay(0.5);
+					player.loseHp();
+				},
+				content:function(){
+				}
 			},
 
 			//圣皇夸
@@ -1132,11 +1350,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 		}, 
 		translate:{
+			dynamicTranslate:{
+					tiantang:function(player){
+					if(player.storage.haoren) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
+					return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
+				},
+			},
 			Paryi: '帕里',
 			tiantang: '天堂之扉',
 			tiantang_info: '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
 			haoren: '好人一生',
 			haoren_info: '<font color=#fcd>觉醒技</font> 你发动“天堂之扉”后，若发动次数大于存活人数，你扣减1点体力上限，将“天堂之扉”的“其他”改为“一名”；且在“天堂之扉”的额外出牌阶段内，当前回合角色获得“引流”。',
+
+			TakatsukiRitsu: '高槻律',
+			shengya: '职业生涯',
+			shengya_info: '锁定技。出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
+
 			Civia: '希薇娅',
 			kuangxin: '旷心',
 			kuangxin2: '旷心',
@@ -1155,6 +1384,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			feichu_equip3:'废除',
 			feichu_equip4:'废除',
 			feichu_equip5:'废除',
+			Artia: '阿媂娅',
+			shuangzhi: '殇冻',
+			shuangzhi_info: '其他角色一次性弃置一张以上的牌后，你可以令其选择一项：受到1点无来源伤害；或受到的伤害+1直到其回合开始。',
+			shenghua: '希握',
+			shenghua_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
+
 
 
 			sp_MinatoAqua:'皇·湊阿库娅',
