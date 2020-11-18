@@ -297,18 +297,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					if(trigger.targets[0].countCards('h')==1){
-						player.viewCards('观看其手牌',trigger.targets[0].getCards('h'));
-					}
-					game.broadcastAll(function(player,target){
-						player.choosePlayerCard(target,'h',true).set('visible', true);
-					}, player, trigger.targets[0]);
-					game.log(player,'观看了',trigger.targets[0],'的手牌')
+	//				if(trigger.targets[0].countCards('h')==1){
+	//					player.viewCards('观看其手牌',trigger.targets[0].getCards('h'));
+	//				}
+					game.broadcastAll(function(target){
+						target.choosePlayerCard(target,'h',true).set('visible', true);
+					}, trigger.targets[0]);
+	//				game.log(player,'观看了',trigger.targets[0],'的手牌')
 					'step 1'
 					if(result.bool){
 						event.card = result.cards[0];
 						game.broadcastAll(function(player){
-							player.choosePlayerCard(player,'h',true);
+							player.choosePlayerCard(player,'h',true).set('visible', true);
 						}, player);
 					}
 					else{
