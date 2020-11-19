@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//		TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
-	//		Artia:['female','holo',3,['shuangzhi','shenghua']],
+			Artia:['female','holo',3,['shuangzhi','shenghua']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -419,12 +419,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.cards = trigger.cards;
-					var next=player.chooseCardButton(1,'选择使用的牌',event.cards);
-					next.set('filterButton',function(button){
-						return game.hasPlayer(function(cur){
-							return player.canUse(button.link,cur)
-						});
-					});;
+					game.broadcastAll(function(player, cards){
+						var next=player.chooseCardButton(1,'选择使用的牌',cards);
+						next.set('filterButton',function(button){
+							return game.hasPlayer(function(cur){
+								return player.canUse(button.link,cur)
+							});
+						});;
+					}, player, event.cards);	
 					'step 1'
 					if(result.bool){
 						game.broadcastAll(function(player, card){
@@ -514,7 +516,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var history=player.getHistory('useCard');
 					var heaG=1,diaG=1;
 					for(var i=0;i<history.length;i++){
-						if(history[i].card==player.storage.hangaohouxu[0])	diaG=0;
+						console.log(history[i].cards[0]==player.storage.hangaohouxu[0]);
+						if(history[i].cards[0]==player.storage.hangaohouxu[0])	diaG=0;
 						if(!history[i].targets) continue;
 						for(var j=0;j<history[i].targets.length;j++){
 							if(history[i].targets[j]==player.storage.hangaohouxu[1])	heaG=0;
@@ -561,17 +564,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			//Artia
-			shuangzhi:{
+			shangdong:{
 				marktext:"冻",
 				locked:true,
 				intro:{
 					name:'殇冻',
 					content:function (storage,player,skill){
-						return '受到伤害时加一';
+						return '受到伤害时加'+storage;
 					},
 				},
+				mark:true,
+			},
+			shuangzhi:{
 				check:function(event,player){
-					return event.player==player;
+					return event.player!=player;
 				},
 				trigger:{global:'loseAfter'},
 				priority:222,
@@ -589,7 +595,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.player.damage();
 					}
 					else{
-						trigger.player.markSkill('shuangzhi');
+						trigger.player.addSkill('shangdong');
+						trigger.player.addMark('shangdong',1);
 					}
 				},
 				group:['shuangzhi_init','shuangzhi_addDam'],
@@ -600,11 +607,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){
-							console.log(event.player.hasMark('shuangzhi'));
-							return event.player.hasMark('shuangzhi');
+							console.log(event.player.hasMark('shangdong'));
+							return event.player.hasMark('shangdong');
 						},
 						content:function(){
-							trigger.player.unmarkSkill('shuangzhi');
+							trigger.player.unmarkSkill('shangdong');
+							trigger.player.removeSkill('shangdong');
 						}
 					},
 					addDam:{
@@ -613,12 +621,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){
-							return event.player.hasMark('shuangzhi');
+							return event.player.hasMark('shangdong');
 						},
 						content:function(){
 							console.log('OK');
 							console.log(trigger);
-							trigger.num++;
+							trigger.num+=trigger.player.countMark('shangdong');
 						},
 					},
 				},
