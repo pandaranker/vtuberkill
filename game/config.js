@@ -49,7 +49,7 @@ window.config={
 	right_info:true,
 	longpress_info:true,
 	long_info:true,
-	background_music:'music_minatoAqua1',
+	background_music:'default',
 	background_audio:true,
 	background_speak:true,
 	glow_phase:'yellow',
@@ -79,7 +79,7 @@ window.config={
 	hp_style:'default',
 
 	image_character:'default',
-	image_background:'ak1_bg',
+	image_background:'xm3_bg',
 
 	asset_image:true,
 	asset_font:true,

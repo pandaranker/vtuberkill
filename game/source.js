@@ -12,6 +12,7 @@ window.noname_source_list=[
 	'card/yunchou.js',
 	'card/zhenfa.js',
 	'card/zhulu.js',
+	'card/longlaoguan.js',
 	'character/vtuber.js',
 	'character/hololive.js',
 	'character/basic.js',

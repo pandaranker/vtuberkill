@@ -36,7 +36,7 @@ window.noname_package={
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',
 		yunchou:'运筹帷幄',
-		// longlaoguan:'龙牢关',
+		longlaoguan:'龙牢关',
 		// swd:'轩辕剑',
 		// gujian:'古剑奇谭',
 		// hearth:'炉石传说',
