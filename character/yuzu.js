@@ -282,7 +282,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					name:'高槻律的头顶',
 					content:'cards',
 				},
-
+				trigger:{global:'gainEnd'},
+				forced:true,
+				priority:998,
+				filter:function(event,player){
+					return event.player!=player;
+				},
 
 
 			},
@@ -516,7 +521,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var history=player.getHistory('useCard');
 					var heaG=1,diaG=1;
 					for(var i=0;i<history.length;i++){
-						console.log(history[i].cards[0]==player.storage.hangaohouxu[0]);
+						console.log(history[i].cards[0]);
 						if(history[i].cards[0]==player.storage.hangaohouxu[0])	diaG=0;
 						if(!history[i].targets) continue;
 						for(var j=0;j<history[i].targets.length;j++){
@@ -577,12 +582,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			shuangzhi:{
 				check:function(event,player){
-					return event.player!=player;
+					return  get.attitude(player,event.player)<1;;
 				},
 				trigger:{global:'loseAfter'},
 				priority:222,
 				filter:function(event,player){
-					return event.player.isAlive()&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length>1;
+					return event.player.isAlive()&&event.player!=player&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length>1;
 				},
 				content:function(){
 					'step 0'
@@ -607,7 +612,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){
-							console.log(event.player.hasMark('shangdong'));
 							return event.player.hasMark('shangdong');
 						},
 						content:function(){
@@ -624,8 +628,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.player.hasMark('shangdong');
 						},
 						content:function(){
-							console.log('OK');
-							console.log(trigger);
 							trigger.num+=trigger.player.countMark('shangdong');
 						},
 					},

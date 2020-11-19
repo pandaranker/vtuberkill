@@ -2026,9 +2026,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 							});
-							console.log(player.getCards('hej'));
 							player.getCards('hej').forEach(function(ca){
-								console.log(ca==shi);
 								if(ca==shi)	own++;
 							});
 							return own;

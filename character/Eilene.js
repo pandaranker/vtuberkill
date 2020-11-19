@@ -57,7 +57,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					_status.event.target = target;
-					console.log(cards);
 					var type = [];
 					for(var i=0;i<cards.length;i++){
 						type.add(get.type(cards[i],'trick',cards[i].original=='h'?player:false));
@@ -75,7 +74,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//		var time = _status.event.time;
 					game.broadcastAll(function(target, suits){
 						console.log(suits);
-						var next=target.discardPlayerCard("弃置与亮出牌花色和数量相同的牌", target, 'he');
+						var next=target.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", target, 'he');
 						next.set('selectButton',suits.length);
 						next.set('filterButton',function(card){
 							if(ui.selected.buttons.length){
@@ -86,19 +85,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return get.suit(card) == suits[0];
 							}
 						});
-						next.set('forced',true);
-						
-			/*			var suit = suits[time];
-						target.chooseToDiscard('请弃置花色分别为'+get.translation(suits)+'的牌\n（目前为'+get.translation(suit)+'）', 1, function(card){
-							return get.suit(card) == suit;
-						})*/
+						next.set('forced',false);
 					}, _status.event.target, _status.event.suits);
 			//		_status.event.time++;
 					'step 2'
-				//	if(result.bool&&_status.event.time<_status.event.suits.length){
-				//		event.goto(1);
-				//	}
-					if(!result.bool){
+					if(!result.cards||result.cards.length<_status.event.suits.length){
 						event.target.damage('player',1);
 					}
 				},
