@@ -8,6 +8,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				type:'trick',
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -93,6 +94,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				type:'trick',
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -128,6 +130,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhinengdulun:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target.identity=='fan';
 				},
@@ -144,6 +147,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			longjiao:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target==game.zhu&&target.identity!='fan';
 				},
@@ -162,6 +166,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			longwei:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				filterTarget:function(card,player,target){
 					return target==game.zhu&&target.identity!='fan';
 				},
@@ -179,6 +184,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			takeover:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -233,6 +239,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			bigong:{
 				audio:true,
 				fullskin:true,
+				modeimage:'longlaoguan',
 				enable:function(){
 					return game.hasPlayer(function(cur){
 						if(cur.identity=='fan'){
@@ -311,6 +318,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 			},
 		},
+		
 		skill:{
 			g_longjiao:{
 				trigger:{player:['loseAfter']},
@@ -349,7 +357,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<trigger.cards.length;i++){
 						if(trigger.cards[i].name=='longwei') event.card=trigger.cards[i];
 					}
-					ui.cardPile.insertBefore(event.card,ui.cardPile.firstChild);
+					ui.cardPile.insertBefore(event.card,ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
 				},
 			},
 			dulun_sha:{
@@ -451,11 +459,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			longwei:{
 				init:function (player){//获得技能时发动
 					if(get.name(player)=='KiryuuCoco')
-					player.gainMaxHp();
+						player.addSkill('yugaimizhang');
+					if(get.name(player)=='AjatarCoco')
+						player.addSkill('esuyingye');
 				},
 				onremove:function(player){//失去技能时发动
 					if(get.name(player)=='KiryuuCoco')
-					player.loseMaxHp();
+						player.removeSkill('yugaimizhang');
+					if(get.name(player)=='AjatarCoco')
+						player.removeSkill('esuyingye');
 				},
 				audio:true,
 				frequent:true,
@@ -485,25 +497,25 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			bigong_clear: '逼宫后续',
 			chuanjia_po: 'fuck',
 		},
-		list:[
-			//3张独轮车
-			["spade","5","dulun"],
-			["club","9","dulun"],
-			["diamond","11","dulun"],
-			//2张穿甲
-			["heart","13","chuanjia"],
-			["club","5","chuanjia"],
-			//
-			["diamond","1","zhinengdulun"],
-			//
-			["spade","2","longjiao"],
-			//
-			["spade","6","longwei"],
-			//
-			["heart","10","takeover"],
-			//2张逼宫
-			["club","9","bigong"],
-			["heart","8","bigong"],
-		],
+		// list:[
+		// 	//3张独轮车
+		// 	["spade","5","dulun"],
+		// 	["club","9","dulun"],
+		// 	["diamond","11","dulun"],
+		// 	//2张穿甲
+		// 	["heart","13","chuanjia"],
+		// 	["club","5","chuanjia"],
+		// 	//
+		// 	["diamond","1","zhinengdulun"],
+		// 	//
+		// 	["spade","2","longjiao"],
+		// 	//
+		// 	["spade","6","longwei"],
+		// 	//
+		// 	["heart","10","takeover"],
+		// 	//2张逼宫
+		// 	["club","9","bigong"],
+		// 	["heart","8","bigong"],
+		// ],
 	}
 });		

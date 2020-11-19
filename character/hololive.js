@@ -1329,23 +1329,32 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         event.finish()
                     }
                     else
-                    player.chooseTarget('命令一名其他杏势力角色本回合所有牌视为无懈可击',{},function(card,player,target){
-                        return player!=target&&target.group=='holo'&&target.countCards('he')>0
+                    player.chooseTarget('命令一名其他杏势力角色本回合一张手牌视为无懈可击',{},function(card,player,target){
+                        return player!=target&&target.group=='holo'&&target.countCards('h')>0
                     });
                     "step 1"
                     if(result.bool){
-                        event.dropTarget=result.targets[0];
-                        //event.dropTarget.chooseCard('he',1,true);
-                        event.dropTarget.addTempSkill('zhongjian1_zhuanhua')
+						event.dropTarget=result.targets[0];
+						player.choosePlayerCard(result.targets[0],1,'h',true)
+						//var dropcards=event.dropTarget.getCards('h')
                     }
                     else{
                         event.finish()
                     }
-                    "step 2"
+					"step 2"
+					if(result.bool){
+						player.addTempSkill('zhongjian1_tag','roundStart');
+						event.dropTarget.storage.changeWuxie=result.links[0];
+						
+                        //event.dropTarget.chooseCard('he',1,true);
+                        event.dropTarget.addTempSkill('zhongjian1_zhuanhua');
+					}
+					else{
+                        event.finish()
+					}
                     // event.dropTarget.$throw(result.cards);
                     // event.dropTarget.lose(result.cards,ui.discardPile);
                     //console.log(event.getParent().getParent().getParent());
-                    player.addTempSkill('zhongjian1_tag','roundStart');
                     // event.cards=result.cards
                     // "step 3"
                     //event.getParent().getParent().state=!event.getParent().getParent().state;
@@ -1370,11 +1379,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         mark:true,
 						intro:{
 							content:function(){
-								return '所有手牌视为【无懈可击】'
+								return '一张手牌视为【无懈可击】'
 							}
-                        },
+						},
+						onremove:function(player){
+							player.storage.changeWuxie=null;
+						},
                         mod:{
                             cardname:function(card,player){
+								if(card==player.storage.changeWuxie)
                                 return 'wuxie';
                             },
                         },
@@ -2268,7 +2281,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
             zhongjian:'中坚',
             zhongjian1:'中坚',
-            zhongjian_info:'<font color=#ff4>主公技</font> 每轮限一次。回合外，当一张通常锦囊牌指定目标后，你可以选择一名同势力其他角色，该角色的手牌在本回合视为【无懈可击】。',
+            zhongjian_info:'<font color=#ff4>主公技</font> 每轮限一次,当一张普通锦囊牌指定目标后,你可以选择同势力一名其他角色的一张手牌,此牌本回合视为【无懈可击】。',
 
 			AkiRosenthal: '亚琦罗森塔尔',
 			meiwu: '魅舞',
