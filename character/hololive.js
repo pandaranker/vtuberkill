@@ -2057,7 +2057,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 								var shi = _status.event.card;
 								result.targets[0].recover();
-								player.lose(shi);
+								player.discard(shi);
 							}
 						},
 					},
