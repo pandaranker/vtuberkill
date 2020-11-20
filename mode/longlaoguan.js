@@ -1339,6 +1339,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},
 					use:{
 						trigger:{global:'phaseEnd'},
+						filter:function(event,player){
+							return (player.countCards('h')>0)
+						},
 						content:function(){
 							'step 0'
 							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1).set('filterButton',function(button){
