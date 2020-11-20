@@ -569,8 +569,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return range[1]=player.countDisabled()||range[1];
 						}
 					},
-					maxHandcard:function(player,num){
-						return num+player.countDisabled();
+					attackFrom:function(from,to,distance){
+						return distance+player.countDisabled();
 					},
 				},
 			},
@@ -1380,7 +1380,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			TakatsukiRitsu: '高槻律',
 			shengya: '职业生涯',
-			shengya_info: '锁定技。出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
+			shengya_info: '<font color=#f66>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',
@@ -1394,7 +1394,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hangao: '函告',
 			hangao_info: '出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
 			yinglve: '影掠',
-			yinglve_info: '结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你每有一个废除的装备栏，攻击距离和【顺手牵羊】可指定的目标数便+1。',
+			yinglve_info: '结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你的攻击范围+X且你使用【顺手牵羊】可选择的目标数为X。（X为你废除的装备栏数）',
 			feichu_equip1:'废除',
 			feichu_equip2:'废除',
 			feichu_equip3:'废除',
