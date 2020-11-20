@@ -461,8 +461,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//Echo
 			hangao:{
-				trigger:{player:'phaseJieshuBegin'},
-				priority:42,
+				enable:'phaseUse',
+				usable:1,
+	//			selectCard:1,
+	//			filterCard:function (card,player){
+     //   			return get.suit(card)=='spade';
+	//			},
 				filter:function(event,player){
 					var gao = player.getCards('he').filter(function(ca){
 						return get.suit(ca)=='spade';
@@ -542,8 +546,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			yinglve:{
-				enable:'phaseUse',
-				usable:1,
+				trigger:{player:'phaseJieshuBegin'},
+				priority:42,
 				filter:function(event,player){
 					return player.countDisabled()!=5;
 				},
@@ -592,7 +596,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var list = ['受到1点无来源伤害','受到的伤害+1直到其回合开始']
-					var next = trigger.player.chooseControlList(['选择其中的一项',list],true,function(){
+					var next = trigger.player.chooseControlList('选择其中的一项',list,true,function(){
 						return _status.event.choice;
 					});
 					'step 1'
@@ -1386,9 +1390,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qingjie_info: '<font color=#f66>锁定技</font> 你你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
 			SpadeEcho: '黑桃影',
 			hangao: '函告',
-			hangao_info: '结束阶段，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
+			hangao_info: '出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
 			yinglve: '影掠',
-			yinglve_info: '出牌阶段限一次，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你每有一个废除的装备栏，手牌上限和【顺手牵羊】可指定的目标数便+1。',
+			yinglve_info: '结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你每有一个废除的装备栏，攻击距离和【顺手牵羊】可指定的目标数便+1。',
 			feichu_equip1:'废除',
 			feichu_equip2:'废除',
 			feichu_equip3:'废除',
