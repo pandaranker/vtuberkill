@@ -518,8 +518,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.classList.remove('guessing');
 					}
 					for(i in lib.character){
-						if(j=='AjatarCoco') continue;
-						if(j=='KiryuuCoco') continue;
+						if(i=='AjatarCoco') continue;
+						if(i=='KiryuuCoco') continue;
 						if(chosen.contains(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
 						event.list.push(i);
