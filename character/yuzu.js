@@ -9,10 +9,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 	//		TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
+			
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
-			Doris:['female','holo',3,['shuangzhi','shenghua']],
+	//		Doris:['female','holo',3,['shenhai','paomo']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -570,7 +571,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					attackFrom:function(from,to,distance){
-						return distance+player.countDisabled();
+						return distance-from.countDisabled();
 					},
 				},
 			},
