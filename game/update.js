@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.68',
+	version:'1.9.100.69',
 	update:'1.9.100.68.1',
 	changeLog:[
 		'修改默认背景为熊猫人背景,背景音乐改回默认三国杀',
