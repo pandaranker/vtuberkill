@@ -240,16 +240,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				modeimage:'longlaoguan',
-				enable:function(){
-					return game.hasPlayer(function(cur){
-						if(cur.identity=='fan'){
-							return true;
-						}
-					});
-				},
-		//		chongzhu:function(){
-		//			return game.countPlayer()<=2;
-		//		},
+				enable:true,
 				singleCard:true,
 				type:'trick',
 				selectTarget:1,
@@ -258,11 +249,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					_status.event.target = target;
+					//_status.event.target = target;
 					var list= [['本轮内失去所有技能'],['交给桐生可可两张不同类型的牌']];
 					event.videoId = lib.status.videoId++;
 					player.line(target,'green')
-					_status.event.target = target;
+					//_status.event.target = target;
 					game.broadcastAll(function(id, choicelist){
                         var dialog=ui.create.dialog('选择一项');
                         choicelist.forEach(element=>{
@@ -271,20 +262,20 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						dialog.videoId = id;
 					}, event.videoId, list);
 					'step 1'
-					var target = _status.event.target;
-					target.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('dulunche'));
+					//var target = _status.event.target;
+					target.chooseButton(true).set('dialog',event.videoId).set('prompt',get.prompt('bigong'));
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
                     if(result.bool){
-						var target = _status.event.target;
+						//var target = _status.event.target;
                         result.links.forEach(element => {
                             if(element[2]=='本轮内失去所有技能'){
                                 game.log(target,'失去了所有技能');
-								target.clearSkills();
+								//target.clearSkills();
 								target.addTempSkill('bigong_clear',{global:'roundStart'});
                             }
                             if(element[2]=='交给桐生可可两张不同类型的牌'){
-								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌',2,target.getCards('he'),true);
+								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌(取消则依然发动效果1)',2,target.getCards('he'));
 								next.set('filterButton',function(button){
 									if(ui.selected.buttons.length){
 										var from=ui.selected.buttons[0];
@@ -300,8 +291,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
                         });
 					}
 					'step 3'
-					if(result.buttons.length){
-						game.zhu.gain(result.buttons,_status.event.target);
+					if(result.bool){
+						if(result.buttons.length){
+							game.zhu.gain(result.buttons,target);
+						}
+					}
+					else{
+						game.log(target,'失去了所有技能');
+						target.addTempSkill('bigong_clear',{global:'roundStart'});
 					}
 				},
 				contentAfter:function(){
@@ -373,26 +370,57 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					player.removeSkill('dulun_sha');
 				}
 			},
+			
 			bigong_clear:{
-				marktext:'悲',
-				locked:true,
-				notemp:true,
-				mark: true,
-				intro: {
-					content: '失去了所有技能',
+				//charlotte:true,
+				firstDo:true,
+				trigger:{
+					global:'roundStart',
 				},
+				priority:99,
 				forced:true,
-				trigger:{global:'roundStart'},
-				content:function(){
+				popup:false,
+				unique:true,
+				content:function (){
+					player.enableSkill('bigong_clear');
 					player.unmarkSkill('bigong_clear');
-					player.removeSkill('bigong_clear');
+					player.removeSkill('bigong_clear')
 				},
-				onremove:function(player) {
-					var hp = player.hp
-					player.init(get.name(player));
-					player.hp = hp;
-					player.update();
+				mark:true,
+				intro:{
+					content:function (storage,player,skill){
+						var str='<li>锁定技，你的其他技能全部失效。';
+						var list=[];
+						for(var i in player.disabledSkills){
+							if(player.disabledSkills[i].contains(skill)){
+								list.push(i)
+							}
+						}
+						if(list.length){
+							str+='<br><li>失效技能：';
+							for(var i=0;i<list.length;i++){
+								if(lib.translate[list[i]+'_info']){
+									str+=get.translation(list[i])+'、';
+								}
+							}
+							return str.slice(0,str.length-1);
+						}else return str;
+					},
 				},
+				init:function (player,skill){
+					var skills=player.getSkills(true,false);
+					for(var i=0;i<skills.length;i++){
+						var info=get.info(skills[i]);
+						if(skills[i]=='bigong_clear'||skills[i]=='rebigong_clear'||info.charlotte){
+							skills.splice(i--,1);
+						}
+					}
+					player.disableSkill(skill,skills);
+				},
+				onremove:function (player,skill){
+					player.enableSkill(skill);
+				},
+				locked:true,
 			},
 			chuanjia_po:{
 				audio:true,

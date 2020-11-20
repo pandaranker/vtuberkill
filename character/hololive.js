@@ -1498,7 +1498,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lose:false,
 				filter: function(event, player) {
 					return player.countCards('h') && !player.hasSkill('haodu_lose')
-						&& (player.getStat('skill').haodu||0) < player.maxHp - player.hp + 1;
+						&& (!player.getStat('skill').haodu)||((player.getStat('skill').haodu||0) < player.maxHp - player.hp);
 				},
 				filterTarget: function(card, player, target) {
 					return player != target;
@@ -1583,7 +1583,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.delayx();
 						if (target.countDiscardableCards(player, 'he')) {
 							player.line(target, 'grean');
-							player.discardPlayerCard("弃置其两张牌", target, 2, 'he', true);
+							target.discardPlayerCard("弃置两张牌", target, 2, 'he', true);
 						}
 					}
 					'step 8'
@@ -2299,7 +2299,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			SakuraMiko: '樱巫女',
 			haodu: '豪赌',
-			haodu_info: '出牌阶段X+1次（X为已损失体力），你可以将至少一张手牌交给一名其他角色并声明点数、花色、类型，然后你展示其一张手牌。根据与声明相同的项依次执行对应效果：点数，你与其交换手牌；类型，你弃置其两张牌；花色，你获得其一张牌。',
+			haodu_info: '出牌阶段限X次（X为你已损失的体力值且至少为1)，你可以将至少一张手牌交给一名其他角色并声明点数、花色、类型，然后你展示其一张手牌。根据与声明相同的项依次执行对应效果：点数，你与其交换手牌；类型，令其弃置两张牌；花色，你获得其一张牌。			',
         
             MinatoAqua: '湊阿库娅',
 			kuali: '夸力满满',

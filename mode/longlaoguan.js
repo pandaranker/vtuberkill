@@ -1321,7 +1321,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						filter:function(event,player){
 							if(player.countCards('h')==0) return false;
-							if(player.storage.yugaimizhang&&player.storage.yugaimizhang.length==0){
+							if(!player.storage.yugaimizhang){
+								return false
+							}
+							if(player.storage.yugaimizhang.length==0){
 								return false
 							}
 							if(event.targets&&event.targets[0]==player&&get.suit(event.cards)==get.suit(game.zhu.storage.yugaimizhang))
@@ -1338,7 +1341,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						content:function(){
 							'step 0'
-							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1,function(button){
+							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1).set('filterButton',function(button){
+								var bool=game.hasPlayer(function(current){
+									return player.canUse(button.link,current);
+								})
+								return bool;
+							}).set('ai',function(button){
 								return get.value(button.link,_status.event.player);
 							});
 							'step 1'
