@@ -12,6 +12,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
+			Doris:['female','holo',3,['shuangzhi','shenghua']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -405,7 +406,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(game.hasPlayer(function(cur){
 						return	cur.getHistory('damage',function(evt){
-							console.log(evt);
 							return evt.source==player;
 						}).length>0
 					}))
@@ -418,12 +418,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.canUse(car,cur))	canG++;
 						});;
 						console.log(canG);
-					})		
+					})
+					console.log(event);
+					if(!event.hs)	return false;	
 					return canG&&(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard'));
 				},
 				content:function(){
 					'step 0'
-					event.cards = trigger.cards;
+					event.cards = trigger.hs;
 					game.broadcastAll(function(player, cards){
 						var next=player.chooseCardButton(1,'选择使用的牌',cards);
 						next.set('filterButton',function(button){
@@ -1385,7 +1387,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuangxin2: '旷心',
 			kuangxin_info: '每回合限一次,当其他角色成为【杀】或伤害类锦囊牌的唯一目标时，你可以令你与其各选择一张牌交换,此牌结算后,若其未受到此牌造成的伤害,你可以令你或其摸一张牌。',
 			danyan: '弹言',
-			danyan_info: '你的牌因弃置而进入弃牌堆时,若本回合你没有造成过伤害,你可以使用其中的一张牌。',
+			danyan_info: '你的手牌因弃置而进入弃牌堆时,若本回合你没有造成过伤害,你可以使用其中的一张牌。',
 			qingjie: '轻捷',
 			qingjie_info: '<font color=#f66>锁定技</font> 你你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
 			SpadeEcho: '黑桃影',
