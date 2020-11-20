@@ -518,6 +518,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.classList.remove('guessing');
 					}
 					for(i in lib.character){
+						if(j=='AjatarCoco') continue;
+						if(j=='KiryuuCoco') continue;
 						if(chosen.contains(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
 						event.list.push(i);
@@ -751,6 +753,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var pack=lib.characterPack[lib.configOL.characterPack[i]];
 						for(var j in pack){
 							if(j=='zuoci') continue;
+							if(j=='AjatarCoco') continue;
+							if(j=='KiryuuCoco') continue;
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
@@ -1472,7 +1476,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.deadlist=game.dead;
 					for(let i=0;i<event.deadlist.length;i=0){
 						event.deadlist[i].storage.reviving=0;
-						event.deadlist[i].revive(1);
+						game.broadcastAll(function(splayer){
+							splayer.revive(1);
+						},event.deadlist[i])
 					}
 					// event.deadlist.forEach(element => {
 					// });
