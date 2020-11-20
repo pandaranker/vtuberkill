@@ -603,7 +603,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.index==0){
-						trigger.player.damage();
+						trigger.player.damage('nosource');
 					}
 					else{
 						trigger.player.addSkill('shangdong');
