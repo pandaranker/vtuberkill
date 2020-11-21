@@ -1224,7 +1224,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					for(var i in lib.character){
 						if(i=='KiryuuCoco'||i=='AjatarCoco') continue;
-						if(i=='Civia'||i=='SpadeEcho'||i=='Artia') continue;
+						if(i=='Civia'||i=='SpadeEcho'||i=='Artia'||i=='Doris'||i=='Yogiri'||i=='Rosalyn') continue;
 						var group=lib.character[i][1];
 						if(group=='shen') continue;
 						if(group=='holo'){
@@ -1351,7 +1351,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1).set('filterButton',function(button){
+							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1).set('filterButton',function(button,player){
 								var bool=game.hasPlayer(function(current){
 									return player.canUse(button.link,current);
 								})
@@ -1371,13 +1371,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									if(get.type(event.usecard)=='delay'||get.type(event.usecard)=='equip'){
 										targetNumber=1;
 									}
-									player.chooseTarget('选择使用目标',[1,Infinity],function(card,player,target){
-										return player.canUse(event.usecard,target);
-									})
+									game.broadcastAll(
+										player.chooseTarget('选择使用目标',[1,Infinity],function(card,player,target){
+											return player.canUse(event.usecard,target);
+										})
+									)
+								}
+								else{
+									event.finish();
 								}
 							}
 							else{
-								event.finish()
+								event.finish();
 							}
 							'step 2'
 							player.useCard(event.usecard, result.targets)

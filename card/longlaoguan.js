@@ -95,17 +95,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				modeimage:'longlaoguan',
-				enable:function(){
-					return game.hasPlayer(function(cur){
-						if(cur.identity=='fan'){
-							return true;
-						}
-					});
+				enable:function(card,player){
+					return player.identity=='fan';
 				},
 				range:{attack:1},
 				selectTarget:1,
 				filterTarget:function(card,player,target){
-					return player!=target&&target==game.zhu;
+					return target.identity=='zhu';
 				},
 				content:function(){
 					target.addTempSkill('chuanjia_po','phaseAfter');
@@ -167,10 +163,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				modeimage:'longlaoguan',
-				enable:function(card,player,target){
+				enable:function(card,player){
 					return player.identity!='fan';
 				},
 				//toself:true,
+				onLose:function(){
+					if(get.name(player)=='KiryuuCoco')
+						player.removeSkill('yugaimizhang');
+					if(get.name(player)=='AjatarCoco')
+						player.removeSkill('esuyingye');
+				},
 				type:"equip",
 				subtype:"equip5",
 				skills:['longwei'],
@@ -492,10 +494,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						player.addSkill('esuyingye');
 				},
 				onremove:function(player){//失去技能时发动
-					if(get.name(player)=='KiryuuCoco')
-						player.removeSkill('yugaimizhang');
-					if(get.name(player)=='AjatarCoco')
-						player.removeSkill('esuyingye');
 				},
 				audio:true,
 				frequent:true,
