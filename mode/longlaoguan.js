@@ -28,9 +28,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				game.prepareArena(4);
 			}
 			"step 1"
-			// for(var i in lib.cardPack.mode_longlaoguan){
-			// 	lib.card[i]=lib.cardPack.mode_longlaoguan[i];
-			// }
 			if(_status.connectMode){
 				game.waitForPlayer(function(){
 						lib.configOL.number=4;
