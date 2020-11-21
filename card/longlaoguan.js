@@ -131,13 +131,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				modeimage:'longlaoguan',
-				filterTarget:function(card,player,target){
-					return target.identity=='fan';
+				enable:function(card,player){
+					return player.identity=='fan';
 				},
-				toself:true,
+				//toself:true,
 				type:"equip",
 				subtype:"equip5",
-				skills:['zhinengdulun'],
+				skills:['zhinengdulun_skill'],
 				ai:{
 					basic:{
 						equipValue:10,
@@ -148,10 +148,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				modeimage:'longlaoguan',
-				filterTarget:function(card,player,target){
-					return target==game.zhu&&target.identity!='fan';
+				enable:function(card,player){
+					return player.identity!='fan';
 				},
-				toself:true,
+				//toself:true,
 				type:"equip",
 				subtype:"equip1",
 				distance:{attackFrom:-3},
@@ -167,10 +167,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				fullskin:true,
 				modeimage:'longlaoguan',
-				filterTarget:function(card,player,target){
-					return target==game.zhu&&target.identity!='fan';
+				enable:function(card,player,target){
+					return player.identity!='fan';
 				},
-				toself:true,
+				//toself:true,
 				type:"equip",
 				subtype:"equip5",
 				skills:['longwei'],
@@ -453,7 +453,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
-			zhinengdulun:{
+			zhinengdulun_skill:{
 				audio:true,
 				trigger:{
 					player:"phaseBegin",

@@ -518,6 +518,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.classList.remove('guessing');
 					}
 					for(i in lib.character){
+						if(i=='AjatarCoco') continue;
+						if(i=='KiryuuCoco') continue;
 						if(chosen.contains(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
 						event.list.push(i);
@@ -751,6 +753,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var pack=lib.characterPack[lib.configOL.characterPack[i]];
 						for(var j in pack){
 							if(j=='zuoci') continue;
+							if(i=='AjatarCoco') continue;
+							if(i=='KiryuuCoco') continue;
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
@@ -1207,8 +1211,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					trigger.cancel();
-					player.revive(1);
+					if(event._trigger.reason=='nosource'){
+						player.storage.state='second';
+						event.finish();
+					}
+					else{
+						trigger.cancel();
+						player.revive(1);
+					}
 					'step 1'
 					player.markSkill('elongkeke');
 					game.delayx();
@@ -1339,6 +1349,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},
 					use:{
 						trigger:{global:'phaseEnd'},
+						filter:function(event,player){
+							return (player.countCards('h')>0)
+						},
 						content:function(){
 							'step 0'
 							player.chooseButton(['选择一张牌使用', player.getCards('h')], 1).set('filterButton',function(button){
@@ -1469,7 +1482,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.deadlist=game.dead;
 					for(let i=0;i<event.deadlist.length;i=0){
 						event.deadlist[i].storage.reviving=0;
-						event.deadlist[i].revive(1);
+						game.broadcastAll(function(splayer){
+							splayer.revive(1);
+						},event.deadlist[i])
 					}
 					// event.deadlist.forEach(element => {
 					// });
