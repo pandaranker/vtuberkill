@@ -421,7 +421,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						console.log(canG);
 					})
 					console.log(event);
-					if(!event.hs)	return false;	
+					if(!event.hs.length)	return false;	
 					return canG&&(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard'));
 				},
 				content:function(){
