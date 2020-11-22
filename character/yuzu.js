@@ -829,8 +829,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.logSkill('shenhai',event.targets);
 						if(trigger.targets.contains(event.targets[0]))	trigger.targets.removeArray(event.targets);
 						else trigger.targets.addArray(event.targets);
-						event.finish();
 					}
+					event.finish();
 					'step 4'//改变使用者
 					player.storage.shenhai.add(get.type(trigger.card));
 						game.broadcastAll(function(player,target,card,trigger){
@@ -839,7 +839,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							trigger.player=target;
 							if(get.type(trigger.card)=='equip')	trigger.targets.splice(0,1,target);
 						},trigger.player, result.targets[0], trigger.card,trigger)
-						event.finish();
+					event.finish();
 					'step 5'//改变结算
 					player.storage.shenhai_jiesuan.length=0;
 					player.storage.shenhai_jiesuan.add(trigger.card);
