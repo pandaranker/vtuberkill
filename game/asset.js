@@ -655,8 +655,8 @@ window.noname_asset_list=[
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
 
-	'image/character/NekomiyaHinata/1.jpg',
-	'image/character/NekomiyaHinata/2.jpg',
+	'image/skin/NekomiyaHinata/1.jpg',
+	'image/skin/NekomiyaHinata/2.jpg',
 	
 	'image/emotion/shibing_emotion/1.gif',
 	'image/emotion/shibing_emotion/2.gif',
