@@ -3267,6 +3267,21 @@
 						init:true,
 						unfrequent:true
 					},
+					replace_image:{
+						name:'替换为原始卡图',
+						intro:'所有V版卡图替换为三国杀原版卡图',
+						init:false,
+						unfrequent:true,
+						onclick:function(bool){
+							game.saveConfig('replace_image',bool);
+							if(bool){
+								ui.arena.classList.remove('replace_image');
+							}
+							else{
+								ui.arena.classList.add('replace_image');
+							}
+						},
+					},
 					hide_card_image:{
 						name:'隐藏卡牌背景',
 						intro:'所有卡牌将使用文字作为背景',
@@ -22969,7 +22984,12 @@
 								this.node.image.setBackgroundImage('image/mode/'+lib.card[bg].modeimage+'/card/'+bg+'.png');
 							}
 							else{
-								this.node.image.setBackgroundImage('image/card/'+bg+'.png');
+								if(lib.config.replace_image){
+									this.node.image.setBackgroundImage('image/replace/'+bg+'.png');
+								}
+								else{
+									this.node.image.setBackgroundImage('image/card/'+bg+'.png');
+								}
 							}
 						}
 					}

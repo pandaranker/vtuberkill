@@ -84,6 +84,8 @@ window.config={
 	asset_image:true,
 	asset_font:true,
 
+	replace_image:false,
+
 	card_font:'xiaozhuan',
 	show_statusbar_ios:'off',
 	show_statusbar_android:false,
