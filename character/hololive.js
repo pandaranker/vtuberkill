@@ -1132,7 +1132,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 }
             },
             yuanlv:{
-                trigger:{global:'phaseEnd'},
+				trigger:{global:'phaseEnd'},
+				priority:2,
 				filter:function(event,player){
 					if(player.hasSkill('yuanlv_tag')){
 						return true;
@@ -1182,6 +1183,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					ready:{
 						trigger:{player:['damageAfter','loseHpAfter','useCardAfter']},
+						priority:2,
 						direct:true,
 						filter:function(event,player,name){
 							if(name=='useCardAfter'){

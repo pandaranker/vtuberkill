@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
-	//		Doris:['female','holo',3,['shenhai','paomo']],
+			Doris:['female','holo',3,['shenhai','paomo']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
@@ -716,6 +716,224 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 				}
 			},
+			//Doris
+			shenhai:{
+				marktext:'海',
+				intro:{
+					name:"光辉深海",
+					content:function (storage,player,skill){
+						if(storage)	return "<li>当前回合已通过类型为"+get.translation(storage)+"的牌发动了技能";
+						return "<li>当前回合未发动技能";
+					},
+				},
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				trigger:{player:'useCard2'},
+				priority:42,
+				filter:function(event,player){
+					if(!player.isPhaseUsing())			return false;
+					if(get.type(event.card)=='delay')	return false;
+					if(!player.getLastUsed(1))			return false;
+					if(player.storage.shenhai.length!=3&&player.storage.shenhai.contains(get.type(event.card)))	return false;
+					var num = player.storage.paomo_contains.length?player.storage.paomo_contains[0]:get.number(player.getLastUsed(1).card);
+					if(player.storage.paomo_contains&&player.storage.paomo_contains.length){
+						player.unmarkSkill('paomo_contains');
+						player.storage.paomo_contains.length=0;
+					}
+					return player.getLastUsed(1)&&get.number(event.card)>num;
+				},
+				content:function(){
+					'step 0'
+					if(player.storage.shenhai.length===3){
+						var list = ['令一名其他角色使用','额外结算一次','增加或减少一个目标']
+						game.broadcastAll(function(player, list){
+							player.chooseControlList(list,
+								true,function(event,player){
+									return _status.event.index;
+								});
+						}, player, list);
+						event.goto(1);
+					}else{
+						if(get.type(trigger.card)=='equip'){
+							game.broadcastAll(function(player,card){
+								player.chooseTarget('令一名其他角色使用',function(card,player,target){
+									if(target.isDisabled(get.subtype(card)))	return false;
+									return target!=player;
+								});
+							}, player, trigger.card);
+							event.goto(4);
+						}
+						if(get.type(trigger.card)=='basic'){
+							player.storage.shenhai.add(get.type(trigger.card));
+							event.goto(5);
+						}
+						if(get.type(trigger.card)=='trick'){
+							var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
+							game.broadcastAll(function(player,trigger,prompt2){
+								player.chooseTarget(get.prompt('shenhai'),function(card,player,target){
+									var player=_status.event.player;
+									if(_status.event.targets.contains(target)) return true;
+									return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
+								}).set('prompt2',prompt2).set('targets',trigger.targets).set('card',trigger.card);
+							}, player, trigger, prompt2);
+							event.goto(2);
+						}
+					}
+					'step 1'
+					if(!result.bool&&player.storage.shenhai.length!=3){
+						event.finish();
+					}
+					if(result.index==0){
+						game.broadcastAll(function(player,card){
+							player.chooseTarget('令一名其他角色使用',function(card,player,target){
+								if(get.type(trigger.card)=='equip'&&target.isDisabled(get.subtype(card)))	return false;
+								return target!=player;
+							});
+						}, player, trigger.card);
+						event.goto(4);
+					}
+					else if(result.index==1){
+						if(get.type(trigger.card)=='equip')		event.finish();
+						event.goto(5);
+					}
+					else if(result.index==2){
+						if(get.type(trigger.card)=='equip')		event.finish();
+						if(get.name(trigger.card)=='jiu'){
+							var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
+							game.broadcastAll(function(player,trigger,prompt2){
+								player.chooseTarget(get.prompt('shenhai'),function(card,player,target){
+									return true;
+								}).set('prompt2',prompt2).set('card',trigger.card);
+							}, player, trigger, prompt2);
+							event.goto(2);
+						}else{
+							var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
+							game.broadcastAll(function(player,trigger,prompt2){
+								player.chooseTarget(get.prompt('shenhai'),function(card,player,target){
+									var player=_status.event.player;
+									if(_status.event.targets.contains(target)) return true;
+									return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
+								}).set('prompt2',prompt2).set('targets',trigger.targets).set('card',trigger.card);
+							}, player, trigger, prompt2);
+							event.goto(2);
+						}
+					}
+					'step 2'//改变目标
+					player.storage.shenhai.add(get.type(trigger.card));
+					if(!event.isMine()) game.delayx();
+					event.targets=result.targets;
+					console.log('OK');
+					'step 3'
+					if(event.targets){
+						player.logSkill('shenhai',event.targets);
+						if(trigger.targets.contains(event.targets[0]))	trigger.targets.removeArray(event.targets);
+						else trigger.targets.addArray(event.targets);
+						event.finish();
+					}
+					'step 4'//改变使用者
+					player.storage.shenhai.add(get.type(trigger.card));
+						game.broadcastAll(function(player,target,card,trigger){
+							target.gain(card,player,'giveAuto');
+							trigger.getParent().player=target;
+							trigger.player=target;
+							if(get.type(trigger.card)=='equip')	trigger.targets.splice(0,1,target);
+						},trigger.player, result.targets[0], trigger.card,trigger)
+						event.finish();
+					'step 5'//改变结算
+					player.storage.shenhai_jiesuan.length=0;
+					player.storage.shenhai_jiesuan.add(trigger.card);
+					event.finish();
+				},
+				group:['shenhai_jiesuan','shenhai_init'],
+				subSkill:{
+					jiesuan:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=[];
+						},
+						trigger:{player:'useCardAfter'},
+						forced: true,
+						priority:42,
+						filter:function(event,player){
+							if(!player.isPhaseUsing())			return false;
+							player.markSkill('shenhai');
+							player.updateMark();
+							if(get.type(event.card)=='delay')	return false;
+							return player.storage.shenhai_jiesuan[0]==event.card;
+						},
+						content:function(){
+							if(trigger.targets)
+							trigger.targets.forEach(function(target){
+								player.useCard(trigger.card,target);
+							});
+						}
+					},
+					init:{
+						trigger:{player:'phaseEnd'},
+						forced: true,
+						silent: true,
+						priority:42,
+						content:function(){
+							player.unmarkSkill('shenhai');
+							player.storage.shenhai_jiesuan.length = 0;
+							player.storage.shenhai.length = 0;
+						}
+					}
+				}
+			},
+			paomo:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				trigger:{global:'useCardAfter'},
+				priority:42,
+				filter:function(event,player){
+					if(!player.isPhaseUsing())			return false;
+					if(player==event.player)			return false;
+					console.log(event.player.getHistory('useCard'));
+					return !player.storage.paomo.contains(event.player)&&event.player.getHistory('useCard').length==0;
+				},
+				content:function(){
+					player.storage.paomo.add(trigger.player);
+					if(player.getLastUsed(1)){
+						if(player.storage.paomo_contains&&player.storage.paomo_contains.length)		player.storage.paomo_contains.length=0;
+						player.storage.paomo_contains.add(get.number(trigger.card));
+						player.markSkill('paomo_contains');}
+					player.draw();
+					trigger.player.draw();
+				},
+				group:['paomo_contains','paomo_init'],
+				subSkill:{
+					contains:{
+						marktext:'沫',
+						intro:{
+							name:"泡沫爱恋",
+							content:function (storage,player,skill){
+								if(storage)	return "<li>上一张使用的牌点数变为"+get.translation(storage);
+								return "<li>当前回合未发动技能";
+							},
+						},
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=[];
+						},
+						mark:true,
+					},
+					init:{
+						trigger:{player:'phaseEnd'},
+						forced: true,
+						silent: true,
+						priority:42,
+						content:function(){
+							player.unmarkSkill('paomo_contains');
+							player.storage.paomo_contains.length = 0;
+							player.storage.paomo.length = 0;
+						}
+					}
+				}
+			},
+
+			
+
 
 			//圣皇夸
 			shenghuang:{
@@ -1406,7 +1624,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shuangzhi_info: '其他角色一次性弃置一张以上的牌后，你可以令其选择一项：受到1点无来源伤害；或受到的伤害+1直到其回合开始。',
 			shenghua: '希握',
 			shenghua_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
-
+			Doris: '朵莉丝',
+			shenhai: '辉海',
+			shenhai_info: '出牌阶段每类型限一次，当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除次数和标号限制。',
+			paomo: '泡沫',
+			paomo_info: '你的回合内，当其他角色于本回合第一次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。',
 
 
 			sp_MinatoAqua:'皇·湊阿库娅',

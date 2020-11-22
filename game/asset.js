@@ -590,6 +590,7 @@ window.noname_asset_list=[
 	'image/character/AkiRosenthal.jpg',
 	'image/character/Artia.jpg',
 	'image/character/Civia.jpg',
+	'image/character/Doris.jpg',
 	'image/character/HanazonoSerena.jpg',
 	'image/character/HiguchiKaede.jpg',
 	'image/character/HoshimatiSuisei.jpg',
