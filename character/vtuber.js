@@ -12,13 +12,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha']],
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
+			/**茜科塞尔 */
+			Qiankesaier:['male','qun',3,['tiaodunchongji']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
 			InuyamaTamaki:'犬山玉姬',
 			XiaoxiXiaotao:'小希小桃',
-			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。'
-        },
+			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。',
+			Qiankesaier:''
+		},
 		skill:{
             ailian:{
 				enable:'phaseUse',
@@ -1094,6 +1097,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.loseMaxHp();
 						}
 					}
+				}
+			},
+			tiaodunchongji:{
+				trigger:{player:'shaBegin'},
+				content:function(){
+					'step 0'
+					
 				}
 			}
 		},
