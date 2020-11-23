@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**茜科塞尔 */
-			Qiankesaier:['male','qun',3,['tiaodunchongji']],
+	//		Qiankesaier:['male','qun',3,['tiaodunchongji']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',

@@ -319,6 +319,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var card = result.links;
 								player.$give(card, trigger.player, false);
 								game.log(player,'将',card,'交给了',trigger.player);
+								trigger.player.gain(card);
 								trigger.player.chooseUseTarget({name:'jiu'},true,'noTargetDelay','nodelayx');
 								player.storage.liangshan.remove(card);
 								player.markSkill('liangshan');
@@ -338,6 +339,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var card = result.links;
 								player.$give(card, trigger.player, false);
 								game.log(player,'将',card,'交给了',trigger.player);
+								trigger.player.gain(card);
 								trigger.player.chooseUseTarget({name:'jiu'},true,'noTargetDelay','nodelayx');
 								player.storage.liangshan.remove(card);
 								player.markSkill('liangshan');
