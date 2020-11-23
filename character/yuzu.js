@@ -290,7 +290,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
-				trigger:{global:'gainEnd'},
+				trigger:{global:'drawEnd'},
 				priority:998,
 				filter:function(event,player){
 					return event.player!=player&&player==_status.currentPhase;
@@ -313,7 +313,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseCardButton('交给其你武将牌上的一张牌', 1, player.storage.liangshan);
+							player.chooseCardButton('交给其一张你武将牌上的牌', 1, player.storage.liangshan);
 							'step 1'
 							if (result.bool) {
 								var card = result.links;
@@ -332,7 +332,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseCardButton('交给其你武将牌上的一张牌', 1, player.storage.liangshan);
+							player.chooseCardButton('交给其一张你武将牌上的一张牌', 1, player.storage.liangshan);
 							'step 1'
 							if (result.bool) {
 								var card = result.links;
