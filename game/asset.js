@@ -643,6 +643,7 @@ window.noname_asset_list=[
 	'image/character/SisterClearie.jpg',
 	'image/character/SpadeEcho.jpg',
 	'image/character/SuzukaUtako.jpg',
+	'image/character/TakatsukiRitsu.jpg',
 	'image/character/Paryi.jpg',
 	'image/character/TokinoSora.jpg',
 	'image/character/UsadaPekora.jpg',
@@ -657,6 +658,8 @@ window.noname_asset_list=[
 
 	'image/skin/NekomiyaHinata/1.jpg',
 	'image/skin/NekomiyaHinata/2.jpg',
+	'image/skin/UsadaPekora/1.jpg',
+	'image/skin/UsadaPekora/2.jpg',
 	
 	'image/emotion/shibing_emotion/1.gif',
 	'image/emotion/shibing_emotion/2.gif',
