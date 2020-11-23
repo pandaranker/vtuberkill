@@ -656,6 +656,8 @@ window.noname_asset_list=[
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
 
+	'image/skin/Artia/1.jpg',
+	'image/skin/Doris/1.jpg',
 	'image/skin/NekomiyaHinata/1.jpg',
 	'image/skin/NekomiyaHinata/2.jpg',
 	'image/skin/UsadaPekora/1.jpg',

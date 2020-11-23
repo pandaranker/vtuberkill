@@ -235,7 +235,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					name:'puripuri……',
 					content:function (storage,player,skill){
-						return '失去【职业生涯】技能直到回合结束';
+						return '失去【职业生涯】技能直到下个回合开始';
 					},
 				},
 				trigger:{player:'useCardAfter'},
@@ -279,7 +279,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:"高",
 				locked:true,
 				intro:{
-					name:'高槻律的头顶',
+					name:'好汉歌',
 					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
@@ -293,7 +293,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'drawEnd'},
 				priority:998,
 				filter:function(event,player){
-					return event.player!=player&&player==_status.currentPhase;
+					console.log(event.player.getHistory('gain'));
+					return event.player!=player&&player==_status.currentPhase&&event.player.getHistory('gain').length==1;
 				},
 				content:function(){
 					var card=game.cardsGotoSpecial(get.cards()).cards[0];
@@ -1664,7 +1665,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shengya: '职业生涯',
 			shengya_info: '<font color=#f66>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
 			liangshan: '梁山好汉',
-			liangshan_info: '其他角色在你的回合内摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
+			liangshan_info: '其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			liangshan_use_info: '一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			liangshan_save_info: '一名角色濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			chongshi: '清楚铳士',
