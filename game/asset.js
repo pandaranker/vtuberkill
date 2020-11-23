@@ -643,6 +643,7 @@ window.noname_asset_list=[
 	'image/character/SisterClearie.jpg',
 	'image/character/SpadeEcho.jpg',
 	'image/character/SuzukaUtako.jpg',
+	'image/character/TakatsukiRitsu.jpg',
 	'image/character/Paryi.jpg',
 	'image/character/TokinoSora.jpg',
 	'image/character/UsadaPekora.jpg',
