@@ -1909,7 +1909,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:24,
 						filter:function(event,player){
 							if(event.player!=player)	return false;
-							if(!event.source.hp)		return false
+							if(!event.source)		return false;
 							return player.hp<event.source.hp;
 						},
 						content:function(){
