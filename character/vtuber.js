@@ -1214,6 +1214,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			}
 		},
+		card:{
+			"feichu_equip1":{
+				type:"equip",
+				subtype:"equip1",
+			},
+			"feichu_equip2":{
+				type:"equip",
+				subtype:"equip2",
+			},
+			"feichu_equip3":{
+				type:"equip",
+				subtype:"equip3",
+			},
+			"feichu_equip4":{
+				type:"equip",
+				subtype:"equip4",
+			},
+			"feichu_equip5":{
+				type:"equip",
+				subtype:"equip5",
+			},
+			disable_judge:{},
+		},
 		translate:{
 			vtuber_upd8:'UPD8',
             KizunaAI:'绊爱',

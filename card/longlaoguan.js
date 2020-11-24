@@ -98,7 +98,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:function(card,player){
 					return player.identity=='fan';
 				},
-				range:{attack:1},
 				selectTarget:1,
 				filterTarget:function(card,player,target){
 					return target.identity=='zhu';
