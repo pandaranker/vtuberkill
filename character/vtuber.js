@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**茜科塞尔 */
-	//		Qiankesaier:['male','qun',3,['tiaodunchongji']],
+			Qiankesaier:['male','qun',4,['tiaodunchongji']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -1103,7 +1103,55 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'shaBegin'},
 				content:function(){
 					'step 0'
-					
+					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
+					'step 1'
+					event.replayers=[];
+					if(result.bool){
+						event.chooseBool=true;
+						event.replayers=trigger.targets;
+					}
+					else{
+						event.chooseBool=false;
+						event.replayers.add(player);
+					}
+					'step 2'
+					if(event.replayers.length>0){
+						event.replayer=event.replayers[0];
+						event.cards=event.replayer.getCards('h');
+						event.replayer.showHandcards();
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					event.recards=[];
+					if(event.cards&&event.cards.length>0){
+						for( i of event.cards){
+							if(i.name=='shan'){
+								event.recards.add(i);
+							}
+						}
+					}
+					if(event.recards.length>0){
+						event.replayer.lose(event.recards, ui.discardPile);
+						event.replayer.$throw(event.recards);
+						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
+						event.replayer.draw(event.recards.length);
+					}
+					'step 4'
+					if(event.recards.length>0){
+						if(event.replayers.contains(event.replayer)&&event.chooseBool){
+							player.draw(1);
+						}
+						if(player==event.replayer){
+							player.getStat().card.sha--;
+						}
+					}
+					event.replayers.shift();
+					if(event.replayers.length>0){
+						event.goto(1)
+					}
 				}
 			}
 		},
