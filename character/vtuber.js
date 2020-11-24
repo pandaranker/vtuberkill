@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**茜科塞尔 */
-			Qiankesaier:['male','qun',4,['tiaodunchongji']],
+			Qiankesaier:['male','qun',4,['shuangshoujiaoying','']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -246,9 +246,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
+					if(!player.hasSkill('qixu3'))
+						player.addSkill('qixu3');
 					if(event.current==undefined) event.current=player.next;
 					if(event.current==player){
-						player.addSkill('qixu3');
 						event.getParent(2).step=0;
 						event.finish();
 					}
@@ -292,7 +293,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.result={bool:true,card:{name:'sha',isCard:true}};
 					trigger.responded=true;
 					trigger.animate=false;
-					player.addSkill('qixu3');
 					if(typeof event.current.ai.shown=='number'&&event.current.ai.shown<0.95){
 						event.current.ai.shown+=0.3;
 						if(event.current.ai.shown>0.95) event.current.ai.shown=0.95;
@@ -322,9 +322,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
+					if(!player.hasSkill('qixu3'))
+						player.addSkill('qixu3');
 					if(event.current==undefined) event.current=player.next;
 					if(event.current==player){
-						player.addSkill('qixu3');
 						event.getParent(2).step=0;
 						event.finish();
 					}
@@ -351,14 +352,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					"step 1"
 					if(result.bool){
-						player.addSkill('qixu3');
 						event.current.discard(result.cards);
 						event.finish();
 					}
 					else{
 						event.current=event.current.next;
 						if(event.current==player){
-							player.addSkill('qixu3');
 							event.getParent(2).step=0;
 							event.goto(2);
 						}
@@ -1099,7 +1098,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			tiaodunchongji:{
+			shuangshoujiaoying:{
 				trigger:{player:'shaBegin'},
 				content:function(){
 					'step 0'
@@ -1127,9 +1126,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					event.recards=[];
 					if(event.cards&&event.cards.length>0){
-						for( i of event.cards){
-							if(i.name=='shan'){
-								event.recards.add(i);
+						if(player.storage.anyingxuemai){
+							for( i of event.cards){
+								if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
+									event.recards.add(i);
+								}
+							}
+						}
+						else{
+							for( i of event.cards){
+								if(i.name=='shan'){
+									event.recards.add(i);
+								}
 							}
 						}
 					}
@@ -1153,6 +1161,57 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.goto(1)
 					}
 				}
+			},
+			anyingxuemai:{
+				skillAnimation:true,
+				animationColor:'soil',
+				audio:2,
+				unique:true,
+				limited:true,
+				enable:'chooseToUse',
+				init:function(player){
+					player.storage.anyingxuemai=false;
+				},
+				mark:true,
+				filter:function(event,player){
+					if(event.type!='dying') return false;
+					if(player!=event.dying) return false;
+					if(player.storage.anyingxuemai) return false;
+					if(player.countCards('h')==0) return false;
+					return true;
+				},
+				content:function(){
+					"step 0"
+					player.awakenSkill('anyingxuemai');
+					player.showHandcards();
+					var handcards=player.getCards('h');
+					var suitlist=[0,0,0,0];
+					for(i of handcards){
+						if(get.suit(i)=='spade'){
+							suitlist[0]++;
+						}
+						if(get.suit(i)=='heart'){
+							suitlist[1]++;
+						}
+						if(get.suit(i)=='diamond'){
+							suitlist[2]++;
+						}
+						if(get.suit(i)=='club'){
+							suitlist[3]++;
+						}
+					}
+					suitlist.sort();
+					var recoverHp=0;
+					for(i of suitlist){
+						if(i!=0){
+							recoverHp=i;
+							break;
+						}
+					}
+					player.recover(recoverHp);
+					"step 1"
+					player.storage.fuli=true;
+				},
 			}
 		},
 		translate:{
@@ -1189,6 +1248,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
 			kuangzuiluanwu:'狂醉乱舞',
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
+		
+			Qiankesaier:'茜科塞尔',
+			Qiankesaier_info:'茜科塞尔',
+			shuangshoujiaoying:'双首角鹰',
+			shuangshoujiaoying_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
+			anyingxuemai:'暗影血脉',
+			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将“双首角鹰”的“【闪】”改为“红色牌”。',
 		},
 	};
 });

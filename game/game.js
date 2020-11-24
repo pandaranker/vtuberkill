@@ -25227,6 +25227,7 @@
 					// 	game.players[i].in();
 					// }
 					if(player.isTurnedOver()){
+						_status.currentPhase=player;
 						trigger.cancel();
 						player.turnOver();
 						player.phaseSkipped=true;

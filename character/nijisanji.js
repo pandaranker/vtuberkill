@@ -886,11 +886,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					diao:{
-						trigger:{global:'phaseAfter'},
+						trigger:{global:['phaseAfter','turnOverAfter']},
 						mark:true,
 						direct:true,
 						filter:function(event,player){
-							if(event.name=='phase'&&event.player.next!==player){
+							if(event.player.next!==player){
+								return false;
+							}
+							else if(event.name=='turnOver'&&event.player.isTurnedOver()) {
+								return false; 
+							}
+							else if(event.name=='turnOver'&&event.player!=_status.currentPhase){
 								return false;
 							}
 							else{

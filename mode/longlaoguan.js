@@ -954,7 +954,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			yanzheshengdun:'演者圣盾',
 			yanzheshengdun_info:'进入此形态后，你随机获得一个本局未出现的Hololive武将的所有技能，然后增加该武将的体力上限与体力值。',
 			zhengzhengrishang:'蒸蒸日上',
-			zhengzhengrishang_info:'锁定技，摸牌阶段结束时，你改为将手牌调整至全场唯一最多。若已为最多，则改为获得一张【逼宫】',
+			zhengzhengrishang_info:'锁定技，出牌阶段开始时，你将手牌调整至全场唯一最多。若已为最多，则改为获得一张【逼宫】。一个回合结束时，你将手牌调整至不为全场最少。',
 			yugaimizhang:'欲盖弥彰',
 			yugaimizhang_info:'锁定技，你的手牌上限始终为5。一轮开始时，亮出牌堆顶牌，本轮内你成为此花色牌目标的回合结束时，你可以使用一张牌，此牌可以额外指定任意目标。',
 			zuoyututan:'坐於涂炭',
@@ -1269,7 +1269,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				
 			},
 			zhengzhengrishang:{
-				trigger:{player:'phaseDrawEnd'},
+				trigger:{player:'phaseUseBegin'},
 				frequent:true,
 				filter:function(event,player){
 					return player==game.zhu;
@@ -1289,6 +1289,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					let getcard = event.maxHandcardPlayer[0].countCards('h')-player.countCards('h');
 					player.draw(getcard);
+				},
+				group:['zhengzhengrishang_endDraw'],
+				subSkill:{
+					endDraw:{
+						trigger:{global:'phaseEnd'},
+						frequent:true,
+						filter:function(event,player){
+							return player==game.zhu;
+						},
+						content:function(){
+							'step 0'
+							if(player.isMinHandcard(false)){
+								player.draw(1);
+							}
+							else{
+								event.finish();
+							}
+							'step 1'
+							event.goto(0);
+						},
+					}
 				},
 				ai:{
 					threaten:1.3
@@ -1429,11 +1450,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			/**使用技能实现给龙皇插入回合 */
 			_anotherPhase:{
-				trigger:{player:'phaseEnd'},
+				trigger:{player:'phaseAfter'},
 				forced:true,
 				silent:true,
 				popup:false,
 				filter:function(event,player){
+					//console.log(_status.event.getParent('phase'));
+					if(_status.event.getParent('phase').skill){
+						return false;
+					}
 					if(game.zhu.storage.state=='second'){
 						return false;
 					}
@@ -1514,7 +1539,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.outlist[i].hp+=1;
 						}
 						event.outlist[i].storage.reviving++;
-						if(event.outlist[i].storage.reviving>4){
+						if(event.outlist[i].storage.reviving>5){
 							event.outlist[i].storage.reviving=null;
 							game.broadcastAll(function(splayer){
 								splayer.in('reviving');

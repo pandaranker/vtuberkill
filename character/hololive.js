@@ -1732,13 +1732,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else event.finish();
 							'step 2'
 							var chk = player.countCards('h') >= 2;
-							chk &= lib.filter.cardUsable({name:'jiu'},player, 
-									event.getParent('chooseToUse'))
-									&& player.canUse('jiu', player);
-							game.players.forEach(function(p) {
-								if (p != player && player.canUse('guohe', p)) chk = true; 
-							})
-							if (!chk) event.finish();
+							if(chk){
+								chk &= lib.filter.cardUsable({name:'jiu'},player, 
+										event.getParent('chooseToUse'))
+										&& player.canUse('jiu', player);
+								game.players.forEach(function(p) {
+									if (p != player && player.canUse('guohe', p)) chk = true; 
+								})
+								if (!chk) event.finish();
+							}
+							else{
+								event.finish();
+							}
 							'step 3'
 							player.chooseCardTarget({
 								prompt: "选择两张手牌并对自己使用一张酒或对其它角色使用一张过河拆桥",
