@@ -1,11 +1,11 @@
 window.noname_update={
-	version:'1.9.100.81',
+	version:'1.9.100.83',
 	update:'1.9.100.72.3',
 	changeLog:[
 		'修改默认背景为熊猫人背景,背景音乐改回默认三国杀',
 		'如果出现无法联机bug请手动清除浏览器缓存',
-		'龙牢关复活BUG修改,龙投降BUG修改,希薇娅弹言BUG。',
-		'新增测试人物OG的阿媂娅、希薇娅、黑桃影和朵莉丝、P家的高槻律和森永缪，联动vup星野妮娅（史官）',
+		'龙牢关难度调整(复活轮数5->6,龙角与蝗技能变更，追加技能),部分bug修改',
+		'新增测试人物OG的阿媂娅、希薇娅、黑桃影和朵莉丝、P家的高槻律和森永缪，联动vup星野妮娅（史官）茜科塞尔',
 		'更新V版卡图（默认开启），新增角色皮肤',
 		'可以在“选项-显示”里切换为三国杀原版卡图',
 	],
@@ -37,6 +37,7 @@ window.noname_update={
 		'image/card/wuzhong.png',
 		'image/card/zengbin.png',
 		'image/character/SpadeEcho.jpg',
+		'image/character/Qiankesaier.jpg',
 		// 'image/character/kaguraNaNa.jpg',
 		// 'image/mode/longlaoguan/card/chuanjia.png',
 		// 'image/mode/longlaoguan/card/dulun.png',
