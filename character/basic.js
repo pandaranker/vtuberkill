@@ -14,6 +14,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HanazonoSerena: ['female', 'qun', 3, ['jiumao', 'enfan', 'shiqi']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
+
+			His_HoshinoNiya: ['male', 'qun', 3, ['shushi', 'zengzhi']],
 		},
 		characterIntro:{
 			KaguraMea: '',
@@ -206,24 +208,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.index==1){
 								player.line(target);
 								player.gain(target.getEquip(1),target,'give','bySelf');
-								player.useCard({name:'sha',isCard:true},target).animate=false;
+								player.useCard({name:'sha',isCard:false},target).animate=false;
 							}	
 							else if(result.index==0){
 								player.draw();
 								trigger.cancel();
 							}						
 			//			}
-			//			else{
-			//				if(result.index==1){
-			//					player.line(target);
-			//					player.useCard({name:'sha',isCard:true},target).animate=false;
-			//				}	
-			//				else						player.draw();
-							
-			//			}
-					
-			//		'step2'
-			//		trigger.cancel();
 				}									
 				
 			},
@@ -1065,6 +1056,49 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+
+			shushi:{
+				trigger:{player:'phaseUseBegin'},
+				priority:41,
+				filter:function(event,player){
+					console.log(ui.cardPile.childElementCount)
+					return ui.cardPile.childElementCount>1;
+				},
+				content:function(){
+					'step 0'
+					game.broadcastAll(function(player){
+						player.chooseCardButton(Math.min(game.countPlayer(),5),true,get.cards(Math.min(game.countPlayer(),5)),'【书史】：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+							return get.value(button.link);
+						});
+					}, player);
+					'step 1'
+					if(result.bool){
+						var list=result.links.slice(0);
+						while(list.length){
+							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+						}
+					}
+				},
+			},
+			zengzhi:{
+				trigger:{player:'useCardAfter'},
+				priority:41,
+				filter:function(event,player){
+					if(!player.isPhaseUsing())			return false;
+					return event.card.isCard&&get.type(event.card)=='trick';
+				},
+				content:function(){
+					'step 0'
+					player.judge(function(card){
+						return get.suit(card)==get.suit(trigger.card)?1:-1;
+					});
+					'step 1'
+					if(trigger.targets&&result.bool)
+					trigger.targets.forEach(function(target){
+						player.useCard({name:trigger.card.name},target);
+					});
+				},
+			},
 		},
 		translate:{
 			
@@ -1124,6 +1158,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
+
+
+			His_HoshinoNiya: '史官·星野妮娅',
+			shushi: '书史',
+			shushi_info: '出牌阶段开始时，你可以观看牌堆顶的X张牌，然后以任意顺序放回。（X为存活角色数且至多为5）',
+			zengzhi: '增殖',
+			zengzhi_info: '当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。',
 		},
 	};
 });

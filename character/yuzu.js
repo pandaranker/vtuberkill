@@ -9,7 +9,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
-			
+			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
+
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
@@ -200,6 +201,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			haoren:{
 				skillAnimation:true,
+				animationStr:'好人一生',
 				unique:true,
 				juexingji:true,
 				forced:true,
@@ -233,7 +235,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:"卒",
 				locked:true,
 				intro:{
-					name:'puripuri……',
+					name:'职业生涯结束',
 					content:function (storage,player,skill){
 						return '失去【职业生涯】技能直到下个回合开始';
 					},
@@ -253,7 +255,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(get.suit(event.cards[0])=='club'){
 						player.loseHp();
 						player.storage.shengya = false;
-						player.markSkill('shengya')
+						player.markSkill('shengya');
 					}
 				},
 				group:'shengya_init',
@@ -266,7 +268,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							if(!player.storage.shengya){
 								player.storage.shengya=true;
-								player.unmarkSkill('shengya')
+								player.unmarkSkill('shengya');
 							}
 						},
 					},
@@ -276,7 +278,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
-				marktext:"高",
+				marktext:"汉",
 				locked:true,
 				intro:{
 					name:'好汉歌',
@@ -355,6 +357,79 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.draw();
 					trigger.target.draw();
+				}
+			},
+			//miu
+			guanzhai:{
+				trigger:{global:['phaseEnd']},
+				priority:997,
+				filter:function(event,player){
+					var history = event.player.getHistory('useCard');
+					var num = 0;
+					history.forEach(function(his){
+						num += his.cards.length;
+					});
+					console.log(num);
+					return event.player!=player&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
+				},
+				content:function(){
+					'step 0'
+					game.broadcastAll(function(player, target){
+						player.choosePlayerCard('获得其中至多'+(target.hasSkill('zhai')?target.countMark('zhai')+1:1)+'张牌',target,[1,(target.hasSkill('zhai')?target.countMark('zhai')+1:1)],'h').set('visible', true);
+					}, player, trigger.player)
+					'step 1'
+					if(result.bool){
+						player.logSkill('guanzhai',trigger.player)
+						player.gain(result.cards,trigger.player,'giveAuto');
+					}
+				},
+			},
+			zhai:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=0;
+				},
+				marktext:'宅',
+				intro:{
+					name:'直往欲女',
+					content:function (storage,player,skill){
+						return '下个回合中，【阿宅观察】（）内的数值+'+storage+'。';
+					},
+				},
+				mark:true,
+			},
+			zhishu:{
+				trigger:{player:['phaseUseBegin','changeHp']},
+				priority:997,
+				filter:function(event,player){
+					return player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					var next=player.chooseCardTarget('h', 1, '选择展示的手牌与目标');
+					next.set('filterTarget',function(card,player,target){
+						return target!=player;
+					},)
+					'step 1'
+					if(result.bool){
+						event.target = result.targets[0];
+						player.showCards(result.cards,'【直抒】展示手牌');
+						game.delay(1);
+						game.broadcastAll(function(player,target,suit){
+							target.chooseCard('he','交给'+get.translation(player)+'一张花色为'+get.translation(suit)+'的牌',function(card,player){
+								return get.suit(card)==suit;
+							},)
+						}, player, event.target, get.suit(result.cards[0]));
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						player.gain(result.cards[0],event.target,'giveAuto');
+					}else{
+						event.target.addTempSkill('zhai',{player:'phaseAfter'});
+						event.target.addMark('zhai',1);
+						game.log(event.target,'拒绝交给',player,'相同花色的牌');
+					}
 				}
 			},
 			//Civia
@@ -558,7 +633,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var target = result.targets[0]
 						player.logSkill('hangao',target);
 						target.gain(player,result.cards[0],'giveAuto');
-						target.addTempSkill('hangaohouxu',{target:'phaseEnd'});
+						target.addTempSkill('hangaohouxu',{player:'phaseAfter'});
 						target.storage.hangaohouxu.add(result.cards[0]);
 						target.storage.hangaohouxu.add(player);
 						target.syncStorage('hangaohouxu');
@@ -954,8 +1029,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(player!=_status.currentPhase)	return false;
 					if(player==event.player)			return false;
-					console.log(event.player.getHistory('useCard'));
-					return !player.storage.paomo.contains(event.player)&&event.player.getHistory('useCard').length==0;
+					return event.card.isCard&&!player.storage.paomo.contains(event.player)&&event.player.getHistory('useCard').length==0;
 				},
 				content:function(){
 					player.storage.paomo.add(trigger.player);
@@ -969,7 +1043,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['paomo_contains','paomo_init'],
 				subSkill:{
 					contains:{
-						marktext:'沫',
+						marktext:'恋',
 						intro:{
 							name:"泡沫爱恋",
 							content:function (storage,player,skill){
@@ -1656,20 +1730,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			Paryi: '帕里',
-			tiantang: '天堂之扉',
+			tiantang: '天扉',
 			tiantang_info: '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
-			haoren: '好人一生',
-			haoren_info: '<font color=#fcd>觉醒技</font> 你发动“天堂之扉”后，若发动次数大于存活人数，你扣减1点体力上限，将“天堂之扉”的“其他”改为“一名”；且在“天堂之扉”的额外出牌阶段内，当前回合角色获得“引流”。',
+			haoren: '好人',
+			haoren_info: '<font color=#fcd>觉醒技</font> 你发动『天扉』后，若发动次数大于存活人数，你扣减1点体力上限，将『天扉』的“其他”改为“一名”；且在『天扉』的额外出牌阶段内，当前回合角色获得『引流』。',
 
 			TakatsukiRitsu: '高槻律',
-			shengya: '职业生涯',
+			shengya: '生涯',
 			shengya_info: '<font color=#f66>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
-			liangshan: '梁山好汉',
+			liangshan: '汉歌',
 			liangshan_info: '其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			liangshan_use_info: '一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			liangshan_save_info: '一名角色濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
-			chongshi: '清楚铳士',
+			chongshi: '铳士',
 			chongshi_info: '你使用【杀】指定目标后，可与其各摸一张牌。',
+
+			MorinagaMiu: '森永缪',
+			guanzhai: '观宅',
+			guanzhai_info: '其他角色的回合结束时，若其本回合使用的牌少于（两）张，你可观看其手牌并获得其中（一）张。',
+			zhishu: '直抒',
+			zhishu_info: '出牌阶段开始时或你的体力值变化时，你可以展示一张手牌，然后令一名角色交给你一张同花色的牌，若其未执行，其下个回合中（）内的数值+1。',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',
@@ -1695,9 +1775,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenghua: '希握',
 			shenghua_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
 			Doris: '朵莉丝',
-			shenhai: '辉海',
+			shenhai: '曜海',
 			shenhai_info: '出牌阶段每类型限一次，当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除次数和标号限制。',
-			paomo: '泡沫',
+			paomo: '儚恋',
 			paomo_info: '你的回合内，当其他角色于本回合第一次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。',
 
 
