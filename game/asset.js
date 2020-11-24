@@ -620,6 +620,7 @@ window.noname_asset_list=[
 	'image/character/Doris.jpg',
 	'image/character/HanazonoSerena.jpg',
 	'image/character/HiguchiKaede.jpg',
+	'image/character/His_HoshinoNiya.jpg',
 	'image/character/HoshimatiSuisei.jpg',
 	'image/character/IenagaMugi.jpg',
 	'image/character/InuyamaTamaki.jpg',
@@ -632,6 +633,7 @@ window.noname_asset_list=[
 	'image/character/MiraiAkari.jpg',
 	'image/character/MitoTsukino.jpg',
 	'image/character/MononobeAlice.jpg',
+	'image/character/MorinagaMiu.jpg',
 	'image/character/NatsuiroMatsuri.jpg',
 	'image/character/Nekomasu.jpg',
 	'image/character/NekomiyaHinata.jpg',
@@ -658,6 +660,7 @@ window.noname_asset_list=[
 
 	'image/skin/Artia/1.jpg',
 	'image/skin/Doris/1.jpg',
+	'image/skin/MorinagaMiu/1.jpg',
 	'image/skin/NekomiyaHinata/1.jpg',
 	'image/skin/NekomiyaHinata/2.jpg',
 	'image/skin/UsadaPekora/1.jpg',
