@@ -10,6 +10,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
+			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
 
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
@@ -23,6 +24,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MinatoAqua:'“余裕余裕~”',
 			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
 			Paryi:'kimo~',
+			OtomeOto:'5000兆円欲しい！ --乙女おと',
 			Civia:'“听我说，DD会带来世界和平~”',
 
 			sp_MinatoAqua:'',
@@ -396,6 +398,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				mark:true,
+				onremove:function(player){
+					delete player.storage.zhai;
+				}
 			},
 			zhishu:{
 				trigger:{player:['phaseUseBegin','changeHp']},
@@ -408,11 +413,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var next=player.chooseCardTarget('h', 1, '选择展示的手牌与目标');
 					next.set('filterTarget',function(card,player,target){
 						return target!=player;
-					},)
+					});
+					next.set('ai2',function(target){
+						return 7-get.attitude(player,target);
+					})
 					'step 1'
 					if(result.bool){
 						event.target = result.targets[0];
-						player.showCards(result.cards,'【直抒】展示手牌');
+						player.showCards(result.cards,'『直抒』展示手牌');
 						game.delay(1);
 						game.broadcastAll(function(player,target,suit){
 							target.chooseCard('he','交给'+get.translation(player)+'一张花色为'+get.translation(suit)+'的牌',function(card,player){
@@ -432,6 +440,241 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//oto
+			xiaogui:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				locked:true,
+				notemp:true,
+				marktext: '玉',
+				intro: {
+					content: 'cards',
+					name:'以『玉箱』使用过的锦囊牌',
+				},
+				enable:'phaseUse',
+				filter:function(event,player){
+					return player.countCards('he')>2;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard(3,'he')
+					'step 1'
+					if(result.bool){
+						player.lose(result.cards,ui.ordering);
+						event.cards = result.cards;
+						event.videoId = lib.status.videoId++;
+						var list=[];
+						for(var i=0;i<lib.inpile.length;i++){
+							var name=lib.inpile[i];
+							var reapeat = 0;
+							if(player.storage.xiaogui.length){
+								player.storage.xiaogui.forEach(function(his){	
+									if(get.name(his)==name) reapeat ++;
+								});
+							}
+							if(reapeat||name=='wuxie'||name=='jinchan') continue;
+							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+						}
+						game.broadcastAll(function(id, list){
+							var dialog=ui.create.dialog('使用一张锦囊牌',[list,'vcard']);
+							dialog.videoId = id;
+						}, event.videoId, list);
+					}else{
+						event.finish();
+					}
+					'step 2'
+					var next = player.chooseButton(1 ,true);
+					next.set('dialog',event.videoId);
+					'step 3'
+					game.broadcastAll('closeDialog', event.videoId);
+					if (result.bool){
+						var card = result.links[0];
+						player.chooseUseTarget({name:card[2]},true);
+						player.storage.xiaogui.add(game.createCard(card[2]));
+						player.syncStorage('xiaogui');
+						player.markSkill('xiaogui');
+					}
+					'step 4'
+					game.broadcastAll(function(player){
+						player.chooseCardButton([0,3],true,event.cards,'『玉箱』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+							return get.value(button.link);
+						});
+					}, player);
+					'step 5'
+					if(result.bool){
+						var list=result.links.slice(0);
+						if(list.length<3){
+							event.cards.removeArray(list);
+						}
+						while(list.length){
+							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+						}
+						game.log(player,'将牌放在牌堆顶')
+						if(event.cards.length){
+							game.cardsDiscard(event.cards);
+							game.log(event.cards,'进入了弃牌堆')
+						}
+					}else{
+						game.cardsDiscard(event.cards);
+						game.log(event.cards,'进入了弃牌堆')
+					}
+				},
+				group:['xiaogui_wuxie'],
+				subSkill:{
+					wuxie:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = true;
+						},
+						enable:'chooseToUse',
+						viewAs:{name:'wuxie'},
+						filterCard:true,
+						position:'he',
+						selectCard:3,
+						viewAsFilter:function(player){
+							return player.storage.xiaogui_wuxie&&player.countCards('he')>=3;
+						},
+						check:function(card){
+							return 6-get.value(card);
+						},
+						prompt:'将三张牌当【无懈可击】使用',
+						onuse:function(result,player){
+							player.storage.xiaogui_wuxie = false;
+							player.storage.xiaogui.add(game.createCard({name:'wuxie'}));
+							player.syncStorage('xiaogui');
+							player.markSkill('xiaogui');
+						},
+					},
+		/*			jinchan:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = true;
+						},
+						enable:['chooseToRespond','chooseToUse'],
+						viewAs:{name:'jinchan'},
+						position:'he',
+						selectCard:3,
+						viewAsFilter:function(player){
+							return player.storage.xiaogui_jinchan&&player.countCards('he')>=3;
+						},
+						check:function(card){
+							return 6-get.value(card);
+						},
+						prompt:'将三张牌当【金蝉脱壳】使用',
+						onuse:function(result,player){
+							player.storage.xiaogui_jinchan = true;
+							player.storage.xiaogui.add(game.createCard({name:'jinchan'}));
+							player.syncStorage('xiaogui');
+							player.markSkill('xiaogui');
+						},
+					},*/
+				},
+			},
+			qiepian:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 0;
+				},
+				group:['qiepian_start','qiepian_end'],
+				subSkill:{
+					start:{
+						trigger:{global:'phaseBefore'},
+						firstDo:true,
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:66,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							player.storage.qiepian = player.countCards('h');
+						},
+					},
+					end:{
+						trigger:{global:'phaseEnd'},
+						priority:66,
+						filter:function(event,player){
+							return (player.storage.qiepian-player.countCards('h'))&&(Math.abs(player.storage.qiepian-player.countCards('h'))%3==0);
+						},
+						content:function(){
+							'step 0'
+							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以『玉箱』使用过的通常锦囊牌'],function(){
+								return 1;
+							});
+							'step 1'
+							switch(result.index){
+								case 0: {
+									player.chooseTarget([1,3],'令至多三名角色各摸一张牌').set('ai',function(target){
+										var att=get.attitude(_status.event.player,target);
+										if(att>1){
+											return att;
+										}
+										return 0;
+									});
+									event.goto(2);
+									break;
+								}
+								case 1: {
+									event.videoId = lib.status.videoId++;
+									var list=[];
+									for(var i=0;i<lib.inpile.length;i++){
+										var name=lib.inpile[i];
+										var reapeat = 0;
+										if(player.storage.xiaogui.length){
+											player.storage.xiaogui.forEach(function(his){	
+												if(get.name(his)==name) reapeat ++;
+											});
+										}
+										if(reapeat||name=='wuxie'||name=='jinchan') continue;
+										else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+									}
+									game.broadcastAll(function(id, list){
+										var dialog=ui.create.dialog('使用一张未以『玉箱』使用过锦囊牌',[list,'vcard']);
+										dialog.videoId = id;
+									}, event.videoId, list);
+									event.goto(3);
+									break;
+								}
+							}
+							'step 2'
+							if(result.targets&&result.targets.length){
+								console.log('OK');
+								result.targets.forEach(function(tar){
+									tar.draw();
+								});
+							}
+							event.finish();
+							'step 3'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							'step 4'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool){
+								var card = result.links[0];
+								player.chooseUseTarget({name:card[2]},true);
+							}
+						},
+					},
+				},
+			},
+			changxiang:{
+				zhuSkill:true,
+				trigger:{global:'dying'},
+				priority:66,
+				filter:function(event,player){
+					return event.player.hp<=0&&event.player.group==player.group&&player.countCards('he')>=player.hp;
+				},
+				content:function(){
+					'step 0'
+					player.chooseToDiscard(player.hp);
+					'step 1'
+					if(result.bool)
+					player.useCard({name:'tao'},trigger.player);
+				}
+		//		viewAsFilter:function(player){
+		//			return player.countCards('he')>=player.hp;
+		//		},
+			},
+
 			//Civia
 			kuangxin:{
 				trigger:{global:'useCardToPlayered'},
@@ -763,6 +1006,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							trigger.player.unmarkSkill('shangdong');
 							trigger.player.removeSkill('shangdong');
+							trigger.player.syncStorage('shangdong');
 						}
 					},
 					addDam:{
@@ -880,7 +1124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.unmarkSkill('paomo_contains');
 						player.storage.paomo_contains.length=0;
 					}
-					return player.getLastUsed(1)&&get.number(event.card)>num;
+					return event.card.isCard&&player.getLastUsed(1)&&get.number(event.card)>num;
 				},
 				content:function(){
 					'step 0'
@@ -898,16 +1142,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							game.broadcastAll(function(player,card){
 								player.chooseTarget('令一名其他角色使用',function(card,player,target){
 									if(target.isDisabled(get.subtype(card)))	return false;
-									return target!=player;
+									return target!=player&&get.attitude(player,target);
 								});
 							}, player, trigger.card);
 							event.goto(4);
 						}
-						if(get.type(trigger.card)=='basic'){
+						else if(get.type(trigger.card)=='basic'){
 							player.storage.shenhai.add(get.type(trigger.card));
 							event.goto(5);
 						}
-						if(get.type(trigger.card)=='trick'){
+						else if(get.type(trigger.card)=='trick'){
 							var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
 							game.broadcastAll(function(player,trigger,prompt2){
 								player.chooseTarget(get.prompt('shenhai'),function(card,player,target){
@@ -971,13 +1215,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					event.finish();
 					'step 4'//改变使用者
-					player.storage.shenhai.add(get.type(trigger.card));
+					if(result.targets&&result.targets.length){
+						player.storage.shenhai.add(get.type(trigger.card));
 						game.broadcastAll(function(player,target,card,trigger){
 							target.gain(card,player,'giveAuto');
 							trigger.getParent().player=target;
 							trigger.player=target;
 							if(get.type(trigger.card)=='equip')	trigger.targets.splice(0,1,target);
 						},trigger.player, result.targets[0], trigger.card,trigger)
+					}
 					event.finish();
 					'step 5'//改变结算
 					player.storage.shenhai_jiesuan.length=0;
@@ -1750,6 +1996,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			guanzhai_info: '其他角色的回合结束时，若其本回合使用的牌少于（两）张，你可观看其手牌并获得其中（一）张。',
 			zhishu: '直抒',
 			zhishu_info: '出牌阶段开始时或你的体力值变化时，你可以展示一张手牌，然后令一名角色交给你一张同花色的牌，若其未执行，其下个回合中（）内的数值+1。',
+
+			OtomeOto: '乙女音',
+			xiaogui: '玉箱',
+			xiaogui_info: '你可以将三张牌当作一张未以此法使用过的通常锦囊牌使用。然后，你可以将这些牌以任意顺序置于牌堆顶。',
+			qiepian: '连崛',
+			qiepian_info: '一个回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以『玉箱』使用过的通常锦囊牌。',
+			changxiang: '龙吟',
+			changxiang_info: '主公技。其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的牌，视为对其使用一张【桃】。',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',

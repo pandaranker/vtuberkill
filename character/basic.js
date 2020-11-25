@@ -15,7 +15,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 
-			His_HoshinoNiya: ['male', 'qun', 3, ['shushi', 'zengzhi']],
+			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 		},
 		characterIntro:{
 			KaguraMea: '',
@@ -1058,7 +1058,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 
 			shushi:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 0;
+				},
 				trigger:{player:'phaseUseBegin'},
+				forced:true,
 				priority:41,
 				filter:function(event,player){
 					console.log(ui.cardPile.childElementCount)
@@ -1066,12 +1070,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					game.broadcastAll(function(player){
-						player.chooseCardButton(Math.min(game.countPlayer(),5),true,get.cards(Math.min(game.countPlayer(),5)),'【书史】：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
-							return get.value(button.link);
-						});
-					}, player);
+					var list = ['不观看牌'];
+					var att = 5;
+					if(player.countCards('h',{type:'trick'})<3)	att = 0;
+					for(var i=1;i<=Math.max(game.countPlayer(),5);i++){
+						list.push('观看'+get.cnNumber(i)+'张牌')
+					}
+					player.chooseControlList(list,true,function(){
+						return _status.event.att;
+					}).set('att',att);
 					'step 1'
+					if(result.index == 0){
+						player.storage.shushi = Math.max(game.countPlayer(),5);
+						event.finish();
+					}else{
+						player.storage.shushi = Math.max(game.countPlayer(),5)-result.index;
+						game.broadcastAll(function(player){
+							player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+								return get.value(button.link);
+							});
+						}, player);
+					}
+					'step 2'
 					if(result.bool){
 						var list=result.links.slice(0);
 						while(list.length){
@@ -1079,6 +1099,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
+				mod:{
+					maxHandcard:function(player,num){
+						return num+=player.storage.shushi;
+					},
+				},
+				group:'shushi_init',
+				subSkill:{
+					init:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return player.storage.shushi;
+						},
+						content:function(){
+							player.storage.shushi = 0;
+						}
+					},
+				}
 			},
 			zengzhi:{
 				trigger:{player:'useCardAfter'},
@@ -1162,7 +1202,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			His_HoshinoNiya: '史官·星野妮娅',
 			shushi: '书史',
-			shushi_info: '出牌阶段开始时，你可以观看牌堆顶的X张牌，然后以任意顺序放回。（X为存活角色数且至多为5）',
+			shushi_info: '你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）',
 			zengzhi: '增殖',
 			zengzhi_info: '当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。',
 		},
