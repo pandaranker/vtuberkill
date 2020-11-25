@@ -1252,11 +1252,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.zhu.update();
 					game.zhu.storage.changeState=true;
 					game.filterPlayer(function(current){
+						// if(current.isOut()){
+						// 	return false;
+						// }
 						if(current==player){
 							return false;
 						}
 						if(current.hasSkill('zuoyututanLimit')){
-							current.remove('zuoyututanLimit');
+							current.removeSkill('zuoyututanLimit');
 						}
 						for(let i=1;i<7;i++){
 							if(current.isDisabled(i)){
@@ -1473,6 +1476,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.log('所有反抗军废除'+get.translation('equip'+event.disableEquip));
 							'step 1'
 							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
 								if(current==player){
 									return false;
 								}
@@ -1508,6 +1514,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.log('所有反抗军手牌上限-1');
 							'step 1'
 							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
 								if(current==player){
 									return false;
 								}
@@ -1546,6 +1555,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.log('所有反抗军获得一张【毒】');
 							'step 1'
 							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
 								if(current==player){
 									return false;
 								}
@@ -1698,6 +1710,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.deadlist[i].storage.reviving=0;
 						game.broadcastAll(function(splayer){
 							splayer.revive(1);
+							for(let i=1;i<7;i++){
+								if(splayer.isDisabled(i)){
+									splayer.enableEquip(i);
+								}
+							}
 						},event.deadlist[i])
 					}
 					// event.deadlist.forEach(element => {
