@@ -661,7 +661,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'dying'},
 				priority:66,
 				filter:function(event,player){
-					return event.player.hp<=0&&event.player.group==player.group&&player.countCards('he')>=player.hp;
+					return event.player.hp<=0&&event.player!=player&&event.player.group==player.group&&player.countCards('he')>=player.hp;
 				},
 				content:function(){
 					'step 0'
