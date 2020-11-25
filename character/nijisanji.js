@@ -827,6 +827,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},event.dialog.videoId);
 				},
+				check:function(event,player){
+					if(player.hp<2) return false;
+					if(player.countCards('h')<1) return true;
+					if(player.countCards('e')>=2) return true;
+					return false;
+				},
+				ai:{
+					result:{
+						player:function(player){
+							if(player.hp<2) return -2;
+							if(player.countCards('e')>=2) return 1;
+							return -2;
+						}
+					},
+				}
 			},
 			yuepi:{
 				trigger:{
@@ -866,7 +881,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.chooseCard('h',[1,Infinity],true,'请选择要给对方的牌');
+					player.chooseCard('h',[1,Infinity],true,'请选择要给对方的牌').set('ai',function(card){
+						if((event.player.countCards('h')+ui.selected.cards.length)>(player.countCards('h')-ui.selected.cards.length)) return -1;
+						return 7-get.value(card);
+					});;
 					'step 1'
 					if(result.cards){
 						trigger.player.gain(result.cards,player,'giveAuto');
@@ -921,6 +939,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.removeSkill('cangxiong_diao');
 						}
 					},
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0
+				},
+				ai:{
+					basic:{
+						order:10
+					},
+					result:{
+						target:function(player,target){
+							return get.attitude(player,target)
+						},
+					},
+					threaten:1.3
 				}
 			},
 			chaoqianyishi:{
