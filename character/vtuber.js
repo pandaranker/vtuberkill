@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**茜科塞尔 */
-			Qiankesaier:['male','qun',4,['shuangshoujiaoying','']],
+			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -1162,20 +1162,80 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			shuangshoujiaoying_gai:{
+				trigger:{player:'shaBegin'},
+				content:function(){
+					'step 0'
+					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
+					'step 1'
+					event.replayers=[];
+					if(result.bool){
+						event.chooseBool=true;
+						event.replayers=trigger.targets;
+					}
+					else{
+						event.chooseBool=false;
+						event.replayers.add(player);
+					}
+					'step 2'
+					if(event.replayers.length>0){
+						event.replayer=event.replayers[0];
+						event.cards=event.replayer.getCards('h');
+						event.replayer.showHandcards();
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					event.recards=[];
+					if(event.cards&&event.cards.length>0){
+						for( i of event.cards){
+							if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
+								event.recards.add(i);
+							}
+						}
+					}
+					if(event.recards.length>0){
+						event.replayer.lose(event.recards, ui.discardPile);
+						event.replayer.$throw(event.recards);
+						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
+						event.replayer.draw(event.recards.length);
+					}
+					'step 4'
+					if(event.recards.length>0){
+						if(event.replayers.contains(event.replayer)&&event.chooseBool){
+							player.draw(1);
+						}
+						if(player==event.replayer){
+							player.getStat().card.sha--;
+						}
+					}
+					event.replayers.shift();
+					if(event.replayers.length>0){
+						event.goto(1)
+					}
+				}
+			},
 			anyingxuemai:{
+				trigger:{
+					player:"dying",
+				},
 				skillAnimation:true,
-				animationColor:'soil',
+				animationColor:'metal',
 				audio:2,
 				unique:true,
 				limited:true,
-				enable:'chooseToUse',
+				// enable:'chooseToUse',
+				//viewAs:{name:'tao'},
 				init:function(player){
 					player.storage.anyingxuemai=false;
 				},
 				mark:true,
 				filter:function(event,player){
-					if(event.type!='dying') return false;
-					if(player!=event.dying) return false;
+					//console.log(event,player);
+					if(event.name!='dying') return false;
+					//if(player!=event.dying) return false;
 					if(player.storage.anyingxuemai) return false;
 					if(player.countCards('h')==0) return false;
 					return true;
@@ -1210,7 +1270,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					player.recover(recoverHp);
 					"step 1"
-					player.storage.fuli=true;
+					player.storage.anyingxuemai=true;
+					player.removeSkill('shuangshoujiaoying');
+					player.addSkill('shuangshoujiaoying_gai');
 				},
 			}
 		},
@@ -1275,7 +1337,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Qiankesaier:'茜科塞尔',
 			Qiankesaier_info:'茜科塞尔',
 			shuangshoujiaoying:'双首角鹰',
+			shuangshoujiaoying_gai:'双首角鹰',
 			shuangshoujiaoying_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
+			shuangshoujiaoying_gai_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
 			anyingxuemai:'暗影血脉',
 			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将“双首角鹰”的“【闪】”改为“红色牌”。',
 		},
