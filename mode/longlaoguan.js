@@ -958,7 +958,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			yugaimizhang:'欲盖弥彰',
 			yugaimizhang_info:'锁定技，你的手牌上限始终为5。一轮开始时，亮出牌堆顶牌，本轮内你成为此花色牌目标的回合结束时，你可以使用一张牌，此牌可以额外指定任意目标。',
 			zuoyututan:'坐於涂炭',
-			zuoyututan_info:'锁定技，转换技。一轮结束时，令所有反抗军①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
+			zuoyututan_info:'锁定技，转换技。一轮开始时，令所有反抗军①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
 			// _feiyang:"飞扬",
 			// _bahu:"跋扈",
 			// _feiyang_info:"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
@@ -1714,6 +1714,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								if(splayer.isDisabled(i)){
 									splayer.enableEquip(i);
 								}
+							}
+							if(splayer.hasSkill('zuoyututanLimit')){
+								splayer.removeSkill('zuoyututanLimit');
 							}
 						},event.deadlist[i])
 					}
