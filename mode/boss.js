@@ -1592,7 +1592,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						return name;
 					}
 					else{
-						var arr=['shen_caocao','shen_simayi','shen_guanyu','shen_zhugeliang','shen_zhaoyun','shen_zhouyu','shen_lvmeng','shen_lvbu'];
+						var arr=[];//'shen_caocao','shen_simayi','shen_guanyu','shen_zhugeliang','shen_zhaoyun','shen_zhouyu','shen_lvmeng','shen_lvbu'];
 						arr.removeArray(list);
 						return arr.randomGet();
 					}
@@ -1641,7 +1641,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.check();
 						});
 						control.backup1=ui.create.div('.buttons');
-						control.backup2=ui.create.buttons(['shen_caocao','shen_simayi','shen_guanyu','shen_zhugeliang','shen_zhaoyun','shen_zhouyu','shen_lvmeng','shen_lvbu','shen_liubei','shen_luxun','shen_ganning','ol_zhangliao','shen_zhenji','shen_caopi'],'character',control.backup1);
+						control.backup2=ui.create.buttons([],'character',control.backup1);
+						//'shen_caocao','shen_simayi','shen_guanyu','shen_zhugeliang','shen_zhaoyun','shen_zhouyu','shen_lvmeng','shen_lvbu','shen_liubei','shen_luxun','shen_ganning','ol_zhangliao','shen_zhenji','shen_caopi'
 						return control;
 					}
 				},
@@ -1652,90 +1653,90 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=['lebu','bingliang'];
 					for(var i=0;i<game.players.length;i++){
 						switch(game.players[i].name){
-							case 'shen_guanyu':{
-								game.players[i].equip(game.createCard2('guilongzhanyuedao','spade',5));
-								lib.inpile.add('guilongzhanyuedao');
-								list.push('qinglong');
-								break;
-							}
-							case 'shen_zhugeliang':{
-								game.players[i].equip(game.createCard2('qimenbagua','spade',2));
-								list.push('bagua');
-								lib.inpile.add('qimenbagua');
-								break;
-							}
-							case 'shen_zhouyu':{
-								game.players[i].equip(game.createCard2('chiyanzhenhunqin','diamond',1));
-								list.push('zhuque');
-								lib.inpile.add('chiyanzhenhunqin');
-								break;
-							}
-							case 'shen_caocao':{
-								game.players[i].equip(game.createCard2('juechenjinge','spade',5));
-								list.push('jueying');
-								lib.inpile.add('juechenjinge');
-								break;
-							}
-							case 'shen_zhaoyun':{
-								game.players[i].equip(game.createCard2('chixueqingfeng','spade',6));
-								list.push('qinggang');
-								lib.inpile.add('chixueqingfeng');
-								break;
-							}
-							case 'shen_lvbu':{
-								game.players[i].equip(game.createCard2('xiuluolianyuji','diamond',12));
-								list.push('fangtian');
-								lib.inpile.add('xiuluolianyuji');
-								break;
-							}
-							case 'shen_simayi':{
-								game.players[i].equip(game.createCard2('xuwangzhimian','diamond',4));
-								lib.inpile.add('xuwangzhimian');
-								break;
-							}
-							case 'shen_liubei':{
-								game.players[i].equip(game.createCard2('longfenghemingjian','spade',2));
-								lib.inpile.add('longfenghemingjian');
-								list.push('cixiong');
-								break;
-							}
-							case 'shen_lvmeng':{
-								game.players[i].equip(game.createCard2('guofengyupao','diamond',3));
-								lib.inpile.add('guofengyupao');
-								break;
-							}
-							case 'shen_luxun':{
-								game.players[i].equip(game.createCard2('qicaishenlu','diamond',3));
-								lib.inpile.add('qicaishenlu');
-								break;
-							}
-							case 'shen_ganning':case 'key_iwasawa':{
-								game.players[i].equip(game.createCard2('jinwuluorigong','heart',5));
-								lib.inpile.add('jinwuluorigong');
-								list.push('qilin');
-								break;
-							}
-							case 'ol_zhangliao':case 'key_noda':{
-								game.players[i].equip(game.createCard2('xingtianpojunfu','diamond',5));
-								lib.inpile.add('xingtianpojunfu');
-								list.push('guanshi');
-								break;
-							}
-							case 'shen_zhenji':{
-								game.players[i].equip(game.createCard2('lingsheji','club',12));
-								lib.inpile.add('lingsheji');
-								break;
-							}
-							case 'shen_caopi':{
-								game.players[i].equip(game.createCard2('shanrangzhaoshu','spade',13));
-								lib.inpile.add('shanrangzhaoshu');
-								break;
-							}
-							case 'key_kagari':{
-								game.players[i].equip(game.createCard2('goujiangdesidai','heart',1));
-								lib.inpile.add('goujiangdesidai');
-								break;
-							}
+							// case 'shen_guanyu':{
+							// 	game.players[i].equip(game.createCard2('guilongzhanyuedao','spade',5));
+							// 	lib.inpile.add('guilongzhanyuedao');
+							// 	list.push('qinglong');
+							// 	break;
+							// }
+							// case 'shen_zhugeliang':{
+							// 	game.players[i].equip(game.createCard2('qimenbagua','spade',2));
+							// 	list.push('bagua');
+							// 	lib.inpile.add('qimenbagua');
+							// 	break;
+							// }
+							// case 'shen_zhouyu':{
+							// 	game.players[i].equip(game.createCard2('chiyanzhenhunqin','diamond',1));
+							// 	list.push('zhuque');
+							// 	lib.inpile.add('chiyanzhenhunqin');
+							// 	break;
+							// }
+							// case 'shen_caocao':{
+							// 	game.players[i].equip(game.createCard2('juechenjinge','spade',5));
+							// 	list.push('jueying');
+							// 	lib.inpile.add('juechenjinge');
+							// 	break;
+							// }
+							// case 'shen_zhaoyun':{
+							// 	game.players[i].equip(game.createCard2('chixueqingfeng','spade',6));
+							// 	list.push('qinggang');
+							// 	lib.inpile.add('chixueqingfeng');
+							// 	break;
+							// }
+							// case 'shen_lvbu':{
+							// 	game.players[i].equip(game.createCard2('xiuluolianyuji','diamond',12));
+							// 	list.push('fangtian');
+							// 	lib.inpile.add('xiuluolianyuji');
+							// 	break;
+							// }
+							// case 'shen_simayi':{
+							// 	game.players[i].equip(game.createCard2('xuwangzhimian','diamond',4));
+							// 	lib.inpile.add('xuwangzhimian');
+							// 	break;
+							// }
+							// case 'shen_liubei':{
+							// 	game.players[i].equip(game.createCard2('longfenghemingjian','spade',2));
+							// 	lib.inpile.add('longfenghemingjian');
+							// 	list.push('cixiong');
+							// 	break;
+							// }
+							// case 'shen_lvmeng':{
+							// 	game.players[i].equip(game.createCard2('guofengyupao','diamond',3));
+							// 	lib.inpile.add('guofengyupao');
+							// 	break;
+							// }
+							// case 'shen_luxun':{
+							// 	game.players[i].equip(game.createCard2('qicaishenlu','diamond',3));
+							// 	lib.inpile.add('qicaishenlu');
+							// 	break;
+							// }
+							// case 'shen_ganning':case 'key_iwasawa':{
+							// 	game.players[i].equip(game.createCard2('jinwuluorigong','heart',5));
+							// 	lib.inpile.add('jinwuluorigong');
+							// 	list.push('qilin');
+							// 	break;
+							// }
+							// case 'ol_zhangliao':case 'key_noda':{
+							// 	game.players[i].equip(game.createCard2('xingtianpojunfu','diamond',5));
+							// 	lib.inpile.add('xingtianpojunfu');
+							// 	list.push('guanshi');
+							// 	break;
+							// }
+							// case 'shen_zhenji':{
+							// 	game.players[i].equip(game.createCard2('lingsheji','club',12));
+							// 	lib.inpile.add('lingsheji');
+							// 	break;
+							// }
+							// case 'shen_caopi':{
+							// 	game.players[i].equip(game.createCard2('shanrangzhaoshu','spade',13));
+							// 	lib.inpile.add('shanrangzhaoshu');
+							// 	break;
+							// }
+							// case 'key_kagari':{
+							// 	game.players[i].equip(game.createCard2('goujiangdesidai','heart',1));
+							// 	lib.inpile.add('goujiangdesidai');
+							// 	break;
+							// }
 						}
 					}
 					lib.inpile.remove('wuzhong');

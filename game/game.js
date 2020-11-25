@@ -25227,6 +25227,7 @@
 					// 	game.players[i].in();
 					// }
 					if(player.isTurnedOver()){
+						_status.currentPhase=player;
 						trigger.cancel();
 						player.turnOver();
 						player.phaseSkipped=true;
@@ -48265,7 +48266,7 @@
 			if(typeof num!='number') num=false;
 			if(name==_status.lord) return num?Math.round(7*(num-1)/8+1):'ap';
 			var rank=lib.rank;
-			if(lib.characterPack.standard[name]||lib.characterPack.shenhua[name]){
+			if(lib.characterPack.basic[name]||lib.characterPack.vtuber[name]||lib.characterPack.yuzu[name]||lib.characterPack.hololive[name]||lib.characterPack.nijisanji[name]){
 				var skills;
 				if(lib.character[name]){
 					skills=lib.character[name][3];

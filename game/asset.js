@@ -714,6 +714,7 @@ window.noname_asset_list=[
 	'image/character/XiaoxiXiaotao.jpg',
 	'image/character/Yomemi.jpg',
 	'image/character/YozoraMel.jpg',
+	'image/character/Qiankesaier.jpg',
 	
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
@@ -841,7 +842,8 @@ window.noname_asset_list=[
 	'image/mode/boss/card/yihuajiemu.png',
 	'image/mode/boss/card/qicaishenlu.png',
 	'image/mode/boss/card/longfenghemingjian.png',
-	'image/mode/boss/card/boss_mengpohuihun.png','image/mode/boss/card/gubuzifeng.png',
+	'image/mode/boss/card/boss_mengpohuihun.png',
+	'image/mode/boss/card/gubuzifeng.png',
 	'image/mode/boss/card/jinwuluorigong.png',
 	'image/mode/boss/card/lingsheji.png',
 	'image/mode/boss/card/shanrangzhaoshu.png',

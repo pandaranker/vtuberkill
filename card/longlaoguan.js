@@ -98,7 +98,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:function(card,player){
 					return player.identity=='fan';
 				},
-				range:{attack:1},
 				selectTarget:1,
 				filterTarget:function(card,player,target){
 					return target.identity=='zhu';
@@ -323,6 +322,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['loseAfter']},
 				forced:true,
 				filter:function(event,player){
+					if(_status.currentPhase.identity=='zhu') return false;
 					if(player.isPhaseUsing()) return false;
 					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
 					for(var i=0;i<event.cards.length;i++){
@@ -335,16 +335,17 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						if(trigger.cards[i].name=='longjiao') event.card=trigger.cards[i];
 					}
 					ui.cardPile.insertBefore(event.card,ui.cardPile.firstChild);
-					var cards=get.cards(ui.cardPile.childElementCount+1);
-					for(var i=0;i<cards.length;i++){
-						ui.cardPile.insertBefore(cards[i],ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
-					}
+					// var cards=get.cards(ui.cardPile.childElementCount+1);
+					// for(var i=0;i<cards.length;i++){
+					// 	ui.cardPile.insertBefore(cards[i],ui.cardPile.childNodes[get.rand(ui.cardPile.childElementCount)]);
+					// }
 				}
 			},
 			g_longwei:{
 				trigger:{player:['loseAfter']},
 				forced:true,
 				filter:function(event,player){
+					if(_status.currentPhase.identity=='zhu') return false;
 					if(player.isPhaseUsing()) return false;
 					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
 					for(var i=0;i<event.cards.length;i++){
@@ -470,20 +471,44 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			longjiao:{
-				audio:true,
-				equipSkill:true,
-				mod:{
-					cardUsable:function(card,player,num){
-						if(get.name(card)=='sha') 
-							return num+1;
+				// audio:true,
+				// equipSkill:true,
+				// mod:{
+				// 	cardUsable:function(card,player,num){
+				// 		if(get.name(card)=='sha') 
+				// 			return num+1;
+				// 	},
+				// 	cardEnabled:function(card,player){
+                //         if(card.name=='sha'&&(player.getStat().card.sha>2)) 
+                //             return false
+				// 	},
+				// },
+				// ai:{
+				// 	hreaten:1,
+				// },
+				zhangba_skill:{
+					equipSkill:true,
+					enable:['chooseToUse','chooseToRespond'],
+					filterCard:true,
+					selectCard:1,
+					position:'he',
+					viewAs:{name:'sha'},
+					complexCard:true,
+					filter:function(event,player){
+						return player.countCards('h')>=1;
 					},
-					cardEnabled:function(card,player){
-                        if(card.name=='sha'&&(player.getStat().card.sha>2)) 
-                            return false
+					audio:true,
+					prompt:'将一张牌当杀使用或打出',
+					check:function(card){
+						if(card.name=='sha') return 0;
+						return 5-get.value(card)
 					},
-				},
-				ai:{
-					hreaten:1,
+					ai:{
+						respondSha:true,
+						skillTagFilter:function(player){
+							return player.countCards('h')>=2;
+						},
+					}
 				},
 			},
 			longwei:{
@@ -513,7 +538,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhinengdulun: '智能独轮车',
 			zhinengdulun_info: '回合开始时，你视为使用一张【独轮车】。',
 			longjiao: '龙角',
-			longjiao_info: '反抗军无法装备。每回合可以额外使用一张【杀】。在反抗军的回合进入弃牌堆时，改为置于牌堆顶。',
+			longjiao_info: '反抗军无法装备。你可以将任意一张牌当【杀】使用。在反抗军的回合进入弃牌堆时，改为置于牌堆顶。',
 			longwei: '龙尾',
 			longwei_info: '反抗军无法装备。若为桐生可可形态，则获得“欲盖弥彰”，若为恶龙形态，则获得“滥觞之至”。在反抗军的回合进入弃牌堆时，改为洗入牌堆。',
 			takeover: '所向无前',

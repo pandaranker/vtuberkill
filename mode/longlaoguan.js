@@ -954,32 +954,33 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			yanzheshengdun:'演者圣盾',
 			yanzheshengdun_info:'进入此形态后，你随机获得一个本局未出现的Hololive武将的所有技能，然后增加该武将的体力上限与体力值。',
 			zhengzhengrishang:'蒸蒸日上',
-			zhengzhengrishang_info:'锁定技，摸牌阶段结束时，你改为将手牌调整至全场唯一最多。若已为最多，则改为获得一张【逼宫】',
+			zhengzhengrishang_info:'锁定技，出牌阶段开始时，你将手牌调整至全场唯一最多。若已为最多，则改为获得一张【逼宫】。一个回合结束时，你将手牌调整至不为全场最少。',
 			yugaimizhang:'欲盖弥彰',
 			yugaimizhang_info:'锁定技，你的手牌上限始终为5。一轮开始时，亮出牌堆顶牌，本轮内你成为此花色牌目标的回合结束时，你可以使用一张牌，此牌可以额外指定任意目标。',
 			zuoyututan:'坐於涂炭',
-			zuoyututan_info:'锁定技，转换技，一轮开始时，①.以宝物，防御马，进攻马，防具，武器的顺序废除所有反抗军的一个装备栏。②.所有反抗军手牌上限-1。',
+			zuoyututan_info:'锁定技，转换技。一轮开始时，令所有反抗军①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
 			// _feiyang:"飞扬",
 			// _bahu:"跋扈",
 			// _feiyang_info:"判定阶段开始时，若你的判定区有牌，则你可以弃置两张手牌，然后弃置你判定区的一张牌。每回合限一次。",
 			// _bahu_info:"锁定技，准备阶段开始时，你摸一张牌。出牌阶段，你可以多使用一张【杀】。",
-			dulun: '独轮车',
-			dulun_info: '出牌阶段，对一名反抗军使用，其可以立即使用一张不可被响应的【杀】或摸一张牌。',
-			chuanjia: '穿甲弹',
-			chuanjia_info: '出牌阶段，对桐生可可使用，本回合其成为【杀】的目标后需弃置装备区内的一张牌。',
-			zhinengdulun: '智能独轮车',
-			zhinengdulun_info: '回合开始时，你视为使用一张【独轮车】。',
-			longjiao: '龙角',
-			longjiao_info: '反抗军无法装备。每回合可以额外使用一张【杀】。在反抗军的回合进入弃牌堆时，改为置于牌堆顶。',
-			longwei: '龙尾',
-			longwei_info: '反抗军无法装备。若为桐生可可形态，则获得“欲盖弥彰”，若为恶龙形态，则获得“滥觞之至”。在反抗军的回合进入弃牌堆时，改为洗入牌堆。',
-			takeover: '所向无前',
-			takeover_info: '为所有反抗军装备【智能独轮车】，使用后移出游戏。',
-			bigong: '逼宫',
-			bigong_info: '对一名反抗军使用，令其选择一项：本轮内失去所有技能，或交给桐生可可两张不同类型的牌，使用后移出游戏。',
-			bigong_clear: '逼宫后续',
+			// dulun: '独轮车',
+			// dulun_info: '出牌阶段，对一名反抗军使用，其可以立即使用一张不可被响应的【杀】或摸一张牌。',
+			// chuanjia: '穿甲弹',
+			// chuanjia_info: '出牌阶段，对桐生可可使用，本回合其成为【杀】的目标后需弃置装备区内的一张牌。',
+			// zhinengdulun: '智能独轮车',
+			// zhinengdulun_info: '回合开始时，你视为使用一张【独轮车】。',
+			// longjiao: '龙角',
+			// longjiao_info: '反抗军无法装备。每回合可以额外使用一张【杀】。在反抗军的回合进入弃牌堆时，改为置于牌堆顶。',
+			// longwei: '龙尾',
+			// longwei_info: '反抗军无法装备。若为桐生可可形态，则获得“欲盖弥彰”，若为恶龙形态，则获得“滥觞之至”。在反抗军的回合进入弃牌堆时，改为洗入牌堆。',
+			// takeover: '所向无前',
+			// takeover_info: '为所有反抗军装备【智能独轮车】，使用后移出游戏。',
+			// bigong: '逼宫',
+			// bigong_info: '对一名反抗军使用，令其选择一项：本轮内失去所有技能，或交给桐生可可两张不同类型的牌，使用后移出游戏。',
+			// bigong_clear: '逼宫后续',
 			chuanjia_po: 'fuck',
 
+			zuoyututanLimit: '手牌减少',
 			mode_longlaoguan_card_config:'龙牢关卡牌',
 		},
 		element:{
@@ -1037,8 +1038,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		characterPack:{
 			mode_longlaoguan:{
-				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke']],
-				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'zhengzhengrishang','yugaimizhang']]
+				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke','zuoyututan']],
+				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'zhengzhengrishang','yugaimizhang','zuoyututan']]
 			}
 		},
 		cardPack:{
@@ -1250,7 +1251,26 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					game.zhu.update();
 					game.zhu.storage.changeState=true;
+					game.filterPlayer(function(current){
+						// if(current.isOut()){
+						// 	return false;
+						// }
+						if(current==player){
+							return false;
+						}
+						if(current.hasSkill('zuoyututanLimit')){
+							current.removeSkill('zuoyututanLimit');
+						}
+						for(let i=1;i<7;i++){
+							if(current.isDisabled(i)){
+								current.enableEquip(i);
+							}
+						}
+					})
 					'step 4'
+					lib.inpile.add('takeover')
+					var takecard=game.createCard2('takeover','heart',10)
+					ui.cardPile.insertBefore(takecard,ui.cardPile.childNodes[get.rand(0,ui.cardPile.childElementCount-1)]);
 					var evt=_status.event.getParent('phase');
 					if(evt){
 						//game.resetSkills();
@@ -1258,9 +1278,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						_status.event.finish();
 						// _status.event.untrigger(true);
 					}
-					lib.inpile.add('takeover')
-					var takecard=game.createCard2('takeover','heart',10)
-					ui.cardPile.insertBefore(takecard,ui.cardPile.childNodes[get.rand(0,ui.cardPile.childElementCount-1)]);
 				},
 			},
 			
@@ -1269,7 +1286,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				
 			},
 			zhengzhengrishang:{
-				trigger:{player:'phaseDrawEnd'},
+				trigger:{player:'phaseUseBegin'},
 				frequent:true,
 				filter:function(event,player){
 					return player==game.zhu;
@@ -1289,6 +1306,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					let getcard = event.maxHandcardPlayer[0].countCards('h')-player.countCards('h');
 					player.draw(getcard);
+				},
+				group:['zhengzhengrishang_endDraw'],
+				subSkill:{
+					endDraw:{
+						trigger:{global:'phaseEnd'},
+						frequent:true,
+						filter:function(event,player){
+							return player==game.zhu;
+						},
+						content:function(){
+							'step 0'
+							if(player.isMinHandcard(false)){
+								player.draw(1);
+							}
+							else{
+								event.finish();
+							}
+							'step 1'
+							event.goto(0);
+						},
+					}
 				},
 				ai:{
 					threaten:1.3
@@ -1401,9 +1439,191 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			zuoyututan:{
+				init:function (player){
+					player.storage.zuoyututan=1;
+					player.storage.zuoyututanUse=true;
+				},
+				mark:true,
+				locked:false,
+				zhuanhuanji:true,
+				marktext:'碳',
+				intro:{
+					content:function(storage,player,skill){
+						if(player.storage.zuoyututan==1) return '随机废除一个装备栏';
+						else if(player.storage.zuoyututan==1) return '手牌上限-1';
+						else return '获得一张进入弃牌堆后即移出游戏的【毒】'
+					},
+				},
+				group:["zuoyututan_1","zuoyututan_2","zuoyututan_3","zuoyututan_clear"],
+				subSkill:{
+					'1':{
+						trigger:{global:'roundStart'},
+						filter:function(event,player){
+							if(player.storage.zuoyututan!=1){
+								return false;
+							}
+							return !player.hasSkill('zuoyututan_stop');
+						},
+						forced: true,
+						content:function(){
+							'step 0'
+							var list=[];
+							for(var i=1;i<6;i++){
+								list.push(i);
+							}
+							event.disableEquip=list.randomGet();
+							player.markSkill('zuoyututan');
+							game.log('所有反抗军废除'+get.translation('equip'+event.disableEquip));
+							'step 1'
+							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
+								if(current==player){
+									return false;
+								}
+								if(!current.isDisabled(event.disableEquip)){
+									current.disableEquip(event.disableEquip);
+								}
+							})
+							game.delayx();
+							'step 2'
+							player.storage.zuoyututan=2;
+							player.storage.zuoyututanUse=false;
+							player.addTempSkill('zuoyututan_stop');
+							player.syncStorage('zuoyututan');
+						},
+					},
+					'2':{
+						trigger:{global:'roundStart'},
+						filter:function(event,player){
+							if(player.storage.zuoyututan!=2){
+								return false;
+							}
+							return !player.hasSkill('zuoyututan_stop');
+						},
+						forced: true,
+						content:function(){
+							'step 0'
+							var list=[];
+							for(var i=1;i<6;i++){
+								list.push(i);
+							}
+							event.disableEquip=list.randomGet();
+							player.markSkill('zuoyututan');
+							game.log('所有反抗军手牌上限-1');
+							'step 1'
+							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
+								if(current==player){
+									return false;
+								}
+								if(current.hasSkill('zuoyututanLimit')){
+									current.storage.zuoyututanLimit++;
+								}
+								else{
+									current.addSkill('zuoyututanLimit');
+								}
+							})
+							game.delayx();
+							'step 2'
+							player.storage.zuoyututan=3;
+							player.storage.zuoyututanUse=false;
+							player.addTempSkill('zuoyututan_stop');
+							player.syncStorage('zuoyututan');
+						},
+					},
+					'3':{
+						trigger:{global:'roundStart'},
+						filter:function(event,player){
+							if(player.storage.zuoyututan!=3){
+								return false;
+							}
+							return !player.hasSkill('zuoyututan_stop');
+						},
+						forced: true,
+						content:function(){
+							'step 0'
+							var list=[];
+							for(var i=1;i<6;i++){
+								list.push(i);
+							}
+							event.disableEquip=list.randomGet();
+							player.markSkill('zuoyututan');
+							game.log('所有反抗军获得一张【毒】');
+							'step 1'
+							game.filterPlayer(function(current){
+								if(current.isOut()){
+									return false;
+								}
+								if(current==player){
+									return false;
+								}
+								var newcard=game.createCard2('du','spade',1);
+								game.zhu.$giveAuto(newcard,current);
+								current.gain(newcard);
+							})
+							game.delayx();
+							'step 2'
+							player.storage.zuoyututan=1;
+							player.storage.zuoyututanUse=false;
+							player.addTempSkill('zuoyututan_stop');
+							player.syncStorage('zuoyututan');
+						},
+					},
+					clear:{
+						trigger:{global:'loseAfter'},
+						filter:function(event,player){
+							if(_status.event.getParent('gain')!=={}&&_status.event.getParent('gain')!=null) return false;
+							if(!event.visible) return false;
+							if(event.player==player) return false;
+							for(var i=0;i<event.cards2.length;i++){
+								if(get.name(event.cards2[i])=='du'&&get.suit(event.cards2[i],event.player)=='club'&&get.number(event.cards2[i])==1){
+									return true;
+								}
+							}
+							return false;
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							var cards=[];
+							for(var i=0;i<trigger.cards2.length;i++){
+								if(get.name(event.cards2[i])=='du'&&get.suit(event.cards2[i],event.player)=='club'&&get.number(event.cards2[i])==1){
+									cards.push(trigger.cards2[i]);
+								}
+							}
+							if(cards.length){
+								game.cardsGotoSpecial(cards);
+							}
+						}
+					},
+					stop:{
 
+					}
+				},
 			},
-
+			zuoyututanLimit:{
+				init:function(player){
+					player.storage.zuoyututanLimit=1;
+				},
+				mark:true,
+				intro:{
+					content:function(storage,player,skill){
+						return '手牌上限减少'+player.storage.zuoyututanLimit;
+					}
+				},
+				marktext:'碳',
+				mod:{
+					maxHandcard:function(player,num){
+						return num-player.storage.zuoyututanLimit;
+					},
+				}
+			},
 			/**卡牌技能 */
 			
 			
@@ -1429,11 +1649,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			/**使用技能实现给龙皇插入回合 */
 			_anotherPhase:{
-				trigger:{player:'phaseEnd'},
+				trigger:{player:'phaseAfter'},
 				forced:true,
 				silent:true,
 				popup:false,
 				filter:function(event,player){
+					//console.log(_status.event.getParent('phase'));
+					if(_status.event.getParent('phase').skill){
+						return false;
+					}
 					if(game.zhu.storage.state=='second'){
 						return false;
 					}
@@ -1486,6 +1710,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.deadlist[i].storage.reviving=0;
 						game.broadcastAll(function(splayer){
 							splayer.revive(1);
+							for(let i=1;i<7;i++){
+								if(splayer.isDisabled(i)){
+									splayer.enableEquip(i);
+								}
+							}
+							if(splayer.hasSkill('zuoyututanLimit')){
+								splayer.removeSkill('zuoyututanLimit');
+							}
 						},event.deadlist[i])
 					}
 					// event.deadlist.forEach(element => {
@@ -1514,7 +1746,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.outlist[i].hp+=1;
 						}
 						event.outlist[i].storage.reviving++;
-						if(event.outlist[i].storage.reviving>4){
+						if(event.outlist[i].storage.reviving>5){
 							event.outlist[i].storage.reviving=null;
 							game.broadcastAll(function(splayer){
 								splayer.in('reviving');
