@@ -2023,7 +2023,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_hundunliandong: '混沌联动',
 			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
 			
-			re_KaguraMea: '神乐めあ',
+			re_KaguraMea: '新·神乐めあ',
 			re_luecai: '掠财',
 			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
 			re_xiaoyan: '嚣言',
