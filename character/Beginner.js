@@ -1368,10 +1368,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger: {
 					global: 'phaseBegin',
 				},
-				round:{
-					mark:true,
-					intro:{content:'本轮已发动'},
-				},
+				round:1,
 				filter: function(event, player) {
 					return player.countCards('h');
 				},
@@ -1425,6 +1422,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 3'
 					if(result.bool){
+					}else{
 						player.addTempSkill('huangyou_used');
 					}
 				},
@@ -1670,7 +1668,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_kaguraNaNa:'新·神乐七奈',
 			re_DDzhanshou: 'DD斩首',
-			re_DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。', 
+			re_DDzhanshou_info: '一名角色的回合结束时，若本回合其对除你和其以外的角色使用过红色牌，你可以摸一张牌或对其使用一张【杀】。', 
 			
 			re_Siro: '新·小白',
 			lingsi: '灵思',
