@@ -49,13 +49,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**犬山 */
 			re_InuyamaTamaki:['male','key',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
-			re_KaguraMea: ['female', 'qun', 4, ['re_luecai', 're_xiaoyan']],
+			re_KaguraMea: ['female', 'qun', 3, ['re_luecai', 're_xiaoyan']],
 
 			
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
 			/**Re莉泽 */
-			re_LizeHelesta:['female','nijisanji',4,['yubing']],
+			re_LizeHelesta:['female','nijisanji',3,['yubing']],
         },
         characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
