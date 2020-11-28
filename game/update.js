@@ -45,6 +45,7 @@ window.noname_update={
 		// 'image/mode/longlaoguan/card/dulun.png',
 		// 'image/mode/longlaoguan/card/longjiao.png',
 		// 'image/mode/longlaoguan/card/takeover.png',
+		'character/Beginner.js',
 		'character/hololive.js',
 		'character/basic.js',
 		'character/moyu.js',
