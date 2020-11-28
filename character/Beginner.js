@@ -60,6 +60,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
         characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
 		},
+		characterSort:{
+			Beginner:{
+                hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal'],
+			}
+		},
         skill:{
 			//re老爱
             re_ailian:{
@@ -1912,20 +1917,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
         },
         translate:{
+			hololive: 'HOLO',
 			
-            re_KizunaAI:'新·绊爱',
-			re_ailian:'爱链',
-			re_ailian_info:'出牌阶段每名角色限一次，你可以将任意张手牌交给一名其他角色，然后当你于此阶段以此法给出第二张牌时，你可以视为使用一张基本牌。',
+            re_KizunaAI: '新·绊爱',
+			re_ailian: '爱链',
+			re_ailian_info: '出牌阶段每名角色限一次，你可以将任意张手牌交给一名其他角色，然后当你于此阶段以此法给出第二张牌时，你可以视为使用一张基本牌。',
 			
-			re_KaguyaLuna:'新·辉夜月',
-			re_jiajiupaidui:'假酒派对',
-			re_jiajiupaidui_info:'每回合限一次，当你需要使用【酒】时，你可以令一名角色弃一张牌，若为♠或点数9，视为你使用之。',
+			re_KaguyaLuna: '新·辉夜月',
+			re_jiajiupaidui: '假酒派对',
+			re_jiajiupaidui_info: '每回合限一次，当你需要使用【酒】时，你可以令一名角色弃一张牌，若为♠或点数9，视为你使用之。',
 
-			re_MiraiAkari:'新·未来明',
-			duanli:'断离',
-			duanli_info:'出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
+			re_MiraiAkari: '新·未来明',
+			duanli: '断离',
+			duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
 
-			re_kaguraNaNa:'新·神乐七奈',
+			re_kaguraNaNa: '新·神乐七奈',
 			re_DDzhanshou: 'DD斩首',
 			re_DDzhanshou_info: '一名角色的回合结束时，若本回合其对除你和其以外的角色使用过红色牌，你可以摸一张牌或对其使用一张【杀】。', 
 			
