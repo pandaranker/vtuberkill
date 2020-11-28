@@ -2024,7 +2024,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.recover(player.maxHp-player.hp);
 					player.storage.duandai = 0;
 					player.unmarkSkill('duandai');
-				}
+				},
 			},
 			
 		}, 

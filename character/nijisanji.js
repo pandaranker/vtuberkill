@@ -1936,7 +1936,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.hp>event.player.hp;
 						},
 						content:function(){
-							trigger.num.changeToZero();
+							trigger.changeToZero();
 						},
 					},
 					//防止体力值大于你的角色每回合对你造成的第一次伤害
@@ -1951,7 +1951,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.hp<event.source.hp;
 						},
 						content:function(){
-							trigger.num.changeToZero();
+							trigger.changeToZero();
 						},
 					}
 				}

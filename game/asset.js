@@ -742,6 +742,7 @@ window.noname_asset_list=[
 	'image/character/re_UshimiIchigo.jpg',
 	'image/character/re_XiaDi.jpg',
 	'image/character/re_XiaoxiXiaotao.jpg',
+	'image/character/re_YuNi.jpg',
 
 	'image/skin/Artia/1.jpg',
 	'image/skin/Doris/1.jpg',

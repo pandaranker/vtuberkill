@@ -1955,7 +1955,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.source.hasSkill('youyishiyue');
 						},
 						prompt:'是否收回“誓约”牌',
-							content:function(){
+						content:function(){
 							trigger.changeToZero();
 							player.line(trigger.source,'thunder');
 							trigger.source.$giveAuto(result.cards,player);
