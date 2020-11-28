@@ -1269,6 +1269,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     player.recover(trigger.num);
                     trigger.cancel();
 				},
+				group:'re_chongdian_leisha',
+				subSkill:{
+					leisha:{
+						enable:['chooseToUse','chooseToRespond'],
+						filterCard:function(card){
+							return get.type(card)=='equip';
+						},
+						viewAs:{name:'sha',nature:'thunder'},
+						check:function(){return 1},
+						ai:{
+							effect:{
+								target:function(card,player,target,current){
+									if(get.tag(card,'respondSha')&&current<0) return 0.8
+								}
+							},
+							respondSha:true,
+							order:4,
+							useful:-1,
+						},
+					},
+				},
 				ai:{
 					nothunder:true
 				},
@@ -1731,8 +1752,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_RobokoSan:'新·萝卜子',
             re_zhanxie:'战械',
             re_zhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用三张【杀】。当你使用第二张【杀】时，摸一张牌；使用第三张【杀】时，摸两张牌。',
-            re_chongdian:'充电',
-			re_chongdian_info:'<font color=#f66>锁定技</font> 锁定技，你受到雷电伤害时改为回复等量体力。',
+            re_chongdian:'机电',
+			re_chongdian_info:'你受到雷电伤害时可改为回复等量体力；你的装备牌均可当【雷杀】使用。',
 			
 			re_ShirakamiFubuki: '新·白上吹雪',
 			re_yuanlv:'远虑',
