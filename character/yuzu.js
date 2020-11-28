@@ -17,8 +17,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
 			Doris:['female','holo',3,['shenhai','paomo']],
 
+//			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
+
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']]
+		},
+		characterSort:{
+			yuzu:{
+                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','OtomeOto'],
+                OurGirls:['Civia','SpadeEcho','Artia','Doris'],
+                huang:['sp_MinatoAqua','sp_MononobeAlice'],
+			}
 		},
 		characterIntro:{
 			MinatoAqua:'“余裕余裕~”',
@@ -371,7 +380,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					history.forEach(function(his){
 						num += his.cards.length;
 					});
-					console.log(num);
 					return event.player!=player&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
 				content:function(){
@@ -400,7 +408,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				onremove:function(player){
 					delete player.storage.zhai;
-				}
+				},
 			},
 			zhishu:{
 				trigger:{player:['phaseUseBegin','changeHp']},
@@ -450,7 +458,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext: '玉',
 				intro: {
 					content: 'cards',
-					name:'以『玉箱』使用过的锦囊牌',
+					name:'以『玉匣』使用过的锦囊牌',
 				},
 				enable:'phaseUse',
 				filter:function(event,player){
@@ -468,11 +476,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						for(var i=0;i<lib.inpile.length;i++){
 							var name=lib.inpile[i];
 							var reapeat = 0;
-							if(player.storage.xiaogui.length){
-								player.storage.xiaogui.forEach(function(his){	
-									if(get.name(his)==name) reapeat ++;
-								});
-							}
 							if(reapeat||name=='wuxie'||name=='jinchan') continue;
 							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 						}
@@ -497,7 +500,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 4'
 					game.broadcastAll(function(player){
-						player.chooseCardButton([0,3],true,event.cards,'『玉箱』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+						player.chooseCardButton([0,3],true,event.cards,'『玉匣』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
 							return get.value(button.link);
 						});
 					}, player);
@@ -576,6 +579,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['qiepian_start','qiepian_end'],
 				subSkill:{
 					start:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=[];
+						},
+						locked:true,
+						notemp:true,
+						marktext: '崛',
+						intro: {
+							content: 'cards',
+							name:'以『连崛』使用过的锦囊牌',
+						},
 						trigger:{global:'phaseBefore'},
 						firstDo:true,
 						forced:true,
@@ -593,11 +606,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						priority:66,
 						filter:function(event,player){
-							return (player.storage.qiepian-player.countCards('h'))&&(Math.abs(player.storage.qiepian-player.countCards('h'))%3==0);
+							return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian-player.countCards('h'))%3==0);
 						},
 						content:function(){
 							'step 0'
-							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以『玉箱』使用过的通常锦囊牌'],function(){
+							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以此也未以『玉匣』使用过的通常锦囊牌'],function(){
 								return 1;
 							});
 							'step 1'
@@ -619,6 +632,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									for(var i=0;i<lib.inpile.length;i++){
 										var name=lib.inpile[i];
 										var reapeat = 0;
+										if(player.storage.qiepian_start.length){
+											player.storage.qiepian_start.forEach(function(his){	
+												if(get.name(his)==name) reapeat ++;
+											});
+										}
 										if(player.storage.xiaogui.length){
 											player.storage.xiaogui.forEach(function(his){	
 												if(get.name(his)==name) reapeat ++;
@@ -628,7 +646,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 									}
 									game.broadcastAll(function(id, list){
-										var dialog=ui.create.dialog('使用一张未以『玉箱』使用过锦囊牌',[list,'vcard']);
+										var dialog=ui.create.dialog('使用一张未以此也未以『玉匣』使用过的通常锦囊牌',[list,'vcard']);
 										dialog.videoId = id;
 									}, event.videoId, list);
 									event.goto(3);
@@ -651,6 +669,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if (result.bool){
 								var card = result.links[0];
 								player.chooseUseTarget({name:card[2]},true);
+								player.storage.qiepian_start.add(game.createCard(card[2]));
+								player.syncStorage('qiepian_start');
+								player.markSkill('qiepian_start');
 							}
 						},
 					},
@@ -800,9 +821,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.hasPlayer(function(cur){
 							if(player.canUse(car,cur))	canG++;
 						});;
-						console.log(canG);
 					})
-					console.log(event);
 					if(!event.hs.length)	return false;	
 					return canG&&(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard'));
 				},
@@ -942,6 +961,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(list.contains('equip2')) 											return 'equip2';
 						if(list.contains('equip1')&&player.countCards('h',{name:'sha'})>2)		return 'equip1';
 						if(list.contains('equip5')&&player.countCards('h',{type:'trick'})>=1)	return 'equip5';
+						return list.randomGet();
 					});
 					'step 1'
 					player.chooseUseTarget('###视为使用一张没有距离限制的【顺手牵羊】',{name:'shunshou'},true,'nodistance');
@@ -968,6 +988,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				mark:true,
+				onremove:function(player){
+					delete player.storage.shangdong;
+				},
 			},
 			shuangzhi:{
 				check:function(event,player){
@@ -1037,7 +1060,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						});
 						next.set('targetprompt',['失去体力','回复体力']);
-						next.set('prompt','指定两名角色，分别回复一点体力和失去一点体力');
+						next.set('prompt','指定两名角色，分别失去一点体力和回复一点体力');
 						next.set('forced',false);
 					}, player)
 					'step 1'
@@ -1316,7 +1339,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
-			
+			//花那
+			huawen:{
+				enable:'phaseEnd',
+				usable: 1,
+				filter:function(event,player){
+					return player.countCards('h')>0;
+				},
+				filterTarget:function(card,player,target){
+					return target!=player&&target.countCards('h')>0&&target.sex == 'female';
+				},
+				content:function(){
+
+				},
+			},
 
 
 			//圣皇夸
@@ -1975,6 +2011,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 				},
 			},
+
+			ParyiPro: '帕里坡',
+			OurGirls: 'OurGirls',
+
 			Paryi: '帕里',
 			tiantang: '天扉',
 			tiantang_info: '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
@@ -1998,12 +2038,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhishu_info: '出牌阶段开始时或你的体力值变化时，你可以展示一张手牌，然后令一名角色交给你一张同花色的牌，若其未执行，其下个回合中（）内的数值+1。',
 
 			OtomeOto: '乙女音',
-			xiaogui: '玉箱',
-			xiaogui_info: '你可以将三张牌当作一张未以此法使用过的通常锦囊牌使用。然后，你可以将这些牌以任意顺序置于牌堆顶。',
+			xiaogui: '玉匣',
+			xiaogui_info: '你可以将三张牌当作一张通常锦囊牌使用。然后，你可以将这些牌以任意顺序置于牌堆顶。',
 			qiepian: '连崛',
-			qiepian_info: '一个回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以『玉箱』使用过的通常锦囊牌。',
-			changxiang: '龙吟',
-			changxiang_info: '主公技。其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的牌，视为对其使用一张【桃】。',
+			qiepian_info: '一个回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此也未以『玉匣』使用过的通常锦囊牌。',
+			changxiang: '长箱',
+			changxiang_info: '<font color=#ff4>主公技</font> 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',
@@ -2034,6 +2074,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			paomo: '儚恋',
 			paomo_info: '你的回合内，当其他角色于本回合第一次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。',
 
+			SukoyaKana: '健屋花那',
+			huawen: '花吻交染',
+			huawen_info: '出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。',
+			liaohu: '逃杀疗护',
+			liaohu_info: '：你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',

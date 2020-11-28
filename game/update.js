@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.87',
+	version:'1.9.100.88',
 	update:'1.9.100.85.3',
 	changeLog:[
 		'修改默认背景为熊猫人背景,背景音乐改回默认三国杀',
@@ -10,6 +10,7 @@ window.noname_update={
 		'可以在“选项-显示”里切换为三国杀原版卡图',
 	],
 	files:[
+		'image/splash/doudizhu.png',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
 		// 'image/card/du.png',

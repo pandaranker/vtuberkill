@@ -31,7 +31,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hololive:{
                 hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
                 hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
-                hololive_2and3:['MinatoAqua','UsadaPekora']
+                hololive_2and3:['MinatoAqua','UsadaPekora'],
 			}
 		},
         characterIntro:{
@@ -1956,7 +1956,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						prompt:'是否收回“誓约”牌',
 							content:function(){
-							trigger.num=0;
+							trigger.changeToZero();
 							player.line(trigger.source,'thunder');
 							trigger.source.$giveAuto(result.cards,player);
 							player.gain(player.storage.youyi,trigger.source);

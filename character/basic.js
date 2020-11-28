@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
 			Siro: ['female', 'dotlive', 4, ['zhongxinghezou']],
-			HanazonoSerena: ['female', 'qun', 3, ['jiumao', 'enfan', 'shiqi']],
+			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 
@@ -78,9 +78,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return get.subtype(event.cards[0])=='equip1';
 						},
 						content:function(){
-							for(var i=0;i<trigger.targets.length;i++){
-								trigger.directHit.add(trigger.targets[0]);
-							}						
+							player.getStat().card.sha--;
+			//				for(var i=0;i<trigger.targets.length;i++){
+			//					trigger.directHit.add(trigger.targets[0]);
+			//				}						
 						},
 					}
 				}
@@ -106,16 +107,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardToPlayered'},
 				priority:8,
 				filter:function(event,player){
-					return event.card.name=='sha'&&!(event.target.maxHp/2 < event.target.hp)&&player.countCards('he')>0;
+					return event.card.name=='sha'&&!(event.target.maxHp/2 < event.target.hp);
 				},
 				logTarget:'target',
 				content:function(){
-					'step 0'
-					player.chooseToDiscard(get.prompt('songzang'),'he');
-							
-					'step 1'	//无法被响应	
+						//无法被响应	
 					//trigger.getParent().directHit.add(trigger.target);
-								//伤害+1
+						//伤害+1
 					trigger.getParent().baseDamage++;
 					trigger.target.addTempSkill('songzang2');
 					trigger.target.addTempSkill('songzang4');
@@ -178,7 +176,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:15,
 				filter:function(event,player){
 					if(!event.target||event.target!=player||event.player==player) return false;
-					if(player.inRange(event.player)) return false; 	//使用牌者在攻击距离外
+				//使用牌者在攻击距离外	if(player.inRange(event.player)) return false;
+					if(player.next==event.player||player.previous==event.player)
 					return (get.type(event.card)=='trick');		//牌为锦囊牌
 				},
 				content:function(){
@@ -205,16 +204,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					var target = trigger.player;
 			//			if(target.getEquip(1)){
-							if(result.index==1){
-								player.line(target);
-								player.gain(target.getEquip(1),target,'give','bySelf');
-								player.useCard({name:'sha',isCard:false},target).animate=false;
-							}	
-							else if(result.index==0){
-								player.draw();
-								trigger.cancel();
-							}						
-			//			}
+						if(result.index==1){
+							player.line(target);
+							player.gain(target.getEquip(1),target,'give','bySelf');
+							player.useCard({name:'sha',isCard:false},target).animate=false;
+						}	
+						else if(result.index==0){
+							player.draw();
+							trigger.cancel();
+						}						
+			//		}
 				}									
 				
 			},
@@ -1061,30 +1060,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill] = 0;
 				},
-				trigger:{player:'phaseUseBegin'},
-				forced:true,
+				trigger:{player:['phaseJudgeBegin','phaseDrawBegin','phaseUseBegin','phaseDiscardBegin']},
 				priority:41,
 				filter:function(event,player){
-					console.log(ui.cardPile.childElementCount)
-					return ui.cardPile.childElementCount>1;
+					return (player.storage.shushi<Math.max(game.countPlayer(),5));
 				},
 				content:function(){
 					'step 0'
 					var list = ['不观看牌'];
 					var att = 5;
+					var prompt2 = player.storage.shushi?'你本回合已看'+get.cnNumber(player.storage.shushi)+'张牌':'你本回合未看牌';
 					if(player.countCards('h',{type:'trick'})<3)	att = 0;
-					for(var i=1;i<=Math.max(game.countPlayer(),5);i++){
-						list.push('观看'+get.cnNumber(i)+'张牌')
+					for(var i=1;i<=(Math.max(game.countPlayer(),5)-player.storage.shushi);i++){
+						list.push('观看'+get.cnNumber(i)+'张牌');
 					}
-					player.chooseControlList(list,true,function(){
+					player.chooseControlList(prompt2
+					,list,true,function(){
 						return _status.event.att;
 					}).set('att',att);
 					'step 1'
 					if(result.index == 0){
-						player.storage.shushi = Math.max(game.countPlayer(),5);
 						event.finish();
 					}else{
-						player.storage.shushi = Math.max(game.countPlayer(),5)-result.index;
+						player.storage.shushi += result.index;
 						game.broadcastAll(function(player){
 							player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
 								return get.value(button.link);
@@ -1101,12 +1099,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					maxHandcard:function(player,num){
-						return num+=player.storage.shushi;
+						return num+=Math.max(game.countPlayer(),5)-player.storage.shushi;
 					},
 				},
-				group:'shushi_init',
+				group:'shushi_clear',
 				subSkill:{
-					init:{
+					clear:{
 						trigger:{player:'phaseAfter'},
 						forced:true,
 						silent:true,
@@ -1118,6 +1116,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.storage.shushi = 0;
 						}
 					},
+				},
+				ai:{
+					guanxing:true,
 				}
 			},
 			zengzhi:{
@@ -1144,11 +1145,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '<font color=#f66>锁定技</font> 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不可被响应的杀。',
+			yuchong_info: '<font color=#f66>锁定技</font> 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不记次数的【杀】。',
 			songzang: '送葬天使',
-			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可以弃一张牌令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
+			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
-			zhimao_info: '当你成为普通锦囊牌的目标时，若来源在你攻击范围外，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
+			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你相邻，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
