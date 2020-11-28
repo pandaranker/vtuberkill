@@ -12,7 +12,6 @@ window.noname_update={
 	],
 	files:[
 		'image/character/MiraiAkari.jpg',
-		'image/character/re_XiaDi.jpg',
 		'image/splash/doudizhu.png',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
