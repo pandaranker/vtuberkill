@@ -1,6 +1,6 @@
 window.noname_update={
-	version:'1.9.100.90',
-	update:'1.9.100.86.3',
+	version:'1.9.100.91',
+	update:'1.9.100.87.3',
 	changeLog:[
 		'新增V杀初心者上手用角色包',
 		'修改默认背景为熊猫人背景,背景音乐改回默认三国杀',

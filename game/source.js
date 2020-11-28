@@ -16,6 +16,7 @@ window.noname_source_list=[
 	'character/vtuber.js',
 	'character/hololive.js',
 	'character/basic.js',
+	'character/Beginner.js',
 	'character/moyu.js',
 	'character/nijisanji.js',
 	'character/diy.js',

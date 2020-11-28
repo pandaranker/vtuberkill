@@ -19,7 +19,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**下地 */
 			re_XiaDi: ['male', 'qun', 4, ['re_yinliu', 'dunzou']],
 			/**物述有栖 */
-	//		MononobeAlice:['female','nijisanji',3,['tinenghuifu1','dianmingguzhen']],
+			re_MononobeAlice:['female','nijisanji',3,['tinenghuifu1','re_dianmingguzhen']],
 			/**静凛 */
 			re_ShizukaRin:['female','nijisanji',4,['re_mozhaotuji']],
 			/**家长麦 */
@@ -48,11 +48,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
 			/**犬山 */
 			re_InuyamaTamaki:['male','key',3,['rongyaochengyuan','re_hundunliandong']],
+			/**咩宝 */
+			re_KaguraMea: ['female', 'qun', 4, ['re_luecai', 're_xiaoyan']],
 
 			
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
-
+			/**Re莉泽 */
+			re_LizeHelesta:['female','nijisanji',4,['yubing']],
         },
         characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
@@ -208,7 +211,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 				
 			},
-			dianmingguzhen:{
+			re_dianmingguzhen:{
 				enable:"phaseUse",
 				usable:1,
 				filter:function(event,player){
@@ -221,7 +224,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					//console.log(lib.skill.dianmingguzhen.canMoveCard(player));
+					//console.log(lib.skill.re_dianmingguzhen.canMoveCard(player));
 					var next=player.chooseTarget(2,function(card,player,target){
 						if(ui.selected.targets.length){
 							var from=ui.selected.targets[0];
@@ -1135,6 +1138,152 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw();
 				},
 			},
+			//reAlice
+			re_dianmingguzhen:{
+				enable:"phaseUse",
+				usable:1,
+				filter:function(event,player){
+					if(!game.hasPlayer(function(current){
+						return current.countCards('e')>0;
+					})) return false;
+					return true
+				},
+				content:function(){
+					'step 0'
+					player.loseHp(1);
+					'step 1'
+					//console.log(lib.skill.re_dianmingguzhen.canMoveCard(player));
+					var next=player.chooseTarget(2,function(card,player,target){
+						if(ui.selected.targets.length){
+							var from=ui.selected.targets[0];
+							if(target.isMin()) return false;
+							var es=from.getCards('e');
+							for(var i=0;i<es.length;i++){
+								if(target.isEmpty(get.subtype(es[i]))) return true;
+							}
+							return false;
+						}
+						else{
+							return target.countCards('e')>0;
+						}
+					});
+					next.set('ai',function(target){
+						var player=_status.event.player;
+						var att=get.attitude(player,target);
+						var sgnatt=get.sgn(att);
+						if(ui.selected.targets.length==0){
+							if(att>0){
+								if(target.countCards('e',function(card){
+									return get.value(card,target)<0&&game.hasPlayer(function(current){
+										return current!=player&&current!=target&&get.attitude(player,current)<0&&current.isEmpty(get.subtype(card))
+									});
+								})>0) return 9;
+							}
+							else if(att<0){
+								if(game.hasPlayer(function(current){
+									if(current!=target&&current!=player&&get.attitude(player,current)>0){
+										var es=target.getCards('e');
+										for(var i=0;i<es.length;i++){
+											if(get.value(es[i],target)>0&&current.isEmpty(get.subtype(es[i]))&&get.value(es[i],current)>0) return true;
+										}
+									}
+								})){
+									return -att;
+								}
+							}
+							return 0;
+						}
+						var es=ui.selected.targets[0].getCards('e');
+						var i;
+						var att2=get.sgn(get.attitude(player,ui.selected.targets[0]));
+						for(i=0;i<es.length;i++){
+							if(sgnatt!=0&&att2!=0&&
+								get.sgn(get.value(es[i],ui.selected.targets[0]))==-att2&&
+								get.sgn(get.value(es[i],target))==sgnatt&&
+								target.isEmpty(get.subtype(es[i]))){
+								return Math.abs(att);
+							}
+						}
+						if(i==es.length){
+							return 0;
+						}
+						return -att*get.attitude(player,ui.selected.targets[0]);
+					});
+					next.set('multitarget',true);
+					next.set('targetprompt',['被移走','移动目标']);
+					next.set('prompt',event.prompt||'移动场上的一张装备牌');
+					next.set('forced',true);
+					'step 2'
+					if(result.bool){
+						player.line2(result.targets,'green');
+						event.targets=result.targets;
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					game.delay();
+					'step 4'
+					if(targets.length==2){
+						player.choosePlayerCard('e',true,function(button){
+							var player=_status.event.player;
+							var targets0=_status.event.targets0;
+							var targets1=_status.event.targets1;
+							if(get.attitude(player,targets0)>get.attitude(player,targets1)){
+								if(get.value(button.link,targets0)<0) return 10;
+								return 0;
+							}
+							else{
+								return get.equipValue(button.link);
+							}
+						},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
+							var targets1=_status.event.targets1;
+							return targets1.isEmpty(get.subtype(button.link));
+						});
+					}
+					else{
+						event.finish();
+					}
+					'step 5'
+					if(result.bool&&result.links.length){
+						var link=result.links[0];
+						event.targets[1].equip(link);
+						event.targets[0].$give(link,event.targets[1]);
+						event.equiptype=get.subtype(link);
+						game.delay();
+						event.result={bool:true};
+					}
+					'step 6'
+					if(event.targets[0]!=player){
+						event.finish();
+					}
+					else{
+						player.chooseUseTarget({name:'sha',nature:'thunder'},'是否视为使用一张【杀】？',false);
+					}
+				},
+				canMoveCard:function(player,withatt){
+					return game.hasPlayer(function(current){
+						if(player==current) return false;
+						var att=get.sgn(get.attitude(player,current));
+						if(!withatt||att!=0){
+							var es=current.getCards('e');
+							for(var i=0;i<es.length;i++){
+								if(game.hasPlayer(function(current2){
+									if(player==current2) return false;
+									if(withatt){
+										if(get.sgn(get.value(es[i],current))!=-att) return false;
+										var att2=get.sgn(get.attitude(player,current2));
+										if(att2!=get.sgn(get.value(es[i],current2))) return false;
+									}
+									return current!=current2&&!current2.isMin()&&current2.isEmpty(get.subtype(es[i]));
+								})){
+									return true;
+								}
+							}
+						}
+					});
+				},
+			},
 			//re修女
 			shenyou:{
 				marktext:'神',
@@ -1188,6 +1337,45 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}else{
 						event.finish();
 					}
+				},
+			},
+			//莉泽
+			yubing:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 0;
+				},
+				trigger: {player: 'useCardAfter'},
+				priority:14,
+				filter: function(event, player) {
+					return player.getHandcardLimit()&&(get.name(event.card)=='sha'||get.type(event.card)=='trick')
+						&&!(event.result.bool == false || event.result.wuxied);
+				},
+				content:function(){
+					player.draw(2);
+					player.storage.yubing++;
+					player.markSkill('yubing');
+				},
+				marktext:"教",
+				mark:true,
+				intro:{
+					content:'手牌上限-#',
+				},
+				mod:{
+					maxHandcard:function (player,num){
+						return num-player.storage.yubing;
+					},
+				},
+				group:'yubing_clear',
+				subSkill:{
+					clear:{
+						trigger:{player:'phaseAfter'},
+						forced: true,
+						silent: true,
+						priority:42,
+						content:function(){
+							player.storage.yubing = 0;
+						}
+					},
 				},
 			},
 
@@ -1672,6 +1860,56 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//reMEA
+			re_luecai: {
+				enable: 'phaseUse',
+				locked: true,
+				filter:function(event,player){
+					return !player.hasSkill('re_luecai_used')&&!player.isMaxHandcard();
+				},
+				filterTarget:function(card,player,target){
+					if (player==target) return false;
+					return target.countCards('h') > player.countCards('h');
+				},
+				selectTarget:-1,
+				multitarget:false,
+				check:function(card){
+					return 1;
+				},
+				content: function() {
+					'step 0'
+					target.chooseCard('he', true);
+					'step 1'
+					player.gain(result.cards[0],target,'giveAuto');
+					player.addTempSkill('re_luecai_used','phaseUseEnd')
+				},
+				subSkill:{
+					used:{}
+				},
+			},
+			re_xiaoyan: {
+				direct: true,
+				trigger:{
+					player:"useCard",
+				},
+				// filter:function(event,player){
+				// 	return event.card
+				// 		&& (
+				// 			get.type(event.card)=='trick'||get.type(event.card)=='basic' 
+				// 			&& !['shan','tao','jiu','du'].contains(event.card.name)
+				// 		)
+				// 		&& game.hasPlayer(function(current){
+				// 			return current!=player && current.countCards('h') < player.countCards('h')
+				// 				&& event.targets.contains(current);
+				// 		});
+				// },
+				content:function(){
+					trigger.directHit.addArray(game.filterPlayer(function(current){
+						return current.countCards('h') < player.countCards('h')
+					}));
+				},
+			},
+
         },
         translate:{
 			
@@ -1707,15 +1945,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dunzou_enable: '遁走',
 
 
-			
-			nochongzhu:'禁止重铸',
-
-			MononobeAlice:'物述有栖',
-			tinenghuifu1:'体能恢复',
-			tinenghuifu1_info:'<font color=#f66>锁定技</font> 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
-			dianmingguzhen:'电鸣鼓震',
-			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
-
 			re_ShizukaRin:'新·静凛',
 			re_mozhaotuji:'魔爪突击',
 			re_mozhaotuji_info:'每回合限一次。你可以将你的一个阶段变为出牌阶段。你使用过至少两张牌的出牌阶段结束时，摸一张牌。',
@@ -1741,11 +1970,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_jitui: '急退',
 			re_jitui_info: '当你受到伤害后或一次性失去了两张以上的牌后，你可以摸一张牌。',
 			
-			re_SisterClearie:'新·克蕾雅',
+            re_MononobeAlice:'新·物述有栖',
+			re_dianmingguzhen:'电鸣鼓震',
+			re_dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你可视为使用一张雷【杀】。',
+
+			re_SisterClearie: '新·克蕾雅',
 			shenyou: '神佑',
 			shenyou_info: '<font color=#f66>锁定技</font> 锁定技。你受到来自基本牌的伤害+1；其它的伤害-1。',
 			shenfa: '神罚',
 			shenfa_info: '当你失去一张手牌时，你可以令一名其他角色获得『神佑』直到回合结束。',
+
+			re_LizeHelesta: '新·莉泽',
+			yubing: '语冰',
+			yubing_info: '你使用【杀】或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
+
 
 			re_TokinoSora: '新·时乃空',
 
@@ -1785,6 +2023,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_hundunliandong: '混沌联动',
 			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
 			
+			re_KaguraMea: '神乐めあ',
+			re_luecai: '掠财',
+			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
+			re_xiaoyan: '嚣言',
+			re_xiaoyan_info: '<font color=#f66>锁定技</font> 锁定技。你对手牌数小于你的角色使用牌不可被响应。',
+
         }
     }
 }

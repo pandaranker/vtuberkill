@@ -1062,6 +1062,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						next.set('targetprompt',['失去体力','回复体力']);
 						next.set('prompt','指定两名角色，分别失去一点体力和回复一点体力');
 						next.set('forced',false);
+						next.set('ai',function(target){
+							var player=_status.event.player;
+							var att=get.attitude(player,target);
+							var sgnatt=get.sgn(att);
+							if(ui.selected.targets.length==0){
+								if(target.hp==1&&sgnatt<=0){
+									return 9;
+								}else if(target.hp==1&&sgnatt>=1){
+									return -10;
+								}else{
+									return 9-att
+								}
+							}else{
+								if(target.hp==target.maxHp&&sgnatt<=0){
+									return 9;
+								}else if(target.hp<target.maxHp&&sgnatt>=1){
+									return 7;
+								}else if(target.hp<target.maxHp&&sgnatt<=0){
+									return -10;
+								}else{
+									return 9-att;
+								}
+							}
+						});
 					}, player)
 					'step 1'
 					if(result.bool){
@@ -2014,6 +2038,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			ParyiPro: '帕里坡',
 			OurGirls: 'OurGirls',
+			huang: 'SP角色',
 
 			Paryi: '帕里',
 			tiantang: '天扉',
