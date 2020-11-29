@@ -10,7 +10,6 @@ window.noname_package={
 		nijisanji:'nijisanji',
 		vtuber:'vtuber',
 		basic: '散装卡包',
-		//sololive: '测试中勿选',
 		// moyu: '摸鱼',
 		yuzu: '测试中可选',
 		Eilene:'Eilene一家',

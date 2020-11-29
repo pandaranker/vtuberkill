@@ -145,18 +145,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					"step 1"
 					if(result.bool&&result.targets.length>0){
-						player.logSkill('jiajiupaidui',result.targets);
+						player.logSkill('re_jiajiupaidui',result.targets);
 						event.targets=result.targets;
 					}
 					else{
 						event.finish();
 					}
 					"step 2"
+					var att = get.sgnAttitude(event.targets[0],player)
 					event.onlyOne=event.targets[0].chooseToDiscard('he','弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
 					event.onlyOne.set('ai',function(card){
 						if(att>1)	return (get.suit(card)=='spade'||get.number(card)==9);
 					});
-					event.onlyOne.set('att',get.sgnAttitude(target,player))
+					event.onlyOne.set('att',att);
 					"step 3"
 					event.discardCards=[];
 					if(event.onlyOne!=undefined){
@@ -565,13 +566,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re兔头
 			re_bingdielei:{
-                group:'re_bingdielei_damageBy',
+                group:'re_bingdielei_lose',
 				subSkill:{
-					damageBy:{
-						trigger:{player:'damageBegin4',source:'damageBegin4'},
+					lose:{
+						trigger:{player:'loseAfter'},
 						priority:99,
+						silent:true,
+						popup: false,
+						forced:true,
 						filter:function(event,player){
-							return event.num&&!_status.event.getParent('phase').skill;
+							return event.cards.length;
 						},
 						direct:true,
 						content:function(){
@@ -587,11 +591,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						marktext: '并',
 						mark:true,
-						silent:true,
-						forced:true,
+						round:1,
 						intro: {
-							content:'当前回合结束后获得一个额外回合',
+							content:'当前回合结束后若本轮没有获得过，可以获得一个额外回合',
 							name:'并蒂恶蕾',
+						},
+						onremove:true,
+						filter:function(event,player){
+							return player.getHistory('lose').length;
 						},
 						content:function(){
 							player.markSkill(event.name);
@@ -1266,10 +1273,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return target!=player&&!target.hasSkill('re_huxi1_target')&&player.countCards('h')&&target.countCards('h');
 						},)
 					"step 1"
-					event.target=result.targets[0];
-					game.log(player,'想要呼吸',event.target);
-                    event.card1=result.cards[0];
-					event.target.chooseCard('请选择交换的牌',true).set('type','compare');
+					if(result.bool){
+						event.target=result.targets[0];
+						game.log(player,'想要呼吸',event.target);
+						event.card1=result.cards[0];
+						event.target.chooseCard('请选择交换的牌',true).set('type','compare');
+					}else{
+						event.finish();
+					}
 					"step 2"
 					event.card2=result.cards[0];
 					if(!event.resultOL&&event.ol){
@@ -1762,7 +1773,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MitoTsukino:'新·月之美兔',
 			re_MitoTsukino_info:'月之美兔',
 			re_bingdielei:'并蒂恶蕾',
-            re_bingdielei_info:'你造成或受到过伤害的额定回合结束时，获得一个额外回合。',
+            re_bingdielei_info:'每轮限一次。你失去过牌的回合结束时，你可以获得一个额外回合。',
             
 			re_HiguchiKaede: '新·樋口枫',
 			re_zhenyin: '震音',
