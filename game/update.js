@@ -11,7 +11,7 @@ window.noname_update={
 		'可以在“选项-显示”里切换为三国杀原版卡图',
 	],
 	files:[
-		'image/splash/doudizhu.png',
+		'image/splash/doudizhu.jpg',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
 		// 'image/card/du.png',
