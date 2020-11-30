@@ -8,12 +8,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KizunaAI:['female','upd8',4,['ailian','qixu'],['zhu']],
 			/**犬山 */
 			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
+			/**小白 */
+			Siro: ['female', 'dotlive', 4, ['zhongxinghezou']],
 			/**小希小桃 */
 			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha']],
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
-			/**茜科塞尔 */
-			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -684,6 +684,92 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.finish();
 				}
 			},
+			zhongxinghezou: {
+				init: function(player) {
+					if (!player.storage.zhongxinghezou) {
+						player.storage.zhongxinghezou = [];
+					}
+				},
+				trigger: {
+					player:'useCard2'
+				},
+				usable: 1,
+				filter:function(event,player){
+					if (!(get.itemtype(event.cards) == 'cards')) return false
+					// if (event.getParent().triggeredTargets3.length > 1) return false;
+					return true;
+				},
+				content: function() {
+					'step 0'
+					event.ctargets = trigger.targets;
+					player.chooseTarget(get.prompt2('zhongxinghezou'),function(card,player,target){
+						return !_status.event.targets.contains(target) && target.countCards('h');
+					}).set('ai',function(target){
+						return 2-get.attitude(_status.event.player,target);
+					}).set('targets',trigger.targets);
+					'step 1'
+					if (result.bool) {
+						event.starget = result.targets[0];
+						event.starget.chooseCard(true, 'h');
+					}
+					else {
+						event.finish();
+					}
+					'step 2'
+					if (result.bool && result.cards.length) {
+						event.starget.showCards(result.cards);
+						event.card = result.cards[0];
+						var num = get.number(event.card) + get.number(trigger.card);
+						if (num < 12) {
+							// trigger.targets.length=0;
+							// trigger.getParent().triggeredTargets2.length=0;
+							player.gain(result.cards,event.starget,'give');
+							trigger.cancel();
+						}
+						if (num >= 12) {
+							player.storage.zhongxinghezou.push({
+								source: trigger.card.cardid,
+								user:event.starget,
+								card: event.card,
+								targets: event.ctargets,
+							});
+						}
+						if (num == 12) {
+							player.draw();
+							event.starget.recover();
+						}
+					}
+					else {
+						event.finish();
+					}
+				},
+				group: ['zhongxinghezou_use'],
+				subSkill: {
+					use: {
+						forced: true,
+						trigger: {
+							player: 'useCardAfter',
+						},
+						filter: function(event, player) {
+							if (!event.card.isCard) return false;
+							if (!player.storage.zhongxinghezou.length) return false;
+							return true;
+						},
+						content: function() {
+							player.storage.zhongxinghezou.forEach(function(item) {
+								if (item.source == trigger.card.cardid) {
+									item.targets.forEach(function(tar) {
+										if (item.user.canUse(item.card,tar)) {
+											item.user.useCard(item.card, tar);
+										}
+									})
+									player.storage.zhongxinghezou.remove(item);
+								}
+							})
+						}
+					},
+				}
+			},
 			yipengyidou:{
 				enable:'phaseUse',
 				usable:1,
@@ -1098,183 +1184,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			shuangshoujiaoying:{
-				trigger:{player:'shaBegin'},
-				content:function(){
-					'step 0'
-					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
-					'step 1'
-					event.replayers=[];
-					if(result.bool){
-						event.chooseBool=true;
-						event.replayers=trigger.targets;
-					}
-					else{
-						event.chooseBool=false;
-						event.replayers.add(player);
-					}
-					'step 2'
-					if(event.replayers.length>0){
-						event.replayer=event.replayers[0];
-						event.cards=event.replayer.getCards('h');
-						event.replayer.showHandcards();
-						game.delayx();
-					}
-					else{
-						event.finish();
-					}
-					'step 3'
-					event.recards=[];
-					if(event.cards&&event.cards.length>0){
-						if(player.storage.anyingxuemai){
-							for( i of event.cards){
-								if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
-									event.recards.add(i);
-								}
-							}
-						}
-						else{
-							for( i of event.cards){
-								if(i.name=='shan'){
-									event.recards.add(i);
-								}
-							}
-						}
-					}
-					if(event.recards.length>0){
-						event.replayer.lose(event.recards, ui.discardPile);
-						event.replayer.$throw(event.recards);
-						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
-						event.replayer.draw(event.recards.length);
-					}
-					'step 4'
-					if(event.recards.length>0){
-						if(event.replayers.contains(event.replayer)&&event.chooseBool){
-							player.draw(1);
-						}
-						if(player==event.replayer){
-							player.getStat().card.sha--;
-						}
-					}
-					event.replayers.shift();
-					if(event.replayers.length>0){
-						event.goto(1)
-					}
-				}
-			},
-			shuangshoujiaoying_gai:{
-				trigger:{player:'shaBegin'},
-				content:function(){
-					'step 0'
-					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
-					'step 1'
-					event.replayers=[];
-					if(result.bool){
-						event.chooseBool=true;
-						event.replayers=trigger.targets;
-					}
-					else{
-						event.chooseBool=false;
-						event.replayers.add(player);
-					}
-					'step 2'
-					if(event.replayers.length>0){
-						event.replayer=event.replayers[0];
-						event.cards=event.replayer.getCards('h');
-						event.replayer.showHandcards();
-						game.delayx();
-					}
-					else{
-						event.finish();
-					}
-					'step 3'
-					event.recards=[];
-					if(event.cards&&event.cards.length>0){
-						for( i of event.cards){
-							if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
-								event.recards.add(i);
-							}
-						}
-					}
-					if(event.recards.length>0){
-						event.replayer.lose(event.recards, ui.discardPile);
-						event.replayer.$throw(event.recards);
-						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
-						event.replayer.draw(event.recards.length);
-					}
-					'step 4'
-					if(event.recards.length>0){
-						if(event.replayers.contains(event.replayer)&&event.chooseBool){
-							player.draw(1);
-						}
-						if(player==event.replayer){
-							player.getStat().card.sha--;
-						}
-					}
-					event.replayers.shift();
-					if(event.replayers.length>0){
-						event.goto(1)
-					}
-				}
-			},
-			anyingxuemai:{
-				trigger:{
-					player:"dying",
-				},
-				skillAnimation:true,
-				animationColor:'metal',
-				audio:2,
-				unique:true,
-				limited:true,
-				// enable:'chooseToUse',
-				//viewAs:{name:'tao'},
-				init:function(player){
-					player.storage.anyingxuemai=false;
-				},
-				mark:true,
-				filter:function(event,player){
-					//console.log(event,player);
-					if(event.name!='dying') return false;
-					//if(player!=event.dying) return false;
-					if(player.storage.anyingxuemai) return false;
-					if(player.countCards('h')==0) return false;
-					return true;
-				},
-				content:function(){
-					"step 0"
-					player.awakenSkill('anyingxuemai');
-					player.showHandcards();
-					var handcards=player.getCards('h');
-					var suitlist=[0,0,0,0];
-					for(i of handcards){
-						if(get.suit(i)=='spade'){
-							suitlist[0]++;
-						}
-						if(get.suit(i)=='heart'){
-							suitlist[1]++;
-						}
-						if(get.suit(i)=='diamond'){
-							suitlist[2]++;
-						}
-						if(get.suit(i)=='club'){
-							suitlist[3]++;
-						}
-					}
-					suitlist.sort();
-					var recoverHp=0;
-					for(i of suitlist){
-						if(i!=0){
-							recoverHp=i;
-							break;
-						}
-					}
-					player.recover(recoverHp);
-					"step 1"
-					player.storage.anyingxuemai=true;
-					player.removeSkill('shuangshoujiaoying');
-					player.addSkill('shuangshoujiaoying_gai');
-				},
-			}
 		},
 		card:{
 			"feichu_equip1":{
@@ -1320,6 +1229,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hundunliandong:'混沌联动',
 			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有四种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有“homolive”标记的角色视为同一势力',
 			
+			Siro: '电脑少女小白',
+			zhongxinghezou: '众星合奏',
+			zhongxinghezou_info: '每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12，你获得亮出牌令你使用的牌无效；不小于12，你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12，你获得亮出牌并令亮出牌的角色回复1点体力。',
+
 			XiaoxiXiaotao:'小希小桃',
 			XiaoxiXiaotao_info:'小希小桃',
 			yipengyidou:'一捧一逗',
@@ -1334,14 +1247,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuangzuiluanwu:'狂醉乱舞',
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		
-			Qiankesaier:'茜科塞尔',
-			Qiankesaier_info:'茜科塞尔',
-			shuangshoujiaoying:'双首角鹰',
-			shuangshoujiaoying_gai:'双首角鹰',
-			shuangshoujiaoying_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
-			shuangshoujiaoying_gai_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
-			anyingxuemai:'暗影血脉',
-			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将“双首角鹰”的“【闪】”改为“红色牌”。',
 		},
 	};
 });

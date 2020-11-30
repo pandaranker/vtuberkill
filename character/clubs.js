@@ -3,19 +3,22 @@
 
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
-		name:'basic',
+		name:'clubs',
 		connect:true,
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			KaguraMea: ['female', 'qun', 4, ['luecai', 'xiaoyan']],
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
-			Siro: ['female', 'dotlive', 4, ['zhongxinghezou']],
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
+			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
+			
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
+			/**茜科塞尔 */
+			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
 		},
 		characterIntro:{
 			KaguraMea: '',
@@ -28,6 +31,88 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
 		},
 		skill:{
+			//Yomemi
+			mokuai:{
+				mod:{
+					selectTarget:function(card,player,range){
+						if(get.name(card)=='sha')
+							return range[1]=Math.floor(player.countCards('e'))||1;
+					},
+				},
+				forced:true,
+				priority:220,
+				trigger:{player:'recoverBegin'},
+				filter:function(event,player){
+						return true;
+				},
+				content:function(){
+					console.log('OK')
+					trigger.num = player.countCards('e')||1;
+				},
+			},
+			yaoji:{
+				enable:"phaseUse", 
+				usable:1,
+				filter:function(event,player){
+					return player.countCards('he')>0
+				},
+				filterCard:function(card){
+					return true;
+				},
+				selectCard:[1,Infinity],
+				position:'he',
+				filterTarget:function(card,player,target){
+					return target!=player;
+				},
+				selectTarget:function(){
+					var player = _status.event.player;
+					var min = 1;
+					var max = Math.floor(player.countCards('e'))||1;
+					return [min,max];
+				},
+				discard:true,
+				multitarget:false,
+				targetprompt:[],
+				content:function(){
+					'step 0'
+					_status.event.target = target;
+					var type = [];
+					for(var i=0;i<cards.length;i++){
+						type.add(get.type(cards[i],'trick',cards[i].original=='h'?player:false));
+					}
+					var num = type.length;
+					var cards = get.cards(num);
+					player.showCards(cards,'致命药剂亮出牌堆');
+					var suits = [];
+					for(var i=0;i<cards.length;i++){
+						suits.push(get.suit(cards[i]));
+					}
+					_status.event.suits = suits;
+					_status.event.time = 0;
+					'step 1'
+			//		var time = _status.event.time;
+					game.broadcastAll(function(target, suits){
+						console.log(suits);
+						var next=target.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", target, 'he');
+						next.set('selectButton',suits.length);
+						next.set('filterButton',function(card){
+							if(ui.selected.buttons.length){
+								console.log(ui.selected.buttons);
+								return get.suit(card) == suits[ui.selected.buttons.length];
+							}
+							else{
+								return get.suit(card) == suits[0];
+							}
+						});
+						next.set('forced',false);
+					}, _status.event.target, _status.event.suits);
+			//		_status.event.time++;
+					'step 2'
+					if(!result.cards||result.cards.length<_status.event.suits.length){
+						event.target.damage('player',1);
+					}
+				},
+			},
 			//猫宫
 			yuchong:{
 				group:['yuchong_unbeDis','yuchong_unRes'],
@@ -559,92 +644,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
-			zhongxinghezou: {
-				init: function(player) {
-					if (!player.storage.zhongxinghezou) {
-						player.storage.zhongxinghezou = [];
-					}
-				},
-				trigger: {
-					player:'useCard2'
-				},
-				usable: 1,
-				filter:function(event,player){
-					if (!(get.itemtype(event.cards) == 'cards')) return false
-					// if (event.getParent().triggeredTargets3.length > 1) return false;
-					return true;
-				},
-				content: function() {
-					'step 0'
-					event.ctargets = trigger.targets;
-					player.chooseTarget(get.prompt2('zhongxinghezou'),function(card,player,target){
-						return !_status.event.targets.contains(target) && target.countCards('h');
-					}).set('ai',function(target){
-						return 2-get.attitude(_status.event.player,target);
-					}).set('targets',trigger.targets);
-					'step 1'
-					if (result.bool) {
-						event.starget = result.targets[0];
-						event.starget.chooseCard(true, 'h');
-					}
-					else {
-						event.finish();
-					}
-					'step 2'
-					if (result.bool && result.cards.length) {
-						event.starget.showCards(result.cards);
-						event.card = result.cards[0];
-						var num = get.number(event.card) + get.number(trigger.card);
-						if (num < 12) {
-							// trigger.targets.length=0;
-							// trigger.getParent().triggeredTargets2.length=0;
-							player.gain(result.cards,event.starget,'give');
-							trigger.cancel();
-						}
-						if (num >= 12) {
-							player.storage.zhongxinghezou.push({
-								source: trigger.card.cardid,
-								user:event.starget,
-								card: event.card,
-								targets: event.ctargets,
-							});
-						}
-						if (num == 12) {
-							player.draw();
-							event.starget.recover();
-						}
-					}
-					else {
-						event.finish();
-					}
-				},
-				group: ['zhongxinghezou_use'],
-				subSkill: {
-					use: {
-						forced: true,
-						trigger: {
-							player: 'useCardAfter',
-						},
-						filter: function(event, player) {
-							if (!event.card.isCard) return false;
-							if (!player.storage.zhongxinghezou.length) return false;
-							return true;
-						},
-						content: function() {
-							player.storage.zhongxinghezou.forEach(function(item) {
-								if (item.source == trigger.card.cardid) {
-									item.targets.forEach(function(tar) {
-										if (item.user.canUse(item.card,tar)) {
-											item.user.useCard(item.card, tar);
-										}
-									})
-									player.storage.zhongxinghezou.remove(item);
-								}
-							})
-						}
-					},
-				}
-			},
 
 			maoliang: {
 				mark:true,
@@ -1141,8 +1140,190 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 				},
 			},
+			shuangshoujiaoying:{
+				trigger:{player:'shaBegin'},
+				content:function(){
+					'step 0'
+					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
+					'step 1'
+					event.replayers=[];
+					if(result.bool){
+						event.chooseBool=true;
+						event.replayers=trigger.targets;
+					}
+					else{
+						event.chooseBool=false;
+						event.replayers.add(player);
+					}
+					'step 2'
+					if(event.replayers.length>0){
+						event.replayer=event.replayers[0];
+						event.cards=event.replayer.getCards('h');
+						event.replayer.showHandcards();
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					event.recards=[];
+					if(event.cards&&event.cards.length>0){
+						if(player.storage.anyingxuemai){
+							for( i of event.cards){
+								if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
+									event.recards.add(i);
+								}
+							}
+						}
+						else{
+							for( i of event.cards){
+								if(i.name=='shan'){
+									event.recards.add(i);
+								}
+							}
+						}
+					}
+					if(event.recards.length>0){
+						event.replayer.lose(event.recards, ui.discardPile);
+						event.replayer.$throw(event.recards);
+						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
+						event.replayer.draw(event.recards.length);
+					}
+					'step 4'
+					if(event.recards.length>0){
+						if(event.replayers.contains(event.replayer)&&event.chooseBool){
+							player.draw(1);
+						}
+						if(player==event.replayer){
+							player.getStat().card.sha--;
+						}
+					}
+					event.replayers.shift();
+					if(event.replayers.length>0){
+						event.goto(1)
+					}
+				}
+			},
+			shuangshoujiaoying_gai:{
+				trigger:{player:'shaBegin'},
+				content:function(){
+					'step 0'
+					player.chooseBool('【确定】展示对方手牌，【取消】展示自己手牌');
+					'step 1'
+					event.replayers=[];
+					if(result.bool){
+						event.chooseBool=true;
+						event.replayers=trigger.targets;
+					}
+					else{
+						event.chooseBool=false;
+						event.replayers.add(player);
+					}
+					'step 2'
+					if(event.replayers.length>0){
+						event.replayer=event.replayers[0];
+						event.cards=event.replayer.getCards('h');
+						event.replayer.showHandcards();
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					event.recards=[];
+					if(event.cards&&event.cards.length>0){
+						for( i of event.cards){
+							if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
+								event.recards.add(i);
+							}
+						}
+					}
+					if(event.recards.length>0){
+						event.replayer.lose(event.recards, ui.discardPile);
+						event.replayer.$throw(event.recards);
+						game.log(event.replayer, '将', event.recards, '置入了弃牌堆');
+						event.replayer.draw(event.recards.length);
+					}
+					'step 4'
+					if(event.recards.length>0){
+						if(event.replayers.contains(event.replayer)&&event.chooseBool){
+							player.draw(1);
+						}
+						if(player==event.replayer){
+							player.getStat().card.sha--;
+						}
+					}
+					event.replayers.shift();
+					if(event.replayers.length>0){
+						event.goto(1)
+					}
+				}
+			},
+			anyingxuemai:{
+				trigger:{
+					player:"dying",
+				},
+				skillAnimation:true,
+				animationColor:'metal',
+				audio:2,
+				unique:true,
+				limited:true,
+				// enable:'chooseToUse',
+				//viewAs:{name:'tao'},
+				init:function(player){
+					player.storage.anyingxuemai=false;
+				},
+				mark:true,
+				filter:function(event,player){
+					//console.log(event,player);
+					if(event.name!='dying') return false;
+					//if(player!=event.dying) return false;
+					if(player.storage.anyingxuemai) return false;
+					if(player.countCards('h')==0) return false;
+					return true;
+				},
+				content:function(){
+					"step 0"
+					player.awakenSkill('anyingxuemai');
+					player.showHandcards();
+					var handcards=player.getCards('h');
+					var suitlist=[0,0,0,0];
+					for(i of handcards){
+						if(get.suit(i)=='spade'){
+							suitlist[0]++;
+						}
+						if(get.suit(i)=='heart'){
+							suitlist[1]++;
+						}
+						if(get.suit(i)=='diamond'){
+							suitlist[2]++;
+						}
+						if(get.suit(i)=='club'){
+							suitlist[3]++;
+						}
+					}
+					suitlist.sort();
+					var recoverHp=0;
+					for(i of suitlist){
+						if(i!=0){
+							recoverHp=i;
+							break;
+						}
+					}
+					player.recover(recoverHp);
+					"step 1"
+					player.storage.anyingxuemai=true;
+					player.removeSkill('shuangshoujiaoying');
+					player.addSkill('shuangshoujiaoying_gai');
+				},
+			}
 		},
 		translate:{
+			Yomemi:'ヨメミ',
+			mokuai:'模块搭载',
+			mokuai_info:'<font color=#f00>锁定技</font> 你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
+			yaoji:'致命药剂',
+			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张牌，然后亮出牌堆顶等于其类型数的牌。目标角色需依次选择：弃置与这些亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
@@ -1172,10 +1353,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
 			xinluezhili_info: '<font color=#ff4>主公技</font> 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
-
-			Siro: '电脑少女小白',
-			zhongxinghezou: '众星合奏',
-			zhongxinghezou_info: '每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12，你获得亮出牌令你使用的牌无效；不小于12，你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12，你获得亮出牌并令亮出牌的角色回复1点体力。',
 
 			HanazonoSerena: '花園セレナ',
 			maoliang: '猫粮',
@@ -1207,6 +1384,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shushi_info: '你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）',
 			zengzhi: '增殖',
 			zengzhi_info: '当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。',
+			
+			Qiankesaier:'茜科塞尔',
+			Qiankesaier_info:'茜科塞尔',
+			shuangshoujiaoying:'双首角鹰',
+			shuangshoujiaoying_gai:'双首角鹰',
+			shuangshoujiaoying_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
+			shuangshoujiaoying_gai_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
+			anyingxuemai:'暗影血脉',
+			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将“双首角鹰”的“【闪】”改为“红色牌”。',
 		},
 	};
 });
