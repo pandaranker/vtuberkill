@@ -1125,7 +1125,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardAfter'},
 				priority:41,
 				filter:function(event,player){
-					if(!player.isPhaseUsing())			return false;
+					if(!player.isPhaseUsing())												return false;
+					if(get.name(event.card)=='jiedao'||get.name(event.card)=='shengdong')	return false;
 					return event.card.isCard&&get.type(event.card)=='trick';
 				},
 				content:function(){

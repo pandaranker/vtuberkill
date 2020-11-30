@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**家长麦 */
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
-			MitoTsukino:['female','nijisanji',3,['mark_bingdielei'],['zhu']],
+			MitoTsukino:['female','nijisanji',3,['mark2_bingdielei'],['zhu']],
 			/**宇志海莓 */
 			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
 			/**铃鹿诗子 */
@@ -1264,6 +1264,47 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			
+			mark2_bingdielei:{
+                group:'mark2_bingdielei_damageBy',
+				subSkill:{
+					damageBy:{
+						trigger:{player:'damageBegin4',global:'dying'},
+						priority:99,
+						filter:function(event,player){
+							if(_status.event.getParent('phase').skill)	return false;
+							if(event.name=='damage'&&player==event.player)	return true;
+							return event.getParent()&&event.getParent().source == player;
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							player.markSkill(event.name);
+							player.logSkill(event.name);
+							player.addTempSkill('mark2_bingdielei_anotherPhase');
+						},
+					},
+					anotherPhase:{
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						silent:true,
+						forced:true,
+						intro: {
+							content:'当前回合结束后获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						content:function(){
+							player.markSkill(event.name);
+							game.delayx();
+							player.logSkill(event.name);
+							player.insertPhase();
+						},
+					},
+				},
+			},
+
 			quanxinquanyi:{
 				group:['quanxinquanyi_begin','quanxinquanyi_playeLosecard'],
 				subSkill:{
@@ -1515,7 +1556,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						marktext: '并',
 						mark:true,
 						forced:true,
-						//prompt:'是否发动'+get.translate('mark_bingdielei')+',获得一个额外的回合',
 						intro: {
 							content:'当前回合结束后获得一个额外回合',
 							name:'并蒂恶蕾',
@@ -2158,7 +2198,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiujinzhiling_info:'<font color=#ff4>主公技</font> <font color=#f66>锁定技</font> 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
 
 			mark_bingdielei: '并蒂恶蕾',
-            mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，获得一个额外回合。',
+			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，获得一个额外回合。',
+			
+			mark2_bingdielei: '并蒂恶蕾',
+            mark2_bingdielei_info:'你造成或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
 			
 			SuzukaUtako: '铃鹿诗子',
 			meici: '美词',

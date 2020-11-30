@@ -48852,6 +48852,12 @@
 		},
 		number:function(card,player){
 			//啥时候狗卡出相关技能我再完善
+			if(get.itemtype(player)=='player'||(player!==false&&get.position(card)=='h')){
+				var owner=player||get.owner(card);
+				if(owner){
+					return game.checkMod(card,card.number,'number',owner);
+				}
+			}
 			return card.number;
 		},
 		nature:function(card,player){

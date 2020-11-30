@@ -62,6 +62,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_LizeHelesta:['female','nijisanji',4,['yubing']],
 			/**ReYuNi */
 			re_YuNi:['female','upd8',4,['re_shengcai']],
+			/**Re兔鞠 */
+			re_TomariMari:['male','upd8',3,['liansheng','ruantang']],
         },
         characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
@@ -395,6 +397,65 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw(stats);
 				},
 			},
+			//reMari
+			liansheng:{
+				trigger:{player:'changeHp'},
+				forced:true,
+				silent:true,
+				firstDo:true,
+				content:function(){
+					if(player.hp==player.maxHp&&player.sex=='female'){
+						player.sex = 'male';
+						player.markSkill('liansheng');
+						game.log(player,'将性别变更为','#g'+get.translation(player.sex));
+						if(_status.currentPhase.sex=='female')	player.draw();
+					}
+					if(player.hp<player.maxHp&&player.sex=='male'){
+						player.sex = 'female';
+						player.markSkill('liansheng');
+						game.log(player,'将性别变更为','#g'+get.translation(player.sex));
+						if(_status.currentPhase.sex=='female')	player.draw();
+					}
+				},
+				mark:true,
+				intro:{
+					content:function(storage,player){
+						if(player.sex=='unknown') return '当前性别未确定';
+						return '当前性别：'+get.translation(player.sex);
+					},
+				},
+			},
+			ruantang:{
+				trigger:{player:'phaseJudgeBefore'},
+				direct:true,
+				content:function(){
+					"step 0"
+					var check= player.countCards('h')>2;
+					player.chooseTarget(get.prompt('ruantang'),'（选择自己则表示不为其他人回复体力）',function(card,player,target){
+						return target==player||target.sex!=player.sex;
+					}).set('check',check);
+					"step 1"
+					if(result.bool){
+						event.target = result.targets[0];
+						var target = result.targets[0];
+						if(target!=player){
+							player.logSkill('ruantang',target);
+							if(target.hp<target.maxHp)	event.recover1 = 1;
+								target.recover();
+						}
+						if(player.hp<player.maxHp)	event.recover2 = 1;
+							player.recover();
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(event.recover1&&event.target.hp==event.target.maxHp)	event.target.draw();
+					if(event.recover2&&player.hp==player.maxHp)	player.draw();
+					"step 3"
+					trigger.cancel();
+					player.skip('phaseDraw');
+				},
+			},
 			//re狗妈
 			re_DDzhanshou:{
 				trigger:{global:'phaseEnd'},
@@ -615,18 +676,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player: 'useCardToPlayered',
 				},
 				filter: function(event, player) {
+					var num;
+					event.targets.forEach(function(tar){
+						num+=tar.countCards('ej');
+					})
 					return event.name == 'useCardToPlayered' 
-						&& event.targets.length == 1
-                        && event.targets[0].countCards('ej')
+						&& event.targets.length
+                        && num
                         && get.color(event.card)=='black';
 					
 				},
 				content: function() {
+					'step 1'
+					game.broadcastAll(function(player,targets){
+						player.chooseTarget('选择目标',function(card,player,target){
+							return targets.contains(target);
+						}).set('targets',targets);
+					},player,trigger.targets)
 					'step 0'
-					event.A = trigger.targets[0];
+					event.A = result.targets[0];
 					event.B = event.A.next;
-					if (!event.A.countCards('ej')) event.finish();
-					player.choosePlayerCard('ej', event.A);
+					if (!event.A.countCards('hej')) event.finish();
+					player.choosePlayerCard('hej', event.A);
 					'step 1'
 					if (result.bool) {
 						var card = result.links[0];
@@ -708,7 +779,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player: ['loseAfter', 'damageAfter'],
 				},
 				filter: function(event, player) {
-					return event.name=='damage' || (event.name='lose'&&event.cards.length > 2);
+					if(event.name=='damage')	return true;
+					var unB = event.cards.filter(function(card){
+						return get.type(card)!='basic';
+					})
+					return player!=_status.currentPhase&&event.name=='lose'&&unB.length;
 				},
 				priority:98,
 				content: function() {
@@ -1115,19 +1190,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
                 content:function(){
 					'step 0'
-					event.card = target.draw()[0];
+					target.draw();
 					'step 1'
-                    if(event.cardUsable){
-                        var bool=game.hasPlayer(function(current){
-                            return target.canUse(event.card,current);
-                        });
-                        if(!bool){
-                            event.cardUsable=false;
-                        }
-                    }
-                    if(event.cardUsable){
-                        target.chooseUseTarget(event.card,'可选择一个目标直接使用该牌');
-                    }
+					event.card = result[0];
+                    if(target.hasUseTarget(event.card)){
+						target.chooseUseTarget(event.card,'可选择一个目标直接使用该牌');
+					}
                 }
 			},
 			//re星姐
@@ -1264,13 +1332,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     return game.hasPlayer(function(cur){
 						if(player.storage.huxiGroup==null) return true;
 						return !player.storage.huxiGroup.contains(cur)&&cur!=player;
-					})&&!event.getParent().skill&&!event.getParent(2).skill;
+					})&&event.getParent().skill!='re_huxi1'&&event.getParent(2).skill!='re_huxi1'&&event.getParent(3).skill!='re_huxi1';
                 },
                 content:function(){
 					"step 0"
 					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
 					next.set('filterTarget',function(card,player,target){
-							return target!=player&&!target.hasSkill('re_huxi1_target')&&player.countCards('h')&&target.countCards('h');
+							return target!=player&&!player.storage.huxiGroup.contains(target)&&player.countCards('h')&&target.countCards('h');
 						},)
 					"step 1"
 					if(result.bool){
@@ -1740,6 +1808,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_shengcai: '声彩',
 			re_shengcai_info: '当你使用一张牌后，若与本回合之前使用的过的牌颜色均不同，你可以摸X张牌。（X为本回合之前使用过的牌数）',
 			
+			re_TomariMari: '新·兎鞠まり',
+			liansheng: '恋声',
+			liansheng_info: '<font color=#f66>锁定技</font> 你未受伤时性别为男；受伤时性别为女。你的性别变化时，若当前回合角色为女性，你摸一张牌。',
+			ruantang: '软糖',
+			ruantang_info: '你可以跳过判定阶段和摸牌阶段，令一名异性角色与你各回复1点体力，然后体力因此回复至上限的角色摸一张牌。',
+
 			re_KaguyaLuna: '新·辉夜月',
 			re_jiajiupaidui: '假酒派对',
 			re_jiajiupaidui_info: '每回合限一次，当你需要使用【酒】时，你可以令一名角色弃一张牌，若为♠或点数9，视为你使用之。',
@@ -1783,7 +1857,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_shuangren: '双刃',
 			re_shuangren_info: '你的黑色【杀】可以额外指定一名角色为目标；你的红色【杀】无距离与次数限制。',
 			re_jitui: '急退',
-			re_jitui_info: '当你受到伤害后或一次性失去了两张以上的牌后，你可以摸一张牌。',
+			re_jitui_info: '当你受到伤害后或在回合外失去非基本牌后，你可以摸一张牌。',
 			
             re_MononobeAlice:'新·物述有栖',
 			re_dianmingguzhen:'电鸣鼓震',
@@ -1836,7 +1910,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiangyun: '强运',
 			qiangyun_info: '你的判定牌生效前，你可以打出一张牌代替之，然后你可以立即使用打出牌，且若之造成伤害，你摸一张牌。',
 			tuquan: '兔拳',
-			tuquan_info: '锁定技。你的【杀】被【闪】抵消时，你进行判定，若为♠，你弃置目标一张牌，若为♥，你弃置一张牌。',
+			tuquan_info: '<font color=#f66>锁定技</font> 你的【杀】被【闪】抵消时，你进行判定，若为♠，你弃置目标一张牌，若为♥，你弃置一张牌。',
 			
 
 			re_XiaoxiXiaotao: '新·小希小桃',

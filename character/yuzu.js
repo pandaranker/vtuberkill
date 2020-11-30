@@ -5,7 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
 		connect:true,
-		connectBanned:['sp_MinatoAqua', 'sp_MononobeAlice'],
+//		connectBanned:['sp_MinatoAqua', 'sp_MononobeAlice'],
 		character:{
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -17,6 +17,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
 			Doris:['female','holo',3,['shenhai','paomo']],
 
+			TomoeShirayuki:['female','nijisanji',4,['gonggan','yeyu']],
 //			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
@@ -91,7 +92,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							['spade', '', 'spade', 'spade', 'div2']
 						];
 						game.broadcastAll(function(id, suitlist){
-							var dialog=ui.create.dialog('天堂之扉 声明');
+							var dialog=ui.create.dialog('天扉 声明');
 							dialog.addText('花色');
 							dialog.add([suitlist, 'vcard']);
 							dialog.videoId = id;
@@ -450,7 +451,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//oto
 			xiaogui:{
-				init:function(player,skill){
+	/*			init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				locked:true,
@@ -459,7 +460,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro: {
 					content: 'cards',
 					name:'以『玉匣』使用过的锦囊牌',
-				},
+				},*/
 				enable:'phaseUse',
 				filter:function(event,player){
 					return player.countCards('he')>2;
@@ -494,9 +495,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if (result.bool){
 						var card = result.links[0];
 						player.chooseUseTarget({name:card[2]},true);
-						player.storage.xiaogui.add(game.createCard(card[2]));
+		/*				player.storage.xiaogui.add(game.createCard(card[2]));
 						player.syncStorage('xiaogui');
-						player.markSkill('xiaogui');
+						player.markSkill('xiaogui');*/
 					}
 					'step 4'
 					game.broadcastAll(function(player){
@@ -541,12 +542,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 6-get.value(card);
 						},
 						prompt:'将三张牌当【无懈可击】使用',
-						onuse:function(result,player){
+		/*				onuse:function(result,player){
 							player.storage.xiaogui_wuxie = false;
 							player.storage.xiaogui.add(game.createCard({name:'wuxie'}));
 							player.syncStorage('xiaogui');
 							player.markSkill('xiaogui');
-						},
+						},*/
 					},
 		/*			jinchan:{
 						init:function(player,skill){
@@ -589,7 +590,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							content: 'cards',
 							name:'以『连崛』使用过的锦囊牌',
 						},
-						trigger:{global:'phaseBefore'},
+						trigger:{player:'phaseBefore'},
 						firstDo:true,
 						forced:true,
 						silent:true,
@@ -603,7 +604,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					end:{
-						trigger:{global:'phaseEnd'},
+						trigger:{player:'phaseEnd'},
 						priority:66,
 						filter:function(event,player){
 							return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian-player.countCards('h'))%3==0);
@@ -637,11 +638,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 												if(get.name(his)==name) reapeat ++;
 											});
 										}
-										if(player.storage.xiaogui.length){
+								/*		if(player.storage.xiaogui.length){
 											player.storage.xiaogui.forEach(function(his){	
 												if(get.name(his)==name) reapeat ++;
 											});
-										}
+										}*/
 										if(reapeat||name=='wuxie'||name=='jinchan') continue;
 										else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 									}
@@ -1253,7 +1254,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.shenhai.add(get.type(trigger.card));
 					if(!event.isMine()) game.delayx();
 					event.targets=result.targets;
-					console.log('OK');
 					'step 3'
 					if(event.targets){
 						player.logSkill('shenhai',event.targets);
@@ -1363,6 +1363,376 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
+			//tmsk
+			gonggan:{
+				trigger:{global:'phaseBegin'},
+				priority:23,
+				popup:false,
+				filter:function(event,player){
+					return event.player!=player&&player.countCards('h')>0;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard('h');
+					'step 1'
+					if(result.bool){
+						player.logSkill('gonggan', trigger.player);
+						event.card = result.cards[0];
+						player.showHandcards('『奇癖共感』展示手牌');
+						game.delay(1);
+					}else{
+						event.finish();
+					}
+					'step 2'
+					var suitlist = [
+						['heart', '', 'heart', 'heart', 'div2'],
+						['diamond', '', 'diamond', 'diamond', 'div2'],
+						['club', '', 'club', 'club', 'div2'],
+						['spade', '', 'spade', 'spade', 'div2']
+					];
+					game.broadcastAll(function(id, suitlist){
+						var dialog=ui.create.dialog('奇癖共感 声明');
+						dialog.addText('花色');
+						dialog.add([suitlist, 'vcard']);
+						dialog.videoId = id;
+					}, event.videoId, suitlist);
+					'step 3'
+					var next = trigger.player.chooseButton(1 ,true);
+					next.set('dialog',event.videoId);
+					'step 4'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+						player.storage.gonggan = result.links[0][2];
+						game.log(trigger.player,'猜测为',player.storage.gonggan)
+					}else{
+						event.finish();
+					}
+					'step 5'
+					if(player.storage.gonggan==get.suit(event.card)){
+						trigger.player.gain(event.card,player,'giveAuto');
+						var suit = 'gonggan_'+get.suit(event.card);
+						player.addTempSkill('gonggan_num'+get.number(event.card));
+						player.addTempSkill(suit);
+					}else{
+						player.addTempSkill('gonggan_num12');
+					}
+				},
+				subSkill:{
+					heart:{
+						marktext:'♥',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为♥',
+						},
+						mod:{
+							suit:function(card,suit){
+								if(suit!='heart') return 'heart';
+							},
+						}
+					},
+					spade:{
+						marktext:'♠',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为♠',
+						},
+						mod:{
+							suit:function(card,suit){
+								if(suit!='spade') return 'spade';
+							},
+						}
+					},
+					diamond:{
+						marktext:'♦',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为♦',
+						},
+						mod:{
+							suit:function(card,suit){
+								if(suit!='diamond') return 'diamond';
+							},
+						}
+					},
+					club:{
+						marktext:'♣',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为♣',
+						},
+						mod:{
+							suit:function(card,suit){
+								if(suit!='club') return 'club';
+							},
+						}
+					},
+					num1:{
+						marktext:'1',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为1',
+						},
+						mod:{
+							number:function(card,number){
+								return number=1;
+							},
+						},
+					},
+					num2:{
+						marktext:'2',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为2',
+						},
+						mod:{
+							number:function(card,number){
+								return number=2;
+							},
+						},
+					},
+					num3:{
+						marktext:'3',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为3',
+						},
+						mod:{
+							number:function(card,number){
+								return number=3;
+							},
+						},
+					},
+					num4:{
+						marktext:'4',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为4',
+						},
+						mod:{
+							number:function(card,number){
+								return number=4;
+							},
+						},
+					},
+					num5:{
+						marktext:'5',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为5',
+						},
+						mod:{
+							number:function(card,number){
+								return number=5;
+							},
+						},
+					},
+					num6:{
+						marktext:'6',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为6',
+						},
+						mod:{
+							number:function(card,number){
+								return number=6;
+							},
+						},
+					},
+					num7:{
+						marktext:'7',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为7',
+						},
+						mod:{
+							number:function(card,number){
+								return number=7;
+							},
+						},
+					},
+					num8:{
+						marktext:'8',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为8',
+						},
+						mod:{
+							number:function(card,number){
+								return number=8;
+							},
+						},
+					},
+					num9:{
+						marktext:'9',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为9',
+						},
+						mod:{
+							number:function(card,number){
+								return number=9;
+							},
+						},
+					},
+					num10:{
+						marktext:'10',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为10',
+						},
+						mod:{
+							number:function(card,number){
+								return number=10;
+							},
+						},
+					},
+					num11:{
+						marktext:'J',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为J',
+						},
+						mod:{
+							number:function(card,number){
+								return number=11;
+							},
+						},
+					},
+					num12:{
+						marktext:'Q',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为Q',
+						},
+						mod:{
+							number:function(card,number){
+								return number=12;
+							},
+						},
+					},
+					num13:{
+						marktext:'K',
+						mark:true,
+						locked:true,
+						intro:{
+							name:'奇癖共感',
+							content:'手牌视为K',
+						},
+						mod:{
+							number:function(card,number){
+								return number=13;
+							},
+						},
+					},
+				},
+			},
+			yeyu:{
+				group:['yeyu_sha','yeyu_trick'],
+				subSkill:{
+					sha:{
+						trigger:{global:'useCard2'},
+						priority:23,
+						popup:false,
+						filter:function(event,player){
+							if(event.player==player||get.name(event.card)!='sha')	return false;
+							return (get.name(event.card)=='sha');
+						},
+						prompt2:'你可以重弃置一张点数大于此【杀】的牌取消之',
+						content:function(){
+							'step 0'
+							var next=player.chooseToDiscard('he','弃置一张点数大于此【杀】的牌取消之');
+							next.set('filterCard',function(card,player){
+								return get.number(card,player)>_status.event.num;
+							});
+							next.set('num',get.number(trigger.card))
+							'step 1'
+							if(result.bool){
+								player.logSkill('yeyu',trigger.player);
+								trigger.cancel();
+							}
+						},
+					},
+					trick:{
+						trigger:{global:'useCard2'},
+						priority:23,
+						popup:false,
+						filter:function(event,player){
+							if(event.player==player||get.type(event.card)!='trick')	return false;
+							return (get.type(event.card)=='trick');
+						},
+						prompt2:'你可以重铸一张梅花牌为之增加或减少一名目标',
+						content:function(){
+							'step 0'
+							var next=player.chooseCard('he','重铸一张梅花牌');
+							next.set('filterCard',function(card,player){
+								return get.suit(card,player)=='club';
+							});
+							'step 1'
+							if(result.bool){
+								console.log(trigger.targets);
+								player.logSkill('yeyu');
+								player.lose(result.cards, ui.discardPile);
+								player.$throw(result.cards);
+								game.log(player, '将', result.cards, '置入了弃牌堆');
+								player.draw();
+								var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
+								game.broadcastAll(function(player,trigger,prompt2){
+									player.chooseTarget(get.prompt('yeyu'),function(card,player,target){
+										var player=_status.event.player;
+										if(_status.event.targets.contains(target)) return true;
+										return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
+									}).set('prompt2',prompt2).set('targets',trigger.targets).set('card',trigger.card);
+								}, player, trigger, prompt2);
+								event.goto(2);
+							}else{
+								event.finish();
+							}
+							'step 2'
+							if(!event.isMine()) game.delayx();
+							event.targets=result.targets;
+							'step 3'
+							if(event.targets){
+								player.logSkill('yeyu',event.targets);
+								if(trigger.targets.contains(event.targets[0]))	trigger.targets.removeArray(event.targets);
+								else trigger.targets.addArray(event.targets);
+							}
+							event.finish();
+						},
+					},
+				},
+			},
 			//花那
 			huawen:{
 				enable:'phaseEnd',
@@ -1374,7 +1744,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return target!=player&&target.countCards('h')>0&&target.sex == 'female';
 				},
 				content:function(){
-
 				},
 			},
 
@@ -2066,7 +2435,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiaogui: '玉匣',
 			xiaogui_info: '你可以将三张牌当作一张通常锦囊牌使用。然后，你可以将这些牌以任意顺序置于牌堆顶。',
 			qiepian: '连崛',
-			qiepian_info: '一个回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此也未以『玉匣』使用过的通常锦囊牌。',
+			qiepian_info: '回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',
 			changxiang: '长箱',
 			changxiang_info: '<font color=#ff4>主公技</font> 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
 
@@ -2104,6 +2473,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huawen_info: '出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。',
 			liaohu: '逃杀疗护',
 			liaohu_info: '：你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
+
+			TomoeShirayuki:'白雪巴',
+			gonggan: '奇癖共感',
+			gonggan_info: '其他角色的回合开始时，你可以展示所有手牌然后扣置其中一张，令当前回合角色猜测此牌花色，若猜对，其获得此牌，且本回合你手牌花色、点数均视为与此牌相同；若猜错，你收回此牌，且本回合你手牌点数均视为Q。',
+			yeyu: '夜域女王',
+			yeyu_info: '其他角色使用【杀】时，你可以弃置一张点数大于此【杀】的牌取消之。其他角色使用通常锦囊牌时，你可以重铸一张梅花牌为之增加或减少一名目标。',
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
