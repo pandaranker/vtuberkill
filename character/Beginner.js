@@ -431,7 +431,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					var check= player.countCards('h')>2;
-					player.chooseTarget(get.prompt('ruantang'),'（选择自己则表示不为其他人回复体力）',function(card,player,target){
+					player.chooseTarget(get.prompt('ruantang'),'令至多一名异性角色与自己各回复一点体力（选择自己则表示仅为自己回复体力）',function(card,player,target){
 						return target==player||target.sex!=player.sex;
 					}).set('check',check);
 					"step 1"
@@ -1812,7 +1812,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liansheng: '恋声',
 			liansheng_info: '<font color=#f66>锁定技</font> 你未受伤时性别为男；受伤时性别为女。你的性别变化时，若当前回合角色为女性，你摸一张牌。',
 			ruantang: '软糖',
-			ruantang_info: '你可以跳过判定阶段和摸牌阶段，令一名异性角色与你各回复1点体力，然后体力因此回复至上限的角色摸一张牌。',
+			ruantang_info: '你可以跳过判定阶段和摸牌阶段，令至多一名异性角色与你各回复1点体力，然后体力因此回复至上限的角色摸一张牌。',
 
 			re_KaguyaLuna: '新·辉夜月',
 			re_jiajiupaidui: '假酒派对',
