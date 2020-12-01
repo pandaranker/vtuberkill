@@ -1067,16 +1067,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							'step 1'
 							if(result.bool){
-								console.log(trigger.targets);
 								player.logSkill('yeyu');
 								player.lose(result.cards, ui.discardPile);
 								player.$throw(result.cards);
 								game.log(player, '将', result.cards, '置入了弃牌堆');
 								player.draw();
+								_status.event.player = trigger.player;
 								var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
 								game.broadcastAll(function(player,trigger,prompt2){
 									player.chooseTarget(get.prompt('yeyu'),function(card,player,target){
-										var player=_status.event.player;
+										var player = _status.event.player;
 										if(_status.event.targets.contains(target)) return true;
 										return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
 									}).set('prompt2',prompt2).set('targets',trigger.targets).set('card',trigger.card);
