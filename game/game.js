@@ -48852,6 +48852,7 @@
 		},
 		number:function(card,player){
 			//啥时候狗卡出相关技能我再完善
+			//已修改
 			if(get.itemtype(player)=='player'||(player!==false&&get.position(card)=='h')){
 				var owner=player||get.owner(card);
 				if(owner){

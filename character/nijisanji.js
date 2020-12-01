@@ -2201,7 +2201,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，获得一个额外回合。',
 			
 			mark2_bingdielei: '并蒂恶蕾',
-            mark2_bingdielei_info:'你造成或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
+            mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
 			
 			SuzukaUtako: '铃鹿诗子',
 			meici: '美词',

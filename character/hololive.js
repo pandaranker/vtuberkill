@@ -2515,7 +2515,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return list.randomGet();
 					});
 					'step 1'
-					player.chooseUseTarget('###视为使用一张没有距离限制的【顺手牵羊】',{name:'shunshou'},true,'nodistance');
+					player.chooseUseTarget('###『影掠』###视为使用一张没有距离限制的【顺手牵羊】',{name:'shunshou'},true,'nodistance');
 				},
 				mod:{
 					selectTarget:function(card,player,range){

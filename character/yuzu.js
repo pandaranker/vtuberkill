@@ -5,7 +5,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"yuzu",
 		connect:true,
-//		connectBanned:['sp_MinatoAqua', 'sp_MononobeAlice'],
 		character:{
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -13,7 +12,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
 
 			TomoeShirayuki:['female','nijisanji',4,['gonggan','yeyu']],
-//			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
+			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 
 		},
 		characterSort:{
@@ -83,7 +82,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							['spade', '', 'spade', 'spade', 'div2']
 						];
 						game.broadcastAll(function(id, suitlist){
-							var dialog=ui.create.dialog('天扉 声明');
+							var dialog=ui.create.dialog('『天扉』声明');
 							dialog.addText('花色');
 							dialog.add([suitlist, 'vcard']);
 							dialog.videoId = id;
@@ -366,11 +365,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			guanzhai:{
 				trigger:{global:['phaseEnd']},
 				priority:997,
+				prompt2:function(event,player){
+					var target = event.player;
+					return '可以观看其手牌，并获得其中至多'+(target.hasSkill('zhai')?target.countMark('zhai')+1:1)+'张牌';
+				},
 				filter:function(event,player){
 					var history = event.player.getHistory('useCard');
 					var num = 0;
 					history.forEach(function(his){
-						num += his.cards.length;
+						num += his.card.length;
 					});
 					return event.player!=player&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
@@ -454,34 +457,34 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},*/
 				enable:'phaseUse',
 				filter:function(event,player){
-					return player.countCards('he')>2;
+					return player.countCards('he')>=3;
 				},
+				filterCard:true,
+				discard:false,
+				selectCard:3,
+				position:'he',
 				content:function(){
 					'step 0'
-					player.chooseCard(3,'he')
-					'step 1'
-					if(result.bool){
-						player.lose(result.cards,ui.ordering);
-						event.cards = result.cards;
-						event.videoId = lib.status.videoId++;
-						var list=[];
-						for(var i=0;i<lib.inpile.length;i++){
-							var name=lib.inpile[i];
-							var reapeat = 0;
-							if(reapeat||name=='wuxie'||name=='jinchan') continue;
-							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
-						}
-						game.broadcastAll(function(id, list){
-							var dialog=ui.create.dialog('使用一张锦囊牌',[list,'vcard']);
-							dialog.videoId = id;
-						}, event.videoId, list);
-					}else{
-						event.finish();
+	//				player.logSkill('xiaogui');
+					player.lose(cards,ui.ordering);
+					console.log(cards)
+					event.cards = cards;
+					event.videoId = lib.status.videoId++;
+					var list=[];
+					for(var i=0;i<lib.inpile.length;i++){
+						var name=lib.inpile[i];
+						var reapeat = 0;
+						if(reapeat||name=='wuxie'||name=='jinchan') continue;
+						else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 					}
-					'step 2'
+					game.broadcastAll(function(id, list){
+						var dialog=ui.create.dialog('使用一张锦囊牌',[list,'vcard']);
+						dialog.videoId = id;
+					}, event.videoId, list);
+					'step 1'
 					var next = player.chooseButton(1 ,true);
 					next.set('dialog',event.videoId);
-					'step 3'
+					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
 					if (result.bool){
 						var card = result.links[0];
@@ -490,13 +493,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.syncStorage('xiaogui');
 						player.markSkill('xiaogui');*/
 					}
-					'step 4'
-					game.broadcastAll(function(player){
-						player.chooseCardButton([0,3],true,event.cards,'『玉匣』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+					'step 3'
+					game.broadcastAll(function(player,cards){
+						player.chooseCardButton([0,3],true,cards,'『玉匣』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
 							return get.value(button.link);
 						});
-					}, player);
-					'step 5'
+					}, player, event.cards);
+					'step 4'
 					if(result.bool){
 						var list=result.links.slice(0);
 						if(list.length<3){
@@ -515,31 +518,68 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log(event.cards,'进入了弃牌堆')
 					}
 				},
-				group:['xiaogui_wuxie'],
+				group:['xiaogui_wuxie','xiaogui_after'],
 				subSkill:{
 					wuxie:{
-						init:function(player,skill){
+		/*				init:function(player,skill){
 							if(!player.storage[skill]) player.storage[skill] = true;
-						},
+						},*/
 						enable:'chooseToUse',
 						viewAs:{name:'wuxie'},
 						filterCard:true,
 						position:'he',
 						selectCard:3,
 						viewAsFilter:function(player){
-							return player.storage.xiaogui_wuxie&&player.countCards('he')>=3;
+							return player.countCards('he')>=3;
 						},
 						check:function(card){
 							return 6-get.value(card);
 						},
 						prompt:'将三张牌当【无懈可击】使用',
-		/*				onuse:function(result,player){
-							player.storage.xiaogui_wuxie = false;
+						onuse:function(result,player){
+		/*					player.storage.xiaogui_wuxie = false;
 							player.storage.xiaogui.add(game.createCard({name:'wuxie'}));
 							player.syncStorage('xiaogui');
-							player.markSkill('xiaogui');
-						},*/
+							player.markSkill('xiaogui');*/
+						},
 					},
+					after:{
+						trigger:{player:'useCardAfter'},
+						priority:66,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return event.card.name=='wuxie'&&event.cards.length==3&&event.skill=='xiaogui_wuxie';
+						},
+						content:function(){
+							'step 0'
+							event.cards = trigger.cards;
+							game.broadcastAll(function(player,cards){
+								player.chooseCardButton([0,3],true,cards,'『玉匣』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+									return get.value(button.link);
+								});
+							}, player, event.cards);
+							'step 1'
+							if(result.bool){
+								var list=result.links.slice(0);
+								if(list.length<3){
+									event.cards.removeArray(list);
+								}
+								while(list.length){
+									ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+								}
+								game.log(player,'将牌放在牌堆顶')
+								if(event.cards.length){
+									game.cardsDiscard(event.cards);
+									game.log(event.cards,'进入了弃牌堆')
+								}
+							}else{
+								game.cardsDiscard(event.cards);
+								game.log(event.cards,'进入了弃牌堆')
+							}
+						}
+					}
 		/*			jinchan:{
 						init:function(player,skill){
 							if(!player.storage[skill]) player.storage[skill] = true;
@@ -602,7 +642,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以此也未以『玉匣』使用过的通常锦囊牌'],function(){
+							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以此使用过的通常锦囊牌'],function(){
 								return 1;
 							});
 							'step 1'
@@ -638,7 +678,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 									}
 									game.broadcastAll(function(id, list){
-										var dialog=ui.create.dialog('使用一张未以此也未以『玉匣』使用过的通常锦囊牌',[list,'vcard']);
+										var dialog=ui.create.dialog('使用一张未以此使用过的通常锦囊牌',[list,'vcard']);
 										dialog.videoId = id;
 									}, event.videoId, list);
 									event.goto(3);
@@ -674,6 +714,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'dying'},
 				priority:66,
 				filter:function(event,player){
+					if(!player.hasZhuSkill('renjiazhizhu')) return false;
 					return event.player.hp<=0&&event.player!=player&&event.player.group==player.group&&player.countCards('he')>=player.hp;
 				},
 				content:function(){
@@ -1060,7 +1101,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//花那
 			huawen:{
-				enable:'phaseEnd',
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				enable:'phaseUse',
 				usable: 1,
 				filter:function(event,player){
 					return player.countCards('h')>0;
@@ -1069,6 +1113,117 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return target!=player&&target.countCards('h')>0&&target.sex == 'female';
 				},
 				content:function(){
+					'step 0'
+					player.storage.huawen.add(target);
+					event.list1 = player.getCards('h');
+					//player.showCards(event.list1,'『花吻交染』展示手牌');
+					game.delay(1);
+					event.list2 = target.getCards('h');
+					//target.showCards(event.list2,'『花吻交染』展示手牌');
+					game.delay(1);
+					game.broadcastAll(function(id, list1, list2, player, target){
+						var dialog=ui.create.dialog('『花吻交染』交换花色、点数、种类相同的牌各一张');
+						dialog.addText(get.translation(player)+'的手牌');
+						dialog.add([list1, 'card']);
+						dialog.addText(get.translation(target)+'的手牌');
+						dialog.add([list2, 'card']);
+						dialog.videoId = id;
+					}, event.videoId, event.list1, event.list2, player, target);
+					'step 1'
+					var next = player.chooseButton(true).set('visible', true);
+					next.set('dialog',event.videoId);
+					next.set('selectButton',function(){
+						if(ui.selected.buttons.length%2==1)	return [ui.selected.buttons.length+1,ui.selected.buttons.length+1];
+						return [0,6];
+					});
+					next.set('filterButton',function(button){
+						if(ui.selected.buttons.length%2==1){
+							var now = button.link, pre = ui.selected.buttons[ui.selected.buttons.length-1].link;
+							if(event.list1.contains(now)&&event.list1.contains(pre))	return false;
+							if(event.list2.contains(now)&&event.list2.contains(pre))	return false;
+							if(ui.selected.buttons.length>2){
+								var from = ui.selected.buttons;
+								if(from.length>4){
+									if((get.type(from[0].link)==get.type(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
+									||(get.type(from[2].link)==get.type(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
+										return get.number(now)==get.number(pre);
+									if((get.number(from[0].link)==get.number(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
+									||(get.number(from[2].link)==get.number(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
+										return get.type(now)==get.type(pre);
+									if((get.number(from[0].link)==get.number(from[1].link)&&get.type(from[2].link)==get.type(from[3].link))
+									||(get.number(from[2].link)==get.number(from[3].link)&&get.type(from[0].link)==get.type(from[1].link)))
+										return get.suit(now)==get.suit(pre);
+								}else{
+									if(get.type(from[0].link)==get.type(from[1].link))	return get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre);
+									if(get.suit(from[0].link)==get.suit(from[1].link))	return get.type(now)==get.type(pre)||get.number(now)==get.number(pre);
+									if(get.number(from[0].link)==get.number(from[1].link))	return get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre);
+								}
+							}else{
+								return (get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre));
+							}
+							return false;
+						}
+						return true;
+					});
+					'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+						var card1 = result.buttons.filter(function(but){
+							return event.list1.contains(but.link);
+						})
+						var card2 = result.buttons.filter(function(but){
+							return event.list2.contains(but.link);
+						})
+						if(card1.length&&card2.length){
+							var cards1 = card1.map(function(card){
+								return card.link;
+							})
+							var cards2 = card2.map(function(card){
+								return card.link;
+							})
+							player.gain(cards2,target,'giveAuto').set('visible', true);
+							player.draw(cards2.length);
+							target.gain(cards1,player,'giveAuto').set('visible', true);
+							target.draw(cards1.length);
+						}
+						if(!card1||card1.length<3){
+							player.loseHp();
+							target.loseHp();
+						}
+					}else{
+						event.finish();
+					}
+				},
+				group:'huawen_clear',
+				subSkill:{
+					clear:{
+						trigger:{global:'phaseAfter'},
+						priority:23,
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.huawen&&player.storage.huawen.length){
+								player.storage.huawen.length = 0;
+							}
+						}
+					}
+				},
+			},
+			liaohu:{
+				trigger:{global:'phaseEnd'},
+				priority:23,
+				filter:function(event,player){
+					return player.getStat('damage');
+				},
+				content:function(){
+					if(player.getStat().skill.huawen||0){
+						if(player.storage.huawen&&player.storage.huawen.length){
+							player.storage.huawen[0].recover();
+						}
+					}else{
+						player.recover();
+					}
 				},
 			},
 
@@ -1120,7 +1275,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huawen: '花吻交染',
 			huawen_info: '出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。',
 			liaohu: '逃杀疗护',
-			liaohu_info: '：你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
+			liaohu_info: '你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
 
 			TomoeShirayuki:'白雪巴',
 			gonggan: '奇癖共感',

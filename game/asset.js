@@ -704,6 +704,7 @@ window.noname_asset_list=[
 	'image/character/Siro.jpg',
 	'image/character/SisterClearie.jpg',
 	'image/character/SpadeEcho.jpg',
+	'image/character/SukoyaKana.jpg',
 	'image/character/SuzukaUtako.jpg',
 	'image/character/TakatsukiRitsu.jpg',
 	'image/character/Paryi.jpg',
@@ -720,6 +721,7 @@ window.noname_asset_list=[
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
 
+	'image/character/re_AkaiHaato.jpg',
 	'image/character/re_AkiRosenthal.jpg',
 	'image/character/re_HiguchiKaede.jpg',
 	'image/character/re_HoshimatiSuisei.jpg',
@@ -742,6 +744,7 @@ window.noname_asset_list=[
 	'image/character/re_SisterClearie.jpg',
 	'image/character/re_TokinoSora.jpg',
 	'image/character/re_TomariMari.jpg',
+	'image/character/re_UruhaRushia.jpg',
 	'image/character/re_UsadaPekora.jpg',
 	'image/character/re_UshimiIchigo.jpg',
 	'image/character/re_XiaDi.jpg',

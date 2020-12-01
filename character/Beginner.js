@@ -46,8 +46,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
             /**夏色祭 */
             re_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
+            /**赤井心 */
+            re_AkaiHaato:['female','holo',3,['chixin']],
             /**兔田佩克拉 */
 			re_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
+			/**润羽露西娅 */
+			re_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
 			/**小希小桃 */
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
 			/**犬山 */
@@ -1203,7 +1207,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger: {player: 'useCardAfter'},
 				priority:3,
 				filter: function(event, player) {
-					console.log(event.card)
 					return event.card.number&&(get.name(event.card)=='sha'||get.name(event.card)=='guohe')
 						&&!(event.result.bool == false || event.result.wuxied);
 				},
@@ -1444,6 +1447,133 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         player.removeSkill('re_huxi2');
                     }
                 },
+			},
+			//re赤心
+			chixin:{
+				trigger:{global:['loseAfter','cardsDiscardAfter']},
+				usable:1,
+				filter:function(event,player){
+					if(event.name=='lose'&&event.position!=ui.discardPile) return false;
+					var list=event.cards.filter(function(card){
+						return get.suit(card)=='heart'&&get.position(card)=='d';
+					});
+					return list.length>0;
+				},
+				content:function(){
+					'step 0'
+					var list = ['获得其中的红色牌','将其中至多两张牌以任意顺序置于牌堆顶'];
+					player.chooseControl().set('choiceList',list).set('index',list.length-1).set('ai',function(){return _status.event.index});
+					'step 1'
+					switch(result.index){
+						case 0:{
+							var cards = trigger.cards.filter(function(card){
+								return get.color(card)=='red'&&get.position(card)=='d';
+							})
+							player.gain(cards);
+							game.log(player,'获得了',cards);
+							break;
+						}
+						case 1:{
+							var cards = trigger.cards.filter(function(card){
+								return get.position(card)=='d';
+							})
+							game.broadcastAll(function(player,cards){
+								player.chooseCardButton([0,2],true,cards,'『赤心』：将其中至多两张牌以任意顺序置于牌堆顶（先选择的在上）').set('ai',function(button){
+									return get.value(button.link);
+								});
+							}, player, cards);
+							break;
+						}
+					}
+					'step 2'
+					if(result.bool){
+						var list=result.links.slice(0);
+						while(list.length){
+							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+						}
+						game.log(player,'将牌放在牌堆顶')
+					}
+				},
+			},
+			//re粽子
+			juebi:{
+				group:['juebi_shan','juebi_dam'],
+				subSkill:{
+					shan:{
+						enable:['chooseToUse','chooseToRespond'],
+						filterCard:function (card){
+							return get.type(card)!='basic';
+						},
+						viewAs:{name:'shan'},
+						position:'he',
+						prompt:'将一张非基本牌当【闪】使用或打出',
+						check:function(card){return 6-get.value(card)},
+						filter:function(event,player){
+							return !player.getStat().damaged;
+						},
+					},
+					dam:{
+						trigger:{player:'damageEnd'},
+						priority:199,
+						direct:true,
+						filter:function(event,player){
+							return !player.hasSkill('juebi_addDam');
+						},
+						content:function(){
+							player.addTempSkill('juebi_addDam','phaseAfter');
+						},
+					},
+					addDam:{
+						marktext: '壁',
+						mark:true,
+						intro: {
+							content:'可以令下一次造成的伤害+1',
+							name:'绝壁狂怒',
+						},
+						trigger:{source:'damageBegin2'},
+						priority:199,
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							'step 0'
+							player.chooseBool('###『绝壁』###是否令本次造成的伤害+1')
+							'step 1'
+							if(result.bool){
+								player.logSkill('juebi',trigger.player);
+								trigger.num++;
+							}
+							if(player.hasSkill('juebi_addDam'))	player.removeSkill('juebi_addDam');
+						},
+						onremove:true,
+					}
+				}
+			},
+			zhanhou:{
+				group:['zhanhou_damage','zhanhou_recover'],
+				subSkill:{
+					damage:{
+						trigger:{player:'phaseUseBegin'},
+						priority:199,
+						prompt2:'出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
+						content:function(){
+							player.damage();
+							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】',{name:'shunshou'},true);
+						},
+					},
+					recover:{
+						trigger:{global:'dieAfter'},
+						priority:199,
+						filter:function(event,player){
+							return player.hp<player.maxHp;
+						},
+						prompt2:'其他角色阵亡时，你可以回复1点体力，视为使用一张【顺手牵羊】。',
+						content:function(){
+							player.recover();
+							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】',{name:'shunshou'},true);
+						},
+					}
+				}
 			},
 			//rePEKO
 			qiangyun:{
@@ -1905,6 +2035,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_NatsuiroMatsuri:'新·夏色祭',
             re_huxi1:'呼吸',
 			re_huxi1_info:'当你不因此技能获得牌后，你可以与一名本回合未“呼吸”过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。',
+
+			re_AkaiHaato: '新·赤井心',
+			chixin: '赤心',
+			chixin_info: '每名角色的回合每项限一次，当有牌进入弃牌堆时，若其中有♥牌，你可以获得其中的红色牌；或将其中至多两张牌以任意顺序置于牌堆顶。',
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
@@ -1912,6 +2046,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tuquan: '兔拳',
 			tuquan_info: '<font color=#f66>锁定技</font> 你的【杀】被【闪】抵消时，你进行判定，若为♠，你弃置目标一张牌，若为♥，你弃置一张牌。',
 			
+			re_UruhaRushia: '新·润羽露西娅',
+			juebi: '绝壁',
+			juebi_info: '在你未受到伤害的回合，你可以将非基本牌当【闪】使用或打出；你受到伤害后，可以令本回合下一次造成的伤害+1。',
+			zhanhou: '战吼',
+			zhanhou_info: '出牌阶段开始时/其他角色阵亡时，你可以受到1点伤害/回复1点体力，视为使用一张【顺手牵羊】。',
 
 			re_XiaoxiXiaotao: '新·小希小桃',
 			re_doupeng: '逗捧',
