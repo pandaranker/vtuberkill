@@ -1342,7 +1342,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
 					next.set('filterTarget',function(card,player,target){
-							return target!=player&&!player.storage.huxiGroup.contains(target)&&player.countCards('h')&&target.countCards('h');
+							return target!=player&&(!player.storage.huxiGroup||!player.storage.huxiGroup.contains(target))&&player.countCards('h')&&target.countCards('h');
 						},)
 					"step 1"
 					if(result.bool){
@@ -1451,48 +1451,78 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re赤心
 			chixin:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
 				trigger:{global:['loseAfter','cardsDiscardAfter']},
-				usable:1,
 				filter:function(event,player){
 					if(event.name=='lose'&&event.position!=ui.discardPile) return false;
 					var list=event.cards.filter(function(card){
 						return get.suit(card)=='heart'&&get.position(card)=='d';
 					});
-					return list.length>0;
+					return list.length>0&&player.storage.chixin.length<2;
 				},
 				content:function(){
 					'step 0'
+					if(player.storage.chixin.length){	
+						if(player.storage.chixin[0]=='获得其中的红色牌')		event.goto(3);
+						if(player.storage.chixin[0]=='将其中至多两张牌以任意顺序置于牌堆顶')	event.goto(5);
+					}
+					'step 1'
 					var list = ['获得其中的红色牌','将其中至多两张牌以任意顺序置于牌堆顶'];
 					player.chooseControl().set('choiceList',list).set('index',list.length-1).set('ai',function(){return _status.event.index});
-					'step 1'
+					'step 2'
+					console.log(result);
 					switch(result.index){
 						case 0:{
-							var cards = trigger.cards.filter(function(card){
-								return get.color(card)=='red'&&get.position(card)=='d';
-							})
-							player.gain(cards);
-							game.log(player,'获得了',cards);
+							event.goto(5);
+							player.storage.chixin.add('获得其中的红色牌');
 							break;
 						}
 						case 1:{
-							var cards = trigger.cards.filter(function(card){
-								return get.position(card)=='d';
-							})
-							game.broadcastAll(function(player,cards){
-								player.chooseCardButton([0,2],true,cards,'『赤心』：将其中至多两张牌以任意顺序置于牌堆顶（先选择的在上）').set('ai',function(button){
-									return get.value(button.link);
-								});
-							}, player, cards);
+							event.goto(3);
+							player.storage.chixin.add('将其中至多两张牌以任意顺序置于牌堆顶');
 							break;
 						}
 					}
-					'step 2'
+					'step 3'
+					var cards = trigger.cards.filter(function(card){
+						return get.position(card)=='d';
+					})
+					game.broadcastAll(function(player,cards){
+						player.chooseCardButton([0,2],true,cards,'『赤心』：将其中至多两张牌以任意顺序置于牌堆顶（先选择的在上）').set('ai',function(button){
+							return get.value(button.link);
+						});
+					}, player, cards);
+					'step 4'
 					if(result.bool){
 						var list=result.links.slice(0);
 						while(list.length){
 							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
 						}
 						game.log(player,'将牌放在牌堆顶')
+					}
+					event.finish();
+					'step 5'
+					var cards = trigger.cards.filter(function(card){
+						return get.color(card)=='red'&&get.position(card)=='d';
+					})
+					player.gain(cards);
+					game.log(player,'获得了',cards);
+				},
+				group:'chixin_clear',
+				subSkill:{
+					clear:{
+						trigger:{global:'phaseAfter'},
+						priority:23,
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.chixin&&player.storage.chixin.length){
+								player.storage.chixin.length = 0;
+							}
+						}
 					}
 				},
 			},
