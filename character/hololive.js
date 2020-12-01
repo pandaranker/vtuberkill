@@ -1003,11 +1003,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				content:function(){
-                    'step 0'
-                    trigger.source.chooseControl(true).set('choiceList',[
-                        '令'+get.translation(player)+'回复'+trigger.num+'点生命',
-                        '将'+get.translation(trigger.cards)+'交给'+get.translation(player),
-                    ])
+					'step 0'
+					if(trigger.source){
+						trigger.source.chooseControl(true).set('choiceList',[
+							'令'+get.translation(player)+'回复'+trigger.num+'点生命',
+							'将'+get.translation(trigger.cards)+'交给'+get.translation(player),
+						])
+					}
+					else{
+						player.recover(trigger.num);
+						event.finish();
+					}
                     'step 1'
                     if(result.index==0){
                         player.recover(trigger.num);
