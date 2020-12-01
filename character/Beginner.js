@@ -52,6 +52,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
 			/**润羽露西娅 */
 			re_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
+			
 			/**小希小桃 */
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
 			/**犬山 */
@@ -75,7 +76,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			Beginner:{
 				界限突破:[],
-                hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_NatsuiroMatsuri','re_UsadaPekora'],
+                hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia'],
 			}
 		},
         skill:{
