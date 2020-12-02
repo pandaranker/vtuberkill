@@ -1342,7 +1342,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
 					next.set('filterTarget',function(card,player,target){
-							return target!=player&&!player.storage.huxiGroup.contains(target)&&player.countCards('h')&&target.countCards('h');
+							if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(target))	return false;
+							return target!=player&&player.countCards('h')&&target.countCards('h');
 						},)
 					"step 1"
 					if(result.bool){
@@ -2039,7 +2040,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
-			chixin_info: '每名角色的回合每项限一次，当有牌进入弃牌堆时，若其中有♥牌，你可以获得其中的红色牌；或将其中至多两张牌以任意顺序置于牌堆顶。',
+			chixin_info: '每回合限一次，当有牌进入弃牌堆时，若其中有♥牌，你可以获得其中的红色牌；或将其中至多两张牌以任意顺序置于牌堆顶。',
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
