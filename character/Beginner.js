@@ -41,7 +41,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             /**星街慧星 */
             re_HoshimatiSuisei:['female','holo',4,['cansha']],
 			/**aki */
-            re_AkiRosenthal: ['female', 'holo', 4, ['meiwu', 're_huichu']],
+            re_AkiRosenthal: ['female', 'holo', 3, ['meiwu', 're_huichu']],
             /**樱巫女 */
             re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
             /**夏色祭 */
@@ -64,7 +64,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
 			/**Re莉泽 */
-			re_LizeHelesta:['female','nijisanji',4,['yubing']],
+			re_LizeHelesta:['female','nijisanji',3,['yubing']],
 			/**ReYuNi */
 			re_YuNi:['female','upd8',4,['re_shengcai']],
 			/**Re兔鞠 */
@@ -1005,13 +1005,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger: {player: 'useCardAfter'},
 				priority:14,
 				filter: function(event, player) {
-					return player.getHandcardLimit()&&(get.name(event.card)=='sha'||get.type(event.card)=='trick')
+					return player.getHandcardLimit()&&(get.type(event.card)=='basic'||get.type(event.card)=='trick')
 						&&!(event.result.bool == false || event.result.wuxied);
 				},
 				content:function(){
-					player.draw(2);
 					player.storage.yubing++;
 					player.markSkill('yubing');
+					player.draw(2);
 				},
 				marktext:"教",
 				mark:true,
@@ -1026,7 +1026,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'yubing_clear',
 				subSkill:{
 					clear:{
-						trigger:{player:'phaseAfter'},
+						trigger:{global:'phaseAfter'},
 						forced: true,
 						silent: true,
 						priority:42,
@@ -2006,7 +2006,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_LizeHelesta: '新·莉泽',
 			yubing: '语冰',
-			yubing_info: '你使用【杀】或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
+			yubing_info: '你使用基本牌或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
 
 
 			re_TokinoSora: '新·时乃空',

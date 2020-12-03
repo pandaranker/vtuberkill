@@ -1497,7 +1497,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'judgeAfter'},
 				usable:1,
 				filter:function(event,player){
-					return player!=_status.currentPhase&&_status.currentPhase.countCards('he');
+					return event.result.color=='red'&&player!=_status.currentPhase&&_status.currentPhase.countCards('he');
 				},
 				content:function(){
 					'step 0'
