@@ -297,7 +297,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'drawEnd'},
 				priority:998,
 				filter:function(event,player){
-					console.log(event.player.getHistory('gain'));
 					return event.player!=player&&player==_status.currentPhase&&event.player.getHistory('gain').length==1;
 				},
 				content:function(){
@@ -466,7 +465,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 	//				player.logSkill('xiaogui');
-					player.lose(cards,ui.ordering);
+					player.lose(cards,ui.ordering).set('visible', true);
 					console.log(cards)
 					event.cards = cards;
 					event.videoId = lib.status.videoId++;
@@ -1068,7 +1067,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							if(result.bool){
 								player.logSkill('yeyu');
-								player.lose(result.cards, ui.discardPile);
+								player.lose(result.cards, ui.discardPile).set('visible', true);
 								player.$throw(result.cards);
 								game.log(player, '将', result.cards, '置入了弃牌堆');
 								player.draw();

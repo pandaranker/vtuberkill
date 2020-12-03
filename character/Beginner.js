@@ -1231,7 +1231,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content: function() {
 					'step 0'
 					player.showHandcards();
-					event.chk = player.countCards('h') == player.countCards('h', {suit: 'heart'});
+					event.chk = player.countCards('h') == player.countCards('h', {color: 'red'});
 					'step 1'
 					if (event.chk) {
 						trigger.player.recover();
@@ -1242,7 +1242,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
-						player.lose(result.cards, ui.discardPile);
+						player.lose(result.cards, ui.discardPile).set('visible', true);
 						player.$throw(result.cards);
 						game.log(player, '将', result.cards, '置入了弃牌堆');
 						player.draw(result.cards.length);
@@ -2026,7 +2026,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkiRosenthal: '新·亚琦',
 			re_huichu: '慧厨',
-            re_huichu_info: '每轮限一次。一名角色的回合开始时，你可以展示所有手牌，若均为♥，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
+            re_huichu_info: '每轮限一次。一名角色的回合开始时，你可以展示所有手牌，若均为红色，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
 			
 			re_SakuraMiko: '新·樱巫女',
 			huangyou: '黄油',

@@ -1771,7 +1771,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.choosePlayerCard("重铸其一张手牌", trigger.player, 'h').set('visible', true);
 							'step 1'
 							if (result.bool && result.cards.length) {
-								trigger.player.lose(result.cards, ui.discardPile);
+								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
 								trigger.player.$throw(result.cards);
 								game.log(trigger.player, '将', result.cards, '置入了弃牌堆');
 								trigger.player.draw();

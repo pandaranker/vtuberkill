@@ -1379,7 +1379,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
 
 
-			His_HoshinoNiya: '史官·星野妮娅',
+			His_HoshinoNiya: '星野妮娅·史官',
 			shushi: '书史',
 			shushi_info: '你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）',
 			zengzhi: '增殖',

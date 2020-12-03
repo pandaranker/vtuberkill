@@ -1496,7 +1496,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
-						player.lose(result.cards, ui.discardPile);
+						player.lose(result.cards, ui.discardPile).set('visible', true);
 						player.$throw(result.cards);
 						game.log(player, '将', result.cards, '置入了弃牌堆');
 						player.draw(result.cards.length);
