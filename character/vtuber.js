@@ -1321,7 +1321,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			huangtu2:{
 				charlotte:true,
-				trigger:{global:'changeHp'},
+				trigger:{global:['damageEnd','recoverEnd','loseHpEnd']},
 				forced:true,
 				filter:function(event,player){
 					if(player==_status.currentPhase&&player==event.player)	return true;
@@ -1400,7 +1400,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				delay:0.5,
 				content:function(){
 					player.draw();
-					console.log(player.storage.wudao);
+//					console.log(player.storage.wudao);
 					player.storage.wudao.remove(get.name(event.cards[0]));
 				},
 				ai:{
@@ -1454,7 +1454,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var name=lib.inpile[i];
 								if(get.type(name)=='basic') list.push(name);
 							}
-							player.storage[skill] = list;
+							player.storage.wudao = list;
 						},
 					},
 				}
@@ -1463,7 +1463,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				zhuSkill:true,
 				trigger:{player:'wudao_useEndAfter'},
 				filter:function(event,player){
-					if(!player.hasZhuSkill('renjiazhizhu')) return false;
+					if(!player.hasZhuSkill('yinyuan')) return false;
 					return event._result;
 				},
 				content:function(){

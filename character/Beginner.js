@@ -967,6 +967,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.num--;
 					}
                 },
+				ai:{
+					notrick:true
+				},
 			},
 			shenfa:{
 				trigger:{player:['loseAfter']},

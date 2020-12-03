@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.103',
+	version:'1.9.100.104',
 	update:'1.9.100.94.3',
 	changeLog:[
 		'新增V杀初心者上手用角色包（内含部分新角色）',
