@@ -4,6 +4,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'emperor',
 		connect:true,
 		character:{
+			sp_KaguraMea:['female','shen',3,['zhigao', 'tiangou']],
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']],
 		},
@@ -11,6 +12,110 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yomemi:' ',
 		 },
 		 skill:{
+			//欧皇咩
+			zhigao:{
+				skillAnimation:true,
+				animationColor:'thunder',
+				trigger:{source:'damageBegin4'},
+				limited:true,
+				unique:true,
+				mark:true,
+				filter:function(event,player){
+					if(player.storage.zhigao) return false;
+					return event.player.isDamaged();
+				},
+				content:function(){
+					player.awakenSkill('zhigao');
+					player.storage.zhigao = true;
+					trigger.cancel();
+					game.broadcast(function(){
+						if(lib.config.background_audio){
+							game.playAudio('effect','damage2');
+						}
+					});
+					trigger.player.$damage(player);
+					trigger.player.loseMaxHp(trigger.num,true);
+				}
+			},
+			tiangou:{
+				init:function(player,skill){
+					player.storage[skill]=[];
+				},
+			//	skillAnimation:true,
+			//	animationColor:'thunder',
+				trigger:{global:'roundStart'},
+				content:function(){
+					'step 0'
+					var list= player.storage.tiangou_list;;
+					list.removeArray(player.storage.tiangou);
+					event.videoId = lib.status.videoId++;
+					for(var i=0;i<list.length;i++){
+						list[i] = [['','',list[i],list[i]]]
+					}
+					game.broadcastAll(function(id, choicelist){
+						var dialog=ui.create.dialog('『天狗食日』 声明一个阶段');
+						choicelist.forEach(element=>{
+							dialog.add([element,'vcard']);
+						})
+						dialog.videoId = id;
+					}, event.videoId, list);
+					'step 1'
+					player.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('tiangou'));
+					'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+						game.delay(0.5);
+						player.storage.tiangou.add(result.links[0][2]);
+					}else{
+						event.finish();
+					}
+					'step 3'
+					player.chooseTarget(true,'『天狗食日』：选定一名角色，本轮内只有其能执行声明阶段');
+					'step 4'
+					if(result.bool){
+						result.targets[0].addTempSkill('tiangou_limit','roundStart');
+						result.targets[0].storage.tiangou_limit.add(player.storage.tiangou[player.storage.tiangou.length-1]);
+					}
+					'step 5'
+					player.storage.tiangou_list=['phaseJudge','phaseDraw','phaseUse','phaseDiscard'];
+					if(player.storage.tiangou.length==player.storage.tiangou_list.length){
+						player.getSkills(true,false).forEach(function(skill){
+							if(lib.skill[skill].init){
+								lib.skill[skill].init(event.player,skill);
+							}
+						})
+						player.awakenedSkills.forEach(function(skill){
+							player.restoreSkill(skill);
+						})
+						player.update();
+					}
+				},
+				group:['tiangou_list'],
+				subSkill:{
+					list:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=['phaseJudge','phaseDraw','phaseUse','phaseDiscard'];
+						},
+					},
+					limit:{
+						init:function(player,skill){
+							if(!player.storage[skill])	player.storage[skill]=[];
+						},
+						firstDo:true,
+						direct:true,
+						trigger:{global:['phaseJudgeBefore','phaseDrawBefore','phaseUseBefore','phaseDiscardBefore']},
+						filter:function(event,player){
+							return event.player!=player&&player.storage.tiangou_limit.contains(event.name);
+						},
+						content:function(){
+							trigger.cancel();
+						},
+						onremove:function(player){
+							delete player.storage.tiangou_limit;
+						},
+					}
+				},
+			},
 			//圣皇夸
 			shenghuang:{
 				init:function(player){
@@ -660,6 +765,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		 },
 		 translate:{
+			sp_KaguraMea: '皇·神乐めあ',
+			zhigao: '至高权柄',
+			zhigao_info: '限定技，当你对一名已受伤角色造成伤害时，你可以改为扣减其等量的体力上限。',
+			tiangou: '天狗食日',
+			tiangou_info: '一轮开始时，你可以声明一个未声明过的主要阶段并选择一名角色。本轮内只有其能执行此阶段。若均已声明，重置你的所有技能。',
+
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
 			shenghuang_info: '<font color=#f66>锁定技</font> 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
@@ -677,6 +788,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duandai_info: '回合结束时，若本回合你使用牌完成过一组Alice序列，你可以回复所有体力。',
 			xiaotuzi: '小兔子',
 			xiaotuzi_info: '成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用',
+
+
+			'phaseJudge': '判定阶段',
+			'phaseDraw': '摸牌阶段',
+			'phaseUse': '出牌阶段',
+			'phaseDiscard': '弃牌阶段',
 		 },
 	};
 });

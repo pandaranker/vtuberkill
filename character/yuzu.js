@@ -76,10 +76,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target.syncStorage('paryi');
 						event.videoId = lib.status.videoId++;
 						var suitlist = [
-							['heart', '', 'heart', 'heart', 'div2'],
-							['diamond', '', 'diamond', 'diamond', 'div2'],
-							['club', '', 'club', 'club', 'div2'],
-							['spade', '', 'spade', 'spade', 'div2']
+							['heart', '', 'heart', 'heart'],
+							['diamond', '', 'diamond', 'diamond'],
+							['club', '', 'club', 'club'],
+							['spade', '', 'spade', 'spade']
 						];
 						game.broadcastAll(function(id, suitlist){
 							var dialog=ui.create.dialog('『天扉』声明');

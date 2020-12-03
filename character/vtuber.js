@@ -18,13 +18,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**兔妈妈 */
 			InabaHaneru:['female','qun',1,['huangtu','wudao','yinyuan'],['zhu']],
+			/**BFM */
+			UmoriHinako:['female','qun',4,['hongyi','jueshou'],],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
 			InuyamaTamaki:'犬山玉姬',
 			XiaoxiXiaotao:'小希小桃',
 			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。',
-			Qiankesaier:''
+			Qiankesaier:'',
 		},
 		skill:{
             ailian:{
@@ -1277,6 +1279,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//黄兔
 			huangtu:{
 				trigger:{
 					global:'gameDrawAfter',
@@ -1489,6 +1492,71 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//蝙蝠妹
+			hongyi:{
+				trigger:{global:'judgeAfter'},
+				usable:1,
+				filter:function(event,player){
+					return player!=_status.currentPhase&&_status.currentPhase.countCards('he');
+				},
+				content:function(){
+					'step 0'
+					_status.currentPhase.chooseCard('he',true,'『红移』：你需要交给'+get.translation(player)+'一张牌');
+					'step 1'
+					if(result.bool)
+					player.gain(result.cards[0],_status.currentPhase,'giveAuto');
+				}
+			},
+			jueshou:{
+				enable: 'phaseUse',
+				filter:function(event,player){
+					if(player.hasSkill('jueshou_used'))	return false;
+					var cards=player.getCards('he',{color:'black'});
+					for(var i=0;i<cards.length;i++){
+						if(get.type(cards[i],'trick')!='trick') return true;
+					}
+					return false;
+				},
+				position:'he',
+				filterCard:function(card){
+					if(get.type(card,'trick')=='trick') return false;
+					return get.color(card)=='black';
+				},
+				check:function(card){
+					return 7-get.value(card);
+				},
+				discard:false,
+				prepare:'throw',
+				filterTarget:function(card,player,target){
+					if(get.suit(card)=='club') return lib.filter.targetEnabled2({name:'bingliang'},player,target)
+					return lib.filter.filterTarget({name:'bingliang'},player,target);
+				},
+				content:function(){
+					player.addTempSkill('jueshou_used','phaseUseEnd');
+					player.useCard({name:'bingliang'},target,cards).animate=false;
+					if(get.type(cards[0])=='equip'){
+						player.addTempSkill('jueshou_dist',{player:'phaseZhunbeiBegin'});
+					}
+				},
+				subSkill:{
+					dist:{
+						mod:{
+							globalTo:function(from,to,distance){
+								return distance+1;
+							},
+						},
+					},
+					used:{},
+				},
+				ai:{
+					result:{
+						target:function(player,target){
+							return get.effect(target,{name:'bingliang'},player,target);
+						}
+					},
+					order:9,
+				}
+			},
 		},
 		card:{
 			"feichu_equip1":{
@@ -1563,8 +1631,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huangtu_info: '<font color=#f66>锁定技</font> 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
 			wudao: '病弱五道',
 			wudao_info: '出牌阶段，你可以重铸一张基本牌，你以此法重铸的牌须与本回合之前重铸的牌名不同。出牌阶段结束时，若本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
+			wudao_useEnd_info: '本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			yinyuan: '因缘斩断',
 			yinyuan_info: '<font color=#ff4>主公技</font> 若你在出牌阶段结束时发动『病弱五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
+
+			UmoriHinako: '宇森ひなこ',
+			hongyi: '红移',
+			hongyi_info: '每回合限一次。当出现红色判定结果后，你可以令当前回合角色交给你一张牌。',
+			jueshou: '绝收',
+			jueshou_info: '出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。',
 		},
 	};
 });

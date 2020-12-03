@@ -712,6 +712,7 @@ window.noname_asset_list=[
 	'image/character/Paryi.jpg',
 	'image/character/TokinoSora.jpg',
 	'image/character/TomoeShirayuki.jpg',
+	'image/character/UmoriHinako.jpg',
 	'image/character/UsadaPekora.jpg',
 	'image/character/UshimiIchigo.jpg',
 	'image/character/XiaDi.jpg',
@@ -720,6 +721,7 @@ window.noname_asset_list=[
 	'image/character/YozoraMel.jpg',
 	'image/character/Qiankesaier.jpg',
 	
+	'image/character/sp_KaguraMea.jpg',
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
 
@@ -764,6 +766,7 @@ window.noname_asset_list=[
 	'image/skin/NekomiyaHinata/2.jpg',
 	'image/skin/OtomeOto/1.jpg',
 	'image/skin/SpadeEcho/1.jpg',
+	'image/skin/UmoriHinako/1.jpg',
 	'image/skin/UsadaPekora/1.jpg',
 	'image/skin/UsadaPekora/2.jpg',
 	
