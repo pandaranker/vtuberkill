@@ -1345,7 +1345,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target.storage.huangtu_mark.sortBySeat();
 						target.markSkill('huangtu_mark');
 					}
-					console.log(target.storage.huangtu_mark);
 					game.delayx();
 					'step 1'
 					player[trigger.name](trigger.num,'nosource');

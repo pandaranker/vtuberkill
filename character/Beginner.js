@@ -1013,7 +1013,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.markSkill('yubing');
 					player.draw(2);
 				},
-				marktext:"教",
+				marktext:"冰",
 				mark:true,
 				intro:{
 					content:'手牌上限-#',
@@ -1094,9 +1094,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             else return false;
                         },
                         content:function(){
-                            if(player.getStat().card.sha==2){
-								player.draw();
-							}
 							if(player.getStat().card.sha==3){
 								player.draw(2);
 							}
@@ -2013,7 +2010,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_RobokoSan:'新·萝卜子',
             re_zhanxie:'战械',
-            re_zhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用三张【杀】。当你使用第二张【杀】时，摸一张牌；使用第三张【杀】时，摸两张牌。',
+            re_zhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用三张【杀】。当你使用第三张【杀】时，摸两张牌。',
             re_chongdian:'机电',
 			re_chongdian_info:'你受到雷电伤害时可改为回复等量体力；你的装备牌均可当【雷杀】使用。',
 			

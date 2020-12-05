@@ -15102,6 +15102,10 @@
 					player.update();
 				},
 				changeHp:function(){
+					//柚子：这里加了一个改变体力前时机
+					'step 0'
+					event.trigger('changeHpBegin');
+					'step 1'
 					player.hp+=num;
 					if(isNaN(player.hp)) player.hp=0;
 					if(player.hp>player.maxHp) player.hp=player.maxHp;
@@ -48852,7 +48856,7 @@
 		},
 		number:function(card,player){
 			//啥时候狗卡出相关技能我再完善
-			//已修改
+			//柚子：已修改
 			if(get.itemtype(player)=='player'||(player!==false&&get.position(card)=='h')){
 				var owner=player||get.owner(card);
 				if(owner){

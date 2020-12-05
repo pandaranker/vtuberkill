@@ -32,6 +32,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SpadeEcho:['female','holo',3,['hangao','yinglve']],
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
 			Doris:['female','holo',3,['shenhai','paomo']],
+			Yogiri:['female','holo',3,['shisang','wanjie']],
 
         },
 		characterSort:{
@@ -681,10 +682,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					game.log(player,'想要呼吸',target);
                     "step 1"
-                    player.chooseCard('请选择交换的牌',true).set('type','compare');
+                    player.chooseCard('###『呼吸』###请选择交换的牌',true).set('type','compare');
                     "step 2"
                     event.card1=result.cards[0];
-					target.chooseCard('请选择交换的牌',true).set('type','compare');
+					target.chooseCard('###『呼吸』###请选择交换的牌',true).set('type','compare');
 					"step 3"
                     event.card2=result.cards[0];
 					if(!event.resultOL&&event.ol){
@@ -1159,7 +1160,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     'step 0'
                     player.draw(player.maxHp);
                     'step 1'
-                    player.chooseCard(player.hp,'he','选择放置到牌堆顶部的牌',true);
+                    player.chooseCard(player.hp,'he','###『远虑』###选择放置到牌堆顶部的牌',true);
                     'step 2'
 					if(result.bool==true&&result.cards!=null){
 						event.cards=result.cards
@@ -1271,7 +1272,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                     game.delayx();
                     'step 1'
                     event.nowHandCards=target.getCards('h');
-                    player.chooseCard('he',true,'选择给予的牌').set('ai',function(card){
+                    player.chooseCard('he',true,'###『近援』###选择给予的牌').set('ai',function(card){
                         return 5-get.value(card);
                     });
                     'step 2'
@@ -1345,7 +1346,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         event.finish()
                     }
                     else
-                    player.chooseTarget('命令一名其他杏势力角色本回合一张手牌视为无懈可击',{},function(card,player,target){
+                    player.chooseTarget('###『中坚』###命令一名其他杏势力角色本回合一张手牌视为无懈可击',{},function(card,player,target){
                         return player!=target&&target.group=='holo'&&target.countCards('h')>0
                     });
                     "step 1"
@@ -1428,7 +1429,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else
 					game.broadcastAll(
 						function(player,tplayer){
-							player.chooseTarget('转移给一名其它角色', function(card, player, target) {
+							player.chooseTarget('###『魅舞』###转移给一名其它角色', function(card, player, target) {
 								return player != target && target != tplayer;
 							})
 						},player,trigger.player
@@ -1492,7 +1493,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if (!event.chk) {
-						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]);
+						player.chooseCard("###『慧厨』###重铸任意张手牌", 'h', [1, Infinity]);
 					}
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
@@ -1547,7 +1548,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						numberlist.push(['', i, c, i, 'div3']);
 					}
 					game.broadcastAll(function(id, typelist, suitlist, numberlist){
-						var dialog=ui.create.dialog('豪赌 选择');
+						var dialog=ui.create.dialog('『豪赌』 选择');
 						dialog.addText('类型');
 						dialog.add([typelist, 'vcard']);
 						dialog.addText('花色');
@@ -1580,7 +1581,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 5'
 					if (result.bool) {
 						event.card = result.links[0];
-						var str = "豪赌展示<br>";
+						var str = "『豪赌』展示<br>";
 						game.log(player,'选择了',event.chi);
 						if (event.chi.contains(get.number(event.card))) str += "你与其交换手牌<br>";
 						if (event.chi.contains(get.type(event.card))) str += "你弃置其两张牌<br>";
@@ -1844,7 +1845,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								});
 							'step 1'
 							if(result.index==0){
-								player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
 									if(target==player) 				return false;
 									return target.countCards('h')%player.countCards('h')==0;
 								});						
@@ -2148,7 +2149,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.pekoyu.add(get.suit(trigger.card));
 					console.log(player.storage.pekoyu);
 					player.draw(),
-					player.chooseToDiscard('然后，弃置一张牌','h').set('ai',function(card){
+					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h').set('ai',function(card){
 						var name = card.name;
 						if(name=='jiu') 			return 120;
 						if(get.type(card)=='trick')	return 40;
@@ -2158,7 +2159,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.cards){
 						if(get.name(result.cards[0],'player')=='jiu'||
 							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
-						player.chooseTarget('选择一名角色，令其摸两张牌').set('ai',function(target){
+						player.chooseTarget('###『嚣张咚鼓』###选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
 							return get.attitude(player,target)*(target.isDamaged()?2:1);
 						});
@@ -2918,6 +2919,84 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//Yogiri
+			shisang:{
+				trigger:{player:'useCard'},
+				priority:42,
+				filter:function(event,player){
+					return player.isPhaseUsing()&&!player.hasSkill('shisang_used');
+				},
+				prompt2:function(event,player){
+					if(player.hasSkill('wanjie_change'))	return '可以将此牌的效果改为 <font color=#fc8>受到你造成的1点伤害</font>';
+					return '可以将此牌的效果改为 令目标回复1点体力';
+				},
+				content:function(){
+					if(!trigger.addedSkill)	trigger.addedSkill = [];
+					trigger.addedSkill.add('shisang');
+					if(player.storage.shisang_clear)	delete player.storage.shisang_clear;
+					player.storage.shisang_clear = get.info(trigger.card).content;
+					if(player.hasSkill('wanjie_change')){
+						get.info(trigger.card).content = function(){
+							target.damage(player);
+						}
+					}else{
+						get.info(trigger.card).content = function(){
+							target.recover();
+						}
+					}
+					player.addTempSkill('shisang_used','phaseUseEnd')
+				},
+				group:'shisang_clear',
+				subSkill:{
+					used:{},
+					clear:{
+						trigger:{global:['damage','damageZero','recoverEnd']},
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							if(!player.hasSkill('shisang_used'))		return false;
+							return (event.getParent().addedSkill&&event.getParent().addedSkill.contains('shisang'))
+							||(event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('shisang'));
+						},
+						content:function(){
+							get.info(trigger.card).content = player.storage.shisang_clear;
+						},
+					},
+				}
+			},
+			wanjie:{
+				enable:'phaseUse',
+				filterCard:true,
+				selectCard:-1,
+				discard:false,
+				lose:false,
+				filter:function(event,player){
+					return player.isPhaseUsing()&&!player.hasSkill('wanjie_used');
+				},
+				content:function(){
+					'step 0'
+					player.showHandcards();
+					player.chooseCard(true,'###『腕解』选择一种颜色的牌弃置###若弃置黑色，你摸两张牌；若弃置红色，本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”');
+					'step 1'
+					if(result.bool){
+						player.discard(player.getCards('h',function(card){
+							return get.color(card)==get.color(result.cards[0]);
+						}));
+						if(get.color(result.cards[0])=='black'){
+							player.draw(2);
+						}
+						if(get.color(result.cards[0])=='red'){
+							player.addTempSkill('wanjie_change');
+						}
+					}
+					player.addTempSkill('wanjie_used','phaseUseEnd');
+				},
+				subSkill:{
+					used:{},
+					change:{},
+				}
+			},
 
 		},
 		translate:{
@@ -3036,6 +3115,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenhai_info: '出牌阶段每类型限一次，当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除次数和标号限制。',
 			paomo: '儚恋',
 			paomo_info: '你的回合内，当其他角色于本回合第一次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。',
+
+			Yogiri: '夜霧',
+			shisang: '食尚',
+			shisang_info: '出牌阶段限一次，你使用牌指定目标后，可以将此牌的效果改为令目标回复1点体力。',
+			wanjie: '腕解',
+			wanjie_info: '出牌阶段限一次，你可以展示所有手牌并弃置其中黑色牌，然后摸两张牌；或弃置其中红色牌，然后将本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”。',
         },
 	};
 });

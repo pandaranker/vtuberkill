@@ -1034,7 +1034,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(event.player==player||get.name(event.card)!='sha')	return false;
 							return (get.name(event.card)=='sha');
 						},
-						prompt2:'你可以重弃置一张点数大于此【杀】的牌取消之',
+						prompt2:'你可以弃置一张点数大于此【杀】的牌取消之',
 						content:function(){
 							'step 0'
 							var next=player.chooseToDiscard('he','弃置一张点数大于此【杀】的牌取消之');

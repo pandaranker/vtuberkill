@@ -16,25 +16,41 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhigao:{
 				skillAnimation:true,
 				animationColor:'thunder',
-				trigger:{source:'damageBegin4'},
+				trigger:{global:'changeHpBegin'},
 				limited:true,
 				unique:true,
 				mark:true,
 				filter:function(event,player){
 					if(player.storage.zhigao) return false;
-					return event.player.isDamaged();
+					return event.num!=0&&player==_status.currentPhase;
 				},
 				content:function(){
 					player.awakenSkill('zhigao');
 					player.storage.zhigao = true;
 					trigger.cancel();
-					game.broadcast(function(){
-						if(lib.config.background_audio){
-							game.playAudio('effect','damage2');
-						}
-					});
-					trigger.player.$damage(player);
-					trigger.player.loseMaxHp(trigger.num,true);
+					if(trigger.num<0){
+						game.broadcast(function(){
+							if(lib.config.background_audio){
+								game.playAudio('effect','damage2');
+							}
+						});
+						trigger.player.$damage(player);
+						player.$damagepop(-Math.abs(trigger.num),'thunder');
+						trigger.player.loseMaxHp(Math.abs(trigger.num),true);
+					}else if(trigger.num>0){
+						game.broadcast(function(){
+							if(lib.config.background_audio){
+								game.playAudio('effect','recover');
+							}
+						});
+						game.broadcastAll(function(player){
+							if(lib.config.animation&&!lib.config.low_performance){
+								player.$recover();
+							}
+						},trigger.player);
+						player.$damagepop(Math.abs(trigger.num),'thunder');
+						trigger.player.gainMaxHp(Math.abs(trigger.num),true);
+					}
 				}
 			},
 			tiangou:{
@@ -262,7 +278,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						cards.push(card);
 					}
 					player.storage.renzhan = cards;
-					console.log(cards);
 					player.showCards(player.storage.renzhan,'瞬息刃斩亮出牌堆');
 					game.delay(2);
 					player.chooseControlList(
@@ -293,18 +308,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					game.broadcastAll(function(player){
-						var next=player.chooseTarget(function(card,player,target){
+						var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
 							return player!=target;
 						});
 						next.set('targetprompt',['RUA']);
-						next.set('prompt','指定一名角色，对其使用任意张【杀】');
 						next.set('forced',false);
 						next.set('ai',function(target){
 							var att=get.attitude(player,target);
 							return 50-att;
 						});
 					}, player)
-					console.log('OK');
 					'step 3'
 					if(result.bool){
 						_status.event.target = result.targets[0];
@@ -313,7 +326,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('renzhan2','phaseEnd');
 						target.storage.renzhan2 = 0;
-						console.log('OK');
 						console.log(player.hasCard('sha','h'));
 						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
@@ -767,7 +779,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		 translate:{
 			sp_KaguraMea: '皇·神乐めあ',
 			zhigao: '至高权柄',
-			zhigao_info: '限定技，当你对一名已受伤角色造成伤害时，你可以改为扣减其等量的体力上限。',
+			zhigao_info: '<font color=#dfb>限定技</font> 当你对一名已受伤角色造成伤害时，你可以改为扣减其等量的体力上限。',
 			tiangou: '天狗食日',
 			tiangou_info: '一轮开始时，你可以声明一个未声明过的主要阶段并选择一名角色。本轮内只有其能执行此阶段。若均已声明，重置你的所有技能。',
 
