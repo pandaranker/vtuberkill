@@ -678,6 +678,7 @@ window.noname_asset_list=[
 	'image/character/Bacharu.jpg',
 	'image/character/Civia.jpg',
 	'image/character/Doris.jpg',
+	'image/character/Elu.jpg',
 	'image/character/HanazonoSerena.jpg',
 	'image/character/HiguchiKaede.jpg',
 	'image/character/His_HoshinoNiya.jpg',

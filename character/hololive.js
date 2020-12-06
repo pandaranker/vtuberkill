@@ -40,7 +40,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
                 hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
                 hololive_2and3:['MinatoAqua','UsadaPekora'],
-                OurGirls:['Civia','SpadeEcho','Artia','Doris'],
+                OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri'],
 			}
 		},
         characterIntro:{
@@ -1821,22 +1821,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             			
 			//夸
 			kuali:{
-				init:function (player){
-					player.storage.kuali=0;
-				},
 				group:['kuali_zhuDong','kuali_jieshu'],
 				subSkill:{
 					zhuDong:{
 						enable:"phaseUse",
-						usable:1,
 						filter:function(event,player){
+							if(player.hasSkill('kuali_used'))	return false;
 							return game.hasPlayer(function(cur){
-								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)||(cur.hp%player.hp==0);
+								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
+								||(cur.hp%player.hp==0&&cur.hp>0);
 							});
 						},
 						content:function(){
 							'step 0'
-							player.storage.kuali++;
+							player.addTempSkill('kuali_used');
 							player.chooseControlList(
 								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
 								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
@@ -1870,59 +1868,55 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						},
 					},
-				
 			
 					jieshu:{
-						trigger:{player:'phaseEnd'},
-						usable:1,
+						trigger:{player:'phaseJieshuBegin'},
 						priority:40,
 						filter:function(event,player){
-								if(player.storage.kuali!=0){
-									player.storage.kuali=0;
-									return false;
-								}
-								return game.hasPlayer(function(cur){
-									return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
-									||(cur.hp%player.hp==0&&cur.hp>0);
+							if(player.hasSkill('kuali_used'))	return false;
+							return game.hasPlayer(function(cur){
+								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
+								||(cur.hp%player.hp==0&&cur.hp>0);
+							});
+						},
+						content:function(){
+							'step 0'
+							player.addTempSkill('kuali_used');
+							player.chooseControlList(
+								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
+								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
+								true,function(event,player){
+									return _status.event.index;
 								});
-							},
-							content:function(){
-								'step 0'
-								player.storage.kuali++;
-								player.chooseControlList(
-									['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
-									'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
-									true,function(event,player){
-										return _status.event.index;
-									});
-								'step 1'
-								if(result.index==0){
-									player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
-										if(target==player) 				return false;
-										return target.countCards('h')%player.countCards('h')==0;
-									});						
-								}
-								if(result.index==1){
-									var num=-1;
-									game.hasPlayer(function(cur){
-										if(cur.hp%player.hp==0)
-										num++;
-									});
-									player.draw(num);
-									player.loseHp();
-									event.finish();
-								}
-								'step 2'
-									if(result.bool&&result.targets.length)
-									{
-										var num=0;
-										num=Number(result.targets.length);
-										player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
-										player.recover(num);
-									}
-								},
+							'step 1'
+							if(result.index==0){
+								player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+									if(target==player) 				return false;
+									return target.countCards('h')%player.countCards('h')==0;
+								});						
+							}
+							if(result.index==1){
+								var num=-1;
+								game.hasPlayer(function(cur){
+									if(cur.hp%player.hp==0)
+									num++;
+								});
+								player.draw(num);
+								player.loseHp();
+								event.finish();
+							}
+							'step 2'
+							if(result.bool&&result.targets.length)
+							{
+								var num=0;
+								num=Number(result.targets.length);
+								player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
+								player.recover(num);
+							}
 						},
 					},
+					used:{},
+				},
 			},
 			youyi:{
 				trigger:{
@@ -2138,8 +2132,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<ark.length;i++){
 						if(get.suit(event.card)==ark[i])							return false
 					}
-		*/			console.log(player.storage.pekoyu);
-					for(var i=0;i<player.storage.pekoyu.length;i++){
+		*/			for(var i=0;i<player.storage.pekoyu.length;i++){
 						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
 					}
 					return !(event.result.bool == false || event.result.wuxied);			
@@ -2950,17 +2943,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					used:{},
 					clear:{
-						trigger:{global:['damage','damageZero','recoverEnd']},
+						trigger:{global:['damage','damageZero','recoverEnd','useCardEnd']},
 						forced:true,
 						silent:true,
 						popup:false,
 						filter:function(event,player){
 							if(!player.hasSkill('shisang_used'))		return false;
-							return (event.getParent().addedSkill&&event.getParent().addedSkill.contains('shisang'))
-							||(event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('shisang'));
+							if((event.name=='useCard'&&event.addedSkill&&event.addedSkill.contains('shisang')))			return true;
+							if(!(event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('shisang')))		return false;
+							return (event.player==event.getParent(2).targets[event.getParent(2).targets.length-1]);
 						},
 						content:function(){
-							get.info(trigger.card).content = player.storage.shisang_clear;
+							if(get.info(trigger.card).content != player.storage.shisang_clear){
+								get.info(trigger.card).content = player.storage.shisang_clear;
+							}
 						},
 					},
 				}

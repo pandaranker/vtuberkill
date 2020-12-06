@@ -13,6 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			TomoeShirayuki:['female','nijisanji',4,['gonggan','yeyu']],
 			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
+			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
 
 		},
 		characterSort:{
@@ -1129,41 +1130,43 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						dialog.videoId = id;
 					}, event.videoId, event.list1, event.list2, player, target);
 					'step 1'
-					var next = player.chooseButton(true).set('visible', true);
-					next.set('dialog',event.videoId);
-					next.set('selectButton',function(){
-						if(ui.selected.buttons.length%2==1)	return [ui.selected.buttons.length+1,ui.selected.buttons.length+1];
-						return [0,6];
-					});
-					next.set('filterButton',function(button){
-						if(ui.selected.buttons.length%2==1){
-							var now = button.link, pre = ui.selected.buttons[ui.selected.buttons.length-1].link;
-							if(event.list1.contains(now)&&event.list1.contains(pre))	return false;
-							if(event.list2.contains(now)&&event.list2.contains(pre))	return false;
-							if(ui.selected.buttons.length>2){
-								var from = ui.selected.buttons;
-								if(from.length>4){
-									if((get.type(from[0].link)==get.type(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
-									||(get.type(from[2].link)==get.type(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
-										return get.number(now)==get.number(pre);
-									if((get.number(from[0].link)==get.number(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
-									||(get.number(from[2].link)==get.number(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
-										return get.type(now)==get.type(pre);
-									if((get.number(from[0].link)==get.number(from[1].link)&&get.type(from[2].link)==get.type(from[3].link))
-									||(get.number(from[2].link)==get.number(from[3].link)&&get.type(from[0].link)==get.type(from[1].link)))
-										return get.suit(now)==get.suit(pre);
+					game.broadcastAll(function(player){
+						var next = player.chooseButton(true).set('visible', true);
+						next.set('dialog',event.videoId);
+						next.set('selectButton',function(){
+							if(ui.selected.buttons.length%2==1)	return [ui.selected.buttons.length+1,ui.selected.buttons.length+1];
+							return [0,6];
+						});
+						next.set('filterButton',function(button){
+							if(ui.selected.buttons.length%2==1){
+								var now = button.link, pre = ui.selected.buttons[ui.selected.buttons.length-1].link;
+								if(event.list1&&event.list1.length&&event.list1.contains(now)&&event.list1.contains(pre))	return false;
+								if(event.list1&&event.list2.length&&event.list2.contains(now)&&event.list2.contains(pre))	return false;
+								if(ui.selected.buttons.length>2){
+									var from = ui.selected.buttons;
+									if(from.length>4){
+										if((get.type(from[0].link)==get.type(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
+										||(get.type(from[2].link)==get.type(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
+											return get.number(now)==get.number(pre);
+										if((get.number(from[0].link)==get.number(from[1].link)&&get.suit(from[2].link)==get.suit(from[3].link))
+										||(get.number(from[2].link)==get.number(from[3].link)&&get.suit(from[0].link)==get.suit(from[1].link)))
+											return get.type(now)==get.type(pre);
+										if((get.number(from[0].link)==get.number(from[1].link)&&get.type(from[2].link)==get.type(from[3].link))
+										||(get.number(from[2].link)==get.number(from[3].link)&&get.type(from[0].link)==get.type(from[1].link)))
+											return get.suit(now)==get.suit(pre);
+									}else{
+										if(get.type(from[0].link)==get.type(from[1].link))	return get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre);
+										if(get.suit(from[0].link)==get.suit(from[1].link))	return get.type(now)==get.type(pre)||get.number(now)==get.number(pre);
+										if(get.number(from[0].link)==get.number(from[1].link))	return get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre);
+									}
 								}else{
-									if(get.type(from[0].link)==get.type(from[1].link))	return get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre);
-									if(get.suit(from[0].link)==get.suit(from[1].link))	return get.type(now)==get.type(pre)||get.number(now)==get.number(pre);
-									if(get.number(from[0].link)==get.number(from[1].link))	return get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre);
+									return (get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre));
 								}
-							}else{
-								return (get.type(now)==get.type(pre)||get.suit(now)==get.suit(pre)||get.number(now)==get.number(pre));
+								return false;
 							}
-							return false;
-						}
-						return true;
-					});
+							return true;
+						});
+					}, player);
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
@@ -1225,6 +1228,148 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//elu
+			huangran:{
+				trigger:{player:'damageBegin4'},
+				priority: 99,
+				filter:function(event,player){
+					return event.num>=2&&event.nature=='fire'&&game.hasPlayer(function(cur){
+						return cur!=player&&get.distance(player,cur)<=1;
+					});
+				},
+				content:function(){
+					'step 0'
+					player.chooseTarget('###『煌燃』###选择一名角色与自己平摊伤害',function(card,player,target){
+						return target!=player&&get.distance(player,target)==1;
+					});
+					'step 1'
+					if(result.bool){
+						if(trigger.num%2==0){
+							trigger.num/=2;
+							result.targets[0].damage(trigger.num,trigger.source,'fire');
+							event.finish();
+						}else{
+							trigger.num--;
+							trigger.num/=2;
+							result.targets[0].damage(trigger.num,trigger.source);
+							player.chooseTarget(true,'###『煌燃』###分配多余的一点伤害');
+						}
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						result.targets[0].damage(1,trigger.source,'fire')
+					}
+				},
+				group:'huangran_drawBy',
+				subSkill:{
+					drawBy:{
+						trigger:{global:'damage'},
+						priority: 99,
+						filter:function(event,player){
+							return event.nature=='fire'&&event.skill=='huangran_drawBy';
+						},
+						content:function(){
+							player.draw();
+						},
+					}
+				}
+			},
+			yinzhen:{
+				group:['yinzhen_fire','yinzhen_contains','yinzhen_getC'],
+				subSkill:{
+					fire:{
+						trigger:{source:'damageBegin1'},
+						priority: 99,
+						usable: 1,
+						forced:	true,
+						content:function(){
+							trigger.nature='fire';
+						},
+					},
+					contains:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=[];
+						},
+						trigger:{global:'phaseBefore'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							player.storage.yinzhen_contains.length = 0;
+							game.hasPlayer(function(cur){
+								if(cur!=player){
+									player.storage.yinzhen_contains.push(cur);
+									player.storage.yinzhen_contains.push(get.distance(cur,player));
+								}
+							})
+						},
+					},
+					getC:{
+						trigger:{global:'phaseAfter'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							for(var i=0;i<(player.storage.yinzhen_contains.length);i+=2){
+								if(get.distance(player.storage.yinzhen_contains[i],player)<player.storage.yinzhen_contains[i+1]){
+									player.logSkill('yinzhen',player.storage.yinzhen_contains[i]);
+									player.gainPlayerCard('h',player.storage.yinzhen_contains[i],true).set('visible', true);
+								}
+							}
+						},
+					},
+					
+				},
+			},
+			senhu:{
+				group:['senhu_tengjia1','senhu_tengjia2','senhu_tengjia3'],
+				locked:true,
+				ai:{
+					effect:{
+						target:function(card,player,target){
+							if(player==target&&get.subtype(card)=='equip2'){
+								if(get.equipValue(card)<=7.5) return 0;
+							}
+							if(!target.isEmpty(2)) return;
+							return lib.skill.bagua_skill.ai.effect.target.apply(this,arguments);
+						}
+					}
+				},
+				subSkill:{
+					tengjia1:{
+						equipSkill:true,
+						noHidden:true,
+						inherit:'tengjia1',
+						filter:function(event,player){
+							if(!lib.skill.tengjia1.filter(event,player)) return false;
+							if(!player.isEmpty(2)) return false;
+							return true;
+						},
+					},
+					tengjia2:{
+						equipSkill:true,
+						noHidden:true,
+						inherit:'tengjia2',
+						filter:function(event,player){
+							if(!lib.skill.tengjia2.filter(event,player)) return false;
+							if(!player.isEmpty(2)) return false;
+							return true;
+						},
+					},
+					tengjia3:{
+						equipSkill:true,
+						noHidden:true,
+						inherit:'tengjia3',
+						filter:function(event,player){
+							if(!lib.skill.tengjia3.filter(event,player)) return false;
+							if(!player.isEmpty(2)) return false;
+							return true;
+						},
+					},
+				}
+			},
 
 
 			
@@ -1247,7 +1392,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			TakatsukiRitsu: '高槻律',
 			shengya: '生涯',
-			shengya_info: '<font color=#f66>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
+			shengya_info: '<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
 			liangshan: '汉歌',
 			liangshan_info: '其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			liangshan_use_info: '一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
@@ -1276,12 +1421,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liaohu: '逃杀疗护',
 			liaohu_info: '你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
 
-			TomoeShirayuki:'白雪巴',
+			TomoeShirayuki: '白雪巴',
 			gonggan: '奇癖共感',
 			gonggan_info: '其他角色的回合开始时，你可以展示所有手牌然后扣置其中一张，令当前回合角色猜测此牌花色，若猜对，其获得此牌，且本回合你手牌花色、点数均视为与此牌相同；若猜错，你收回此牌，且本回合你手牌点数均视为Q。',
 			yeyu: '夜域女王',
 			yeyu_info: '其他角色使用【杀】时，你可以弃置一张点数大于此【杀】的牌取消之。其他角色使用通常锦囊牌时，你可以重铸一张梅花牌为之增加或减少一名目标。',
 
+			Elu: 'Elu',
+			huangran: '煌燃',
+			huangran_info: '你受到火焰伤害时，可以令与你距离为1的角色与你平均，不能平均的额外1点由你分配。然后每有一名角色因此受伤，你摸一张牌。',
+			yinzhen: '隐真',
+			yinzhen_info: '<font color=#f66>锁定技</font> 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
+			senhu: '森护',
+			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你视为装备着【藤甲】。',
 		},
 	};
 });

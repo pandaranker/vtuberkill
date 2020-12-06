@@ -260,9 +260,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				priority:15,
 				filter:function(event,player){
-					if(!event.target||event.target!=player||event.player==player) return false;
+					if(!event.player||event.target!=player||event.player==player) return false;
 				//使用牌者在攻击距离外	if(player.inRange(event.player)) return false;
-					if(player.next==event.player||player.previous==event.player)
+					if(player.next==event.player || player.previous==event.player)	return false;
 					return (get.type(event.card)=='trick');		//牌为锦囊牌
 				},
 				content:function(){

@@ -22,7 +22,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				filter:function(event,player){
 					if(player.storage.zhigao) return false;
-					return event.num!=0&&player==_status.currentPhase;
+					return event.num!=0&&event.player.isDamaged()&&player==_status.currentPhase;
 				},
 				content:function(){
 					player.awakenSkill('zhigao');
@@ -81,6 +81,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
 						game.delay(0.5);
+						game.log(player,'声明了',result.links[0][2]);
 						player.storage.tiangou.add(result.links[0][2]);
 					}else{
 						event.finish();
@@ -89,6 +90,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget(true,'『天狗食日』：选定一名角色，本轮内只有其能执行声明阶段');
 					'step 4'
 					if(result.bool){
+						player.logSkill('tiangou',result.targets[0]);
 						result.targets[0].addTempSkill('tiangou_limit','roundStart');
 						result.targets[0].storage.tiangou_limit.add(player.storage.tiangou[player.storage.tiangou.length-1]);
 					}
@@ -124,6 +126,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.player!=player&&player.storage.tiangou_limit.contains(event.name);
 						},
 						content:function(){
+							player.logSkill('tiangou',trigger.player);
 							trigger.cancel();
 						},
 						onremove:function(player){
@@ -779,7 +782,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		 translate:{
 			sp_KaguraMea: '皇·神乐めあ',
 			zhigao: '至高权柄',
-			zhigao_info: '<font color=#dfb>限定技</font> 当你对一名已受伤角色造成伤害时，你可以改为扣减其等量的体力上限。',
+			zhigao_info: '<font color=#dfb>限定技</font> 回合内，一名已受伤角色体力值变化时，你可以令此变化改为等量的体力上限变化。',
 			tiangou: '天狗食日',
 			tiangou_info: '一轮开始时，你可以声明一个未声明过的主要阶段并选择一名角色。本轮内只有其能执行此阶段。若均已声明，重置你的所有技能。',
 
