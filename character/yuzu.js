@@ -1240,7 +1240,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.chooseTarget('###『煌燃』###选择一名角色与自己平摊伤害',function(card,player,target){
-						return target!=player&&get.distance(player,target)==1;
+						return target!=player&&get.distance(player,target)<=1;
 					});
 					'step 1'
 					if(result.bool){
@@ -1251,7 +1251,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}else{
 							trigger.num--;
 							trigger.num/=2;
-							result.targets[0].damage(trigger.num,trigger.source);
+							result.targets[0].damage(trigger.num,trigger.source,'fire');
 							player.chooseTarget(true,'###『煌燃』###分配多余的一点伤害');
 						}
 					}else{
@@ -1259,21 +1259,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(result.bool){
-						result.targets[0].damage(1,trigger.source,'fire')
+						result.targets[0].damage(1,trigger.source,'fire');
 					}
 				},
 				group:'huangran_drawBy',
 				subSkill:{
 					drawBy:{
-						trigger:{global:'damage'},
+						trigger:{global:'damageEnd'},
 						priority: 99,
+						forced:true,
 						filter:function(event,player){
-							return event.nature=='fire'&&event.skill=='huangran_drawBy';
+							if(event.player.hasSkill('huangran_shao')) 	return false;
+							console.log(event)
+							return event.nature=='fire'&&event.getParent().name=='huangran';
 						},
 						content:function(){
 							player.draw();
+							trigger.player.addTempSkill('huangran_shao','huangranAfter');
 						},
-					}
+					},
+					shao:{},
 				}
 			},
 			yinzhen:{
@@ -1429,7 +1434,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Elu: 'Elu',
 			huangran: '煌燃',
-			huangran_info: '你受到火焰伤害时，可以令与你距离为1的角色与你平均，不能平均的额外1点由你分配。然后每有一名角色因此受伤，你摸一张牌。',
+			huangran_info: '你受到火焰伤害时，可以选择一名距离为1的角色与你平均承担，不能平均的额外1点由你分配。然后每有一名角色因此受伤，你摸一张牌。',
 			yinzhen: '隐真',
 			yinzhen_info: '<font color=#f66>锁定技</font> 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
 			senhu: '森护',

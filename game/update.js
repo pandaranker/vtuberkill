@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.108',
+	version:'1.9.100.109',
 	update:'1.9.100.97.3',
 	changeLog:[
 		'新增V杀初心角色包（内含部分新角色）',
