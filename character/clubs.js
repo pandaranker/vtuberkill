@@ -326,7 +326,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.card&&get.name(event.card) =='juedou'&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('duixian')&&event.player==player;
 						},
 						content:function(){
-							player.draw();
+							player.draw(2);
 						},
 					},
 					addDam:{
