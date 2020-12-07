@@ -15,7 +15,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
 			/**雫るる */
-			ShizukuLulu:['female','qun',4,['duixian','gutai']],
+			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
