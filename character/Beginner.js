@@ -384,8 +384,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							};
 						});
 					});
-					console.log(repeat);
-					console.log(another);
 					return repeat==1&&another;
 				},
 				content:function(){

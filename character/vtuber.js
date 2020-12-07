@@ -19,12 +19,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**兔妈妈 */
 			InabaHaneru:['female','qun',1,['huangtu','wudao','yinyuan'],['zhu']],
 			/**BFM */
-			UmoriHinako:['female','qun',4,['hongyi','jueshou'],],
+			UmoriHinako:['female','qun',4,['hongyi','jueshou']],
 		},
         characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
-			InuyamaTamaki:'犬山玉姬',
-			XiaoxiXiaotao:'小希小桃',
+			InuyamaTamaki:'犬山玉姬者，草莽微末之士也，原为东都一亭长，后绊爱首义，豪杰并起，犬山自叹曰，金鳞岂是池中物，遂聚族起义，然命运多舛，先败朝廷，又为四天王猜忌，幸而频频与杏社、虹社联动，渐得民心，立国时已四十有六。犬山帐下将军皆封之曰姬，世人戏称之曰娘子军，犬山亦不屑一顾。',
+			XiaoxiXiaotao:'小希者，魔都之望族也，魔都的破坏者，屡欲炸虚研村，后为小桃止之，魔都土妹，穿模之神，多有传说流传于世，小桃者，小希之后辈也，昔有伯乐识千里马，小桃制小希亦是之矣，有沙雕观察广为人知。',
 			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。',
 			Qiankesaier:'',
 		},
@@ -783,7 +783,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:1,
 				popup:false,
 				filter:function(event,player){
-					return event.player!=player;
+					return event.player!=player&&event.num;
 				},
 				content:function(){
 					player.logSkill('zuodun',trigger.player);
@@ -1639,6 +1639,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hongyi_info: '每回合限一次。当出现红色判定结果后，你可以令当前回合角色交给你一张牌。',
 			jueshou: '绝收',
 			jueshou_info: '出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。',
+
 		},
 	};
 });

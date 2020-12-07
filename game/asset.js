@@ -704,6 +704,7 @@ window.noname_asset_list=[
 	'image/character/SakuraMiko.jpg',
 	'image/character/ShirakamiFubuki.jpg',
 	'image/character/ShizukaRin.jpg',
+	'image/character/ShizukuLulu.jpg',
 	'image/character/Siro.jpg',
 	'image/character/SisterClearie.jpg',
 	'image/character/SpadeEcho.jpg',

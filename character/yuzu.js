@@ -22,8 +22,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterIntro:{
-			MinatoAqua:'“余裕余裕~”',
-			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
 			Paryi:'kimo~',
 			OtomeOto:'5000兆円欲しい！ --乙女おと',
 			Civia:'“听我说，DD会带来世界和平~”',

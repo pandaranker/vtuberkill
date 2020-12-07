@@ -14,6 +14,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
+			/**雫るる */
+			ShizukuLulu:['female','qun',4,['duixian','gutai']],
 			
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
@@ -21,13 +23,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
 		},
 		characterIntro:{
-			KaguraMea: '',
-			MiraiAkari: "因为人物设计是曾经创造过初音未来的KEI，因此经常被人称为初音的妹妹。Mirai Akari是一名失忆少女，为了让大家了解自己开始做视频。同时是一位NEET，且拥有一套别墅并作为背景。",
-			kaguraNaNa: "大家好辣！我是从唐辛子星来的，神乐七奈！平常是扮成插画师，偷偷地（？）辛略地球。",
+			Yomemi:' ',
+			KaguraMea: '神乐咩者，东瀛之歌女也，迫于生计西来中原，有《money》、《你好我很可爱》之名曲流传世间，咩性格直爽，以此获众拥簇，却亦因此惹祸上身，V始二十二年，西都陷落，咩于京畿聚众建国，国号曰咩，定元咩啊元年，与杏虹分庭抗礼。',
+			MiraiAkari: "未来明（V始二年），生于荆楚郡望，少时猎虎不慎坠马，遂记忆尽失，同族有长者初音未来，携明识山见水，阿满童年如此。V始十九年，绊爱既首义，天下豪杰并起，明亦王于西南，定国号为ENTUM，后为小人夺之，满知无经纬之才，遁入山中，不闻世事。",
+			kaguraNaNa: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
 			Siro: "siro（V始二年），字小白，别号电脑少女，母孕时梦海豚入怀，小白诞即能言，孩提之时即多识胡语，尤善海豚之言，既加冠，应召入宫，拜左将军V海豚候领幽州牧，善骑射，有神弓曰AKM，军中皆呼战神。",
-			HanazonoSerena: "被您收养的猫娘。主人！从现在开始请多关照喵。",
-			XiaDi: '',
-			Nekomasu: '虚拟口癖萝莉狐娘YouTuber大叔',
+			HanazonoSerena: "花园sarena者（V始三年），青城之猫灵也，清楚三铳士之一，为报帕里之恩追随之，虽体弱多病然擅行刺，V始三年，以松饼鸩杀汉中太守，帕里pro遂建国巴蜀，花园猫不谙世事，常为好事者钓之。V始九年，朝廷出兵百万击巴蜀，大破蜀军，花园猫身中数刀，仍负帕里逃出益州，复还青城，人不知所踪。",
+			XiaDi: '下地者，V8之健将也，自群雄并起，囚人草莽之徒自成一国，名曰V8，V8奉绅宝为主，总领V8事宜，次年勒夫以鸩杀之，夺绅宝之权，下地作丹青《不要以为这样就赢了》缅之，领自家军离V8，后为勒夫击，大败，遁于江城。',
+			Nekomasu: '狐叔者，原国相也，屡谏朝廷，针砭时弊，谗人间之，放于巴蜀，巴蜀有奇人曰野良喵，叔与野良一见如故，尝与青城饮之，后绊爱起义，屡请狐叔，狐叔自认忠于朝廷，屡拒之，叔素修黄帝之道，善养生之经，建宗“养生”，后日竟成第一宗。',
 			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
 		},
 		skill:{
@@ -301,6 +304,84 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//		}
 				}									
 				
+			},
+			//lulu
+			duixian:{
+				trigger:{player:'useCardToPlayer',target:'useCardToPlayer'},
+				usable:1,
+				filter:function(event,player){
+					return get.name(event.card) =='sha';
+				},
+				content:function(){
+					if(!trigger.getParent().addedSkill)	trigger.getParent().addedSkill = [];
+					trigger.getParent().addedSkill.add('duixian');
+					trigger.card.name = 'juedou';
+				},
+				group:['duixian_drawBy','duixian_addDam'],
+				subSkill:{
+					drawBy:{
+						trigger:{global:'damageEnd'},
+						forced:	true,
+						filter:function(event,player){
+							return event.card&&get.name(event.card) =='juedou'&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('duixian')&&event.player==player;
+						},
+						content:function(){
+							player.draw();
+						},
+					},
+					addDam:{
+						trigger:{global:'damageBegin2'},
+						forced:	true,
+						filter:function(event,player){
+							return event.card&&get.name(event.card) =='juedou'&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('duixian')&&event.player!=player;
+						},
+						content:function(){
+							trigger.num++;
+						},
+					}
+				},
+			},
+			gutai:{
+				trigger:{global:'damageEnd'},
+				forced:	true,
+				filter:function(event,player){
+					if(event.player!=player&&event.getParent().player!=player)	return false;
+					return event.card&&get.type(event.card)=='trick'&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
+				},
+				content:function(){
+					if(!trigger.getParent(2).addedSkill)	trigger.getParent(2).addedSkill = [];
+					trigger.getParent(2).addedSkill.add('gutai');
+					console.log(trigger.getParent(2));
+				},
+				group:['gutai_cancelDam','gutai_gainBy'],
+				subSkill:{
+					cancelDam:{
+						trigger:{global:'damageBegin3'},
+						forced:	true,
+						silent: true,
+						popup: false,
+						filter:function(event,player){
+							return event.card&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('gutai');
+						},
+						content:function(){
+							player.logSkill('gutai',trigger.player);
+							trigger.changeToZero();
+						},
+					},
+					gainBy:{
+						trigger:{global:'useCardAfter'},
+						forced:	true,
+						filter:function(event,player){
+							if(event.player==player)	return false;
+							return event.targets.contains(player)&&get.type(event.card)=='trick'&&player.getHistory('damage',function(evt){
+								return evt.card==event.card;
+							}).length==0;
+						},
+						content:function(){
+							player.gain(trigger.cards,'giveAuto');
+						},
+					},
+				},
 			},
 
 			caibu: {
@@ -1371,13 +1452,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以令你于本回合视为不存在。',
 			dunzou_enable: '遁走',
 
-
-
 			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
 			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
+
+			
+			ShizukuLulu: '雫るる',
+			duixian: '对线好手',
+			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，此伤害+1；若你因此受到伤害，你摸两张牌。',
+			gutai: '坐守孤台',
+			gutai_info: '<font color=#f66>锁定技</font> 当你使用一张普通锦囊牌指定1名以上角色为目标时，若此牌对其中一名角色造成伤害，你防止其对其他角色造成伤害；当你成为一张普通锦囊牌的目标时，若此牌对你造成伤害，你防止其对其他角色造成伤害。若此牌没有对任何角色造成伤害，你获得之。',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',

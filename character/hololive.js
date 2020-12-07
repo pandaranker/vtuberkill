@@ -44,14 +44,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
         characterIntro:{
+			MinatoAqua:'“阿库娅者，杏社一孑然水兵，虫蝗起祸之时水军都督欲助之，夸苦谏无果，斩之，人常言名正则言顺，夸亦不惧流言，僭越圣皇之位。如此抗争十月有余，战功赫赫，只身一人斩鬼佬兆计，活华夏民众不可胜数，元昭既为虫蝗惑，出兵连击圣皇，圣皇外抗虫蝗，内拒元昭，日削月割，以至于穷，V始二十四年，姑苏城破，圣皇燔宝器、烧粮草，死战力竭而亡。”',
+			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
+			
 			SakuraMiko: '樱巫女（V始三年）者，神社之巫女也，性坚毅，素有樱火龙之称，子云，食色性也，圣人如此，miko亦然，miko喜黄油，常于配信误启之，虽贵为巫女，护东南诸郡安宁，然不识诗书，有《FAQ》、《倪哥》为众人笑，V始十九年，朝廷窜东南，miko力拒之，自封自由领，不受诸侯管制',
-			HoshimatiSuisei:'星街彗星（V始三年），北海人也，少时贫寒，彗酱一心求学，从当世之先达元昭执经叩问，元昭深器之，彗酱豆蔻之年即通晓诸经，人莫不言之曰天道酬勤，六边形战士之名世人皆知。V始十三年绊爱首义，彗酱自投笔从戎，有tst之神兵，杏国拜之曰上将军',
-            TokinoSora:'混沌的尽头，少女的回旋曲，杏社起始同时也是终末的清楚担当，全杏社圆桌骑士之首，空友之母，反抗军的破坏者、狮心之人、大杏社的卡丽熙、hololive真主、永不恐惧者、阿芙乐尔公主，时乃空是也',
-            YozoraMel:'夜空梅露',
-            AkaiHaato:'赤井心，京师名医之后也，嗜食成性，有《药膳经》流于世，其药多先夺人命后生之，用者莫不谈之色变，食尤喜沙琪玛，每日贡食入府，左右皆呼“哈恰玛恰玛”，后元昭起势，心随夏色祭往拜之，从军十年活人兆计，后拜土澳公主，总领土澳事宜。',
-            NatsuiroMatsuri:'夏色祭（V始二年）者，元昭之同族也，自党锢之祸后，元昭暗谋国事，遣祭访天下名士，得名士四人，是为杏国一期，祭不拘小节，最喜呼吸，同社皆避之，既为混沌传说，一般露○可轻言之，建功累累，元昭尊为第一将军',
-            RobokoSan:'萝卜子（V始三年）者，奇巧士之造物也，自号高性能机器人，实则不善文书，萝卜起于草莽，生性豪爽，后为时乃空所动，随杏社征战，V始二十年，杏国攻灭诸侯，远交近攻，俨然有大一统之势，萝卜子拜平南王福禄将军，安于南方',
-            ShirakamiFubuki:'白上吹雪者，青丘之狐也，夏色祭以玉米赚之，V始十五年，朝廷击绊爱于桐江，大破之，又击之于宛城，斩爱之左将军，一时人皆自危，起义初显败势，吹雪自领百骑迂回西南袭朝廷于后，解绊爱众叛亲离之危，重兴V国大业，吹雪虽为狐灵，然生猫态，憨态可掬',
+			HoshimatiSuisei: '星街彗星（V始三年），北海人也，少时贫寒，彗酱一心求学，从当世之先达元昭执经叩问，元昭深器之，彗酱豆蔻之年即通晓诸经，人莫不言之曰天道酬勤，六边形战士之名世人皆知。V始十三年绊爱首义，彗酱自投笔从戎，有tst之神兵，杏国拜之曰上将军，后党锢事泄，世人皆知元昭欺世盗名之徒，星街亦惶惶不可终日，随杏败走瀛洲。',
+			TokinoSora: '混沌的尽头，少女的回旋曲，杏社起始同时也是终末的清楚担当，全杏社圆桌骑士之首，空友之母，反抗军的破坏者、狮心之人、大杏社的卡丽熙、hololive真主、永不恐惧者、阿芙乐尔公主，时乃空是也',
+			YozoraMel: '夜空梅露者，西界之吸血鬼也，面容婧然身材出众，曾因人拒同族长者，为血族放，梅露东奔长安，于苑中为歌女，惹得京城子弟风流，夏色祭既受元昭令，以樱桃汁赚梅露，遂从祭拜杏国，元昭拜之曰南阳县主。',
+			AkaiHaato: '赤井心，京师名医之后也，嗜食成性，有《药膳经》流于世，其药多先夺人命后生之，用者莫不谈之色变，食尤喜沙琪玛，每日贡食入府，左右皆呼“哈恰玛恰玛”，后元昭起势，心随夏色祭往拜之，从军十年活人兆计，后拜土澳公主，总领土澳事宜。',
+			AkiRosenthal: 'aki者，蓬莱之仙子也，天帝遣aki携神兵助元昭起义师，aki遂下界，恰逢时乃空见欺，朝廷围之，aki使奥术魔刃斩之，只一合，朝廷三十万军士灰飞烟灭，杏军皆呼之曰神，有反重力之发辫二，元昭欲留aki，aki婉拒之，还复天界，不知所踪。',
+			NatsuiroMatsuri: '夏色祭（V始二年）者，元昭之同族也，自党锢之祸后，元昭暗谋国事，遣祭访天下名士，得名士四人，是为杏国一期，祭不拘小节，最喜呼吸，同社皆避之，既为混沌传说，一般露○可轻言之，建功累累，元昭尊为第一将军',
+			RobokoSan: '萝卜子（V始三年）者，奇巧士之造物也，自号高性能机器人，实则不善文书，萝卜起于草莽，生性豪爽，后为时乃空所动，随杏社征战，V始二十年，杏国攻灭诸侯，远交近攻，俨然有大一统之势，萝卜子拜平南王福禄将军，安于南方',
+			ShirakamiFubuki: '白上吹雪者，青丘之狐也，夏色祭以玉米赚之，V始十五年，朝廷击绊爱于桐江，大破之，又击之于宛城，斩爱之左将军，一时人皆自危，起义初显败势，吹雪自领百骑迂回西南袭朝廷于后，解绊爱众叛亲离之危，重兴V国大业，后虫蝗起祸，元昭绥靖，吹雪亦听之任之，遂成大乱。',
         },
 		skill:{
 			taiyangzhiyin:{
@@ -2142,7 +2146,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.pekoyu.add(get.suit(trigger.card));
 					console.log(player.storage.pekoyu);
 					player.draw(),
-					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h').set('ai',function(card){
+					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h',true).set('ai',function(card){
 						var name = card.name;
 						if(name=='jiu') 			return 120;
 						if(get.type(card)=='trick')	return 40;
@@ -2914,8 +2918,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//Yogiri
 			shisang:{
-				trigger:{player:'useCard'},
+				trigger:{player:'useCardToTarget'},
 				priority:42,
+				check:function(event,player){
+					if(player.hasSkill('shisang_used'))	return get.attitude(player,event.targets[0])<0
+					return !player.hasSkill('shisang_used')&&event.targets[0].isDamaged()&&get.attitude(player,event.targets[0])>0;
+				},
 				filter:function(event,player){
 					return player.isPhaseUsing()&&!player.hasSkill('shisang_used');
 				},
@@ -2924,8 +2932,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return '可以将此牌的效果改为 令目标回复1点体力';
 				},
 				content:function(){
-					if(!trigger.addedSkill)	trigger.addedSkill = [];
-					trigger.addedSkill.add('shisang');
+					if(!trigger.getParent().addedSkill)	trigger.getParent().addedSkill = [];
+					trigger.getParent().addedSkill.add('shisang');
 					if(player.storage.shisang_clear)	delete player.storage.shisang_clear;
 					player.storage.shisang_clear = get.info(trigger.card).content;
 					if(player.hasSkill('wanjie_change')){
