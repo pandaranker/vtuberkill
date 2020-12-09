@@ -373,9 +373,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:	true,
 						filter:function(event,player){
 							if(event.player==player)	return false;
-							return event.targets.contains(player)&&get.type(event.card)=='trick'&&player.getHistory('damage',function(evt){
-								return evt.card==event.card;
-							}).length==0;
+							return event.targets.contains(player)&&get.type(event.card)=='trick'&&!game.hasPlayer(function(cur){
+								return player.getHistory('damage',function(evt){
+									return evt.card==event.card;
+								}).length>0
+							});
 						},
 						content:function(){
 							player.gain(trigger.cards,'giveAuto');

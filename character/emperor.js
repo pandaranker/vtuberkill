@@ -8,10 +8,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
 			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']],
 		},
-		 characterIntro:{
-			sp_MinatoAqua: '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
-		 },
-		 skill:{
+        characterIntro:{
+			sp_MinatoAqua:	 '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
+		},
+		skill:{
 			//欧皇咩
 			zhigao:{
 				skillAnimation:true,

@@ -11,9 +11,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
 
-			TomoeShirayuki:['female','nijisanji',4,['gonggan','yeyu']],
+			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
+			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
 
 		},
 		characterSort:{
@@ -25,9 +26,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Paryi:'kimo~',
 			OtomeOto:'5000兆円欲しい！ --乙女おと',
 			Civia:'“听我说，DD会带来世界和平~”',
-
-			sp_MinatoAqua:'',
-			sp_MononobeAlice:'',
 		},
 		skill:{
 			
@@ -1373,6 +1371,86 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
+			//ssk
+			tiaolian:{
+				trigger:{player:'useCardToPlayer', target:'useCardToTarget'},
+				usable:1,
+				filter:function(event,player){
+					if(event.player==player&&!game.hasPlayer(function(cur){
+						return event.targets.contains(cur)&&cur!=player;
+					}))	return false;
+					return player.countCards('h')>0;
+				},
+				content:function(){
+					'step 0'
+					if(trigger.targets.contains(player)&&trigger.player!=player){
+						player.chooseToCompare(trigger.player);
+					}
+					'step 1'
+					if(trigger.targets.contains(player)&&trigger.player!=player){
+						if(result.bool){
+							trigger.getParent().targets.remove(player);
+							game.log(trigger.card,'不会对',player,'生效');
+						}
+						event.finish();
+					}
+					'step 2'
+					event.targets = trigger.targets;
+					console.log(event.targets);
+					var next = player.chooseTarget('###咆咲###选择拼点的对象',true);
+					next.set('filterTarget',function(card,player,target){
+						return player.canCompare(target)&&event.targets.contains(target);
+					})
+					next.set('selectTarget',[1,event.targets.length]);
+					next.set('multitarget',true);
+					next.set('multiline',true)
+					'step 3'
+					if(result.bool){
+						player.chooseToCompare(result.targets).callback=lib.skill.tiaolian.callback;
+					}
+				},
+			//	chat:['粗鄙之语','天地不容','谄谀之臣','皓首匹夫，苍髯老贼','二臣贼子','断脊之犬','我从未见过有如此厚颜无耻之人！'],
+				callback:function(){
+					'step 0'
+					if(event.num1<=event.num2){
+			//			target.chat(lib.skill.tiaolian.chat[Math.floor(Math.random()*5)]);
+						event.getParent(2)._trigger.targets.remove(target);
+						game.log(event.getParent(2)._trigger.card,'不会对',target,'生效');
+						game.delay();
+					}
+					'step 1'
+					if(event.num1>event.num2){
+						event.getParent(2)._trigger.directHit.add(target);
+						game.log(target,'不能响应',event.getParent(2)._trigger.card);
+						game.delay();
+					}
+				},
+			},
+			jiaku:{
+				trigger:{player:['chooseToCompareAfter','compareMultipleAfter'],target:['chooseToCompareAfter','compareMultipleAfter']},
+				forced: true,
+				filter:function(event,player){
+					console.log(event)
+					return !event.iwhile;
+				},
+				content:function(){
+					if(player==trigger.player){
+						if(trigger.num1>trigger.num2){
+							player.gainPlayerCard('###生笹###获得对方的一张牌',trigger.target,true);
+						}
+						else{
+							player.draw();
+						}
+					}else{
+						if(trigger.num2>trigger.num1){
+							player.gainPlayerCard('###生笹###获得对方的一张牌',trigger.player,true);
+						}
+						else{
+							player.draw();
+						}
+					}
+				},
+			},
 
 
 			
@@ -1424,7 +1502,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liaohu: '逃杀疗护',
 			liaohu_info: '你造成过伤害的回合结束时，若该回合未发动/发动了“花吻交染”，你可以令你/本轮“花吻交染”选择的其他角色回复1点体力。',
 
-			TomoeShirayuki: '白雪巴',
+			ShirayukiTomoe: '白雪巴',
 			gonggan: '奇癖共感',
 			gonggan_info: '其他角色的回合开始时，你可以展示所有手牌然后扣置其中一张，令当前回合角色猜测此牌花色，若猜对，其获得此牌，且本回合你手牌花色、点数均视为与此牌相同；若猜错，你收回此牌，且本回合你手牌点数均视为Q。',
 			yeyu: '夜域女王',
@@ -1437,6 +1515,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yinzhen_info: '<font color=#f66>锁定技</font> 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
 			senhu: '森护',
 			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你视为装备着【藤甲】。',
+
+			SasakiSaku: '笹木咲',
+			tiaolian: '咆咲',
+			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效。每回合限一次。',
+			jiaku: '生笹',
+			jiaku_info: '锁定技。你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 		},
 	};
 });

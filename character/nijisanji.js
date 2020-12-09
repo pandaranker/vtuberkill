@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**家长麦 */
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
-			MitoTsukino:['female','nijisanji',3,['mark2_bingdielei'],['zhu']],
+			MitoTsukino:['female','nijisanji',3,['mark_bingdielei'],['zhu']],
 			/**宇志海莓 */
 			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
 			/**铃鹿诗子 */
@@ -1249,17 +1249,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						marktext: '并',
 						mark:true,
-						silent:true,
-						forced:true,
+						filter:function(event,player){
+							return player.countCards('he',{suit:'club'})||player.countCards('he',{type:'equip'});
+						},
+						prompt2:'你可以弃置一张♣或装备牌以获得一个额外回合',
 						intro: {
-							content:'当前回合结束后获得一个额外回合',
+							content:'当前回合结束后可以获得一个额外回合',
 							name:'并蒂恶蕾',
 						},
 						content:function(){
-							player.markSkill(event.name);
-							game.delayx();
-							player.logSkill(event.name);
-							player.insertPhase();
+							'step 0'
+							player.chooseToDiscard('弃置一张♣或装备牌以获得一个额外回合','he',function(card){
+								return get.suit(card)=='club'||get.type(card)=='equip';
+							})
+							'step 1'
+							if(result.bool){
+								player.markSkill(event.name);
+								game.delayx();
+								player.logSkill(event.name);
+								player.insertPhase();
+							}
 						},
 					},
 				},
@@ -2199,7 +2208,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiujinzhiling_info:'<font color=#ff4>主公技</font> <font color=#f66>锁定技</font> 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
 
 			mark_bingdielei: '并蒂恶蕾',
-			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，获得一个额外回合。',
+			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。',
 			
 			mark2_bingdielei: '并蒂恶蕾',
             mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
