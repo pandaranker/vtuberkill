@@ -1389,6 +1389,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(result.bool){
 							trigger.getParent().targets.remove(player);
 							game.log(trigger.card,'不会对',player,'生效');
+							if(event.getParent(2)._trigger.targets.length==0)	event.getParent(2)._trigger.cancel();
 						}
 						event.finish();
 					}
@@ -1415,6 +1416,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//			target.chat(lib.skill.tiaolian.chat[Math.floor(Math.random()*5)]);
 						event.getParent(2)._trigger.targets.remove(target);
 						game.log(event.getParent(2)._trigger.card,'不会对',target,'生效');
+						if(event.getParent(2)._trigger.targets.length==0)	event.getParent(2)._trigger.cancel();
 						game.delay();
 					}
 					'step 1'

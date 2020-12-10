@@ -1520,7 +1520,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				position:'he',
-				filterCard:function(card){
+				filterCard:function(card,player){
 					if(get.type(card,'trick')=='trick') return false;
 					return get.color(card)=='black'&&get.owner(card)==player;
 				},
