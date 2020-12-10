@@ -369,18 +369,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var history = event.player.getHistory('useCard');
 					var num = 0;
 					history.forEach(function(his){
-						num += his.card.length;
+						if(his.card)	num ++;
 					});
-					return event.player!=player&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
+					return event.player!=player&&event.player.countCards('h')&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
 				content:function(){
 					'step 0'
 					game.broadcastAll(function(player, target){
-						player.choosePlayerCard('获得其中至多'+(target.hasSkill('zhai')?target.countMark('zhai')+1:1)+'张牌',target,[1,(target.hasSkill('zhai')?target.countMark('zhai')+1:1)],'h').set('visible', true);
+						player.choosePlayerCard('###『观宅』###获得其中至多'+(target.hasSkill('zhai')?target.countMark('zhai')+1:1)+'张牌',target,[1,(target.hasSkill('zhai')?target.countMark('zhai')+1:1)],'h').set('visible', true);
 					}, player, trigger.player)
 					'step 1'
 					if(result.bool){
-						player.logSkill('guanzhai',trigger.player)
+						player.logSkill('guanzhai',trigger.player);
 						player.gain(result.cards,trigger.player,'giveAuto');
 					}
 				},
@@ -602,20 +602,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			qiepian:{
 				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill] = 0;
+					player.storage[skill]=[];
+				},
+				locked:true,
+				notemp:true,
+				marktext: '崛',
+				intro: {
+					content: 'cards',
+					name:'以『连崛』使用过的锦囊牌',
 				},
 				group:['qiepian_start','qiepian_end'],
 				subSkill:{
 					start:{
 						init:function(player,skill){
-							if(!player.storage[skill]) player.storage[skill]=[];
-						},
-						locked:true,
-						notemp:true,
-						marktext: '崛',
-						intro: {
-							content: 'cards',
-							name:'以『连崛』使用过的锦囊牌',
+							if(!player.storage[skill]) player.storage[skill] = 0;
 						},
 						trigger:{player:'phaseBefore'},
 						firstDo:true,
@@ -623,18 +623,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						popup:false,
 						priority:66,
-						filter:function(event,player){
-							return true;
-						},
 						content:function(){
-							player.storage.qiepian = player.countCards('h');
+							player.storage.qiepian_start = player.countCards('h');
 						},
 					},
 					end:{
 						trigger:{player:'phaseEnd'},
 						priority:66,
+						prompt2: '你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',
 						filter:function(event,player){
-							return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian-player.countCards('h'))%3==0);
+							return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian_start-player.countCards('h'))%3==0);
 						},
 						content:function(){
 							'step 0'
@@ -660,8 +658,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									for(var i=0;i<lib.inpile.length;i++){
 										var name=lib.inpile[i];
 										var reapeat = 0;
-										if(player.storage.qiepian_start.length){
-											player.storage.qiepian_start.forEach(function(his){	
+										if(player.storage.qiepian.length){
+											player.storage.qiepian.forEach(function(his){	
 												if(get.name(his)==name) reapeat ++;
 											});
 										}
@@ -697,9 +695,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if (result.bool){
 								var card = result.links[0];
 								player.chooseUseTarget({name:card[2]},true);
-								player.storage.qiepian_start.add(game.createCard(card[2]));
-								player.syncStorage('qiepian_start');
-								player.markSkill('qiepian_start');
+								player.storage.qiepian.add(game.createCard(card[2]));
+								player.syncStorage('qiepian');
+								player.markSkill('qiepian');
 							}
 						},
 					},
@@ -1396,14 +1394,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					event.targets = trigger.targets;
-					console.log(event.targets);
-					var next = player.chooseTarget('###咆咲###选择拼点的对象',true);
-					next.set('filterTarget',function(card,player,target){
-						return player.canCompare(target)&&event.targets.contains(target);
-					})
-					next.set('selectTarget',[1,event.targets.length]);
-					next.set('multitarget',true);
-					next.set('multiline',true)
+					game.broadcastAll(function(player,targets){
+						var next = player.chooseTarget('###『咆咲』###选择拼点的对象',true);
+						next.set('filterTarget',function(card,player,target){
+							return player.canCompare(target)&&targets.contains(target);
+						})
+						next.set('selectTarget',[1,targets.length]);
+						next.set('multitarget',true);
+						next.set('multiline',true)
+					},player,event.targets);
 					'step 3'
 					if(result.bool){
 						player.chooseToCompare(result.targets).callback=lib.skill.tiaolian.callback;
@@ -1436,14 +1435,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					if(player==trigger.player){
 						if(trigger.num1>trigger.num2){
-							player.gainPlayerCard('###生笹###获得对方的一张牌',trigger.target,true);
+							player.gainPlayerCard('###『生笹』###获得对方的一张牌',trigger.target,true);
 						}
 						else{
 							player.draw();
 						}
 					}else{
 						if(trigger.num2>trigger.num1){
-							player.gainPlayerCard('###生笹###获得对方的一张牌',trigger.player,true);
+							player.gainPlayerCard('###『生笹』###获得对方的一张牌',trigger.player,true);
 						}
 						else{
 							player.draw();

@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.100.111',
+	version:'1.9.100.112',
 	update:'1.9.100.99.3',
 	changeLog:[
 		'新增V杀初心角色包（内含部分新角色）',
@@ -11,6 +11,7 @@ window.noname_update={
 		'可以在“选项-显示”里切换为三国杀原版卡图',
 	],
 	files:[
+		'image/character/HiguchiKaede.jpg',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
 		// 'image/card/du.png',

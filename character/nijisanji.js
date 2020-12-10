@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**家长麦 */
 			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
-			MitoTsukino:['female','nijisanji',3,['mark_bingdielei'],['zhu']],
+			MitoTsukino:['female','nijisanji',3,['mark_bingdielei','mark_quanxinquanyi'],['zhu']],
 			/**宇志海莓 */
 			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
 			/**铃鹿诗子 */
@@ -1259,7 +1259,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseToDiscard('弃置一张♣或装备牌以获得一个额外回合','he',function(card){
+							player.chooseToDiscard('###『并蒂恶蕾』###弃置一张♣或装备牌以获得一个额外回合','he',function(card){
 								return get.suit(card)=='club'||get.type(card)=='equip';
 							})
 							'step 1'
@@ -1273,7 +1273,130 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
-			
+			mark_quanxinquanyi:{
+				init:function(player,skill){
+					player.storage[skill]=[];
+				},
+				group:['mark_quanxinquanyi_begin','mark_quanxinquanyi_saycards','mark_quanxinquanyi_loseBy','mark_quanxinquanyi_endRound'],
+				subSkill:{
+					begin:{
+						trigger:{global:'roundStart'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							'step 0'
+							if(player.hasMark('mark_quanxinquanyi_saycards')) player.unmarkSkill('mark_quanxinquanyi_saycards');
+							if (!player.storage.mark_quanxinquanyi_loseBy) player.storage.mark_quanxinquanyi_loseBy = true;
+							player.storage.mark_quanxinquanyi_saycards.length = 0;
+							'step 1'
+							player.chooseBool('###是否发动『全新全异』###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
+							'step 2'
+							if(!result.bool)	event.finish();
+							player.logSkill('mark_quanxinquanyi');
+							event.videoId = lib.status.videoId++;
+							var list=[];
+							for(var i=0;i<lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								var reapeat = 0;
+								if(player.storage.mark_quanxinquanyi.length){
+									player.storage.mark_quanxinquanyi.forEach(function(his){	
+										if(get.name(his)==name) reapeat ++;
+									});
+								}
+								if(reapeat||name=='wuxie'||name=='jinchan') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							game.broadcastAll(function(id, list){
+								var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
+								dialog.videoId = id;
+							}, event.videoId, list);
+							'step 3'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							'step 4'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool) {
+								player.storage.mark_quanxinquanyi_saycards.add(result.links[0][2]);
+								player.storage.mark_quanxinquanyi.add(result.links[0][2]);
+								player.showCards(player.storage.mark_quanxinquanyi_saycards,'『全新全异』（声明）');
+								player.syncStorage('mark_quanxinquanyi_saycards');
+								player.markSkill('mark_quanxinquanyi_saycards');
+							}
+						}
+					},
+					saycards:{
+						init:function(player,skill){
+							if (!player.storage.mark_quanxinquanyi_saycards) {
+								player.storage.mark_quanxinquanyi_saycards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '异',
+						intro: {
+							content: function(storage,player){
+								if(player.storage.mark_quanxinquanyi_loseBy) return '声明了【'+get.translation(player.storage.mark_quanxinquanyi_saycards)+'】';
+								else return '声明了【'+get.translation(player.storage.mark_quanxinquanyi_saycards)+'】,当前轮次已有同名牌进入弃牌堆';
+							},
+							name:'『全新全异』',
+						}
+					},
+					loseBy:{
+						init:function(player,skill){
+							if (!player.storage[skill]){
+								player.storage[skill] = true;
+							}
+						},
+						trigger:{global:'phaseEnd'},
+						priority:999,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return game.getGlobalHistory('cardMove',function(evt){
+								if(evt.name=='cardsDiscard'||(evt.name=='lose'&&evt.position==ui.discardPile)){
+									var num = 0;
+									evt.cards.forEach(function(card){
+										if(get.name(card)==player.storage.mark_quanxinquanyi_saycards[0])	num++;
+									})
+									return num;
+								}
+							}).length;;
+						},
+						content:function(){
+							player.storage.mark_quanxinquanyi_loseBy = false;
+							player.markSkill('mark_quanxinquanyi_saycards');
+						}
+					},
+					endRound:{
+						trigger:{global:'roundStart'},
+						priority:999,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return player.storage.mark_quanxinquanyi_saycards.length&&player.storage.mark_quanxinquanyi_loseBy;
+						},
+						content:function(){
+							'step 0'
+							if(!player.hasUseTarget({name:player.storage.mark_quanxinquanyi_saycards})){
+								event.goto(3);
+							}
+							'step 1'
+							player.chooseCard('###『全新全异』##是否将一张牌当作声明牌使用？',1)
+							'step 2'
+							if(result.bool){
+								player.logSkill('mark_quanxinquanyi');
+								player.chooseUseTarget(result.cards,{name:player.storage.mark_quanxinquanyi_saycards},true,false);
+							}
+							'step 3'
+							player.removeSkill('mark_quanxinquanyi_saycards');
+							player.removeSkill('mark_quanxinquanyi_endRound');
+						}
+					}
+				}
+			},
 			mark2_bingdielei:{
                 group:'mark2_bingdielei_damageBy',
 				subSkill:{
@@ -2209,6 +2332,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			mark_bingdielei: '并蒂恶蕾',
 			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。',
+			mark_quanxinquanyi:'全新全异',
+			mark_quanxinquanyi_info:'一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。',
 			
 			mark2_bingdielei: '并蒂恶蕾',
             mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
