@@ -1292,25 +1292,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							player.chooseBool('###是否发动『全新全异』###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
 							'step 2'
-							if(!result.bool)	event.finish();
-							player.logSkill('mark_quanxinquanyi');
-							event.videoId = lib.status.videoId++;
-							var list=[];
-							for(var i=0;i<lib.inpile.length;i++){
-								var name=lib.inpile[i];
-								var reapeat = 0;
-								if(player.storage.mark_quanxinquanyi.length){
-									player.storage.mark_quanxinquanyi.forEach(function(his){	
-										if(get.name(his)==name) reapeat ++;
-									});
+							if(result.bool){
+								player.logSkill('mark_quanxinquanyi');
+								event.videoId = lib.status.videoId++;
+								var list=[];
+								for(var i=0;i<lib.inpile.length;i++){
+									var name=lib.inpile[i];
+									var reapeat = 0;
+									if(player.storage.mark_quanxinquanyi.length){
+										player.storage.mark_quanxinquanyi.forEach(function(his){	
+											if(his==name) reapeat ++;
+										});
+									}
+									if(reapeat||name=='wuxie'||name=='jinchan') continue;
+									else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 								}
-								if(reapeat||name=='wuxie'||name=='jinchan') continue;
-								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+								game.broadcastAll(function(id, list){
+									var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
+									dialog.videoId = id;
+								}, event.videoId, list);
+							}else{
+								event.finish();
 							}
-							game.broadcastAll(function(id, list){
-								var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
-								dialog.videoId = id;
-							}, event.videoId, list);
 							'step 3'
 							var next = player.chooseButton(1 ,true);
 							next.set('dialog',event.videoId);
@@ -1319,7 +1322,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if (result.bool) {
 								player.storage.mark_quanxinquanyi_saycards.add(result.links[0][2]);
 								player.storage.mark_quanxinquanyi.add(result.links[0][2]);
-								player.showCards(player.storage.mark_quanxinquanyi_saycards,'『全新全异』（声明）');
+								game.log(player,'的『全新全异』声明了【',player.storage.mark_quanxinquanyi_saycards,'】');
 								player.syncStorage('mark_quanxinquanyi_saycards');
 								player.markSkill('mark_quanxinquanyi_saycards');
 							}
@@ -1381,7 +1384,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							if(!player.hasUseTarget({name:player.storage.mark_quanxinquanyi_saycards})){
-								event.goto(3);
+								event.finish();
 							}
 							'step 1'
 							player.chooseCard('###『全新全异』##是否将一张牌当作声明牌使用？',1)
@@ -1390,9 +1393,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.logSkill('mark_quanxinquanyi');
 								player.chooseUseTarget(result.cards,{name:player.storage.mark_quanxinquanyi_saycards},true,false);
 							}
-							'step 3'
-							player.removeSkill('mark_quanxinquanyi_saycards');
-							player.removeSkill('mark_quanxinquanyi_endRound');
 						}
 					}
 				}

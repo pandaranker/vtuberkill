@@ -1522,7 +1522,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'he',
 				filterCard:function(card){
 					if(get.type(card,'trick')=='trick') return false;
-					return get.color(card)=='black';
+					return get.color(card)=='black'&&get.owner(card)==player;
 				},
 				check:function(card){
 					return 7-get.value(card);
