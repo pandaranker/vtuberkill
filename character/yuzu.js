@@ -309,6 +309,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					use:{
 						trigger:{global:'phaseBegin'},
 						priority: 998,
+						check:function(event,player){
+							return get.attitude(player,event.player)>0;
+						},
 						filter:function(event,player){
 							return player.storage.liangshan.length;
 						},
@@ -329,6 +332,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					save:{
 						trigger:{global:'dying'},
+						priority: 998,
+						check:function(event,player){
+							return get.attitude(player,event.player)>0;
+						},
 						filter:function(event,player){
 							return event.player.hp<=0&&player.storage.liangshan.length;
 						},
@@ -1264,7 +1271,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						filter:function(event,player){
 							if(event.player.hasSkill('huangran_shao')) 	return false;
-							console.log(event)
 							return event.nature=='fire'&&event.getParent().name=='huangran';
 						},
 						content:function(){
@@ -1279,10 +1285,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['yinzhen_fire','yinzhen_contains','yinzhen_getC'],
 				subSkill:{
 					fire:{
-						trigger:{source:'damageBegin1'},
+						trigger:{global:'damageBegin1'},
 						priority: 99,
 						usable: 1,
 						forced:	true,
+				/*		filter:function(event,player){
+							return player!=event.source;
+						},*/
 						content:function(){
 							trigger.nature='fire';
 						},
@@ -1323,7 +1332,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			senhu:{
-				group:['senhu_tengjia1','senhu_tengjia2','senhu_tengjia3'],
+				group:['senhu_tengjia2'],
+			//	group:['senhu_tengjia1','senhu_tengjia2','senhu_tengjia3'],
 				locked:true,
 				ai:{
 					effect:{
@@ -1375,8 +1385,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				usable:1,
 				filter:function(event,player){
 					if(event.player==player&&!game.hasPlayer(function(cur){
-						return event.targets.contains(cur)&&cur!=player;
+						return event.targets.contains(cur)&&cur!=player&&player.canCompare(cur);
 					}))	return false;
+					if(event.player!=player&&!player.canCompare(event.player))	return false;
 					return player.countCards('h')>0;
 				},
 				content:function(){
@@ -1389,7 +1400,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(result.bool){
 							trigger.getParent().targets.remove(player);
 							game.log(trigger.card,'不会对',player,'生效');
-							if(event.getParent(2)._trigger.targets.length==0)	event.getParent(2)._trigger.cancel();
+							if(trigger.getParent().targets.length==0)	trigger.getParent().cancel();
+						}else{
+							trigger.getParent().directHit.add(player);
+							game.log(player,'不能响应',trigger.getParent().card);
 						}
 						event.finish();
 					}
@@ -1515,11 +1529,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yinzhen: '隐真',
 			yinzhen_info: '<font color=#f66>锁定技</font> 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
 			senhu: '森护',
-			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你视为装备着【藤甲】。',
+			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你受到的火焰伤害+1。',
 
 			SasakiSaku: '笹木咲',
 			tiaolian: '咆咲',
-			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效。每回合限一次。',
+			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
 			jiaku: '生笹',
 			jiaku_info: '锁定技。你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 		},

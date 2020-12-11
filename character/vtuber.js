@@ -519,7 +519,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				//alter:true,
 				filter:function (event,player){
-					if(event.source==undefined) return false;
+					if(event.source==undefined||event.source==player) return false;
 					if(event.source.hasSkill('rongyaochengyuan_homolive')) return false;
 					return true;
 				},

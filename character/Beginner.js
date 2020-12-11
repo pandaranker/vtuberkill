@@ -410,20 +410,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.hp==player.maxHp&&player.sex=='female'){
 						player.sex = 'male';
 						player.markSkill('liansheng');
-						game.log(player,'将性别变更为','#g'+get.translation(player.sex));
+						game.log(player,'的性别变更为','#g'+get.translation(player.sex));
 						if(_status.currentPhase.sex=='female')	player.draw();
 					}
 					if(player.hp<player.maxHp&&player.sex=='male'){
 						player.sex = 'female';
 						player.markSkill('liansheng');
-						game.log(player,'将性别变更为','#g'+get.translation(player.sex));
+						game.log(player,'的性别变更为','#g'+get.translation(player.sex));
 						if(_status.currentPhase.sex=='female')	player.draw();
 					}
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player){
-						if(player.sex=='unknown') return '当前性别未确定';
 						return '当前性别：'+get.translation(player.sex);
 					},
 				},

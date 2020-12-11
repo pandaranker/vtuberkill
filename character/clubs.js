@@ -317,7 +317,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.getParent().addedSkill.add('duixian');
 					trigger.card.name = 'juedou';
 				},
-				group:['duixian_drawBy','duixian_addDam'],
+				group:['duixian_drawBy','duixian_disCard'],
 				subSkill:{
 					drawBy:{
 						trigger:{global:'damageEnd'},
@@ -329,32 +329,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.draw(2);
 						},
 					},
-					addDam:{
-						trigger:{global:'damageBegin2'},
-						forced:	true,
+					disCard:{
+						trigger:{global:'damage'},
+						prompt2:'你可弃置对方一张牌',
 						filter:function(event,player){
-							return event.card&&get.name(event.card) =='juedou'&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('duixian')&&event.player!=player;
+							return event.card&&get.name(event.card) =='juedou'&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('duixian')&&event.player!=player&&event.player.countCards('he');
 						},
 						content:function(){
-							trigger.num++;
+							player.discardPlayerCard('###『守峡』###弃置对方一张牌',trigger.player,'he');
 						},
 					}
 				},
 			},
 			gutai:{
 				trigger:{global:'damageEnd'},
-				forced:	true,
 				filter:function(event,player){
 					if(event.player!=player&&event.getParent().player!=player)	return false;
 					return event.card&&get.type(event.card)=='trick'&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
 				},
 				content:function(){
-					if(!trigger.getParent(2).addedSkill)	trigger.getParent(2).addedSkill = [];
-					trigger.getParent(2).addedSkill.add('gutai');
-					console.log(trigger.getParent(2));
+			//		if(!trigger.getParent(2).addedSkill)	trigger.getParent(2).addedSkill = [];
+			//		trigger.getParent(2).addedSkill.add('gutai');
+					var shouxia = trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
+					player.logSkill('gutai',shouxia)
+					console.log(trigger.getParent());
 				},
-				group:['gutai_cancelDam','gutai_gainBy'],
-				subSkill:{
+			//	group:['gutai_cancelDam','gutai_gainBy'],
+			/*	subSkill:{
 					cancelDam:{
 						trigger:{global:'damageBegin3'},
 						forced:	true,
@@ -383,7 +384,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.gain(trigger.cards,'giveAuto');
 						},
 					},
-				},
+				},*/
 			},
 
 			caibu: {
@@ -1462,10 +1463,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			
 			ShizukuLulu: '雫るる',
-			duixian: '对线好手',
-			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，此伤害+1；若你因此受到伤害，你摸两张牌。',
-			gutai: '坐守孤台',
-			gutai_info: '<font color=#f66>锁定技</font> 当你使用一张普通锦囊牌指定1名以上角色为目标时，若此牌对其中一名角色造成伤害，你防止其对其他角色造成伤害；当你成为一张普通锦囊牌的目标时，若此牌对你造成伤害，你防止其对其他角色造成伤害。若此牌没有对任何角色造成伤害，你获得之。',
+			duixian: '稽杀',
+			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
+			gutai: '守峡',
+			gutai_info: '当你使用牌造成伤害后，你可以取消此牌的剩余目标；当你于回合外成为牌的目标后，若此牌造成伤害，你可以取消此牌的剩余目标。',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',
