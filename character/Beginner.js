@@ -33,7 +33,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
             /**时乃空 */
-            re_TokinoSora:['female','holo',4,['taiyangzhiyin'],['zhu']],
+            re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
             /**萝卜子 */
             re_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
             /**白上吹雪 */
@@ -432,10 +432,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					"step 0"
-					var check= player.countCards('h')>2;
+					var check= player.countCards('h')>1&&player.hp<player.maxHp;
 					player.chooseTarget(get.prompt('ruantang'),'令至多一名异性角色与自己各回复一点体力（选择自己则表示仅为自己回复体力）',function(card,player,target){
-						return target==player||target.sex!=player.sex;
-					}).set('check',check);
+						return target==player||(target.sex!=player.sex&&target.isDamaged());
+					}).set('check',check).set('ai',function(target){
+						var att=get.attitude(_status.event.player,target);
+						return att;
+					});
 					"step 1"
 					if(result.bool){
 						event.target = result.targets[0];
@@ -444,6 +447,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.logSkill('ruantang',target);
 							if(target.hp<target.maxHp)	event.recover1 = 1;
 								target.recover();
+						}else{
+							player.logSkill('ruantang');
 						}
 						if(player.hp<player.maxHp)	event.recover2 = 1;
 							player.recover();
@@ -499,6 +504,94 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 				},
 			},
+			//re空
+			re_taiyangzhiyin:{
+                trigger:{ player:'useCard2'},
+				filter:function(event,player){
+                    return get.number(event.card)>10&&(player.storage.onlink==null||player.storage.onlink.indexOf(event.card.cardid)==-1);
+				},
+                priority: 1,
+                forced:false,
+                content:function (){
+					var info=get.info(trigger.card);
+                    var players=game.filterPlayer();
+                    if(player.storage.onlink==null){
+                        player.storage.onlink=[];
+                    }//处理正处于连锁中的卡牌
+                    'step 0'
+                    var list=[['无法响应'],['额外目标'],['摸一张牌']];
+                    if(!game.hasPlayer(function(current) {
+                        return lib.filter.targetEnabled2(trigger.card, player, current)
+                            && player.inRange(current)
+                            && !trigger.targets.contains(current)
+                            && (get.type(trigger.card)!='equip'&&get.type(trigger.card)!='delay')
+                    })) {
+                        list.splice(1,1);
+                    }
+					event.videoId = lib.status.videoId++;
+					game.broadcastAll(function(id, choicelist,Dvalue){
+                        var dialog=ui.create.dialog('选择'+Dvalue+'项');
+                        choicelist.forEach(element=>{
+                            dialog.add([element,'vcard']);
+                        })
+						dialog.videoId = id;
+					}, event.videoId, list, 1);
+                    player.storage.onlink.push(trigger.card.cardid);
+                    'step 1'
+                    player.chooseButton(1).set('dialog',event.videoId).set('prompt',get.prompt('re_taiyangzhiyin'));
+                    'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+                    if(result.bool){
+                        result.links.forEach(element => {
+                            if(element[2]=="摸一张牌"){
+                                player.draw();
+                            }
+                            if(element[2]=="无法响应"){
+                                game.log(player,'令',trigger.card,'无法被响应');
+                                trigger.directHit.addArray(players);
+                                trigger.nowuxie=true;
+                            }
+                        });
+                        result.links.forEach(element => {
+                            if(element[2]=="额外目标"){
+                                //console.log(trigger);
+                                player.chooseTarget(true,'额外指定一名'+get.translation(trigger.card)+'的目标？',function(card,player,target){
+                                    var trigger=_status.event;
+                                    if(trigger.targets.contains(target)) return false;
+                                    return lib.filter.targetEnabled2(trigger.card,_status.event.player,target);
+                                }).set('ai',function(target){
+                                    var trigger=_status.event.getTrigger();
+                                    var player=_status.event.player;
+                                    return get.effect(target,trigger.card,player,player);
+                                }).set('targets',trigger.targets).set('card',trigger.card);
+                            }
+                        });
+                    }
+                    'step 3'
+                    if(result&&result.bool){
+                        if(!event.isMine()) game.delayx();
+                        event.target=result.targets[0];
+                        if(event.target){
+                            trigger.targets.add(event.target);
+                        }
+                    }
+                },
+                group:'re_taiyangzhiyin_clear',
+                subSkill:{
+					clear:{
+						trigger:{player:['useCardAfter']},
+                        direct:true,
+						content:function(){
+                            if(player.storage.onlink!=null){
+                                var deleteIndex=player.storage.onlink.indexOf(trigger.card.cardid);
+                                if(deleteIndex!=-1){
+                                    player.storage.onlink.splice(deleteIndex,1,null)
+                                }
+                            }
+						}
+					}
+                }
+            },
             //re凛
 			re_mozhaotuji:{
 				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_Ready','re_mozhaotuji_Judge','re_mozhaotuji_PhaseDraw','re_mozhaotuji_Discard','re_mozhaotuji_End'],
@@ -1461,7 +1554,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var list = ['获得其中的红色牌','将其中至多两张牌以任意顺序置于牌堆顶'];
-					player.chooseControl().set('choiceList',list).set('index',list.length-1).set('ai',function(){return _status.event.index});
+					player.chooseControl().set('choiceList',list).set('index',list.length-2).set('ai',function(){return _status.event.index});
 					'step 1'
 					switch(result.index){
 						case 0:{
@@ -1662,20 +1755,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
-				trigger:{source:'damageBegin4'},
+				trigger:{source:'damageEnd'},
 				filter:function(event,player){
-					console.log(event);
 					return player.storage.qiangyun3.contains(event.cards[0]);
 				},
 				direct:true,
 				priority:2,
 				content:function(){
-					console.log('OK')
 					player.draw();
 				},
 				onremove:function(player){
 					delete player.storage.qiangyun3;
-				}
+				},
 			},
 			tuquan:{
 				trigger:{player:'shaMiss'},
@@ -2004,6 +2095,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 
 			re_TokinoSora: '新·时乃空',
+			re_taiyangzhiyin:'太阳之音',
+			re_taiyangzhiyin_info:'你使用牌指定目标时，若此牌点数大于10，你可选择一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
 
 			re_RobokoSan:'新·萝卜子',
             re_zhanxie:'战械',

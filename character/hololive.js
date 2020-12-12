@@ -33,7 +33,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
 			Doris:['female','holo',3,['shenhai','paomo']],
 			Yogiri:['female','holo',3,['shisang','wanjie']],
-
         },
 		characterSort:{
 			hololive:{
@@ -3001,6 +3000,318 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					change:{},
 				}
 			},
+			//蘑菇人
+			maoge:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				mark:true,
+				hiddenCard:function(player,name){
+					if(!player.storage.maoge||player.storage.maoge.length<=player.countCards('h')) return false;
+					for(var i=0;i<player.storage.maoge.length;i++){
+						if(player.storage.maoge[i].name==name) return true;
+					}
+					return false;
+				},
+				intro:{
+					name:'书',
+					content:function(storage,player){
+						if(!storage||!storage.length) return '共有〇张牌';
+						if(player.isUnderControl(true)){
+							return get.translation(storage);
+						}
+						else{
+							return '共有'+get.cnNumber(storage.length)+'张牌';
+						}
+					},
+					mark:function(dialog,storage,player){
+						if(!storage||!storage.length) return '共有〇张牌';
+						if(player.isUnderControl(true)){
+							dialog.addAuto(storage);
+						}
+						else{
+							return '共有'+get.cnNumber(storage.length)+'张牌';
+						}
+					},
+					markcount:function(storage,player){
+						if(storage&&storage.length) return storage.length;
+						return 0;
+					}
+				},
+				trigger:{global:'gameDrawAfter',player:['drawBegin','enterGame']},
+				forced:true,
+				silent:true,
+				popup:false,
+				lastDo:true,
+				content:function(){
+					if(trigger.name=='gameDraw'){
+						var cards=player.getCards('h');
+						player.lose(cards,ui.special,'toStorage');
+					}else{
+						var cards=get.cards(trigger.num);
+					}
+					player.$draw(cards.length);
+					player.markAuto('maoge',cards);
+					game.log(player,'获得了'+get.cnNumber(cards.length)+'张牌');
+					trigger.changeToZero();
+				},
+				group:['maoge_nouse','maoge_use','maoge_respond'],
+				subSkill:{
+					nouse:{
+						mod:{
+							cardEnabled2:function(card,player){
+								if(player.storage.maoge.length>player.countCards('h')){
+									return get.position(card)!='h';
+								}
+							}
+						}
+					},
+					use:{
+						enable:'chooseToUse',
+						filter:function(event,player){
+							if(player.storage.maoge&&player.storage.maoge.length>player.countCards('h')){
+								for(var i=0;i<player.storage.maoge.length;i++){
+									if(event.filterCard(player.storage.maoge[i],player,event)) return true;
+								}
+							}
+							return false;
+						},
+						chooseButton:{
+							dialog:function(event,player){
+								return ui.create.dialog('『帽阁』',player.storage.maoge,'hidden');
+							},
+							filter:function(button,player){
+								var evt=_status.event.getParent();
+								if(evt&&evt.filterCard&&evt.getParent().name!='phaseUse'){
+									return evt.filterCard(button.link,player,evt);
+								}
+								return player.hasUseTarget(button.link);
+							},
+							check:function(button){
+								if(button.link.name=='du') return 10;
+								var player=_status.event.player;
+								if(player.getUseValue(button.link)>0) return get.order(button.link);
+								return -1;
+							},
+							backup:function(links,player){
+								return {
+									prompt:'选择'+get.translation(links)+'的目标',
+									filterCard:function(){return false},
+									selectCard:-1,
+									viewAs:links[0],
+									onuse:function(result,player){
+										if(player.storage.maoge&&player.storage.maoge.length){
+											player.storage.maoge.remove(result.card);
+										}
+										player.updateMarks();
+									}
+								}
+							},
+						},
+						ai:{
+							order:function(item,player){
+								var event=_status.event;
+								if(event.type!='phase') return 4;
+								if(!player) return -1;
+								if(!player.storage.maoge||!player.storage.maoge.length) return -1;
+								var order=0;
+								for(var i=0;i<player.storage.maoge.length;i++){
+									if(player.getUseValue(player.storage.maoge[i])>0){
+										var order2=get.order(player.storage.maoge[i]);
+										if(order2>order) order=order2
+									}
+								}
+								return order+0.1;
+							},
+							result:{
+								player:function(player){
+									if(_status.event.dying) return get.attitude(player,_status.event.dying);
+									return 1;
+								}
+							},
+							useful:-1,
+							value:-1
+						}
+					},
+					respond:{
+						trigger:{player:'chooseToRespondBegin'},
+						filter:function(event,player){
+							if(event.responded) return false;
+							if(player.storage.maoge&&player.storage.maoge.length)	return player.storage.maoge.length>player.countCards('h');
+							return false;
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							player.chooseButton(['『帽阁』',player.storage.maoge]).set('filterButton',function(button){
+								var evt=_status.event.getTrigger();
+								if(evt&&evt.filterCard){
+									console.log(evt);
+									return evt.filterCard(button.link,_status.event.player,evt)&&lib.filter.cardRespondable(button.link,_status.event.player,evt);
+								}
+								return true;
+							}).set('ai',function(button){
+								var evt=_status.event.getTrigger();
+								if(evt&&evt.ai){
+									var tmp=_status.event;
+									_status.event=evt;
+									var result=evt.ai(button.link,_status.event.player,evt);
+									_status.event=tmp;
+									return result;
+								}
+								return 1;
+							});
+							"step 1"
+							if(result.bool){
+								trigger.untrigger();
+								trigger.responded=true;
+								trigger.result={bool:true,card:result.links[0],cards:result.links.slice(0)};
+								if(player.storage.maoge&&player.storage.maoge.length){
+									player.storage.maoge.remove(result.links[0]);
+								}
+								player.updateMarks();
+							}
+						},
+						ai:{
+							order:4,
+							useful:-1,
+							value:-1
+						}
+					},
+				},
+			},
+			bianlan:{
+				trigger:{player:'useCard2'},
+				filter:function(event,player){
+					if(player.storage.maoge&&player.storage.maoge.length)	return event.targets&&event.targets.length;
+					return false;
+				},
+				lastDo:true,
+				content:function(){
+					'step 0'
+					player.chooseButton(['###『帽阁』###选择一种花色的“书”',player.storage.maoge]).set('filterButton',function(button){
+						return true;
+					});
+					'step 1'
+					if(result.bool){
+						event.suit = get.suit(result.links[0]);
+						var shus = player.storage.maoge.filter(function(card){
+							return get.suit(card)==event.suit;
+						});
+						player.storage.maoge.removeArray(shus);
+						player.updateMarks();
+						player.showCards(shus,'获得一种花色的书');
+						game.delay(1);
+						player.gain(shus,'giveAuto');
+						game.broadcastAll(function(player,targets){
+							player.chooseTarget('###『帽阁』###令一名目标摸一张牌',function(card,player,target){
+								return targets.contains(target);
+							})
+						},player,trigger.targets)
+					}
+					'step 2'
+					if(result.bool){
+						result.targets[0].draw();
+					}
+				}
+			},
+			futian:{
+				init:function(player,skill){
+					player.storage[skill] = [];
+				},
+				trigger:{player:'phaseBegin'},
+				limited:true,
+				unique:true,
+				skillAnimation:true,
+				animationColor:'fire',
+				filter:function(event,player){
+					return player.storage.maoge&&player.storage.maoge.length;
+				},
+				check:function(event,player){
+					return player.storage.maoge&&player.storage.maoge.length>6;
+				},
+				content:function(){
+					'step 0'
+					player.awakenSkill(event.name);
+					event.hc = player.getCards('h');
+					player.lose(event.hc,ui.special,'toStorage');
+					event.shus = player.storage.maoge.splice(0);
+			//		player.unmarkAuto('maoge',event.shus);
+			//		player.updateMarks();
+					'step 1'
+					player.markAuto('maoge',event.hc);
+					player.updateMarks();
+					'step 2'
+					player.gain(event.shus,'giveAuto');
+					player.addTempSkill('futian_futian');
+				},
+				subSkill:{
+					futian:{
+						hiddenCard:function(player,name){
+							if(player.storage.maoge&&player.storage.maoge.length>player.countCards('h')) return false;
+							var list = get.inpile('trick',function(card){
+								var player = _status.event.player;
+								if(player.storage.futian.contains(card))	return false;
+								return true;
+							});
+							console.log(list)
+							for(var i=0;i<list.length;i++){
+								if(list[i]==name) return true;
+							}
+							return false;
+						},
+						enable:'chooseToUse',
+						filter:function(event,player){
+							return player.countCards('he')>=2&&player.storage.maoge.length<=player.countCards('h');
+						},
+						chooseButton:{
+							dialog:function(event,player){
+								var list = get.inpile('trick',function(card){
+									var player = _status.event.player;
+									if(player.storage.futian.contains(card))	return false;
+									return true;
+								});
+								for(var i=0;i<list.length;i++){
+									list[i]=['锦囊','',list[i]];
+								}
+								if(list.length==0){
+									return ui.create.dialog('『覆天』已无可用牌');
+								}
+								return ui.create.dialog('『覆天』',[list,'vcard']);
+							},
+							filter:function(button,player){
+								return _status.event.getParent().filterCard({name:button.link[2]},player,_status.event.getParent());
+							},
+							check:function(button){
+								var player=_status.event.player;
+								if(player.countCards('h',button.link[2])>0) return 0;
+								if(button.link[2]=='wugu') return 0;
+								var effect=player.getUseValue(button.link[2]);
+								if(effect>0) return effect;
+								return 0;
+							},
+							backup:function(links,player){
+								return {
+									filterCard:true,
+									selectCard:2,
+									popname:true,
+									check:function(card){
+										return 6-get.value(card);
+									},
+									position:'he',
+									viewAs:{name:links[0][2]},
+									onuse:function(result,player){
+										player.storage.futian.add(result.card.name);
+									},
+								}
+							},
+							prompt:function(links,player){
+								return '###『覆天』###将两张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+							}
+						},
+					},
+				},
+			},
 
 		},
 		translate:{
@@ -3125,6 +3436,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shisang_info: '出牌阶段限一次，你使用牌指定目标后，可以将此牌的效果改为令目标回复1点体力。',
 			wanjie: '腕解',
 			wanjie_info: '出牌阶段限一次，你可以展示所有手牌并弃置其中黑色牌，然后摸两张牌；或弃置其中红色牌，然后将本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”。',
+			
+			Rosalyn: '罗莎琳',
+			maoge: '帽阁',
+			maoge_info: '锁定技，你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
+			bianlan: '遍览',
+			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名目标摸一张牌。',
+			futian: '覆天',
+			futian_info: '限定技。回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
+
         },
 	};
 });

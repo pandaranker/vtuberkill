@@ -6,21 +6,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
-			Paryi:['male','paryi',4,['tiantang','haoren']],
-			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
-			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
-			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
+			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
+
 
 			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
 			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
 
-		},
-		characterSort:{
-			yuzu:{
-                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','OtomeOto'],
-			}
 		},
 		characterIntro:{
 			Paryi:'kimo~',
@@ -54,6 +47,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					if(player.storage.tiantang)	player.storage.tiantang.length = 0;
 					var num = trigger.player.storage.paryi||1;
 					player.chooseToDiscard(num,'he');
 					'step 1'
@@ -119,31 +113,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(trigger.player.countCards('h')==1&&trigger.player.countCards('e')==0&&get.suit(trigger.player.getCards('h')[0])==player.storage.tiantang){
 									player.viewCards('观看其手牌',trigger.player.getCards('h'));
 								}
-								game.broadcastAll(function(player,trigger){
-									var next=player.discardPlayerCard("弃置一张声明花色的牌", trigger.player, 'he').set('visible', true);
+								game.broadcastAll(function(player,target){
+									var next=player.discardPlayerCard("弃置一张声明花色的牌", target, 'he').set('visible', true);
 									next.set('filterButton',function(card){
 										return get.suit(card.link)==player.storage.tiantang;
 									});
 									var fC=0;
-									trigger.player.getCards('he').forEach(function(tB){
+									target.getCards('he').forEach(function(tB){
 										if(get.suit(tB)==player.storage.tiantang)	fC++;
 									})
 									if(fC){
 										next.set('forced',true);
 									}
-									trigger.player.phaseUse();
-								}, player, trigger)
-								trigger.player.addTempSkill('tiantangzhifei_yisheng','phaseUseEnd');
-								if(player.storage.haoren===true){
-									trigger.player.markSkill('tiantangzhifei_yisheng');
-									trigger.player.addTempSkill('yinliu','phaseUseEnd');
-								}
+									target.addTempSkill('tiantangzhifei_yisheng','phaseUseEnd');
+									if(player.storage.haoren===true){
+										target.markSkill('tiantangzhifei_yisheng');
+										target.addTempSkill('yinliu','phaseUseEnd');
+									}
+									target.phaseUse();
+								}, player, trigger.player)
+								event.statClear = true;
                             }
                             if(element[2]=='摸两张牌'){
 								trigger.player.draw(2);
 								trigger.player.addTempSkill('tiantangzhifei_xianzhi','phaseEnd');
-								trigger.player.storage.tiantangzhifei_xianzhi=player.storage.tiantang;
-								trigger.player.syncStorage('tiantangzhifei_xianzhi')
+								trigger.player.storage.tiantangzhifei_xianzhi = player.storage.tiantang;
+								trigger.player.syncStorage('tiantangzhifei_xianzhi');
+								event.finish();
                             }
                         });
 					}
@@ -151,8 +147,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 6'
-					if(player.hasSkill('tiantangzhifei_yisheng')){
-						var stat=player.getStat();
+					if(event.statClear){
+						var stat = trigger.player.getStat();
 						stat.card={};
 						for(var i in stat.skill){
 							var bool=false;
@@ -1478,7 +1474,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
-			ParyiPro: '帕里坡',
 
 			Paryi: '帕里',
 			tiantang: '天扉',

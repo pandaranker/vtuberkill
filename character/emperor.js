@@ -82,11 +82,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						game.delay(0.5);
 						game.log(player,'声明了',result.links[0][2]);
+						player.popup(result.links[0][2],'thunder');
 						player.storage.tiangou.add(result.links[0][2]);
 					}else{
 						event.finish();
 					}
 					'step 3'
+					game.delay(0.5);
 					player.chooseTarget(true,'『天狗食日』：选定一名角色，本轮内只有其能执行声明阶段');
 					'step 4'
 					if(result.bool){
@@ -126,7 +128,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.player!=player&&player.storage.tiangou_limit.contains(event.name);
 						},
 						content:function(){
-							player.logSkill('tiangou',trigger.player);
+							player.line(trigger.player,'thunder');
+							game.log(trigger.player,'的','#y'+player.storage.tiangou_limit,'被跳过了');
 							trigger.cancel();
 						},
 						onremove:function(player){

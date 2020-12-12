@@ -16,11 +16,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
-			
+			/**P家诸人 */
+			Paryi:['male','paryi',4,['tiantang','haoren']],
+			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
+			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
+			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
 			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
+		},
+		characterSort:{
+			clubs:{
+                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','OtomeOto'],
+			}
 		},
 		characterIntro:{
 			Yomemi:' ',
@@ -1404,6 +1413,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		translate:{
+			
+			ParyiPro: '帕里坡',
+
 			Yomemi:'ヨメミ',
 			mokuai:'模块搭载',
 			mokuai_info:'<font color=#f00>锁定技</font> 你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
