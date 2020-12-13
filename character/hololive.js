@@ -2469,6 +2469,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:function (storage,player,skill){
 						return '在回合结束时展示手牌';
 					},
+					markcount:function(storage,player){
+						return 0;
+					}
 				},
 				mark:true,
 				forced:true,
@@ -3005,6 +3008,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
+				marktext:'书',
 				mark:true,
 				hiddenCard:function(player,name){
 					if(!player.storage.maoge||player.storage.maoge.length<=player.countCards('h')) return false;
@@ -3052,11 +3056,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					player.$draw(cards.length);
 					player.markAuto('maoge',cards);
-					game.log(player,'获得了'+get.cnNumber(cards.length)+'张牌');
+					game.log(player,'获得了'+get.cnNumber(cards.length)+'张“书”');
 					trigger.changeToZero();
 				},
-				group:['maoge_nouse','maoge_use','maoge_respond'],
+				group:['maoge_nouse','maoge_use','maoge_respond','maoge_drawPhase'],
 				subSkill:{
+					drawPhase:{
+						trigger:{player:'phaseDrawBegin2'},
+						forced:true,
+						filter:function(event,player){
+							return player.storage.maoge.length<player.countCards('h')&&!event.numFixed;
+						},
+						content:function(){
+							trigger.num++;
+						}
+					},
 					nouse:{
 						mod:{
 							cardEnabled2:function(card,player){
@@ -3082,10 +3096,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							},
 							filter:function(button,player){
 								var evt=_status.event.getParent();
-								if(evt&&evt.filterCard&&evt.getParent().name!='phaseUse'){
-									return evt.filterCard(button.link,player,evt);
+								if(evt&&evt.filterCard){
+									if(evt.getParent().name!='phaseUse'){
+										return evt.filterCard(button.link,player,evt);
+									}
+									return player.hasUseTarget(button.link)&&evt.filterCard(button.link,player,evt);
 								}
-								return player.hasUseTarget(button.link);
+								return true;
 							},
 							check:function(button){
 								if(button.link.name=='du') return 10;
@@ -3186,14 +3203,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.storage.maoge&&player.storage.maoge.length)	return event.targets&&event.targets.length;
 					return false;
 				},
+				forced:true,
+				silent:true,
+				popup:false,
 				lastDo:true,
 				content:function(){
 					'step 0'
-					player.chooseButton(['###『帽阁』###选择一种花色的“书”',player.storage.maoge]).set('filterButton',function(button){
+					player.chooseButton(['###是否发动『遍览』？###选择一种花色的“书”',player.storage.maoge]).set('filterButton',function(button){
 						return true;
 					});
 					'step 1'
 					if(result.bool){
+						player.logSkill('bianlan')
 						event.suit = get.suit(result.links[0]);
 						var shus = player.storage.maoge.filter(function(card){
 							return get.suit(card)==event.suit;
@@ -3204,10 +3225,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.delay(1);
 						player.gain(shus,'giveAuto');
 						game.broadcastAll(function(player,targets){
-							player.chooseTarget('###『帽阁』###令一名目标摸一张牌',function(card,player,target){
+							player.chooseTarget('###『遍览』###可以令一名目标摸一张牌',function(card,player,target){
 								return targets.contains(target);
 							})
 						},player,trigger.targets)
+					}else{
+						event.finish();
 					}
 					'step 2'
 					if(result.bool){
@@ -3439,11 +3462,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			Rosalyn: '罗莎琳',
 			maoge: '帽阁',
-			maoge_info: '锁定技，你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
+			maoge_info: '<font color=#f66>锁定技</font> 你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
 			bianlan: '遍览',
 			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名目标摸一张牌。',
 			futian: '覆天',
-			futian_info: '限定技。回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
+			futian_info: '<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
 
         },
 	};

@@ -965,39 +965,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+
 			yinliu: {
 				enable: 'phaseUse',
+				usable:1,
 				filter: function(event, player) {
-					return	(player.countCards('he') >= 2 ||
-							player.countCards('h')) && 
-							!player.hasSkill('yinliu_used');
+					return	player.countCards('he')>0;
 				},
 				content: function() {
 					'step 0'
-					var list = [];
-					//if (player.countCards('he') >= 2) list.push('弃置两张牌');
-					if (player.countCards('he')) list.push('弃置牌并发动技能');
-					if (list.length) {
-						player.addTempSkill('yinliu_used');
-						player.chooseControl(list);
-					}
-					else event.finish();
+					player.chooseToDiscard('###『引流』###弃置至多三张牌','he', [1,3], true);
 					'step 1'
-					//if (result.control == '弃置两张牌') event.control = 0;
-					if (result.control == '弃置牌并发动技能') event.control = 0;
-					if (event.control == 0) {
-						player.chooseCard('he', [1,3], true);
-					}
-					else {
-						event.cards = player.getCards('h');
+					if(result.bool&&result.cards){
+						event.cards = result.cards;
+					}else{
+						event.finish();
 					}
 					'step 2'
-					if (event.control == 0 && result.bool) {
-						event.cards = result.cards;
-					} 
-					'step 3'
-					player.discard(event.cards);
-					'step 4'
 					game.delayx();
 					if(player.countCards('h')==0){
 						player.addTempSkill('yinliu_end');
@@ -1014,13 +998,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				subSkill: {
-					used: {},
 					end: {
 						trigger: {
 							player: 'phaseEnd',
 						},
 						filter: function(event, player) {
-							return player.countCards('he') >= 2 || player.countCards('h');
+							return player.countCards('he')>0;
 						},
 						content: function () {
 							player.insertEvent('yinliu', lib.skill.yinliu.content);
@@ -1428,7 +1411,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
-			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你相邻，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
+			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你不相邻，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',

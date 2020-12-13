@@ -10,9 +10,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 
 			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
-			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
-			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
 
 		},
 		characterIntro:{
@@ -466,7 +464,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 	//				player.logSkill('xiaogui');
 					player.lose(cards,ui.ordering).set('visible', true);
-					console.log(cards)
 					event.cards = cards;
 					event.videoId = lib.status.videoId++;
 					var list=[];

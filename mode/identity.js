@@ -18,6 +18,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_key:{
 				fullskin:true,
 			},
+			group_holo:{
+				fullskin:true,
+			},
+			group_nijisanji:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1893,7 +1899,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['wei','shu','wu','qun','key'];
+						var list=['qun','key','holo','nijisanji'];
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -1970,7 +1976,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['wei','shu','wu','qun','key'];
+						var list=['qun','key','holo','nijisanji'];
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							list[i]=['','','group_'+list[i]];
@@ -2034,11 +2040,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_wu:"吴势力",
 			group_qun:"群势力",
 			group_key:"键势力",
+			group_holo:"杏势力",
+			group_nijisanji:"虹势力",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
 			group_qun_bg:"群",
 			group_key_bg:"键",
+			group_holo_bg:"杏",
+			group_nijisanji_bg:"虹",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

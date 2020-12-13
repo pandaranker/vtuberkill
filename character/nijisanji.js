@@ -20,6 +20,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
 			/**修女克蕾雅 */
 			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
+			/**健屋花那 */
+			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
+			/**熊猫人 */
+			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',

@@ -4654,6 +4654,7 @@
 							'6':'六',
 							'8':'八',
 							'10':'十',
+							'12':'十二',
 						},
 					},
 					choice_zhong:{
@@ -6353,6 +6354,10 @@
 			globalId:0,
 		},
 		help:{
+			'Q&A':'<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>'+
+			'<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能与卡牌使用次数均会清空，但是请注意，森永缪可能会因为你的出牌次数重置而满足对你发动观宅的条件<br>'+
+			'<li>Q：夜雾和lulu的技能改变出牌效果时，影响牌的使用次数吗？<li>A：不影响，牌的使用次数始终在牌使用或打出时计入。特别的，lulu的技能可以改变牌名，有可能影响牌的后续结算；而夜雾的技能不改变牌名，（虽然效果已经变化）与原牌名关联的效果不会受影响（如【藤甲】之于【杀】【万箭】【南蛮】）<br>',
+
 			'游戏操作':'<ul><li>长按/鼠标悬停/右键单击显示信息<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管<li>键盘快捷键<br>'+
 			'<table><tr><td>A<td>切换托管<tr><td>W<td>切换不询问无懈<tr><td>空格<td>暂停</table><li>编辑牌堆<br>在卡牌包中修改牌堆后，将自动创建一个临时牌堆，在所有模式中共用，当保存当前牌堆后，临时牌堆被清除。每个模式可设置不同的已保存牌堆，设置的牌堆优先级大于临时牌堆</ul>',
 			'游戏命令':'<div style="margin:10px">变量名</div><ul style="margin-top:0"><li>场上角色<br>game.players<li>阵亡角色<br>game.dead'+
@@ -8585,6 +8590,11 @@
 								lib.card.list[i][2]='sha';
 								lib.card.list[i][3]='thunder';
 							}
+							else if(lib.card.list[i][2]=='haisha'){
+								lib.card.list[i]=lib.card.list[i].slice(0);
+								lib.card.list[i][2]='sha';
+								lib.card.list[i][3]='ocean';
+							}
 							if(!lib.card[lib.card.list[i][2]]){
 								lib.card.list.splice(i,1);i--;
 							}
@@ -9757,6 +9767,10 @@
 				else if(name=='leisha'){
 					name='sha';
 					nature='thunder';
+				}
+				else if(name=='haisha'){
+					name='sha';
+					nature='ocean';
 				}
 				if(!lib.card[name]){
 					return null;
@@ -13822,6 +13836,10 @@
 								(card.classList&&card.classList.contains('thunder'))){
 								config.color='thunder';
 							}
+							else if(card.nature=='ocean'||
+								(card.classList&&card.classList.contains('ocean'))){
+								config.color='ocean';
+							}
 							if(event.addedTarget){
 								player.line2(targets.concat(event.addedTargets),config);
 							}
@@ -14215,6 +14233,9 @@
 						}
 						else if(info.line=='thunder'){
 							config.color='thunder';
+						}
+						else if(info.line=='ocean'){
+							config.color='ocean';
 						}
 						else if(info.line===undefined||info.line=='green'){
 							config.color='green';
@@ -23148,6 +23169,10 @@
 							name='雷'+name;
 							this.node.image.classList.add('thunder');
 						}
+						else if(card[3]=='ocean'){
+							name='海'+name;
+							this.node.image.classList.add('thunder');
+						}
 						else if(card[3]=='kami'){
 							name='神'+name;
 							this.node.image.classList.add('kami');
@@ -26527,7 +26552,7 @@
 		},
 		suit:['club','spade','diamond','heart'],
 		group:['wei','shu','wu','qun','shen','holo','nijisanji','dotlive','udp8','Eilene','key','paryi'],
-		nature:['fire','thunder','poison','kami'],
+		nature:['fire','thunder','poison','ocean','kami'],
 		linked:['fire','thunder','kami'],
 		groupnature:{
 			shen:'thunder',
@@ -29568,7 +29593,7 @@
 					}
 				}
 			}
-			else if(arguments[1]=='fire'||arguments[1]=='thunder'||arguments[1]=='green'){
+			else if(arguments[1]=='fire'||arguments[1]=='thunder'||arguments[1]=='ocean'||arguments[1]=='green'){
 				color=arguments[1];
 			}
 			if(color=='fire'){
@@ -29576,6 +29601,9 @@
 			}
 			else if(color=='thunder'){
 				color=[141, 216, 255];
+			}
+			else if(color=='ocean'){
+				color=[98, 146, 250];
 			}
 			else if(color=='green'){
 				color=[141, 255, 216];
@@ -29668,7 +29696,7 @@
 					}
 				}
 			}
-			else if(arguments[1]=='fire'||arguments[1]=='thunder'||arguments[1]=='green'){
+			else if(arguments[1]=='fire'||arguments[1]=='thunder'||arguments[1]=='ocean'||arguments[1]=='green'){
 				color=arguments[1];
 			}
 			if(color=='fire'){
@@ -29676,6 +29704,9 @@
 			}
 			else if(color=='thunder'){
 				color=[141, 216, 255];
+			}
+			else if(color=='ocean'){
+				color=[98, 146, 250];
 			}
 			else if(color=='green'){
 				color=[141, 255, 216];
@@ -31785,6 +31816,11 @@
 							lib.card.list[i]=lib.card.list[i].slice(0);
 							lib.card.list[i][2]='sha';
 							lib.card.list[i][3]='thunder';
+						}
+						else if(lib.card.list[i][2]=='haisha'){
+							lib.card.list[i]=lib.card.list[i].slice(0);
+							lib.card.list[i][2]='sha';
+							lib.card.list[i][3]='ocean';
 						}
 						if(!lib.card[lib.card.list[i][2]]){
 							lib.card.list.splice(i,1);i--;
@@ -34649,6 +34685,7 @@
 									item:{
 										'10':'10秒',
 										'15':'15秒',
+										'20':'20秒',
 										'30':'30秒',
 										'60':'60秒',
 										'90':'90秒',
@@ -36633,6 +36670,7 @@
 									if(cname=='sha'){
 										pileaddlist.push(['huosha','火杀']);
 										pileaddlist.push(['leisha','雷杀']);
+										pileaddlist.push(['haisha','海杀']);
 									}
 								}
 							}
@@ -49146,6 +49184,9 @@
 					else if(str.nature=='thunder'){
 						str2='雷'+str2;
 					}
+					else if(str.nature=='ocean'){
+						str2='海'+str2;
+					}
 					else if(str.nature=='kami'){
 						str2='神'+str2;
 					}
@@ -51184,6 +51225,9 @@
 			}
 			else if(nature=='thunder'){
 				name='thunderdamage';
+			}
+			else if(nature=='ocean'){
+				name='oceandamage';
 			}
 			var eff=get.effect(target,{name:name},player,viewer);
 			if(eff>0&&target.hujia>0) return 0;

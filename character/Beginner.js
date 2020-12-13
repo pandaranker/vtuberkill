@@ -65,6 +65,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
 			/**Re莉泽 */
 			re_LizeHelesta:['female','nijisanji',3,['yubing']],
+			/**Re安洁 */
+			re_AngeKatrina:['female','nijisanji',3,['xiaoqiao','liancheng']],
 			/**ReYuNi */
 			re_YuNi:['female','upd8',4,['re_shengcai']],
 			/**Re兔鞠 */
@@ -1126,6 +1128,131 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			//安啾
+			xiaoqiao:{
+				trigger:{player:'phaseDiscardBegin'},
+				filter:function(event,player){
+					return player.countCards('h');
+				},
+				forced:true,
+				popup:false,
+				lastDo:true,
+				content:function(){
+					'step 0'
+					player.chooseCardButton('###是否发动『小巧』？###展示任意张类型不同的手牌',player.getCards('h'),[1,3]).set('filterButton',function(button){
+						var type = get.type(button.link,'trick');
+						for(var i=0;i<ui.selected.buttons.length;i++){
+							if(type==get.type(ui.selected.buttons[i].link,'trick')) return false;
+						}
+						return true;
+					});
+					'step 1'
+					if(result.bool){
+						player.logSkill('xiaoqiao');
+						var cards = result.buttons.map(function(button){
+							return button.link;
+						})
+						player.showCards(cards,'『小巧』展示手牌');
+						player.storage.xiaoqiao.addArray(cards);
+					}
+				},
+				mod:{
+					ignoredHandcard:function(card,player){
+						if(player.storage.xiaoqiao&&player.storage.xiaoqiao.contains(card)){
+							return true;
+						}
+					},
+					cardDiscardable:function(card,player,name){
+						if(name=='phaseDiscard'&&player.storage.xiaoqiao&&player.storage.xiaoqiao.contains(card)){
+							return false;
+						}
+					},
+				},
+				group:'xiaoqiao_init',
+				subSkill:{
+					init:{
+						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							player.storage.xiaoqiao = [];
+						},
+					}
+				},
+			},
+			liancheng:{
+				trigger:{global:'phaseEnd'},
+				filter:function(event,player){
+					if(player.storage.liancheng&&player.storage.liancheng==2)	return false;
+					return player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					player.chooseCardButton('###『链成』###重铸任意张类型不同的手牌',player.getCards('h'),[1,3]).set('filterButton',function(button){
+						var type = get.type(button.link,'trick');
+						for(var i=0;i<ui.selected.buttons.length;i++){
+							if(type==get.type(ui.selected.buttons[i].link,'trick')) return false;
+						}
+						return true;
+					});
+					'step 1'
+					if(result.bool){
+						player.storage.liancheng++;
+						var cards = result.buttons.map(function(button){
+							return button.link;
+						});
+						player.lose(cards, ui.discardPile).set('visible', true);
+						player.$throw(cards,1000);
+						game.log(player,'将',cards,'置入了弃牌堆');
+						player.draw(cards.length);
+						if(player==_status.currentPhase||cards.filter(function(card){
+							return get.type(card)=='equip';
+						}).length==0)	event.finish();
+					}else{
+						event.finish();
+					}
+					'step 2'
+					event.diff = player.countCards('h') - _status.currentPhase.countCards('h');
+					if(event.diff==0){
+						event.finish();
+					}
+					'step 3'
+					player.chooseBool('###『链成』###是否令当前回合角色调整手牌与你相同？').set('check',((event.diff>0)?(get.attitude(player,_status.currentPhase)>0):(get.attitude(player,_status.currentPhase)<0)));
+					'step 4'
+					if(result.bool){
+						if(event.diff>0){
+							_status.currentPhase.gain(get.cards(event.diff),'draw');
+						}else if(event.diff<0){
+							_status.currentPhase.chooseToDiscard(-event.diff,true,'h');
+						}
+					}
+				},
+				mod:{
+					ignoredHandcard:function(card,player){
+						if(player.storage.xiaoqiao&&player.storage.xiaoqiao.contains(card)){
+							return true;
+						}
+					},
+					cardDiscardable:function(card,player,name){
+						if(name=='phaseDiscard'&&player.storage.xiaoqiao&&player.storage.xiaoqiao.contains(card)){
+							return false;
+						}
+					},
+				},
+				group:'liancheng_init',
+				subSkill:{
+					init:{
+						trigger:{global:'roundStart'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							player.storage.liancheng = 0;
+						},
+					}
+				},
+			},
 
 			//re下地
 			re_yinliu: {
@@ -2093,6 +2220,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yubing: '语冰',
 			yubing_info: '你使用基本牌或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
 
+			re_AngeKatrina: '新·安洁',
+			xiaoqiao: '小巧',
+			xiaoqiao_info: '弃牌阶段开始时，你可以展示任意张类型不同的手牌，本回合这些牌不计入手牌上限。',
+			liancheng: '链成',
+			liancheng_info: '一轮限两次。一个回合结束时，你可以重铸任意张类型不同的手牌。若你重铸了装备牌，你可以令当前回合角色调整手牌与你相同。',
 
 			re_TokinoSora: '新·时乃空',
 			re_taiyangzhiyin:'太阳之音',
