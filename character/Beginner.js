@@ -100,25 +100,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 },
                 content: function(){
 					'step 0'
+					event.num = player.storage.re_ailian_clear;
 					targets[0].gain(cards,player,'giveAuto');
 					'step 1'
-					event.num = player.storage.re_ailian_clear;
 					player.storage.re_ailian.add(targets[0]);
 					player.storage.re_ailian_clear+=cards.length;
 					'step 2'
 					if(player.storage.re_ailian_clear>=2&&event.num<2){
-						var list=get.inpile('basic');
+						var list=get.inpile('basic',function(name){
+							return name!='du'&&name!='shan';
+						});
 						for(var i=0;i<list.length;i++){
 							list[i]=['基本','',list[i]];
 						}
-						game.broadcastAll(function(player,list){
-							var dialog = ui.create.dialog('选择使用一张基本牌',[list,'vcard'],'hidden');
-							player.chooseButton(dialog);
-						}, player, list);
+						event.videoId = lib.status.videoId++;
+						game.broadcastAll(function(id, list){
+							var dialog = ui.create.dialog('『爱链』选择使用一张基本牌',[list,'vcard']);
+							dialog.videoId = id;
+						}, event.videoId, list);
 					}else{
 						event.finish();
 					}
 					'step 3'
+					player.chooseButton().set('dialog',event.videoId);
+					'step 4'
+					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
 						player.chooseUseTarget({name:result.buttons[0].link[2]},false);
 					}
@@ -1479,19 +1485,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var list=['摸三张牌','回复体力'];
-					game.broadcastAll(function(player,list){
-						var dialog = ui.create.dialog('选择一项',[list,'vcard']);
-						player.chooseButton(dialog,true);
-					}, player, list)
+					if(player.hp==player.maxHp){
+						player.draw(3);
+						event.goto(4);
+					}
 					'step 1'
+					var list=['摸三张牌','回复体力'];
+					event.videoId = lib.status.videoId++;
+					game.broadcastAll(function(id,list){
+						var dialog = ui.create.dialog('选择一项',[list,'vcard']);
+						dialog.videoId = id;
+					}, event.videoId, list);
+					'step 2'
+					player.chooseButton(true).set('dialog',event.videoId);
+					'step 3'
+					game.broadcastAll('closeDialog', event.videoId);
 					if(result.buttons[0].link[2]=='摸三张牌'){
 						player.draw(3);
 					}
 					if(result.buttons[0].link[2]=='回复体力'){
 						player.recover();
 					}
-					'step 2'
+					'step 4'
 					player.judge(function(card){
 						if(get.suit(card,'player')=='heart') return 4;
 						else{

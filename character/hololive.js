@@ -3429,7 +3429,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			danyan: '弹言',
 			danyan_info: '你的手牌因弃置而进入弃牌堆时,若本回合你没有造成过伤害,你可以使用其中的一张牌。',
 			qingjie: '轻捷',
-			qingjie_info: '<font color=#f66>锁定技</font> 你你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
+			qingjie_info: '<font color=#f66>锁定技</font> 你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
 
 			SpadeEcho: '黑桃影',
 			hangao: '函告',
