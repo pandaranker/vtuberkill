@@ -1686,7 +1686,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:['loseAfter','cardsDiscardAfter']},
 				filter:function(event,player){
 					console.log(event.getParent());
-					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent(2).name=='useCard') return false;
+					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent().relatedEvent.name=='useCard') return false;
 					if(event.name=='lose'&&(event.getParent().name=='useCard'||event.position!=ui.discardPile)) return false;
 					var list=event.cards.filter(function(card){
 						return get.suit(card)=='heart'&&get.position(card)=='d';
@@ -1714,19 +1714,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var next = player.chooseButton();
 					next.set('selectButton',function(){
 						if(ui.selected.buttons.length==0) return 2;
-						else if(get.color(ui.selected.buttons[0].link)=='red')	return [1,2];
+						else if(get.color(ui.selected.buttons[0].link)=='red'&&ui.dialog.buttons.length==1)	return 1;
 						return [1,2];
 					});
 					next.set('dialog',event.videoId);
 					next.set('ai',function(){return get.value(button.link)});
 					next.set('forceAuto',function(){
-						return ui.selected.buttons.lengt==2
+						return ui.selected.buttons.length==2||ui.dialog.buttons.length==1;
 					});
 					'step 2'
 					if(result.bool){
 						event.links=result.links;
 						var controls=['取消选择','将这些牌置于牌堆顶','获得这张牌'];
-						if(event.links.length!=1||get.color(event.links[0])=='red'){
+						if(event.links.length!=1||get.color(event.links[0])!='red'){
 							controls.splice(2,1);
 						}
 						var func=function(cards,id){
@@ -2333,7 +2333,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
-			chixin_info: '当有牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
+			chixin_info: '当有♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
