@@ -3216,6 +3216,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						player.logSkill('bianlan')
 						event.suit = get.suit(result.links[0]);
+						event.targets = trigger.targets;
 						var shus = player.storage.maoge.filter(function(card){
 							return get.suit(card)==event.suit;
 						});
@@ -3224,19 +3225,39 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.showCards(shus,'获得一种花色的书');
 						game.delay(1);
 						player.gain(shus,'giveAuto');
-						game.broadcastAll(function(player,targets){
-							player.chooseTarget('###『遍览』###可以令一名目标摸一张牌',function(card,player,target){
-								return targets.contains(target);
-							})
-						},player,trigger.targets)
+						if(game.hasPlayer(function(cur){
+							return event.targets.contains(cur)&&!player.storage.bianlan.contains(cur);
+						})){
+							game.broadcastAll(function(player,targets){
+								player.chooseTarget('###『遍览』###可以令一名目标摸一张牌',function(card,player,target){
+									return targets.contains(target)&&!player.storage.bianlan.contains(target);
+								});
+							}, player, event.targets)
+						}else{
+							event.finish();
+						}
 					}else{
 						event.finish();
 					}
 					'step 2'
 					if(result.bool){
+						player.storage[event.name].add(result.targets[0])
 						result.targets[0].draw();
 					}
-				}
+				},
+				group:'bianlan_init',
+				subSkill:{
+					init:{
+						trigger:{global:['gameDrawAfter','phaseAfter'],player:'enterGame'},
+						forced:true,
+						silent:true,
+						popup:false,
+						lastDo:true,
+						content:function(){
+							player.storage.bianlan = [];
+						},
+					},
+				},
 			},
 			futian:{
 				init:function(player,skill){
@@ -3368,7 +3389,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
             huxi1:'呼吸',
             huxi1_info:'出牌阶段限一次，你可以令攻击范围内的一名其他角色与你同时展示一张手牌并交换，若你获得了红色牌，你可以摸一张牌并令你本回合使用的下一张牌不受距离与次数限制；若没有人获得红色牌，你失去 1 点体力。',
             lianmeng:'连梦',
-            lianmeng_info:'当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
+            lianmeng_info:'<font color=#f66>锁定技</font> 当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
 
             RobokoSan:'萝卜子',
             gaonengzhanxie:'高能战械',
@@ -3464,7 +3485,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			maoge: '帽阁',
 			maoge_info: '<font color=#f66>锁定技</font> 你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
 			bianlan: '遍览',
-			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名目标摸一张牌。',
+			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名本回合未因此摸牌的目标摸一张牌。',
 			futian: '覆天',
 			futian_info: '<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
 

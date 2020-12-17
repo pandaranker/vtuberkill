@@ -48,6 +48,18 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			oceandamage:{
+				ai:{
+					result:{
+						target:-1.5
+					},
+					tag:{
+						damage:1,
+						thunderDamage:1,
+						natureDamage:1,
+					}
+				}
+			},
 			respondShan:{
 				ai:{
 					result:{
@@ -63,7 +75,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			sha:{
 				audio:true,
 				fullskin:true,
-				nature:['thunder','fire','kami'],
+				nature:['thunder','fire','kami','ocean'],
 				type:'basic',
 				enable:true,
 				usable:1,
@@ -2263,7 +2275,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		translate:{
 			sha:'杀',
 			huosha:'火杀',
+			huosha_info:'出牌阶段，对攻击范围内的一名角色使用，令其使用一张【闪】，否则受到一点火焰伤害。',
 			leisha:'雷杀',
+			leisha_info:'出牌阶段，对攻击范围内的一名角色使用，令其使用一张【闪】，否则受到一点雷电伤害。',
+			haisha:'海杀',
 			shan:'闪',
 			tao:'桃',
 			bagua:'八卦阵',

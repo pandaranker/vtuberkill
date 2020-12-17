@@ -1256,14 +1256,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							return player.countCards('he',{suit:'club'})||player.countCards('he',{type:'equip'});
 						},
-						prompt2:'你可以弃置一张♣或装备牌以获得一个额外回合',
 						intro: {
 							content:'当前回合结束后可以获得一个额外回合',
 							name:'并蒂恶蕾',
 						},
+						forced:true,
+						silent:true,
+						popup:false,
 						content:function(){
 							'step 0'
-							player.chooseToDiscard('###『并蒂恶蕾』###弃置一张♣或装备牌以获得一个额外回合','he',function(card){
+							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合','he',function(card){
 								return get.suit(card)=='club'||get.type(card)=='equip';
 							})
 							'step 1'
@@ -1401,6 +1403,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+
 			mark2_bingdielei:{
                 group:'mark2_bingdielei_damageBy',
 				subSkill:{
@@ -1901,11 +1904,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.player.hasSkill('meici_mark')
 								&& ['trick', 'delay'].contains(get.type(event.card));
 						},
+						forced:true,
+						silent:true,
+						popup:false,
 						content: function() {
 							'step 0'
 							game.delay(0.5);
 							player.logSkill('meici', trigger.player);
-							player.choosePlayerCard("重铸其一张手牌", trigger.player, 'h').set('visible', true);
+							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true);
 							'step 1'
 							if (result.bool && result.cards.length) {
 								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
@@ -1947,6 +1953,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}).length &&
 						event.player.isAlive();
 				},
+				forced:true,
+				silent:true,
+				popup:false,
 				content: function() {
 					'step 0'
 					var cards = [];
@@ -1960,7 +1969,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}));
 						}
 					});
-					if (cards) player.chooseCardButton("选择一张牌", cards);
+					if (cards) player.chooseCardButton("###『耽恋』：进入弃牌堆的牌###选择一张牌（♦牌当【乐不思蜀】，♣牌当【决斗】）", cards);
 					else event.finish();
 					'step 1'
 					if (result.bool) {

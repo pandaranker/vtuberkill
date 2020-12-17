@@ -296,7 +296,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}else if(num2>=2){
 								prompt2 += '令一名角色回复一点体力'
 							}
-							lib.skill.lingsi_discard.prompt2 =prompt2
+							lib.skill.lingsi_discard.prompt2 = prompt2;
 							return Math.max(num1,num2)>=2;
 						},
 						prompt2:'',
@@ -747,7 +747,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(trigger.delay==false) game.delay();
 							"step 1"
 							player.markSkill(event.name);
-							player.logSkill(event.name);
 							player.addTempSkill('re_bingdielei_anotherPhase');
 						},
 					},
@@ -1685,48 +1684,105 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//re赤心
 			chixin:{
 				trigger:{global:['loseAfter','cardsDiscardAfter']},
-				usable:1,
 				filter:function(event,player){
-					if(event.name=='lose'&&event.position!=ui.discardPile) return false;
+					console.log(event.getParent());
+					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent(2).name=='useCard') return false;
+					if(event.name=='lose'&&(event.getParent().name=='useCard'||event.position!=ui.discardPile)) return false;
 					var list=event.cards.filter(function(card){
 						return get.suit(card)=='heart'&&get.position(card)=='d';
 					});
 					return list.length>0;
 				},
+				forced:true,
 				content:function(){
 					'step 0'
-					var list = ['获得其中的红色牌','将其中至多两张牌以任意顺序置于牌堆顶'];
-					player.chooseControl().set('choiceList',list).set('index',list.length-2).set('ai',function(){return _status.event.index});
+					event.cards = trigger.cards.filterInD('d');
 					'step 1'
+					event.videoId=lib.status.videoId++;
+					var dialogx=['###『赤心』：进入弃牌堆的牌###获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶（先选择的在上）'];
+					dialogx.push(event.cards);
+					if(player.isOnline2()){
+						player.send(function(dialogx,id){
+							ui.create.dialog.apply(null,dialogx).videoId=id;
+						},dialogx,event.videoId);
+					}
+					event.dialog=ui.create.dialog.apply(null,dialogx);
+					event.dialog.videoId=event.videoId;
+					if(player!=game.me||_status.auto){
+						event.dialog.style.display='none';
+					}
+					var next = player.chooseButton();
+					next.set('selectButton',function(){
+						if(ui.selected.buttons.length==0) return 2;
+						else if(get.color(ui.selected.buttons[0].link)=='red')	return [1,2];
+						return [1,2];
+					});
+					next.set('dialog',event.videoId);
+					next.set('ai',function(){return get.value(button.link)});
+					next.set('forceAuto',function(){
+						return ui.selected.buttons.lengt==2
+					});
+					'step 2'
+					if(result.bool){
+						event.links=result.links;
+						var controls=['取消选择','将这些牌置于牌堆顶','获得这张牌'];
+						if(event.links.length!=1||get.color(event.links[0])=='red'){
+							controls.splice(2,1);
+						}
+						var func=function(cards,id){
+							var dialog=get.idDialog(id);
+							if(dialog){
+								for(var j=0;j<cards.length;j++){
+									for(var i=0;i<dialog.buttons.length;i++){
+										if(dialog.buttons[i].link==cards[j]){
+											dialog.buttons[i].classList.add('glow');
+										}
+										else{
+											dialog.buttons[i].classList.add('unselectable');
+										}
+									}
+								}
+							}
+						}
+						if(player.isOnline2()){
+							player.send(func,event.links,event.videoId);
+						}
+						else if(player==game.me&&!_status.auto){
+							func(event.links,event.videoId);
+						}
+						player.chooseControl(controls);
+					}else{
+						if(player.isOnline2()){
+							player.send('closeDialog',event.videoId);
+						}
+						event.dialog.close();
+						event.finish();					
+					}
+					'step 3'
 					switch(result.index){
 						case 0:{
-							var cards = trigger.cards.filter(function(card){
-								return get.color(card)=='red'&&get.position(card)=='d';
-							})
-							player.gain(cards);
-							game.log(player,'获得了',cards);
+							event.goto(1);
 							break;
 						}
 						case 1:{
-							var cards = trigger.cards.filter(function(card){
-								return get.position(card)=='d';
-							})
-							game.broadcastAll(function(player,cards){
-								player.chooseCardButton([0,2],true,cards,'『赤心』：将其中至多两张牌以任意顺序置于牌堆顶（先选择的在上）').set('ai',function(button){
-									return get.value(button.link);
-								});
-							}, player, cards);
+							var list=event.links.slice(0);
+							while(list.length){
+								ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+							}
+							game.log(player,'将牌放在牌堆顶')
+							break;
+						}
+						case 2:{
+							player.gain(event.links);
+							game.log(player,'获得了',event.links);
 							break;
 						}
 					}
-					'step 2'
-					if(result.bool){
-						var list=result.links.slice(0);
-						while(list.length){
-							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
-						}
-						game.log(player,'将牌放在牌堆顶')
+					'step 4'
+					if(player.isOnline2()){
+						player.send('closeDialog',event.videoId);
 					}
+					event.dialog.close();
 				},
 			},
 			//re粽子
@@ -2277,7 +2333,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
-			chixin_info: '每回合限一次，当有牌进入弃牌堆时，若其中有♥牌，你可以获得其中的红色牌；或将其中至多两张牌以任意顺序置于牌堆顶。',
+			chixin_info: '当有牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
