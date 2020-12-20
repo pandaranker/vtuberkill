@@ -1,6 +1,6 @@
 window.noname_update={
-	version:'1.9.101.03',
-	update:'1.9.100.101.3',
+	version:'1.9.101.04',
+	update:'1.9.100.102.3',
 	changeLog:[
 		'新增V杀初心角色包（内含部分新角色）',
 		'削弱罗莎琳和初心包的赤井心',

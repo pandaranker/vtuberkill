@@ -71,6 +71,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_YuNi:['female','upd8',4,['re_shengcai']],
 			/**Re兔鞠 */
 			re_TomariMari:['male','upd8',3,['liansheng','ruantang']],
+			/**Omesis */
+			re_Omesis:['female','upd8',4,['yaozhan','chongxin']],
         },
         characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
@@ -471,14 +473,143 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.skip('phaseDraw');
 				},
 			},
+			//reOmesis
+			yaozhan:{
+				trigger:{player:['phaseDrawBefore','phaseUseBefore']},
+				direct:true,
+				content:function(){
+					"step 0"
+					var check= player.countCards('h')>2;
+					player.chooseTarget('###是否发动『邀战』？###跳过'+get.translation(trigger.name)+'，视为对一名其他角色使用一张【决斗】',function(card,player,target){
+						if(player==target) return false;
+						return player.canUse({name:'juedou'},target);
+					}).set('check',check).set('ai',function(target){
+						if(!_status.event.check) return 0;
+						return get.effect(target,{name:'juedou'},_status.event.player);
+					});
+					"step 1"
+					if(result.bool){
+						player.logSkill('yaozhan',result.targets);
+						player.useCard({name:'juedou'},result.targets[0]);
+						trigger.cancel();
+					}
+				}
+			},
+			chongxin:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				mark:true,
+				intro:{
+					name:'崇新',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
+							storage.length=0;
+						}
+					},
+				},
+				trigger:{global:'judge'},
+				filter:function(event,player){
+					var suit0 = get.suit(event.player.judging[0]);
+					return player.countCards('he',{suit:suit0})>0;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					player.chooseCard(get.translation(trigger.player)+'的'+(trigger.judgestr||'')+'判定为'+
+					get.translation(trigger.player.judging[0])+'，'+get.prompt('chongxin'),'he',function(card){
+						var judging=_status.event.judging;
+						if(get.suit(card)!=get.suit(judging)) return false;
+						var player=_status.event.player;
+						var mod2=game.checkMod(card,player,'unchanged','cardEnabled2',player);
+						if(mod2!='unchanged') return mod2;
+						var mod=game.checkMod(card,player,'unchanged','cardRespondable',player);
+						if(mod!='unchanged') return mod;
+						return true;
+					}).set('ai',function(card){
+						var trigger=_status.event.getTrigger();
+						var player=_status.event.player;
+						var judging=_status.event.judging;
+						var result=trigger.judge(card)-trigger.judge(judging);
+						var attitude=get.attitude(player,trigger.player);
+						if(attitude==0||result==0) return 0;
+						if(attitude>0){
+							return result;
+						}
+						else{
+							return -result;
+						}
+					}).set('judging',trigger.player.judging[0]);
+					'step 1'
+					if(result.bool){
+						player.respond(result.cards,'highlight','noOrdering');
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool){
+						event.card = trigger.player.judging[0];
+						player.gain(event.card,'gain2');
+						trigger.player.judging[0]=result.cards[0];
+						trigger.orderingCards.addArray(result.cards);
+						game.log(trigger.player,'的判定牌改为',result.cards[0]);
+					}else{
+						event.finish();
+					}
+					'step 3'
+					player.chooseBool('是否将'+get.translation(event.card)+'置于武将牌上')
+					'step 4'
+					if(result.bool){
+						var card = event.card;
+						player.lose(card,ui.special,'toStorage');
+						player.$give(card,player);
+						player.markAuto('chongxin',[card]);
+						game.log(player,'将',card,'置于武将牌上');
+					}
+					game.delay(1);
+				},
+				global:'chongxin2',
+				ai:{
+					rejudge:true,
+					tag:{
+						rejudge:0.2,
+					}
+				},
+			},
+			chongxin2:{
+				mod:{
+					cardEnabled:function(card,player,now){
+						if(_status.event.type=='wuxie'&&_status.event.getParent().name == '_wuxie'&&_status.event.getParent().card.name == 'juedou'&&player!=_status.event.getParent().player){
+							if(_status.event.getParent().player.hasSkill('chongxin')&&_status.event.getParent().player.storage.chongxin&&_status.event.getParent().player.storage.chongxin.length){
+								var cards = _status.event.getParent().splayer.storage.chongxin;
+								for(var i=0;i<cards.length;i++)
+								if(get.suit(cards[i])==get.suit(card))	return false;
+							}
+						}
+					},
+					cardRespondable:function(card,player,now){
+						if(_status.event.name == 'chooseToRespond'&&_status.event.getParent().name == 'juedou'&&player!=_status.event.splayer){
+							if(_status.event.splayer.hasSkill('chongxin')&&_status.event.splayer.storage.chongxin&&_status.event.splayer.storage.chongxin.length){
+								var cards = _status.event.splayer.storage.chongxin;
+								for(var i=0;i<cards.length;i++)
+								if(get.suit(cards[i])==get.suit(card))	return false;
+							}
+						}
+					},
+				},
+			},
 			//re狗妈
 			re_DDzhanshou:{
 				trigger:{global:'phaseEnd'},
 				priority:77,
 				filter:function(event,player){
 					var history = event.player.getHistory('useCard');
-					console.log(history)
-					var DD = false
+					var DD = false;
 					history.forEach(function(his){
 						if(!(his.targets.contains(event.player)||his.targets.contains(player))&&get.color(his.card)=='red')		DD = true;
 					});
@@ -1139,8 +1270,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.countCards('h');
 				},
-				forced:true,
-				popup:false,
+				direct:true,
 				lastDo:true,
 				content:function(){
 					'step 0'
@@ -1685,7 +1815,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chixin:{
 				trigger:{global:['loseAfter','cardsDiscardAfter']},
 				filter:function(event,player){
-					console.log(event.getParent());
 					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent().relatedEvent.name=='useCard') return false;
 					if(event.name=='lose'&&(event.getParent().name=='useCard'||event.position!=ui.discardPile)) return false;
 					var list=event.cards.filter(function(card){
@@ -1693,7 +1822,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					return list.length>0;
 				},
-				forced:true,
+				direct:true,
 				content:function(){
 					'step 0'
 					event.cards = trigger.cards.filterInD('d');
@@ -1718,7 +1847,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return [1,2];
 					});
 					next.set('dialog',event.videoId);
-					next.set('ai',function(){return get.value(button.link)});
+					next.set('ai',function(button){
+						return get.value(button.link);
+					});
+					next.set('check',function(){
+						return ui.selected.buttons.length==1;
+					}) 
 					next.set('forceAuto',function(){
 						return ui.selected.buttons.length==2||ui.dialog.buttons.length==1;
 					});
@@ -1750,7 +1884,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						else if(player==game.me&&!_status.auto){
 							func(event.links,event.videoId);
 						}
-						player.chooseControl(controls);
+						player.chooseControl(controls).set('ai',function(event,player){
+							return _status.event.index;
+						}).set('index',2);
 					}else{
 						if(player.isOnline2()){
 							player.send('closeDialog',event.videoId);
@@ -1827,7 +1963,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						popup:false,
 						content:function(){
 							'step 0'
-							player.chooseBool('###『绝壁』###是否令本次造成的伤害+1')
+							player.chooseBool('###『绝壁』###是否令本次造成的伤害+1',function(){
+								return get.attitude(player,trigger.player)<0;
+							});
 							'step 1'
 							if(result.bool){
 								player.logSkill('juebi',trigger.player);
@@ -1845,7 +1983,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					damage:{
 						trigger:{player:'phaseUseBegin'},
 						priority:199,
-						prompt2:'出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
+						prompt2:'『战吼』出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
 						content:function(){
 							player.damage();
 							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】',{name:'shunshou'},true);
@@ -1857,7 +1995,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							return player.hp<player.maxHp;
 						},
-						prompt2:'其他角色阵亡时，你可以回复1点体力，视为使用一张【顺手牵羊】。',
+						prompt2:'『战吼』其他角色阵亡时，你可以回复1点体力，视为使用一张【顺手牵羊】。',
 						content:function(){
 							player.recover();
 							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】',{name:'shunshou'},true);
@@ -2231,6 +2369,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liansheng_info: '<font color=#f66>锁定技</font> 你未受伤时性别为男；受伤时性别为女。你的性别变化时，若当前回合角色为女性，你摸一张牌。',
 			ruantang: '软糖',
 			ruantang_info: '你可以跳过判定阶段和摸牌阶段，令至多一名异性角色与你各回复1点体力，然后体力因此回复至上限的角色摸一张牌。',
+
+			re_Omesis: '新·欧米伽姐妹',
+			yaozhan: '邀战',
+			yaozhan_info: '你可以跳过摸牌阶段/出牌阶段，视为使用一张【决斗】。',
+			chongxin: '崇新',
+			chongxin_info: '场上的判定牌生效前，你可以用相同花色的牌替换之。然后你可以将获得的牌置于武将牌上，其他角色不能使用与之花色相同的牌响应你使用的【决斗】。',
 
 			re_KaguyaLuna: '新·辉夜月',
 			re_jiajiupaidui: '假酒派对',

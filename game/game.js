@@ -10501,9 +10501,9 @@
 					}
 					player.ai.tempIgnore=[];
 					_status.globalHistory.push({
-   			cardMove:[],
-   			custom:[],
-   		});
+							cardMove:[],
+						custom:[],
+					});
 					game.countPlayer2(function(current){
 						current.actionHistory.push({useCard:[],respond:[],skipped:[],lose:[],gain:[],sourceDamage:[],damage:[],custom:[]});
 						current.stat.push({card:{},skill:{}});
@@ -20741,8 +20741,8 @@
 					if(raw) range=game.checkMod(player,player,range,'globalFrom',player);
 					range=game.checkMod(player,player,range,'attackFrom',player);
 					var equips=player.getCards('e',function(card){
-				return !ui.selected.cards||!ui.selected.cards.contains(card);
-			});
+						return !ui.selected.cards||!ui.selected.cards.contains(card);
+					});
 					for(var i=0;i<equips.length;i++){
 						var info=get.info(equips[i]).distance;
 						if(!info) continue;
@@ -47860,10 +47860,10 @@
 				if(target==player){
 					str+='（你）'
 				}
-				return '是否对'+str+'发动【'+get.skillTranslation(skill,player)+'】？';
+				return '是否对'+str+'发动『'+get.skillTranslation(skill,player)+'』？';
 			}
 			else{
-				return '是否发动【'+get.skillTranslation(skill,player)+'】？';
+				return '是否发动『'+get.skillTranslation(skill,player)+'』？';
 			}
 		},
 		prompt2:function(skill,target,player){

@@ -1875,6 +1875,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					jieshu:{
 						trigger:{player:'phaseJieshuBegin'},
 						priority:40,
+						direct: true,
 						filter:function(event,player){
 							if(player.hasSkill('kuali_used'))	return false;
 							return game.hasPlayer(function(cur){
@@ -1884,33 +1885,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.addTempSkill('kuali_used');
 							player.chooseControlList(
 								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
 								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
-								true,function(event,player){
+								function(event,player){
 									return _status.event.index;
 								});
 							'step 1'
-							if(result.index==0){
-								player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
-									if(target==player) 				return false;
-									return target.countCards('h')%player.countCards('h')==0;
-								});						
-							}
-							if(result.index==1){
-								var num=-1;
-								game.hasPlayer(function(cur){
-									if(cur.hp%player.hp==0)
-									num++;
-								});
-								player.draw(num);
-								player.loseHp();
+							if(result.control!='cancel2'){
+								player.addTempSkill('kuali_used');
+								player.logSkill('kuali');
+								if(result.index==0){
+									player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+										if(target==player) 				return false;
+										return target.countCards('h')%player.countCards('h')==0;
+									});						
+								}
+								if(result.index==1){
+									var num=-1;
+									game.hasPlayer(function(cur){
+										if(cur.hp%player.hp==0)
+										num++;
+									});
+									player.draw(num);
+									player.loseHp();
+									event.finish();
+								}
+							}else{
 								event.finish();
 							}
 							'step 2'
-							if(result.bool&&result.targets.length)
-							{
+							if(result.bool&&result.targets.length){
 								var num=0;
 								num=Number(result.targets.length);
 								player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
@@ -1927,6 +1932,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				round:1,
 				priority:80,
+				direct: true,
 				filter:function(event, player){	
 					return event.player!=player&&player.countCards('he');
 				},
@@ -1947,11 +1953,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var target = trigger.player;
 						player.$giveAuto(result.cards,target);
 						target.gain(result.cards,player);
-						target.markSkill('youyi');
+						player.storage.youyi = result.cards[0];
+						target.storage.youyishiyue = result.cards[0];
 						target.addTempSkill('youyishiyue','phaseAfter');
 						target.addTempSkill('youyishiyue_lose','phaseEnd');
 						target.addTempSkill('youyishiyue_rec','phaseAfter');
-						player.storage.youyi=result.cards[0];
 					}
 				},
 				group:['youyi_dam'],
@@ -1979,32 +1985,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			youyishiyue:{
-				marktext:"誓",
 				locked:true,
 				intro:{
 					name:'誓约牌',
-					content:function (storage,player,skill){
-						var su,na,nu,shi;
-						game.hasPlayer(function(cur){
-							if(cur.hasSkill('youyi')){
-								shi=cur.storage.youyi;
-								su=get.suit(shi);
-								na=get.name(shi);
-								nu=shi.number;
-							}
-						});
-						return '当前的“誓约”牌为'+get.translation(su)+get.translation(nu)+get.translation(na)+'当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 \n （若此牌离开你的区域，此状态结束）';
-					},
+					content:'当前的“誓约”牌为$当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 \n （若此牌离开你的区域，此状态结束）',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
 							game.log(storage,'誓约解除');
 							storage.length=0;
 						}
 					},
 				},
-				mark:true,
+				mark:'card',
 				group:['youyishiyue_lose','youyishiyue_rec'],
 				subSkill:{
 					lose:{
@@ -2026,7 +2018,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(!(event.getParent().cards||event.cards))											return false;
 							if(event.getParent().name=="useCard"&&get.type(event.getParent().card)=='equip')	return false;
 							if(event.getParent().card!=null&&(get.name(event.getParent().card) =='shandian'||get.name(event.getParent().card) =='fulei'))		return false;
-		//					console.log(event);
 							if(event.cards){
 								for(var i=0;i<event.cards.length;i++){
 									if(event.cards[i]==shi)		return true;
@@ -2076,9 +2067,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 								});
 								_status.event.card = shi;
-			//					player.choosePlayerCard('弃置誓约牌','hej',function(card,player){
-			//						return card=shi;
-			//					});
 								player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
 									return target==player||target==aqua;
 								});
@@ -2449,10 +2437,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var target = result.targets[0]
 						player.logSkill('hangao',target);
 						target.gain(player,result.cards[0],'giveAuto');
-						target.addTempSkill('hangaohouxu',{player:'phaseAfter'});
-						target.storage.hangaohouxu.add(result.cards[0]);
-						target.storage.hangaohouxu.add(player);
+						target.storage.hangaohouxu = player;
+						target.storage.hangaohouxu.hangao = result.cards[0];
 						target.syncStorage('hangaohouxu');
+						target.addTempSkill('hangaohouxu',{player:'phaseAfter'});
 					}
 				},
 			},
@@ -2471,14 +2459,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					markcount:function(storage,player){
 						return 0;
-					}
+					},
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							storage.length=0;
+						}
+					},
 				},
-				mark:true,
+				mark:'character',
 				forced:true,
 				priority:42,
 				trigger:{player:'phaseEnd'},
 				filter:function(event,player){
-					return player.storage.hangaohouxu[1].isAlive()&&!player.storage.hangaohouxu[1].isOut();
+					return player.storage.hangaohouxu.isAlive()&&!player.storage.hangaohouxu.isOut();
 				},
 				content:function(){
 					player.showCards(player.getCards('h'),'函告后续');
@@ -2487,19 +2480,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var heaG=1,diaG=1;
 					for(var i=0;i<history.length;i++){
 						console.log(history[i].cards[0]);
-						if(history[i].cards[0]==player.storage.hangaohouxu[0])	diaG=0;
+						if(history[i].cards[0]==player.storage.hangaohouxu.hangao)	diaG=0;
 						if(!history[i].targets) continue;
 						for(var j=0;j<history[i].targets.length;j++){
-							if(history[i].targets[j]==player.storage.hangaohouxu[1])	heaG=0;
+							if(history[i].targets[j]==player.storage.hangaohouxu)	heaG=0;
 						}
 					}
 					if(heaG){
-						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
+						player.storage.hangaohouxu.gain(player,player.getCards('he').filter(function(ca){
 							return get.suit(ca)=='heart';
 						}),'giveAuto');
 					}
-					if(diaG&&!player.getCards('h').contains(player.storage.hangaohouxu[0])){
-						player.storage.hangaohouxu[1].gain(player,player.getCards('he').filter(function(ca){
+					if(diaG&&!player.getCards('h').contains(player.storage.hangaohouxu.hangao)){
+						player.storage.hangaohouxu.gain(player,player.getCards('he').filter(function(ca){
 							return get.suit(ca)=='diamond';
 						}),'giveAuto');
 					}

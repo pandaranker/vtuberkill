@@ -219,6 +219,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.awakenSkill('haoren');
 					player.unmarkSkill('haoren');
 				},
+				ai:{
+					combo:'tiantang',
+				},
 			},
 			//ggl
 			shengya:{
@@ -438,7 +441,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target.addMark('zhai',1);
 						game.log(event.target,'拒绝交给',player,'相同花色的牌');
 					}
-				}
+				},
+				ai:{
+					combo:'guanzhai',
+				},
 			},
 			//oto
 			xiaogui:{

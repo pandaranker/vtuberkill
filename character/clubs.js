@@ -16,6 +16,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
+			/**花谱 */
+			Kaf:['female','qun',3,['liuhua','yinshi']],
 			/**P家诸人 */
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -28,7 +30,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			clubs:{
-                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','OtomeOto'],
+                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto'],
 			}
 		},
 		characterIntro:{
@@ -321,6 +323,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return get.name(event.card) =='sha';
 				},
+				check:function(event,player){
+					return event.target == player||!event.target.hasSkillTag('');
+				},
 				content:function(){
 					if(!trigger.getParent().addedSkill)	trigger.getParent().addedSkill = [];
 					trigger.getParent().addedSkill.add('duixian');
@@ -394,6 +399,119 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},*/
+			},
+			//Kaf
+			liuhua:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				mark:true,
+				intro:{
+					name:'流花',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.gain(storage,'gainAuto');
+							storage.length=0;
+						}
+					},
+				},
+				trigger:{global:'phaseAfter'},
+				lastDo: true,
+				filter:function(event,player){
+					return player.countCards('h')&&game.countPlayer2(function(cur){
+						return cur.getHistory('damage').length;
+					});
+				},
+				content:function(){
+					'step 0'
+					player.showHandcards();
+					event.cards = player.getCards('h');
+					if(player.storage.liuhua.length){
+						for(var i = 0;i<player.storage.liuhua.length;i++){
+							for(var j = 0;j<event.cards.length;j++){
+								if(get.suit(player.storage.liuhua[i])==get.suit(event.cards[j])){
+									event.finish();
+								}
+							}
+						}
+					}
+					'step 1'
+					player.lose(event.cards,ui.special,'toStorage');
+					player.$give(event.cards,player);
+					player.markAuto('liuhua',event.cards);
+					game.log(player,'将',event.cards,'置于武将牌上');
+					player.insertPhase();
+				},
+				group:'liuhua_regain',
+				subSkill:{
+					regain:{
+						trigger:{global:'phaseEnd'},
+						firstDo:true,
+						direct:true,
+						filter:function(event,player){
+							return player.storage.liuhua.length>=4;
+						},
+						content:function(){
+							'step 0'
+							player.chooseCardButton(1,'###'+get.prompt('liuhua')+'###获得武将牌上的牌',player.storage.liuhua,false);
+							'step 1'
+							if(result.bool){
+								game.delay(0.5);
+								player.logSkill('liuhua');
+								player.unmarkSkill('liuhua');
+								player.turnOver();
+							}
+						},
+					},
+				}
+			},
+			yinshi:{
+				trigger:{player:'phaseBefore'},
+				firstDo:true,
+				forced:true,
+				filter:function(event,player){
+					return event.skill&&_status.currentPhase==player;
+				},
+				content:function(){
+					player.addSkill('yinshi_use');
+				},
+				group:'yinshi_last',
+				subSkill:{
+					last:{
+						trigger:{global:'phaseEnd'},
+						direct:true,
+						content:function(){
+							player.storage.yinshi_use = _status.currentPhase;
+						},
+					},
+					use:{
+						mark:'character',
+						intro:{
+							content:function(storage,player){
+								if(storage==player)	return '使用牌只能指定自己为目标';
+								return '使用牌只能指定自己或$为目标';
+							}
+						},
+						trigger:{global:'phaseBefore'},
+						firstDo:true,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return !event.skill;
+						},
+						onremove:true,
+						content:function(){
+							player.removeSkill('yinshi_use');
+						},
+						mod:{
+							playerEnabled:function(card,player,target){
+								if(player!=target&&player.storage.yinshi_use!=target) return false;
+							}
+						}
+					}
+				}
 			},
 
 			caibu: {
@@ -1462,6 +1580,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
 			gutai: '守峡',
 			gutai_info: '当你使用牌造成伤害后，你可以取消此牌的剩余目标；当你于回合外成为牌的目标后，若此牌造成伤害，你可以取消此牌的剩余目标。',
+
+			Kaf: '花谱',
+			liuhua: '流花',
+			liuhua_info: '有角色受到伤害的回合结束时，你可以展示所有手牌，若与武将牌上牌的花色均不同，你将这些牌置于武将牌上并执行一个额外回合。一个回合结束时，若你武将牌上有至少四张牌，你可以翻面并获得之。',
+			yinshi: '遗世',
+			yinshi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标。',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',

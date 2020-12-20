@@ -788,6 +788,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return event.player!=player&&event.num;
 				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>1;
+				},
 				content:function(){
 					player.logSkill('zuodun',trigger.player);
 					trigger.player = player;
@@ -1319,7 +1322,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			huangtu_mark:{
-				marktext:'恩',
+				mark:'character',
 				intro:{
 					name:'颂恩',
 					content:'当你在$的回合外体力变化时，$体力进行同样的变化，当$在自己的回合内合体力变化时，你体力进行同样的变化'
@@ -1338,18 +1341,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(trigger.player==player){
-						player.storage.huangtu2[0][trigger.name](trigger.num,'nosource');
+						var target = player.storage.huangtu2[0];
+						target[trigger.name](trigger.num,'nosource');
+						if(!target.storage.huangtu_mark){
+							target.storage.huangtu_mark=[];
+							target.storage.huangtu_mark.add(player);
+							target.storage.huangtu_mark.sortBySeat();
+							target.markSkill('huangtu_mark');
+						}
 						event.finish();
 					}
-					var target=trigger.player;
-					if(!target.storage.huangtu_mark){ 
+					'step 1'
+					var target = trigger.player;
+					if(!target.storage.huangtu_mark){
 						target.storage.huangtu_mark=[];
 						target.storage.huangtu_mark.add(player);
 						target.storage.huangtu_mark.sortBySeat();
 						target.markSkill('huangtu_mark');
 					}
 					game.delayx();
-					'step 1'
+					'step 2'
 					player[trigger.name](trigger.num,'nosource');
 				},
 				onremove:function(player){
