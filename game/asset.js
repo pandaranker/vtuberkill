@@ -690,7 +690,13 @@ window.noname_asset_list=[
 	
 	'image/replace/chuqibuyi.png',
 	'image/replace/dongzhuxianji.png',
+	'image/replace/heiguangkai.png',
 	'image/replace/suijiyingbian.png',
+	'image/replace/taigongyinfu.png',
+	'image/replace/tianjitu.png',
+	'image/replace/tongque.png',
+	'image/replace/wutiesuolian.png',
+	'image/replace/wuxinghelingshan.png',
 	'image/replace/zhujinqiyuan.png',
 	
 	'image/character/AkaiHaato.jpg',
