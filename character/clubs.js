@@ -407,7 +407,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mark:true,
 				intro:{
-					name:'流花',
+					name:'化羽',
 					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
@@ -427,7 +427,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.showHandcards();
 					event.cards = player.getCards('h');
-					if(player.storage.liuhua.length){
+			/*		if(player.storage.liuhua.length){
 						for(var i = 0;i<player.storage.liuhua.length;i++){
 							for(var j = 0;j<event.cards.length;j++){
 								if(get.suit(player.storage.liuhua[i])==get.suit(event.cards[j])){
@@ -435,10 +435,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							}
 						}
-					}
+					}*/
 					'step 1'
 					player.lose(event.cards,ui.special,'toStorage');
-					player.$give(event.cards,player);
+					player.$give(event.cards,player,false);
 					player.markAuto('liuhua',event.cards);
 					game.log(player,'将',event.cards,'置于武将牌上');
 					player.insertPhase();
@@ -446,20 +446,41 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'liuhua_regain',
 				subSkill:{
 					regain:{
-						trigger:{global:'phaseEnd'},
+						trigger:{player:['phaseBegin','turnOverEnd']},
 						firstDo:true,
 						direct:true,
 						filter:function(event,player){
-							return player.storage.liuhua.length>=4;
+							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&event.getParent()._trigger.skill!='liuhua'))	return false;
+							if(player.storage.liuhua.length<3)	return false;
+							var list = [];
+							player.storage.liuhua.forEach(function(hua){
+								list.add(get.suit(hua))
+							});
+							return list.length>=3;
 						},
 						content:function(){
 							'step 0'
-							player.chooseCardButton(1,'###'+get.prompt('liuhua')+'###获得武将牌上的牌',player.storage.liuhua,false);
+							var list = [];
+							player.storage.liuhua.forEach(function(hua){
+								list.add(get.suit(hua))
+							});
+							var next = player.chooseCardButton(list.length,'###'+get.translation('liuhua')+'###获得武将牌上的不同花色牌各一张',player.storage.liuhua,true);
+							next.set('filterButton',function(button){
+								var suit=get.suit(button.link);
+								for(var i=0;i<ui.selected.buttons.length;i++){
+									if(get.suit(ui.selected.buttons[i].link)==suit) return false;
+								}
+								return true;
+							});
+							next.set('ai',function(button){
+								return get.value(button.link);
+							});
 							'step 1'
 							if(result.bool){
 								game.delay(0.5);
 								player.logSkill('liuhua');
-								player.unmarkSkill('liuhua');
+								player.unmarkAuto('liuhua',result.links);
+								player.gain(result.links,player,'gain2')
 								player.turnOver();
 							}
 						},
@@ -471,20 +492,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				firstDo:true,
 				forced:true,
 				filter:function(event,player){
-					return event.skill&&_status.currentPhase==player;
+					return event.skill;
 				},
 				content:function(){
-					player.addSkill('yinshi_use');
+					'step 0'
+					player.storage.yinshi_use = _status.currentPhase;
+					console.log( _status.currentPhase)
+					'step 1'
+					player.addTempSkill('yinshi_use');
 				},
-				group:'yinshi_last',
 				subSkill:{
-					last:{
-						trigger:{global:'phaseEnd'},
-						direct:true,
-						content:function(){
-							player.storage.yinshi_use = _status.currentPhase;
-						},
-					},
 					use:{
 						mark:'character',
 						intro:{
@@ -493,18 +510,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return '使用牌只能指定自己或$为目标';
 							}
 						},
-						trigger:{global:'phaseBefore'},
-						firstDo:true,
-						forced:true,
-						silent:true,
-						popup:false,
-						filter:function(event,player){
-							return !event.skill;
-						},
 						onremove:true,
-						content:function(){
-							player.removeSkill('yinshi_use');
-						},
 						mod:{
 							playerEnabled:function(card,player,target){
 								if(player!=target&&player.storage.yinshi_use!=target) return false;
@@ -1582,8 +1588,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gutai_info: '当你使用牌造成伤害后，你可以取消此牌的剩余目标；当你于回合外成为牌的目标后，若此牌造成伤害，你可以取消此牌的剩余目标。',
 
 			Kaf: '花谱',
-			liuhua: '流花',
-			liuhua_info: '有角色受到伤害的回合结束时，你可以展示所有手牌，若与武将牌上牌的花色均不同，你将这些牌置于武将牌上并执行一个额外回合。一个回合结束时，若你武将牌上有至少四张牌，你可以翻面并获得之。',
+			liuhua: '化羽',
+			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上拥有至少三种花色的牌时，你获得每种花色牌各一张并翻面。',
 			yinshi: '遗世',
 			yinshi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标。',
 

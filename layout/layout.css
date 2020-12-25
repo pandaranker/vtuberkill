@@ -2257,6 +2257,9 @@ div:not(.handcards)>.card>.info>span,
 #window>.damage.fullscreenavatar[data-nature='water']>div:first-child>div{
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 10px, rgba(0, 0, 0,0.3) 0 0 30px, rgba(78, 117, 140,1) 0 0 60px, rgba(78, 117, 140,1) 0 0 60px;
 }
+#window>.damage.fullscreenavatar[data-nature='ice']>div:first-child>div{
+	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 20px, rgba(0, 0, 0,0.3) 0 0 40px, rgba(213, 194, 179, 1) 0 0 80px;
+}
 #window>.damage.fullscreenavatar[data-nature='soil']>div:first-child>div{
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 10px, rgba(0, 0, 0,0.3) 0 0 30px, rgba(128, 59, 2,1) 0 0 60px;
 }
@@ -3883,6 +3886,27 @@ span[data-nature='graymx'] {
 		rgba(213, 194, 179,1) 0 0 5px,black 0 0 1px;
 }
 
+div[data-nature='ice'],
+span[data-nature='ice'] {
+	text-shadow: rgba(213, 194, 179,1) 0 0 2px,rgba(213, 194, 179,1) 0 0 5px,rgba(213, 194, 179,1) 0 0 10px,
+		rgba(213, 194, 179,1) 0 0 10px,rgba(213, 194, 179,1) 0 0 20px,rgba(213, 194, 179,1) 0 0 20px,black 0 0 1px;
+}
+div[data-nature='icem'],
+span[data-nature='icem'] {
+	text-shadow: rgba(213, 194, 179,1) 0 0 2px,rgba(213, 194, 179,1) 0 0 5px,rgba(213, 194, 179,1) 0 0 5px,
+		rgba(213, 194, 179,1) 0 0 5px,black 0 0 1px;
+}
+div[data-nature='icemm'],
+span[data-nature='icemm'] {
+	text-shadow: rgba(213, 194, 179,1) 0 0 2px,rgba(213, 194, 179,1) 0 0 2px,rgba(213, 194, 179,1) 0 0 2px,
+		rgba(213, 194, 179,1) 0 0 2px,black 0 0 1px;
+}
+div[data-nature='icemx'],
+span[data-nature='icemx'] {
+	text-shadow: black 0 0 1px,rgba(213, 194, 179,0.2) 0 0 2px,rgba(213, 194, 179,1) 0 0 2px,rgba(213, 194, 179,1) 0 0 5px,
+		rgba(213, 194, 179,1) 0 0 5px,black 0 0 1px;
+}
+
 .player .identity[data-color="unknownx"],
 div[data-nature='black'],
 span[data-nature='black'] {
@@ -4047,6 +4071,14 @@ div[data-decoration="bronze"]::after{
 .card.fullskin.thunder>.name {
 	color: #152E63;
 	border: 1px solid #152E63;
+}
+.card.fullskin.kami>.name {
+	color: #1F3C38;
+	border: 1px solid #1F3C38;
+}
+.card.fullskin.ice>.name {
+	color: #3B6273;
+	border: 1px solid #3B6273;
 }
 .card.fullskin.fire>.name {
 	color: #631515;

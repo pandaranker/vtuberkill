@@ -264,7 +264,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				filterTarget:function(card,player,target){
-					return target!=player&&target.countCards('h')>0;
+					if(target==player) return false;
+					if(!ui.selected.targets.length) return target.countCards('h')>0&&game.hasPlayer(function(current){
+						return target.canCompare(current);
+					});
+					return ui.selected.targets[0].canCompare(target);
 				},
 				enable:function(){
 					return game.countPlayer()>2;
@@ -280,6 +284,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				multitarget:true,
 				multiline:true,
 				singleCard:true,
+				complexSelect:true,
 				content:function(){
 					'step 0'
 					target.chooseToCompare(event.addedTarget);
@@ -326,7 +331,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var list=game.filterPlayer(function(current){
-						return current!=target&&current.countCards('h');
+						return current!=target&&target.canCompare(current);
 					});
 					if(!list.length){
 						target.draw(3);
@@ -550,7 +555,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				type:'trick',
 				enable:true,
 				filterTarget:function(card,player,target){
-					return player!=target&&target.countCards('h');
+					return player.canCompare(target);
 				},
 				content:function(){
 					"step 0"
@@ -859,7 +864,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{target:'shaBefore'},
 				direct:true,
 				filter:function(event,player){
-					return !event.getParent().directHit.contains(player)&&player.hasCard('youdishenru');
+					return !event.getParent().directHit.contains(player)&&player.hasUsableCard('youdishenru');
 				},
 				content:function(){
 					event.youdiinfo={
@@ -880,7 +885,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					if(!event.player.countCards('he')) return false;
 					if(!lib.filter.targetEnabled({name:'chenhuodajie'},player,event.player)) return false;
 					if(event._notrigger.contains(event.player)) return false;
-					return player.hasCard('chenhuodajie');
+					return player.hasUsableCard('chenhuodajie');
 				},
 				content:function(){
 					player.chooseToUse(get.prompt('chenhuodajie',trigger.player).replace(/发动/,'使用'),function(card,player){

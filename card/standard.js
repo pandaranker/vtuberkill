@@ -60,6 +60,18 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			icedamage:{
+				ai:{
+					result:{
+						target:-1.5
+					},
+					tag:{
+						damage:1,
+						iceDamage:1,
+						natureDamage:1,
+					}
+				}
+			},
 			respondShan:{
 				ai:{
 					result:{
@@ -75,12 +87,31 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			sha:{
 				audio:true,
 				fullskin:true,
-				nature:['thunder','fire','kami','ocean'],
+				nature:['thunder','fire','kami','ocean','ice'],
 				type:'basic',
 				enable:true,
 				usable:1,
+				updateUsable:'phaseUse',
+				global:'icesha_skill',
 				range:{attack:1},
 				selectTarget:1,
+				yingbian_prompt:function(card){
+					if(card.nature=='fire'){
+						return '此牌的伤害值基数+1';
+					}
+					else{
+						return '当你使用此牌选择目标后，你可为此牌增加一个目标';
+					}
+				},
+				yingbian:function(event){
+					if(event.card.nature=='fire'){
+						if(typeof event.baseDamage!='number') event.baseDamage=1;
+						event.baseDamage++;
+					}
+					else{
+						event.yingbian_addTarget=true;
+					}
+				},
 				filterTarget:function(card,player,target){return player!=target},
 				content:function(){
 					"step 0"
@@ -244,6 +275,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				cardcolor:'red',
 				notarget:true,
 				nodelay:true,
+				yingbian_prompt:'当你声明使用此牌后，你摸一张牌',
+				yingbian:function(event){
+					event.player.draw();
+				},
 				content:function(){
 					event.result='shaned';
 					event.getParent().delayx=false;
@@ -745,6 +780,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				type:'trick',
 				enable:true,
 				selectTarget:-1,
+				yingbian_prompt:'当你使用此牌选择目标后，你可为此牌减少一个目标',
+				yingbian:function(event){
+					event.yingbian_removeTarget=true;
+				},
 				filterTarget:function(card,player,target){
 					return target!=player;
 				},
@@ -912,6 +951,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				enable:true,
+				yingbian_prompt:'你令此牌不可被响应',
+				yingbian:function(event){
+					event.directHit.addArray(game.players);
+				},
 				filterTarget:function(card,player,target){
 					return target!=player;
 				},
@@ -1281,6 +1324,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					expose:0.2
 				},
 				notarget:true,
+				yingbian_prompt:'当此牌生效后，你获得此牌响应的目标牌',
 				contentBefore:function(){
 					'step 0'
 					if(get.mode()=='guozhan'&&get.cardtag(card,'guo')){
@@ -1319,6 +1363,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							ui.tempnowuxie.close();
 							delete ui.tempnowuxie;
 						}
+					}
+					if(event.card.yingbian){
+						var cardx=event.getParent().respondTo[1];
+						if(cardx&&cardx.cards&&cardx.cards.filterInD().length) player.gain(cardx.cards.filterInD(),'gain2','log');
 					}
 				},
 			},
@@ -1555,6 +1603,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						player.discardPlayerCard('he',trigger.player,true);
 					}
 				}
+			},
+			icesha_skill:{
+				inherit:'hanbing_skill',
+				trigger:{source:'damageBegin2'},
+				equipSkill:false,
+				ruleSkill:true,
+				filter:function(event){
+					return event.card&&event.card.name=='sha'&&event.nature=='ice'&&event.notLink()&&event.player.getCards('he').length>0;
+				},
 			},
 			renwang_skill:{
 				equipSkill:true,
@@ -2391,6 +2448,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			wuxie_info:'一张锦囊牌生效前，对此牌使用。抵消此牌对一名角色产生的效果，或抵消另一张【无懈可击】产生的效果。',
 			lebu_info:'出牌阶段，对一名其他角色使用。若判定结果不为红桃，跳过其出牌阶段。',
 			shandian_info:'出牌阶段，对自己使用。若判定结果为黑桃2~9，则目标角色受到3点雷电伤害。若判定不为黑桃2~9，将之移动到下家的判定区里。',
+			icesha_skill:'冰杀',
+			icesha_skill_info:'防止即将造成的伤害，改为依次弃置其两张牌。',
 		},
 		list:[
 			["spade",7,"sha"],

@@ -129,11 +129,22 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				filterLose:function(card,player){
-				if(player.hasSkillTag('unequip2')) return false;
-				return true;
+					if(player.hasSkillTag('unequip2')) return false;
+					return true;
 				},
+				loseDelay:false,
 				onLose:function(){
+					var next=game.createEvent('taipingyaoshu');
+					event.next.remove(next);
+					var evt=event.getParent();
+					if(evt.getlx===false) evt=evt.getParent();
+					evt.after.push(next);
+					next.player=player;
+					next.setContent(lib.card.taipingyaoshu.onLosex);
+				},
+				onLosex:function(){
 					'step 0'
+					player.logSkill('taipingyaoshu');
 					player.draw(2);
 					'step 1'
 					if(player.hp>1) player.loseHp();
@@ -191,13 +202,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				filterTarget:function(card,player,target){
-					if(!get.is.single()&&!target.countCards('e')) return false;
-					return target!=player;
+					return target!=player&&(get.mode()!='guozhan'||target.countCards('e')>0);
 				},
 				enable:true,
+				yingbian_prompt:'此牌的效果改为依次执行所有选项',
 				content:function(){
 					'step 0'
-					if(!target.countCards('e',function(card){
+					if(get.mode()!='guozhan'&&!get.is.single()) event.goto(2);
+					else if(!target.countCards('e',function(card){
 						return lib.filter.cardDiscardable(card,target);
 					})){
 						var next=target.damage();
@@ -205,7 +217,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						event.finish();
 						return;
 					}
-					target.chooseControl('discard_card','take_damage',function(event,player){
+					else target.chooseControl('discard_card','take_damage',function(event,player){
 						if(get.damageEffect(player,event.player,player,'thunder')>=0){
 							return 'take_damage';
 						}
@@ -222,6 +234,21 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						var next=target.damage();
 						if(!get.is.single()) next.nature='thunder'
 					}
+					event.finish();
+					'step 2'
+					target.chooseToDiscard(2,card.yingbian,'e').set('ai',function(card){
+						var player=_status.event.player;
+						var source=_status.event.getParent().player;
+						if(get.damageEffect(player,source,player,'thunder')>=0){
+							return 0;
+						}
+						if(player.hp>=3){
+							return 4-get.value(card);
+						}
+						return 8-get.value(card);
+					});
+					'step 3'
+					if(card.yingbian||!result.bool) target.damage('thunder');
 				},
 				ai:{
 					order:7,
@@ -233,8 +260,27 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						natureDamage:1,
 						loseCard:1,
 					},
+					yingbian:function(card,player,targets,viewer){
+						if(get.attitude(viewer,player)<=0) return 0;
+						if(targets.filter(function(current){
+							return get.damageEffect(current,player,player,'thunder')>0&&current.countCards('e',function(card){
+								return get.value(card,current)<=0;
+							})<2&&current.countCards('e',function(card){
+								return get.value(card,current)>0;
+							})>0;
+						}).length) return 6;
+						return 0;
+					},
 					result:{
 						target:function(player,target){
+							if(get.mode()!='guozhan'&&!get.is.single()){
+								if(target.countCards('e',function(card){
+									return get.value(card,target)<=0;
+								})>1) return 1;
+								var es=target.countCards('e');
+								if(es<2) return -1.5;
+								return -3/es;
+							}
 							return -1-target.countCards('e');
 						}
 					}
@@ -280,27 +326,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						return 0;
 					},
 					result:{
-						player:function(player,target){
-							if(get.mode()=='versus') return game.countPlayer(function(current){
-								if(target.isFriendOf(current)){
-									if(current.isFriendOf(player)&&current.isLinked()){
-										return get.attitude(player,target);
-									}
-									else if(current.isEnemyOf(player)&&!current.isLinked()){
-										return -get.attitude(player,target)*0.6;
-									}
-								}
-							});
-							return game.countPlayer(function(current){
-								if(target.isMajor()==current.isMajor()){
-									if(current.isLinked()){
-										return get.attitude(player,target);
-									}
-									else{
-										return -get.attitude(player,target)*0.8;
-									}
-								}
-							});
+						target:function(player,target){
+							if(get.mode()=='versus'){
+								if(target.isFriendOf(player)) return target.isLinked()?1:0;
+								return target.isLinked()?0:-1;
+							}
+							return target.isLinked()?1:-1;
 						}
 					}
 				}
@@ -361,8 +392,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							}
 							else{
 								var list=[];
-								for(var i=0;i<=Math.min(num,damaged);i++){
-									list.push('摸'+i+'回'+(num-i));
+								for(var i=Math.min(num,damaged);i>=0;i--){
+									list.push('摸'+(num-i)+'回'+i);
 								}
 								target.chooseControl(list).set('prompt','请分配自己的摸牌数和回复量').ai=function(){
 									if(player.hasSkill('diaohulishan')) return 0;
@@ -390,8 +421,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					value:4,
 					useful:2,
 					result:{
-						player:1.5,
-						target:1,
+						target:function(player,target){
+							if(player==target) return 2;
+							return 1;
+						},
 					},
 				},
 			},
@@ -1363,8 +1396,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-			
-			equip6:'坐骑',
 			liulongcanjia:'六龙骖驾',
 			liulongcanjia_info:'锁定技，你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技，当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
 			minguangkai:'明光铠',
@@ -1390,7 +1421,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			xietianzi_info:'出牌阶段，对自己使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',
 			xietianzi_info_guozhan:'出牌阶段，对为大势力角色的你使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',
 			shuiyanqijunx:'水淹七军',
-			shuiyanqijunx_info:'出牌阶段，对一名装备区里有牌的其他角色使用。目标角色选择一项：1、弃置装备区里的所有牌；2、受到你造成的1点雷电伤害',
+			shuiyanqijunx_info_guozhan:'出牌阶段，对一名装备区里有牌的其他角色使用。目标角色选择一项：1、弃置装备区里的所有牌；2、受到你造成的1点雷电伤害',
+			shuiyanqijunx_info:'出牌阶段，对一名其他角色使用。目标角色选择一项：1、弃置装备区内的两张牌；2、受到你造成的1点雷电伤害',
 			lulitongxin:'勠力同心',
 			lulitongxin_info:'出牌阶段，对所有大势力角色或所有小势力角色使用。若目标角色：不处于“连环状态”，其横置；处于“连环状态”，其摸一张牌',
 			lulitongxin_info_versus:'出牌阶段，对所有敌方角色或所有己方角色使用。若目标角色：为敌方角色且不处于“连环状态”，其横置；为己方角色且处于“连环状态”，其摸一张牌。',

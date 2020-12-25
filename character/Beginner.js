@@ -567,7 +567,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						var card = event.card;
 						player.lose(card,ui.special,'toStorage');
-						player.$give(card,player);
+						player.$give(card,player,false);
 						player.markAuto('chongxin',[card]);
 						game.log(player,'将',card,'置于武将牌上');
 					}

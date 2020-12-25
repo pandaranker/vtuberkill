@@ -490,7 +490,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.broadcastAll('closeDialog', event.videoId);
 					if (result.bool){
 						var card = result.links[0];
-						player.chooseUseTarget({name:card[2]},true);
+						var next = player.chooseUseTarget({name:card[2]},true);
+						next.set('cards',event.cards);
 		/*				player.storage.xiaogui.add(game.createCard(card[2]));
 						player.syncStorage('xiaogui');
 						player.markSkill('xiaogui');*/
@@ -504,7 +505,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 4'
 					if(result.bool){
 						var list=result.links.slice(0);
-						if(list.length<3){
+						if(list.length>0){
 							event.cards.removeArray(list);
 						}
 						while(list.length){
@@ -552,7 +553,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						popup:false,
 						filter:function(event,player){
-							return event.card.name=='wuxie'&&event.cards.length==3&&event.skill=='xiaogui_wuxie';
+							return event.card.name=='wuxie'&&event.cards.length==3&&event.skill=='xiaogui_wuxie'&&get.position(event.cards[0])=='d';
 						},
 						content:function(){
 							'step 0'
@@ -1466,17 +1467,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
-
-			
+		
 		}, 
-		translate:{
-			dynamicTranslate:{
-					tiantang:function(player){
-					if(player.storage.haoren) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
-					return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
-				},
+		dynamicTranslate:{
+				tiantang:function(player){
+				if(player.storage.haoren===true) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
+				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
-
+		},
+		translate:{
 
 			Paryi: '帕里',
 			tiantang: '天扉',

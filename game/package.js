@@ -32,6 +32,7 @@ window.noname_package={
 		standard:'标准',
 		extra:'军争',
 		sp:'SP',
+		yingbian:'应变篇',
 		guozhan:'国战',
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',
