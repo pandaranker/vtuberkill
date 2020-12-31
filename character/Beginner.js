@@ -1284,9 +1284,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						player.logSkill('xiaoqiao');
-						var cards = result.buttons.map(function(button){
-							return button.link;
-						})
+						var cards = result.links;
 						player.showCards(cards,'『小巧』展示手牌');
 						player.storage.xiaoqiao.addArray(cards);
 					}
@@ -1334,9 +1332,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						player.storage.liancheng++;
-						var cards = result.buttons.map(function(button){
-							return button.link;
-						});
+						var cards = result.links;
 						player.lose(cards, ui.discardPile).set('visible', true);
 						player.$throw(cards,1000);
 						game.log(player,'将',cards,'置入了弃牌堆');
@@ -1595,7 +1591,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
 						player.lose(result.cards, ui.discardPile).set('visible', true);
-						player.$throw(result.cards);
+						player.$throw(result.cards,1000);
 						game.log(player, '将', result.cards, '置入了弃牌堆');
 						player.draw(result.cards.length);
 					}

@@ -497,7 +497,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.storage.yinshi_use = _status.currentPhase;
-					console.log( _status.currentPhase)
 					'step 1'
 					player.addTempSkill('yinshi_use');
 				},
@@ -1589,7 +1588,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Kaf: '花谱',
 			liuhua: '化羽',
-			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上拥有至少三种花色的牌时，你获得每种花色牌各一张并翻面。',
+			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
 			yinshi: '遗世',
 			yinshi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标。',
 

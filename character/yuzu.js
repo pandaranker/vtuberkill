@@ -6,10 +6,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
+			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
+
 			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
 
 
-			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
 
 		},
@@ -52,8 +53,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						if(!(player.storage.haoren===true)){
 							player.storage.haoren++;
+							player.markSkill('haoren');
 						}
-						player.markSkill('haoren');
 						var target = trigger.player;
 						if(target.storage.paryi>0){
 							target.storage.paryi++;
@@ -715,7 +716,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'dying'},
 				priority:66,
 				filter:function(event,player){
-					if(!player.hasZhuSkill('renjiazhizhu')) return false;
+					if(!player.hasZhuSkill('changxiang')) return false;
 					return event.player.hp<=0&&event.player!=player&&event.player.group==player.group&&player.countCards('he')>=player.hp;
 				},
 				content:function(){
@@ -728,6 +729,224 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		//		viewAsFilter:function(player){
 		//			return player.countCards('he')>=player.hp;
 		//		},
+			},
+			//团长
+			huanshi:{
+				mark:true,
+				intro:{
+					name:'幻士',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							storage.length=0;
+						}
+					},
+				},
+			},
+			huange:{
+				trigger:{global:'phaseBegin'},
+				round:1,
+				priority:996,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					game.broadcastAll(function(player){
+						player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true);
+					}, player)
+					'step 1'
+					if(result.bool){
+						player.logSkill('huange',result.targets);
+						player.draw(result.targets[0].hp);
+						player.storage.huange_disc = result.targets[0];
+						player.markSkill('huange_disc');
+						player.addTempSkill('huange_disc');
+					}
+				},
+				subSkill:{
+					disc:{
+						mark:'character',
+						intro:{
+							name:'幻歌',
+							content:'回合结束时弃置$体力值的牌',
+							onunmark:function(storage,player){
+								if(storage&&storage.length){
+									storage.length=0;
+								}
+							},
+						},
+						trigger:{global:'phaseEnd'},
+						priority:996,
+						onremove:true,
+						forced:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							'step 0'
+							if(player.storage.huange_disc.isIn()&&player.countCards('he')){
+								var prompt2 = '';
+								if(player.storage.qishi===true)	prompt2 += '将'+get.cnNumber(player.storage.huange_disc.hp)+'张牌置于武将牌上';
+								else	prompt2 += '弃置'+get.cnNumber(player.storage.huange_disc.hp)+'张牌';
+								player.chooseCard('he','###『幻歌』###'+prompt2,player.storage.huange_disc.hp,true);
+							}else{
+								event.goto(2);
+							}
+							'step 1'
+							if(result.bool){
+								if(player.storage.qishi===true){
+									event.cards = result.cards;
+									player.lose(result.cards,ui.special,'toStorage');
+									player.$give(event.cards,player,false);
+									player.markAuto('huanshi',event.cards);
+								}else{
+									player.discard(result.cards);
+								}
+							}
+							'step 2'
+							player.unmarkSkill('huange_disc');
+						},
+					}
+				},
+			},
+			qishi:{
+				skillAnimation:true,
+				animationStr:'希望之花',
+				unique:true,
+				juexingji:true,
+				forced:true,
+				trigger:{global:'roundStart'},
+				firstDo:true,
+				priority:996,
+				filter:function(event,player){
+					return player.storage.qishi_date&&player.storage.qishi_date.contains(player)&&player.storage.qishi_date.length>1;
+				},
+				content:function(){
+					player.loseMaxHp();
+					player.storage.qishi = true;
+					player.awakenSkill('qishi');
+					player.addSkill('xiban');
+				},
+				group:['qishi_date','qishi_update'],
+				subSkill:{
+					date:{
+						mark:true,
+						intro:{
+							name:'奇誓',
+							content:function (storage,player,skill){
+								var str = '本轮内';
+								if(storage.contains(player))	str += ' 已受到伤害';
+								if(storage!=[player])	str += ' 已造成伤害';
+								return str;
+							},
+							onunmark:function(storage,player){
+								if(storage&&storage.length){
+									storage.length=0;
+								}
+							},
+						},
+						trigger:{player:'damageEnd',source:'damageEnd'},
+						firstDo:true,
+						priority:996,
+						direct:true,
+						filter:function(event,player){
+							if(player.storage.qishi === true)	return false;
+							if(player.storage.qishi_date&&player.storage.qishi_date.contains(event.player))	return false;
+							return true;
+						},
+						content:function(){
+							if(!player.storage.qishi_date)	player.storage.qishi_date = [];
+							player.storage.qishi_date.add(trigger.player);
+							player.markSkill('qishi_date');
+						},
+					},
+					update:{
+						trigger:{global:'roundStart'},
+						lastDo:true,
+						priority:996,
+						direct:true,
+						filter:function(event,player){
+							if(player.storage.qishi === true)	return false;
+							return true;
+						},
+						content:function(){
+							player.unmarkSkill('qishi_date');
+						}
+					},
+				},
+				ai:{
+					combo:'huange',
+				},
+			},
+			xiban:{
+				trigger:{global:'phaseEnd'},
+				priority:99,
+				forced:true,
+				filter:function(event,player){
+					return _status.currentPhase!=player&&_status.currentPhase.getHistory('sourceDamage').length&&player.hp<=player.storage.huanshi.length;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCardButton('###『系绊』###可以弃置'+get.cnNumber(player.hp)+'张“士” 发动技能',player.hp,player.storage.huanshi);
+					'step 1'
+					if(result.bool){
+						event.cards = result.links;
+						player.unmarkAuto('huanshi',event.cards);
+						player.$throw(event.cards,1000);
+						var next = player.chooseTarget(get.prompt2('xiban'),function(card,player,tar){
+							if(tar==_status.event.source||tar==_status.event.player)	return true;
+						},true);
+						next.set('source',trigger.player);
+						next.set('num',event.cards.length)
+						next.set('ai',function(target){
+							if(target==_status.event.player&&_status.event.player.hp==_status.event.player.maxHp)	return -10;
+							if(target==_status.event.source&&_status.event.source.countCards('he')>=2&&_status.event.num>=2)	return -get.attitude(_status.event.player,target);
+							return (target==_status.event.player)?1:0;
+						});
+					}
+					'step 2'
+					if(result.bool){
+						if(result.targets[0]!=player){
+							trigger.player.chooseToDiscard(true,'he',event.cards.length);
+						}else{
+							player.recover();
+						}
+					}
+				},
+				ai:{
+					combo:'huange',
+				},
+			},
+			yongtuan:{
+				skillAnimation:true,
+				animationStr:'一袋米要扛几楼',
+				unique:true,
+				limited:true,
+				zhuSkill:true,
+				trigger:{player:'xibanAfter'},
+				priority:66,
+				filter:function(event,player){
+					if(!player.hasZhuSkill('yongtuan')) return false;
+					return event.cards.length;
+				},
+				content:function(){
+					'step 0'
+					var next = player.chooseTarget(true,function(card,player,tar){
+						return tar.group==_status.event.player.group;
+					});
+					next.set('ai',function(target){
+						return get.attitude(_status.event.player,target);
+					});
+					'step 1'
+					if(result.bool){
+						result.targets[0].gain(trigger.cards);
+						player.awakenSkill('qishi');
+					}
+				},
+				ai:{
+					combo:'huange',
+				},
 			},
 
 			//tmsk
@@ -1507,6 +1726,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			changxiang: '长箱',
 			changxiang_info: '<font color=#ff4>主公技</font> 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
 
+			huanshi: '士',
+			HisekiErio: '绯赤艾莉欧',
+			huange: '幻歌',
+			huange_info: '每轮限一次。一个回合开始时，你可以摸等同一名角色体力值的牌，然后于回合结束时，弃置等同其当前体力值的牌。若你发动过『奇誓』，你可以将弃牌改为置于你的武将牌上。',
+			qishi: '奇誓',
+			qishi_info: '<font color=#f54>觉醒技</font> 你造成且受到伤害的轮次结束时，你减1体力上限，获得『系绊』，然后进行判定直到出现黑色并将这些牌置于武将牌上，称为“士”。',
+			xiban: '系绊',
+			xiban_info: '其他角色造成伤害的回合结束时，你可以弃置X张“士”令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）',
+			yongtuan: '拥团',
+			yongtuan_info: '<font color=#ff4>主公技</font> <font color=#fa6>限定技</font> 你弃置“士”时，可以令一名同势力角色获得之。',
 
 			SukoyaKana: '健屋花那',
 			huawen: '花吻交染',

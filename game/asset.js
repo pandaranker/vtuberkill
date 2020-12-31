@@ -709,6 +709,7 @@ window.noname_asset_list=[
 	'image/character/HanazonoSerena.jpg',
 	'image/character/HiguchiKaede.jpg',
 	'image/character/His_HoshinoNiya.jpg',
+	'image/character/HisekiErio.jpg',
 	'image/character/HoshimatiSuisei.jpg',
 	'image/character/IenagaMugi.jpg',
 	'image/character/InabaHaneru.jpg',
@@ -805,6 +806,7 @@ window.noname_asset_list=[
 	'image/skin/NekomiyaHinata/2.jpg',
 	'image/skin/OtomeOto/1.jpg',
 	'image/skin/SasakiSaku/1.jpg',
+	'image/skin/SasakiSaku/2.jpg',
 	'image/skin/SpadeEcho/1.jpg',
 	'image/skin/TakatsukiRitsu/1.jpg',
 	'image/skin/UmoriHinako/1.jpg',
@@ -933,6 +935,11 @@ window.noname_asset_list=[
 	'image/emotion/throw_emotion/wine2.png',
 	'image/emotion/throw_emotion/yuxisx1.png',
 	'image/emotion/throw_emotion/yuxisx2.png',
+	
+	'image/emotion/throw_emotion/sc1.png',
+	'image/emotion/throw_emotion/sc2.png',
+	'image/emotion/throw_emotion/ship1.png',
+	'image/emotion/throw_emotion/ship2.png',
 	
 	'image/mode/boss/card/chixueqingfeng.png',
 	'image/mode/boss/card/chiyanzhenhunqin.png',
