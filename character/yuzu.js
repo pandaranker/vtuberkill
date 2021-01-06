@@ -8,8 +8,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 
+			Yousa:['female','VirtualReal',3,['niaoji','xiangxing']],
+
 			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
 
+			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
 
@@ -941,7 +944,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						result.targets[0].gain(trigger.cards);
-						player.awakenSkill('qishi');
+						player.awakenSkill('yongtuan');
 					}
 				},
 				ai:{
@@ -949,6 +952,193 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
+			//冷鸟
+			niaoji:{
+				trigger:{source:'damageEnd'},
+				priority:99,
+				lastDo:true,
+				check:function(event,player){
+					return get.attitude(player,event.player)<0;
+				},
+				prompt:function(event){
+					return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
+				},
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var func=function(result){
+						if(get.suit(result)=='spade') return 2;
+						if(get.suit(result)=='heart') return 2;
+						return -1;
+					};
+					if(!trigger.player.isIn()||trigger.player.countCards('he')<=0){
+						func=function(result){
+							if(get.suit(result)=='spade') return 0;
+							if(get.suit(result)=='heart') return 2;
+							return -1;
+						};
+					}
+					player.judge(func);
+					'step 1'
+					if(result.bool){
+						if(result.suit=='spade'){
+							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(trigger.player)+get.cnNumber(trigger.player.hp)+'张牌',trigger.player,trigger.player.hp,true,'he');
+						}else if(result.suit=='heart'){
+							player.draw(player.hp);
+						}
+					}
+				},
+			},
+			xiangxing:{
+				enable:'phaseUse',
+				usable: 1,
+				filter:function(event,player){
+					return player.countCards('h')>0;
+				},
+				filterTarget:function(card,player,target){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var next = player.chooseCardButton('###『翔星』###按顺序将卡牌置于牌堆顶（先选择的在上）',player.getCards('h'),player.countCards('h'),true);
+					next.set('forceAuto',function(){
+						return ui.selected.buttons.length==_status.event.player.countCards('h');
+					});
+					'step 1'
+					if(result.bool&&result.links&&result.links.length)	event.cards=result.links.slice(0);
+					else	event.finish();
+					game.delay();
+					'step 2'
+					player.lose(event.cards,ui.special);
+					'step 3'
+					var cards = event.cards;
+                    while(cards.length>0){
+                        var card=cards.pop();
+                        card.fix();
+                        ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+                        game.updateRoundNumber();
+					}
+					'step 4'
+					target.damage(player);
+				}
+			},
+
+			//艾琳
+			duanfu:{
+				trigger:{player:'useCardToPlayer', target:'useCardToPlayer'},
+				priority:100,
+				lastDo:true,
+				check:function(event,player){
+					if(player==event.player)	return get.effect(event.target,event.card,player)<0;
+					return get.effect(player,event.card,event.target,player)<0;
+				},
+				prompt:function(event,player){
+					if(player==event.player&&event.target!=player)	return '指定'+get.translation(event.target)+'为'+get.translation(event.card)+'的目标，'+get.prompt('duanfu');
+					else	return '被'+get.translation(event.player)+'指定为'+get.translation(event.card)+'的目标，'+get.prompt('duanfu');
+				},
+				filter:function(event,player){
+					if(player==event.player&&!event.target.isLinked())	return true;
+					if(player==event.target&&event.player.isLinked())	return true;
+					return false;
+				},
+				content:function(){
+					if(player==trigger.player){
+						trigger.target.link();
+						trigger.getParent().targets.remove(trigger.target);
+						game.log(trigger.getParent().card,'不会对',trigger.target,'生效');
+					}else{
+						trigger.player.link();
+						trigger.getParent().targets.remove(player);
+						game.log(trigger.getParent().card,'不会对',player,'生效');
+					}
+				}
+			},
+			daichang:{
+				enable:'phaseUse',
+				usable: 1,
+				filter:function(event,player){
+					return game.hasPlayer(function(cur){
+						return cur.isLinked();
+					});
+				},
+				content:function(){
+					'step 0'
+					player.loseMaxHp();
+					'step 1'
+					event.num = game.countPlayer(function(cur){
+						return cur.isLinked();
+					});
+					player.draw(event.num);
+					player.addTempSkill('daichang_bottom','phaseUseAfter')
+				},
+				subSkill:{
+					bottom:{
+						mark:true,
+						intro:{
+							name:'借贷',
+							content:'造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
+						},
+						trigger:{source:'damageEnd'},
+						priority:100,
+						lastDo:true,
+						forced:true,
+						filter:function(event,player){
+							return player.countCards('he')&&game.hasPlayer(function(cur){
+								return cur.isLinked();
+							});
+						},
+						content:function(){
+							'step 0'
+							event.num = game.countPlayer(function(cur){
+								return cur.isLinked();
+							});
+							player.choosePlayerCard('###『贷偿』###请选择要置于牌堆底的牌（先选择的在下）',player,'he',event.num,true);
+							'step 1'
+							event.cards = result.cards.slice(0);
+							player.lose(event.cards);
+							'step 2'
+							while(event.cards.length){
+								var card=event.cards.pop();
+								card.fix();
+								ui.cardPile.appendChild(card);
+							}
+							game.log(player,'将'+get.cnNumber(event.num)+'张牌置于牌堆底');
+						}
+					}
+				},
+			},
+			hongtu:{
+				trigger:{player:'phaseUseEnd'},
+				unique:true,
+				limited:true,
+				priority:100,
+				filter:function(event,player){
+					return player.isLinked()&&player.hp==player.maxHp;
+				},
+				content:function(){
+					'step 0'
+					player.awakenSkill('hongtu');
+					event.going = 1;
+					'step 1'
+					event.card = get.bottomCards()[0];
+					player.showCards(event.card);
+					'step 2'
+					if(player.hasUseTarget(event.card,false)){
+						player.chooseUseTarget(event.card,false,true);
+					}else{
+						event.going = 0;
+					}
+					'step 3'
+					player.draw();
+					'step 4'
+					if(event.going==1){
+						event.goto(1);
+					}
+					console.log(get.bottomCards())
+				},
+			},
 			//tmsk
 			gonggan:{
 				trigger:{global:'phaseBegin'},
@@ -1664,7 +1854,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['chooseToCompareAfter','compareMultipleAfter'],target:['chooseToCompareAfter','compareMultipleAfter']},
 				forced: true,
 				filter:function(event,player){
-					console.log(event)
 					return !event.iwhile;
 				},
 				content:function(){
@@ -1735,7 +1924,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiban: '系绊',
 			xiban_info: '其他角色造成伤害的回合结束时，你可以弃置X张“士”令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）',
 			yongtuan: '拥团',
-			yongtuan_info: '<font color=#ff4>主公技</font> <font color=#fa6>限定技</font> 你弃置“士”时，可以令一名同势力角色获得之。',
+			yongtuan_info: '<font color=#ff4>主公技</font> <font color=#fa8>限定技</font> 你弃置“士”时，可以令一名同势力角色获得之。',
+
+			Yousa: '泠鸢',
+			niaoji: '鸟肌',
+			niaoji_info: '你造成一次伤害后可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标等同于其当前体力值的牌。',
+			xiangxing: '翔星',
+			xiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对任一角色造成1点伤害。',
+
+			Eilene: '艾琳',
+			duanfu: '断缚',
+			duanfu_info: '你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。',
+			daichang: '贷偿',
+			daichang_info: '出牌阶段限一次，你可以扣减一点体力上限并摸X张牌，然后你于本阶段内造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
+			hongtu: '宏图',
+			hongtu_info: '<font color=#faa>限定技</font> 你的出牌阶段结束时，若你处于横置状态且体力为上限：你可以亮出牌堆底牌并使用之，然后摸一张牌，重复此操作直到你无法使用亮出牌。',
 
 			SukoyaKana: '健屋花那',
 			huawen: '花吻交染',

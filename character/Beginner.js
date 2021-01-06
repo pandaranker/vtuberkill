@@ -442,10 +442,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					"step 0"
-					var check= player.countCards('h')>1&&player.hp<player.maxHp;
+					var check = player.countCards('h')>=2&&player.hp<player.maxHp;
 					player.chooseTarget(get.prompt('ruantang'),'令至多一名异性角色与自己各回复一点体力（选择自己则表示仅为自己回复体力）',function(card,player,target){
 						return target==player||(target.sex!=player.sex&&target.isDamaged());
 					}).set('check',check).set('ai',function(target){
+						if(!_status.event.check) return 0;
 						var att=get.attitude(_status.event.player,target);
 						return att;
 					});
@@ -479,7 +480,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					"step 0"
-					var check= player.countCards('h')>2;
+					var check = player.countCards('h')>2;
+					if(trigger.name=='phaseUse'&&player.getHandcardLimit()>2)	check = player.countCards('h')<player.getHandcardLimit();
 					player.chooseTarget('###是否发动『邀战』？###跳过'+get.translation(trigger.name)+'，视为对一名其他角色使用一张【决斗】',function(card,player,target){
 						if(player==target) return false;
 						return player.canUse({name:'juedou'},target);
@@ -1203,8 +1205,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['loseAfter']},
                 priority:1,
 				filter:function(event,player){
+					if(!game.hasPlayer(function(cur){
+						return !cur.hasSkill('shenyou');
+					}))	return false;
 					return event.cards.length&&event.hs.length;
 				},
+				direct:true,
 				content:function(){
 					'step 0'
 					event.num=trigger.cards.length;
@@ -1215,10 +1221,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 2'
 					if(result.bool){
+						player.logSkill('shenfa',result.targets[0])
 						result.targets[0].addTempSkill('shenyou');
 						event.num--;
 						if(event.num){
 							event.goto(1);
+						}else{
+							event.finish();
 						}
 					}else{
 						event.finish();
@@ -1349,7 +1358,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 3'
-					player.chooseBool('###『链成』###是否令当前回合角色调整手牌与你相同？').set('check',((event.diff>0)?(get.attitude(player,_status.currentPhase)>0):(get.attitude(player,_status.currentPhase)<0)));
+					var check = (event.diff>0)?(get.attitude(player,_status.currentPhase)>0):(get.attitude(player,_status.currentPhase)<0);
+					var next = player.chooseBool('###『链成』###是否令当前回合角色调整手牌与你相同？');
+					next.set('ai',function(){
+						if(!_status.event.check) return 0;
+						return 1;
+					});
+					next.set('check',check)
 					'step 4'
 					if(result.bool){
 						if(event.diff>0){
@@ -1556,7 +1571,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger: {player: 'useCardAfter'},
 				priority:3,
 				filter: function(event, player) {
-					return event.card.number&&(get.name(event.card)=='sha'||get.name(event.card)=='guohe')
+					return event.cards.length&&event.targets.length&&(get.name(event.card)=='sha'||get.name(event.card)=='guohe')
 						&&!(event.result.bool == false || event.result.wuxied);
 				},
 				content:function(){

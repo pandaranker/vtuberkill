@@ -13,7 +13,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
-			Yomemi:['female','Eilene',3,['mokuai','yaoji']],
+			Yomemi:['female','eilene',3,['mokuai','yaoji']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			/**花谱 */

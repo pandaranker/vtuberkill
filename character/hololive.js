@@ -2179,6 +2179,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			hongshaoturou:{
+				filter:function(event,player){
+					return !player.isLinked();
+				},
 				enable:"phaseUse",
 				usable:1,
 				content:function(){

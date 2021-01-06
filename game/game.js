@@ -9477,10 +9477,11 @@
 							case 'key':f++;if(lib.config.banned.contains(i)) sf++;break;
 							case 'holo':g++;if(lib.config.banned.contains(i)) sg++;break;
 							case 'nijisanji':h++;if(lib.config.banned.contains(i)) sh++;break;
+							case 'VirtualReal':i++;if(lib.config.banned.contains(i)) sl++;break;
 							case 'upd8':j++;if(lib.config.banned.contains(i)) sj++;break;
 							case 'dotlive':k++;if(lib.config.banned.contains(i)) sk++;break;
-							case 'Eilene':l++;if(lib.config.banned.contains(i)) sl++;break;
-							case 'paryi':l++;if(lib.config.banned.contains(i)) sm++;break;
+							case 'eilene':l++;if(lib.config.banned.contains(i)) sl++;break;
+							case 'paryi':m++;if(lib.config.banned.contains(i)) sm++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -9955,8 +9956,9 @@
 			holo:'杏',
 			dotlive:'点',
 			nijisanji:'虹',
+			VirtualReal:'维阿',
 			upd8:'U',
-			Eilene:'艾琳',
+			eilene:'艾琳',
 			paryi:'帕',
 			wei2:'魏国',
 			shu2:'蜀国',
@@ -9969,7 +9971,8 @@
 			upd82:'Upd8',
 			dotlive2:'.live',
 			nijisanji2:'Nijisanji',
-			Eilene2:'艾琳一家',
+			VirtualReal2:'VirtualReal',
+			eilene2:'艾琳一家',
 			paryi2:'帕里',
 			male:'男',
 			female:'女',
@@ -9993,8 +9996,9 @@
 			nijisanjiColor:"#b0d0e2",
 			dotliveColor:"#b2d9a9",
 			upd8Color:"#ffe14c",
-			EileneColor:"#DB7093",
-			paryiColor:"DDAAAF",
+			eileneColor:"#DB7093",
+			paryiColor:"#DDAAAF",
+			VirtualRealColor:"#77aaee",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -25100,9 +25104,10 @@
 					if(lib.character[name][1]=='nijisanji') return 7;
 					if(lib.character[name][1]=='dotlive') return 8;
 					if(lib.character[name][1]=='upd8') return 9;
-					if(lib.character[name][1]=='Eilene') return 10;
+					if(lib.character[name][1]=='eilene') return 10;
 					if(lib.character[name][1]=='paryi') return 11;
-					return 10;
+					if(lib.character[name][1]=='VirtualReal') return 11;
+					return 12;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -26961,7 +26966,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','dotlive','udp8','Eilene','key','paryi'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtualReal','dotlive','udp8','eilene','key','paryi'],
 		nature:['fire','thunder','poison','ocean','ice','kami'],
 		linked:['fire','thunder','ocean','ice','kami'],
 		groupnature:{
@@ -26976,8 +26981,9 @@
 			udp8:'metal',
 			dotlive:'wood',
 			nijisanji:'water',
-			Eilene:'thunder',
-			paryi:'thunder',
+			VirtualReal:'ocean',
+			eilene:'thunder',
+			paryi:'ice',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 	};
@@ -36483,9 +36489,10 @@
 							if(info[name][1]=='nijisanji') return 7;
 							if(info[name][1]=='dotlive') return 8;
 							if(info[name][1]=='upd8') return 9;
-							if(info[name][1]=='Eilene') return 10;
+							if(info[name][1]=='eilene') return 10;
 							if(info[name][1]=='paryi') return 11;
-							return 12;
+							if(info[name][1]=='VirtualReal') return 12;
+							return 13;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -41462,7 +41469,7 @@
 				},true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','dotlive','upd8','Eilene','paryi',function(link,node){//
+				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','VirtualReal','dotlive','upd8','eilene','paryi',function(link,node){//
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -41889,7 +41896,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['qun','holo','key','nijisanji','dotlive','upd8','Eilene','paryi'];//'wei','shu','wu',
+					var groups=['qun','holo','key','nijisanji','VirtualReal','dotlive','upd8','eilene','paryi'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -42116,8 +42123,10 @@
 						if(lib.character[name][1]=='nijisanji') return 5;
 						if(lib.character[name][1]=='dotlive') return 6;
 						if(lib.character[name][1]=='upd8') return 7;
-						if(lib.character[name][1]=='Eilene') return 8;
-						return 9;
+						if(lib.character[name][1]=='eilene') return 8;
+						if(lib.character[name][1]=='paryi') return 9;
+						if(lib.character[name][1]=='VirtualReal') return 10;
+						return 11;
 					}
 				}
 				list.sort(function(a,b){
@@ -51325,7 +51334,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','dotlive','upd8','Eilene','paryi'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtualReal','dotlive','upd8','eilene','paryi'];
 		},
 		types:function(){
 			var types=[];

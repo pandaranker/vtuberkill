@@ -705,6 +705,7 @@ window.noname_asset_list=[
 	'image/character/Bacharu.jpg',
 	'image/character/Civia.jpg',
 	'image/character/Doris.jpg',
+	'image/character/Eilene.jpg',
 	'image/character/Elu.jpg',
 	'image/character/HanazonoSerena.jpg',
 	'image/character/HiguchiKaede.jpg',
@@ -752,6 +753,7 @@ window.noname_asset_list=[
 	'image/character/XiaoxiXiaotao.jpg',
 	'image/character/Yogiri.jpg',
 	'image/character/Yomemi.jpg',
+	'image/character/Yousa.jpg',
 	'image/character/YozoraMel.jpg',
 	'image/character/Qiankesaier.jpg',
 	
@@ -795,6 +797,7 @@ window.noname_asset_list=[
 	'image/skin/Artia/1.jpg',
 	'image/skin/Civia/1.jpg',
 	'image/skin/Doris/1.jpg',
+	'image/skin/HisekiErio/1.jpg',
 	'image/skin/InabaHaneru/1.jpg',
 	'image/skin/Kaf/1.jpg',
 	'image/skin/Kaf/2.jpg',
