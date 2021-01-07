@@ -49369,9 +49369,15 @@
 				return get.color(card.cards,player);
 			}
 			else{
-				if(get.suit(card,player)=='spade'||get.suit(card,player)=='club') return 'black';
-				if(get.suit(card,player)=='heart'||get.suit(card,player)=='diamond') return 'red';
-				return 'none';
+				//柚子：已修改
+				var color = 'none'
+				if(get.suit(card,player)=='spade'||get.suit(card,player)=='club') color = 'black';
+				if(get.suit(card,player)=='heart'||get.suit(card,player)=='diamond') color = 'red';
+				var owner=player||get.owner(card);
+				if(owner){
+					return game.checkMod(card,owner,color,'color',owner);
+				}
+				return color;
 			}
 		},
 		number:function(card,player){

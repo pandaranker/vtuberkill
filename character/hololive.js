@@ -2428,7 +2428,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.chooseCardTarget({
 							position:'he',
 							filterCard:function(card){
-							return get.suit(card)=='spade';
+								return get.suit(card)=='spade';
 							},
 							filterTarget:function(card,player,target){
 								return target!=player;

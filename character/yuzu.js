@@ -14,7 +14,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
-			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
+			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
+			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
 
 		},
 		characterIntro:{
@@ -1139,7 +1140,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					console.log(get.bottomCards())
 				},
 			},
-			//tmsk
+			//tm
 			gonggan:{
 				trigger:{global:'phaseBegin'},
 				priority:23,
@@ -1874,11 +1875,264 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-
-		
+			//露露
+			zhongli:{
+				trigger:{player:'phaseUseAfter'},
+				priority:99,
+				lastDo:true,
+				forced:true,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var func=function(result){
+						if(get.type(result)=='equip') return 2;
+						return 0;
+					};
+					player.judge(func);
+					'step 1'
+					if(result.judge>0){
+						if(player.maxHp>1)	player.loseMaxHp();
+						player.gain(result.card);
+						player.phaseUse();
+					}
+				},
+			},
+			xinhuo:{
+				enable:'phaseUse',
+				filter:function(event,player){
+					return player.countCards('he')>=2;
+				},
+				content:function(){
+					'step 0'
+					var next = player.chooseCardButton('###『薪火相传』###按顺序将卡牌置于牌堆顶（先选择的在上）',player.getCards('he'),2);
+					next.set('forceAuto',function(){
+						return ui.selected.buttons.length==2;
+					});
+					'step 1'
+					if(result.bool&&result.links&&result.links.length)	event.cards=result.links.slice(0);
+					else	event.finish();
+					game.delay();
+					'step 2'
+					player.lose(event.cards,ui.special);
+					'step 3'
+					var cards = event.cards;
+                    while(cards.length>0){
+                        var card=cards.pop();
+                        card.fix();
+                        ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+                        game.updateRoundNumber();
+					}
+					'step 4'
+					player.addTempSkill('xinhuo_chuanhuo')
+				},
+				subSkill:{
+					chuanhuo:{
+						trigger:{player:'useCard'},
+						forced:true,
+						onremove:true,
+						mod:{
+							selectTarget:function(card,player,range){
+								if(range[1]==-1) return;
+								range[1]++;
+							},
+							cardUsable:function(card,player,num){
+								return true;
+							},
+							targetInRange:function(card,player,target,now){
+								return true;
+							},
+						},
+						content:function(){
+							player.removeSkill('xinhuo_chuanhuo');
+						},
+						mark:true,
+						intro:{
+							content:'下一张使用的牌无距离和次数限制且可额外指定一名目标',
+						},
+					},
+				},
+			},
+			weizhuang:{
+				trigger:{player:'useCard'},
+				forced:true,
+				lastDo:true,
+				filter:function(event,player){
+					return (get.type(event.card,'trick')=='trick' || get.type(event.card,'trick')=='basic')&&event.targets.length>0;
+				},
+				content:function(){
+					'step 0'
+					if(!player.hasMark('weizhuang')){
+						player.markSkill('weizhuang');
+					}
+					'step 1'
+					console.log(player.getHistory());
+					if(get.type(trigger.card,'trick')=='basic'&&player.getHistory('useCard',function(evt){
+						return get.type(evt.card,'trick')=='basic';
+					}).length>1){
+						player.draw(trigger.targets.length)
+					}else if(get.type(trigger.card,'trick')=='trick'&&player.getHistory('useCard',function(evt){
+						return get.type(evt.card,'trick')=='trick';
+					}).length>1){
+						player.chooseToDiscard(trigger.targets.length,'he',true)
+					}
+				},
+				mark:true,
+				intro:{
+					content:'使用基本牌/锦囊牌指定目标时，摸/弃X张牌（X为此牌指定的目标数）',
+					onunmark:true,
+				},
+				group:['weizhuang_clear'],
+				subSkill:{
+					clear:{
+						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						direct:true,
+						firstDo:true,
+						content:function(){
+							player.unmarkSkill('weizhuang');
+						}
+					},
+				},
+			},
+			//社长
+			liebo:{
+				trigger:{player:'useCard'},
+				filter:function(event,player){
+					return get.color(event.card,player)=='black';
+				},
+				priority:12,
+				forced:true,
+				content:function(){
+					trigger.directHit.addArray(game.filterPlayer(function(cur){
+						return true;
+					}));
+				},
+				group:'liebo_drawBy',
+				subSkill:{
+					drawBy:{
+						trigger:{source:'damage'},
+						filter:function(event,player){
+							var evt = event.getParent();
+							if(evt.name=='_lianhuan')	evt = evt.getTrigger().getParent(2);
+							else	evt = evt.getParent();
+							if(evt.addedSkill&&evt.addedSkill.contains('liebo'))	return false;
+							return get.color(event.card,player)=='black';
+						},
+						priority:12,
+						forced:true,
+						content:function(){
+							'step 0'
+							var evt = trigger.getParent();
+							if(evt.name=='_lianhuan')	evt = evt.getTrigger().getParent(2);
+							else	evt = evt.getParent();
+							if(!evt.addedSkill)	evt.addedSkill = [];
+							evt.addedSkill.add('liebo');
+							player.draw();
+							'step 1'
+							game.broadcastAll(function(player,target){
+								player.discardPlayerCard('e',target);
+							},trigger.player,player)
+						},
+					},
+				},
+			},
+			zhimeng:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				enable:'phaseUse',
+				usable:1,
+				filterCard:true,
+				position:'he',
+				content:function(){
+					'step 0'
+					player.chooseCard('h',true,'###『重机织梦』###展示一张手牌');
+					'step 1'
+					if(result.bool){
+						player.showCards(result.cards,'###『重机织梦』###展示手牌')
+						player.storage.zhimeng = result.cards[0];
+						player.syncStorage('zhimeng');
+					}else{
+						event.finish();
+					}
+					'step 2'
+					player.markSkill('zhimeng');
+				},
+				mark:true,
+				intro:{
+					name:'失去展示牌时，可以令一名角色回复1点体力或摸两张牌',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							storage = [];
+						}
+					},
+				},
+				mod:{
+					color:function(card,player,color){
+						if(card.cards.length==1&&card.cards[0]==player.storage.zhimeng){
+							if(color=='red')	return 'black';
+							else if(color=='black')	return 'red';
+						}
+					},
+				},
+				group:['zhimeng_lose','zhimeng_clear'],
+				subSkill:{
+					lose:{
+						trigger:{player:'loseAfter'},
+						filter:function(event,player){
+							return player.storage.zhimeng!=[]&&event.cards.contains(player.storage.zhimeng);
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							player.chooseTarget('###'+get.prompt('zhimeng')+'###令一名角色回复1点体力或摸两张牌').set('ai',function(target){
+								return get.attitude(_status.event.player,target);
+							});
+							'step 1'
+							if(result.bool){
+								event.target = result.targets[0]
+								event.target.classList.add('glow');
+							}else{
+								event.finish();
+							}
+							'step 2'
+							var controls=['摸两张牌','回复一点体力','取消选择'];
+							player.chooseControl(controls).set('ai',function(event,player){
+								return _status.event.index;
+							}).set('index',0);
+							'step 3'
+							event.target.classList.remove('glow');
+							switch(result.index){
+								case 0:{
+									event.target.draw(2);
+									break;
+								}
+								case 1:{
+									event.target.recover();
+									break;
+								}
+								case 2:{
+									event.goto(0);
+									break;
+								}
+							}
+						}
+					},
+					clear:{
+						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						direct:true,
+						firstDo:true,
+						content:function(){
+							player.unmarkSkill('zhimeng');
+						}
+					},
+				},
+			},
 		}, 
 		dynamicTranslate:{
-				tiantang:function(player){
+			tiantang:function(player){
 				if(player.storage.haoren===true) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
 				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
@@ -1964,7 +2218,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tiaolian: '咆咲',
 			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
 			jiaku: '生笹',
-			jiaku_info: '锁定技。你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
+			jiaku_info: '<font color=#f66>锁定技</font> 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
+
+			SuzuharaLulu: '铃原露露',
+			zhongli: '重力牵引',
+			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你减1点体力上限（至少为1）并获得判定牌，然后执行一个额外的出牌阶段。',
+			xinhuo: '薪火相传',
+			xinhuo_chuanhuo: '传火',
+			xinhuo_info: '出牌阶段，你可以将两张牌以任意顺序置于牌堆顶，令你本回合下一张使用的牌无距离和次数限制且可额外指定一名目标。',
+			weizhuang: '魔界伪装',
+			weizhuang_info: '<font color=#f66>锁定技</font> 你在一回合内多次使用基本牌/锦囊牌指定目标时，摸/弃X张牌。（X为此牌指定的目标数）',
+
+			KagamiHayato: '加賀美隼人',
+			liebo: '裂帛核哮',
+			liebo_info: '<font color=#f66>锁定技</font> 你的黑色牌无法被响应。你的一张黑色牌首次造成伤害时，摸一张牌，然后目标可以令你弃置你装备区内的一张牌',
+			zhimeng: '重机织梦',
+			zhimeng_info: '出牌阶段限一次，你可弃置一张牌并展示一张手牌，此牌的颜色视为原来的异色直到回合结束。本回合内你失去此牌时，可以令一名角色回复1点体力或摸两张牌',
 		},
 	};
 });
