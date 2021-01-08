@@ -63,8 +63,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return player.hasUseTarget(card);
 					},get.prompt2('hunzhan'));
 					'step 1'
-					console.log(result)
-					if(result.bool){
+					if(result.cards&&result.cards.length){
 						player.draw();
 					}
 				}
@@ -2422,7 +2421,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie: '备械',
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
-			hunzhan_info: '锁定技。一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
 			Paryi: '帕里',
 			tiantang: '天扉',
