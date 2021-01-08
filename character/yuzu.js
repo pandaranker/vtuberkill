@@ -47,7 +47,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseButton(['是否获得其中的一张牌？',event.togain]);
 					'step 2'
 					if(result.bool){
-						player.gain(result.links,'draw')
+						player.gain(result.links,'draw');
+						if(get.subtype(result.links[0])=='equip1'){
+							player.equip(result.links[0]);
+						}
 					}
 				}
 			},
