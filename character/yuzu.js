@@ -8,15 +8,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 
-			Yousa:['female','VirtualReal',3,['niaoji','xiangxing']],
-
-			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
+			Yousa:['female','VirtuaReal',3,['niaoji','xiangxing']],
 
 			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
+			LizeHelesta:['female','nijisanji',3,['shencha','helesta']],
 			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
 
+			ShirayukiMishiro:['female','key',3,['tianyi','nveyu']],
+
+			/**测试用角色 */
+			Ruki:['female','VirtuaReal',4,['beixie','hunzhan']],
+		},
+		characterSort:{
+			yuzu:{
+				TEST:['Ruki'],
+			}
 		},
 		characterIntro:{
 			Paryi:'kimo~',
@@ -24,7 +32,40 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Civia:'“听我说，DD会带来世界和平~”',
 		},
 		skill:{
-			
+			//Ruki
+			beixie:{
+				trigger:{global:'gameDrawBegin',player:'enterGame'},
+				forced:true,
+				content:function(){
+					'step 0'
+					event.togain = [];
+					for(var i=0;i<ui.cardPile.childElementCount;i++){
+						var current=ui.cardPile.childNodes[i];
+						event.togain.push(current);
+					}
+					'step 1'
+					player.chooseButton(['是否获得其中的一张牌？',event.togain]);
+					'step 2'
+					if(result.bool){
+						player.gain(result.links,'draw')
+					}
+				}
+			},
+			hunzhan:{
+				trigger:{global:'damageAfter'},
+				forced:true,
+				content:function(){
+					'step 0'
+					trigger.player.chooseToUse(function(card){
+						return player.hasUseTarget(card);
+					},get.prompt2('hunzhan'));
+					'step 1'
+					console.log(result)
+					if(result.bool){
+						player.draw();
+					}
+				}
+			},
 			//帕里
 			paryi:{
 				marktext:"P",
@@ -693,10 +734,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							'step 2'
 							if(result.targets&&result.targets.length){
-								console.log('OK');
-								result.targets.forEach(function(tar){
-									tar.draw();
-								});
+								game.asyncDraw(result.targets);
 							}
 							event.finish();
 							'step 3'
@@ -1139,6 +1177,144 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					console.log(get.bottomCards())
 				},
+			},
+
+			//mishiro
+			tianyi:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				mark:true,
+				intro:{
+					name:'衣',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
+							storage.length=0;
+						}
+					},
+				},
+				enable:'phaseUse',
+				usable: 1,
+				filter:function(event,player){
+					return !player.getEquip(2);
+				},
+				filterCard:function(card,player){
+					return true;
+				},
+		//		selectTarget:-1,
+		//		filterTarget:function(card,player,target){
+		//			return player==target;
+		//		},
+				discard:false,
+				visible:true,
+				toStorage:true,
+		//		prepare:'give',
+				content:function(){
+					'step 0'
+					player.$give(cards,player,false);
+					player.markAuto('tianyi',cards);
+					game.log(player,'将',cards,'置于武将牌上');
+				},
+				group:['tianyi_drawBy','tianyi_cancelBy','tianyi_clear'],
+				subSkill:{
+					drawBy:{
+						trigger:{player:'useCard'},
+						priority:77,
+						lastDo:true,
+						forced:true,
+						filter:function(event,player){
+							if(get.type(event.card,'trick')!='trick')	return false;
+							if(player.getHistory('useCard',function(evt){
+								return get.suit(evt.card)==get.suit(event.card);
+							}).length>1)	return false;
+							return player.storage.tianyi.length && get.suit(player.storage.tianyi[0])!=get.suit(event.card);
+						},
+						content:function(){
+							player.draw();
+						}
+					},
+					cancelBy:{
+						trigger:{target:'useCardToTarget'},
+						priority:77,
+						lastDo:true,
+						check:function(event,player){
+							return get.effect(player,event.card,event.player,player)<-1;
+						},
+						prompt:function(event){
+							return '被'+get.translation(event.card)+'指定为目标，'+get.prompt('tianyi');
+						},
+						filter:function(event,player){
+							if(get.type(event.card,'trick')!='trick')	return false;
+							return player.storage.tianyi.length && get.suit(player.storage.tianyi[0])==get.suit(event.card);
+						},
+						content:function(){
+							'step 0'
+							player.unmarkSkill('tianyi');
+							'step 1'
+							trigger.getParent().cancel();
+							'step 2'
+							player.gain(trigger.getParent().card);
+						}
+					},
+					clear:{
+						trigger:{global:'gameDrawAfter',player:['enterGame','phaseZhunbeiBegin']},
+						direct:true,
+						firstDo:true,
+						content:function(){
+							'step 0'
+							if(trigger.name=='phaseZhunbei'&&player.storage.tianyi.length){
+								event.moveCard = true;
+							}
+							'step 1'
+							player.unmarkSkill('tianyi');
+							'step 2'
+							if(event.moveCard==true){
+								player.moveCard('###'+get.prompt('tianyi')+'###可以移动场上的一张装备牌').nojudge=true;
+							}
+						}
+					},
+				},
+			},
+			nveyu:{
+				trigger:{source:'damageEnd'},
+				priority:77,
+				usable:1,
+				lastDo:true,
+				forced:true,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					trigger.player.recover();
+					'step 1'
+					game.asyncDraw([player,trigger.player]);
+					'step 2'
+					player.storage.nveyu_eff = trigger.player;
+					player.addTempSkill('nveyu_eff');
+				},
+				subSkill:{
+					eff:{
+						mark:'character',
+						intro:{
+							name:'虐语',
+							content:'对$使用牌无距离与次数限制',
+						},
+						mod:{
+							targetInRange:function (card,player,target){
+								if(target==player.storage.nveyu_eff) return true;
+							},
+							cardUsableTarget:function (card,player,target){
+								if(player.storage.nveyu_eff==target) return true;
+							},
+						},
+						onremove:true,
+					}
+				}
 			},
 			//tm
 			gonggan:{
@@ -1875,6 +2051,94 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//lize
+			shencha:{
+				trigger:{player:'phaseZhunbeiBegin'},
+				filter:function(event,player){
+					return true;
+				},
+				check:function(event,player){
+					return player.countCards('j')>0;
+				},
+				content:function(){
+					'step 0'
+					event.num = 3+player.countCards('j');
+					event.getE = (player.countCards('e')==0);
+					'step 1'
+					event.cards = get.cards(event.num)
+					'step 2'
+					var prompt2 = '获得其中至多两张基础牌';
+					var selectButton = [0,2]
+					if(event.getE){
+						prompt2+=',装备其中至多两张装备牌';
+						selectButton[1]+=2;
+					}
+					var next =  player.chooseCardButton(event.cards,'###『审查』###'+prompt2);
+					next.set('selectButton',selectButton)
+					next.set('filterButton',function(button){
+						var type = get.type(button.link,'trick');
+						var geting = [0,0]
+						for(var i=0;i<ui.selected.buttons.length;i++){
+							if(get.type(ui.selected.buttons[i].link,'trick')=='basic') geting[0]++;
+							if(get.type(ui.selected.buttons[i].link,'trick')=='equip') geting[1]++;
+						}
+						return (type=='basic'&&geting[0]<2)||(_status.event.getE&&type=='equip'&&geting[1]<2);
+					});
+					next.set('getE',event.getE)
+					next.set('ai',function(button){
+						return get.value(button.link,_status.event.player);
+					});
+					'step 3'
+					if(result.bool&&result.links.length){
+						var cards = result.links.slice(0);
+						var basics = cards.filter(function(card){
+							return get.type(card)=='basic'
+						});
+						var equips = cards.filter(function(card){
+							return get.type(card)=='equip'
+						});
+						player.gain(basics,'gain2');
+						equips.forEach(function(equip){
+							player.equip(equip);
+						});
+					}
+					'step 4'
+					player.skip('phaseDraw');
+				},
+			},
+			helesta:{
+				trigger:{player:'damageBegin3'},
+				direct:true,
+				filter:function(event,player,name){
+					return event.num&&player.countCards('e');
+				},
+				content:function(){
+					'step 0'
+					player.gainPlayerCard('###'+get.prompt('helesta')+'###可以获得装备区的一张牌使伤害-1',player,'e');
+					'step 1'
+					if(result.bool){
+						player.logSkill('helesta');
+						trigger.num--;
+					}
+				},
+				group:'helesta_iceshaBy',
+				subSkill:{
+					iceshaBy:{
+						trigger:{
+							player:'loseAfter',
+				//			global:['gainAfter','equipAfter','addJudgeAfter'],
+						},
+						filter:function(event,player){
+							var evt=event.getl(player);
+							return evt&&evt.es&&evt.es.length>0&&player.hasUseTarget({name:'sha',nature:'ice',isCard:true});
+						},
+						direct:true,
+						content:function(){
+							player.chooseUseTarget('###'+get.prompt('helesta')+'###视为使用一张冰【杀】',{name:'sha',nature:'ice',isCard:true},false);
+						},
+					}
+				},
+			},
 			//露露
 			zhongli:{
 				trigger:{player:'phaseUseAfter'},
@@ -1925,17 +2189,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                         game.updateRoundNumber();
 					}
 					'step 4'
-					player.addTempSkill('xinhuo_chuanhuo')
+					if(player.hasSkill('xinhuo_chuanhuo')){
+						player.storage.xinhuo_chuanhuo++;
+						player.updateMarks();
+					}else{
+						player.addTempSkill('xinhuo_chuanhuo');
+						player.storage.xinhuo_chuanhuo = 1
+					}
 				},
 				subSkill:{
 					chuanhuo:{
 						trigger:{player:'useCard'},
 						forced:true,
-						onremove:true,
+						onremove:function(player){
+							player.unmarkSkill('xinhuo_chuanhuo');
+							delete player.storage.xinhuo_chuanhuo;
+						},
 						mod:{
 							selectTarget:function(card,player,range){
 								if(range[1]==-1) return;
-								range[1]++;
+								range[1]+=player.storage.xinhuo_chuanhuo;
 							},
 							cardUsable:function(card,player,num){
 								return true;
@@ -1949,7 +2222,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mark:true,
 						intro:{
-							content:'下一张使用的牌无距离和次数限制且可额外指定一名目标',
+							content:'下一张使用的牌无距离和次数限制且可额外指定$名目标',
+							markcount:function(storage,player){
+								return player.storage.xinhuo_chuanhuo;
+							}
 						},
 					},
 				},
@@ -2138,6 +2414,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
+			TEST: '测试员',
+			Ruki: '琉绮',
+			beixie: '备械',
+			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
+			hunzhan: '混战',
+			hunzhan_info: '锁定技。一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
 			Paryi: '帕里',
 			tiantang: '天扉',
@@ -2194,6 +2476,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hongtu: '宏图',
 			hongtu_info: '<font color=#faa>限定技</font> 你的出牌阶段结束时，若你处于横置状态且体力为上限：你可以亮出牌堆底牌并使用之，然后摸一张牌，重复此操作直到你无法使用亮出牌。',
 
+			ShirayukiMishiro: '白雪深白',
+			tianyi: '梦幻天衣',
+			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张装备牌。',
+			nveyu: '甜言虐语',
+			nveyu_info: '<font color=#f66>锁定技</font> 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
+
 			SukoyaKana: '健屋花那',
 			huawen: '花吻交染',
 			huawen_info: '出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。',
@@ -2220,12 +2508,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiaku: '生笹',
 			jiaku_info: '<font color=#f66>锁定技</font> 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 
+			LizeHelesta: '莉泽·赫露艾斯塔',
+			shencha: '权力审查',
+			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张牌。',
+			helesta: '赫露圣剑',
+			helesta_info: '你受到伤害时，你可以获得装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】。',
+
 			SuzuharaLulu: '铃原露露',
 			zhongli: '重力牵引',
 			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你减1点体力上限（至少为1）并获得判定牌，然后执行一个额外的出牌阶段。',
 			xinhuo: '薪火相传',
 			xinhuo_chuanhuo: '传火',
-			xinhuo_info: '出牌阶段，你可以将两张牌以任意顺序置于牌堆顶，令你本回合下一张使用的牌无距离和次数限制且可额外指定一名目标。',
+			xinhuo_info: '出牌阶段，你可以将两张牌以任意顺序置于牌堆顶，令你本回合下一张使用的牌无距离和次数限制且可额外指定一名目标（可叠加）。',
 			weizhuang: '魔界伪装',
 			weizhuang_info: '<font color=#f66>锁定技</font> 你在一回合内多次使用基本牌/锦囊牌指定目标时，摸/弃X张牌。（X为此牌指定的目标数）',
 

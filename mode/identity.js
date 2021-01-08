@@ -3,15 +3,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'identity',
 		card:{
-			group_wei:{
-				fullskin:true,
-			},
-			group_shu:{
-				fullskin:true,
-			},
-			group_wu:{
-				fullskin:true,
-			},
 			group_qun:{
 				fullskin:true,
 			},
@@ -22,6 +13,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 			},
 			group_nijisanji:{
+				fullskin:true,
+			},
+			group_VirtuaReal:{
+				fullskin:true,
+			},
+			group_upd8:{
+				fullskin:true,
+			},
+			group_paryi:{
 				fullskin:true,
 			},
 		},
@@ -1899,7 +1899,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji'];
+						var list=['qun','key','holo','nijisanji','VirtuaReal','upd8','paryi'];
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -1976,7 +1976,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['qun','key','holo','nijisanji'];
+						var list=['qun','key','holo','nijisanji','VirtuaReal','upd8','paryi'];
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							list[i]=['','','group_'+list[i]];
@@ -2035,20 +2035,20 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-			group_wei:"魏势力",
-			group_shu:"蜀势力",
-			group_wu:"吴势力",
 			group_qun:"群势力",
-			group_key:"键势力",
+			group_key:"苔势力",
 			group_holo:"杏势力",
 			group_nijisanji:"虹势力",
-			group_wei_bg:"魏",
-			group_shu_bg:"蜀",
-			group_wu_bg:"吴",
+			group_VirtuaReal:"维势力",
+			group_upd8:"U势力",
+			group_paryi:"帕势力",
 			group_qun_bg:"群",
-			group_key_bg:"键",
+			group_key_bg:"苔",
 			group_holo_bg:"杏",
 			group_nijisanji_bg:"虹",
+			group_VirtuaReal_bg:"维",
+			group_upd8_bg:"U",
+			group_paryi_bg:"帕",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

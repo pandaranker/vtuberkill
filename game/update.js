@@ -1,14 +1,15 @@
 window.noname_update={
-	version:'1.9.101.08',
-	update:'1.9.100.106.3',
+	version:'1.9.101.09',
+	update:'1.9.100.107.3',
 	changeLog:[
 		'新增V杀初心角色包（内含部分新角色）',
-		'重做花谱技能',
 		'在菜单-其他-帮助里，新增“Q&A”栏',
-		'新增测试人物：神椿的花谱、巧可拉拉的绯赤艾利欧、VR的泠鸢、艾琳一家的艾琳、彩虹的铃原露露和加贺美社长',
+		'新增测试人物：巧可拉拉的绯赤艾利欧、VR的泠鸢、艾琳一家的艾琳、NoriP的白雪深白、彩虹的铃原露露、加贺美社长和莉泽',
+		'新增测试员Ruki（请尽量不要在联机中使用，否则游戏可能会卡顿）',
 		'更新V版卡图（默认开启），新增角色皮肤',
 	],
 	files:[
+		'image/card/group_key.png',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
 		// 'image/card/du.png',

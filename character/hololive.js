@@ -33,13 +33,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Artia:['female','holo',3,['shuangzhi','shenghua']],
 			Doris:['female','holo',3,['shenhai','paomo']],
 			Yogiri:['female','holo',3,['shisang','wanjie']],
+			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
         },
 		characterSort:{
 			hololive:{
                 hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
                 hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
                 hololive_2and3:['MinatoAqua','UsadaPekora'],
-                OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri'],
+                OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri','Rosalyn'],
 			}
 		},
         characterIntro:{
