@@ -320,7 +320,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			manjia:'蛮甲',
 			manjia1:'蛮甲',
 			manjia2:'蛮甲',
-			manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了[藤甲]',
+			manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了[初始服]',
 			xiaoshou:'枭首',
 			xiaoshou_info:'结束阶段，若场上体力值最多的角色只有一个，你可以对其造成一点火焰伤害',
 			guiji:'诡计',

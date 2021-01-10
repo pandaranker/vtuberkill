@@ -1899,7 +1899,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','upd8','paryi'];
+						var list=['qun','key','holo','nijisanji','upd8'];//'VirtuaReal','paryi',
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -1976,7 +1976,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','upd8','paryi'];
+						var list=['qun','key','holo','nijisanji','upd8'];//'VirtuaReal','paryi',
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
 							list[i]=['','','group_'+list[i]];

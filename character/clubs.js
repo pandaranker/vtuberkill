@@ -1575,7 +1575,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
-			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【雌雄双股剑】的效果。当你使用一张【杀】后，改变你的性别。',
+			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
 

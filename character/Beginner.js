@@ -2,9 +2,9 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'Beginner',
-        connect:true,
-        character:{
-            /**绊爱 */
+		connect:true,
+		character:{
+			/**绊爱 */
 			re_KizunaAI:['female','upd8',4,['re_ailian'],['zhu']],
 			/**辉夜月 */
 			re_KaguyaLuna:['female','qun',4,['re_jiajiupaidui']],
@@ -32,23 +32,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//		SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
-            /**时乃空 */
-            re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
-            /**萝卜子 */
-            re_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
-            /**白上吹雪 */
-            re_ShirakamiFubuki:['female','holo',3,['re_yuanlv','re_jinyuan'],['zhu']],
-            /**星街慧星 */
-            re_HoshimatiSuisei:['female','holo',4,['cansha']],
+			/**时乃空 */
+			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
+			/**萝卜子 */
+			re_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
+			/**白上吹雪 */
+			re_ShirakamiFubuki:['female','holo',3,['re_yuanlv','re_jinyuan'],['zhu']],
+			/**星街慧星 */
+			re_HoshimatiSuisei:['female','holo',4,['cansha']],
 			/**aki */
-            re_AkiRosenthal: ['female', 'holo', 3, ['meiwu', 're_huichu']],
-            /**樱巫女 */
-            re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
-            /**夏色祭 */
-            re_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
-            /**赤井心 */
-            re_AkaiHaato:['female','holo',3,['chixin']],
-            /**兔田佩克拉 */
+			re_AkiRosenthal: ['female', 'holo', 3, ['meiwu', 're_huichu']],
+			/**樱巫女 */
+			re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
+			 /**夏色祭 */
+			re_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
+			 /**赤井心 */
+			re_AkaiHaato:['female','holo',3,['chixin']],
+			/**兔田佩克拉 */
 			re_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
 			/**润羽露西娅 */
 			re_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
@@ -73,14 +73,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_TomariMari:['male','upd8',3,['liansheng','ruantang']],
 			/**Omesis */
 			re_Omesis:['female','upd8',4,['yaozhan','chongxin']],
-        },
-        characterIntro:{
+		},
+		characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
 		},
 		characterSort:{
 			Beginner:{
-				界限突破:[],
-                hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia'],
+		//		界限突破:[],
+                hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia'],
 			}
 		},
         skill:{

@@ -9485,7 +9485,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_baolian:'暴敛',
 			boss_baolian_info:'锁定技，结束阶段，你摸两张牌',
 			boss_manjia:'蛮甲',
-			boss_manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了[藤甲]',
+			boss_manjia_info:'锁定技，若你的装备区内没有防具牌，则你视为装备了[初始服]',
 			boss_xiaoshou:'枭首',
 			boss_xiaoshou_info:'结束阶段，对体力不小于你的一名其他角色造成3点伤害',
 			boss_guiji:'诡计',
@@ -9556,7 +9556,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			// boss_bianshen4_info:'你死亡后，随机召唤罗刹、夜叉中的一个',
 
 			zhanjiang:'斩将',
-			zhanjiang_info:'准备阶段开始时，如果其他角色的装备区内有【青釭剑】，你可以获得之',
+			zhanjiang_info:'准备阶段开始时，如果其他角色的装备区内有【青鼈斩】，你可以获得之',
 
 			boss_qiangzheng:'强征',
 			boss_qiangzheng_info:'锁定技，结束阶段，你获得每个敌方角色的一张手牌',
@@ -9684,7 +9684,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_xuechi_info:'锁定技，你的回合结束时，令随机一名其他角色失去2点体力。',
 			boss_yanluowang:'阎罗王',
 			boss_tiemian:'铁面',
-			boss_tiemian_info:'锁定技，你的防具区没有牌时，视为你装备【仁王盾】。',
+			boss_tiemian_info:'锁定技，你的防具区没有牌时，视为你装备【黑色阳伞】。',
 			boss_zhadao:'铡刀',
 			boss_zhadao_info:'锁定技，你使用【杀】指定目标后，你令目标角色防具无效。',
 			boss_zhuxin:'诛心',

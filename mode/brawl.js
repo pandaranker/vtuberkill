@@ -1629,7 +1629,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				intro:[
 					'主公必选曹操',
 					'其余玩家从曹休、文聘、曹洪、张郃、夏侯渊、徐晃、许褚这些武将中随机选中一个',
-					'游戏开始时将麒麟弓和爪黄飞电各置于每名角色的装备区内，大宛马洗入牌堆，移除其他的武器牌和坐骑牌'
+					'游戏开始时将毛瑟步枪和卡丁车各置于每名角色的装备区内，轿车洗入牌堆，移除其他的武器牌和坐骑牌'
 				],
 				init:function(){
 					game.saveConfig('player_number','8','identity');

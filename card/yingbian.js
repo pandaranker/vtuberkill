@@ -365,7 +365,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.chooseCard('h','是否发动【太公阴符】重铸一张手牌？').set('ai',function(card){
+					player.chooseCard('h','是否发动【贝琳】重铸一张手牌？').set('ai',function(card){
 						return 5-get.value(card);
 					});
 					'step 1'
@@ -392,7 +392,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.chooseTarget(true,function(card,player,target){
 						return !target.isLinked();
-					},'是否发动【太公阴符】横置一名角色？').set('',function(target){
+					},'是否发动【贝琳】横置一名角色？').set('',function(target){
 						return get.effect(target,{name:'tiesuo'},_status.event.player);
 					});
 					'step 1'
@@ -669,15 +669,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			heiguangkai:'黑光铠',
 			heiguangkai_skill:'黑光铠',
 			heiguangkai_info:'锁定技，当你成为【杀】或普通锦囊牌的目标后，若此牌的目标数大于1，则你令此牌对你无效。',
-			tongque:'铜雀',
+			tongque:'缪缪教授',
 			tongque_info:'你使用带有【应变】效果的牌可以无视条件直接生效。',
-			tianjitu:'天机图',
-			tianjitu_skill:'天机图',
-			tianjitu_info:'锁定技，当此牌进入你的装备区时，你弃置一张不为此【天机图】的牌。当此牌离开你的装备区后，你将手牌摸至五张。',
-			taigongyinfu:'太公阴符',
+			tianjitu:'大头菜',
+			tianjitu_skill:'大头菜',
+			tianjitu_info:'锁定技，当此牌进入你的装备区时，你弃置一张不为此【大头菜】的牌。当此牌离开你的装备区后，你将手牌摸至五张。',
+			taigongyinfu:'贝琳',
 			taigongyinfu_info:'出牌阶段开始时，你可以横置一名角色。出牌阶段结束时，你可以重铸一张手牌。',
-			taigongyinfu_skill:'太公阴符',
-			taigongyinfu_link:'太公阴符',
+			taigongyinfu_skill:'贝琳',
+			taigongyinfu_link:'贝琳',
 			yingbian_zhuzhan_tag:'助战',
 			yingbian_kongchao_tag:'空巢',
 			yingbian_fujia_tag:'富甲',

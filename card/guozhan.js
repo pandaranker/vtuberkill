@@ -1396,7 +1396,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-			liulongcanjia:'六龙骖驾',
+			liulongcanjia:'高收益车',
 			liulongcanjia_info:'锁定技，你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技，当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
 			minguangkai:'明光铠',
 			minguangkai_cancel:'明光铠',
@@ -1455,7 +1455,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			wuliu_skill:'吴六剑',
 			sanjian_skill:'三尖两刃刀',
 			jingfanma_bg:'-马',
-			jingfanma:'惊帆',
+			jingfanma:'三轮摩托',
 			jingfanma_info:'你的进攻距离+1',
 			huxinjing_bg:'镜',
 			huxinjing:'护心镜',

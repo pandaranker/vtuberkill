@@ -8,7 +8,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 
-			Yousa:['female','VirtuaReal',3,['niaoji','xiangxing']],
+			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
 
 			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
@@ -867,7 +867,38 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.storage.qishi_date&&player.storage.qishi_date.contains(player)&&player.storage.qishi_date.length>1;
 				},
 				content:function(){
+					'step 0'
+					player.unmarkSkill('qishi_date');
 					player.loseMaxHp();
+					event.cards = [];
+					'step 1'
+					var next=player.judge(function(card){
+						if(get.color(card)=='black') return -1.5;
+						return 1.5;
+					});
+					next.set('callback',function(){
+						event.getParent().orderingCards.remove(card);
+					});
+					'step 2'
+					if(result.bool){
+						event.cards.push(result.card);
+						event.goto(1);
+					}
+					else{
+						event.cards.push(result.card);
+					}
+					'step 3'
+					for(var i=0;i<event.cards.length;i++){
+						if(get.position(event.cards[i],true)!='o'){
+							event.cards.splice(i,1);
+							i--;
+						}
+					}
+					if(event.cards.length){
+						player.$gain2(event.cards,false)
+						player.markAuto('huanshi',event.cards);
+					}
+					'step 4'
 					player.storage.qishi = true;
 					player.awakenSkill('qishi');
 					player.addSkill('xiban');
@@ -1032,7 +1063,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-			xiangxing:{
+			ysxiangxing:{
 				enable:'phaseUse',
 				usable: 1,
 				filter:function(event,player){
@@ -2093,6 +2124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					if(result.bool&&result.links.length){
 						var cards = result.links.slice(0);
+						event.cards.removeArray(cards);
 						var basics = cards.filter(function(card){
 							return get.type(card)=='basic'
 						});
@@ -2106,6 +2138,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 4'
 					player.skip('phaseDraw');
+					if(event.cards.length==0)	event.finish();
+					if(event.cards.length==1)	event.goto(7);
+					'step 5'
+					player.chooseCardButton('###『权力审查』###请选择置于牌堆底的顺序（先选择的在下）',event.cards,event.cards.length,true);
+					'step 6'
+					event.cards = result.links.slice(0);
+					'step 7'
+					game.log(player,'将'+get.cnNumber(event.cards.length)+'张牌置于牌堆底');
+					while(event.cards.length){
+						var card=event.cards.pop();
+						card.fix();
+						ui.cardPile.appendChild(card);
+					}
 				},
 			},
 			helesta:{
@@ -2467,8 +2512,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yousa: '泠鸢',
 			niaoji: '鸟肌',
 			niaoji_info: '你造成一次伤害后可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标等同于其当前体力值的牌。',
-			xiangxing: '翔星',
-			xiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对任一角色造成1点伤害。',
+			ysxiangxing: '翔星',
+			ysxiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对任一角色造成1点伤害。',
 
 			Eilene: '艾琳',
 			duanfu: '断缚',

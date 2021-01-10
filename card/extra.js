@@ -529,7 +529,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					});
 					players.sort(lib.sort.seat);
 					var choice=players[0];
-					var next=player.chooseTarget('是否移动木牛流马？',function(card,player,target){
+					var next=player.chooseTarget('是否移动拉普拉斯？',function(card,player,target){
 						return !target.isMin()&&player!=target&&target.isEmpty(5);
 					});
 					next.set('ai',function(target){
@@ -596,7 +596,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					"step 0"
-					player.chooseButton(['木牛流马',player.getEquip(5).cards]).set('filterButton',function(button){
+					player.chooseButton(['拉普拉斯',player.getEquip(5).cards]).set('filterButton',function(button){
 						var evt=_status.event.getTrigger();
 						if(evt&&evt.filterCard){
 							return evt.filterCard(button.link,_status.event.player,evt)&&lib.filter.cardRespondable(button.link,_status.event.player,evt);
@@ -643,7 +643,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				chooseButton:{
 					dialog:function(event,player){
-						return ui.create.dialog('木牛流马',player.getEquip(5).cards,'hidden');
+						return ui.create.dialog('拉普拉斯',player.getEquip(5).cards,'hidden');
 					},
 					filter:function(button,player){
 						var evt=_status.event.getParent();
@@ -1008,38 +1008,38 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			huogong_info:'目标角色展示一张手牌，然后若你能弃掉一张与所展示牌相同花色的手牌，则火攻对该角色造成1点火焰伤害。',
 			tiesuo_bg:'索',
 			bingliang:'兵粮寸断',
-			hualiu:'骅骝',
-			zhuque:'朱雀羽扇',
+			hualiu:'渡渡鸟',
+			zhuque:'RPG',
 			bingliang_bg:'粮',
 			bingliang_info:'目标角色判定阶段进行判定：若判定结果不为梅花，则跳过该角色的摸牌阶段。',
 			hualiu_bg:'+马',
 			hualiu_info:'你的防御距离+1',
 			zhuque_bg:'扇',
-			zhuque_skill:'朱雀羽扇',
+			zhuque_skill:'RPG',
 			zhuque_info:'你可以将一张普通【杀】当具火焰伤害的【杀】使用。',
-			guding:'古锭刀',
+			guding:'军刀',
 			guding_info:'锁定技，当你使用【杀】对目标角色造成伤害时，若其没有手牌，此伤害+1。',
-			guding_skill:'古锭刀',
-			tengjia:'藤甲',
+			guding_skill:'军刀',
+			tengjia:'初始服',
 			tengjia_info:'锁定技，【南蛮入侵】、【万箭齐发】和普通【杀】对你无效。你每次受到火焰伤害时，该伤害+1。',
-			tengjia1:'藤甲',
-			tengjia2:'藤甲',
-			tengjia3:'藤甲',
-			baiyin:'白银狮子',
-			baiyin_info:'锁定技，你每次受到伤害时，最多承受1点伤害（防止多余的伤害）；当你失去装备区里的【白银狮子】时，你回复1点体力。',
-			baiyin_skill:'白银狮子',
+			tengjia1:'初始服',
+			tengjia2:'初始服',
+			tengjia3:'初始服',
+			baiyin:'防毒面具',
+			baiyin_info:'锁定技，你每次受到伤害时，最多承受1点伤害（防止多余的伤害）；当你失去装备区里的【防毒面具】时，你回复1点体力。',
+			baiyin_skill:'防毒面具',
 			
-			muniu:'木牛流马',
-			muniu_bg:'牛',
-			muniu_skill:'木牛',
-			muniu_skill2:'流马',
-			muniu_skill3:'流马',
-			muniu_skill4:'流马',
-			muniu_skill6:'木牛流马',
-			muniu_skill6_bg:'辎',
-			muniu_skill4_backup:'流马',
-			muniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
-			muniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
+			muniu:'拉普拉斯',
+			muniu_bg:'鱼',
+			muniu_skill:'雏鸟',
+			muniu_skill2:'青雀',
+			muniu_skill3:'青雀',
+			muniu_skill4:'青雀',
+			muniu_skill6:'拉普拉斯',
+			muniu_skill6_bg:'雀',
+			muniu_skill4_backup:'青雀',
+			muniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【拉普拉斯】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
+			muniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【拉普拉斯】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
 		},
 		list:[
 			["heart",4,"sha","fire"],
