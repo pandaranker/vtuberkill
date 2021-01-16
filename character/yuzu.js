@@ -6,18 +6,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
-			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
-
 			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
 
 			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
-			LizeHelesta:['female','nijisanji',3,['shencha','helesta']],
+			LizeHelesta:['female','nijisanji',3,['shencha','helesta'],['zhu']],
+//			AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
+			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
 
 			ShirayukiMishiro:['female','key',3,['tianyi','nveyu']],
 
+			TenkaiTsukasa:['male','upd8',4,['pojie','dazhen']],
 			/**测试用角色 */
 			Ruki:['female','VirtuaReal',4,['beixie','hunzhan']],
 		},
@@ -75,7 +76,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					name:'帕里家常',
 					content:function (storage,player,skill){
-						return '已经历了'+storage+'次【天堂之扉】';
+						return '已经历了'+storage+'次『天扉』';
 					},
 				},
 			},
@@ -195,7 +196,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 6'
 					if(event.statClear){
 						var stat = trigger.player.getStat();
-						stat.card={};
 						for(var i in stat.skill){
 							var bool=false;
 							var info=lib.skill[i];
@@ -1790,25 +1790,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
-						var card1 = result.buttons.filter(function(but){
-							return event.list1.contains(but.link);
-						})
-						var card2 = result.buttons.filter(function(but){
-							return event.list2.contains(but.link);
-						})
-						if(card1.length&&card2.length){
-							var cards1 = card1.map(function(card){
-								return card.link;
-							})
-							var cards2 = card2.map(function(card){
-								return card.link;
-							})
+						var cards1 = result.links.slice(0);
+						var cards2 = result.links.slice(0);
+						if(cards1.length&&cards2.length&&cards1.length==cards2.length){
+							event.num = cards1.length;
 							player.gain(cards2,target,'giveAuto').set('visible', true);
-							player.draw(cards2.length);
 							target.gain(cards1,player,'giveAuto').set('visible', true);
-							target.draw(cards1.length);
+							game.asyncDraw([player,target],event.num)
 						}
-						if(!card1||card1.length<3){
+						if(!event.num||event.num<3){
 							player.loseHp();
 							target.loseHp();
 						}
@@ -2047,15 +2037,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					if(event.num1<=event.num2){
 			//			target.chat(lib.skill.tiaolian.chat[Math.floor(Math.random()*5)]);
-						event.getParent(2)._trigger.targets.remove(target);
-						game.log(event.getParent(2)._trigger.card,'不会对',target,'生效');
-						if(event.getParent(2)._trigger.targets.length==0)	event.getParent(2)._trigger.cancel();
+						event.getParent().getTrigger().targets.remove(target);
+						game.log(event.getParent().getTrigger().card,'不会对',target,'生效');
+						if(event.getParent().getTrigger().targets.length==0)	event.getParent().getTrigger().cancel();
 						game.delay();
 					}
 					'step 1'
 					if(event.num1>event.num2){
-						event.getParent(2)._trigger.directHit.add(target);
-						game.log(target,'不能响应',event.getParent(2)._trigger.card);
+						event.getParent().getTrigger().directHit.add(target);
+						game.log(target,'不能响应',event.getParent().getTrigger().card);
 						game.delay();
 					}
 				},
@@ -2186,6 +2176,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//ange
+			chuangzuo:{},
 			//露露
 			zhongli:{
 				trigger:{player:'phaseUseAfter'},
@@ -2207,6 +2199,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.maxHp>1)	player.loseMaxHp();
 						player.gain(result.card);
 						player.phaseUse();
+					}else{
+						event.finish();
+					}
+					'step 2'
+					var stat = player.getStat();
+					for(var i in stat.skill){
+						var bool=false;
+						var info=lib.skill[i];
+						if(info.enable!=undefined){
+							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+						}
+						if(bool) stat.skill[i]=0;
 					}
 				},
 			},
@@ -2337,7 +2342,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{source:'damage'},
 						filter:function(event,player){
 							var evt = event.getParent();
-							if(evt.name=='_lianhuan')	evt = evt.getTrigger().getParent(2);
+							if(evt.name=='_lianhuan')	evt = event.getTrigger().getParent(2);
 							else	evt = evt.getParent();
 							if(evt.addedSkill&&evt.addedSkill.contains('liebo'))	return false;
 							return get.color(event.card,player)=='black';
@@ -2347,7 +2352,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							var evt = trigger.getParent();
-							if(evt.name=='_lianhuan')	evt = evt.getTrigger().getParent(2);
+							if(evt.name=='_lianhuan')	evt = trigger.getTrigger().getParent(2);
 							else	evt = evt.getParent();
 							if(!evt.addedSkill)	evt.addedSkill = [];
 							evt.addedSkill.add('liebo');
@@ -2370,7 +2375,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'he',
 				content:function(){
 					'step 0'
-					player.chooseCard('h',true,'###『重机织梦』###展示一张手牌');
+					player.chooseCard('h',true,'『重机织梦』：展示一张手牌');
 					'step 1'
 					if(result.bool){
 						player.showCards(result.cards,'###『重机织梦』###展示手牌')
@@ -2451,6 +2456,158 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.unmarkSkill('zhimeng');
 						}
 					},
+				},
+			},
+			//阿喵喵
+			miaomiao:{
+				trigger:{source:'damageBegin4'},
+				priority:3,
+				lastDo:true,
+				direct:true,
+				filter:function(event,player){
+					return event.num == 1;
+				},
+				content:function(){
+					'step 0'
+					var check = -1;
+					check += (get.attitude(player,target)*get.effect(trigger.player,{name:'recover'},player,player));
+					player.chooseTarget('『流泪喵喵』：令目标摸两张牌（取消则改本次伤害为回复）',function(card,player,target){
+						return target==trigger.player;
+					}).set('ai',function(target){
+						var player=_status.event.player;
+						if(_status.event.check>0)	return false;
+						return get.attitude(player,target)>0&&target.hp==target.maxHp;
+					});
+					'step 1'
+					if(result.bool){
+						result.targets[0].draw(2);
+						event.goto(3);
+					}else{
+						trigger.cancel();
+					}
+					'step 2'
+					trigger.player.recover();
+					'step 3'
+					if(player.hasSkill('chengneng_used')){
+						player.draw();
+					}
+				},
+			},
+			chengneng:{
+				trigger:{global:'damageBegin3'},
+				priority:3,
+				firstDo:true,
+				direct:true,
+				filter:function(event,player){
+					return event.player != player;
+				},
+				content:function(){
+					'step 0'
+					player.chooseToDiscard(get.prompt2('chengneng'),'he')
+					'step 1'
+					if(result.bool){
+						player.addTempSkill('chengneng_used')
+						if(trigger.source==player)	event.goto(3);
+					}else{
+						event.finish();
+					}
+					'step 2'
+					trigger.source = player;
+					event.finish();
+					'step 3'
+					trigger.cancel();
+					'step 4'
+					trigger.player.loseHp(trigger.num);
+				},
+				subSkill:{
+					used:{
+						mark:true,
+						marktext:"龙",
+						intro:{
+							name:'逞能龙息',
+							content:'本回合已发动『逞能龙息』',
+
+						}
+					}
+				},
+			},
+			//开司
+			pojie:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=0;
+				},
+				trigger:{
+					global:['loseAfter','equipAfter'],
+				},
+				marktext:"戒",
+				mark:true,
+				intro:{
+					content:'弃牌阶段改为弃置#张牌',
+				},
+				filter:function(event,player){
+					if(player!=_status.currentPhase)	return false;
+					if(event.name=='equip'){
+						return true;
+					}
+					var evt=event.getl(event.player);
+					return evt&&evt.es&&evt.es.length>0;
+				},
+				content:function(){
+					player.draw();
+					player.storage.pojie++;
+					player.markSkill('pojie');
+				},
+				group:'pojie_phaseDiscard',
+				subSkill:{
+					phaseDiscard:{
+						trigger:{player:['phaseDiscardBegin','phaseEnd']},
+						forced:true,
+						filter:function(event,player){
+							return player.storage.pojie>0;
+						},
+						content:function(){
+							'step 0'
+							if(trigger.name=='phaseDiscard'){
+								player.chooseToDiscard(player.storage.pojie,true,'h');
+								trigger.cancel();
+							}
+							'step 1'
+							player.storage.pojie==0;
+							player.unmarkSkill('pojie');
+						},
+
+					},
+				},
+			},
+			dazhen:{
+				enable:'phaseUse',
+				usable:1,
+				filter:function(event,player,cards){
+					return player.getEquip(1);
+				},
+				filterCard:function(card,player){
+					return get.subtype(card) == 'equip1';
+				},
+				discard:false,
+				position:'e',
+				filterTarget:function(card,player,target){
+					return target!=player;
+				},
+				content:function(){
+					'step 0'
+					if(target.getEquip(1)){
+						event.equip = target.getEquip(1);
+					}
+					'step 1'
+					player.$give(cards,target);
+					target.equip(cards[0]);
+					'step 2'
+					if(event.equip){
+						target.$give(event.equip,player);
+						player.equip(event.equip)
+					}
+					'step 3'
+					target.chooseToDiscard('『大振』：需要弃置'+get.cnNumber(Math.abs(player.getHandcardLimit()-player.countCards('h')))+'张牌',Math.abs(player.getHandcardLimit()-player.countCards('h')),'he',true);
 				},
 			},
 		}, 
@@ -2561,6 +2718,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			helesta: '赫露圣剑',
 			helesta_info: '你受到伤害时，你可以获得装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】。',
 
+			AngeKatrina: '安洁·卡特琳娜',
+			chuangzuo: '创作延续',
+			chuangzuo_info: '准备阶段，你可令一名角色获得其判定区或装备区的一张牌，然后你摸一张牌。',
+
 			SuzuharaLulu: '铃原露露',
 			zhongli: '重力牵引',
 			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你减1点体力上限（至少为1）并获得判定牌，然后执行一个额外的出牌阶段。',
@@ -2575,6 +2736,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liebo_info: '<font color=#f66>锁定技</font> 你的黑色牌无法被响应。你的一张黑色牌首次造成伤害时，摸一张牌，然后目标可以令你弃置你装备区内的一张牌',
 			zhimeng: '重机织梦',
 			zhimeng_info: '出牌阶段限一次，你可弃置一张牌并展示一张手牌，此牌的颜色视为原来的异色直到回合结束。本回合内你失去此牌时，可以令一名角色回复1点体力或摸两张牌',
+
+			AmamiyaKokoro: '天宫心',
+			miaomiao: '流泪喵喵',
+			miaomiao_info: '<font color=#f66>锁定技</font> 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能突击』，摸一张牌。',
+			chengneng: '逞能龙息',
+			chengneng_info: '每回合限一次。其他角色受到伤害，你可以弃一张牌令其来源视为你，且你为其原来源时，本次伤害改为等量体力流失。',
+
+			TenkaiTsukasa: '天开司',
+			pojie: '破戒',
+			pojie_info: '回合内，一名角色装备区内的牌数变化时，你可以摸一张牌。弃牌阶段，你需弃置的牌数改为本回合发动此技能的次数。',
+			dazhen: '大振',
+			dazhen_info: '出牌阶段限一次，你可将你武器栏的牌移动至其他角色武器栏（可替换原武器），然后其弃置你手牌数与手牌上限之差的牌，若不足，受到你造成的1点伤害。',
 		},
 	};
 });

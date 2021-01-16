@@ -1829,6 +1829,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent().relatedEvent.name=='useCard') return false;
 					if(event.name=='lose'&&(event.getParent().name=='useCard'||event.position!=ui.discardPile)) return false;
 					var list=event.cards.filter(function(card){
+						if(player.storage.chixin&&player.storage.chixin.contains(card))	return false;
 						return get.suit(card)=='heart'&&get.position(card)=='d';
 					});
 					return list.length>0;
@@ -1920,6 +1921,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							break;
 						}
 						case 2:{
+							if(!player.storage.chixin)	player.storage.chixin = [];
+							player.storage.chixin.addArray(event.links)
 							player.gain(event.links);
 							game.log(player,'获得了',event.links);
 							break;
@@ -1930,6 +1933,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.send('closeDialog',event.videoId);
 					}
 					event.dialog.close();
+				},
+				group:'chixin_clear',
+				subSkill:{
+					clear:{
+						trigger:{global:'phaseAfter'},
+						priority:23,
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.chixin&&player.storage.chixin.length){
+								player.storage.chixin.length = 0;
+							}
+						}
+					}
 				},
 			},
 			//re粽子
@@ -2364,6 +2382,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 
         },
+		characterReplace:{
+			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
+			ShizukaRin:['re_ShizukaRin','ShizukaRin'],
+			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
+			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
+			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
+			TokinoSora:['re_TokinoSora','TokinoSora'],
+			RobokoSan:['re_RobokoSan','RobokoSan'],
+			ShirakamiFubuki:['re_ShirakamiFubuki','ShirakamiFubuki'],
+			HoshimatiSuisei:['re_HoshimatiSuisei','HoshimatiSuisei'],
+			AkiRosenthal:['re_AkiRosenthal','AkiRosenthal'],
+			SakuraMiko:['re_SakuraMiko','SakuraMiko'],
+			NatsuiroMatsuri:['re_NatsuiroMatsuri','NatsuiroMatsuri'],
+			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
+			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
+			
+			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
+			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
+			KaguraMea:['re_KaguraMea','KaguraMea'],
+			
+			SisterClearie:['re_SisterClearie','SisterClearie'],
+			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
+		},
         translate:{
 			hololive: 'HOLO',
 			
@@ -2488,7 +2529,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
-			chixin_info: '当有♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
+			chixin_info: '当有本回合未以此技能获得的♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',

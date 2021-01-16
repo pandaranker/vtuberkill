@@ -23,6 +23,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
+			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
@@ -30,7 +31,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			clubs:{
-                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto'],
+                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio'],
 			}
 		},
 		characterIntro:{
@@ -1518,13 +1519,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			}
 		},
+		characterReplace:{
+			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
+			kaguraNaNa:['re_kaguraNaNa','kaguraNaNa'],
+			Siro:['re_Siro','Siro'],
+			Nekomasu:['re_Nekomasu','Nekomasu'],
+			XiaDi:['re_XiaDi','XiaDi'],
+		},
 		translate:{
 			
 			ParyiPro: '帕里坡',
 
 			Yomemi:'ヨメミ',
 			mokuai:'模块搭载',
-			mokuai_info:'<font color=#f00>锁定技</font> 你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
+			mokuai_info:'<font color=#f66>锁定技</font> 你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
 			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张牌，然后亮出牌堆顶等于其类型数的牌。目标角色需依次选择：弃置与这些亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
 			

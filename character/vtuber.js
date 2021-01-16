@@ -1594,6 +1594,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			disable_judge:{},
 		},
+		characterReplace:{
+			KizunaAI:['re_KizunaAI','KizunaAI'],
+			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
+		},
 		translate:{
 			vtuber_upd8:'UPD8',
             KizunaAI:'绊爱',

@@ -251,6 +251,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					});
 				},
+				ai:{
+					basic:{
+						equipValue:0.5
+					}
+				},
 			},
 			taigongyinfu:{
 				audio:true,
@@ -277,18 +282,24 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{
 					player:['useCard1','respond'],
+					global:'phaseBeginStart',
 				},
 				silent:true,
 				firstDo:true,
 				filter:function(event,player,name){
-					//if(name=='phaseBeginStart') return true;
+					if(name=='phaseBeginStart') return true;
 					var type=get.type(event.card);
 					return type=='basic'||type=='trick';
 				},
 				content:function(){
-					//if(event.triggername=='phaseBeginStart') delete player.storage.suijiyingbian;
-					player.storage.suijiyingbian=trigger.card.name;
-					player.storage.suijiyingbian_nature=trigger.card.nature;
+					if(event.triggername=='phaseBeginStart'){
+						delete player.storage.suijiyingbian;
+						delete player.storage.suijiyingbian_nature;
+					}
+					else{
+						player.storage.suijiyingbian=trigger.card.name;
+						player.storage.suijiyingbian_nature=trigger.card.nature;
+					}
 				},
 			},
 			wuxinghelingshan_skill:{
@@ -390,17 +401,20 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					'step 0'
-					player.chooseTarget(true,function(card,player,target){
+					player.chooseTarget(function(card,player,target){
 						return !target.isLinked();
-					},'是否发动【贝琳】横置一名角色？').set('',function(target){
-						return get.effect(target,{name:'tiesuo'},_status.event.player);
+					},'是否发动【贝琳】横置一名角色？').set('ai',function(target){
+						return get.effect(target,{name:'tiesuo'},_status.event.player,_status.event.player);
 					});
 					'step 1'
 					if(result.bool){
 						var target=result.targets[0];
-						player.logSkill('taigongyinfu_skill',target);
+						player.logSkill('taigongyinfu_link',target);
 						target.link();
 					}
+				},
+				ai:{
+					expose:0.2,
 				},
 			},
 			_yingbian:{
@@ -408,7 +422,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				popup:false,
 				firstDo:true,
+				ruleSkill:true,
 				filter:function(event,player){
+					if(event.card.yingbian) return false;
 					var bool=player.hasSkillTag('forceYingbian');
 					var card=event.card;
 					if(get.cardtag(card,'yingbian_kongchao')&&(!player.countCards('h')||bool)) return true;
@@ -434,7 +450,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						player.popup('富甲','orange');
 						bool=true;
 					}
-					else if(player.hasSkillTag('forceYingbian')) bool=true;
+					else if(player.hasSkillTag('forceYingbian')){
+						player.popup('应变','metal');
+						bool=true;
+					}
 					if(bool){
 						game.log(player,'触发了',card,'的应变条件');
 						event.goto(10);
@@ -585,6 +604,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						target.discard(event.zhuzhanresult2.cards);
 						target.popup('助战','wood');
 						game.log(target,'响应了',player,'发起的助战');
+						target.addExpose(0.2);
 					}
 					else event.finish();
 					'step 10'
@@ -653,7 +673,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			suijiyingbian:'随机应变',
-			suijiyingbian_info:'此牌的牌名视为你本局游戏内使用或打出的上一张基本牌或普通锦囊牌的牌名。',
+			suijiyingbian_info:'此牌的牌名视为你本回合内使用或打出的上一张基本牌或普通锦囊牌的牌名。',
 			zhujinqiyuan:'逐近弃远',
 			zhujinqiyuan_info:'出牌阶段，对一名有牌的其他角色使用。若你与其距离的大于1，你弃置其区域内的一张牌；若你与其的距离等于1，你获得其区域内的一张牌。',
 			dongzhuxianji:'洞烛先机',
@@ -763,7 +783,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['heart',12,'tao'],
 			['heart',12,'shan'],
 			['heart',12,'guohe'],
-			['heart',1,'shandian'],
+			['heart',12,'shandian'],
 			['heart',13,'wuxie',null,['yingbian_kongchao']],
 			['heart',13,'shan'],
 			['heart',13,'zhuahuang'],
@@ -774,7 +794,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['club',2,'sha',null,['yingbian_kongchao']],
 			['club',2,'heiguangkai'],
 			['club',2,'tengjia'],
-			['club',1,'renwang'],
+			['club',2,'renwang'],
 			['club',3,'sha',null,['yingbian_kongchao']],
 			['club',3,'jiu'],
 			['club',3,'zhujinqiyuan',null,['yingbian_zhuzhan']],
@@ -792,7 +812,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['club',7,'nanman'],
 			['club',8,'sha'],
 			['club',8,'sha','thunder'],
-			['club',8,'jiu'],
+			['club',8,'sha'],
 			['club',9,'sha','thunder'],
 			['club',9,'sha','thunder'],
 			['club',9,'jiu'],

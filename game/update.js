@@ -1,10 +1,10 @@
 window.noname_update={
-	version:'1.9.101.11',
-	update:'1.9.100.108.3',
+	version:'1.9.101.12',
+	update:'1.9.100.109.3',
 	changeLog:[
 		'新增V杀初心角色包（内含部分新角色）',
 		'在菜单-其他-帮助里，新增“Q&A”栏',
-		'新增测试人物：巧可拉拉的绯赤艾利欧、VR的泠鸢、艾琳一家的艾琳、NoriP的白雪深白、彩虹的铃原露露、加贺美社长和莉泽',
+		'新增测试人物：VR的泠鸢、艾琳一家的艾琳、NoriP的白雪深白、Upd8的天开司、彩虹的铃原露露、加贺美社长、莉泽和阿喵喵',
 		'新增测试员Ruki（请尽量不要在联机中使用，否则游戏可能会卡顿）',
 		'更新V版卡图（默认开启），新增角色皮肤',
 	],
@@ -23,6 +23,7 @@ window.noname_update={
 		'image/card/zixin.png',
 		'image/card/tengjia.png',
 		'image/card/renwang.png',
+		'image/card/qibaodao.png',
 		'image/card/qilin.png',
 		'image/card/qinggang.png',
 		'image/card/qinglianxindeng.png',

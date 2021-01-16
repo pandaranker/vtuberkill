@@ -33,6 +33,7 @@ window.noname_package={
 		extra:'军争',
 		sp:'SP',
 		yingbian:'应变篇',
+		vtuber:'化鲸篇',
 		guozhan:'国战',
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',
@@ -53,7 +54,7 @@ window.noname_package={
 	},
 	mode:{
 		identity:'身份',
-		guozhan:'国战',
+		//guozhan:'国战',
 		versus:'对决',
 		connect:'联机',
 		boss:'挑战',
