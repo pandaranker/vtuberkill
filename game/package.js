@@ -33,7 +33,7 @@ window.noname_package={
 		extra:'军争',
 		sp:'SP',
 		yingbian:'应变篇',
-		vtuber:'化鲸篇',
+		//vtuber:'化鲸篇',
 		guozhan:'国战',
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',
