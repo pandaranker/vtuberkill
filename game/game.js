@@ -44167,10 +44167,10 @@
 						for(var i of game.connectPlayers){
 							if(!i.nickname&&!i.classList.contains('unselectable2')) num++;
 						}
-						if(num>=lib.configOL.number-1){
-							alert('至少要有两名玩家才能开始游戏！');
-							return;
-						}
+			//			if(num>=lib.configOL.number-1){
+			//				alert('至少要有两名玩家才能开始游戏！');
+			//				return;
+			//			}
 						game.resume();
 					}
 					button.delete();
@@ -51227,18 +51227,18 @@
 				if(!simple||get.is.phoneLayout()){
 					var es=node.getCards('e');
 					for(var i=0;i<es.length;i++){
-						uiintro.add('<div><div class="skill">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].name+'_info']+'</div></div>');
-						uiintro.content.lastChild.querySelector('.skill>.card').style.transform='';
+						uiintro.add('<div><div class="equip">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].name+'_info']+'</div></div>');
+						uiintro.content.lastChild.querySelector('.equip>.card').style.transform='';
 					}
 					var js=node.getCards('j');
 					for(var i=0;i<js.length;i++){
 						if(js[i].viewAs&&js[i].viewAs!=js[i].name){
-							uiintro.add('<div><div class="skill">'+js[i].outerHTML+'</div><div>'+lib.translate[js[i].viewAs]+'：'+lib.translate[js[i].viewAs+'_info']+'</div></div>');
+							uiintro.add('<div><div class="equip">'+js[i].outerHTML+'</div><div>'+lib.translate[js[i].viewAs]+'：'+lib.translate[js[i].viewAs+'_info']+'</div></div>');
 						}
 						else{
-							uiintro.add('<div><div class="skill">'+js[i].outerHTML+'</div><div>'+lib.translate[js[i].name+'_info']+'</div></div>');
+							uiintro.add('<div><div class="equip">'+js[i].outerHTML+'</div><div>'+lib.translate[js[i].name+'_info']+'</div></div>');
 						}
-						uiintro.content.lastChild.querySelector('.skill>.card').style.transform='';
+						uiintro.content.lastChild.querySelector('.equip>.card').style.transform='';
 					}
 					if(get.is.phoneLayout()){
 						var markCoutainer=ui.create.div('.mark-container.marks');
@@ -51505,7 +51505,7 @@
 					var stint=info.mark(uiintro,player.storage[node.skill],player);
 					if(stint){
 						var placetext=uiintro.add('<div class="text" style="display:inline">'+stint+'</div>');
-						if(stint.indexOf('<div class="skill"')!=0){
+						if(stint.indexOf('<div class="equip"')!=0){
 							uiintro._place_text=placetext;
 						}
 						// if(stint.length<=100){
@@ -51524,7 +51524,7 @@
 						}
 						else{
 							var placetext=uiintro.add('<div class="text" style="display:inline">'+stint+'</div>');
-							if(stint.indexOf('<div class="skill"')!=0){
+							if(stint.indexOf('<div class="equip"')!=0){
 								uiintro._place_text=placetext;
 							}
 						}
@@ -51692,7 +51692,7 @@
 						}
 						if(lib.translate[name+'_info']){
 							var placetext=uiintro.add('<div class="text" style="display:inline">'+lib.translate[name+'_info']+'</div>');
-							if(lib.translate[name+'_info'].indexOf('<div class="skill"')!=0){
+							if(lib.translate[name+'_info'].indexOf('<div class="equip"')!=0){
 								uiintro._place_text=placetext;
 							}
 						}

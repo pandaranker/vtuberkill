@@ -1873,7 +1873,7 @@ div:not(.handcards)>.card>.info>span,
 .skilltext{
 	text-indent:32px;
 } 
-
+/** 已修改 */
 .skill {
 	left: 0 !important;
 	width: 64px !important;
@@ -1890,6 +1890,18 @@ div:not(.handcards)>.card>.info>span,
 	width: 70px !important;
 }
 .skill>.card {
+	transform: scale(0.56);
+	transform-origin: top left;
+	margin-left: 2px;
+	margin-top: 6px;
+	margin-bottom: -52px
+}
+.equip {
+	left: 0 !important;
+	width: 70px !important;
+	white-space: nowrap;
+}
+.equip>.card {
 	transform: scale(0.56);
 	transform-origin: top left;
 	margin-left: 2px;

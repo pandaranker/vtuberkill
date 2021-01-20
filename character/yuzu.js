@@ -1026,14 +1026,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			//冷鸟
 			niaoji:{
-				trigger:{source:'damageEnd'},
+				trigger:{source:'damageEnd',player:'damageEnd'},
 				priority:99,
 				lastDo:true,
 				check:function(event,player){
-					return get.attitude(player,event.player)<0;
+					if(event.source == player)	return get.attitude(player,event.player)<0;
+					return true;
 				},
-				prompt:function(event){
-					return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
+				prompt:function(event,player){
+					if(event.source == player)	return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
+					return '受到来自'+get.translation(event.source)+'的伤害，'+get.prompt('niaoji');
 				},
 				filter:function(event,player){
 					return true;
@@ -1045,7 +1047,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.suit(result)=='heart') return 2;
 						return -1;
 					};
-					if(!trigger.player.isIn()||trigger.player.countCards('he')<=0){
+					event.target = (player==trigger.source)?trigger.player:trigger.source;
+					if(!event.target.isIn()||event.target.countCards('he')<=0){
 						func=function(result){
 							if(get.suit(result)=='spade') return 0;
 							if(get.suit(result)=='heart') return 2;
@@ -1056,7 +1059,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						if(result.suit=='spade'){
-							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(trigger.player)+get.cnNumber(trigger.player.hp)+'张牌',trigger.player,trigger.player.hp,true,'he');
+							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(event.target)+get.cnNumber(event.target.hp)+'张牌',event.target,event.target.hp,true,'he');
 						}else if(result.suit=='heart'){
 							player.draw(player.hp);
 						}
@@ -2668,7 +2671,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Yousa: '泠鸢',
 			niaoji: '鸟肌',
-			niaoji_info: '你造成一次伤害后可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标等同于其当前体力值的牌。',
+			niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标/来源等同于其当前体力值的牌。',
 			ysxiangxing: '翔星',
 			ysxiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对任一角色造成1点伤害。',
 
