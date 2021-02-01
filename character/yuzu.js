@@ -1795,6 +1795,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						var cards1 = result.links.slice(0);
 						var cards2 = result.links.slice(0);
+						cards1 = result.links.filter(function(card){
+							return event.list1.contains(card);
+						})
+						cards2 = result.links.filter(function(card){
+							return event.list2.contains(card);
+						})
 						if(cards1.length&&cards2.length&&cards1.length==cards2.length){
 							event.num = cards1.length;
 							player.gain(cards2,target,'giveAuto').set('visible', true);
@@ -1854,6 +1860,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.chooseTarget('###『煌燃』###选择一名角色与自己平摊伤害',function(card,player,target){
 						return target!=player&&get.distance(player,target)<=1;
+					}).set('ai',function(target){
+						return get.attitude(player,target);
 					});
 					'step 1'
 					if(result.bool){
@@ -1898,7 +1906,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					fire:{
 						trigger:{global:'damageBegin1'},
-						priority: 99,
+						priority: 999,
 						usable: 1,
 						forced:	true,
 				/*		filter:function(event,player){

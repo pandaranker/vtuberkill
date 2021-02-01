@@ -21,7 +21,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**BFM */
 			UmoriHinako:['female','qun',4,['hongyi','jueshou']],
 		},
-        characterIntro:{
+		characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
 			InuyamaTamaki:'犬山玉姬者，草莽微末之士也，原为东都一亭长，后绊爱首义，豪杰并起，犬山自叹曰，金鳞岂是池中物，遂聚族起义，然命运多舛，先败朝廷，又为四天王猜忌，幸而频频与杏社、虹社联动，渐得民心，立国时已四十有六。犬山帐下将军皆封之曰姬，世人戏称之曰娘子军，犬山亦不屑一顾。',
 			XiaoxiXiaotao:'小希者，魔都之望族也，魔都的破坏者，屡欲炸虚研村，后为小桃止之，魔都土妹，穿模之神，多有传说流传于世，小桃者，小希之后辈也，昔有伯乐识千里马，小桃制小希亦是之矣，有沙雕观察广为人知。',
@@ -1308,17 +1308,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.bool){
-						var target=result.targets[0];
+						event.target=result.targets[0];
 						if(!player.storage.huangtu2) player.storage.huangtu2=[];
-						player.storage.huangtu2.push(target);
+						player.storage.huangtu2.push(event.target);
 						player.addSkill('huangtu2');
-						player.gainMaxHp(target.maxHp);
-						player.recover(target.maxHp);
-						if(!target.storage.huangtu_mark) target.storage.huangtu_mark=[];
-						target.storage.huangtu_mark.add(player);
-						target.storage.huangtu_mark.sortBySeat();
-						target.markSkill('huangtu_mark');
+						player.addSkill('huangtu3');
 					}
+					'step 2'
+					var target = event.target;
+					target.storage.huangtu_mark = player;
+					target.addSkill('huangtu_mark');
+					'step 3'
+					var target = event.target;
+					player.gainMaxHp(target.maxHp);
+					player.recover(target.maxHp);
 				}
 			},
 			huangtu_mark:{
@@ -1343,22 +1346,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(trigger.player==player){
 						var target = player.storage.huangtu2[0];
 						target[trigger.name](trigger.num,'nosource');
-						if(!target.storage.huangtu_mark){
-							target.storage.huangtu_mark=[];
-							target.storage.huangtu_mark.add(player);
-							target.storage.huangtu_mark.sortBySeat();
-							target.markSkill('huangtu_mark');
+						if(target.storage.huangtu_mark!=player){
+							target.storage.huangtu_mark = player;
 						}
+						target.markSkill('huangtu_mark');
 						event.finish();
 					}
 					'step 1'
 					var target = trigger.player;
-					if(!target.storage.huangtu_mark){
-						target.storage.huangtu_mark=[];
-						target.storage.huangtu_mark.add(player);
-						target.storage.huangtu_mark.sortBySeat();
-						target.markSkill('huangtu_mark');
+					if(target.storage.huangtu_mark!=player){
+						target.storage.huangtu_mark = player;
 					}
+					target.markSkill('huangtu_mark');
 					game.delayx();
 					'step 2'
 					player[trigger.name](trigger.num,'nosource');
@@ -1374,7 +1373,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					delete player.storage.huangtu2;
 				},
-				group:'huangtu3',
 			},
 			huangtu3:{
 				trigger:{global:'dieBegin'},

@@ -200,6 +200,7 @@ window.noname_asset_list=[
 	'image/background/holo2_bg.jpg',
 	'image/background/holo3_bg.jpg',
 	'image/background/holo4_bg.jpg',
+	'image/background/huajing_bg.jpg',
 	'image/background/zh1_bg.jpg',
 	'image/background/tw1_bg.jpg',
 	'image/background/tw2_bg.jpg',
@@ -603,6 +604,22 @@ window.noname_asset_list=[
 	'image/card/wutiesuolian.png',
 	'image/card/wuxinghelingshan.png',
 	'image/card/zhujinqiyuan.png',
+	//化鲸篇
+	'image/card/chenjing.png',
+	'image/card/chenmo.png',
+	'image/card/haidi.png',
+	'image/card/haixiao.png',
+	'image/card/jingluo.png',
+	'image/card/langyong.png',
+	'image/card/linghunshouge.png',
+	'image/card/qi.png',
+	'image/card/qiyu.png',
+	'image/card/sanchaji.png',
+	'image/card/waiguge.png',
+	'image/card/xuanwo.png',
+	'image/card/yalishanda.png',
+	'image/card/yinghua.png',
+
 	
 	'image/replace/bagua.png',
 	'image/replace/baihupifeng.png',
@@ -803,6 +820,13 @@ window.noname_asset_list=[
 	'image/character/re_XiaoxiXiaotao.jpg',
 	'image/character/re_YuNi.jpg',
 
+	//化鲸篇
+	'image/character/NagaoKei.jpg',
+	'image/character/ShirakamiHaruka.jpg',
+	'image/character/KisaragiKoyori.jpg',
+	'image/character/GawrGura.jpg',
+	'image/character/Nana7mi.jpg',
+
 	'image/skin/AkiRosenthal/1.jpg',
 	'image/skin/AmamiyaKokoro/1.jpg',
 	'image/skin/Artia/1.jpg',
@@ -840,6 +864,15 @@ window.noname_asset_list=[
 	'image/skin/UsadaPekora/6.jpg',
 	'image/skin/UsadaPekora/7.jpg',
 	
+	'image/skin/GawrGura/1.jpg',
+	'image/skin/GawrGura/2.jpg',
+	'image/skin/GawrGura/3.jpg',
+	'image/skin/KisaragiKoyori/1.jpg',
+	'image/skin/Nana7mi/1.jpg',
+	'image/skin/ShirakamiHaruka/1.jpg',
+	'image/skin/ShirakamiHaruka/2.jpg',
+	'image/skin/ShirakamiHaruka/3.jpg',
+
 	'image/emotion/shibing_emotion/1.gif',
 	'image/emotion/shibing_emotion/2.gif',
 	'image/emotion/shibing_emotion/3.gif',

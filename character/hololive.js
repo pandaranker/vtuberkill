@@ -4,27 +4,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'hololive',
 		connect:true,
 		character:{
-            /**时乃空 */
-            TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
-            /**夜空梅露 */
-            YozoraMel:['female','holo',3,['juhun','meilu']],
-            /**赤井心 */
-            AkaiHaato:['female','holo',3,['liaolishiyan','momizhiyan']],
-            /**夏色祭 */
-            NatsuiroMatsuri:['female','holo',3,['huxi1','lianmeng']],
-            /**萝卜子 */
-            RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
-            /**白上吹雪 */
-            ShirakamiFubuki:['female','holo',3,['yuanlv','jinyuan','zhongjian'],['zhu']],
+			/**时乃空 */
+			TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
+			/**夜空梅露 */
+			YozoraMel:['female','holo',3,['juhun','meilu']],
+			/**赤井心 */
+			AkaiHaato:['female','holo',3,['liaolishiyan','momizhiyan']],
+			/**夏色祭 */
+			NatsuiroMatsuri:['female','holo',3,['huxi1','lianmeng']],
+			/**萝卜子 */
+			RobokoSan:['female','holo',3,['gaonengzhanxie','ranyouxielou']],
+			/**白上吹雪 */
+			ShirakamiFubuki:['female','holo',3,['yuanlv','jinyuan','zhongjian'],['zhu']],
 			/**aki */
-            AkiRosenthal: ['female', 'holo', 3, ['meiwu', 'huichu']],
-            /**星街慧星 */
-            HoshimatiSuisei:['female','holo',4,['yemuxingyong', 'xinghejianduei']],
-            /**樱巫女 */
-            SakuraMiko: ['female', 'holo', 4, ['haodu']],
-            /**湊阿库娅 */
-            MinatoAqua:['female','holo',3,['kuali','youyi']],
-            /**兔田佩克拉 */
+			AkiRosenthal: ['female', 'holo', 3, ['meiwu', 'huichu']],
+			/**星街慧星 */
+			HoshimatiSuisei:['female','holo',4,['yemuxingyong', 'xinghejianduei']],
+			/**樱巫女 */
+			SakuraMiko: ['female', 'holo', 4, ['haodu']],
+			/**湊阿库娅 */
+			MinatoAqua:['female','holo',3,['kuali','youyi']],
+			/**兔田佩克拉 */
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
 			
 			/**OG诸人 */
@@ -34,16 +34,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Doris:['female','holo',3,['shenhai','paomo']],
 			Yogiri:['female','holo',3,['shisang','wanjie']],
 			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
-        },
+		},
 		characterSort:{
 			hololive:{
-                hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
-                hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
-                hololive_2and3:['MinatoAqua','UsadaPekora'],
-                OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri','Rosalyn'],
+				hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
+				hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
+				hololive_2and3:['MinatoAqua','UsadaPekora'],
+				OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri','Rosalyn'],
 			}
 		},
-        characterIntro:{
+		characterIntro:{
 			MinatoAqua: '阿库娅者，杏社一孑然水兵，虫蝗起祸之时水军都督欲助之，夸苦谏无果，斩之，人常言名正则言顺，夸亦不惧流言，僭越圣皇之位。如此抗争十月有余，战功赫赫，只身一人斩鬼佬兆计，活华夏民众不可胜数，元昭既为虫蝗惑，出兵连击圣皇，圣皇外抗虫蝗，内拒元昭，日削月割，以至于穷，V始二十四年，姑苏城破，圣皇燔宝器、烧粮草，死战力竭而亡。',
 			UsadaPekora: '“哈↑哈↑哈↑哈↑”',
 			
@@ -56,7 +56,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NatsuiroMatsuri: '夏色祭（V始二年）者，元昭之同族也，自党锢之祸后，元昭暗谋国事，遣祭访天下名士，得名士四人，是为杏国一期，祭不拘小节，最喜呼吸，同社皆避之，既为混沌传说，一般露○可轻言之，建功累累，元昭尊为第一将军',
 			RobokoSan: '萝卜子（V始三年）者，奇巧士之造物也，自号高性能机器人，实则不善文书，萝卜起于草莽，生性豪爽，后为时乃空所动，随杏社征战，V始二十年，杏国攻灭诸侯，远交近攻，俨然有大一统之势，萝卜子拜平南王福禄将军，安于南方',
 			ShirakamiFubuki: '白上吹雪者，青丘之狐也，夏色祭以玉米赚之，V始十五年，朝廷击绊爱于桐江，大破之，又击之于宛城，斩爱之左将军，一时人皆自危，起义初显败势，吹雪自领百骑迂回西南袭朝廷于后，解绊爱众叛亲离之危，重兴V国大业，后虫蝗起祸，元昭绥靖，吹雪亦听之任之，遂成大乱。',
-        },
+		},
 		skill:{
 			taiyangzhiyin:{
                 trigger:{ player:['useCard2'] },
@@ -151,9 +151,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                             }
 						}
 					}
-                }
-            },
-            renjiazhizhu:{
+				}
+			},
+			renjiazhizhu:{
 				audio:2,
 				unique:true,
 				trigger:{player:'phaseUseBefore'},
@@ -1822,7 +1822,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-            			
+			
 			//夸
 			kuali:{
 				group:['kuali_zhuDong','kuali_jieshu'],
@@ -2917,24 +2917,45 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//Yogiri
 			shisang:{
-				trigger:{player:'useCardToTarget'},
+				trigger:{player:'useCard1'},
 				priority:42,
 				check:function(event,player){
-					if(player.hasSkill('shisang_used'))	return get.attitude(player,event.targets[0])<0
+					if(player.hasSkill('shisang_used'))	return get.attitude(player,event.targets[0])<0;
 					return !player.hasSkill('shisang_used')&&event.targets[0].isDamaged()&&get.attitude(player,event.targets[0])>0;
 				},
 				filter:function(event,player){
 					return player.isPhaseUsing()&&!player.hasSkill('shisang_used');
 				},
 				prompt2:function(event,player){
-					if(player.hasSkill('wanjie_change'))	return '可以将此牌的效果改为 <font color=#fc8>受到你造成的1点伤害</font>';
-					return '可以将此牌的效果改为 令目标回复1点体力';
+					if(player.hasSkill('wanjie_change'))	return '出牌阶段限一次，可以将此牌的效果改为 <font color=#fc8>受到你造成的1点伤害</font>';
+					return '出牌阶段限一次，可以将此牌的效果改为 令目标回复1点体力';
 				},
 				content:function(){
-					if(!trigger.getParent().addedSkill)	trigger.getParent().addedSkill = [];
-					trigger.getParent().addedSkill.add('shisang');
-					if(player.storage.shisang_clear)	delete player.storage.shisang_clear;
-					player.storage.shisang_clear = get.info(trigger.card).content;
+					'step 0'
+					player.addTempSkill('shisang_used','phaseUseEnd');
+					if(!trigger.addedSkill)	trigger.addedSkill = [];
+					trigger.addedSkill.add('shisang');
+			//		if(player.storage.shisang_clear)	delete player.storage.shisang_clear;
+					if(player.storage.shisang2)	delete player.storage.shisang2;
+					lib.skill.shisang2.trigger = {player:[get.name(trigger.card)+'Begin'/** ,get.name(trigger.card)+'ContentBefore'*/]};
+					'step 1'
+					player.storage.shisang2 = trigger.card;
+					player.addTempSkill('shisang2',{player:'useCardAfter'});
+			/*		if(player.hasSkill('wanjie_change')){
+						trigger.getParent().setContent(function(){
+							targets.forEach(function(target){
+								target.damage(player);
+							})
+						});
+					}else{
+						trigger.getParent().setContent(function(){
+							targets.forEach(function(target){
+								target.recover();
+							})
+						});
+					}
+				*/
+			/*		player.storage.shisang_clear = get.info(trigger.card).content;
 					if(player.hasSkill('wanjie_change')){
 						get.info(trigger.card).content = function(){
 							target.damage(player);
@@ -2944,9 +2965,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							target.recover();
 						}
 					}
-					player.addTempSkill('shisang_used','phaseUseEnd')
+					'step 2'
+					if(get.itemtype(trigger.card)=='card'){
+						var next = game.createEvent('sanchaji_clear');
+						next.card = trigger.card;
+						next.cardContent = player.storage.shisang_clear;
+						event.next.remove(next);
+						trigger.after.push(next);
+						next.setContent(function(){
+							get.info(next).content = cardContent;
+						});
+					}
+				*/
 				},
-				group:'shisang_clear',
+			//	group:'shisang_clear',
 				subSkill:{
 					used:{},
 					clear:{
@@ -2955,6 +2987,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						popup:false,
 						filter:function(event,player){
+							return false;
 							if(!player.hasSkill('shisang_used'))		return false;
 							if((event.name=='useCard'&&event.addedSkill&&event.addedSkill.contains('shisang')))			return true;
 							if(!(event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('shisang')))		return false;
@@ -2967,6 +3000,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				}
+			},
+			shisang2:{
+				trigger:{global:'Xbegin'},
+				forced:true,
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return event.card == player.storage.shisang2;
+				},
+				content:function(){
+					if(player.hasSkill('wanjie_change')){
+						trigger.setContent(function(){
+							target.damage(player);
+						});
+					}else{
+						trigger.setContent(function(){
+							target.recover();
+						});
+					}
+				},
 			},
 			wanjie:{
 				enable:'phaseUse',
@@ -3295,7 +3348,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(player.storage.futian.contains(card))	return false;
 								return true;
 							});
-							console.log(list)
 							for(var i=0;i<list.length;i++){
 								if(list[i]==name) return true;
 							}
@@ -3486,6 +3538,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			futian: '覆天',
 			futian_info: '<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
 
-        },
+		},
 	};
 });

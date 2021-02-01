@@ -8675,6 +8675,16 @@
 								lib.card.list[i][2]='sha';
 								lib.card.list[i][3]='ocean';
 							}
+							else if(lib.card.list[i][2]=='yamisha'){
+								lib.card.list[i]=lib.card.list[i].slice(0);
+								lib.card.list[i][2]='sha';
+								lib.card.list[i][3]='yami';
+							}
+							if(lib.card.list[i][2]=='haitao'){
+								lib.card.list[i]=lib.card.list[i].slice(0);
+								lib.card.list[i][2]='tao';
+								lib.card.list[i][3]='ocean';
+							}
 							if(!lib.card[lib.card.list[i][2]]){
 								lib.card.list.splice(i,1);i--;
 							}
@@ -9859,6 +9869,14 @@
 					name='sha';
 					nature='ocean';
 				}
+				else if(name=='yamisha'){
+					name='sha';
+					nature='yami';
+				}
+				else if(name=='haitao'){
+					name='tao';
+					nature='ocean';
+				}
 				if(!lib.card[name]){
 					return null;
 				}
@@ -10029,6 +10047,7 @@
 			kami:'神',
 			ocean:'海',
 			ice:'冰',
+			yami:'暗',
 			wei:'魏',
 			shu:'蜀',
 			wu:'吴',
@@ -10111,6 +10130,8 @@
 			_kamisha:'神杀',
 			_oceansha:'海杀',
 			_icesha:'冰杀',
+			_yamisha:'暗杀',
+			_yamisha2:'暗杀',
 			qianxing:'潜行',
 			mianyi:'免疫',
 			fengyin:'封印',
@@ -11283,7 +11304,7 @@
 					if(info.popup!=false&&!info.direct){
 						if(info.popup){
 							player.popup(info.popup);
-							game.log(player,'发动了','【'+get.skillTranslation(event.skill,player)+'】');
+							game.log(player,'发动了','#p『'+get.skillTranslation(event.skill,player)+'』');
 						}
 						else{
 							if(info.logTarget&&info.logLine!==false){
@@ -14100,6 +14121,10 @@
 								(card.classList&&card.classList.contains('ocean'))){
 								config.color='ocean';
 							}
+							else if(card.nature=='yami'||
+								(card.classList&&card.classList.contains('yami'))){
+								config.color='yami';
+							}
 							if(event.addedTarget){
 								player.line2(targets.concat(event.addedTargets),config);
 							}
@@ -15200,7 +15225,7 @@
 					"step 3"
 					event.trigger('damageBegin4');
 					"step 4"
-					if(num>0&&player.hujia&&!player.hasSkillTag('nohujia')){
+					if(num>0&&player.hujia&&!player.hasSkillTag('nohujia')&&!(source&&source.hasSkillTag('overHujia'))){
 						if(num>=player.hujia){
 							event.hujia=player.hujia;
 							num-=player.hujia;
@@ -15209,7 +15234,6 @@
 							event.hujia=num;
 							num=0;
 						}
-						game.log(player,'的护甲抵挡了'+get.cnNumber(event.hujia)+'点伤害');
 						player.changeHujia(-event.hujia).type='damage';
 					}
 					event.num=num;
@@ -15407,8 +15431,12 @@
 				},
 				changeHujia:function(){
 					player.hujia+=num;
+					player.$damagepop((num>0?'+'+num:num),'gray');
 					if(num>0){
 						game.log(player,'获得了'+get.cnNumber(num)+'点护甲');
+					}else if(event.type){
+						if(event.type=='damage')	game.log(player,'的护甲抵挡了'+get.cnNumber(-num)+'点伤害');
+						if(event.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
 					}
 					if(player.hujia<0){
 						player.hujia=0;
@@ -20182,10 +20210,10 @@
 						this.trySkillAnimate(name,popname,checkShow);
 						if(typeof targets=='object'&&targets.length){
 							var str=(targets[0]==this?'#b自己':targets);
-							game.log(this,'对',str,'发动了','『'+get.skillTranslation(name,this)+'』');
+							game.log(this,'对',str,'发动了','#p『'+get.skillTranslation(name,this)+'』');
 						}
 						else{
-							game.log(this,'发动了','『'+get.skillTranslation(name,this)+'』');
+							game.log(this,'发动了','#p『'+get.skillTranslation(name,this)+'』');
 						}
 					}
 					if(nature!=false){
@@ -22002,6 +22030,21 @@
 					}
 					return false;
 				},
+				//暗属性
+				hasYami:function(){
+					if(this.countCards('h',{nature:'yami'})) return true;
+					var skills=this.getSkills(true).concat(lib.skill.global);
+					game.expandSkills(skills);
+					for(var i=0;i<skills.length;i++){
+						var ifo=get.info(skills[i]);
+						if(ifo.viewAs&&typeof ifo.viewAs!='function'&&ifo.viewAs.nature=='yami'){
+							if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
+								return true;
+							}
+						}
+					}
+					return false;
+				},
 				hasWuxie:function(){
 					if(this.countCards('h','wuxie')) return true;
 					var skills=this.getSkills(true).concat(lib.skill.global);
@@ -23621,6 +23664,14 @@
 							card[2]='sha';
 							card[3]='ocean';
 						}
+						if(card[2]=='yamisha'){
+							card[2]='sha';
+							card[3]='yami';
+						}
+						if(card[2]=='haitao'){
+							card[2]='tao';
+							card[3]='ocean';
+						}
 					}
 					else if(typeof card=='object'){
 						card=[card.suit,card.number,card.name,card.nature];
@@ -23857,7 +23908,7 @@
 					this.node.name.innerHTML='';
 					this.node.image.className='image';
 					var name=get.translation(card[2]);
-					if(card[2]=='sha'){
+					if(card[2]=='sha'||card[2]=='tao'){
 						if(card[3]=='fire'){
 							name='火'+name;
 							this.node.image.classList.add('fire');
@@ -23876,7 +23927,30 @@
 						}
 						else if(card[3]=='ocean'){
 							name='海'+name;
+							this.node.image.classList.add('ocean');
+						}
+						else if(card[3]=='yami'){
+							name='暗'+name;
+							this.node.image.classList.add('yami');
+						}
+					}else{
+						if(card[3]=='fire'){
+							this.node.image.classList.add('fire');
+						}
+						else if(card[3]=='thunder'){
 							this.node.image.classList.add('thunder');
+						}
+						else if(card[3]=='kami'){
+							this.node.image.classList.add('kami');
+						}
+						else if(card[3]=='ice'){
+							this.node.image.classList.add('ice');
+						}
+						else if(card[3]=='ocean'){
+							this.node.image.classList.add('ocean');
+						}
+						else if(card[3]=='yami'){
+							this.node.image.classList.add('yami');
 						}
 					}
 					for(var i=0;i<name.length;i++){
@@ -25619,16 +25693,227 @@
 			},
 			//海洋伤害特性
 			_oceansha:{
-				trigger:{source:'damageBegin2'},
+				trigger:{source:'damageBegin4'},
 				forced:true,
+				priority:7,
+				logTarget:'player',
 				filter:function(event,player){
-					return event.nature=='oceansha'&&event.num>0&&event.player.hujia>0;
+					return event.nature=='ocean'&&event.num>0&&event.player.hujia>0;
 				},
 				ruleSkill:true,
 				content:function(){
 					trigger.num++;
 					trigger.oceanAddDam = true;
 				},
+			},
+			//暗影伤害特性
+			_yamisha:{
+				trigger:{player:'useCardToPlayered'},
+				forced:true,
+				priority:7,
+				logTarget:'target',
+				filter:function(event,player){
+					return event.card.nature=='yami'&&event.target.countCards('h')>player.countCards('h');
+				},
+				ruleSkill:true,
+				content:function(){
+					trigger.getParent().directHit.add(trigger.target);
+					trigger.getParent().yamiDirect = true;
+				},
+			},
+			_yamisha2:{
+				trigger:{player:'phaseJieshu'},
+				priority:5,
+				popup:false,
+				forced:true,
+				filter:function(event,player){
+					if(event.getParent().noyami) return false;
+					if(event.player.hasSkillTag('playernoyami',false,event)) return false;
+					return game.countPlayer(function(cur){
+						return cur.hasYami();
+					})
+				},
+				content:function(){
+					'step 0'
+					event.target=trigger.player;
+					event.state=true;
+					event._global_waiting=true;
+					event.filterCard=function(card,player){
+						if(get.nature(card)!='yami') return false;
+						return lib.filter.cardEnabled(card,player,'forceEnable');
+					};
+					event.send=function(player,state,target,id,skillState){
+						if(skillState){
+							player.applySkills(skillState);
+						}
+						state=state?1:-1;
+						var str='';
+						if(target){
+							str+='对'+get.translation(target);
+						}
+						str+='的结束阶段，是否对其使用暗影属性的牌？';
+
+						var next=player.chooseToUse({
+							filterCard:function(card,player){
+								if(get.nature(card)!='yami') return false;
+								return lib.filter.cardEnabled(card,player,'forceEnable');
+							},
+							filterTarget:target,
+							prompt:str,
+							type:'yami',//
+							state:state,
+							_global_waiting:true,
+							ai1:function(){
+								if(target){
+									var triggerevent=_status.event.getTrigger();
+									if(triggerevent&&triggerevent.parent&&
+										triggerevent.parent.postAi&&
+										triggerevent.player.isUnknown(_status.event.player)){
+										return 0;
+									}
+									if(Math.abs(get.attitude(_status.event.player,target))<0) return Math.random()-0.2;
+								}
+								else{
+									return 0;
+								}
+							},
+							id:id,
+						});
+						if(event.stateplayer&&event.statecard) next.set('respondTo',[event.stateplayer]);
+						if(game.online){
+							_status.event._resultid=id;
+							game.resume();
+						}
+						else{
+							next.nouse=true;
+						}
+					};
+					event.settle=function(){
+						if(!event.state){
+							trigger.cancel();
+							trigger.result = {yamied: true};
+						}
+						event.finish();
+					};
+					'step 1'
+					var list=game.filterPlayer(function(current){
+						if(current==event.target)	return false;
+						if(event.noyami) return false;
+						if(event.directHit&&event.directHit.contains(current)) return false;
+						return current.hasYami();
+					});
+					event.list=list;
+					event.id=get.id();
+					list.sort(function(a,b){
+						return get.distance(event.target,a,'absolute')-get.distance(event.target,b,'absolute');
+					});
+					'step 2'
+					if(event.list.length==0){
+						event.settle();
+					}
+					else if(_status.connectMode&&(event.list[0].isOnline()||event.list[0]==game.me)){
+						event.goto(4);
+					}
+					else{
+						event.current=event.list.shift();
+						event.send(event.current,event.state,event.target,event.id);
+					}
+					'step 3'
+					if(result.bool){
+						event.yamiresult=event.current;
+						event.yamiresult2=result;
+						event.goto(8);
+					}
+					else{
+						event.goto(2);
+					}
+					'step 4'
+					var id=event.id;
+					var sendback=function(result,player){
+						if(result&&result.id==id&&!event.yamiresult&&result.bool){
+							event.yamiresult=player;
+							event.yamiresult2=result;
+							game.broadcast('cancel',id);
+							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
+								return (function(){
+									event.resultOL=_status.event.resultOL;
+									ui.click.cancel();
+									if(ui.confirm) ui.confirm.close();
+								});
+							}
+						}
+						else{
+							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
+								return (function(){
+									event.resultOL=_status.event.resultOL;
+								});
+							}
+						}
+					};
+
+					var withme=false;
+					var withol=false;
+					var list=event.list;
+					for(var i=0;i<list.length;i++){
+						if(list[i].isOnline()){
+							withol=true;
+							list[i].wait(sendback);
+							list[i].send(event.send,list[i],event.state,event.target,event.idget.skillState(list[i]));
+							list.splice(i--,1);
+						}
+						else if(list[i]==game.me){
+							withme=true;
+							event.send(list[i],event.state,event.target,event.id);
+							list.splice(i--,1);
+						}
+					}
+					if(!withme){
+						event.goto(6);
+					}
+					if(_status.connectMode){
+						if(withme||withol){
+							for(var i=0;i<game.players.length;i++){
+								game.players[i].showTimer();
+							}
+						}
+					}
+					event.withol=withol;
+					'step 5'
+					if(result&&result.bool&&!event.yamiresult){
+						game.broadcast('cancel',event.id);
+						event.yamiresult=game.me;
+						event.yamiresult2=result;
+					}
+					'step 6'
+					if(event.withol&&!event.resultOL){
+						game.pause();
+					}
+					'step 7'
+					for(var i=0;i<game.players.length;i++){
+						game.players[i].hideTimer();
+					}
+					'step 8'
+					if(event.yamiresult){
+						var next=event.yamiresult.useResult(event.yamiresult2);
+						if(event.stateplayer) next.respondTo=[event.stateplayer,event];
+					}
+					'step 9'
+					if(event.yamiresult){
+						if(result.yamied){
+							event.goto(1);
+						}
+						else event.settle();
+					}
+					else if(event.list.length){
+						event.goto(2);
+					}
+					else{
+						event.settle();
+					}
+					delete event.resultOL;
+					delete event.yamiresult;
+					delete event.yamiresult2;
+				}
 			},
 			aozhan:{
 				charlotte:true,
@@ -26366,8 +26651,12 @@
 					return evt&&evt.name=='damage'&&evt.nature&&lib.linked.contains(evt.nature)&&player.isLinked();
 				},
 				content:function(){
-					player.link();
-					if(trigger.getParent().notLink()&&!trigger.getParent().oceanAddDam) trigger.getParent().lianhuanable=true;
+					var overNature = trigger.getParent().oceanAddDam||false;
+					if(trigger.getParent(2).type=='card'&&get.nature(trigger.getParent(2).card)=='yami'&&trigger.getParent(3).yamiDirect)	overNature = true;
+					if(!overNature){
+						player.link();
+						if(trigger.getParent().notLink()) trigger.getParent().lianhuanable=true;
+					}
 				}
 			}
 		},
@@ -27375,8 +27664,8 @@
 		},
 		suit:['club','spade','diamond','heart'],
 		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','udp8','eilene','key','paryi'],
-		nature:['fire','thunder','poison','ocean','ice','kami'],
-		linked:['fire','thunder','ocean','ice','kami'],
+		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
+		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{
 			shen:'thunder',
 			wei:'water',
@@ -32023,6 +32312,7 @@
 									if(cardnature=='kami') cards[i]._tempName.dataset.nature='kami';
 									if(cardnature=='ice') cards[i]._tempName.dataset.nature='ice';
 									if(cardnature=='ocean') cards[i]._tempName.dataset.nature='ocean';
+									if(cardnature=='yami') cards[i]._tempName.dataset.nature='yami';
 								}
 								cards[i]._tempName.innerHTML=lib.config.cardtempname=='default'?get.verticalStr(tempname):tempname;
 								cards[i]._tempName.tempname=tempname;
@@ -32746,6 +33036,16 @@
 						else if(lib.card.list[i][2]=='haisha'){
 							lib.card.list[i]=lib.card.list[i].slice(0);
 							lib.card.list[i][2]='sha';
+							lib.card.list[i][3]='ocean';
+						}
+						else if(lib.card.list[i][2]=='yamisha'){
+							lib.card.list[i]=lib.card.list[i].slice(0);
+							lib.card.list[i][2]='sha';
+							lib.card.list[i][3]='yami';
+						}
+						if(lib.card.list[i][2]=='haitao'){
+							lib.card.list[i]=lib.card.list[i].slice(0);
+							lib.card.list[i][2]='tao';
 							lib.card.list[i][3]='ocean';
 						}
 						if(!lib.card[lib.card.list[i][2]]){
@@ -33795,9 +34095,12 @@
 					else if(arguments[i][0]=='#'){
 						var color='';
 						switch(arguments[i][1]){
+							case 'r':color='fire';break;
+							case 'p':color='legend';break;
 							case 'b':color='blue';break;
-							case 'y':color='yellow';break;
 							case 'g':color='green';break;
+							case 'y':color='yellow';break;
+							case 'i':color='ice';break;
 						}
 						str+='<span class="'+color+'text">'+get.translation(arguments[i].slice(2))+'</span>';
 						str2+=get.translation(arguments[i].slice(2));
@@ -37624,6 +37927,9 @@
 										pileaddlist.push(['huosha','火杀']);
 										pileaddlist.push(['leisha','雷杀']);
 										pileaddlist.push(['haisha','海杀']);
+									}
+									if(cname=='tao'){
+										pileaddlist.push(['haitao','海桃']);
 									}
 								}
 							}
@@ -48806,6 +49112,8 @@
 					case 'p':color='legend';break;
 					case 'b':color='blue';break;
 					case 'g':color='green';break;
+					case 'y':color='yellow';break;
+					case 'i':color='ice';break;
 					default:return str.slice(2);
 				}
 				return '<span class="'+color+'text '+color+'auto">'+str.slice(2)+'</span>';
@@ -50380,7 +50688,7 @@
 				else{
 					str2=get.translation(str.name);
 				}
-				if(str2=='杀'){
+				if(str2=='杀'||str2=='桃'){
 					if(str.nature=='fire'){
 						str2='火'+str2;
 					}
@@ -50395,6 +50703,28 @@
 					}
 					else if(str.nature=='ice'){
 						str2='冰'+str2;
+					}
+					else if(str.nature=='yami'){
+						str2='暗'+str2;
+					}
+				}else if(str.nature&&str.nature.length){
+					if(str.nature=='fire'){
+						str2=str2.splice(0,1,'火');
+					}
+					else if(str.nature=='thunder'){
+						str2=str2.splice(0,1,'雷');
+					}
+					else if(str.nature=='kami'){
+						str2=str2.splice(0,1,'神');
+					}
+					else if(str.nature=='ocean'){
+						str2=str2.splice(0,1,'海');
+					}
+					else if(str.nature=='ice'){
+						str2=str2.splice(0,1,'冰');
+					}
+					else if(str.nature=='yami'){
+						str2=str2.splice(0,1,'暗');
 					}
 				}
 				if(get.itemtype(str)=='card'||str.isCard){
@@ -51293,7 +51623,7 @@
 					table.style.margin='0';
 					table.style.width='100%';
 					table.style.position='relative';
-					var listi=['flower','egg'];
+					var listi=['flower','egg','wine','shoe'];
 					for(var i=0;i<listi.length;i++){
 						td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
 						ui.throwEmotion.add(td);
@@ -51309,24 +51639,7 @@
 					table.style.margin='0';
 					table.style.width='100%';
 					table.style.position='relative';
-					var listi=['wine','shoe'];
-					if(game.me.storage.zhuSkill_shanli) listi=['yuxisx','shoukao'];
-					for(var i=0;i<listi.length;i++){
-						td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
-						ui.throwEmotion.add(td);
-						if(_status.throwEmotionWait) td.classList.add('exclude');
-						td.link=listi[i];
-						table.appendChild(td);
-						td.innerHTML='<span>'+get.translation(listi[i])+'</span>';
-						td.addEventListener(lib.config.touchscreen?'touchend':'click',click);
-					}
-					uiintro.content.appendChild(table);
-					table=document.createElement('div');
-					table.classList.add('add-setting');
-					table.style.margin='0';
-					table.style.width='100%';
-					table.style.position='relative';
-					var listi=['sc','ship'];
+					var listi=['yuxisx','shoukao','sc','ship'];
 					for(var i=0;i<listi.length;i++){
 						td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
 						ui.throwEmotion.add(td);
@@ -52701,6 +53014,9 @@
 			}
 			else if(nature=='ice'){
 				name='icedamage';
+			}
+			else if(nature=='yami'){
+				name='yamidamage';
 			}
 			var eff=get.effect(target,{name:name},player,viewer);
 			if(eff>0&&target.hujia>0) return 0;

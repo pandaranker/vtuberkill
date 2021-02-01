@@ -1,6 +1,4 @@
 'use strict';
-
-
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'clubs',
@@ -61,7 +59,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return true;
 				},
 				content:function(){
-					console.log('OK')
 					trigger.num = player.countCards('e')||1;
 				},
 			},
@@ -175,13 +172,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:	true,
 						filter:function(event,player){
 							if(!player.getEquip(1))		return false;
-							return get.subtype(event.cards[0])=='equip1';
+							return get.subtype(event.cards[0])=='equip1'&&event.getParent().addCount_extra==true;
 						},
 						content:function(){
+			//				console.log(trigger);
+							trigger.getParent().addCount_extra = false;
 							player.getStat().card.sha--;
-			//				for(var i=0;i<trigger.targets.length;i++){
-			//					trigger.directHit.add(trigger.targets[0]);
-			//				}						
 						},
 					}
 				}
@@ -325,12 +321,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return get.name(event.card) =='sha';
 				},
 				check:function(event,player){
-					return event.target == player||!event.target.hasSkillTag('');
+					return event.target == player||!event.target.hasSkillTag('notrick');
 				},
 				content:function(){
+					'step 0'
 					if(!trigger.getParent().addedSkill)	trigger.getParent().addedSkill = [];
 					trigger.getParent().addedSkill.add('duixian');
+					'step 1'
 					trigger.card.name = 'juedou';
+					if(get.itemtype(trigger.card)=='card'){
+						var next=game.createEvent('duixian_clear');
+						next.card=trigger.card;
+						event.next.remove(next);
+						trigger.after.push(next);
+						next.setContent(function(){
+							card.name = sha;
+						});
+					}
 				},
 				group:['duixian_drawBy','duixian_disCard'],
 				subSkill:{
@@ -367,7 +374,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//		trigger.getParent(2).addedSkill.add('gutai');
 					var shouxia = trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
 					player.logSkill('gutai',shouxia)
-					console.log(trigger.getParent());
 				},
 			//	group:['gutai_cancelDam','gutai_gainBy'],
 			/*	subSkill:{
@@ -635,9 +641,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					dam: {
 						forced: true,
 						trigger: {
-							source: 'damageBefore',
-							player: 'damageBefore'
+							source: 'damageBegin1',
+							player: 'damageBegin3'
 						},
+						firstDo:true,
 						filter: function(event, player) {
 							if (!event.card || !get.suit(event.card)) return false;
 							var chk = false;
@@ -1263,6 +1270,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:41,
 				filter:function(event,player){
 					return (player.storage.shushi<Math.max(game.countPlayer(),5));
+				},
+				prompt:function(event,player){
+					return get.translation(event.name)+'开始,'+get.prompt('shushi');
 				},
 				content:function(){
 					'step 0'

@@ -1856,17 +1856,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.set('selectButton',function(){
 						if(ui.selected.buttons.length==0) return 2;
 						else if(get.color(ui.selected.buttons[0].link)=='red'&&ui.dialog.buttons.length==1)	return 1;
-						return [1,2];
+						return [1,Infinity];
 					});
 					next.set('dialog',event.videoId);
 					next.set('ai',function(button){
-						return get.value(button.link);
+						return get.value(button.link)&&ui.selected.buttons.length==1;
 					});
-					next.set('check',function(){
-						return ui.selected.buttons.length==1;
-					}) 
 					next.set('forceAuto',function(){
-						return ui.selected.buttons.length==2||ui.dialog.buttons.length==1;
+						return ui.selected.buttons.length==ui.dialog.buttons.length||ui.dialog.buttons.length==1;
 					});
 					'step 2'
 					if(result.bool){

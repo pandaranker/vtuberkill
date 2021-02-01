@@ -1689,7 +1689,7 @@ div:not(.handcards)>.card>.info>span,
 }
 #window>.dialog.popped {
 	z-index: 5;
-	width: 220px;
+	width: 360px;
 	background: rgba(0,0,0,0.2);
 	box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px;
 	border-radius: 6px;
@@ -1864,24 +1864,44 @@ div:not(.handcards)>.card>.info>span,
 .caption>div>div {
 	font-size: 16px;
 	position: relative;
-	width: calc(100% - 70px);
+	width: calc(100% - 90px);
 	vertical-align: top;
 	margin: 0;
 	padding: 0;
 }
 
+.skilltext{
+	text-indent:32px;
+} 
+/** 已修改 */
 .skill {
-	color: rgba(98, 146, 240, 0.6);
 	left: 0 !important;
-	width: 64px !important;
+	width: 72px !important;
 	white-space: nowrap;
 }
+.skill::before {
+	content:'『'
+}
+.skill::after {
+	content:'』'
+}
 .skilln {
-	color: rgba(98, 146, 240, 0.4);
 	left: 0 !important;
 	width: 70px !important;
 }
 .skill>.card {
+	transform: scale(0.56);
+	transform-origin: top left;
+	margin-left: 2px;
+	margin-top: 6px;
+	margin-bottom: -52px
+}
+.equip {
+	left: 0 !important;
+	width: 70px !important;
+	white-space: nowrap;
+}
+.equip>.card {
 	transform: scale(0.56);
 	transform-origin: top left;
 	margin-left: 2px;
@@ -1987,7 +2007,7 @@ div:not(.handcards)>.card>.info>span,
 	width: 42px;
 	right: auto;
 	bottom: 3px;
-	background-image: linear-gradient(rgba(150, 47, 47, 1), rgba(132, 43, 43, 1));
+	background-image: linear-gradient(rgba(150, 47, 47, 0.8), rgba(132, 43, 43, 0.2));
 	border-radius: 3px;
 }
 .button.replaceButton>div{
@@ -2287,7 +2307,10 @@ div:not(.handcards)>.card>.info>span,
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 20px, rgba(0, 0, 0,0.3) 0 0 40px, rgba(213, 194, 179, 1) 0 0 80px;
 }
 #window>.damage.fullscreenavatar[data-nature='ocean']>div:first-child>div{
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 20px, rgba(0, 0, 0,0.3) 0 0 40px, rgba(98, 146, 240, 1) 0 0 80px;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 20px, rgba(0, 0, 0,0.3) 0 0 40px, rgb(72, 125, 204) 0 0 80px;
+}
+#window>.damage.fullscreenavatar[data-nature='yami']>div:first-child>div{
+	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 20px, rgba(0, 0, 0,0.3) 0 0 40px, rgb(111, 89, 121) 0 0 80px;
 }
 #window>.damage.fullscreenavatar[data-nature='soil']>div:first-child>div{
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0,0.5) 0 0 10px, rgba(0, 0, 0,0.3) 0 0 30px, rgba(128, 59, 2,1) 0 0 60px;
@@ -3487,7 +3510,10 @@ div:not(.handcards)>.card>.info>span,
 	color: rgba(0,153,255,0.3);
 }
 .ocean {
-	color: rgba(98, 146, 240, 0.4)
+	color: rgba(72, 125, 204, 0.4)
+}
+.yami {
+	color: rgba(111, 89, 121, 0.4)
 }
 .poison {
 	color: rgba(30, 133, 51,0.4);
@@ -3967,23 +3993,44 @@ span[data-nature='icemx'] {
 
 div[data-nature='ocean'],
 span[data-nature='ocean'] {
-	text-shadow: rgba(98, 146, 240,1) 0 0 2px,rgba(98, 146, 240,1) 0 0 5px,rgba(98, 146, 240,1) 0 0 10px,
-		rgba(98, 146, 240,1) 0 0 10px,rgba(98, 146, 240,1) 0 0 20px,rgba(98, 146, 240,1) 0 0 20px,black 0 0 1px;
+	text-shadow: rgba(72, 125, 204,1) 0 0 2px,rgba(72, 125, 204,1) 0 0 5px,rgba(72, 125, 204,1) 0 0 10px,
+		rgba(72, 125, 204,1) 0 0 10px,rgba(72, 125, 204,1) 0 0 20px,rgba(72, 125, 204,1) 0 0 20px,black 0 0 1px;
 }
 div[data-nature='oceanm'],
 span[data-nature='oceanm'] {
-	text-shadow: rgba(98, 146, 240,1) 0 0 2px,rgba(98, 146, 240,1) 0 0 5px,rgba(98, 146, 240,1) 0 0 5px,
-		rgba(98, 146, 240,1) 0 0 5px,black 0 0 1px;
+	text-shadow: rgba(72, 125, 204,1) 0 0 2px,rgba(72, 125, 204,1) 0 0 5px,rgba(72, 125, 204,1) 0 0 5px,
+		rgba(72, 125, 204,1) 0 0 5px,black 0 0 1px;
 }
 div[data-nature='oceanmm'],
 span[data-nature='oceanmm'] {
-	text-shadow: rgba(98, 146, 240,1) 0 0 2px,rgba(98, 146, 240,1) 0 0 2px,rgba(98, 146, 240,1) 0 0 2px,
-		rgba(98, 146, 240,1) 0 0 2px,black 0 0 1px;
+	text-shadow: rgba(72, 125, 204,1) 0 0 2px,rgba(72, 125, 204,1) 0 0 2px,rgba(72, 125, 204,1) 0 0 2px,
+		rgba(72, 125, 204,1) 0 0 2px,black 0 0 1px;
 }
 div[data-nature='oceanmx'],
 span[data-nature='oceanmx'] {
-	text-shadow: black 0 0 1px,rgba(98, 146, 240,0.2) 0 0 2px,rgba(98, 146, 240,1) 0 0 2px,rgba(98, 146, 240,1) 0 0 5px,
-		rgba(98, 146, 240,1) 0 0 5px,black 0 0 1px;
+	text-shadow: black 0 0 1px,rgba(72, 125, 204,0.2) 0 0 2px,rgba(72, 125, 204,1) 0 0 2px,rgba(72, 125, 204,1) 0 0 5px,
+		rgba(72, 125, 204,1) 0 0 5px,black 0 0 1px;
+}
+
+div[data-nature='yami'],
+span[data-nature='yami'] {
+	text-shadow: rgb(111, 89, 121) 0 0 2px,rgba(111, 89, 121,1) 0 0 5px,rgba(111, 89, 121,1) 0 0 10px,
+		rgba(111, 89, 121,1) 0 0 10px,rgba(111, 89, 121,1) 0 0 20px,rgba(111, 89, 121,1) 0 0 20px,black 0 0 1px;
+}
+div[data-nature='yamim'],
+span[data-nature='yamim'] {
+	text-shadow: rgba(111, 89, 121,1) 0 0 2px,rgba(111, 89, 121,1) 0 0 5px,rgba(111, 89, 121,1) 0 0 5px,
+		rgba(111, 89, 121,1) 0 0 5px,black 0 0 1px;
+}
+div[data-nature='yamimm'],
+span[data-nature='yamimm'] {
+	text-shadow: rgba(111, 89, 121,1) 0 0 2px,rgba(111, 89, 121,1) 0 0 2px,rgba(111, 89, 121,1) 0 0 2px,
+		rgba(111, 89, 121,1) 0 0 2px,black 0 0 1px;
+}
+div[data-nature='yamimx'],
+span[data-nature='yamimx'] {
+	text-shadow: black 0 0 1px,rgba(111, 89, 121,0.2) 0 0 2px,rgba(111, 89, 121,1) 0 0 2px,rgba(111, 89, 121,1) 0 0 5px,
+		rgba(111, 89, 121,1) 0 0 5px,black 0 0 1px;
 }
 
 .player .identity[data-color="unknownx"],
@@ -4160,8 +4207,12 @@ div[data-decoration="bronze"]::after{
 	border: 1px solid #3B6273;
 }
 .card.fullskin.ocean>.name {
-	color: #6292F0;
-	border: 1px solid #6292F0;
+	color: #2b5cac;
+	border: 1px solid #2b5cac;
+}
+.card.fullskin.yami>.name {
+	color: #631a72;
+	border: 1px solid #631a72;
 }
 .card.fullskin.fire>.name {
 	color: #631515;

@@ -55,7 +55,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					tag:{
 						damage:1,
-						thunderDamage:1,
+						oceanDamage:1,
 						natureDamage:1,
 					}
 				}
@@ -68,6 +68,18 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						damage:1,
 						iceDamage:1,
+						natureDamage:1,
+					}
+				}
+			},
+			yamidamage:{
+				ai:{
+					result:{
+						target:-1.5
+					},
+					tag:{
+						damage:1,
+						yamiDamage:1,
 						natureDamage:1,
 					}
 				}
@@ -87,7 +99,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			sha:{
 				audio:true,
 				fullskin:true,
-				nature:['thunder','fire','kami','ocean','ice'],
+				nature:['thunder','fire','kami','ocean','ice','yami'],
 				type:'basic',
 				enable:true,
 				usable:1,
@@ -296,6 +308,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			tao:{
 				fullskin:true,
+				nature:['ocean'],
 				type:'basic',
 				cardcolor:'red',
 				toself:true,
@@ -312,6 +325,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					target.recover(event.baseDamage||1);
+					if(get.nature(event.card)=='ocean')	target.changeHujia();
 				},
 				ai:{
 					basic:{
@@ -2447,18 +2461,18 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			icesha_skill_info:'防止即将造成的伤害，改为依次弃置其两张牌。',
 		},
 		list:[
-			["spade",7,"sha"],
+	//		["spade",7,"sha"],
 			["spade",8,"sha"],
 			["spade",8,"sha"],
 			["spade",9,"sha"],
 			["spade",9,"sha"],
+	//		["spade",10,"sha"],
 			["spade",10,"sha"],
-			["spade",10,"sha"],
-			["club",2,"sha"],
+	//		["club",2,"sha"],
 			["club",3,"sha"],
 			["club",4,"sha"],
 			["club",5,"sha"],
-			["club",6,"sha"],
+	//		["club",6,"sha"],
 			["club",7,"sha"],
 			["club",8,"sha"],
 			["club",8,"sha"],
@@ -2476,7 +2490,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			["diamond",8,"sha"],
 			["diamond",9,"sha"],
 			["diamond",10,"sha"],
-			["diamond",13,"sha"],
+	//		["diamond",13,"sha"],
 			["heart",2,"shan"],
 			["heart",2,"shan"],
 			["heart",13,"shan"],
@@ -2484,19 +2498,19 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			["diamond",2,"shan"],
 			["diamond",3,"shan"],
 			["diamond",4,"shan"],
-			["diamond",5,"shan"],
+	//		["diamond",5,"shan"],
 			["diamond",6,"shan"],
 			["diamond",7,"shan"],
 			["diamond",8,"shan"],
-			["diamond",9,"shan"],
+	//		["diamond",9,"shan"],
 			["diamond",10,"shan"],
 			["diamond",11,"shan"],
-			["diamond",11,"shan"],
-			["heart",3,"tao"],
+	//		["diamond",11,"shan"],
+	//		["heart",3,"tao"],
 			["heart",4,"tao"],
 			["heart",6,"tao"],
 			["heart",7,"tao"],
-			["heart",8,"tao"],
+	//		["heart",8,"tao"],
 			["heart",9,"tao"],
 			["heart",12,"tao"],
 			["diamond",12,"tao"],
@@ -2510,7 +2524,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			["spade",13,"dawan"],
 			["diamond",13,"zixin"],
 			["club",1,"zhuge"],
-			["diamond",1,"zhuge"],
+	//		["diamond",1,"zhuge"],
 			["spade",2,"cixiong"],
 			["spade",6,"qinggang"],
 			["spade",5,"qinglong"],
@@ -2539,7 +2553,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			["diamond",3,'shunshou'],
 			["diamond",4,'shunshou'],
 			["spade",3,'guohe'],
-			["spade",4,'guohe'],
+	//		["spade",4,'guohe'],
 			["spade",12,'guohe'],
 			["club",3,'guohe'],
 			["club",4,'guohe'],
