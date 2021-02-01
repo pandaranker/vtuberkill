@@ -1030,15 +1030,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:99,
 				lastDo:true,
 				check:function(event,player){
-					if(event.source == player)	return get.attitude(player,event.player)<0;
+					if(event.source&&event.source == player)	return get.attitude(player,event.player)<0;
 					return true;
 				},
 				prompt:function(event,player){
-					if(event.source == player)	return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
+					if(event.source&&event.source == player)	return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
 					return '受到来自'+get.translation(event.source)+'的伤害，'+get.prompt('niaoji');
 				},
 				filter:function(event,player){
-					return true;
+					return event.source;
 				},
 				content:function(){
 					'step 0'
@@ -1048,7 +1048,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return -1;
 					};
 					event.target = (player==trigger.source)?trigger.player:trigger.source;
-					if(!event.target.isIn()||event.target.countCards('he')<=0){
+					if(!event.target||!event.target.isIn()||event.target.countCards('he')<=0){
 						func=function(result){
 							if(get.suit(result)=='spade') return 0;
 							if(get.suit(result)=='heart') return 2;
