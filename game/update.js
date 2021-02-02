@@ -1,8 +1,9 @@
 window.noname_update={
-	version:'1.9.101.14',
-	update:'1.9.100.110.3',
+	version:'1.9.101.15',
+	update:'1.9.100.111.3',
 	changeLog:[
-		'101.14小更新：新增《化鲸篇》',
+		'101.15小更新：修复泠鸢『鸟肌』对于无来源伤害的bug，增加少量旧角色配音',
+		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景、HOLOEN的噶呜·古拉',
@@ -16,8 +17,9 @@ window.noname_update={
 		'image/character/Nana7mi.jpg',
 		'image/background/huajing_bg.jpg',
 	
-		,
-		'image/card/zhuahuang.png',
+		'audio/effect/equip3.mp3',
+		'audio/effect/equip4.mp3',
+		
 		'image/card/zhufangshenshi.png',
 		'image/card/zhuge.png',
 		'image/card/zhungangshuo.png',

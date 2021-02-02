@@ -187,7 +187,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			qibaodao:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',

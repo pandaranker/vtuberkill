@@ -802,7 +802,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			guding_skill:{
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				trigger:{source:'damageBegin1'},
 				filter:function(event){
 					if(event.parent.name=='_lianhuan'||event.parent.name=='_lianhuan2') return false;
@@ -831,7 +831,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{target:['useCardToBefore']},
 				forced:true,
 				priority:6,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					if(player.hasSkillTag('unequip2')) return false;
 					if(event.player.hasSkillTag('unequip',false,{
@@ -881,7 +881,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					})) return false;
 					return true;
 				},
-				audio:true,
+				//audio:true,
 				forced:true,
 				content:function(){
 					trigger.num++;
@@ -921,7 +921,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				trigger:{player:'damageBegin4'},
 				forced:true,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					if(event.num<=1) return false;
 					if(player.hasSkillTag('unequip2')) return false;
@@ -963,7 +963,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(event.card.name=='sha'&&!event.card.nature) return true;
 				},
-				audio:true,
+				//audio:true,
 				check:function(event,player){
 					var eff=0;
 					for(var i=0;i<event.targets.length;i++){

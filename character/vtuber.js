@@ -33,6 +33,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		skill:{
             ailian:{
+				audio:1,
 				enable:'phaseUse',
 				position:'h',
 				filter:function(event,player){

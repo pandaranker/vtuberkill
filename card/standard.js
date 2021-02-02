@@ -1577,7 +1577,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				trigger:{source:'damageBegin2'},
 				//direct:true,
-				audio:true,
+				//audio:true,
 				filter:function(event){
 					return event.card&&event.card.name=='sha'&&event.notLink()&&event.player.getCards('he').length>0;
 				},
@@ -1632,7 +1632,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{target:'shaBegin'},
 				forced:true,
 				priority:6,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					if(player.hasSkillTag('unequip2')) return false;
 					if(event.player.hasSkillTag('unequip',false,{
@@ -1665,7 +1665,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			zhuge_skill:{
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				firstDo:true,
 				trigger:{player:'useCard1'},
 				forced:true,
@@ -1689,7 +1689,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			cixiong_skill:{
 				equipSkill:true,
 				trigger:{player:'useCardToPlayered'},
-				audio:true,
+				//audio:true,
 				logTarget:'target',
 				check:function(event,player){
 					if(get.attitude(player,event.target)>0) return true;
@@ -1714,7 +1714,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			qinggang_skill:{
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				trigger:{
 					player:'useCardToPlayered',
 				},
@@ -1786,7 +1786,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.countCards('h')>=2;
 				},
-				audio:true,
+				//audio:true,
 				prompt:'将两张手牌当杀使用或打出',
 				check:function(card){
 					if(card.name=='sha') return 0;
@@ -1803,7 +1803,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				trigger:{player:'shaMiss'},
 				direct:true,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					return player.countCards('he')>2&&event.target.isAlive();
 				},
@@ -1836,7 +1836,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			fangtian_skill:{
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				trigger:{player:'useCard1'},
 				forced:true,
 				firstDo:true,
@@ -1940,7 +1940,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return event.card&&event.card.name=='sha'&&event.notLink()&&event.player.getCards('e',{subtype:['equip3','equip4','equip6']}).length>0
 				},
 				direct:true,
-				audio:true,
+				//audio:true,
 				content:function(){
 					"step 0"
 					var att=(get.attitude(player,trigger.player)<=0);
@@ -1975,7 +1975,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					})) return false;
 					return true;
 				},
-				audio:true,
+				//audio:true,
 				check:function(event,player){
 					if(event&&(event.ai||event.ai1)){
 						var ai=event.ai||event.ai1;

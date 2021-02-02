@@ -548,6 +548,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			luecai: {
+				audio:2,
 				group: ['caibu', 'luecai_draw'],
 				enable: 'phaseUse',
 				usable: 1,
@@ -585,20 +586,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill: {
 					draw: {
+						//audio:false,
 						trigger: {
 							player: 'phaseBegin'
 						},
 						filter: function(event, player) {
 							return player.storage.caibu.length > 0;
 						},
+						silent:true,
 						content: function() {
 							'step 0'
-							player.chooseCardButton('移去任意张财布', [1, Infinity], player.storage.caibu);
+							player.chooseCardButton(get.prompt('luecai')+'移去任意张财布', [1, Infinity], player.storage.caibu);
 							'step 1'
 							if (result.bool) {
+								player.logSkill('luecai_draw');
 								var cards = result.links;
 								player.$throw(cards);
 								game.cardsDiscard(cards);
+								//game.trySkillAudio('luecai_draw',player);
 								cards.forEach(function(card) {
 									player.storage.caibu.remove(card);
 								});
@@ -639,6 +644,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					dam: {
+						audio:'xiaoyan',
 						forced: true,
 						trigger: {
 							source: 'damageBegin1',
@@ -702,6 +708,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 
 			shiyilijia: {
+				audio:2,
 				group: ['shiyilijia_draw'],
 				enable: 'phaseUse',
 				usable: 1,
@@ -739,6 +746,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			seqinghuashen: {
+				audio:2,
 				popup: false,
 				trigger: {
 					global:'useCardAfter'
@@ -766,6 +774,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				zhuSkill:true,
 			},
 			DDzhanshou: {
+				audio:3,
 				trigger: {
 					player:'useCard2'
 				},
@@ -1054,6 +1063,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			shiqi: {
+				audio:1,
 				direct: true,
 				trigger: {
 					player: 'phaseZhunbeiBegin',

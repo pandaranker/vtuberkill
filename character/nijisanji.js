@@ -306,6 +306,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
                 }
 			},
 			tinenghuifu1:{
+				audio:'tinenghuifu',
 				trigger:{player:'loseAfter'},
 				forced:true,	
 				nopop:false,//player是否logSkill('此技能')，true为不
@@ -345,6 +346,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				
 			},
 			dianmingguzhen:{
+				audio:2,
 				enable:"phaseUse",
 				usable:1,
 				filter:function(event,player){
@@ -1235,6 +1237,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			
 			mark_bingdielei:{
+				audio:3,
                 group:'mark_bingdielei_damageBy',
 				subSkill:{
 					damageBy:{
@@ -1254,6 +1257,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					anotherPhase:{
+						audio:'bingdielei',
 						trigger:{global:'phaseEnd'},
 						marktext: '并',
 						mark:true,
@@ -1264,8 +1268,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							content:'当前回合结束后可以获得一个额外回合',
 							name:'并蒂恶蕾',
 						},
-						forced:true,
-						silent:true,
+						direct:true,
 						popup:false,
 						content:function(){
 							'step 0'
@@ -1284,6 +1287,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			mark_quanxinquanyi:{
+				audio:'quanxinquanyi',
 				init:function(player,skill){
 					player.storage[skill]=[];
 				},
@@ -1400,7 +1404,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseCard('###『全新全异』##是否将一张牌当作声明牌使用？',1)
 							'step 2'
 							if(result.bool){
-								player.logSkill('mark_quanxinquanyi');
+								player.logSkill('mark_quanxinquanyi_endRound');
 								player.chooseUseTarget(result.cards,{name:player.storage.mark_quanxinquanyi_saycards},true,false);
 							}
 						}
@@ -2350,6 +2354,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mark_bingdielei: '并蒂恶蕾',
 			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。',
 			mark_quanxinquanyi:'全新全异',
+			mark_quanxinquanyi_endRound:'全新全异',
 			mark_quanxinquanyi_info:'一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。',
 			
 			mark2_bingdielei: '并蒂恶蕾',

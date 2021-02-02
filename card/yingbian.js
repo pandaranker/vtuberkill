@@ -174,7 +174,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			wuxinghelingshan:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',
@@ -187,7 +187,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				skills:['wuxinghelingshan_skill']
 			},
 			wutiesuolian:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',
@@ -200,7 +200,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				skills:['wutiesuolian_skill']
 			},
 			heiguangkai:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip2',
@@ -212,7 +212,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				skills:['heiguangkai_skill']
 			},
 			tongque:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip5',
@@ -224,7 +224,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				skills:['tongque_skill']
 			},
 			tianjitu:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip5',
@@ -258,7 +258,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			taigongyinfu:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip5',
@@ -308,7 +308,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return (event.card.name=='sha'&&event.card.nature&&event.card.nature!='kami');
 				},
-				audio:true,
+				//audio:true,
 				direct:true,
 				content:function(){
 					'step 0'
@@ -330,7 +330,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardToPlayered'},
 				forced:true,
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					return event.card.name=='sha'&&(!event.target.isLinked()||event.target.countCards('h'));
 				},
@@ -345,7 +345,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				trigger:{target:'useCardToTargeted'},
 				forced:true,
-				audio:true,
+				//audio:true,
 				filter:function(event,player){
 					if(event.targets.length<2||(event.card.name!='sha'&&get.type(event.card)!='trick')) return false;
 					if(player.hasSkillTag('unequip2')) return false;
@@ -364,11 +364,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{forceYingbian:true},
 			},
 			tianjitu_skill:{
-				audio:true,
+				//audio:true,
 			},
 			taigongyinfu_skill:{
 				equipSkill:true,
-				audio:true,
+				//audio:true,
 				trigger:{player:'phaseUseEnd'},
 				direct:true,
 				filter:function(event,player){

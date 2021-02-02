@@ -86,6 +86,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
         skill:{
 			//re老爱
             re_ailian:{
+				audio:'ailian',
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
@@ -207,6 +208,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re小明
 			duanli: {
+				audio:'shiyilijia',
 				group: ['duanli_draw'],
 				enable: 'phaseUse',
 				usable: 1,
@@ -244,6 +246,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			qingmi: {
+				audio:'seqinghuashen',
 				popup: false,
 				trigger: {
 					global:'useCardAfter'
@@ -607,6 +610,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re狗妈
 			re_DDzhanshou:{
+				audio:'DDzhanshou',
 				trigger:{global:'phaseEnd'},
 				priority:77,
 				filter:function(event,player){
@@ -884,6 +888,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					anotherPhase:{
+						audio:'bingdielei',
 						trigger:{global:'phaseEnd'},
 						marktext: '并',
 						mark:true,
@@ -1027,6 +1032,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//reAlice
 			re_dianmingguzhen:{
+				audio:'dianmingguzhen',
 				enable:"phaseUse",
 				usable:1,
 				filter:function(event,player){
