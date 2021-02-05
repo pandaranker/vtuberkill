@@ -114,6 +114,7 @@ window.noname_update={
 		'character/nijisanji.js',
 		'character/vtuber.js',
 		'character/yuzu.js',
+		'character/huajing.js',
 		'character/sololive.js',
 		'card/longlaoguan.js',
 		'card/yingbian.js',
