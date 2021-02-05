@@ -651,6 +651,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re空
 			re_taiyangzhiyin:{
+				audio:'taiyangzhiyin',
                 trigger:{ player:'useCard2'},
 				filter:function(event,player){
                     return get.number(event.card)>10&&(player.storage.onlink==null||player.storage.onlink.indexOf(event.card.cardid)==-1);
