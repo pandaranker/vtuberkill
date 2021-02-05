@@ -197,6 +197,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				selectTarget:1,
 				cardnature:'ocean',
 				filterTarget:function(card,player,target){
+					return player.countCards('e');
 					return target.countDiscardableCards(player,'e');
 				},
 				content:function(){
@@ -464,7 +465,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return 0;
 				},
 				effect:function(){
-					console.log(result);
 					if(result.bool==true){
 						player.draw(2);
 					}else{
@@ -472,7 +472,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						if(!player.hasSkill('haidi')){
 							player.addTempSkill('haidi');
 						}
-						player.addJudge(card);
+						player.addJudge({name:'haidi'},card);
 					}
 				},
 				ai:{
@@ -835,25 +835,31 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			haidi_info: '出牌阶段，对一名角色使用（横置于判定区内）；若判定结果点数大于10，摸两张牌。否则其本回合手牌上限+2，保留此牌。',
 
 			sanchaji: '三叉戟',
+			sanchaji_bg: '叉',
 			sanchaji_skill: '三叉戟',
 			sanchaji_info: '你可以将你的任一张【杀】当具海洋伤害的【杀】来使用。',
 			sanchaji_skill_info: '你可以将你的任一张【杀】当具海洋伤害的【杀】来使用。',
 			linghunshouge: '灵魂收割者',
+			linghunshouge_bg: '灵',
 			linghunshouge_skill: '灵魂收割者',
 			linghunshouge_info: '<font color=#f66>锁定技</font> 你造成的伤害无视护甲。',
 			linghunshouge_skill_info: '<font color=#f66>锁定技</font> 你造成的伤害无视护甲。',
 			yinghua: '樱华水刃',
+			yinghua_info: '樱',
 			yinghua_skill: '樱华水刃',
 			yinghua_info: '你使用【杀】指定装备区里有牌的角色为目标时，你可以将之效果改为【浪涌】。',
 			yinghua_skill_info: '你使用【杀】指定装备区里有牌的角色为目标时，你可以将之效果改为【浪涌】。',
 
 			waiguge: '外骨骼',
+			waiguge_bg: '骨',
 			waiguge_skill: '外骨骼',
 			waiguge_info: '<font color=#f66>锁定技</font> 装备时获得1点护甲，防止你受到的海洋伤害。',
 			waiguge_skill_info: '<font color=#f66>锁定技</font> 装备时获得1点护甲，防止你受到的海洋伤害。',
 			qiyu: '旗鱼',
+			qiyu_info: '鱼',
 			qiyu_info: '<font color=#f66>锁定技</font> 你计算与其他角色的距离-1。',
 			yalishanda: '亚历山大石',
+			yalishanda_info: '石',
 			yalishanda_skill: '亚历山大石',
 			yalishanda_info: '你可以指定你造成伤害的属性。你造成伤害后可以弃置此牌，令目标弃置两张牌。',
 			yalishanda_skill_info: '你可以指定你造成伤害的属性。',

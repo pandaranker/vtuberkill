@@ -16,8 +16,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			/**花谱 */
 			Kaf:['female','qun',3,['liuhua','yinshi']],
+			/**泠鸢 */
+			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
 			/**P家诸人 */
-			Paryi:['male','paryi',4,['tiantang','haoren']],
+			Paryi:['male','paryi',4,['tiantang','haoren'],['forbidai']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
@@ -457,7 +459,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						firstDo:true,
 						direct:true,
 						filter:function(event,player){
-							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&event.getParent()._trigger.skill!='liuhua'))	return false;
+							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&(event.getParent()._trigger.skill||event.getParent()._trigger.skill!='liuhua')))	return false;
 							if(player.storage.liuhua.length<3)	return false;
 							var list = [];
 							player.storage.liuhua.forEach(function(hua){
@@ -720,11 +722,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter: function(event, player) {
 					return player.countCards('h');
 				},
+				filterCard:lib.filter.cardDiscardable,
+				selectCard:-1,
+				check:function(card){
+					var player=_status.event.player;
+					if(get.position(card)=='h'&&!player.countCards('h',function(card){
+						return get.value(card)>=8;
+					})){
+						return 8-get.value(card);
+					}
+					return 7-get.value(card)
+				},
 				content:function() {
-					'step 0'
-					player.storage.shiyilijia = player.countCards('h');
-					'step 1'
-					var cards=player.getCards('h');
+					player.storage.shiyilijia = cards.length;
 					player.discard(cards);
 				},
 				subSkill: {

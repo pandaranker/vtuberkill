@@ -3995,7 +3995,7 @@
 					}
 				},
 			},
-			boss:{
+		/*	boss:{
 				enable:{
 					name:'开启',
 					init:false,
@@ -4167,7 +4167,7 @@
 						game.saveConfig('hiddenPlayPack',lib.config.hiddenPlayPack);
 					}
 				},
-			},
+			},*/
 		},
 		mode:{
 			identity:{
@@ -7329,7 +7329,7 @@
 						if(lib.device||typeof window.require=='function'){
 							lib.configMenu.audio.config.background_music.item.music_custom='自定义音乐';
 						}
-						lib.config.all.background_music=['music_default'];
+						lib.config.all.background_music=['music_diaochan'];
 						for(i in pack.music){
 							lib.config.all.background_music.push(i);
 							lib.configMenu.audio.config.background_music.item[i]=pack.music[i];
@@ -10852,7 +10852,7 @@
 					if(lib.filter.judge(card,player,target)&&cards.length&&get.position(cards[0],true)=='o') target.addJudge(card,cards);
 				},
 				equipCard:function(){
-					if(cards.length&&get.position(cards[0],true)=='o') target.equip(cards[0]);
+					if(cards.length&&get.position(cards[0],true)=='o') target.equip(event.card,cards);
 				},
 				gameDraw:function(){
 					"step 0"
@@ -15669,16 +15669,18 @@
 				},
 				equip:function(){
 					"step 0"
-					var owner=get.owner(card)
-					if(owner) owner.lose(card,ui.special,'visible').set('type','equip').set('getlx',false);
+					if(cards){
+						var owner=get.owner(cards[0]);
+						if(owner) owner.lose(card,ui.special,'visible').set('type','equip').set('getlx',false);
+					}
 					"step 1"
 					if(event.cancelled){
 						event.finish();
 						return;
 					}
-					if(card.destroyed){
-						if(player.hasSkill(card.destroyed)){
-							delete card.destroyed;
+					if(cards[0].destroyed){
+						if(player.hasSkill(cards[0].destroyed)){
+							delete cards[0].destroyed;
 						}
 						else{
 							event.finish();
@@ -15687,17 +15689,28 @@
 					}
 					if(event.draw){
 						game.delay(0,300);
-						player.$draw(card);
+						player.$draw(cards);
+					}
+					cards[0].fix();
+					cards[0].style.transform='';
+					cards[0].classList.remove('drawinghidden');
+					delete cards[0]._transform;
+					var viewAs = typeof card=='string'?card:card.name;
+					event.viewAs = viewAs;
+					if(!lib.card[viewAs]){
+						game.cardsDiscard(cards[0]);
+						event.finish();
 					}
 					"step 2"
-					if(card.clone){
-						game.broadcast(function(card,player){
-							if(card.clone){
-								card.clone.moveDelete(player);
-							}
-						},card,player);
-						card.clone.moveDelete(player);
-						game.addVideo('gain2',player,get.cardsInfo([card.clone]));
+					game.broadcast(function(player,card,viewAs){
+						if(card.clone&&(card.clone.parentNode==player.parentNode||card.clone.parentNode==ui.arena)){
+							card.clone.moveDelete(player);
+							game.addVideo('gain2',player,get.cardsInfo([card]));
+						}
+					},player,cards[0],event.viewAs);
+					if(cards[0].clone&&(cards[0].clone.parentNode==player.parentNode||cards[0].clone.parentNode==ui.arena)){
+						cards[0].clone.moveDelete(player);
+						game.addVideo('gain2',player,get.cardsInfo(cards));
 					}
 					player.equiping=true;
 					"step 3"
@@ -15714,24 +15727,38 @@
 						event.swapped=true;
 						event.redo();
 					}
+					if(get.itemtype(card)!='card'){
+						if(typeof card=='string') cards[0].viewAs=card;
+						else cards[0].viewAs=card.name;
+					}
+					else{
+						delete cards[0].viewAs;
+					}
 					"step 4"
-					if(player.isMin() || player.countCards('e',{subtype:get.subtype(card)})){
+					if(player.isMin() || player.countCards('e',{subtype:get.subtype(event.viewAs)})){
 						event.finish();
-						game.cardsDiscard(card);
+						game.cardsDiscard(cards[0]);
 						delete player.equiping;
 						return;
 					}
 					if(lib.config.background_audio){
-						game.playAudio('effect',get.subtype(card));
+						game.playAudio('effect',get.subtype(event.viewAs));
 					}
 					game.broadcast(function(type){
 						if(lib.config.background_audio){
 							game.playAudio('effect',type);
 						}
-					},get.subtype(card));
-					player.$equip(card);
-					game.addVideo('equip',player,get.cardInfo(card));
-					game.log(player,'装备了',card);
+					},get.subtype(cards[0].viewAs));
+					if(cards[0].viewAs&&cards[0].viewAs!=cards[0].name){
+						player.$equip(cards[0],cards[0].viewAs);
+						game.addVideo('equip',player,get.cardInfo(cards[0].viewAs));
+						game.log(player,'装备了<span class="yellowtext">'+get.translation(cards[0].viewAs)+'</span>（',cards[0],'）');
+					}
+					else{
+						player.$equip(cards[0]);
+						game.addVideo('equip',player,get.cardInfo(card));
+						game.log(player,'装备了',card);
+					}
 					"step 5"
 					var info=get.info(card,false);
 					if(info.onEquip&&(!info.filterEquip||info.filterEquip(card,player))){
@@ -15826,7 +15853,8 @@
 								cards[0].classList.add('fakejudge');
 								cards[0].node.background.innerHTML=lib.translate[cards[0].viewAs+'_bg']||get.translation(cards[0].viewAs)[0];
 							}
-							game.log(player,'被贴上了<span class="yellowtext">'+get.translation(cards[0].viewAs)+'</span>（',cards,'）');
+							//姑且改成了取单牌的形状，以后需要叠多张牌的时候再改回来
+							game.log(player,'被贴上了<span class="yellowtext">'+get.translation(cards[0].viewAs)+'</span>（',cards[0],'）');
 						}
 						else{
 							cards[0].classList.remove('fakejudge');
@@ -19910,16 +19938,20 @@
 					}
 					return this;
 				},
-				equip:function(card,draw){
+				equip:function(card,arg2){
 					var next=game.createEvent('equip');
 					next.card=card;
 					next.player=this;
-					if(draw){
-						next.draw=true;
+					if(arg2){
+						if(arg2===true){
+							next.draw = true;
+						}else{
+							next.cards = arg2;
+						}
 					}
+					if(!next.cards.length) next.cards=[card];
+					if(get.itemtype(next.cards)=='card') next.cards=[next.cards];
 					next.setContent(lib.element.content.equip);
-					if(get.is.object(next.card)&&next.card.cards) next.card=next.card.cards[0];
-					next.cards=[next.card];
 					next.getl=function(player){
 						var that=this;
 						var map={
@@ -21069,6 +21101,18 @@
 				removeEquipTrigger:function(card){
 					if(card){
 						var info=get.info(card);
+						if(card.viewAs&&card.originalName){
+							card.classList.remove('fakejudge');
+							if(get.type(card.originalName)=='equip'){
+								card.classList.remove(get.subtype(card.viewAs));
+								card.classList.add(get.subtype(card.originalName));
+							}else{
+								card.classList.remove(get.subtype(card.viewAs));
+							}
+							card.name = card.originalName;
+							delete card.viewAs;
+							delete card.originalName;
+						}
 						var skills=this.getSkills(null,false);
 						if(info.skills){
 							for(var j=0;j<info.skills.length;j++){
@@ -23051,20 +23095,48 @@
 						}
 					}
 				},
-				$equip:function(card){
-					if(this.storage.disableEquip!=undefined&&this.storage.disableEquip.contains(get.subtype(card))){
+				$equip:function(card,viewAs){
+					if(viewAs&&this.storage.disableEquip!=undefined&&this.storage.disableEquip.contains(get.subtype(viewAs))){
+						this.gain(card,'gain2');
+						game.log(this,'装备失败');
+					}
+					else if(this.storage.disableEquip!=undefined&&this.storage.disableEquip.contains(get.subtype(card))){
 						this.gain(card,'gain2');
 						game.log(this,'装备失败');
 					}
 					else{
+						var player=this;
 						game.broadcast(function(player,card){
 							player.$equip(card);
-						},this,card);
+						},player,card);
 						card.fix();
 						card.style.transform='';
 						card.classList.remove('drawinghidden');
 						delete card._transform;
-						var player=this;
+						//已修改
+						card.fix();
+						card.style.transform='';
+						card.classList.add('drawinghidden');
+						card.viewAs=viewAs;
+						if(viewAs&&viewAs!=card.name){
+							if(card.classList.contains('fullskin')||card.classList.contains('fullborder')){
+								card.classList.add('fakejudge');
+								card.node.background.innerHTML=lib.translate[viewAs.name+'_bg']||get.translation(viewAs)[0];
+							}
+							card.classList.remove(get.subtype(card));
+							card.classList.add(get.subtype(viewAs));
+							if(typeof viewAs=='string') card.viewAs=viewAs;
+							else card.viewAs=viewAs.name;
+						}
+						else{
+							card.classList.remove('fakejudge');
+							delete card.viewAs;
+						}
+						//console.log(card.viewAs);
+						if(card.viewAs){	
+							card.originalName = card.name;
+							card.name = card.viewAs;
+						}
 						var equipNum=get.equipNum(card);
 						var equipped=false;
 						for(var i=0;i<player.node.equips.childNodes.length;i++){
@@ -23080,7 +23152,7 @@
 								_status.discarded.remove(card);
 							}
 						}
-						var info=get.info(card);
+						var info=get.info(viewAs?{name:viewAs}:card);
 						if(info.skills){
 							for(var i=0;i<info.skills.length;i++){
 								player.addSkillTrigger(info.skills[i]);
@@ -25726,6 +25798,7 @@
 				priority:5,
 				popup:false,
 				forced:true,
+				ruleSkill:true,
 				filter:function(event,player){
 					if(event.getParent().noyami) return false;
 					if(event.player.hasSkillTag('playernoyami',false,event)) return false;
@@ -25789,10 +25862,10 @@
 						}
 					};
 					event.settle=function(){
-						if(!event.state){
+						/*if(!event.state){
 							trigger.cancel();
 							trigger.result = {yamied: true};
-						}
+						}*/
 						event.finish();
 					};
 					'step 1'
@@ -29966,6 +30039,7 @@
 				}
 			},
 			addJudge:function(player,content){
+				console.log(content)
 				if(player&&content){
 					var card=get.infoCard(content[0]);
 					card.viewAs=content[1];
@@ -50310,8 +50384,9 @@
 			}
 		},
 		equipNum:function(card){
-			if(get.type(card)=='equip'){
-				return parseInt(get.subtype(card)[5]);
+			var cardx = (card.viewAs?{name:card.viewAs}:card)
+			if(get.type(cardx)=='equip'){
+				return parseInt(get.subtype(cardx)[5]);
 			}
 			return 0;
 		},
@@ -50403,7 +50478,7 @@
 			//啥时候狗卡出相关技能我再完善
 			//柚子：已修改
 			var number = null;
-			if(typeof card.number=='number') number = card.number;
+			if(card.number&&typeof card.number=='number') number = card.number;
 			if(number!=null&&get.itemtype(player)=='player'||(player!==false&&get.position(card)=='h')){
 				var owner=player||get.owner(card);
 				if(owner){
@@ -51557,7 +51632,12 @@
 				if(!simple||get.is.phoneLayout()){
 					var es=node.getCards('e');
 					for(var i=0;i<es.length;i++){
-						uiintro.add('<div><div class="equip">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].name+'_info']+'</div></div>');
+						if(es[i].viewAs&&es[i].originalName){
+							uiintro.add('<div><div class="equip">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].viewAs]+'：'+lib.translate[es[i].viewAs+'_info']+'</div></div>');
+						}
+						else{
+							uiintro.add('<div><div class="equip">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].name+'_info']+'</div></div>');
+						}
 						uiintro.content.lastChild.querySelector('.equip>.card').style.transform='';
 					}
 					var js=node.getCards('j');
@@ -51872,7 +51952,7 @@
 				if(node.link&&node.link.name&&lib.card[node.link.name]){
 					name=node.link.name;
 				}
-				if(get.position(node)=='j'&&node.viewAs&&node.viewAs!=name){
+				if((get.position(node)=='j'||get.position(node)=='h')&&node.viewAs&&node.viewAs!=name){
 					uiintro.add(get.translation(node.viewAs));
 					uiintro.add('<div class="text center">（'+get.translation(get.translation(node))+'）</div>');
 					// uiintro.add(get.translation(node.viewAs)+'<br><div class="text center" style="padding-top:5px;">（'+get.translation(node)+'）</div>');

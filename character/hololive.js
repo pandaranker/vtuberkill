@@ -59,6 +59,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		skill:{
 			taiyangzhiyin:{
+				audio:2,
                 trigger:{ player:['useCard2'] },
 				filter:function(event,player){
                     //console.log(event.card,1)

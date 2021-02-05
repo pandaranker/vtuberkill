@@ -228,7 +228,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			yinyueqiang:{
-				audio:true,
+				//audio:true,
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',

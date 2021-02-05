@@ -6,13 +6,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
-			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
-
 			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
 			LizeHelesta:['female','nijisanji',3,['shencha','helesta'],['zhu']],
 //			AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
-			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
 			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
 
@@ -1073,7 +1070,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('h')>0;
 				},
 				filterTarget:function(card,player,target){
-					return true;
+					if(target.inRange(player)) return true;
 				},
 				content:function(){
 					'step 0'
@@ -2727,7 +2724,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shencha: '权力审查',
 			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张牌。',
 			helesta: '赫露圣剑',
-			helesta_info: '你受到伤害时，你可以获得装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】。',
+			helesta_info: '你受到伤害时，可以获得自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】。',
 
 			AngeKatrina: '安洁·卡特琳娜',
 			chuangzuo: '创作延续',

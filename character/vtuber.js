@@ -782,6 +782,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			zuodun:{
+				audio:2,
 				trigger:{global:'damageBegin3'},
 				usable:1,
 				priority:1,
@@ -1132,6 +1133,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			jiajiupaidui:{
+				audio:3,
 				enable:'chooseToUse',
 				filter:function(event,player){
 					if(player.hasSkill('jiajiupaidui_tag')) return false;
@@ -1220,6 +1222,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			kuangzuiluanwu:{
+				audio:1,
 				// group:['kuangzuiluanwu_tag'],
 				// subSkill:{
 				//	tag:{

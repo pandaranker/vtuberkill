@@ -912,6 +912,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
             //re德龙
 			re_zhenyin: {
+				audio:'zhenyin',
 				trigger: {
 					player: 'useCardToPlayered',
 				},
@@ -969,6 +970,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re海牛
 			re_shuangren: {
+				audio:'kuangbaoshuangren',
 				trigger:{player:'shaBegin'},
 				priority:98,
 				forced:true,
@@ -1015,6 +1017,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			re_jitui: {
+				audio:'guangsuxiabo',
 				trigger: {
 					player: ['loseAfter', 'damageAfter'],
 				},
@@ -2536,7 +2539,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
-			qiangyun_info: '你的判定牌生效前，你可以打出一张牌代替之，然后你可以立即使用打出牌，且若之造成伤害，你摸一张牌。',
+			qiangyun_info: '你的判定牌生效前，你可以打出一张牌代替之，然后你可以立即使用打出牌，且此牌造成伤害后，你摸一张牌。',
 			tuquan: '兔拳',
 			tuquan_info: '<font color=#f66>锁定技</font> 你的【杀】被【闪】抵消时，你进行判定，若为♠，你弃置目标一张牌，若为♥，你弃置一张牌。',
 			

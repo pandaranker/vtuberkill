@@ -28,6 +28,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			/**Elu */
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
+			/**露露 */
+			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
         },
         characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
@@ -1379,7 +1381,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									})
 									return num;
 								}
-							}).length;;
+							}).length;
 						},
 						content:function(){
 							player.storage.mark_quanxinquanyi_loseBy = false;
@@ -1722,6 +1724,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				zhuSkill:true,
 			},
 			zhenyin: {
+				audio:1,
 				trigger: {
 					source: 'damageEnd',
 					player: 'useCardToPlayered',
@@ -2013,6 +2016,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			kuangbaoshuangren: {
+				audio:3,
 				group: ['kuangbaoshuangren_red', 'kuangbaoshuangren_black'],
 				subSkill: {
 					red: {
@@ -2098,6 +2102,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			guangsuxiabo: {
+				audio:2,
 				init: function(player) {
 					player.storage.hp = 0;
 					player.storage.loseCount = 0;

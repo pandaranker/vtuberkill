@@ -14,6 +14,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			GawrGura:['female','holo',3,['lingqun','yangliu']],
 			/**娜娜米 */
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai']],
+			
+			/**皇团 */
+			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
 		},
 		characterSort:{
 		},
@@ -24,7 +27,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCard1'},
 				priority:42,
 				check:function(event,player){
-					return true;
+					return event.targets[0]!=player;
 				},
 				filter:function(event,player){
 					if(event.targets.length!=1) return false;
@@ -251,7 +254,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.haoren = true;
 					player.awakenSkill('juzu');
 					player.addSkill('haigou');
-					player.addSkill('haigou_addDam');
 				},
 				ai:{
 					combo:'tiantang',
@@ -267,6 +269,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					trigger.directHit.add(trigger.target);
 				},
+				group:'haigou_addDam',
 				subSkill:{
 					addDam:{
 						trigger:{source:'damageBegin2'},
@@ -357,7 +360,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xieqi:{
 				hiddenCard:function(player,name){
 					var list = get.libCard(function(card){
-						return (card.type=='trick'||card.type=='delay')&&card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
+						return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 					});
 					for(var i=0;i<list.length;i++){
 						if(list[i]==name) return true;
@@ -367,16 +370,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'chooseToUse',
 				usable:1,
 				filter:function(event,player){
-					return player.countCards('he',function(card){
-						return get.number(card)<=7;
-					})&&player.isPhaseUsing();
+					var list = player.getCards().sort(lib.sort.number);
+					return (get.number(list[0])+get.number(list[1])<=7)&&player.isPhaseUsing();
 				},
 				chooseButton:{
 					dialog:function(event,player){
 						var list = get.libCard(function(card){
-							return (card.type=='trick'||card.type=='delay')&&card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
+							return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 						});
-						console.log(list);
+						list.push('haitao');
+						list.push('haisha');
+						list.push('yamisha');
 						for(var i=0;i<list.length;i++){
 							list[i]=['锦囊','',list[i]];
 						}
@@ -406,7 +410,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return sum<=7;
 							},
 							complexCard:true,
-							selectCard:[1,Infinity],
+							selectCard:[2,Infinity],
 							popname:true,
 							check:function(card){
 								return 6-get.value(card);
@@ -414,12 +418,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							position:'he',
 							viewAs:{name:links[0][2]},
 							onuse:function(result,player){
+								console.log(result)
 								if(result.targets&&result.targets.length==1) player.draw(result.cards.length);
 							},
 						}
 					},
 					prompt:function(links,player){
-						return '###『携七』###将任意张点数合计不大于7的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+						return '###『携七』###将多张点数合计不大于7的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 					}
 				},
 			},
@@ -461,8 +466,132 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			qiming:{
+				audio:5,
+				global:'qiming_viewH',
+				group:['qiming_begin','qiming_saycards','qiming_UseBy'],
+				subSkill:{
+					viewH:{
+						ai:{
+							viewHandcard:true,
+							skillTagFilter:function(player,tag,target){
+								if(!game.hasPlayer(function(cur){
+										return cur.hasSkill('qiming');
+								})) return false;
+							},
+						},
+					},
+					begin:{
+						trigger:{global:'roundStart'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							'step 0'
+							if(player.hasMark('qiming_saycards')) player.unmarkSkill('qiming_saycards');
+							player.storage.qiming_saycards.length = 0;
+							'step 1'
+							event.videoId = lib.status.videoId++;
+							var list=[];
+							for(var i=0;i<lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								if(get.type(name)!='basic') list.push(['锦囊','',name]);
+							}
+							game.broadcastAll(function(id, list){
+								var dialog=ui.create.dialog('###『启明星辰』###声明一张牌',[list,'vcard']);
+								dialog.videoId = id;
+							}, event.videoId, list);
+							'step 2'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							'step 3'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool) {
+								player.logSkill('qiming');
+								player.storage.qiming_saycards.add(result.links[0][2]);
+								game.log(player,'的『启明星辰』声明了【',player.storage.qiming_saycards,'】');
+								player.syncStorage('qiming_saycards');
+								player.markSkill('qiming_saycards');
+							}
+						}
+					},
+					saycards:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = [];
+						},
+						locked:true,
+						notemp:true,
+						marktext: '异',
+						intro: {
+							content:'声明了$',
+							name:'『启明星辰』',
+						}
+					},
+					UseBy:{
+						trigger:{global:'useCard1'},
+						priority:999,
+						forced:true,
+						firstDo:true,
+						priority:999,
+						filter:function(event,player){
+							return get.name(event.card)==player.storage.qiming_saycards;
+						},
+						content:function(){
+							trigger.player.draw();
+							player.recover();
+						}
+					},
+				},
+			},
+			shengbian:{
+				audio:2,
+				trigger:{player:['changeHp','changeHujiaEnd']},
+				filter:function(event,player){
+					return player.maxHp&&(player.hujia?(player.hp+player.hujia):player.hp)>=player.maxHp;
+				},
+				lastDo:true,
+				forced:true,
+				content:function(){
+					'step 0'
+					event.num = player.hujia*(player.hp-1);
+					player.hujia = 0;
+					player.hp = 1;
+					player.update();
+					game.log(player,'体力和护甲重置为初始状态');
+					'step 1'
+					player.draw(event.num);
+				},
+			},
+			tulong:{
+				trigger:{player:'dyingBegin'},
+				filter:function(event,player){
+					return player.storage.qiming_saycards&&player.countCards('h');
+				},
+				lastDo:true,
+				direct:true,
+				content:function(){
+					'step 0'
+					player.loseMaxHp();
+					event.card = {name:player.storage.qiming_saycards[0]};
+					var next = player.chooseCardTarget();
+					next.prompt = get.prompt2('tulong');
+					next.filterTarget = lib.card[event.card.name].filterTarget;
+					next.selectTarget = lib.card[event.card.name].selectTarget;
+					'step 1'
+					event.cards = result.cards.slice(0);
+					event.targets = result.targets.slice(0);
+					var next = player.useCard(event.card,event.targets);
+					next.cards = event.cards;
+				},
+			},
 		},
 		characterReplace:{
+		},
+		dynamicTranslate:{
+			tulong:function(player){
+				if(player.storage.qiming_saycards&&player.storage.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【'+get.translation(player.storage.qiming_saycards)+'】</font>使用。';
+				return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。';
+			},
 		},
 		translate:{
 			NagaoKei: '长尾景',
@@ -497,6 +626,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xieqi_info: '每回合限一次，你可以将任意张点数合计不大于7的牌当化鲸篇的一张锦囊牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
 			youhai: '佑海',
 			youhai_info: '你使用点数或点数合计为7的牌时，可以将X点护甲分配给任意角色。（X为你已损失的体力值）',
+
+			sp_HisekiErio: '皇•绯赤艾利欧',
+			qiming: '启明星辰',
+			qiming_info: '<font color=#f66>锁定技</font> 你在场时所有角色明置手牌。一轮开始时，你可以声明一种非基本牌，本轮内使用此牌同名牌的角色摸一张牌并令你回复1点体力。',
+			shengbian: '升变征途',
+			shengbian_info: '<font color=#f66>锁定技</font> 当你的体力或护甲变化后，若你体力与护甲之和不小于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
+			tulong: '屠龙伐彼',
+			tulong_info: '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。',
 		},
 	}
 });
