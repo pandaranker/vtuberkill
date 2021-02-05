@@ -829,9 +829,11 @@ window.noname_asset_list=[
 	'image/character/YozoraMel.jpg',
 	'image/character/Qiankesaier.jpg',
 	
+	'image/character/sp_HisekiErio.jpg',
 	'image/character/sp_KaguraMea.jpg',
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
+
 
 	'image/character/re_AkaiHaato.jpg',
 	'image/character/re_AkiRosenthal.jpg',
