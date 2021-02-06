@@ -15159,9 +15159,14 @@
 					event.js=js;
 					"step 2"
 					if(num<cards.length){
+						var evt=event.getParent();
+						console.log(evt);
 						if(event.es.contains(cards[num])){
+							event.moveEquip=false;
+							if(evt.name=='equip'&&evt.cards.contains(cards[num]))	event.moveEquip=true;
+							console.log(event.moveEquip);
 							event.loseEquip=true;
-							player.removeEquipTrigger(cards[num]);
+							player.removeEquipTrigger(cards[num],event.moveEquip);
 							var info=get.info(cards[num]);
 							if(info.onLose&&(!info.filterLose||info.filterLose(cards[num],player))){
 								event.goto(3);
@@ -19939,6 +19944,7 @@
 					return this;
 				},
 				equip:function(card,arg2){
+					if(get.type(card)!='equip')	return;
 					var next=game.createEvent('equip');
 					next.card=card;
 					next.player=this;
@@ -19949,7 +19955,7 @@
 							next.cards = arg2;
 						}
 					}
-					if(!next.cards.length) next.cards=[card];
+					if(!next.cards) next.cards=[card];
 					if(get.itemtype(next.cards)=='card') next.cards=[next.cards];
 					next.setContent(lib.element.content.equip);
 					next.getl=function(player){
@@ -21098,20 +21104,22 @@
 					}
 					return this;
 				},
-				removeEquipTrigger:function(card){
+				removeEquipTrigger:function(card,move){
 					if(card){
 						var info=get.info(card);
-						if(card.viewAs&&card.originalName){
-							card.classList.remove('fakejudge');
-							if(get.type(card.originalName)=='equip'){
-								card.classList.remove(get.subtype(card.viewAs));
-								card.classList.add(get.subtype(card.originalName));
-							}else{
-								card.classList.remove(get.subtype(card.viewAs));
+						if(move===false){
+							if(card.viewAs&&card.originalName){
+								card.classList.remove('fakejudge');
+								if(get.type(card.originalName)=='equip'){
+									card.classList.remove(get.subtype(card.viewAs));
+									card.classList.add(get.subtype(card.originalName));
+								}else{
+									card.classList.remove(get.subtype(card.viewAs));
+								}
+								card.name = card.originalName;
+								delete card.viewAs;
+								delete card.originalName;
 							}
-							card.name = card.originalName;
-							delete card.viewAs;
-							delete card.originalName;
 						}
 						var skills=this.getSkills(null,false);
 						if(info.skills){
@@ -23114,9 +23122,6 @@
 						card.classList.remove('drawinghidden');
 						delete card._transform;
 						//已修改
-						card.fix();
-						card.style.transform='';
-						card.classList.add('drawinghidden');
 						card.viewAs=viewAs;
 						if(viewAs&&viewAs!=card.name){
 							if(card.classList.contains('fullskin')||card.classList.contains('fullborder')){
@@ -23133,8 +23138,8 @@
 							delete card.viewAs;
 						}
 						//console.log(card.viewAs);
-						if(card.viewAs){	
-							card.originalName = card.name;
+						if(card.viewAs&&card.name!=card.viewAs){	
+							if(!card.originalName)	card.originalName = card.name;
 							card.name = card.viewAs;
 						}
 						var equipNum=get.equipNum(card);
@@ -51632,7 +51637,7 @@
 				if(!simple||get.is.phoneLayout()){
 					var es=node.getCards('e');
 					for(var i=0;i<es.length;i++){
-						if(es[i].viewAs&&es[i].originalName){
+						if(es[i].viewAs&&es[i].originalName&&es[i].originalName!=es[i].name){
 							uiintro.add('<div><div class="equip">'+es[i].outerHTML+'</div><div>'+lib.translate[es[i].viewAs]+'：'+lib.translate[es[i].viewAs+'_info']+'</div></div>');
 						}
 						else{

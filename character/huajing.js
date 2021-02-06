@@ -547,7 +547,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				trigger:{player:['changeHp','changeHujiaEnd']},
 				filter:function(event,player){
-					return player.maxHp&&(player.hujia?(player.hp+player.hujia):player.hp)>=player.maxHp;
+					return player.maxHp&&(player.hujia?(player.hp+player.hujia):player.hp)>player.maxHp;
 				},
 				lastDo:true,
 				forced:true,
@@ -578,10 +578,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.filterTarget = lib.card[event.card.name].filterTarget;
 					next.selectTarget = lib.card[event.card.name].selectTarget;
 					'step 1'
-					event.cards = result.cards.slice(0);
-					event.targets = result.targets.slice(0);
-					var next = player.useCard(event.card,event.targets);
-					next.cards = event.cards;
+					if(result.bool&&result.cards&&result.targets){
+						event.cards = result.cards.slice(0);
+						event.targets = result.targets.slice(0);
+						var next = player.useCard(event.card,event.targets);
+						next.cards = event.cards;
+					}
 				},
 			},
 		},
@@ -623,7 +625,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nana7mi: '七海',
 			xieqi: '携七',
-			xieqi_info: '每回合限一次，你可以将任意张点数合计不大于7的牌当化鲸篇的一张锦囊牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
+			xieqi_info: '每回合限一次，你可以将多张点数合计不大于7的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
 			youhai: '佑海',
 			youhai_info: '你使用点数或点数合计为7的牌时，可以将X点护甲分配给任意角色。（X为你已损失的体力值）',
 
@@ -631,7 +633,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiming: '启明星辰',
 			qiming_info: '<font color=#f66>锁定技</font> 你在场时所有角色明置手牌。一轮开始时，你可以声明一种非基本牌，本轮内使用此牌同名牌的角色摸一张牌并令你回复1点体力。',
 			shengbian: '升变征途',
-			shengbian_info: '<font color=#f66>锁定技</font> 当你的体力或护甲变化后，若你体力与护甲之和不小于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
+			shengbian_info: '<font color=#f66>锁定技</font> 当你的体力或护甲变化后，若你体力与护甲之和大于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
 			tulong: '屠龙伐彼',
 			tulong_info: '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。',
 		},

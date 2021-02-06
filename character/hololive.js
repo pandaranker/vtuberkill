@@ -2147,12 +2147,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
 						player.chooseTarget('###『嚣张咚鼓』###选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
+							if(player.countCards('h')<player.getHandcardLimit())	return target==player;
 							return get.attitude(player,target)*(target.isDamaged()?2:1);
 						});
 					}
 					'step 2'
-					if(result.bool&&result.targets.length){
-						var target=result.targets[0];
+					if(result.bool&&result.targets&&result.targets.length){
+						var target = result.targets[0];
 						player.line(target,'thunder');
 						target.draw(2);
 					}
@@ -2554,21 +2555,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'loseAfter'},
 				priority:222,
 				filter:function(event,player){
-					return event.player.isAlive()&&event.player!=player&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length>1;
+					if(event.player.storage.shuangzhi2&&event.player.storage.shuangzhi2>=2)	return false;
+					if(event.player.isAlive()&&event.player!=player&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length){
+						event.player.addTempSkill('shuangzhi2');
+						if(!event.player.storage.shuangzhi2)	event.player.storage.shuangzhi2=0;
+						event.player.storage.shuangzhi2+=event.cards.filterInD('d').length;
+						if(event.player.storage.shuangzhi2<2)	return false;
+						else return true;
+					}
 				},
 				content:function(){
 					'step 0'
+					event.target = trigger.player;
 					var list = ['受到1点无来源伤害','受到的伤害+1直到其回合开始']
-					var next = trigger.player.chooseControlList('选择其中的一项',list,true,function(){
+					var next = event.target.chooseControlList('选择其中的一项',list,true,function(){
 						return _status.event.choice;
 					});
 					'step 1'
 					if(result.index==0){
-						trigger.player.damage('nosource');
+						event.target.damage('nosource');
 					}
 					else{
-						trigger.player.addSkill('shangdong');
-						trigger.player.addMark('shangdong',1);
+						event.target.addSkill('shangdong');
+						event.target.addMark('shangdong',1);
 					}
 				},
 				group:['shuangzhi_init','shuangzhi_addDam'],
@@ -2588,7 +2597,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					addDam:{
-						trigger:{global:'damageBegin1'},
+						trigger:{global:'damageBegin3'},
 						forced:true,
 						silent:true,
 						firstDo:true,
@@ -2599,6 +2608,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							trigger.num+=trigger.player.countMark('shangdong');
 						},
 					},
+				},
+			},
+			shuangzhi2:{
+				onremove:function(player){
+					delete player.storage.shuangzhi2;
 				},
 			},
 			shenghua:{
@@ -3515,7 +3529,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			Artia: '阿媂娅',
 			shuangzhi: '殇冻',
-			shuangzhi_info: '其他角色一次性弃置一张以上的牌后，你可以令其选择一项：受到1点无来源伤害；或受到的伤害+1直到其回合开始。',
+			shuangzhi_info: '其他角色一回合内弃置第二张牌后，你可以令其选择一项：受到1点无来源伤害；或受到的伤害+1直到其回合开始。',
 			shenghua: '希握',
 			shenghua_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
 			

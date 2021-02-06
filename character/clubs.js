@@ -129,6 +129,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//猫宫
 			yuchong:{
+				audio:2,
 				group:['yuchong_unbeDis','yuchong_unRes'],
 			//	group:['yuchong_dist' , 'yuchong_uneq'],
 			//	subSkill: 
@@ -160,6 +161,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 					},
 					unRes:{
+						audio:'yuchong',
 						mod:{
 							cardname:function(card,player){
 								if(player.getEquip(1)){
@@ -202,6 +204,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//	}
 			},										
 			songzang:{
+				audio:2,
 				trigger:{player:'useCardToPlayered'},
 				priority:8,
 				filter:function(event,player){

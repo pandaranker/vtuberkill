@@ -2407,7 +2407,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					color:function(card,player,color){
-						if(card.cards.length==1&&card.cards[0]==player.storage.zhimeng){
+						if(card.cards&&card.cards.length==1&&card.cards[0]==player.storage.zhimeng){
 							if(color=='red')	return 'black';
 							else if(color=='black')	return 'red';
 						}
@@ -2607,14 +2607,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.equip = target.getEquip(1);
 					}
 					'step 1'
+					if(event.equip){
+						target.$give(event.equip,player);
+						player.equip(event.equip);
+					}
 					player.$give(cards,target);
 					target.equip(cards[0]);
 					'step 2'
-					if(event.equip){
-						target.$give(event.equip,player);
-						player.equip(event.equip)
-					}
-					'step 3'
 					target.chooseToDiscard('『大振』：需要弃置'+get.cnNumber(Math.abs(player.getHandcardLimit()-player.countCards('h')))+'张牌',Math.abs(player.getHandcardLimit()-player.countCards('h')),'he',true);
 				},
 			},

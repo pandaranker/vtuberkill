@@ -128,8 +128,8 @@ window.config={
 	right_click:'pause',
 	sort:'type_sort',
 
-	cards:['standard','ex','extra','sp','basic'],
-	characters:['Beginner','extra','hololive', 'basic','vtuber','nijisanji'],
+	cards:['standard','extra'],
+	characters:['Beginner','clubs','vtuber','nijisanji'],
 	connect_characters:[],
 	connect_cards:[],
 	plays:[],
