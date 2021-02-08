@@ -1,14 +1,21 @@
 window.noname_update={
-	version:'1.9.101.18',
-	update:'1.9.100.112.3',
+	version:'1.9.101.19',
+	update:'1.9.100.113.3',
 	changeLog:[
-		'101.18小更新：修复部分bug，调整皇团长和artia，增加少量旧角色配音',
+		'101.19小更新：新增角色帕特拉，修复部分bug，优化部分角色ai，给sasaki加了一个动态皮肤',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景、HOLOEN的噶呜·古拉、巧可拉拉的皇·绯赤艾莉欧',
 	],
 	files:[
+		'image/card/group_holo.png',
+		'image/card/group_nijisanji.png',
+		'image/card/group_VirtuaReal.png',
+		'image/card/group_upd8.png',
+		'image/card/group_qun.png',
+		'image/card/group_key.png',
+		'image/card/group_paryi.png',
 		//化鲸篇
 		'image/character/NagaoKei.jpg',
 		'image/character/ShirakamiHaruka.jpg',
@@ -75,7 +82,6 @@ window.noname_update={
 		'image/card/wutiesuolian.png',
 		'image/card/wuxinghelingshan.png',
 		'image/card/zhujinqiyuan.png',
-		//'image/card/group_key.png',
 		'image/character/HisekiErio.jpg',
 		// 'image/card/bingliang.png',
 		// 'image/card/caomu.png',
