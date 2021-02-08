@@ -19,6 +19,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
 		},
 		characterSort:{
+			huajing:{
+				emperor:['sp_HisekiErio'],
+			},
 		},
 		characterIntro:{
 		},
@@ -565,13 +568,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tulong:{
 				trigger:{player:'dyingBegin'},
 				filter:function(event,player){
-					return player.storage.qiming_saycards&&player.countCards('h');
+					return player.storage.qiming_saycards&&player.storage.qiming_saycards[0]&&player.countCards('h')&&player.hasUseTarget(player.storage.qiming_saycards[0]);
 				},
 				lastDo:true,
 				direct:true,
 				content:function(){
 					'step 0'
-					player.loseMaxHp();
 					event.card = {name:player.storage.qiming_saycards[0]};
 					var next = player.chooseCardTarget();
 					next.prompt = get.prompt2('tulong');
@@ -579,6 +581,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.selectTarget = lib.card[event.card.name].selectTarget;
 					'step 1'
 					if(result.bool&&result.cards&&result.targets){
+						player.logSkill('tulong');
+						player.loseMaxHp();
 						event.cards = result.cards.slice(0);
 						event.targets = result.targets.slice(0);
 						var next = player.useCard(event.card,event.targets);

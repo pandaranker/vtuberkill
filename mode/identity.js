@@ -1705,9 +1705,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						 var list=lib.group.slice(0);
-							list.remove('shen');
-							game.me.chooseControl(list).prompt='请选择神武将的势力';
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
+						for(var i=0;i<list.length;i++){
+							if(!lib.group.contains(list[i])) list.splice(i--,1);
+							else list[i]=['','','group_'+list[i]];
+						}
+						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
+							return Math.random();
+						});
 					}
 					"step 2"
 					event.group=result.control||false;
@@ -1982,9 +1987,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji','upd8'];//'VirtuaReal','paryi',
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
 						for(var i=0;i<list.length;i++){
-							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
+							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
 						}
 						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
@@ -2063,14 +2068,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['qun','key','holo','nijisanji','upd8'];//'VirtuaReal','paryi',
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
 						for(var i=0;i<list.length;i++){
-							if(!lib.group.contains(list[i])) list[i].splice(i--,1);
-							list[i]=['','','group_'+list[i]];
+							if(!lib.group.contains(list[i])) list.splice(i--,1);
+							else list[i]=['','','group_'+list[i]];
 						}
-						for(var i=0;i<shen.length;i++){
-							shen[i]=[shen[i],['请选择神武将的势力',[list,'vcard']],1,true];
-						}
+						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
+							return Math.random();
+						});
 						game.me.chooseButtonOL(shen,function(player,result){
 							if(player==game.me) player.changeGroup(result.links[0][2].slice(6),false,false);
 						}).set('switchToAuto',function(){
@@ -2125,14 +2130,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_wei:"魏势力",
 			group_shu:"蜀势力",
 			group_wu:"吴势力",
-			group_qun:"群势力",
 			group_jin:"晋势力",
-			group_key:"苔势力",
-			group_holo:"杏势力",
-			group_nijisanji:"虹势力",
-			group_VirtuaReal:"维势力",
-			group_upd8:"U势力",
-			group_paryi:"帕势力",
+			group_qun:"群",
+			group_key:"苔",
+			group_holo:"杏",
+			group_nijisanji:"虹",
+			group_VirtuaReal:"维",
+			group_upd8:"U",
+			group_paryi:"帕",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
@@ -2536,6 +2541,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return get.realAttitude(from,to)+difficulty*1.5;
 				}
 				else{
+					if(!to.ai)	to.ai = {};
+					//
 					if(from.identity=='zhong'&&to.ai.shown==0&&from.ai.tempIgnore&&
 						!from.ai.tempIgnore.contains(to)){
 						for(var i=0;i<game.players.length;i++){

@@ -15160,7 +15160,6 @@
 					"step 2"
 					if(num<cards.length){
 						var evt=event.getParent();
-						console.log(evt);
 						if(event.es.contains(cards[num])){
 							event.moveEquip=false;
 							if(evt.name=='equip'&&evt.cards.contains(cards[num]))	event.moveEquip=true;
@@ -27741,7 +27740,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','udp8','eilene','key','paryi'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi'],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
 		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{
@@ -27753,7 +27752,7 @@
 			western:'thunder',
 			key:'key',
 			holo:'soil',
-			udp8:'metal',
+			upd8:'metal',
 			dotlive:'wood',
 			nijisanji:'water',
 			VirtuaReal:'ocean',
@@ -50487,7 +50486,7 @@
 			if(number!=null&&get.itemtype(player)=='player'||(player!==false&&get.position(card)=='h')){
 				var owner=player||get.owner(card);
 				if(owner){
-					return game.checkMod(card,number,'number',owner);
+					return game.checkMod(card,owner,number,'number',owner);
 				}
 			}
 			else if(card.cards&&card.cards.length==1) number = get.number(card.cards[0]);

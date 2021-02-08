@@ -27,12 +27,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:8.5,
-					value:7,
+					value:5,
 					useful:3,
 					result:{
 						target:function(player,target){
 							if(target.isDamaged()) return 1;
-							return 0;
+							return 0.1;
 						},
 					},
 					//一些新标签
@@ -133,8 +133,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
 					if(event.directHit) event._result={bool:false};
 					else{
-						var sourcesuit = get.suit(card);
-						var next=target.chooseToRespond({suit:sourcesuit});
+						var sourcecolor = get.color(card,player);
+						var next=target.chooseToRespond({color:sourcecolor});
 						next.set('ai',function(card){
 							var evt=_status.event.getParent();
 							if(get.damageEffect(evt.target,evt.player,evt.target)>=0) return 0;
@@ -145,7 +145,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							}
 						return 8-get.value(card);
 						});
-						next.set('prompt','打出一张花色为'+get.translation(sourcesuit)+'的牌响应之，否则受到'+get.cnNumber(event.baseDamage)+'点海洋伤害');
+						next.set('prompt','打出一张颜色为'+get.translation(sourcecolor)+'的牌响应之，否则受到'+get.cnNumber(event.baseDamage)+'点海洋伤害');
 						next.autochoose=lib.filter.autoRespondShan;
 					}
 					'step 1'

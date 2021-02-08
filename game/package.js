@@ -139,6 +139,7 @@ window.noname_package={
 		music_jifeng:'祭风',
 		music_jilve:'极略',
 		music_minatoAqua1:'凑阿库娅1',
+		music_usadaPekora:'兔田佩克拉',
 	},
 	font:{
 		xiaozhuan:'小篆',

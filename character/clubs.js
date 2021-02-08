@@ -31,7 +31,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			clubs:{
-                ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio'],
+				ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio'],
 			}
 		},
 		characterIntro:{
@@ -72,6 +72,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filterCard:function(card){
 					return true;
+				},
+				check:function(card){
+					return 5-get.value(card);
 				},
 				selectCard:[1,Infinity],
 				position:'he',
@@ -126,6 +129,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target.damage('player',1);
 					}
 				},
+				ai:{order:5,result:{target:-1}},
 			},
 			//猫宫
 			yuchong:{
@@ -230,7 +234,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			songzang2:{
 				firstDo:true,
-				ai:{unequip2:true},
+				//ai:{unequip2:true},
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
@@ -563,9 +567,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if (target.countCards('he') == 0 || target.countCards('h') == player.countCards('h')) return false;
 					return target;
 				},
-				check() {
-					return 1;
-				},
 				content: function() {
 					'step 0'
 					if (target.countCards('h') > player.countCards('h')) {
@@ -589,6 +590,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.markSkill('caibu');
 					player.showCards(player.storage.caibu, '财布');
 				},
+				ai:{order:10,result:{target:-1}},
 				subSkill: {
 					draw: {
 						//audio:false,
@@ -740,6 +742,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.shiyilijia = cards.length;
 					player.discard(cards);
 				},
+				ai:{order:4,result:{player:1}},
 				subSkill: {
 					draw: {
 						forced: true,
@@ -1128,7 +1131,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					'step 0'
-					player.chooseToDiscard('###『引流』###弃置至多三张牌','he', [1,3], true);
+					player.chooseToDiscard('###『引流』###弃置至多三张牌','he', [1,3], true).set('ai',function(card){
+						var suit = get.suit(card);
+						for(var i=0;i<ui.selected.cards.length;i++){
+							if(suit==get.suit(ui.selected.cards[i])) return -Math.random();
+						}
+						if (player.needsToDiscard()) return 7-get.useful(card)+Math.random();
+						else return 5-get.useful(card)+Math.random();
+					});
 					'step 1'
 					if(result.bool&&result.cards){
 						event.cards = result.cards;
@@ -1150,6 +1160,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						})
 						if (!chk) break;
 					}
+				},
+				ai:{
+					order:5,
+					result:{
+						player:1,
+					},
 				},
 				subSkill: {
 					end: {

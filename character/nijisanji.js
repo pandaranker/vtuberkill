@@ -2,8 +2,8 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'nijisanji',
-        connect:true,
-        character:{
+		connect:true,
+		character:{
 			/**物述有栖 */
 			MononobeAlice:['female','nijisanji',3,['tinenghuifu1','dianmingguzhen']],
 			/**静凛 */
@@ -30,8 +30,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
 			/**露露 */
 			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
-        },
-        characterIntro:{
+			/**阿喵喵 */
+			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
+		},
+		characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
 			HiguchiKaede: '樋口枫者，关西之游侠也，姿色天然占尽风流，善以琴杀人，来去翩翩，有宾客枫组三千，V始二十年，月之美兔兴于西北，自封委员长、上将军，建国曰彩虹，枫率宾客从之，枫尝与杏之福禄将军萝卜子交好，惺惺相惜，成V界之佳话。',
 			ShizukaRin:'静凛者，皇族也，因父败于樱巫女被贬为庶人，遂恨朝廷，先随绊爱征战，绊爱初建国，不慕名利，往杏国扶之，先取天水后取临沂，成杏国之伟业，元昭欲拜之国师，又避之，尝与美兔弈棋，战百余合，喜曰：美兔知我矣！遂安于彩虹。',
@@ -41,13 +43,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuzukaUtako: '腐烂的贞德、历战的尸套龙、饥饿的恐暴龙、攻击性的母性、古老的腐女、每秒都在渗出黑历史的女人、801战争的英灵、腐女子的末路、从温暖的图片中看出阴暗的女人、背景是正太自助餐、深网的魔物、过滤未成年直播者、彩虹社诞生出的怪物、DeathZone、唯一让DD害怕的大姐姐、国际问题、邪神美兔崇拜者、十年后的月之美兔、属性商店、神造兵器、有行动力的变态、出口即是真言、行走的HiAce、酒淋浴、母性的墓场、假面具即将掉落的铃鹿诗子。',
 			SisterClearie:	'“今日也愿神加护于你……”',
 		},
-        skill:{
-            fuheijs:{
+		skill:{
+			fuheijs:{
 				enable:"phaseUse",
 				filter:function(event,player){
 					return player.countDiscardableCards(player,'he')!=0
 				},
-                content:function(){
+			    content:function(){
 					'step 0'
 					var list=['弃置一名角色的1张装备牌'];
 					if(lib.skill.fuheijs.canMoveCard(player)) list.push('将一名其他角色装备区内的一张牌移动到另一名角色的装备区内');
@@ -181,7 +183,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.delay();
 						event.result={bool:true};
 					}
-                },
+			    },
 				canMoveCard:function(player,withatt){
 					return game.hasPlayer(function(current){
 						if(player==current) return false;
@@ -204,18 +206,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					});
 				}
-            },
-            leiyan:{
+			},
+			leiyan:{
 				trigger:{player:'useCard1'},
 				forced:true,
-                firstDo:true,
-                filter:function(event,player){
+			    firstDo:true,
+			    filter:function(event,player){
 					//console.log(event);
 					if(event.card.name!='sha'||event.card.nature!='thunder') return false;
 					return true;
-                },
+			    },
 				content:function(){
-                },
+			    },
 				mod:{
 					selectTarget:function(card,player,range){
 						//console.log(card.nature,range);
@@ -248,7 +250,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				}
-            },
+			},
 			leiyan2:{
 				firstDo:true,
 				ai:{unequip2:true},
@@ -273,7 +275,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage.leyan2.length) player.removeSkill('leyan2');
 				},
 			},
-            xiaozhangduandai:{
+			xiaozhangduandai:{
 				skillAnimation:true,
 				animationColor:'orange',
 				unique:true,
@@ -289,23 +291,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.awakenSkill('qianxin');
 					player.storage.yongchun=true;
 					player.addSkill('yongchun');
-                    player.hp+=3;
-                    player.draw(3);
+					player.hp+=3;
+					player.draw(3);
 				}
-            },
-            yongchun:{
-                enable:"phaseUse",
-                trigger:{player:'shaBegin'},
-                frequent:true,
-                forced:false,
+			},
+			yongchun:{
+			    enable:"phaseUse",
+			    trigger:{player:'shaBegin'},
+			    frequent:true,
+			    forced:false,
 				filterCard:function(card){//选择的牌需要满足的条件
 					return card.name=='sha';//例子，只能选择红色牌
 				},
-                content:function(){
-                    player.draw(1);
-                    player.chooseToDiscard('he',true);
-                    player.getStat().card.sha--;
-                }
+			    content:function(){
+					player.draw(1);
+					player.chooseToDiscard('he',true);
+					player.getStat().card.sha--;
+			    }
 			},
 			tinenghuifu1:{
 				audio:'tinenghuifu',
@@ -361,7 +363,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					//console.log(lib.skill.dianmingguzhen.canMoveCard(player));
 					var next=player.chooseTarget(2,function(card,player,target){
 						if(ui.selected.targets.length){
 							var from=ui.selected.targets[0];
@@ -472,15 +473,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 7'
 					event.equiptype=parseInt(event.equiptype.slice(5));
-                    event.players=game.filterPlayer(function(current){
+					event.players=game.filterPlayer(function(current){
 						return (current!=player)&&(!current.getEquip(event.equiptype));
-                    });
+					});
 					event.players.sortBySeat(player);
 					'step 8'
-                    if(event.playersIndex==null){
-                        event.playersIndex=0;
-                    }
-                    if(event.playersIndex<event.players.length){
+					if(event.playersIndex==null){
+					    event.playersIndex=0;
+					}
+					if(event.playersIndex<event.players.length){
 						////getCards('e',{subtype:['equip3','equip4','equip6']}));
 						if(!event.players[event.playersIndex].getEquip(event.equiptype)){
 							player.useCard({name:'sha',nature:'thunder',isCard:true},event.players[event.playersIndex],false);
@@ -554,6 +555,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					});
+				},
+				ai:{
+					order:7,
+					result:{
+						player:function(player,target){
+							if(player.hp!=0)	return 1;
+							else return -1;
+						},
+					/*	target:function(player,target){
+							if(ui.selected.targets.length==0){
+								if(target==player&&player.hp!=1)	return 2+Math.random();	
+								return -2;
+							}
+							else{
+								return 2+Math.random();
+							}
+						}*/
+					},
 				},
 			},
 			mozhaotuji:{
@@ -1239,8 +1258,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			
 			mark_bingdielei:{
-				audio:3,
-                group:'mark_bingdielei_damageBy',
+				audio:'bingdielei',
+			    group:'mark_bingdielei_damageBy',
 				subSkill:{
 					damageBy:{
 						trigger:{player:'damageBegin4',source:'damageBegin4'},
@@ -1415,7 +1434,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 
 			mark2_bingdielei:{
-                group:'mark2_bingdielei_damageBy',
+			    group:'mark2_bingdielei_damageBy',
 				subSkill:{
 					damageBy:{
 						trigger:{player:'damageBegin4',global:'dying'},
@@ -1700,6 +1719,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			bingdielei:{
+				audio:3,
 				subSkill:{
 					anotherPhase:{
 						trigger:{global:'phaseEnd'},
@@ -2308,19 +2328,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},			
 			},
-        },
-        translate:{
+		},
+		translate:{
 
 			nochongzhu:'禁止重铸',
 
-            MononobeAlice:'物述有栖',
-            fuheijs:'腹黑JS',
-            fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
-            leiyan:'雷言',
-            leiyan_info:'<font color=#f66>锁定技</font> 你的［雷杀］可以指定1-3个目标，并无视角色防具',
-            xiaozhangduandai:'嚣张缎带',
-            xiaozhangduandai_info:'觉醒技。当你处于濒死状态时，立即恢复3点体力，摸3张牌并获得技能（咏春）',
-            yongchun:'咏春',
+			MononobeAlice:'物述有栖',
+			fuheijs:'腹黑JS',
+			fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
+			leiyan:'雷言',
+			leiyan_info:'<font color=#f66>锁定技</font> 你的［雷杀］可以指定1-3个目标，并无视角色防具',
+			xiaozhangduandai:'嚣张缎带',
+			xiaozhangduandai_info:'觉醒技。当你处于濒死状态时，立即恢复3点体力，摸3张牌并获得技能（咏春）',
+			yongchun:'咏春',
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
 			tinenghuifu1_info:'<font color=#f66>锁定技</font> 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
@@ -2363,7 +2383,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mark_quanxinquanyi_info:'一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。',
 			
 			mark2_bingdielei: '并蒂恶蕾',
-            mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
+			mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
 			
 			SuzukaUtako: '铃鹿诗子',
 			meici: '美词',
@@ -2390,7 +2410,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			zhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
 
-        }
-    }
+		}
+	}
 }
 )
