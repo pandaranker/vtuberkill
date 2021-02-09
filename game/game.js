@@ -15695,13 +15695,13 @@
 						game.delay(0,300);
 						player.$draw(cards);
 					}
-					cards[0].fix();
-					cards[0].style.transform='';
-					cards[0].classList.remove('drawinghidden');
-					delete cards[0]._transform;
 					var viewAs = typeof card=='string'?card:card.name;
 					event.viewAs = viewAs;
 					if(!lib.card[viewAs]){
+						cards[0].fix();
+						cards[0].style.transform='';
+						cards[0].classList.remove('drawinghidden');
+						delete cards[0]._transform;
 						game.cardsDiscard(cards[0]);
 						event.finish();
 					}
@@ -21119,6 +21119,10 @@
 								delete card.viewAs;
 								delete card.originalName;
 							}
+						}else{
+						//	if(card.viewAs&&card.originalName&&card.originalName){
+						//		card.name = card.originalName
+						//	}
 						}
 						var skills=this.getSkills(null,false);
 						if(info.skills){
@@ -50788,22 +50792,22 @@
 					}
 				}else if(str.nature&&str.nature.length){
 					if(str.nature=='fire'){
-						str2=str2.splice(0,1,'火');
+						str2=str2.replace(str2.charAt(0),'火');
 					}
 					else if(str.nature=='thunder'){
-						str2=str2.splice(0,1,'雷');
+						str2=str2.replace(str2.charAt(0),'雷');
 					}
 					else if(str.nature=='kami'){
-						str2=str2.splice(0,1,'神');
+						str2=str2.replace(str2.charAt(0),'神');
 					}
 					else if(str.nature=='ocean'){
-						str2=str2.splice(0,1,'海');
+						str2=str2.replace(str2.charAt(0),'海');
 					}
 					else if(str.nature=='ice'){
-						str2=str2.splice(0,1,'冰');
+						str2=str2.replace(str2.charAt(0),'冰');
 					}
 					else if(str.nature=='yami'){
-						str2=str2.splice(0,1,'暗');
+						str2=str2.replace(str2.charAt(0),'暗');
 					}
 				}
 				if(get.itemtype(str)=='card'||str.isCard){

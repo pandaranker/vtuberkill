@@ -35,7 +35,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterIntro:{
-			Yomemi:' ',
+			Paryi: '帕里，巴蜀富豪者也，累世公卿，广散金帛，养士三千，昔绊爱首义，左右劝帕里图之，帕里由此建国，聚诸奇士建国帕里破一期，天时地利人和皆不顺，诸士心皆背，P家无疾而终，帕里亦败走青城，后党锢事泄，杏国树倒猴散，P家有团长绯赤艾利欧接连败诸侯，中兴P家，OTO、古守血遊等士亦借此征战，P家之势渐盛。',
+			OtomeOto: 'oto者，名歌姬也，曾学于教坊司，能歌善舞，以《初音未来的消失》之传说名曲惊煞一众善才，后烽烟四起，oto批皮入V界，人情炎凉，难以经营，如此经年，后杏溃败，oto喃喃自言曰：好风凭借力，送我上青云。有友曰绯赤艾利欧，两人相持生活数十年，V始二十年，杏礼崩乐坏，团长尽收杏社之地，亲迎oto，oto亦欣然前往，paryi系重归荣光，此二人先导也。',
+			TakatsukiRitsu: '阿律者，帕里之衙内也，清楚三铳士之一，以超美丽3d与烂活闻名，常联动yyut，一日律问直播间观众爱者，众人皆曰yyut，律遂破防光速下播，杏溃败后，众v皆如终获青天，有欣欣向荣之势，独律未增半分，郁郁寡欢，此后毕业之，是矣，烂活可供一时，可供一世乎？',
+
+			Yomemi: ' ',
 			KaguraMea: '神乐咩者，东瀛之歌女也，迫于生计西来中原，有《money》、《你好我很可爱》之名曲流传世间，咩性格直爽，以此获众拥簇，却亦因此惹祸上身，V始二十二年，西都陷落，咩于京畿聚众建国，国号曰咩，定元咩啊元年，与杏虹分庭抗礼。',
 			MiraiAkari: "未来明（V始二年），生于荆楚郡望，少时猎虎不慎坠马，遂记忆尽失，同族有长者初音未来，携明识山见水，阿满童年如此。V始十九年，绊爱既首义，天下豪杰并起，明亦王于西南，定国号为ENTUM，后为小人夺之，满知无经纬之才，遁入山中，不闻世事。",
 			kaguraNaNa: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
@@ -43,7 +47,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HanazonoSerena: "花园sarena者（V始三年），青城之猫灵也，清楚三铳士之一，为报帕里之恩追随之，虽体弱多病然擅行刺，V始三年，以松饼鸩杀汉中太守，帕里pro遂建国巴蜀，花园猫不谙世事，常为好事者钓之。V始九年，朝廷出兵百万击巴蜀，大破蜀军，花园猫身中数刀，仍负帕里逃出益州，复还青城，人不知所踪。",
 			XiaDi: '下地者，V8之健将也，自群雄并起，囚人草莽之徒自成一国，名曰V8，V8奉绅宝为主，总领V8事宜，次年勒夫以鸩杀之，夺绅宝之权，下地作丹青《不要以为这样就赢了》缅之，领自家军离V8，后为勒夫击，大败，遁于江城。',
 			Nekomasu: '狐叔者，原国相也，屡谏朝廷，针砭时弊，谗人间之，放于巴蜀，巴蜀有奇人曰野良喵，叔与野良一见如故，尝与青城饮之，后绊爱起义，屡请狐叔，狐叔自认忠于朝廷，屡拒之，叔素修黄帝之道，善养生之经，建宗“养生”，后日竟成第一宗。',
-			NekomiyaHinata: '“这不是猫耳，这是头发啦！”',
+			NekomiyaHinata: '“猫宫日向者，游侠也，尤善射术，有“飞将”之称，以一人一枪往艾伦格百次余，屠者以千计，日向好游戏，性天然，行事率真常为联动对象捉弄，节目效果斐然，日向家境贫寒，尚不能备衣物，以塑料袋蔽身，为邻人笑，邻人有九石玉、隐神木荫者素与日向交好，昔绊爱首义，日向与玉、木荫筹划建国，后为小人所泄，破之，日向遁于江湖，转个人势，与玉、木荫经营。”',
 		},
 		skill:{
 			//Yomemi
@@ -175,17 +179,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							},
 						},
-						trigger:{player:['useCard1']},
+						trigger:{player:'useCard1'},
 						firstDo:true,
 						forced:	true,
 						filter:function(event,player){
 							if(!player.getEquip(1))		return false;
-							return get.subtype(event.cards[0])=='equip1'&&event.getParent().addCount_extra==true;
+							return get.subtype(event.cards[0])=='equip1';
 						},
 						content:function(){
-			//				console.log(trigger);
-							trigger.getParent().addCount_extra = false;
-							player.getStat().card.sha--;
+							if(trigger.addCount!==false){
+								trigger.addCount=false;
+								var stat=player.getStat();
+								if(stat&&stat.card&&stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
+							}
 						},
 					}
 				}
@@ -466,7 +472,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						firstDo:true,
 						direct:true,
 						filter:function(event,player){
-							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&(event.getParent()._trigger.skill||event.getParent()._trigger.skill!='liuhua')))	return false;
+							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&(!event.getParent()._trigger||event.getParent()._trigger.skill!='liuhua')))	return false;
 							if(player.storage.liuhua.length<3)	return false;
 							var list = [];
 							player.storage.liuhua.forEach(function(hua){

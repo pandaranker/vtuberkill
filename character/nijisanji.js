@@ -560,8 +560,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:7,
 					result:{
 						player:function(player,target){
-							if(player.hp!=0)	return 1;
-							else return -1;
+							if(player.hp!=1)	return 1;
+							else return -2;
 						},
 					/*	target:function(player,target){
 							if(ui.selected.targets.length==0){
@@ -1898,6 +1898,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			meici: {
+				audio:4,
 				group: ['meici_set', 'meici_use'],
 				subSkill: {
 					mark: {
@@ -1942,7 +1943,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							game.delay(0.5);
 							player.logSkill('meici', trigger.player);
-							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true);
+							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).ai=function(button){
+								var val=get.buttonValue(button);
+								if(att>0) return 2-val+Math.random();
+								return val+Math.random();
+							};
 							'step 1'
 							if (result.bool && result.cards.length) {
 								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
@@ -1965,6 +1970,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			danlian: {
+				audio:3,
 				trigger: {
 					global: 'phaseEnd'
 				},

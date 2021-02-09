@@ -1371,7 +1371,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.chooseCard('h');
+					player.chooseCard('h').set('ai',function(card){
+						if(get.number(card)>10)			return 8-get.value(card)+Math.random();
+						if(player.countCards('h')>=3)	return 5-get.value(card)+Math.random();
+						if(player.countCards('h')==1)	return -get.value(card)+Math.random();
+						return 2-get.value(card)+Math.random();
+					});
 					'step 1'
 					if(result.bool){
 						player.logSkill('gonggan', trigger.player);
@@ -1397,6 +1402,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					var next = trigger.player.chooseButton(1 ,true);
 					next.set('dialog',event.videoId);
+					next.set('ai',function(button){
+						_status.event.cards.forEach(function(card){
+							if(get.suit(card)==button.link[0][2])	return 1+Math.random();
+						})
+						return -1+Math.random();
+					});
+					next.set('cards',player.getCards('h'));
 					'step 4'
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
@@ -1851,7 +1863,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.getStat('damage');
 				},
 				content:function(){
-					if(player.getStat().skill.huawen||0){
+					if(player.getStat().skill.huawen!=undefined){
 						if(player.storage.huawen&&player.storage.huawen.length){
 							player.storage.huawen[0].recover();
 						}
@@ -2253,15 +2265,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return ui.selected.buttons.length==2;
 					});
 					next.set('ai',function(button){
-						if(get.type(button.link)=='equip')	return 10;
-						if(get.name(button.link)=='sha')	return 1;
-						return 9-get.value(button.link);
+						if(get.type(button.link)=='equip'){	
+							if(typeof get.info(button.link).onLose=='function') return 10+Math.random();
+							else return 7+Math.random();
+						}
+						if(get.name(button.link)=='sha'&&player.countCards('h',{name:'sha'})==1)	return 0;
+						return 7-get.value(button.link)/2+Math.random();
 					});
 					'step 1'
 					if(result.bool&&result.links&&result.links.length)	event.cards=result.links.slice(0);
 					else	event.finish();
 					game.delay();
 					'step 2'
+					game.log(player,'把两张牌放在了牌堆顶')
 					player.lose(event.cards,ui.special);
 					'step 3'
 					var cards = event.cards;
@@ -2280,17 +2296,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.xinhuo_chuanhuo = 1
 					}
 				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&get.type(card,'trick')=='trick'&&get.info(card).notarget!==true&&!player.needsToDiscard()){
+							var evt=player.getStat().card;
+							for(var i in evt){
+								if(evt[i]&&get.type(evt[i],'trick')=='trick'){
+									return num-7;
+								}
+							}
+						}
+					},
+				},
 				ai:{
 					order:function(item,player){
-						var cards = player.getStat().card.slice(0);
+						var cards =  Object.entries(player.getStat().card);
 						for(var i=0;i<cards.length;i++){
-							if(get.type(cards[i])=='basic'){
-								if(player.hasSha()&&player.countCards('he')>=3)
-								return 10;
+							if(get.type(cards[i][0])=='basic'){
+								if(player.hasSha()&&player.countCards('he')>=3&&(!player.storage.xinhuo_chuanhuo||player.storage.xinhuo_chuanhuo<2)){
+									return 7.1;
+								}
 							}
 						}
 						return 0;
 					},
+					result:{player:1},
 				},
 				subSkill:{
 					chuanhuo:{
@@ -2338,7 +2368,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.markSkill('weizhuang');
 					}
 					'step 1'
-					console.log(player.getHistory());
 					if(get.type(trigger.card,'trick')=='basic'&&player.getHistory('useCard',function(evt){
 						return get.type(evt.card,'trick')=='basic';
 					}).length>1){
@@ -2631,7 +2660,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								trigger.cancel();
 							}
 							'step 1'
-							player.storage.pojie==0;
+							player.storage.pojie = 0;
 							player.unmarkSkill('pojie');
 						},
 

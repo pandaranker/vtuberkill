@@ -157,12 +157,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:	true,
 				filter:function(event,player){
 					if(event.card.nature!='ocean')		return false;
-					return event.card.name=='sha'&&event.getParent().addCount_extra==true;
+					return event.card.name=='sha';
 				},
 				content:function(){
 					'step 0'
-					trigger.getParent().addCount_extra = false;	
-					player.getStat().card.sha--;
+					if(trigger.addCount!==false){
+						trigger.addCount=false;
+						var stat=player.getStat();
+						if(stat&&stat.card&&stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
+					}
 					event.num = trigger.targets.filter(function(tar){
 						return tar.hujia==0;
 					}).length;
@@ -180,10 +183,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.countCards('he')>=2&&player.isPhaseUsing();
 				},
-				prompt:'将两张手牌当海【杀】使用',
+				prompt:'将两张牌当海【杀】使用',
 				check:function(card){
 					if(card.name=='sha') return 0;
-					return 5-get.value(card)
+					return 5-get.value(card);
 				},
 				group:['quru_drawBy','quru_addDam'],
 				subSkill:{

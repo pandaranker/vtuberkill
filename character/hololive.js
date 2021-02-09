@@ -1811,11 +1811,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 								},
 								ai1:function(card){
-									return 6-get.useful(card);
+									return 6-get.value(card);
 								},
 								ai2:function(target){
-									if(target!=player)	return get.effect(target,{name:'guohe'},player,player)
-									return get.effect(player,{name:'jiu'},player,player);
+									if(target!=player)	return get.effect(target,{name:'guohe'},player,player)-Math.random();
+									return get.effect(player,{name:'jiu'},player,player)-Math.random()*3;
 								},
 							})
 							'step 4'
@@ -2300,16 +2300,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//				if(trigger.targets[0].countCards('h')==1){
 	//					player.viewCards('观看其手牌',trigger.targets[0].getCards('h'));
 	//				}
-					game.broadcastAll(function(target){
-						target.choosePlayerCard(target,'h',true).set('visible', true);
-					}, trigger.targets[0]);
+					event.target = trigger.targets[0];
+					event.target.chooseCard('h',true).set('visible', true).set('prompt',get.translation('kuangxin')+'：选择一张牌与对方交换');
 	//				game.log(player,'观看了',trigger.targets[0],'的手牌')
 					'step 1'
 					if(result.bool){
 						event.card = result.cards[0];
-						game.broadcastAll(function(player){
-							player.choosePlayerCard(player,'h',true).set('visible', true);
-						}, player);
+						player.chooseCard('h',true).set('visible', true).set('prompt',get.translation('kuangxin')+'：选择一张牌与对方交换');
 					}
 					else{
 						event.finish();
@@ -2591,29 +2588,34 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			shuangzhi:{
-				check:function(event,player){
-					return  get.attitude(player,event.player)<1;;
-				},
 				trigger:{global:'loseAfter'},
 				priority:222,
+				direct:true,
 				filter:function(event,player){
 					if(event.player.storage.shuangzhi2&&event.player.storage.shuangzhi2>=2)	return false;
-					if(event.player.isAlive()&&event.player!=player&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")&&event.cards.filterInD('d').length){
-						event.player.addTempSkill('shuangzhi2');
-						if(!event.player.storage.shuangzhi2)	event.player.storage.shuangzhi2=0;
-						event.player.storage.shuangzhi2+=event.cards.filterInD('d').length;
-						if(event.player.storage.shuangzhi2<2)	return false;
-						else return true;
+					if(event.player.isAlive()&&event.player!=player
+					&&!(event.getParent().name=="useCard"||event.getParent().name=="useSkill")
+					&&event.cards.filterInD('d').length){
+						return true;
 					}
 				},
 				content:function(){
 					'step 0'
 					event.target = trigger.player;
-					var list = ['受到1点无来源伤害','受到的伤害+1直到其回合开始']
-					var next = event.target.chooseControlList('选择其中的一项',list,true,function(){
-						return _status.event.choice;
-					});
+					event.target.addTempSkill('shuangzhi2');
+					if(!event.target.storage.shuangzhi2)	event.target.storage.shuangzhi2=0;
+					event.target.storage.shuangzhi2+=trigger.cards.filterInD('d').length;
+					if(event.target.storage.shuangzhi2<2)	event.finish();
+					else player.chooseBool(get.prompt2('shuangzhi')).set('ai',get.attitude(player,event.target)<1);
 					'step 1'
+					if(result.bool){
+						player.logSkill('shuangzhi',event.target);
+						var list = ['受到1点无来源伤害','受到的伤害+1直到其回合开始']
+						event.target.chooseControlList('选择其中的一项',list,true,function(event,player){
+							return _status.event.choice;
+						}).set('choice',((_status.currentPhase==event.target)?0:1));
+					}else	event.finish();
+					'step 2'
 					if(result.index==0){
 						event.target.damage('nosource');
 					}
