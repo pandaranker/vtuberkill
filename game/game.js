@@ -4727,6 +4727,18 @@
 							map.connect_junzhu.hide();
 						}
 					},
+					connect_guozhan_mode:{
+						name:'游戏模式',
+						init:'normal',
+						item:{
+							normal:'势备',
+							yingbian:'应变',
+							old:'怀旧',
+						},
+						frequent:true,
+						restart:true,
+						intro:'<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。',
+					},
 					connect_player_number:{
 						name:'游戏人数',
 						init:'8',
@@ -4770,19 +4782,19 @@
 						// frequent:true,
 						intro:'主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
 					},
-					connect_guozhanpile:{
-						name:'使用国战牌堆',
-						init:true,
-						frequent:true,
-						restart:true,
-					},
-					connect_onlyguozhan:{
-						name:'使用国战武将',
-						init:true,
-						frequent:true,
-						restart:true,
-						intro:'开启武将技能将替换为国战版本并禁用非国战武将'
-					},
+				//	connect_guozhanpile:{
+				//		name:'使用国战牌堆',
+				//		init:true,
+				//		frequent:true,
+				//		restart:true,
+				//	},
+				//	connect_onlyguozhan:{
+				//		name:'使用国战武将',
+				//		init:true,
+				//		frequent:true,
+				//		restart:true,
+				//		intro:'开启武将技能将替换为国战版本并禁用非国战武将'
+				//	},
 					connect_junzhu:{
 						name:'替换君主',
 						init:true,
@@ -4820,10 +4832,14 @@
 						name:'游戏模式',
 						init:'normal',
 						item:{
-							normal:'标准',
-							mingjiang:'明将'
+							normal:'势备',
+							yingbian:'应变',
+							old:'怀旧',
+							free:'自由',
 						},
 						frequent:true,
+						restart:true,
+						intro:'<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。<br><li>自由：使用玩家的自定义牌堆进行游戏。',
 					},
 					player_number:{
 						name:'游戏人数',
@@ -4881,12 +4897,6 @@
 						init:true,
 						// frequent:true,
 						intro:'主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
-					},
-					guozhanpile:{
-						name:'使用国战牌堆',
-						init:true,
-						frequent:true,
-						restart:true,
 					},
 					changeViceType:{
 						name:'副将变更方式',
@@ -6433,7 +6443,7 @@
 		},
 		help:{
 			'FAQ':'<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>'+
-			'<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能与卡牌使用次数均会清空，但是请注意，森永缪可能会因为你的出牌次数重置而满足对你发动观宅的条件<br>'+
+			'<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>'+
 			'<li>Q：夜雾和lulu的技能改变出牌效果时，影响牌的使用次数吗？<li>A：不影响，牌的使用次数始终在牌使用或打出时计入。特别的，lulu的技能可以改变牌名，有可能影响牌的后续结算；而夜雾的技能不改变牌名，（虽然效果已经变化）与原牌名关联的效果不会受影响（如【初始服】之于【杀】【万箭】【南蛮】）<br>',
 
 			'游戏操作':'<ul><li>长按/鼠标悬停/右键单击显示信息<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管<li>键盘快捷键<br>'+
@@ -21107,7 +21117,7 @@
 					if(card){
 						var info=get.info(card);
 						if(move===false){
-							if(card.viewAs&&card.originalName){
+							if(card.originalName){
 								card.classList.remove('fakejudge');
 								if(get.type(card.originalName)=='equip'){
 									card.classList.remove(get.subtype(card.viewAs));
@@ -23107,6 +23117,7 @@
 					}
 				},
 				$equip:function(card,viewAs){
+					var originalName = card.originalName;
 					if(viewAs&&this.storage.disableEquip!=undefined&&this.storage.disableEquip.contains(get.subtype(viewAs))){
 						this.gain(card,'gain2');
 						game.log(this,'装备失败');
@@ -23125,7 +23136,8 @@
 						card.classList.remove('drawinghidden');
 						delete card._transform;
 						//已修改
-						card.viewAs=viewAs;
+						card.originalName = originalName;
+						card.viewAs = viewAs;
 						if(viewAs&&viewAs!=card.name){
 							if(card.classList.contains('fullskin')||card.classList.contains('fullborder')){
 								card.classList.add('fakejudge');
@@ -25803,7 +25815,7 @@
 			},
 			_yamisha2:{
 				trigger:{player:'phaseJieshu'},
-				priority:5,
+				priority:1,
 				popup:false,
 				forced:true,
 				ruleSkill:true,
@@ -48163,6 +48175,7 @@
 				}
 				ui.system.hide();
 				game.pause2();
+				//这个地方有问题
 				var node=ui.create.pause().animate('start');
 				ui.sidebar3.innerHTML='';
 				if(lib.config.show_discardpile){
@@ -51713,7 +51726,7 @@
 					table.style.position='relative';
 					var listi=['flower','egg','wine','shoe'];
 					for(var i=0;i<listi.length;i++){
-						td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
+						td=ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
 						ui.throwEmotion.add(td);
 						if(_status.throwEmotionWait) td.classList.add('exclude');
 						td.link=listi[i];
@@ -51729,7 +51742,7 @@
 					table.style.position='relative';
 					var listi=['yuxisx','shoukao','sc','ship'];
 					for(var i=0;i<listi.length;i++){
-						td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
+						td=ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
 						ui.throwEmotion.add(td);
 						if(_status.throwEmotionWait) td.classList.add('exclude');
 						td.link=listi[i];
@@ -51960,9 +51973,10 @@
 				if(node.link&&node.link.name&&lib.card[node.link.name]){
 					name=node.link.name;
 				}
-				if((get.position(node)=='j'||get.position(node)=='h')&&node.viewAs&&node.viewAs!=name){
+				if((get.position(node)=='j'||get.position(node)=='h')&&node.viewAs&&(node.viewAs!=name||node.originalName!=name)){
 					uiintro.add(get.translation(node.viewAs));
-					uiintro.add('<div class="text center">（'+get.translation(get.translation(node))+'）</div>');
+					console.log(node.originalName)
+					uiintro.add('<div class="text center">（'+get.translation(get.translation(node.originalName||node))+'）</div>');
 					// uiintro.add(get.translation(node.viewAs)+'<br><div class="text center" style="padding-top:5px;">（'+get.translation(node)+'）</div>');
 					uiintro.nosub=true;
 					name=node.viewAs;
@@ -52895,10 +52909,18 @@
 				final=(result1*get.attitude(player2,player)+(target?result2*get.attitude(player2,target):0));
 			}
 			else final=(result1*get.attitude(player,player)+(target?result2*get.attitude(player,target):0));
-			if(!isLink&&get.tag(card,'natureDamage')&&target.isLinked()&&!zerotarget){
-				game.countPlayer(function(current){
-					if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
-				})
+			if(!isLink&&get.tag(card,'natureDamage')&&!zerotarget){
+				var info=get.info(card);
+				if(!info||!info.ai||!info.ai.canLink){
+					if(target.isLinked()) game.countPlayer(function(current){
+						if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
+					});
+				}
+				else if(info.ai.canLink(player,target,card)){
+					game.countPlayer(function(current){
+						if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
+					});
+				}
 			}
 			return final;
 		},
@@ -53076,10 +53098,18 @@
 				final=(result1*get.attitude(player2,player)+(target?result2*get.attitude(player2,target):0));
 			}
 			else final=(result1*get.attitude(player,player)+(target?result2*get.attitude(player,target):0));
-			if(!isLink&&get.tag(card,'natureDamage')&&target.isLinked()&&!zerotarget){
-				game.countPlayer(function(current){
-					if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
-				})
+			if(!isLink&&get.tag(card,'natureDamage')&&!zerotarget){
+				var info=get.info(card);
+				if(!info||!info.ai||!info.ai.canLink){
+					if(target.isLinked()) game.countPlayer(function(current){
+						if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
+					});
+				}
+				else if(info.ai.canLink(player,target,card)){
+					game.countPlayer(function(current){
+						if(current!=target&&current.isLinked()) final+=get.effect(current,card,player,player2,true);
+					});
+				}
 			}
 			return final;
 		},

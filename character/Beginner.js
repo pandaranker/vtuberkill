@@ -302,6 +302,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.discard(cards);
 				},
 				ai:{order:4,result:{player:1}},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&get.name(card)=='tao'){
+							var damage = (player.maxHp-player.hp)*2;
+							return num+damage;
+						}
+					},
+				},
 				subSkill: {
 					draw: {
 						forced: true,
@@ -1272,8 +1280,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:7,
 					result:{
 						player:function(player,target){
-							if(player.hp!=0)	return 1;
-							else return -1;
+							if(player.hp!=1)	return 1;
+							else return -2;
 						},
 					/*	target:function(player,target){
 							if(ui.selected.targets.length==0){
@@ -1314,11 +1322,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				ai:{
-					notrick:true
+					notrick:1,
 				},
 			},
 			shenfa:{
-				trigger:{player:['loseAfter']},
+				trigger:{player:'loseAfter'},
 				priority:1,
 				filter:function(event,player){
 					if(!game.hasPlayer(function(cur){
@@ -1335,6 +1343,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.set('filterTarget',function(card,player,target){
 						return !target.hasSkill('shenyou');
 					});
+					next.set('ai',function(target){
+						var player = _status.event.player;
+						var evt = _status.event.getTrigger().getParent();
+						if((player.hasSha()&&player.getCardUsable('sha')&&(player.countCards('h',function(card){
+							return get.tag(card,'damage')&&get.type('card')=='trick';
+						})<1)||(evt.name=='useCard'&&evt.card.name=='sha')
+						)&&player.inRange(target))	return get.damageEffect(target,player,player);
+						return get.attitude(player,target);
+					})
 					'step 2'
 					if(result.bool){
 						player.logSkill('shenfa',result.targets[0])
@@ -2329,18 +2346,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.loop=false;
 						event.resultBool=!event.resultBool;
 						if(event.resultBool){
-							player.chooseBool('是否使对方回复一点体力').set('ai',function(target){
-								var player=_status.event.player;
-								var att=get.attitude(player,target);
-								return att;
-							});
+							player.chooseBool('是否使对方回复一点体力').set('ai',function(){
+								return _status.event.check>0;
+							}).set('check',get.attitude(player,event.target));
 						}
 						else{
-							event.target.chooseBool('是否使对方回复一点体力').set('ai',function(target){
-								var player=_status.event.player;
-								var att=get.attitude(player,target);
-								return att;
-							});
+							event.target.chooseBool('是否使对方回复一点体力').set('ai',function(){
+								return _status.event.check>0;
+							}).set('check',get.attitude(event.target,player));
 						}
 					}
 					else{
@@ -2451,6 +2464,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(ui.selected.targets[i].group==target.group) return false;
 					}
 					return true;
+				},
+				selectTarget:function(){
+					return [1,ui.selected.targets.length+1];
 				},
 				complexTarget:true,
 				multitarget:false,

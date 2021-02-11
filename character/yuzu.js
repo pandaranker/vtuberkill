@@ -26,8 +26,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterIntro:{
-			Paryi:'kimo~',
-			OtomeOto:'5000兆円欲しい！ --乙女おと',
 			Civia:'“听我说，DD会带来世界和平~”',
 		},
 		skill:{
@@ -409,18 +407,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//miu
 			guanzhai:{
-				trigger:{global:['phaseEnd']},
+				trigger:{global:'phaseEnd'},
 				priority:997,
 				prompt2:function(event,player){
 					var target = event.player;
 					return '可以观看其手牌，并获得其中至多'+(target.hasSkill('zhai')?target.countMark('zhai')+1:1)+'张牌';
 				},
 				filter:function(event,player){
-					var history = event.player.getHistory('useCard');
-					var num = 0;
-					history.forEach(function(his){
-						if(his.card)	num ++;
-					});
+					console.log(event.player.countUsed());
+					var num = event.player.countUsed();
 					return event.player!=player&&event.player.countCards('h')&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
 				content:function(){
@@ -793,14 +788,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(event,player){
-					if(event.player!=player&&get.attitude(player,event.player)<0&&player.inRange(event.player))	return true;
-					return event.player==player&&player.hasSha()&&player.hasUseTarget('sha');
+					if(event.player!=player&&get.attitude(player,event.player)<0&&event.player.inRange(player))	return true;
+					return event.player==player&&game.roundNumber>1&&player.hasUseTarget('sha')&&!player.needsToDiscard();
 				},
 				content:function(){
 					'step 0'
 					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true);
 					next.set('ai',function(target){
-						return get.attitude(player,target)<0&&target.inRange(player);
+						if(player.inRange(target))	return 2-get.attitude(player,target);
+						else return target.hp-(get.attitude(player,target)/2);
 					})
 					'step 1'
 					if(result.bool){
@@ -1076,7 +1072,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('h')>0;
 				},
 				filterTarget:function(card,player,target){
-					if(target.inRange(player)) return true;
+					if(player.inRange(target)) return true;
 				},
 				content:function(){
 					'step 0'
@@ -2196,6 +2192,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.num--;
 					}
 				},
+				mod:{
+					aiValue:function(player,card,num){
+						if(game.roundNumber>1&&get.type(card)=='equip'&&!get.cardtag(card,'gifts')){
+							if(get.position(card)=='e') return num/player.hp;
+							return num*player.hp;
+						}
+					},
+				},
 				group:'helesta_iceshaBy',
 				subSkill:{
 					iceshaBy:{
@@ -2935,7 +2939,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			niaoji: '鸟肌',
 			niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标/来源等同于其当前体力值的牌。',
 			ysxiangxing: '翔星',
-			ysxiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对任一角色造成1点伤害。',
+			ysxiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对攻击范围内一名角色造成1点伤害。',
 
 			Eilene: '艾琳',
 			duanfu: '断缚',

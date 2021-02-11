@@ -628,6 +628,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true
 						}
 						return false;
+					}).set(function(target){
+						return get.attitude(_status.event.player,target)<1;
 					});
 					'step 1'
 					if(result&&result.bool==false){
@@ -731,7 +733,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},event.dialogId);
 					event.finish();
-				}
+				},
+				ai:{
+					order:7,
+					result:{
+						player:function(player,target){
+							if(game.roundNumber>1&&player.countCards('h')>1)	return 1;
+							else return -0.2;
+						},
+					},
+				},
+
 			},
 			zhongxinghezou: {
 				init: function(player) {
@@ -1199,6 +1211,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return target.countCards('he');
 				},
 				selectTarget:2,
+				multitarget:true,
 				content:function(){
 					"step 0"
 					player.addSkill('jiajiupaidui_tag');
@@ -1260,7 +1273,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:9,
 					result:{
+						player:0.8,
 						target:-1,
+						expose:0.4,
 					},
 				},
 				subSkill:{

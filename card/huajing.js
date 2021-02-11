@@ -28,7 +28,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:8.5,
 					value:5,
-					useful:3,
+					useful:[3,2,2,1],
 					result:{
 						target:function(player,target){
 							if(target.isDamaged()) return 1;
@@ -220,7 +220,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					basic:{
 						order:9.5,
-						useful:1,
+						useful:[3,1],
 						value:5,
 					},
 					result:{
@@ -294,7 +294,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					basic:{
 						order:9.5,
-						useful:1,
+						useful:[2,1],
 						value:5,
 					},
 					result:{
@@ -366,7 +366,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					basic:{
 						order:9.5,
-						useful:1,
+						useful:[2,1],
 						value:5,
 					},
 					result:{
@@ -415,7 +415,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return (lib.filter.judge(card,player,target)&&player!=target);
 				},
 				judge:function(card){
-					if(get.suit(card)=='diamond') return 0;
+					if(get.suit(card)=='diamond') return 2;
 					return -3;
 				},
 				effect:function(){
@@ -427,8 +427,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						for(var i=0;i<list.length;i++){
 							list[i].chooseToDiscard(1,true)
 						}
+					}else{
+						player.addJudgeNext(card);
 					}
-					player.addJudgeNext(card);
 				},
 				ai:{
 					basic:{
@@ -478,7 +479,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					basic:{
 						order:1,
-						useful:1,
+						useful:[2,1],
 						value:8,
 					},
 					result:{
@@ -497,7 +498,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',
-				distance:{attackFrom:-1},
+				distance:{attackFrom:-2},
 				ai:{
 					basic:{
 						equipValue:6
@@ -527,7 +528,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'equip',
 				subtype:'equip1',
-				distance:{attackFrom:-1},
+				distance:{attackFrom:-4},
 				ai:{
 					basic:{
 						equipValue:4

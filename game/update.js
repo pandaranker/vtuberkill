@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.20',
+	version:'1.9.101.21',
 	update:'1.9.100.113.3',
 	changeLog:[
-		'101.20小更新：修复大量bug，优化部分角色ai，增加旧角色的配音，给狗妈和古拉加了一个动态皮肤',
+		'101.21除夕小更新：修复bug，优化角色ai，大家除夕快乐！',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -22,8 +22,9 @@ window.noname_update={
 		'image/character/KisaragiKoyori.jpg',
 		'image/character/GawrGura.jpg',
 		'image/character/Nana7mi.jpg',
-		'image/background/huajing_bg.jpg',
 		'image/card/yalishanda.png',
+		'image/card/zhungangshuo.png',
+		'image/card/lanyinjia.png',
 	
 		'audio/effect/equip3.mp3',
 		'audio/effect/equip4.mp3',

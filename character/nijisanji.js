@@ -576,14 +576,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			mozhaotuji:{
-				group:['mozhaotuji_DrawOrStop','mozhaotuji_Clear','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
+				group:['mozhaotuji_DrawOrStop','mozhaotuji_useCard','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
 				/**转化阶段 */
 				contentx:function(trigger,player){
 					'step 0'
 					if(!player.hasSkill('mozhaotujiStart'))
 						player.addTempSkill('mozhaotujiStart');
 					trigger.cancel();
-					var stat=player.getStat();
+					/*var stat=player.getStat();
 					stat.card={};
 					for(var i in stat.skill){
 						var bool=false;
@@ -593,12 +593,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
 						}
 						if(bool) stat.skill[i]=0;
-					}
+					}*/
 					'step 1'
 					player.phaseUse();
 					'step 2'
 					var stat=player.getStat();
-					stat.card={};
+					//stat.card={};
 					for(var i in stat.skill){
 						var bool=false;
 						var info=lib.skill[i];
@@ -611,29 +611,43 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					DrawOrStop:{
-						trigger:{global:'phaseUseAfter'},
+						trigger:{global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']},
 						filter:function(event,player){
-							if((player.getHistory('useCard').length)>=2)
+							if((player.storage.mozhaotuji_useCard)>=1)
 								return true;
-							else if((player.getHistory('useCard').length)==0)
+							else if((player.storage.mozhaotuji_useCard)==0)
 								return player==_status.currentPhase;
 							else
 								return false;
 						},
 						priority: 14,
-						forced:true,
+						direct:true,
 						content:function(){
 							'step 0'
-							if((player.getHistory('useCard').length)>=2)
+							if((player.storage.mozhaotuji_useCard)>=2){
+								player.logSkill('mozhaotuji');
 								player.draw(1);
-							else
+							}
+							else if(trigger.name=='phaseUse')
 								player.addTempSkill('mozhaotujiStop');
-							// 'step 1'
-							// player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
-							// player.getHistory('respond').splice(0,player.getHistory('respond').length);
+							'step 1'
+							player.storage.mozhaotuji_useCard = 0;
 						},
 					},
-					Clear:{
+					useCard:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = 0;
+						},
+						trigger:{player:'useCardAfter'},
+						direct:true,
+						silent:true,
+						priority: 1,
+						content:function(){
+							player.storage.mozhaotuji_useCard++;
+							console.log(player.storage.mozhaotuji_useCard);
+						},
+					},
+					/*Clear:{
 						trigger:{player:'phaseUseAfter'},
 						direct:true,
 						priority: 1,
@@ -645,16 +659,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
 							player.getHistory('respond').splice(0,player.getHistory('respond').length);
 						},
-					},
+					},*/
 					Ready:{
 						trigger:{
 							player:'phaseZhunbeiBegin'
+						},
+						check:function(event,player){
+							return player.countCards('h',function(card){
+								return player.hasUseTarget(card);
+							}).length>=3;
 						},
 						filter:function(event,player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
 						prompt:function(){
-							return '把准备阶段转换为出牌阶段';
+							return get.prompt('mozhaotuji')+'把准备阶段转换为出牌阶段';
 						},
 						content:function () {
 							lib.skill.mozhaotuji.contentx(trigger,player);
@@ -664,11 +683,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{
 							player:'phaseJudgeBefore'
 						},
+						check:function(event,player){
+							return player.countCards('h',function(card){
+								return player.hasUseTarget(card);
+							}).length>=2;
+						},
 						filter:function(event,player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
 						prompt:function(){
-							return '把判定阶段转换为出牌阶段';
+							return get.prompt('mozhaotuji')+'把判定阶段转换为出牌阶段';
 						},
 						content:function () {
 							lib.skill.mozhaotuji.contentx(trigger,player);
@@ -678,11 +702,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{
 							player:'phaseDrawBefore'
 						},
+						check:function(event,player){
+							return false;
+						},
 						filter:function(event,player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
 						prompt:function(){
-							return '把摸牌阶段转换为出牌阶段';
+							return get.prompt('mozhaotuji')+'把摸牌阶段转换为出牌阶段';
 						},
 						content:function () {
 							lib.skill.mozhaotuji.contentx(trigger,player);
@@ -692,11 +719,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{
 							player:'phaseDiscardBefore'
 						},
+						check:function(event,player){
+							return true;
+						},
 						filter:function(event,player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
 						prompt:function(){
-							return '把弃牌阶段转换为出牌阶段';
+							return get.prompt('mozhaotuji')+'把弃牌阶段转换为出牌阶段';
 						},
 						content:function () {
 							lib.skill.mozhaotuji.contentx(trigger,player);
@@ -706,11 +736,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{
 							player:'phaseJieshuBegin'
 						},
+						check:function(event,player){
+							return true;
+						},
 						filter:function(event,player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
 						prompt:function(){
-							return '把结束阶段转换为出牌阶段';
+							return get.prompt('mozhaotuji')+'把结束阶段转换为出牌阶段';
 						},
 						content:function () {
 							lib.skill.mozhaotuji.contentx(trigger,player);
@@ -720,11 +753,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			mozhaotujiStart:{
 				trigger:{
-					player:['phaseJudgeAfter','phaseDrawAfter','phaseDiscardAfter']
+					player:['phaseJudgeEnd','phaseDrawEnd','phaseDiscardEnd']
 				},
+				priority: 15,
 				direct:true,
+				silent:true,
 				filter:function(event,player){
-					if((player.getHistory('useCard').length+player.getHistory('respond').length)==0)
+					if((player.storage.mozhaotuji_useCard)==0)
 						return true;
 					else
 						return !player.hasSkill('mozhaotujiStop');
@@ -1352,6 +1387,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 3'
 							var next = player.chooseButton(1 ,true);
 							next.set('dialog',event.videoId);
+							next.set('ai',function(button){
+								var card={name:button.link[2]};
+								var value=get.value(card);
+								return value;
+							});
 							'step 4'
 							game.broadcastAll('closeDialog', event.videoId);
 							if (result.bool) {
@@ -1943,9 +1983,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							game.delay(0.5);
 							player.logSkill('meici', trigger.player);
-							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).ai=function(button){
-								var val=get.buttonValue(button);
-								if(att>0) return 2-val+Math.random();
+							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target',trigger.player).ai=function(button){
+								var val = get.buttonValue(button);
+								var player = _status.event.player;
+								var target = _status.event.target;
+								if(get.attitude(player,target)>0) return 2-val+Math.random();
 								return val+Math.random();
 							};
 							'step 1'

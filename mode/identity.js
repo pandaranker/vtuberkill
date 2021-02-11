@@ -2541,8 +2541,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return get.realAttitude(from,to)+difficulty*1.5;
 				}
 				else{
-					if(!to.ai)	to.ai = {};
-					//
 					if(from.identity=='zhong'&&to.ai.shown==0&&from.ai.tempIgnore&&
 						!from.ai.tempIgnore.contains(to)){
 						for(var i=0;i<game.players.length;i++){

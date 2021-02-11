@@ -1875,31 +1875,36 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							if(player.hasSkill('kuali_used'))	return false;
 							return game.hasPlayer(function(cur){
-								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
-								||(cur.hp%player.hp==0&&cur.hp>0);
+								return (cur.countCards('h')%player.countCards('h')==0)
+								||(cur.hp%player.hp==0);
 							});
 						},
 						content:function(){
 							'step 0'
+							var choice = 1;
+							if(player.hp==1&&game.hasPlayer(function(cur){
+								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
+							}))	choice = 0;
 							player.addTempSkill('kuali_used');
 							player.chooseControlList(
 								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
 								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
 								true,function(event,player){
-									return _status.event.index;
-								});
+									return _status.event.choice;
+								}).set('choice',choice);
 							'step 1'
 							if(result.index==0){
 								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
 									if(target==player) 				return false;
 									return target.countCards('h')%player.countCards('h')==0;
-								});						
+								}).set('ai',function(target){
+									var player = _status.event.player;
+									return ui.selected.targets.length<(player.maxHp-player.hp);
+								})						
 							}
 							if(result.index==1){
-								var num=-1;
-								game.hasPlayer(function(cur){
-									if(cur.hp%player.hp==0)
-									num++;
+								var num = game.countPlayer(function(cur){
+									return cur.hp%player.hp==0&&cur!=player;
 								});
 								player.draw(num);
 								player.loseHp();
@@ -1908,14 +1913,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 2'
 							if(result.bool&&result.targets.length)
 							{
-								var num=0;
-								num=Number(result.targets.length);
-								player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
+								var num = result.targets.length;
+								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he');
 								player.recover(num);
 							}
 						},
 					},
-			
+					ai:{
+						order:function(item,player){
+							if(player.hp==1&&game.hasPlayer(function(cur){
+								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
+							}))	return 2;
+							if(!player.needsToDiscard()&&game.countPlayer(function(cur){
+								return cur.hp%player.hp==0&&cur!=player;
+							})>player.hp)	return 8;
+							return 0;
+						},
+						result:{player:1}
+					},
 					jieshu:{
 						trigger:{player:'phaseJieshuBegin'},
 						priority:40,
@@ -1923,46 +1938,56 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							if(player.hasSkill('kuali_used'))	return false;
 							return game.hasPlayer(function(cur){
-								return (cur.countCards('h')%player.countCards('h')==0&&cur.countCards('h')>0)
-								||(cur.hp%player.hp==0&&cur.hp>0);
+								return (cur.countCards('h')%player.countCards('h')==0)
+								||(cur.hp%player.hp==0);
 							});
+						},
+						check:function(event,player){
+							if(player.hp==1&&game.hasPlayer(function(cur){
+								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
+							}))	return true;
+							if(!player.needsToDiscard()&&game.countPlayer(function(cur){
+								return cur.hp%player.hp==0&&cur!=player;
+							})>player.hp)	return true;
+							return false;
 						},
 						content:function(){
 							'step 0'
+							var choice = 1;
+							if(player.hp==1&&game.hasPlayer(function(cur){
+								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
+							}))	choice = 0;
+							player.addTempSkill('kuali_used');
 							player.chooseControlList(
 								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
 								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
-								function(event,player){
-									return _status.event.index;
-								});
+								true,function(event,player){
+									return _status.event.choice;
+								}).set('choice',choice);
 							'step 1'
-							if(result.control!='cancel2'){
-								player.addTempSkill('kuali_used');
-								player.logSkill('kuali');
-								if(result.index==0){
-									player.chooseTarget('选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
-										if(target==player) 				return false;
-										return target.countCards('h')%player.countCards('h')==0;
-									});						
-								}
-								if(result.index==1){
-									var num=-1;
-									game.hasPlayer(function(cur){
-										if(cur.hp%player.hp==0)
-										num++;
-									});
-									player.draw(num);
-									player.loseHp();
-									event.finish();
-								}
-							}else{
-								event.finish();
+							player.logSkill('kuali');
+							if(result.index==0){
+								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
+									if(target==player) 				return false;
+									return target.countCards('h')%player.countCards('h')==0;
+								}).set('ai',function(target){
+									var player = _status.event.player;
+									return ui.selected.targets.length<(player.maxHp-player.hp);
+								})						
+							}
+							if(result.index==1){
+								var num = game.countPlayer(function(cur){
+									return cur.hp%player.hp==0&&cur!=player;
+								});
+								player.draw(num);
+								player.loseHp();
+								_status.event.finish();
 							}
 							'step 2'
-							if(result.bool&&result.targets.length){
-								var num=0;
-								num=Number(result.targets.length);
-								player.chooseToDiscard(num,'弃置'+num+'张牌并回复等量体力','he');
+							if(result.bool&&result.targets.length)
+							{
+								var num = result.targets.length;
+								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he');
 								player.recover(num);
 							}
 						},
@@ -2857,7 +2882,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									var player=_status.event.player;
 									if(_status.event.targets.contains(target)) return true;
 									return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
-								}).set('prompt2',prompt2).set('targets',trigger.targets).set('card',trigger.card);
+								}).set('prompt2',prompt2).set('ai',function(target){
+									var trigger=_status.event.getTrigger();
+									var player=_status.event.player;
+									return get.effect(target,trigger.card,player,player)*(_status.event.targets.contains(target)?-1:1);
+								}).set('targets',trigger.targets).set('card',trigger.card);
 							}, player, trigger, prompt2);
 							event.goto(2);
 						}
@@ -2888,6 +2917,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.shenhai_jiesuan.length=0;
 					player.storage.shenhai_jiesuan.add(trigger.card);
 					event.finish();
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&get.number(card)){
+							var cards = player.getCards('h');
+							var numx = 0
+							for(var i = 0;i<cards.length;i++){
+								if(cards[i]!=card&&get.number(cards[i])>get.number(card)&&player.getCardUsable(cards[i])&&player.hasUseTarget(cards[i])){
+									numx++;
+								}
+							}
+							if(get.type(card)=='equip')	return num+4*numx;
+							return num+8*numx;
+						}
+					},
 				},
 				group:['shenhai_jiesuan','shenhai_init'],
 				subSkill:{
@@ -2935,6 +2979,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player!=_status.currentPhase)	return false;
 					if(player==event.player)			return false;
 					return event.card.isCard&&!player.storage.paomo.contains(event.player)&&event.player.getHistory('useCard').length==0;
+				},
+				check:function(event,player){
+
 				},
 				content:function(){
 					player.storage.paomo.add(trigger.player);

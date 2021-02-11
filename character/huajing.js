@@ -376,6 +376,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'chooseToUse',
 				usable:1,
 				filter:function(event,player){
+					if(player.countCards('h')<2)	return false;
 					var list = player.getCards().sort(lib.sort.number);
 					return (get.number(list[0])+get.number(list[1])<=7)&&player.isPhaseUsing();
 				},
@@ -424,7 +425,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							position:'he',
 							viewAs:{name:links[0][2]},
 							onuse:function(result,player){
-								console.log(result)
 								if(result.targets&&result.targets.length==1) player.draw(result.cards.length);
 							},
 						}
@@ -432,6 +432,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					prompt:function(links,player){
 						return '###『携七』###将多张点数合计不大于7的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 					}
+				},
+				ai:{
+					order:4,
+					result:{
+						player:function(player){
+							var players=game.filterPlayer();
+							for(var i=0;i<players.length;i++){
+								if(players[i]!=player&&get.attitude(player,players[i])>0){
+									return 1;
+								}
+							}
+							return 0;
+						}
+					},
+					threaten:1.5,
 				},
 			},
 			youhai:{
@@ -455,7 +470,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.targets = [];
 					'step 1'
 					player.chooseTarget('###『佑海』###分配第'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
-						return target==player;
+						if(target.hujia==0)	return get.attitude(player,players[i]);
+						return get.attitude(player,players[i])/2;
 					});
 					'step 2'
 					if(result.targets){
@@ -571,7 +587,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tulong:{
 				trigger:{player:'dyingBegin'},
 				filter:function(event,player){
-					return player.storage.qiming_saycards&&player.storage.qiming_saycards[0]&&player.countCards('h')&&player.hasUseTarget(player.storage.qiming_saycards[0]);
+					return player.storage.qiming_saycards&&player.storage.qiming_saycards[0]&&get.info({name:player.storage.qiming_saycards[0]}).notarget!==true&&player.countCards('h')&&player.hasUseTarget(player.storage.qiming_saycards[0]);
 				},
 				lastDo:true,
 				direct:true,
@@ -580,8 +596,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.card = {name:player.storage.qiming_saycards[0]};
 					var next = player.chooseCardTarget();
 					next.prompt = get.prompt2('tulong');
-					next.filterTarget = lib.card[event.card.name].filterTarget;
-					next.selectTarget = lib.card[event.card.name].selectTarget;
+					next.filterTarget = lib.card[event.card.name].filterTarget||true;
+					next.selectTarget = lib.card[event.card.name].selectTarget||[1,1];
+					next.ai2 = function(target){
+						var player = _status.event.player;
+						return get.effect(target,_status.event.card,player,player);
+					},
+					next.set('card',event.card)
 					'step 1'
 					if(result.bool&&result.cards&&result.targets){
 						player.logSkill('tulong');

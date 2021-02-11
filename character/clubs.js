@@ -596,7 +596,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.markSkill('caibu');
 					player.showCards(player.storage.caibu, '财布');
 				},
-				ai:{order:10,result:{target:-1}},
+				ai:{order:10,result:{target:-1},expose:0.4,},
 				subSkill: {
 					draw: {
 						//audio:false,
@@ -747,6 +747,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function() {
 					player.storage.shiyilijia = cards.length;
 					player.discard(cards);
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&get.name(card)=='tao'){
+							var damage = (player.maxHp-player.hp)*2;
+							return num+damage;
+						}
+					},
 				},
 				ai:{order:4,result:{player:1}},
 				subSkill: {
@@ -927,8 +935,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var target = game.findPlayer(function(cur) {
 								return cur.hasSkill('jiumao');
 							})
-							console.log(get.attitude(player, target));
-							return target && get.attitude(player, target) > 0;
+							return target&&get.attitude(player, target)>0;
 						},
 						filter: function(event, player) {
 							return !player.hasSkill('jiumao') && player.countCards('he')
@@ -939,7 +946,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content: function() {
 							'step 0'
 							player.chooseCard(get.prompt('jiumao'), 'he', [1, Infinity]).set('ai', function(card) {
-								if (player.needsToDiscard()) return 5 - get.useful(card);
+								if (player.needsToDiscard()&&ui.selected.cards.length<player) return 6 - get.useful(card);
 								else return 2 - get.useful(card);
 							});
 							'step 1'
