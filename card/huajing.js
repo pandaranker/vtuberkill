@@ -18,7 +18,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
                     'step 0'
                     if(!target.hasSkill('qi')){
-                        target.addTempSkill('qi',{player:'phaseEnd'})
+                        target.addTempSkill('qi')
                     }
 					'step 1'
                     if(target.isDamaged()){
@@ -31,8 +31,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					useful:[3,2,2,1],
 					result:{
 						target:function(player,target){
-							if(target.isDamaged()) return 1;
-							return 0.1;
+							if(target.isDamaged()) return 1.1;
+							else if(target.isPhaseUsing())	return 0.5;
+							return 0;
 						},
 					},
 					//一些新标签
@@ -197,7 +198,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				selectTarget:1,
 				cardnature:'ocean',
 				filterTarget:function(card,player,target){
-					return player.countCards('e');
+					return target.countCards('e');
 					return target.countDiscardableCards(player,'e');
 				},
 				content:function(){
@@ -425,9 +426,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						},targets);
 						list.unshift(player);
 						for(var i=0;i<list.length;i++){
-							list[i].chooseToDiscard(1,true)
+							list[i].chooseToDiscard(1,true,'he');
 						}
-					}else{
 						player.addJudgeNext(card);
 					}
 				},
@@ -674,7 +674,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				check:function(event,player){
 					if(event.targets[0].hujia==0)	return false;
 					if(event.targets[0].isLinked()&&player.isLinked&&!player.hasSkillTag('noocean'))	return false;
-					if(get.attitude(player,event.target)>0) return true;
+					if(get.attitude(player,event.targets[0])>0) return true;
 					var eff=0;
 					for(var i=0;i<event.targets.length;i++){
 						var target=event.targets[i];
@@ -733,6 +733,20 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'shaBegin'},
 				filter:function(event,player){
 					return lib.filter.filterTarget({name:'langyong'},player,event.target);
+				},
+				check:function(event,player){
+					if(event.target.hujia==0)	return false;
+					if(event.target.isLinked()&&player.isLinked&&!player.hasSkillTag('noocean'))	return false;
+					if(get.attitude(player,event.target)>0&&event.target.hasSkillTag('noocean')) return true;
+					var eff=0;
+					for(var i=0;i<event.targets.length;i++){
+						var target=event.targets[i];
+						var eff1=get.damageEffect(target,player,player);
+						var eff2=get.damageEffect(target,player,player,'ocean');
+						eff+=eff2;
+						eff-=eff1;
+					}
+					return eff>=0;
 				},
 				content:function(){
 					var fun = lib.card.langyong.content;
@@ -862,6 +876,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			yalishanda: '亚历山大石',
 			yalishanda_info: '石',
 			yalishanda_skill: '亚历山大石',
+			yalishanda_skill2: '亚历山大石',
 			yalishanda_info: '你可以指定你造成伤害的属性。你造成伤害后可以弃置此牌，令目标弃置两张牌。',
 			yalishanda_skill_info: '你可以指定你造成伤害的属性。',
 			yalishanda_skill2_info: '你造成伤害后可以弃置此牌，令目标弃置两张牌。',

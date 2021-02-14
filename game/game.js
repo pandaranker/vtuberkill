@@ -9585,6 +9585,7 @@
 							case 'dotlive':k++;if(lib.config.banned.contains(i)) sk++;break;
 							case 'eilene':l++;if(lib.config.banned.contains(i)) sl++;break;
 							case 'paryi':m++;if(lib.config.banned.contains(i)) sm++;break;
+							case 'kagura':n++;if(lib.config.banned.contains(i)) sn++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -10072,6 +10073,7 @@
 			upd8:'U',
 			eilene:'艾琳',
 			paryi:'帕',
+			kagura:'神楽',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -10086,6 +10088,7 @@
 			VirtuaReal2:'VirtuaReal',
 			eilene2:'艾琳一家',
 			paryi2:'帕里',
+			kagura2:'神楽组',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -10111,6 +10114,7 @@
 			eileneColor:"#DB7093",
 			paryiColor:"#DDAAAF",
 			VirtuaRealColor:"#77aaee",
+			kaguraColor:"#55deef",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -25630,7 +25634,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 13;
+					if(!lib.character[name]) return 15;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -25645,7 +25649,8 @@
 					if(lib.character[name][1]=='eilene') return 10;
 					if(lib.character[name][1]=='paryi') return 11;
 					if(lib.character[name][1]=='VirtuaReal') return 12;
-					return 13;
+					if(lib.character[name][1]=='kagura') return 13;
+					return 14;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -25813,201 +25818,210 @@
 					trigger.getParent().yamiDirect = true;
 				},
 			},
-			_yamisha2:{
-				trigger:{player:'phaseJieshu'},
-				priority:1,
-				popup:false,
-				forced:true,
-				ruleSkill:true,
-				filter:function(event,player){
-					if(event.getParent().noyami) return false;
-					if(event.player.hasSkillTag('playernoyami',false,event)) return false;
-					return game.countPlayer(function(cur){
-						return cur.hasYami();
-					})
-				},
-				content:function(){
-					'step 0'
-					event.target=trigger.player;
-					event.state=true;
-					event._global_waiting=true;
-					event.filterCard=function(card,player){
-						if(get.nature(card)!='yami') return false;
-						return lib.filter.cardEnabled(card,player,'forceEnable');
-					};
-					event.send=function(player,state,target,id,skillState){
-						if(skillState){
-							player.applySkills(skillState);
-						}
-						state=state?1:-1;
-						var str='';
-						if(target){
-							str+='对'+get.translation(target);
-						}
-						str+='的结束阶段，是否对其使用暗影属性的牌？';
+			// _yamisha2:{
+			// 	trigger:{player:'phaseJieshu'},
+			// 	priority:1,
+			// 	popup:false,
+			// 	forced:true,
+			// 	ruleSkill:true,
+			// 	filter:function(event,player){
+			// 		if(event.getParent().noyami) return false;
+			// 		if(event.player.hasSkillTag('playernoyami',false,event)) return false;
+			// 		return game.countPlayer(function(cur){
+			// 			return cur.hasYami();
+			// 		})
+			// 	},
+			// 	content:function(){
+			// 		'step 0'
+			// 		event.target=trigger.player;
+			// 		event.state=true;
+			// 		event._global_waiting=true;
+			// 		event.filterCard=function(card,player){
+			// 			if(get.nature(card)!='yami') return false;
+			// 			return lib.filter.cardEnabled(card,player,'forceEnable');
+			// 		};
+			// 		event.send=function(player,state,target,id,skillState){
+			// 			if(skillState){
+			// 				player.applySkills(skillState);
+			// 			}
+			// 			state=state?1:-1;
+			// 			var str='';
+			// 			if(target){
+			// 				str+='对'+get.translation(target);
+			// 			}
+			// 			str+='的结束阶段，是否对其使用暗影属性的牌？';
 
-						var next=player.chooseToUse({
-							filterCard:function(card,player){
-								if(get.nature(card)!='yami') return false;
-								return lib.filter.cardEnabled(card,player,'forceEnable');
-							},
-							filterTarget:target,
-							prompt:str,
-							type:'yami',//
-							state:state,
-							_global_waiting:true,
-							ai1:function(){
-								if(target){
-									var triggerevent=_status.event.getTrigger();
-									if(triggerevent&&triggerevent.parent&&
-										triggerevent.parent.postAi&&
-										triggerevent.player.isUnknown(_status.event.player)){
-										return 0;
-									}
-									if(Math.abs(get.attitude(_status.event.player,target))<0) return Math.random()-0.2;
-								}
-								else{
-									return 0;
-								}
-							},
-							id:id,
-						});
-						if(event.stateplayer&&event.statecard) next.set('respondTo',[event.stateplayer]);
-						if(game.online){
-							_status.event._resultid=id;
-							game.resume();
-						}
-						else{
-							next.nouse=true;
-						}
-					};
-					event.settle=function(){
-						/*if(!event.state){
-							trigger.cancel();
-							trigger.result = {yamied: true};
-						}*/
-						event.finish();
-					};
-					'step 1'
-					var list=game.filterPlayer(function(current){
-						if(current==event.target)	return false;
-						if(event.noyami) return false;
-						if(event.directHit&&event.directHit.contains(current)) return false;
-						return current.hasYami();
-					});
-					event.list=list;
-					event.id=get.id();
-					list.sort(function(a,b){
-						return get.distance(event.target,a,'absolute')-get.distance(event.target,b,'absolute');
-					});
-					'step 2'
-					if(event.list.length==0){
-						event.settle();
-					}
-					else if(_status.connectMode&&(event.list[0].isOnline()||event.list[0]==game.me)){
-						event.goto(4);
-					}
-					else{
-						event.current=event.list.shift();
-						event.send(event.current,event.state,event.target,event.id);
-					}
-					'step 3'
-					if(result.bool){
-						event.yamiresult=event.current;
-						event.yamiresult2=result;
-						event.goto(8);
-					}
-					else{
-						event.goto(2);
-					}
-					'step 4'
-					var id=event.id;
-					var sendback=function(result,player){
-						if(result&&result.id==id&&!event.yamiresult&&result.bool){
-							event.yamiresult=player;
-							event.yamiresult2=result;
-							game.broadcast('cancel',id);
-							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
-								return (function(){
-									event.resultOL=_status.event.resultOL;
-									ui.click.cancel();
-									if(ui.confirm) ui.confirm.close();
-								});
-							}
-						}
-						else{
-							if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
-								return (function(){
-									event.resultOL=_status.event.resultOL;
-								});
-							}
-						}
-					};
+			// 			var next=player.chooseToUse({
+			// 				filterCard:function(card,player){
+			// 					if(get.nature(card)!='yami') return false;
+			// 					return lib.filter.cardEnabled(card,player,'forceEnable');
+			// 				},
+			// 				filterTarget:target,
+			// 				prompt:str,
+			// 				type:'yami',//
+			// 				state:state,
+			// 				_global_waiting:true,
+			// 				ai1:function(){
+			// 					if(target){
+			// 						var triggerevent=_status.event.getTrigger();
+			// 						if(triggerevent&&triggerevent.parent&&
+			// 							triggerevent.parent.postAi&&
+			// 							triggerevent.player.isUnknown(_status.event.player)){
+			// 							return 0;
+			// 						}
+			// 						if(Math.abs(get.attitude(_status.event.player,target))<0) return Math.random()-0.2;
+			// 					}
+			// 					else{
+			// 						return 0;
+			// 					}
+			// 				},
+			// 				id:id,
+			// 			});
+			// 			if(event.stateplayer&&event.statecard) next.set('respondTo',[event.stateplayer]);
+			// 			if(game.online){
+			// 				_status.event._resultid=id;
+			// 				game.resume();
+			// 			}
+			// 			else{
+			// 				next.nouse=true;
+			// 			}
+			// 		};
+			// 		event.settle=function(){
+			// 			/*if(!event.state){
+			// 				trigger.cancel();
+			// 				trigger.result = {yamied: true};
+			// 			}*/
+			// 			event.finish();
+			// 		};
+			// 		'step 1'
+			// 		var list=game.filterPlayer(function(current){
+			// 			if(current==event.target)	return false;
+			// 			if(event.noyami) return false;
+			// 			if(event.directHit&&event.directHit.contains(current)) return false;
+			// 			return current.hasYami();
+			// 		});
+			// 		event.list=list;
+			// 		event.id=get.id();
+			// 		list.sort(function(a,b){
+			// 			return get.distance(event.target,a,'absolute')-get.distance(event.target,b,'absolute');
+			// 		});
+			// 		'step 2'
+			// 		if(event.list.length==0){
+			// 			event.settle();
+			// 		}
+			// 		else if(_status.connectMode&&(event.list[0].isOnline()||event.list[0]==game.me)){
+			// 			event.goto(4);
+			// 		}
+			// 		else{
+			// 			event.current=event.list.shift();
+			// 			event.send(event.current,event.state,event.target,event.id);
+			// 		}
+			// 		'step 3'
+			// 		if(result.bool){
+			// 			event.yamiresult=event.current;
+			// 			event.yamiresult2=result;
+			// 			event.goto(8);
+			// 		}
+			// 		else{
+			// 			event.goto(2);
+			// 		}
+			// 		'step 4'
+			// 		var id=event.id;
+			// 		var sendback=function(result,player){
+			// 			if(result&&result.id==id&&!event.yamiresult&&result.bool){
+			// 				event.yamiresult=player;
+			// 				event.yamiresult2=result;
+			// 				game.broadcast('cancel',id);
+			// 				if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
+			// 					return (function(){
+			// 						event.resultOL=_status.event.resultOL;
+			// 						ui.click.cancel();
+			// 						if(ui.confirm) ui.confirm.close();
+			// 					});
+			// 				}
+			// 			}
+			// 			else{
+			// 				if(_status.event.id==id&&_status.event.name=='chooseToUse'&&_status.paused){
+			// 					return (function(){
+			// 						event.resultOL=_status.event.resultOL;
+			// 					});
+			// 				}
+			// 			}
+			// 		};
 
-					var withme=false;
-					var withol=false;
-					var list=event.list;
-					for(var i=0;i<list.length;i++){
-						if(list[i].isOnline()){
-							withol=true;
-							list[i].wait(sendback);
-							list[i].send(event.send,list[i],event.state,event.target,event.idget.skillState(list[i]));
-							list.splice(i--,1);
-						}
-						else if(list[i]==game.me){
-							withme=true;
-							event.send(list[i],event.state,event.target,event.id);
-							list.splice(i--,1);
-						}
-					}
-					if(!withme){
-						event.goto(6);
-					}
-					if(_status.connectMode){
-						if(withme||withol){
-							for(var i=0;i<game.players.length;i++){
-								game.players[i].showTimer();
-							}
-						}
-					}
-					event.withol=withol;
-					'step 5'
-					if(result&&result.bool&&!event.yamiresult){
-						game.broadcast('cancel',event.id);
-						event.yamiresult=game.me;
-						event.yamiresult2=result;
-					}
-					'step 6'
-					if(event.withol&&!event.resultOL){
-						game.pause();
-					}
-					'step 7'
-					for(var i=0;i<game.players.length;i++){
-						game.players[i].hideTimer();
-					}
-					'step 8'
-					if(event.yamiresult){
-						var next=event.yamiresult.useResult(event.yamiresult2);
-						if(event.stateplayer) next.respondTo=[event.stateplayer,event];
-					}
-					'step 9'
-					if(event.yamiresult){
-						if(result.yamied){
-							event.goto(1);
-						}
-						else event.settle();
-					}
-					else if(event.list.length){
-						event.goto(2);
-					}
-					else{
-						event.settle();
-					}
-					delete event.resultOL;
-					delete event.yamiresult;
-					delete event.yamiresult2;
-				}
-			},
+			// 		var withme=false;
+			// 		var withol=false;
+			// 		var list=event.list;
+			// 		for(var i=0;i<list.length;i++){
+			// 			if(list[i].isOnline()){
+			// 				withol=true;
+			// 				list[i].wait(sendback);
+			// 				list[i].send(event.send,list[i],event.state,event.target,event.idget.skillState(list[i]));
+			// 				list.splice(i--,1);
+			// 			}
+			// 			else if(list[i]==game.me){
+			// 				withme=true;
+			// 				event.send(list[i],event.state,event.target,event.id);
+			// 				list.splice(i--,1);
+			// 			}
+			// 		}
+			// 		if(!withme){
+			// 			event.goto(6);
+			// 		}
+			// 		if(_status.connectMode){
+			// 			if(withme||withol){
+			// 				for(var i=0;i<game.players.length;i++){
+			// 					game.players[i].showTimer();
+			// 				}
+			// 			}
+			// 		}
+			// 		event.withol=withol;
+			// 		'step 5'
+			// 		if(result&&result.bool&&!event.yamiresult){
+			// 			game.broadcast('cancel',event.id);
+			// 			event.yamiresult=game.me;
+			// 			event.yamiresult2=result;
+			// 		}
+			// 		'step 6'
+			// 		if(event.withol&&!event.resultOL){
+			// 			game.pause();
+			// 		}
+			// 		'step 7'
+			// 		for(var i=0;i<game.players.length;i++){
+			// 			game.players[i].hideTimer();
+			// 		}
+			// 		'step 8'
+			// 		if(event.yamiresult){
+			// 			var next=event.yamiresult.useResult(event.yamiresult2);
+			// 			if(event.stateplayer) next.respondTo=[event.stateplayer,event];
+			// 		}
+			// 		'step 9'
+			// 		if(event.yamiresult){
+			// 			if(result.yamied){
+			// 				event.noyami=result.noyami;
+			// 				event.directHit=result.directHit;
+			// 				event.stateplayer=event.yamiresult;
+			// 				if(event.yamiresult2&&event.yamiresult2.used){
+			// 					event.statecard=event.yamiresult2.used;
+			// 				}
+			// 				else{
+			// 					event.statecard=true;
+			// 				}
+			// 				event.goto(1);
+			// 			}
+			// 			else event.settle();
+			// 		}
+			// 		else if(event.list.length){
+			// 			event.goto(2);
+			// 		}
+			// 		else{
+			// 			event.settle();
+			// 		}
+			// 		delete event.resultOL;
+			// 		delete event.yamiresult;
+			// 		delete event.yamiresult2;
+			// 	}
+			// },
 			aozhan:{
 				charlotte:true,
 				mod:{
@@ -27756,7 +27770,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura'],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
 		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{
@@ -27774,6 +27788,7 @@
 			VirtuaReal:'ocean',
 			eilene:'thunder',
 			paryi:'ice',
+			kagura:'ocean',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 	};
@@ -37407,7 +37422,8 @@
 							if(info[name][1]=='upd8') return 11;
 							if(info[name][1]=='eilene') return 12;
 							if(info[name][1]=='paryi') return 13;
-							return 14;
+							if(info[name][1]=='kagura') return 14;
+							return 15;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -42398,7 +42414,7 @@
 				},true,true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('wei','shu','wu','western','qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi',function(link,node){//
+				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura',function(link,node){//'wei','shu','wu','western',
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -42825,7 +42841,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi'];//'wei','shu','wu',
+					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -43055,7 +43071,8 @@
 						if(lib.character[name][1]=='eilene') return 8;
 						if(lib.character[name][1]=='paryi') return 9;
 						if(lib.character[name][1]=='VirtuaReal') return 10;
-						return 11;
+						if(lib.character[name][1]=='kagura') return 11;
+						return 12;
 					}
 				}
 				list.sort(function(a,b){
@@ -52471,7 +52488,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura'];
 		},
 		types:function(){
 			var types=[];

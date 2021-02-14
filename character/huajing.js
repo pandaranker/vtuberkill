@@ -9,7 +9,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**白神遥 */
 			ShirakamiHaruka:['female','qun',3,['baoxiao','quru']],
 			/**海狗 */
-			KisaragiKoyori:['female','qun',3,['shinve','juzu']],
+			KisaragiKoyori:['female','kagura',3,['shinve','juzu']],
 			/**鲨皇 */
 			GawrGura:['female','holo',3,['lingqun','yangliu']],
 			/**娜娜米 */
@@ -364,6 +364,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			xieqi:{
+				auido:2,
 				hiddenCard:function(player,name){
 					var list = get.libCard(function(card){
 						return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
@@ -376,9 +377,51 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'chooseToUse',
 				usable:1,
 				filter:function(event,player){
-					if(player.countCards('h')<2)	return false;
-					var list = player.getCards().sort(lib.sort.number);
-					return (get.number(list[0])+get.number(list[1])<=7)&&player.isPhaseUsing();
+					if(player.countCards('h')<1)	return false;
+					var list = player.getCards().map(function(i){
+						return get.number(i);
+					});
+					function getNumbers(source, count, isPermutation = true) {
+						//如果只取一位，返回数组中的所有项，例如 [ [1], [2], [3] ]
+						let currentList = source.map((item) => [item]);
+						if (count === 1) {
+						  return currentList;
+						}
+						let result = [];
+						//取出第一项后，再取出后面count - 1 项的排列组合，并把第一项的所有可能（currentList）和 后面count-1项所有可能交叉组合
+						for (let i = 0; i < currentList.length; i++) {
+						  let current = currentList[i];
+						  //如果是排列的方式，在取count-1时，源数组中排除当前项
+						  let children = [];
+						  if (isPermutation) {
+							children = getNumbers(source.filter(item => item !== current[0]), count - 1, isPermutation);
+						  }
+						  //如果是组合的方法，在取count-1时，源数组只使用当前项之后的
+						  else {
+							children = getNumbers(source.slice(i + 1), count - 1, isPermutation);
+						  }
+						  for (let child of children) {
+							result.push([...current, ...child]);
+						  }
+						}
+						return result;
+					}
+					for (var i = 1; i <= list.length; i++) {
+						var num = getNumbers(list, i, false);
+						for(var j = 0;j < num.length;j ++){
+							var sum = 0;
+							for (var k = 1; k < num[j].length; k++) {
+								sum += num[j][k];
+							}
+							if(sum>0&&sum%7==0)	return true;
+						}
+					}
+					var sum = 0;
+					for (var k = 0; k < list.length; k++) {
+						sum += Number(num[k]);
+					}
+					if(sum>0&&sum%7==0)	return true;
+					return false;
 				},
 				chooseButton:{
 					dialog:function(event,player){
@@ -410,14 +453,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					backup:function(links,player){
 						return {
 							filterCard:function(card){
-								var sum = get.number(card);
-								for(var i=0;i<ui.selected.cards.length;i++){
-									sum += get.number(ui.selected.cards[i]);
-								}
-								return sum<=7;
+								return true;
 							},
 							complexCard:true,
-							selectCard:[2,Infinity],
+							selectCard:function(){
+								var num=0;
+								for(var i=0;i<ui.selected.cards.length;i++){
+									num+=get.number(ui.selected.cards[i]);
+								}
+								if(num>0&&num%7==0) return [ui.selected.cards.length,ui.selected.cards.length+1];
+								return ui.selected.cards.length+2;
+							},
+							forceAuto:function(){
+								return ui.selected.buttons.length==1;
+							},
 							popname:true,
 							check:function(card){
 								return 6-get.value(card);
@@ -425,16 +474,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							position:'he',
 							viewAs:{name:links[0][2]},
 							onuse:function(result,player){
+								player.logSkill('xieqi');
 								if(result.targets&&result.targets.length==1) player.draw(result.cards.length);
 							},
 						}
 					},
 					prompt:function(links,player){
-						return '###『携七』###将多张点数合计不大于7的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+						return '###『携七』###任意张点数合计为7倍数的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 					}
 				},
 				ai:{
-					order:4,
+					order:6,
 					result:{
 						player:function(player){
 							var players=game.filterPlayer();
@@ -466,26 +516,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lastDo:true,
 				content:function(){
 					'step 0'
-					event.num = 1;
+					event.num = player.maxHp-player.hp;
 					event.targets = [];
 					'step 1'
-					player.chooseTarget('###『佑海』###分配第'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
-						if(target.hujia==0)	return get.attitude(player,players[i]);
-						return get.attitude(player,players[i])/2;
+					player.chooseTarget([1,event.num],'###『佑海』###分配第'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
+						var player = _status.event.player;
+						if(target.hujia==0)	return get.attitude(player,target);
+						return get.attitude(player,target)/2;
 					});
 					'step 2'
-					if(result.targets){
-						event.targets.add(result.targets[0]);
-						player.line(result.targets[0],'ocean');
-						result.targets[0].changeHujia();
+					if(result.targets&&result.targets.length){
+						event.targets.addArray(result.targets);
+						player.line(result.targets,'ocean');
+						for(var i=0;i<event.targets.length;i++){
+							event.targets[i].changeHujia();
+						};
 					}else{
 						return false;
 					}
-					'step 3'
-					if(event.num<player.maxHp-player.hp){
-						event.num++;
-						event.goto(1);
-					}
+					// 'step 3'
+					// if(event.num<player.maxHp-player.hp){
+					// 	event.num++;
+					// 	event.goto(1);
+					// }
 				},
 			},
 			qiming:{
@@ -653,7 +706,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nana7mi: '七海',
 			xieqi: '携七',
-			xieqi_info: '每回合限一次，你可以将多张点数合计不大于7的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
+			xieqi_info: '每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
 			youhai: '佑海',
 			youhai_info: '你使用点数或点数合计为7的牌时，可以将X点护甲分配给任意角色。（X为你已损失的体力值）',
 

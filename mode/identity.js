@@ -36,6 +36,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_paryi:{
 				fullskin:true,
 			},
+			group_kagura:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1705,7 +1708,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -1715,7 +1718,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						});
 					}
 					"step 2"
-					event.group=result.control||false;
+					event.group=result.links[0][2].slice(6)||false;
 					if(event.chosen.length){
 						game.me.init(event.chosen[0],event.chosen[1]);
 					}
@@ -1987,7 +1990,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2068,7 +2071,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2138,6 +2141,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_VirtuaReal:"维",
 			group_upd8:"U",
 			group_paryi:"帕",
+			group_kagura:"神楽",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
@@ -2149,6 +2153,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_VirtuaReal_bg:"维",
 			group_upd8_bg:"U",
 			group_paryi_bg:"帕",
+			group_kagura_bg:"神",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

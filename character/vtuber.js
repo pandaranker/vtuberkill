@@ -8,6 +8,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KizunaAI:['female','upd8',4,['ailian','qixu'],['zhu']],
 			/**犬山 */
 			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
+			/**Mishiro */
+			ShirayukiMishiro:['female','key',3,['tianyi','nveyu']],
 			/**小白 */
 			Siro:['female', 'dotlive', 4, ['zhongxinghezou'],['zhu']],
 			/**巴恰鲁 */
@@ -386,7 +388,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},{name:'sha'},1);
 						next.set('ai',function(card){
 							var event=_status.event;
-							return get.effect(event.target,card,event.source,event.player);
+							return -get.effect(event.target,card,event.source,event.player);
 						});
 						next.set('source',player);
 						next.set('target',target);
@@ -441,6 +443,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:function(){
 						return get.order({name:'sha'})-0.1;
 					},
+					result:{target:-1},
 				}
 			},
 			qixu3:{

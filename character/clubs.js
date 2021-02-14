@@ -5,7 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
-			KaguraMea: ['female', 'qun', 4, ['luecai', 'xiaoyan']],
+			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],

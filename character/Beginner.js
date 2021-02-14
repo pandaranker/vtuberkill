@@ -58,9 +58,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**犬山 */
 			re_InuyamaTamaki:['male','key',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
-			re_KaguraMea: ['female', 'qun', 3, ['re_luecai', 're_xiaoyan']],
+			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
 
-			
+			/**373 */
+			re_MinamiNami: ['female','qun',4,['re_longdan']],
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
 			/**Re莉泽 */
@@ -1071,6 +1072,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'shaBegin'},
 				priority:98,
 				forced:true,
+				filter: function(event, player) {
+					return get.color(event.card) == 'red';
+					
+				},
 				content:function(){},
 				group: ['re_shuangren_red', 're_shuangren_black'],
 				subSkill: {
@@ -1293,6 +1298,73 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}*/
 					},
+				},
+			},
+			//re373
+			re_longdan:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = true;
+				},
+				hiddenCard:function(player,name){
+					if(player.storage.re_longdan==true&&name=='sha'&&lib.inpile.contains(name))	return player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'});
+					if(player.storage.re_longdan==false&&get.type(name)=='basic'&&lib.inpile.contains(name)) return player.countCards('h',{name:'sha'});
+				},
+				enable:['chooseToUse','chooseToRespond'],
+				usable:1,
+				filter:function(event,player){
+					return !player.hasSkill('haruka_kanata');
+				},
+				chooseButton:{
+					dialog:function(event,player){
+						var list=[];
+						for(var i=0;i<lib.inpile.length;i++){
+							var name=lib.inpile[i];
+							if(player.storage.re_longdan==true&&name=='sha'){
+								list.push(['基本','','sha']);
+								list.push(['基本','','sha','fire']);
+								list.push(['基本','','sha','thunder']);
+								list.push(['基本','','sha','ice']);
+								list.push(['基本','','sha','ocean']);
+							}
+							else if(player.storage.re_longdan==false&&get.type(name)=='basic') list.push(['基本','',name]);
+						}
+						return ui.create.dialog(get.translation('re_longdan'),[list,'vcard']);
+					},
+					filter:function(button,player){
+						return _status.event.getParent().filterCard({name:button.link[2]},player,_status.event.getParent());
+					},
+					check:function(button){
+						var player=_status.event.player;
+						if(player.countCards('h',button.link[2])>0) return 0;
+						var effect=player.getUseValue(button.link[2]);
+						if(effect>0) return effect;
+						return 0;
+					},
+					backup:function(links,player){
+						return {
+							filterCard:function(card,player){
+								if(player.storage.re_longdan==false) return get.name(card)=='sha';
+								return get.type(card)=='basic'&&get.name(card)!='sha';
+							},
+							selectCard:1,
+							popname:true,
+							check:function(card){
+								return 6-get.value(card);
+							},
+							position:'he',
+							viewAs:{name:links[0][2],nature:links[0][3],isCard:true},
+							onuse:function(result,player){
+								if(player.storage.re_longdan==false)	player.storage.re_longdan = true;
+								else	player.storage.re_longdan = false;
+							},
+						}
+					},
+					prompt:function(links,player){
+						return '请选择'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'的目标';
+					}
+				},
+				ai:{
+					fireAttack:true,
 				},
 			},
 			//re修女
@@ -2566,7 +2638,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SisterClearie:['re_SisterClearie','SisterClearie'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
 		},
-		   translate:{
+		dynamicTranslate:{
+			re_longdan:function(player){
+				if(player.storage.re_longdan) return '<font color=#66f>转换技</font> 每回合限一次。<span class="bluetext">阳：每回合限一次，你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：每回合限一次，你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
+				return '<font color=#66f>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
+			},
+		},
+		translate:{
 			hololive: 'HOLO',
 			
 			re_KizunaAI: '新·绊爱',
@@ -2637,6 +2715,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MononobeAlice:'新·物述有栖',
 			re_dianmingguzhen:'电鸣鼓震',
 			re_dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你可视为使用一张雷【杀】。',
+
+			re_MinamiNami: '新·美波七海',
+			re_longdan: '龙胆雄心',
+			re_longdan_info: '<font color=#66f>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。',
 
 			re_SisterClearie: '新·克蕾雅',
 			shenyou: '神佑',
