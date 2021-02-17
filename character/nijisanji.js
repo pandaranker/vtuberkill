@@ -28,6 +28,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			/**Elu */
 			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
+			/**皇女 */
+			LizeHelesta:['female','nijisanji',3,['shencha','helesta'],['zhu']],
 			/**露露 */
 			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
 			/**阿喵喵 */

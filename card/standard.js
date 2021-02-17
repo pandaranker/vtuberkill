@@ -1123,8 +1123,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						value:5.5
 					},
 					result:{
-						target:-1.5,
+						target:function(player,target,card){
+							if(player.hasSkill('miaomiao'))	return get.recoverEffect(target,player,player);
+							return -1.5;
+						},
 						player:function(player,target,card){
+							if(player.hasSkill('miaomiao'))	return 0;
 							if(player.hasSkillTag('directHit_ai',true,{
 								target:target,
 								card:card,

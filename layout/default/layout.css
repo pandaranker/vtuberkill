@@ -1306,6 +1306,14 @@ body>.background.land {
 	text-shadow: rgba(213, 194, 179,1) 0 0 3px,rgba(213, 194, 179,1) 0 0 3px,rgba(213, 194, 179,1) 0 0 3px,
 		rgba(213, 194, 179,1) 0 0 3px,black 0 0 3px;
 }
+.card>.gaintag {
+	bottom: 5px;
+	left: 5px;
+	text-align: left;
+	color: white;
+	text-shadow: rgba(255, 120, 0,1) 0 0 2px,rgba(255, 120, 0,1) 0 0 2px,rgba(255, 120, 0,1) 0 0 2px,
+		rgba(255, 120, 0,1) 0 0 2px,black 0 0 1px;
+}
 .card>.name {
 	top: 9px;
 	left: 6px;
@@ -2779,6 +2787,14 @@ div:not(.handcards)>.card>.info>span,
 	background-image: radial-gradient(circle at bottom left, rgb(255, 218, 71), rgb(224, 191, 62))
 }
 
+.identitycircle > div > div[data-color='jin'] {
+	background-image: radial-gradient(circle at bottom left, rgb(100, 74, 139), rgb(96, 72, 136))
+}
+
+.identitycircle > div > div[data-color='key'] {
+	background-image: radial-gradient(circle at bottom left, rgb(203, 177, 255), rgb(203, 177, 255))
+}
+
 .unseen>.avatar,.unseen>.name:not(.name2),
 .unseen2>.avatar2,.unseen2>.name2 {
 	opacity: 0 !important;
@@ -3391,6 +3407,7 @@ div:not(.handcards)>.card>.info>span,
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.name2,
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.info,
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.range,
+#arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.gaintag,
 #arena.selecting:not(.video) .player[data-position='0'] .card:not(.selectable)>.addinfo,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.background,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.image,
@@ -3398,6 +3415,7 @@ div:not(.handcards)>.card>.info>span,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.name2,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.info,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.range,
+#arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.gaintag,
 #arena.selecting:not(.video) .player.current_action .card:not(.selectable)>.addinfo,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.background,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.image,
@@ -3405,6 +3423,7 @@ div:not(.handcards)>.card>.info>span,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.name2,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.info,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.range,
+#arena.selecting:not(.video) #me .card:not(.selectable)>.gaintag,
 #arena.selecting:not(.video) #me .card:not(.selectable)>.addinfo,
 #arena.selecting:not(.video) .dialog:not(.noselect) .button:not(.selectable):not(.noclick):not(.replaceButton),
 .dead,.likedead {
@@ -3489,6 +3508,7 @@ div:not(.handcards)>.card>.info>span,
 .card.selectable>.name2,
 .card.selectable>.info,
 .card.selectable>.range,
+.card.selectable>.gaintag,
 .button.selectable {
 	opacity: 1;
 }

@@ -22,14 +22,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MononobeAlice:['female','nijisanji',3,['tinenghuifu1','re_dianmingguzhen']],
 			/**静凛 */
 			re_ShizukaRin:['female','nijisanji',4,['re_mozhaotuji']],
-			/**家长麦 */
-	//		IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
 			/**月之美兔 */
 			re_MitoTsukino:['female','nijisanji',3,['re_bingdielei'],['zhu']],
 			/**宇志海莓 */
 			re_UshimiIchigo: ['female', 'nijisanji', 3, ['re_shuangren', 're_jitui']],
-			/**铃鹿诗子 */
-	//		SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
 			/**时乃空 */
@@ -60,7 +56,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
 
-			/**373 */
+			/**美波 */
 			re_MinamiNami: ['female','qun',4,['re_longdan']],
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
@@ -2640,7 +2636,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			re_longdan:function(player){
-				if(player.storage.re_longdan) return '<font color=#66f>转换技</font> 每回合限一次。<span class="bluetext">阳：每回合限一次，你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：每回合限一次，你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
+				if(player.storage.re_longdan) return '<font color=#66f>转换技</font> 每回合限一次。<span class="bluetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
 				return '<font color=#66f>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
 			},
 		},

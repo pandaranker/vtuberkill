@@ -226,6 +226,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					result:{
 						target:function(player,target){
+							if(player.hasSkill('miaomiao'))	return get.recoverEffect(target,player,player);
 							var att=get.attitude(player,target);
 							var nh=target.countCards('h');
 							if(att>0){
@@ -274,7 +275,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.choosePlayerCard(target, 'he', [1, 3], '【沉没】：移除至多3张牌',true);
+					player.choosePlayerCard(target, 'he', [1, 3], '【沉没】：移除至多3张牌',true).set('ai',function(button){
+						var val = get.buttonValue(button);
+						var att = get.attitude(_status.event.player,get.owner(button.link));
+						var pos = get.position(button.link);
+						var extra = get.owner(button.link).getCards('h').removeArray(ui.selected.cards);
+						if(att>0&&pos=='h') return 8+val;
+						else if(pos=='h'&&extra.length==1&&extra.contains(button.link)) return 0;
+						else if(att>0)	return -val;
+						return val;
+					});
 					'step 1'
 					if(result.bool){
 						event.cards = result.links.slice(0);
@@ -294,12 +304,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					basic:{
-						order:9.5,
+						order:10.5,
 						useful:[2,1],
 						value:5,
 					},
 					result:{
 						target:function(player,target){
+							if(!player.inRange(target)&&!player.hasCard('juedou'))	return 0;
+							if(target==player&&player.needsToDiscard())	return 1;
 							var att=get.attitude(player,target);
 							var nh=target.countCards('h');
 							if(att>0){
@@ -346,7 +358,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.choosePlayerCard(target, 'he', [1, 3], '【沉没】：移除至多3张牌',true);
+					player.choosePlayerCard(target, 'he', [1, 3], '【沉静】：移除至多3张牌',true).set('ai',function(button){
+						var val = get.buttonValue(button);
+						var att = get.attitude(_status.event.player,get.owner(button.link));
+						var pos = get.position(button.link);
+						var extra = get.owner(button.link).getCards('h').removeArray(ui.selected.cards);
+						if(att>0&&pos=='h') return 8+val;
+						else if(pos=='h'&&extra.length==1&&extra.contains(button.link)) return 0;
+						else if(att>0)	return -val;
+						return val;
+					});
 					'step 1'
 					if(result.bool){
 						event.cards = result.links.slice(0);
@@ -366,12 +387,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					basic:{
-						order:9.5,
+						order:10.5,
 						useful:[2,1],
 						value:5,
 					},
 					result:{
 						target:function(player,target){
+							if(!player.inRange(target)&&!player.hasCard('juedou'))	return 0;
+							if(target==player&&player.needsToDiscard())	return 1;
 							var att=get.attitude(player,target);
 							var nh=target.countCards('h');
 							if(att>0){

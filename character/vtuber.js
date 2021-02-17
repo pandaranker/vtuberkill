@@ -23,13 +23,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**BFM */
 			UmoriHinako:['female','qun',4,['hongyi','jueshou']],
 		},
+		characterTitle:{
+			KizunaAI:'#r绊虚之始',
+			KaguyaLuna:'#p不羁的夜空之月',
+			XiaoxiXiaotao:'#p研虚之实',
+		},
 		characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
 			InuyamaTamaki:'犬山玉姬者，草莽微末之士也，原为东都一亭长，后绊爱首义，豪杰并起，犬山自叹曰，金鳞岂是池中物，遂聚族起义，然命运多舛，先败朝廷，又为四天王猜忌，幸而频频与杏社、虹社联动，渐得民心，立国时已四十有六。犬山帐下将军皆封之曰姬，世人戏称之曰娘子军，犬山亦不屑一顾。',
 			XiaoxiXiaotao:'小希者，魔都之望族也，魔都的破坏者，屡欲炸虚研村，后为小桃止之，魔都土妹，穿模之神，多有传说流传于世，小桃者，小希之后辈也，昔有伯乐识千里马，小桃制小希亦是之矣，有沙雕观察广为人知。',
 			KaguyaLuna:'辉夜月者，燕赵之侠客也，生于V始元年，性豪爽，声奇特，有可卡因酱之美名，luna少时绊爱交好，亲涉矢石披坚执锐，成绊爱之功业，然rap一战，恩断义绝，自领军建国，国号为辉夜月channel，追随者数以兆记。',
-			UmoriHinako: '宇森雏子，异界之蝙蝠者，随黄兔因幡氏战于列阳东，伐乌桓、鲜卑、高句丽诸部，取之以红旗，修律，重末，百姓安，震周之诸侯。雏子善战，屡自鼓乐助御敌，谓之《攻击战》，后友人常效之。然雏子初修律，列阳东遭百年不遇之饥，敌者饥之为“绝收将军”，雏子不意此事。V始十九年，为仇设计所刺，不幸卒。后二年，地入于京畿神乐咩之手，咩与雏子为旧识，遂善置此地旧民。',
-			InabaHaneru: '因幡哈涅鲁，异界之黄兔者，精通东瀛书花五道，起势以后，割据幽州及扶余，后建社，号曰‘佚’。佚社初效始皇绊爱之治，怀柔四方，广纳封臣，固有宇森雏子、周防帕特拉之能臣，然因幡氏深知功不足自坐此位，终不称王，后竟服于绊爱势。所幸周无大患，因幡氏亦与神乐咩犬山玉姬之势远交联合，佚社渐广，绊爱势溃后，即背，改因幡氏与帕特拉共治。至于雏子卒，因幡甚悲，至常自怨，引怀柔之首共治，杏户氏与龙龙崎氏由此入朝。后之佚社，终黯淡于杏国虹社者。',
+			UmoriHinako: '宇森雏子，异界之蝙蝠者，随黄兔因幡氏战于列阳东，伐乌桓、鲜卑、高句丽诸部，取之以红旗，修律，重末，百姓安，震周之诸侯。雏子善战，屡自鼓乐助御敌，谓之《攻击战》，后友人常效之。然雏子初修律，列阳东遭百年不遇之饥，敌者饥之为“绝收将军”，雏子不意此事。V始十九年，为仇设计所刺，不幸卒。后二年，地尽数入于京畿神乐咩之手，咩与雏子为旧识，遂善置此地旧民。',
+			InabaHaneru: '因幡哈涅鲁，异界之黄兔者，精通东瀛书花五道，起势以后，割据幽州及扶余，后建社，号曰‘佚’。佚社初效始皇绊爱之治，怀柔四方，广纳封臣，固有宇森雏子、周防帕特拉之能臣，然因幡氏深知功不足自坐此位，终不称王，后竟服于绊爱势。所幸周无大患，因幡氏亦与神乐咩犬山玉姬之势远交联合，佚社渐广，绊爱势溃后，即背，改与魔族周防帕特拉共治。至于雏子卒，因幡甚悲，至常自怨，引怀柔之首共治，杏户氏与龙龙崎氏由此入朝。后之佚社，终黯淡于杏国虹社者。',
 
 			Qiankesaier:'',
 		},
@@ -978,7 +983,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					},trigger);
-					if(event.cards.length<0){
+					if(event.cards.length<=0){
 						event.finish();
 					}
 					else{
@@ -1029,21 +1034,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.goto(6);
 					}
 					else{
+						event.cardUse = result.links[0];
 						if(event.resultBool){
-							var bool=game.hasPlayer(function(current){
-								return player.canUse(result.links[0],current);
-							});
-							if(bool){
+							if(player.hasUseTarget(event.cardUse)){
 								//player.chooseUseTarget(result.links[0],true,false);
-								//console.log(result.links[0]);
 								player.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
 							}
 						}
 						else{
-							var bool=game.hasPlayer(function(current){
-								return event.target.canUse(result.links[0],current);
-							});
-							if(bool){
+							if(event.target.hasUseTarget(event.cardUse)){
 								event.target.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
 							}
 						}
@@ -1063,10 +1062,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.loop=false;
 						event.resultBool=!event.resultBool;
 						if(event.resultBool){
-							player.chooseBool('同样发动一次效果，或取消使对方回复一点体力');
+							player.chooseBool('同样发动一次效果，或取消使对方回复一点体力').set('ai',function(){
+								var player = _status.event.player;
+								var target = _status.event.getParent().target;
+								if(get.recoverEffect(target,player,player)>1)	return 0;
+								else return -0.2+Math.random();
+							});
 						}
 						else{
-							event.target.chooseBool('同样发动一次效果，或取消使对方回复一点体力');
+							event.target.chooseBool('同样发动一次效果，或取消使对方回复一点体力').set('ai',function(){
+								var player = _status.event.player;
+								var target = _status.event.getParent().player;
+								if(get.recoverEffect(target,player,player)>1)	return 0;
+								else return -0.2+Math.random();
+							});
 						}
 					}
 					else{
@@ -1088,7 +1097,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:8,
 					result:{
-						target:1,
+						target:0.5,
 					},
 				},
 			},

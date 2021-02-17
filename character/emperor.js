@@ -332,7 +332,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('renzhan2','phaseEnd');
 						target.storage.renzhan2 = 0;
-						console.log(player.hasCard('sha','h'));
 						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
 					}
@@ -549,13 +548,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							var suits = [];
 							game.getGlobalHistory('cardMove',function(evt){
-			//					console.log(evt);
-								if(evt.name=='cardsDiscard'||(evt.name=='lose'&&evt.getParent().name=='discard')){
-										for(var i=0;i<evt.cards.length;i++){
+								if(evt==trigger||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+								for(var i=0;i<evt.cards.length;i++){
 											suits.add(get.suit(evt.cards[i]));
-										}
-									}
-								});
+								}
+							});
 							if(suits.length == 4)	return true;
 						},
 						content:function(){

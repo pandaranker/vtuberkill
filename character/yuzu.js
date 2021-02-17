@@ -12,9 +12,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			SuouPatra:['female','qun',4,['mianmo','tiaolv']],
 
-			LizeHelesta:['female','nijisanji',3,['shencha','helesta'],['zhu']],
 //			AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
+			KenmochiDouya:['male','nijisanji',3,['shenglang','nodao']],
 
 			TenkaiTsukasa:['male','upd8',4,['pojie','dazhen']],
 			/**测试用角色 */
@@ -2293,7 +2293,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.gainPlayerCard('###'+get.prompt('helesta')+'###可以获得装备区的一张牌使伤害-1',player,'e');
+					player.discardPlayerCard('###'+get.prompt('helesta')+'###可以弃置装备区的一张牌使伤害-1',player,'e');
 					'step 1'
 					if(result.bool){
 						player.logSkill('helesta');
@@ -2321,7 +2321,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						direct:true,
 						content:function(){
-							player.chooseUseTarget('###'+get.prompt('helesta')+'###视为使用一张冰【杀】',{name:'sha',nature:'ice',isCard:true},false);
+							'step 0'
+							player.chooseUseTarget('###'+get.prompt('helesta')+'###视为使用一张冰【杀】并摸一张牌',{name:'sha',nature:'ice',isCard:true},false);
+							'step 1'
+							if(result.targets&&result.targets.length){
+								player.draw();
+							}
 						},
 					}
 				},
@@ -2330,6 +2335,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chuangzuo:{},
 			//露露
 			zhongli:{
+				mark:true,
+				intro:{
+					name:'本回合因『重力牵引』获得的牌',
+					content:'cards',
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							storage.length=0;
+						}
+					},
+				},
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
 				trigger:{player:'phaseUseAfter'},
 				priority:99,
 				lastDo:true,
@@ -2346,13 +2364,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.judge(func);
 					'step 1'
 					if(result.judge>0){
-						if(player.maxHp>1)	player.loseMaxHp();
-						player.gain(result.card);
-						player.phaseUse();
+						player.gain(result.card,'draw');
+						if(!event.cards)	event.cards = [];
+						event.cards.add(result.card);
+						event.goto(0);
+					}
+					'step 2'
+					if(event.cards&&event.cards.length){
+						for(var i =0;i<event.cards.length;i++){
+							if(!player.storage.zhongli.contains(event.cards[i])){
+								event.newPhaseUse = true;
+							}
+						}
 					}else{
 						event.finish();
 					}
-					'step 2'
+					'step 3'
+					if(event.newPhaseUse){
+						player.markAuto('zhongli',event.cards);
+						if(player.maxHp>1)	player.loseMaxHp();
+						player.phaseUse();
+					}
+					'step 4'
 					var stat = player.getStat();
 					for(var i in stat.skill){
 						var bool=false;
@@ -2364,8 +2397,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(bool) stat.skill[i]=0;
 					}
 				},
+				group:'zhongli_clear',
+				subSkill:{
+					clear:{
+						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						direct:true,
+						lastDo:true,
+						priority:666,
+						content:function(){
+							player.unmarkSkill('zhongli');
+						}
+					},
+				}
 			},
 			xinhuo:{
+				audio:2,
 				enable:'phaseUse',
 				filter:function(event,player){
 					return player.countCards('he')>=2;
@@ -2436,6 +2482,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					chuanhuo:{
+						audio:3,
 						trigger:{player:'useCard'},
 						forced:true,
 						onremove:function(player){
@@ -2468,8 +2515,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			weizhuang:{
-				trigger:{player:'useCard'},
-				forced:true,
+				audio:2,
+				trigger:{player:'useCardAfter'},
+				direct:true,
 				lastDo:true,
 				filter:function(event,player){
 					return (get.type(event.card,'trick')=='trick' || get.type(event.card,'trick')=='basic')&&event.targets.length>0;
@@ -2483,10 +2531,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(get.type(trigger.card,'trick')=='basic'&&player.getHistory('useCard',function(evt){
 						return get.type(evt.card,'trick')=='basic';
 					}).length>1){
-						player.draw(trigger.targets.length)
+						player.logSkill('weizhuang');
+						player.draw(trigger.targets.length);
 					}else if(get.type(trigger.card,'trick')=='trick'&&player.getHistory('useCard',function(evt){
 						return get.type(evt.card,'trick')=='trick';
 					}).length>1){
+						player.logSkill('weizhuang_discard');
 						player.chooseToDiscard(trigger.targets.length,'he',true)
 					}
 				},
@@ -2497,10 +2547,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				group:['weizhuang_clear'],
 				subSkill:{
+					discard:{},
 					clear:{
 						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
 						direct:true,
 						firstDo:true,
+						priority:666,
 						content:function(){
 							player.unmarkSkill('weizhuang');
 						}
@@ -2738,6 +2790,102 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//下巴
+			shenglang:{
+				enable:'phaseUse',
+				viewAs:{name:'juedou'},
+				usable:1,
+				filter:function(event,player){
+					return player.hasCard(function(card){
+						return get.name(card)=='sha';
+					});
+				},
+				filterCard:function(card,player){
+					return get.name(card)=='sha';
+				},
+				check:function(card){
+					return 8-get.value(card);
+				},
+				ai:{
+					basic:{
+						order:10
+					}
+				},
+				group:'shenglang_drawBy',
+				subSkill:{
+					drawBy:{
+						trigger:{player:'phaseEnd'},
+						priority:7,
+						direct:true,
+						filter:function(event,player){
+							if(!player.getStat().card.juedou)	return false
+							var num = 0;
+							game.getGlobalHistory('cardMove',function(evt){
+								if(evt==event||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+								for(var i=0;i<evt.cards.length;i++){
+									var card=evt.cards[i];
+									if(get.name(card)=='sha')	num++;
+								}
+							},event);
+							return num>0;
+						},
+						content:function(){
+							var num = 0;
+							game.getGlobalHistory('cardMove',function(evt){
+								if(evt==event||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+								for(var i=0;i<evt.cards.length;i++){
+									var card=evt.cards[i];
+									if(get.name(card)=='sha')	num++;
+								}
+							},event);
+							event.num = num;
+							player.logSkill('shenglang');
+							player.draw(event.num);
+						}
+					}
+				}
+			},
+			nodao:{
+				audio:2,
+				enable:'phaseUse',
+				filter:function(event,player){
+					return !player.getEquip(1)&&player.countCards('h','sha')>0;
+				},
+				filterCard:{name:'sha'},
+				prepare:function(cards,player){
+					player.$throw(cards,1000);
+					game.log(player,'将',cards,'置入了弃牌堆');
+				},
+				discard:false,
+				loseTo:'discardPile',
+				visible:true,
+				delay:0.5,
+				content:function(){
+					player.draw();
+				},
+				ai:{
+					basic:{
+						order:2
+					},
+					result:{
+						player:function(player,target){
+							if(player.getStat().card.juedou)	return 1;
+							else return 0.5;
+						},
+					},
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(get.itemtype(card)=='card'&&get.subtype(card)=='equip1') return (num>1?1:num);
+					},
+					aiValue:function(player,card,num){
+						if(get.itemtype(card)=='card'&&get.subtype(card)=='equip1') return num/10;
+						if(get.itemtype(card)=='card'&&player.getStat().card.juedou&&get.name(card)=='sha') return num/10;
+					},
+				},
+			},
 			//开司
 			pojie:{
 				init:function(player,skill){
@@ -2867,7 +3015,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						for(var j=0;j<ui.selected.targets.length;j++){
 							sum += ui.selected.targets[j].hp;
 						}
-						console.log(sum)
 						if(num==sum) return [0,ui.selected.targets.length];
 						else return [ui.selected.targets.length+1,ui.selected.targets.length+1];
 					});
@@ -3099,6 +3246,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			senhu: '森护',
 			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你受到的火焰伤害+1。',
 
+			KenmochiDouya: '剣持刀也',
+			shenglang: '声浪燃烈',
+			shenglang_info: '出牌阶段限一次，你可以将一张【杀】当【决斗】使用，你使用过【决斗】的回合结束时，你摸等同于该回合进入弃牌堆的【杀】数量的牌。',
+			nodao: '无刀之咎',
+			nodao_info: '你没有装备武器时，可以于出牌阶段重铸【杀】，若你以此法获得武器牌，你可以立即装备之并回复1点体力。',
+
 			SasakiSaku: '笹木咲',
 			tiaolian: '咆咲',
 			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
@@ -3109,7 +3262,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shencha: '权力审查',
 			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张牌。',
 			helesta: '赫露圣剑',
-			helesta_info: '你受到伤害时，可以获得自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】。',
+			helesta_info: '你受到伤害时，可以弃置自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】并摸一张牌。',
 
 			AngeKatrina: '安洁·卡特琳娜',
 			chuangzuo: '创作延续',
@@ -3117,12 +3270,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			SuzuharaLulu: '铃原露露',
 			zhongli: '重力牵引',
-			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你获得判定牌并继续判定；若你以此法获得了牌，你减1点体力上限（至少为1）且执行一个额外的出牌阶段。',
+			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你获得判定牌并继续判定；若你本回合第一次因此获得了某张装备牌，你减1点体力上限（至少为1）且执行一个额外的出牌阶段。',
 			xinhuo: '薪火相传',
 			xinhuo_chuanhuo: '传火',
 			xinhuo_info: '出牌阶段，你可以将两张牌以任意顺序置于牌堆顶，令你本回合下一张使用的牌无距离和次数限制且可多指定一名目标（可叠加）。',
 			weizhuang: '魔界伪装',
-			weizhuang_info: '<font color=#f66>锁定技</font> 你在一回合内多次使用基本牌/锦囊牌指定目标时，摸/弃X张牌。（X为此牌指定的目标数）',
+			weizhuang_discard: '魔界伪装',
+			weizhuang_info: '<font color=#f66>锁定技</font> 你在一回合内多次使用基本牌/锦囊牌后，摸/弃X张牌。（X为此牌指定的目标数）',
 
 			KagamiHayato: '加賀美隼人',
 			liebo: '裂帛核哮',
