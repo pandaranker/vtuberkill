@@ -6,19 +6,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
+			Ciyana: ['female','qun',3,['yankui', 'danyan']],
+
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
 
-			Eilene:['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
-
-			SuouPatra:['female','qun',4,['mianmo','tiaolv']],
+			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 
 //			AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
-			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
-			KenmochiDouya:['male','nijisanji',3,['shenglang','nodao']],
+			KenmochiDouya: ['male','nijisanji',3,['shenglang','nodao']],
 
-			TenkaiTsukasa:['male','upd8',4,['pojie','dazhen']],
+			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**测试用角色 */
-			Ruki:['female','VirtuaReal',4,['beixie','hunzhan']],
+			Ruki: ['female','VirtuaReal',4,['beixie','hunzhan']],
 		},
 		characterSort:{
 			yuzu:{
@@ -26,7 +25,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterIntro:{
-			Civia:'“听我说，DD会带来世界和平~”',
 		},
 		skill:{
 			//Ruki
@@ -69,6 +67,100 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.draw();
 					}
 				}
+			},
+			//Ciyana
+			yankui:{
+				trigger:{global:'phaseZhunbei'},
+				direct:true,
+				filter:function(event, player){
+					return player!=event.player&&player.countCards('he',function(card){
+						return !player.storage.yankui_mark||!player.storage.yankui_mark.contains(get.type(card,'trick'));
+					})>1&&event.player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					player.chooseToDiscard(get.prompt2('yankui'),function(card){
+						return !player.storage.yankui_mark||!player.storage.yankui_mark.contains(get.type(card,'trick'));
+					}).ai = function(card){
+						var player = _status.event.player;
+						var target = _status.event.getTrigger().player;
+						if(player.hasUseTarget(card)) return 6+player.getUseValue(card);
+						else if(get.attitude(player,target)<1) return 6-get.useful(card);
+						return 0;
+					}
+					'step 1'
+					if(result.cards&&result.cards.length){
+						player.logSkill(event.target);
+						if(!player.storage.yankui_mark)	player.storage.yankui_mark = [];
+						for(var i=0;i<result.cards.length;i++){
+							player.storage.yankui_mark.add(get.type(result.cards[0],'trick'));
+						}
+						var next = player.gainPlayerCard(event.target,'h',true);
+						next.set('visible',true);
+						next.set('ai',function(button){
+							var player = _status.event.player;
+							var target = _status.event.getTrigger().player;
+							if(get.attitude(player,target)>0){
+								if(target.countCards('h',{name:'sha'})>1&&get.type(button.link)!='basic'&&get.name(button.link)!='sha')	return 6+get.value(button.link);
+								if(target.countCards('j')&&target.needsToDiscard()&&get.type(button.link)!='basic')	return 5+get.value(button.link);
+							}
+							return get.value(button.link);
+						});
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool&&result.links){
+						player.addTempSkill('yankui_mark','roundStart');
+						event.card = result.links[0];
+						if(get.type(event.card)!='basic'){
+							event.target.skip('phaseJudge');
+							event.target.skip('phaseJudge');
+							event.target.addTempSkill('yankui1');
+						}else{
+							event.target.addTempSkill('yankui2');
+						}
+					}
+				},
+				//group:'yankui_mark',
+				subSkill:{
+					mark:{
+						mark:true,
+						marktext:'魇',
+						intro:{
+							name:'魇窥',
+							content:function(storage,player){
+								console.log(storage)
+								var str='<ul style="padding-top:0;margin-top:0"><p>本轮次已弃置的牌类型</p>';
+								for(var i=0;i<storage.length;i++){
+									str+='<li>'+get.translation(storage[i]);
+								}
+								str+='</ul>'
+								return str;
+							},
+						},
+						onremove:function (player,skill){
+							player.unmarkSkill(skill);
+							delete player.storage[skill]
+						},
+					},
+				},
+			},
+			yankui1:{
+				mark:true,
+				marktext:'魇',
+				intro:{name:'魇窥 - 非基本牌',content:'跳过本回合下一个判定阶段和弃牌阶段'},
+			},
+			yankui2:{
+				mod:{
+					cardUsable:function (card,player,num){
+						if(card.name=='sha') return num+1;
+					},
+				},
+				mark:true,
+				marktext:'魇',
+				intro:{name:'魇窥 - 基本牌',content:'本回合内可以多使用一张【杀】'},
 			},
 			//noe
 			huiyuan:{
@@ -601,6 +693,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					var next = player.chooseButton(1 ,true);
 					next.set('dialog',event.videoId);
+					next.set('ai',function(button){
+						return player.getUseValue({name:button.link[2],isCard:true});
+					});
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
 					if (result.bool){
@@ -809,6 +904,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 3'
 							var next = player.chooseButton(1 ,true);
 							next.set('dialog',event.videoId);
+							next.set('ai',function(button){
+								return player.getUseValue({name:button.link[2],isCard:true});
+							});
 							'step 4'
 							game.broadcastAll('closeDialog', event.videoId);
 							if (result.bool){
@@ -2602,9 +2700,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			zhimeng:{
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
 				enable:'phaseUse',
 				usable:1,
 				filterCard:true,
@@ -2614,7 +2709,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.chooseCard('h',true,'『重机织梦』：展示一张手牌');
+					var next = player.chooseCard('h',true,'『重机织梦』：展示一张手牌');
 					next.set('ai',function(card){
 						if(get.suit(card)=='red'&&_status.event.player.hasUseTarget(card))	return 10;
 						if(_status.event.player.hasUseTarget(card))	return 8;
@@ -2622,40 +2717,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					})
 					'step 1'
 					if(result.bool){
-						player.showCards(result.cards,'###『重机织梦』###展示手牌')
-						player.storage.zhimeng = result.cards[0];
-						player.syncStorage('zhimeng');
+						event.cards = result.cards;
+						player.showCards(event.cards,'###『重机织梦』###展示手牌');
+						player.addGaintag(event.cards,'zhimeng')
 					}else{
 						event.finish();
 					}
-					'step 2'
-					player.markSkill('zhimeng');
-				},
-				mark:true,
-				intro:{
-					name:'失去展示牌时，可以令一名角色回复1点体力或摸两张牌',
-					content:'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							storage = [];
-						}
-					},
 				},
 				mod:{
 					color:function(card,player,color){
-						if(card.cards&&card.cards.length==1&&card.cards[0]==player.storage.zhimeng){
-							if(color=='red')	return 'black';
-							else if(color=='black')	return 'red';
+						if(!card.cards||card.cards.length!=1) return;
+						for(var i of card.cards){
+							if(!i.hasGaintag('zhimeng')){
+								if(color=='red')	return 'black';
+								else if(color=='black')	return 'red';
+							}
 						}
 					},
 				},
-				ai:{order:10},
+				ai:{order:10,player:1},
 				group:['zhimeng_lose','zhimeng_clear'],
 				subSkill:{
 					lose:{
 						trigger:{player:'loseAfter'},
 						filter:function(event,player){
-							return player.storage.zhimeng!=[]&&event.cards.contains(player.storage.zhimeng);
+							for(var i in event.gaintag_map){
+								if(event.gaintag_map[i].contains('zhimeng')) return true;
+							}
 						},
 						direct:true,
 						content:function(){
@@ -2694,11 +2782,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					clear:{
-						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						trigger:{player:['phaseAfter']},
 						direct:true,
 						firstDo:true,
 						content:function(){
-							player.unmarkSkill('zhimeng');
+							player.removeGaintag('zhimeng');
 						}
 					},
 				},
@@ -3153,6 +3241,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
+			Ciyana: '希亚娜',
+			yankui: '魇窥',
+			yankui_info: '其他角色的准备阶段，你可以弃置一张与本轮以此法弃置的牌类型均不同的牌，然后观看其手牌，展示并获得其中一张。若此牌为：非基本牌，本回合其跳过判定阶段与弃牌阶段；基本牌，本回合其可以多使用一张【杀】。',
+
 			YaotomeNoe: '八乙女のえ',
 			huiyuan: '回援',
 			huiyuan_info: '每回合限一次，当一名其他角色使用基本牌时，若其手牌数多于你，则你可以与其各摸一张牌。',
@@ -3246,7 +3338,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			senhu: '森护',
 			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你受到的火焰伤害+1。',
 
-			KenmochiDouya: '剣持刀也',
+			KenmochiDouya: '剑持刀也',
 			shenglang: '声浪燃烈',
 			shenglang_info: '出牌阶段限一次，你可以将一张【杀】当【决斗】使用，你使用过【决斗】的回合结束时，你摸等同于该回合进入弃牌堆的【杀】数量的牌。',
 			nodao: '无刀之咎',

@@ -1,21 +1,14 @@
 window.noname_update={
-	version:'1.9.101.23',
+	version:'1.9.101.24',
 	update:'1.9.100.113.3',
 	changeLog:[
-		'101.23初六小更新：修复bug，新增角色剑持刀也，铃原露露和莉泽技能调整，并为露露添加配音（“空露露”）',
+		'101.24初九小更新：修复bug，新增角色希亚娜和海sasaki（化鲸），古拉的技能修复并调整，为白神王八添加配音（“后宫王八”），夏哥和爱丽丝各增加一个动态皮肤，增加阿夸动态背景（125MB，会下得很慢）',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景、HOLOEN的噶呜·古拉、巧可拉拉的皇·绯赤艾莉欧',
 	],
 	files:[
-		'image/card/group_holo.png',
-		'image/card/group_nijisanji.png',
-		'image/card/group_VirtuaReal.png',
-		'image/card/group_upd8.png',
-		'image/card/group_qun.png',
-		'image/card/group_key.png',
-		'image/card/group_paryi.png',
 		//化鲸篇
 		'image/character/NagaoKei.jpg',
 		'image/character/ShirakamiHaruka.jpg',
@@ -26,9 +19,6 @@ window.noname_update={
 		'image/card/zhungangshuo.png',
 		'image/card/lanyinjia.png',
 	
-		'audio/effect/equip3.mp3',
-		'audio/effect/equip4.mp3',
-		
 		'image/card/zhufangshenshi.png',
 		'image/card/zhuge.png',
 		'image/card/zhungangshuo.png',

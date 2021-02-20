@@ -39,6 +39,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_kagura:{
 				fullskin:true,
 			},
+			group_nanashi:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1708,7 +1711,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -1990,7 +1993,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2071,7 +2074,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura'];//
+						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2142,6 +2145,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_upd8:"U",
 			group_paryi:"帕",
 			group_kagura:"神楽",
+			group_nanashi:"な",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
@@ -2154,6 +2158,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_upd8_bg:"U",
 			group_paryi_bg:"帕",
 			group_kagura_bg:"神",
+			group_nanashi_bg:"な",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

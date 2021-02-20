@@ -650,6 +650,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						trigger.card.nature=result.control;
 						player.popup(get.translation(trigger.card).slice(0,2),result.control);
 						game.log(trigger.card,'被转为了','#y'+get.translation(result.control),'属性')
+						player.removeSkill('qi');
 					}
 				},
 			},

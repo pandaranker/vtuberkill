@@ -19,9 +19,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**兔妈妈 */
-			InabaHaneru:['female','qun',1,['huangtu','wudao','yinyuan'],['zhu']],
+			InabaHaneru:['female','nanashi',1,['huangtu','wudao','yinyuan'],['zhu']],
 			/**BFM */
-			UmoriHinako:['female','qun',4,['hongyi','jueshou']],
+			UmoriHinako:['female','nanashi',4,['hongyi','jueshou']],
+			/**patra */
+			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -228,46 +230,46 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						delete player.storage.targets;
 						event.finish();
 					}
-			    }
-			},
-			ai:{
-				order:function(skill,player){
-					if(player.hp<player.maxHp&&player.countCards('h')>1){
-						return 10;
-					}
-					return 1;
-				},
-				result:{
-					target:function(player,target){
-						if(target.hasSkillTag('nogain')) return 0;
-						if(ui.selected.cards.length&&ui.selected.cards[0].name=='du'){
-							if(target.hasSkillTag('nodu')) return 0;
-							return -10;
+			    },
+				ai:{
+					order:function(skill,player){
+						if(player.hp<player.maxHp&&player.countCards('h')>1){
+							return 10;
 						}
-						if(target.hasJudge('lebu')) return 0;
-						var nh=target.countCards('h');
-						var np=player.countCards('h');
-						if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
-							if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
+						return 1;
+					},
+					result:{
+						target:function(player,target){
+							if(target.hasSkillTag('nogain')) return 0;
+							if(ui.selected.cards.length&&ui.selected.cards[0].name=='du'){
+								if(target.hasSkillTag('nodu')) return 0;
+								return -10;
+							}
+							if(target.hasJudge('lebu')) return 0;
+							var nh=target.countCards('h');
+							var np=player.countCards('h');
+							if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
+								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
+							}
+							return Math.max(1,5-nh);
 						}
-						return Math.max(1,5-nh);
-					}
-				},
-				effect:{
-					target:function(card,player,target){
-						if(player==target&&get.type(card)=='equip'){
-							if(player.countCards('e',{subtype:get.subtype(card)})){
-								var players=game.filterPlayer();
-								for(var i=0;i<players.length;i++){
-									if(players[i]!=player&&get.attitude(player,players[i])>0){
-										return 0;
+					},
+					effect:{
+						target:function(card,player,target){
+							if(player==target&&get.type(card)=='equip'){
+								if(player.countCards('e',{subtype:get.subtype(card)})){
+									var players=game.filterPlayer();
+									for(var i=0;i<players.length;i++){
+										if(players[i]!=player&&get.attitude(player,players[i])>0){
+											return 0;
+										}
 									}
 								}
 							}
 						}
-					}
+					},
+					threaten:0.8
 				},
-				threaten:0.8
 			},
 			ailianUsable:{
 				trigger:{global:['phaseUseAfter','phaseAfter']},
@@ -1379,13 +1381,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player:'enterGame',
 				},
 				forced:true,
-				filter:function(){
-					return game.players.length>1;
+				filter:function(event,player){
+					return game.countPlayer(function(cur){
+						return !cur.storage.nohp&&cur.maxHp!=Infinity&&cur!=player;
+					});
 				},
 				audio:6,
 				content:function(){
 					'step 0'
 					player.chooseTarget('请选择『『黄兔颂恩』』的目标',lib.translate.huangtu_info,true,function(card,player,target){
+						if(target.storage.nohp||target.maxHp==Infinity)	return false
 						return target!=player&&(!player.storage.huangtu2||!player.storage.huangtu2.contains(target));
 					}).set('ai',function(target){
 						var att=get.attitude(_status.event.player,target);
@@ -1682,6 +1687,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterReplace:{
 			KizunaAI:['re_KizunaAI','KizunaAI'],
 			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
+			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
+			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
 		},
 		translate:{
 			vtuber_upd8:'UPD8',
