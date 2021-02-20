@@ -14,13 +14,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			GawrGura:['female','holo',3,['lingqun','yangliu']],
 			/**娜娜米 */
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai']],
+			/**海熊猫 */
+			sea_SasakiSaku:['female','nijisanji',4,['haishou','lishi']],
 			
 			/**皇团 */
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
 		},
 		characterSort:{
 			huajing:{
-				emperor:['sp_HisekiErio'],
+				sea_emperor:['sp_HisekiErio'],
 			},
 		},
 		characterIntro:{
@@ -153,7 +155,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			baoxiao:{
 				trigger:{player:'useCard'},
-				firstDo:true,
+				lastDo:true,
 				forced:	true,
 				filter:function(event,player){
 					if(event.card.nature!='ocean')		return false;
@@ -174,19 +176,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			quru:{
+				audio:5,
 				enable:'chooseToUse',
 				filterCard:true,
 				selectCard:2,
 				position:'he',
 				viewAs:{name:'sha',nature:'ocean'},
-				complexCard:true,
 				filter:function(event,player){
 					return player.countCards('he')>=2&&player.isPhaseUsing();
 				},
 				prompt:'将两张牌当海【杀】使用',
-				check:function(card){
-					if(card.name=='sha') return 0;
-					return 5-get.value(card);
+				check:function(card,cards){
+					var player=_status.event.player;
+					if((get.name(card)=='sha'&&(card.nature=='ocean'||(player.getEquip(1)&&get.name(player.getEquip(1))=='sanchaji')))) return 0;
+					return 8-get.value(card);
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(get.itemtype(card)=='card'&&get.name(card)=='sha'&&card.nature=='ocean') return num+10;
+						if(get.itemtype(card)=='card'&&get.name(card)=='sha'&&card.nature!='ocean') return num-2;
+					},
+					aiValue:function(player,card,num){
+						if(get.itemtype(card)=='card'&&get.name(card)=='sha'&&card.nature=='ocean') return num+5;
+					},
+				},
+				ai:{
+					order:10,
+					result:{player:1},
 				},
 				group:['quru_drawBy','quru_addDam'],
 				subSkill:{
@@ -197,7 +213,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return event.skill=='quru'&&player.countCards('he')==0;
 						},
 						content:function(){
-							player.draw();
+							player.changeHujia();
 						}
 					},
 					addDam:{
@@ -303,7 +319,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.cards&&event.cards.length;
 				},
 				content:function(){
-					player.changeHujia();
+					event.num = trigger.cards.length;
+					player.changeHujia(event.num);
 				},
 				mod:{
 					maxHandcard:function (player,num){
@@ -336,7 +353,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					switch(result.index){
 						case 0:{
-							event.target.draw();
+							player.draw();
 							break;
 						}
 						case 1:{
@@ -350,6 +367,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					changeNature:{
 						trigger:{global:'damageBegin1'},
 						firstDo:true,
+						forced:true,
 						priority:7,
 						filter:function(event,player){
 							var evt = event.getParent();
@@ -541,6 +559,54 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					// }
 				},
 			},
+			haishou:{
+				audio:3,
+				enable:'chooseToUse',
+				filterCard:function(card,player){
+					return get.type(card)!='basic';
+				},
+				selectCard:1,
+				position:'he',
+				viewAs:{name:'qi'},
+				filter:function(event,player){
+					if(player.hasSkill('haishou_round'))	return false;
+					return player.countCards('he')>player.countCards('he',{type:'basic'});
+				},
+				check:function(card){
+					var player = _status.event.player;
+					if(card.name=='qi') return 0;
+					if(player.hp<player.maxHp) return 8-get.value(card);
+					return 3-get.value(card);
+				},
+				onuse:function(result,player){
+					player.addTempSkill('haishou_round','roundStart')
+				},
+				subSkill:{
+					round:{
+						trigger:{source:'damageBegin1'},
+						silent:true,
+						filter:function(event,player){
+							return event.nature;
+						},
+						content:function(){
+							player.removeSkill('haishou_round');
+						}
+					},
+				},
+			},
+			lishi:{
+				audio:2,
+				trigger:{player:'changeHujiaEnd'},
+				filter:function(event,player){
+					return event.num<0;
+				},
+				forced:true,
+				lastDo:true,
+				content:function(){
+					player.draw();
+				}
+			},
+
 			qiming:{
 				audio:5,
 				global:'qiming_viewH',
@@ -677,6 +743,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
+			sea_emperor: '化鲸皇',
+
+			sea_SasakiSaku: '海·笹木咲',
+			haishou: '煽动海兽',
+			haishou_info: '每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。',
+			lishi: '幕下力士',
+			lishi_info: '<font color=#f66>锁定技</font> 当你的护甲减少时，摸一张牌。',
+
 			NagaoKei: '长尾景',
 			fumo: '伏魔',
 			fumo_info: '你使用牌指定其他角色为唯一目标时，你可以进行判定，若结果为黑色，将之效果改为【浪涌】。当你使用锦囊牌后，重置【忖度】。',
@@ -700,7 +774,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			GawrGura: '噶呜·古拉',
 			lingqun: '领群',
-			lingqun_info: '<font color=#f66>锁定技</font> 你于弃牌阶段弃牌后获得1点护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。',
+			lingqun_info: '<font color=#f66>锁定技</font> 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。',
 			yangliu: '洋流',
 			yangliu_info: '当你使用能造成伤害的牌时，可以扣减1点护甲将此伤害改为海洋属性。然后你摸一张牌；或令之不可被响应。',
 

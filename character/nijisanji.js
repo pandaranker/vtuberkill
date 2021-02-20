@@ -33,6 +33,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**露露 */
 			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
 			/**阿喵喵 */
+			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
+			/**社长 */
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
 		},
 		characterIntro:{
@@ -646,7 +648,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority: 1,
 						content:function(){
 							player.storage.mozhaotuji_useCard++;
-							console.log(player.storage.mozhaotuji_useCard);
 						},
 					},
 					/*Clear:{
@@ -2378,6 +2379,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},			
 			},
+		},
+		characterReplace:{
+			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
 		},
 		translate:{
 

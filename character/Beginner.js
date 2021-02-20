@@ -80,7 +80,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia'],
 			}
 		},
-		   skill:{
+		skill:{
 			//re老爱
 			re_ailian:{
 				audio:'ailian',
@@ -2627,8 +2627,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
 			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
 			
-			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
-			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
 			KaguraMea:['re_KaguraMea','KaguraMea'],
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],

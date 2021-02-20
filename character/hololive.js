@@ -4,6 +4,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'hololive',
 		connect:true,
 		character:{
+			GawrGura:['female','holo',3,['lingqun','yangliu']],
 			/**时乃空 */
 			TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
 			/**夜空梅露 */
@@ -56,6 +57,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NatsuiroMatsuri: '夏色祭（V始二年）者，元昭之同族也，自党锢之祸后，元昭暗谋国事，遣祭访天下名士，得名士四人，是为杏国一期，祭不拘小节，最喜呼吸，同社皆避之，既为混沌传说，一般露○可轻言之，建功累累，元昭尊为第一将军',
 			RobokoSan: '萝卜子（V始三年）者，奇巧士之造物也，自号高性能机器人，实则不善文书，萝卜起于草莽，生性豪爽，后为时乃空所动，随杏社征战，V始二十年，杏国攻灭诸侯，远交近攻，俨然有大一统之势，萝卜子拜平南王福禄将军，安于南方',
 			ShirakamiFubuki: '白上吹雪者，青丘之狐也，夏色祭以玉米赚之，V始十五年，朝廷击绊爱于桐江，大破之，又击之于宛城，斩爱之左将军，一时人皆自危，起义初显败势，吹雪自领百骑迂回西南袭朝廷于后，解绊爱众叛亲离之危，重兴V国大业，后虫蝗起祸，元昭绥靖，吹雪亦听之任之，遂成大乱。',
+		
+			
+			Civia: '希薇娅者，独角兽也，九世善行，神灵感其所为，点化成人，其成人之时情不自禁多言人语，后人称之为“话痨将军”，civia多通夷语，随黑桃影归杏后，官拜大学士，总掌文职，行事和蔼淡然，常言“watashimo”，有好好先生之称，虫蝗之难后，civia叹恶龙之无道，元昭之无能，携cn六人离之。',
+			SpadeEcho: '黑桃影者，神乐七奈之女也，幼时离散，嗓音独特，孑然独活于幽云等地，以行盗活之，echo盗亦有道，决不伸手贫寒，常行窃于联动对象设备，造成诸多直播事故，为天下笑，echo慕杏“则天去私”之号，携友三人归之，战功赫赫，杏有中华基业，echo等六人之力也，虫皇之难后，echo终思华夷不两立，冲突出阵，隐退于山林。',
 		},
 		skill:{
 			taiyangzhiyin:{
@@ -1455,7 +1460,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						function(player,tplayer){
 							player.chooseTarget('###『魅舞』###转移给一名其它角色', function(card, player, target) {
 								return player != target && target != tplayer;
-							})
+							}).set('ai',function(target){
+								var player=_status.event.player;
+								var att=get.attitude(player,target);
+								return 2-att;
+							});
 						},player,trigger.player
 					)
 					'step 1'
@@ -1926,7 +1935,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}))	return 2;
 							if(!player.needsToDiscard()&&game.countPlayer(function(cur){
 								return cur.hp%player.hp==0&&cur!=player;
-							})>player.hp)	return 8;
+							})>2)	return 8;
 							return 0;
 						},
 						result:{player:1}
@@ -1942,21 +1951,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								||(cur.hp%player.hp==0);
 							});
 						},
-						check:function(event,player){
-							if(player.hp==1&&game.hasPlayer(function(cur){
-								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
-							}))	return true;
-							if(!player.needsToDiscard()&&game.countPlayer(function(cur){
-								return cur.hp%player.hp==0&&cur!=player;
-							})>player.hp)	return true;
-							return false;
-						},
 						content:function(){
 							'step 0'
-							var choice = 1;
-							if(player.hp==1&&game.hasPlayer(function(cur){
-								return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
-							}))	choice = 0;
+							var choice = function(){
+								if(player.hp==1&&game.hasPlayer(function(cur){
+									return cur.countCards('h')%player.countCards('h')==0&&cur!=player;
+								}))	return 0;
+								if(game.countPlayer(function(cur){
+									return cur.hp%player.hp==0&&cur!=player;
+								})>1)	return 1;
+								return -1;
+							}
 							player.addTempSkill('kuali_used');
 							player.chooseControlList(
 								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
@@ -1965,8 +1970,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return _status.event.choice;
 								}).set('choice',choice).set('prompt',get.prompt2('kuali_jieshu'));
 							'step 1'
-							player.logSkill('kuali');
 							if(result.index==0){
+								player.logSkill('kuali');
 								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
 									if(target==player) 				return false;
 									return target.countCards('h')%player.countCards('h')==0;
@@ -1976,6 +1981,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								})						
 							}
 							if(result.index==1){
+								player.logSkill('kuali');
 								var num = game.countPlayer(function(cur){
 									return cur.hp%player.hp==0&&cur!=player;
 								});
@@ -2021,7 +2027,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.cards){
 						var target = trigger.player;
 						player.$giveAuto(result.cards,target);
-						target.gain(result.cards,player);
+						target.gain(result.cards,player,'gain2').gaintag.add('youyi');
 						player.storage.youyi = result.cards[0];
 						target.storage.youyishiyue = result.cards[0];
 						target.addTempSkill('youyishiyue','phaseAfter');
@@ -2045,13 +2051,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.line(trigger.source,'thunder');
 							trigger.source.$giveAuto(result.cards,player);
 							player.gain(player.storage.youyi,trigger.source);
-							trigger.source.removeSkill('youyishiyue');
-							trigger.source.updateMarks();
 						}
 					},
 				},
 			},
 			youyishiyue:{
+				onremove:function(player){
+					player.removeGaintag('youyi');
+				},
 				locked:true,
 				intro:{
 					name:'誓约牌',
@@ -3520,6 +3527,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
+		},
+		characterReplace:{
+			Ciyana:['Ciyana','Civia'],
 		},
 		translate:{
 			hololive_1:'一期生',

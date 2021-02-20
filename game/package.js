@@ -91,6 +91,8 @@ window.noname_package={
 		},
 	},
 	background:{
+		Aqua_bg:'阿夸_动态',
+
 		ol_bg:'龙纹',
 		zhulin_bg:'竹林',
 		shengshi_bg:'盛世',
