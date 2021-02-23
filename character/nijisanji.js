@@ -1311,7 +1311,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(trigger.delay==false) game.delay();
 							"step 1"
 							player.markSkill(event.name);
-							player.logSkill(event.name);
+							//player.logSkill(event.name);
 							player.addTempSkill('mark_bingdielei_anotherPhase');
 						},
 					},
@@ -1336,8 +1336,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							})
 							'step 1'
 							if(result.bool){
-								player.markSkill(event.name);
-								game.delayx();
+								player.unmarkSkill(event.name);
 								player.logSkill(event.name);
 								player.insertPhase();
 							}
@@ -2431,6 +2430,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiujinzhiling_info:'<font color=#ff4>主公技</font> <font color=#f66>锁定技</font> 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
 
 			mark_bingdielei: '并蒂恶蕾',
+			mark_bingdielei_anotherPhase: '并蒂恶蕾',
 			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。',
 			mark_quanxinquanyi:'全新全异',
 			mark_quanxinquanyi_endRound:'全新全异',

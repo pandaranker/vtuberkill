@@ -6,6 +6,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
+			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
+			
 			Ciyana: ['female','qun',3,['yankui', 'danyan']],
 
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
@@ -80,15 +82,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.target = trigger.player;
-					player.chooseToDiscard(get.prompt2('yankui'),function(card){
-						return !player.storage.yankui_mark||!player.storage.yankui_mark.contains(get.type(card,'trick'));
-					}).ai = function(card){
-						var player = _status.event.player;
-						var target = _status.event.getTrigger().player;
-						if(player.hasUseTarget(card)) return 6+player.getUseValue(card);
-						else if(get.attitude(player,target)<1) return 6-get.useful(card);
-						return 0;
-					}
+					game.broadcastAll(function(player){
+						player.chooseToDiscard(get.prompt2('yankui'),function(card){
+							return !player.storage.yankui_mark||!player.storage.yankui_mark.contains(get.type(card,'trick'));
+						}).ai = function(card){
+							var player = _status.event.player;
+							var target = _status.event.getTrigger().player;
+							if(player.hasUseTarget(card)) return 6+player.getUseValue(card);
+							else if(get.attitude(player,target)<1) return 6-get.useful(card);
+							return 0;
+						}
+					}, player)
 					'step 1'
 					if(result.cards&&result.cards.length){
 						player.logSkill(event.target);
@@ -131,7 +135,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						intro:{
 							name:'魇窥',
 							content:function(storage,player){
-								console.log(storage)
 								var str='<ul style="padding-top:0;margin-top:0"><p>本轮次已弃置的牌类型</p>';
 								for(var i=0;i<storage.length;i++){
 									str+='<li>'+get.translation(storage[i]);
@@ -3226,7 +3229,287 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
-		}, 
+			niwei:{
+				marktext:'弼',
+				intro:{
+					name:'味增弼佐',
+					content:function(storage,player){
+						var str='<ul style="padding-top:0;margin-top:0"><p>本回合变为逆位的牌名</p>';
+						for(var i=0;i<storage.length;i++){
+							str+='<li>'+get.translation(storage[i]);
+						}
+						str+='</ul>'
+						return str;
+					},
+				},
+				onremove:function (player,skill){
+					player.unmarkSkill(skill);
+					delete player.storage[skill]
+				},
+			},
+			ming_niwei:{
+				trigger:{global:['shaBegin','shanBegin','taoBegin','jiuBegin']},
+				direct:true,
+				lastDo:true,
+				priority:3,
+				filter:function(event,player){
+					if(event.player.hasSkill('niwei')&&event.player.storage.niwei&&event.player.storage.niwei.contains(event.name))	return true;
+					if(event.player!=player)	return false;
+					var loser = player.getHistory('lose',function(evt){
+						 return (evt.type=='use'&&evt.getParent().card&&evt.getParent().card==event.card);
+					});
+					loser = loser[loser.length-1];
+					console.log(loser);
+					if(loser.getParent()){
+						if(event.getParent()==loser.getParent()){
+							for(var i in loser.gaintag_map){
+								if(loser.gaintag_map[i].contains('ming_niwei')) return true;
+							}
+						}
+					}
+				},
+				content:function(){
+					var fun = lib.card['niwei_'+trigger.name].content;
+					if(fun)	trigger.setContent(fun);
+				},
+			},
+			xuanxu:{
+				global:'xuanxu_put',
+				group:'ming_niwei',
+				trigger:{player:'phaseUseBegin'},
+				direct:true,
+				lastDo:true,
+				priority:3,
+				filter:function(event,player){
+					return player.countCards('h',function(card){
+						return get.type(card)=='basic'&&!card.hasGaintag('ming_niwei');
+					});
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard(get.prompt2('xuanxu'),[1,Infinity],function(card){
+						return get.type(card)=='basic'&&!card.hasGaintag('ming_niwei');
+					});
+					'step 1'
+					if(result.bool&&result.cards&&result.cards.length){
+						event.cards = result.cards.slice(0);
+						game.log(player,'亮出了',event.cards);
+						player.addGaintag(event.cards,'ming_niwei');
+					}
+				},
+				subSkill:{
+					put:{
+						mod:{
+							targetEnabled:function(card,player,target,now){
+								if(!card.cards) return;
+								for(var i of card.cards){
+									if(!i.hasGaintag('ming_niwei')) return;
+								}
+								if(now===false)	return true;
+								var info=get.info(card);
+								var filter=info.filterTarget;
+								var range=info.range;
+								var outrange=info.outrange;
+								if(typeof filter=='boolean') return !filter;
+								if(range==undefined&&outrange==undefined){
+									if(typeof filter=='function'){
+										return !filter(card,player,target);
+									}
+								}else{
+									return lib.filter.targetInRange(card,player,target)||!filter(card,player,target);
+								}
+							},
+						}
+					}
+				},
+				mod:{
+					playerEnabled:function(card,player,target,now){
+						if(!card.cards) return;
+						for(var i of card.cards){
+							if(!i.hasGaintag('ming_niwei')) return;
+						}
+						var info=get.info(card);
+						var filter=info.filterTarget;
+						var range=info.range;
+						var outrange=info.outrange;
+						if(typeof filter=='boolean') return !filter;
+						if(range==undefined&&outrange==undefined){
+							if(typeof filter=='function'){
+								return !filter(card,player,target);
+							}
+						}else{
+							return lib.filter.targetInRange(card,player,target)||!filter(card,player,target);
+						}
+					},
+					selectTarget:function(card,player,range){
+						if(!card.cards) return;
+						for(var i of card.cards){
+							if(!i.hasGaintag('ming_niwei')) return;
+						}
+						if(range[1]==-1)	range[1]=1;
+					},
+					targetInRange:function(card,player,target,now){
+						if(!card.cards) return;
+						for(var i of card.cards){
+							if(!i.hasGaintag('ming_niwei')) return;
+						}
+						var info=get.info(card);
+						var range=info.range;
+						var outrange=info.outrange;
+						if(range==undefined&&outrange==undefined) return true;
+						if(player.hasSkill('undist')||target.hasSkill('undist')) return true;
+						for(var i in range){
+							if(i=='attack'){
+								if(target==player)	return true;
+								if(player.inRange(target)) return false;
+								var range2=player.getAttackRange();
+								if(range2<=0) return true;
+								var distance=get.distance(player,target);
+								if(range[i]<=distance-range2) return true;
+							}
+							else{
+								var distance=get.distance(player,target,i);
+								if(range[i]<distance) return true;
+							}
+						}
+						for(var i in outrange){
+							if(i=='attack'){
+								var range2=player.getAttackRange();
+								if(range2<=0) return true;
+								var distance=get.distance(player,target)+extra;
+								if(outrange[i]>distance-range2+1) return true;
+							}
+							else{
+								var distance=get.distance(player,target,i)+extra;
+								if(outrange[i]>distance) return true;
+							}
+						}
+						return false;
+					},
+					ignoredHandcard:function(card,player){
+						if(card.hasGaintag('ming_niwei')){
+							return true;
+						}
+					},
+					cardDiscardable:function(card,player,name){
+						if(name=='phaseDiscard'&&card.hasGaintag('ming_niwei')){
+							return false;
+						}
+					},
+				},
+			},
+			weizeng:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				trigger:{global:'phaseBegin'},
+				direct:true,
+				lastDo:true,
+				priority:3,
+				filter:function(event,player){
+					return event.player!=player&&player.countCards('h',function(card){
+						return get.type(card)=='basic'&&card.hasGaintag('ming_niwei');
+					});
+				},
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					player.chooseCard(get.prompt2('weizeng'),[1,Infinity],function(card){
+						return get.type(card)=='basic'&&card.hasGaintag('ming_niwei');
+					});
+					'step 1'
+					if(result.bool&&result.cards&&result.cards.length){
+						event.cards = result.cards.slice(0);
+						player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
+							var value=get.value(button.link);
+							if(_status.event.reverse) return value;
+							return -value;
+						}).set('reverse',((_status.currentPhase)?get.attitude(player,_status.currentPhase)>0:false));
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool&&result.links&&result.links.length){
+						event.linkcards = result.links.slice(0);
+						player.lose(event.cards,ui.special);
+						event.target.addTempSkill('weizeng_put');
+						event.target.addTempSkill('niwei');
+						event.target.storage.weizeng_put = [];
+						event.target.storage.weizeng_put.addArray(event.cards);
+						game.log(player,'将',event.cards,'置于牌堆顶');
+					}
+					'step 3'
+					var cards=event.linkcards;
+					while(cards.length>0){
+						var card=cards.pop();
+						card.fix();
+						ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+						game.updateRoundNumber();
+					}
+				},
+				subSkill:{
+					put:{
+						trigger:{player:'gainAfter'},
+						direct:true,
+						lastDo:true,
+						priority:3,
+						filter:function(event,player){
+							if(player.storage.weizeng_put&&player.storage.weizeng_put.length){
+								for(var i=0;i<event.cards.length;i++){
+									if(player.storage.weizeng_put.contains(event.cards[i])){
+										return true;
+									}
+								}
+							}
+						},
+						content:function(){
+							'step 0'
+							event.cards = [];
+							if(!player.storage.niwei)	player.storage.niwei = [];
+							for(var i=0;i<trigger.cards.length;i++){
+								if(player.storage.weizeng_put.contains(trigger.cards[i])){
+									player.storage.niwei.add(trigger.cards[i].name);
+									event.cards.contains(trigger.cards.splice(i--,1));
+								}
+							}
+							'step 1'
+							player.markSkill('niwei');
+							player.storage.weizeng_put.removeArray(event.cards);
+						},
+						onremove:function (player,skill){
+							delete player.storage[skill]
+						},
+					}
+				},
+			},
+		},
+		card:{
+			niwei_sha:{
+				content:function(){
+					event.target.recover();
+					game.delay(0.5);
+				},
+			},
+			niwei_shan:{
+				content:function(){
+					delete event.result;
+					event.player.draw(2);
+					game.delay(0.5);
+				},
+			},
+			niwei_tao:{
+				content:function(){
+					event.target.loseHp();
+					game.delay(0.5);
+				},
+			},
+			niwei_jiu:{
+				content:function(){
+					event.target.chooseToUse();
+					game.delay(0.5);
+				},
+			},
+		},
 		dynamicTranslate:{
 			tiantang:function(player){
 				if(player.storage.haoren===true) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
@@ -3240,6 +3523,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			ŌokamiMio: '大神澪',
+			niwei: '逆位',
+			ming_niwei: '逆位',
+			xuanxu: '玄虚映实',
+			xuanxu_info: '出牌阶段开始时，你可以亮出任意张基本牌，称为“逆位”牌，“逆位”牌不计入手牌数，且只能以以下效果对原不合法的目标使用：【杀】∽回复1点体力；【闪】∽摸两张牌；【桃】∽失去1点体力；【酒】∽立即使用一张牌。',
+			weizeng: '味增弼佐',
+			weizeng_info: '其他角色的回合开始时，你可以将任意亮出牌以任意顺序置于牌堆顶，其获得这些牌后，其所有同名牌在本回合内均视为“逆位”。',
 
 			Ciyana: '希亚娜',
 			yankui: '魇窥',

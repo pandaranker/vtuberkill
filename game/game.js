@@ -13427,13 +13427,27 @@
 						if(event.position[i]=='h'){
 							var hs=target.getCards('h');
 							if(hs.length){
-								event.dialog.addText('手牌区');
 								hs.randomSort();
+								var ms = [],ans = [];
 								if(event.visible||target.isUnderControl(true)||player.hasSkillTag('viewHandcard',null,target,true)){
-									event.dialog.add(hs);
+									ms.addArray(hs);
+								}
+								for(var j=0;j<hs.length;j++){
+									if(hs[j].hasGaintag('ming_'))	ms.add(hs[j]);
+									if(hs[j].hasGaintag('an_'))		ms.remove(ms[j]);
+								}
+								if(ms.length){
+									event.dialog.addText('手牌区');
+									event.dialog.add(ms);
 									directh=false;
+									// var ans = hs.removeArray(ms).slice(0);
+									// if(ans.length){
+									// 	event.dialog.addText('未明置区');
+									// 	event.dialog.add([ans,'black']);
+									// }
 								}
 								else{
+									event.dialog.addText('手牌区');
 									event.dialog.add([hs,'blank']);
 								}
 							}
@@ -13545,13 +13559,27 @@
 						if(event.position[i]=='h'){
 							var hs=target.getDiscardableCards(player,'h');
 							if(hs.length){
-								event.dialog.addText('手牌区');
 								hs.randomSort();
+								var ms = [],ans = [];
 								if(event.visible||target.isUnderControl(true)||player.hasSkillTag('viewHandcard',null,target,true)){
-									event.dialog.add(hs);
+									ms.addArray(hs);
+								}
+								for(var j=0;j<hs.length;j++){
+									if(hs[j].hasGaintag('ming_'))	ms.add(hs[j]);
+									if(hs[j].hasGaintag('an_'))		ms.remove(ms[j]);
+								}
+								if(ms.length){
+									event.dialog.addText('手牌区');
+									event.dialog.add(ms);
 									directh=false;
+									// var ans = hs.removeArray(ms).slice(0);
+									// if(ans.length){
+									// 	event.dialog.addText('未明置手牌区');
+									// 	event.dialog.add([ans,'black']);
+									// }
 								}
 								else{
+									event.dialog.addText('手牌区');
 									event.dialog.add([hs,'blank']);
 								}
 							}
@@ -13690,13 +13718,28 @@
 						if(event.position[i]=='h'){
 							var hs=target.getGainableCards(player,'h');
 							if(hs.length){
-								event.dialog.addText('手牌区');
 								hs.randomSort();
+								var ms = [];
 								if(event.visible||target.isUnderControl(true)||player.hasSkillTag('viewHandcard',null,target,true)){
-									event.dialog.add(hs);
+									ms.addArray(hs);
+								}
+								for(var j=0;j<hs.length;j++){
+									if(hs[j].hasGaintag('ming_'))	ms.add(hs[j]);
+									if(hs[j].hasGaintag('an_'))		ms.remove(ms[j]);
+								}
+								if(ms.length){
+									event.dialog.addText('手牌区');
+									event.dialog.add(ms);
 									directh=false;
+									// var ans = hs.removeArray(ms).slice(0);
+									// console.log(ans);
+									// if(ans.length){
+									// 	event.dialog.addText('未明置手牌区');
+									// 	event.dialog.add([ans,'black']);
+									// }
 								}
 								else{
+									event.dialog.addText('手牌区');
 									event.dialog.add([hs,'blank']);
 								}
 							}
@@ -23813,7 +23856,12 @@
 					}
 				},
 				hasGaintag:function(tag){
-					return this.gaintag&&this.gaintag.contains(tag);
+					if(['ming_','an_'].contains(tag)){
+						return	this.gaintag&&this.gaintag.filter(function(gain){
+							return gain.indexOf(tag)==0;
+						}).length;
+					}
+					else	return this.gaintag&&this.gaintag.contains(tag);
 				},
 				init:function(card){
 					if(Array.isArray(card)){
@@ -44384,6 +44432,7 @@
 				switch(type){
 					case 'blank':
 					node=ui.create.div('.button.card',position);
+					console.log(node);
 					node.link=item;
 					break;
 
@@ -50960,7 +51009,25 @@
 			return null;
 		},
 		skillTranslation:function(str,player){
-			var str2;
+			var str2,str3;
+			if(str.indexOf('re_')==0){
+				str2=str.slice(3);
+				if(str2){
+					str3 = 'mark_'+str2;
+					if(lib.translate[str]==lib.translate[str2]){
+						if(player.hasSkill(str2)){
+							return '新·'+lib.translate[str];
+						}
+					}
+					if(lib.translate[str3]&&lib.translate[str]==lib.translate[str3]){
+						console.log(str3)
+						if(player.hasSkill(str3)){
+							return '新·'+lib.translate[str];
+						}
+
+					}
+				}
+			}
 			if(str.indexOf('re')==0){
 				str2=str.slice(2);
 				if(str2){
@@ -51680,11 +51747,21 @@
 					uiintro.addText(get.colorspan(lib.characterTitle[node.name]));
 				}
 
-				if(node.isUnderControl()||(!game.observe&&game.me&&game.me.hasSkillTag('viewHandcard',null,node,true))){
+				if(true){
 					var hs=node.getCards('h');
 					if(hs.length){
-						uiintro.add('<div class="text center">手牌</div>');
-						uiintro.addSmall(node.getCards('h'));
+						var ms = [];
+						if(node.isUnderControl()||(!game.observe&&game.me&&game.me.hasSkillTag('viewHandcard',null,node,true))){
+							ms.addArray(hs);
+						}
+						for(var i=0;i<hs.length;i++){
+							if(hs[i].hasGaintag('ming_'))	ms.add(hs[i]);
+							if(hs[i].hasGaintag('an_'))		ms.remove(ms[i]);
+						}
+						if(ms.length){
+							uiintro.add('<div class="text center">手牌</div>');
+							uiintro.addSmall(ms);
+						}
 					}
 				}
 

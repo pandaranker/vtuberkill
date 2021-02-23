@@ -663,7 +663,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhungangshuo_info:'当你使用【杀】指定一名角色为目标后，你可令该角色弃置你的一张手牌，然后你弃置其一张手牌',
 			lanyinjia:'钢板',
 			lanyinjia_info:'你可以将一张手牌当做【闪】使用或打出。锁定技，【钢板】不会无效化；当你受到【杀】造成的伤害时，弃置【钢板】。',
-			yinyueqiang:'银月枪',
+			yinyueqiang:'铁棍',
 			yinyueqiang_info:'你的回合外，每当你使用或打出了一张黑色手牌（若为使用则在它结算之前），你可以立即对你攻击范围内的任意一名角色使用一张【杀】',
 			du:'毒',
 			du_info:'当此牌正面朝上离开你的手牌区时，你失去一点体力',

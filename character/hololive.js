@@ -1188,16 +1188,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.cards=result.cards
 					}
 					if(event.cards.length>0){
-					    //player.$throw(cards,1000);
-					    //player.lose(event.cards,ui.special,'visible');
-					    player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
-					        var value=get.value(button.link);
-					        if(_status.event.reverse) return value;
-					        return -value;
+						//player.$throw(cards,1000);
+						//player.lose(event.cards,ui.special,'visible');
+						player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
+							var value=get.value(button.link);
+							if(_status.event.reverse) return value;
+							return -value;
 					    }).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
 					}
 					"step 3"
-					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
+					if(result.bool&&result.links&&result.links.length)	event.linkcards=result.links.slice(0);
 					game.delay();
 					'step 4'
 					var cards=event.linkcards;
@@ -1213,9 +1213,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					    card.fix();
 					    ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
 					    game.updateRoundNumber();
-					        //game.log(player,'将',card,'置于牌堆顶');
 					}
-					},
+				},
 				group:['yuanlv_ready'],
 				subSkill:{
 					ready:{
@@ -2027,7 +2026,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.cards){
 						var target = trigger.player;
 						player.$giveAuto(result.cards,target);
-						target.gain(result.cards,player,'gain2').gaintag.add('youyi');
+						target.gain(result.cards,player,'gain2').gaintag.add('youyishiyue');
 						player.storage.youyi = result.cards[0];
 						target.storage.youyishiyue = result.cards[0];
 						target.addTempSkill('youyishiyue','phaseAfter');
@@ -2042,10 +2041,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return (get.attitude(player,event.player)>0);
 						},	
 						filter:function(event,player){
-							if(event.source==player||!event.source)	return false;
-							return event.source.hasSkill('youyishiyue');
+							if(!event.source.hasSkill('youyishiyue'))	return false;
+							var shi = event.source.storage.youyishiyue;
+							shi = player.storage.youyi||shi;
+							return event.source.countGainableCards('hej',shi);
 						},
-						prompt:'是否收回“誓约”牌',
+						prompt:'是否收回“誓约”牌？',
 						content:function(){
 							trigger.changeToZero();
 							player.line(trigger.source,'thunder');
@@ -2057,12 +2058,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			youyishiyue:{
 				onremove:function(player){
-					player.removeGaintag('youyi');
+					player.removeGaintag('youyishiyue');
 				},
 				locked:true,
 				intro:{
 					name:'誓约牌',
-					content:'当前的“誓约”牌为$当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。该回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。 \n （若此牌离开你的区域，此状态结束）',
+					content:'当前的“誓约”牌为$当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。 \n 本回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
 							game.log(storage,'誓约解除');
@@ -2071,44 +2072,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				mark:'card',
-				group:['youyishiyue_lose','youyishiyue_rec'],
+				group:['youyishiyue_rec'],
 				subSkill:{
-					lose:{
-						trigger:{player:['loseAfter']},
-						forced:true,
-						silent:true,
-						firstDo:true,
-						filter:function(event,player){
-							var shi;
-							game.hasPlayer(function(cur){
-								if(cur.hasSkill('youyi')){
-									shi=cur.storage.youyi;
-									return true;
-								}
-								else{
-									return false;
-								}
-							});
-							shi = player.storage.youyishiyue||shi;
-							if((event.getParent().name=='useCard'&&event.getParent().name=='equip')
-							&&event.getParent().card==shi&&event.getParent().targets[0]==player
-							&&(get.type(event.getParent().card)=='equip'||get.type(event.getParent().card)=='delay'))	return true;
-							return player.countCards('hej',shi)==0;
-						},
-						content:function(){
-							player.removeSkill('youyishiyue');
-							player.updateMarks();
-						},
-					},
 					//弃“誓约”牌回复
 					rec:{
 						trigger:{player:'phaseEnd'},
 						direct:true,
 						priority:80,
 						filter:function(event,player){
-							var shi;
+							var shi,damaged = player.isDamaged();
 							game.hasPlayer(function(cur){
 								if(cur.hasSkill('youyi')){
+									if(cur.isDamaged())	damaged = true;
 									shi=cur.storage.youyi;
 									return true;
 								}
@@ -2117,7 +2092,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							});
 							shi = player.storage.youyishiyue||shi;
-							return player.countDiscardableCards('hej',shi);
+							return damaged&&player.countDiscardableCards('hej',shi);
 						},
 						content:function(){
 							'step 0'
@@ -2132,7 +2107,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								});
 								event.card = player.storage.youyishiyue||shi;
 								player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
-									return target==player||target==aqua;
+									return [player,aqua].contains(target)&&target.isDamaged();
 								}).set('ai',function(target){
 									return get.recoverEffect(target,player,player)+Math.random();
 								});
@@ -3608,7 +3583,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuali_jieshu_info: '结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
 			youyi: '友谊誓约',
 			youyi_info: '每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
-			youyishiyue: '友谊誓约',
+			youyishiyue: '誓约',
 			youyishiyue_info: '友谊誓约生效中',
 			youyishiyue_rec_info: '弃置“誓约”牌，令你或湊阿库娅回复一点体力。',
 			

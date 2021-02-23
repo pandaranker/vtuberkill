@@ -197,6 +197,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:true,
 				selectTarget:1,
 				cardnature:'ocean',
+				modTarget:true,
 				filterTarget:function(card,player,target){
 					return target.countCards('e');
 					return target.countDiscardableCards(player,'e');

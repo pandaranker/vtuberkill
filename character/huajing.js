@@ -16,6 +16,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai']],
 			/**海熊猫 */
 			sea_SasakiSaku:['female','nijisanji',4,['haishou','lishi']],
+			/**潜水夸 */
+			sea_MinatoAqua:['female','holo',3,['jinchen','qianyong']],
 			
 			/**皇团 */
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
@@ -178,18 +180,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quru:{
 				audio:5,
 				enable:'chooseToUse',
-				filterCard:true,
+				filterCard:function(card){
+					return get.type(card)!='basic';
+				},
 				selectCard:2,
 				position:'he',
 				viewAs:{name:'sha',nature:'ocean'},
 				filter:function(event,player){
-					return player.countCards('he')>=2&&player.isPhaseUsing();
+					return (player.countCards('he')-player.countCards('he',{type:'basic'}))>=2&&player.isPhaseUsing();
 				},
 				prompt:'将两张牌当海【杀】使用',
 				check:function(card,cards){
 					var player=_status.event.player;
 					if((get.name(card)=='sha'&&(card.nature=='ocean'||(player.getEquip(1)&&get.name(player.getEquip(1))=='sanchaji')))) return 0;
+
 					return 8-get.value(card);
+				},
+				onuse:function(result,player){
+					var hs = player.getCards('h');
+					var es = player.getCards('e');
+					var hu = [],eu = [];
+					result.cards.forEach(function(card){
+						if(get.position(card)=='h')	hu.add(card);
+						if(get.position(card)=='e')	eu.add(card);
+					})
+					if(hu.length==hs.length||eu.length==es.length)	player.changeHujia();
 				},
 				mod:{
 					aiOrder:function(player,card,num){
@@ -201,21 +216,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				ai:{
-					order:10,
+					order:7,
 					result:{player:1},
 				},
-				group:['quru_drawBy','quru_addDam'],
+				group:['quru_addDam'],
 				subSkill:{
-					drawBy:{
-						trigger:{player:'useCard1'},
-						silent:true,
-						filter:function(event,player){
-							return event.skill=='quru'&&player.countCards('he')==0;
-						},
-						content:function(){
-							player.changeHujia();
-						}
-					},
 					addDam:{
 						trigger:{source:'damageBegin2'},
 						priority:22,
@@ -296,17 +301,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					addDam:{
 						trigger:{source:'damageBegin2'},
 						priority:9,
-						lastDo:true,
 						forced:true,
 						filter:function(event,player){
-							return event.nature;
+							return event.nature=='ocean';
 						},
 						content:function(){
-							'step 0'
-							event.num = player.hujia;
-							'step 1'
-							player.changeHujia(-event.num);
-							trigger.num += event.num;
+							trigger.num ++;
 						},
 					},
 				}
@@ -436,7 +436,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					var sum = 0;
 					for (var k = 0; k < list.length; k++) {
-						sum += Number(num[k]);
+						sum += Number(list[k]);
 					}
 					if(sum>0&&sum%7==0)	return true;
 					return false;
@@ -606,6 +606,72 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw();
 				}
 			},
+			jinchen:{
+				trigger:{player:'phaseUseEnd'},
+				lastDo:true,
+				check:function(event,player){
+					return get.recoverEffect(player,player,player);
+				},
+				content:function(){
+					'step 0'
+					player.recover();
+					player.turnOver();
+					'step 1'
+					player.chooseUseTarget({name:'chenmo'});
+				}
+			},
+			qianyong:{
+				trigger:{player:'turnOverBefore'},
+				filter:function(event,player){
+					return player.isTurnedOver();
+				},
+				direct:true,
+				lastDo:true,
+				content:function(){
+					'step 0'
+					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸一张牌',function(card,player,target){
+						if(player==target) return false;
+						return player.canUse({name:'sha',nature:'ocean'},target,false);
+					});
+					'step 1'
+					if(result.targets&&result.targets.length){
+						player.logSkill('qianyong');
+						player.useCard({name:'sha',nature:'ocean'},result.targets,false).card.qianyong=true;
+					}
+					else{
+						player.logSkill('qianyong_draw')
+						player.draw(2);
+					}
+				},
+				ai:{
+					unequip:true,
+					skillTagFilter:function(player,tag,arg){
+						if(!arg||!arg.card||arg.card.qianyong!=true) return false;
+					},
+				},
+				mod:{
+					targetEnabled:function(card,player,target,now){
+						if(target.isTurnedOver()&&(card.name=='sha'||get.type(card)=='trick')){
+							if(player!=target)	return false;
+						}
+					},
+				},
+				group:'qianyong_addDam',
+				subSkill:{
+					addDam:{
+						trigger:{source:'damageBegin2'},
+						priority:6,
+						forced:true,
+						filter:function(event,player){
+							return event.nature=='ocean'&&player.isTurnedOver();
+						},
+						content:function(){
+							trigger.num ++;
+						},
+					},
+					draw:{audio:2}
+				},
+			},
 
 			qiming:{
 				audio:5,
@@ -645,6 +711,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 2'
 							var next = player.chooseButton(1 ,true);
 							next.set('dialog',event.videoId);
+							next.set('ai',function(button){
+								var value = player.getUseValue({name:button.link[2],isCard:true});
+								if(player.hasCard({name:button.link[2]}))	return 2*value;
+								return value;
+							});
 							'step 3'
 							game.broadcastAll('closeDialog', event.videoId);
 							if (result.bool) {
@@ -750,6 +821,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			haishou_info: '每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。',
 			lishi: '幕下力士',
 			lishi_info: '<font color=#f66>锁定技</font> 当你的护甲减少时，摸一张牌。',
+			
+			sea_MinatoAqua: '海·湊阿夸',
+			jinchen: '浸沉',
+			jinchen_info: '出牌阶段结束时，你可以回复一点体力并翻面，视为使用一张【沉没】。',
+			qianyong: '潜涌',
+			qianyong_info: '<font color=#f66>锁定技</font> 当你背面朝上时，你不能成为其他角色的【杀】或通常锦囊牌的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
+			qianyong_draw: '潜涌',
 
 			NagaoKei: '长尾景',
 			fumo: '伏魔',
@@ -761,7 +839,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			baoxiao: '豹笑',
 			baoxiao_info: '<font color=#f66>锁定技</font> 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。',
 			quru: '取乳',
-			quru_info: '出牌阶段，你可以将两张牌当作海【杀】使用，若你因此失去了最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲，令此伤害等量增加。',
+			quru_info: '出牌阶段，你可以将两张非基本牌当作海【杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。',
 			quru_addDam_info: '你可以失去所有护甲，令此伤害等量增加。',
 
 			KisaragiKoyori: '如月こより',
