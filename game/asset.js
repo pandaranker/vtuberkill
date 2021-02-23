@@ -777,7 +777,7 @@ window.noname_asset_list=[
 	//化鲸篇
 	'image/card/chenjing.png',
 	'image/card/chenmo.png',
-	'audio/card/chenmo.mp3',
+	'audio/card/female/chenmo.mp3',
 	'image/card/haidi.png',
 	'image/card/haixiao.png',
 	'image/card/jingluo.png',
