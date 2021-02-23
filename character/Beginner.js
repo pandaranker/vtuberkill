@@ -992,12 +992,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							name:'并蒂恶蕾',
 						},
 						onremove:true,
+						prompt2: '获得一个额外回合',
 						filter:function(event,player){
 							return player.getHistory('lose').length;
 						},
 						content:function(){
-							player.markSkill(event.name);
-							game.delayx();
+							player.unmarkSkill(event.name);
 							player.logSkill(event.name);
 							player.insertPhase();
 						},
@@ -2694,6 +2694,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MitoTsukino:'新·月之美兔',
 			re_MitoTsukino_info:'月之美兔',
 			re_bingdielei:'并蒂恶蕾',
+			re_bingdielei_anotherPhase: '并蒂恶蕾',
 			re_bingdielei_info:'每轮限一次。你失去过牌的回合结束时，你可以获得一个额外回合。',
 			
 			re_HiguchiKaede: '新·樋口枫',
