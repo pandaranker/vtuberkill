@@ -1389,7 +1389,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:6,
 				content:function(){
 					'step 0'
-					player.chooseTarget('请选择『『黄兔颂恩』』的目标',lib.translate.huangtu_info,true,function(card,player,target){
+					player.chooseTarget('请选择『颂恩』的目标',lib.translate.huangtu_info,true,function(card,player,target){
 						if(target.storage.nohp||target.maxHp==Infinity)	return false
 						return target!=player&&(!player.storage.huangtu2||!player.storage.huangtu2.contains(target));
 					}).set('ai',function(target){
@@ -1574,7 +1574,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					console.log(trigger);
 					var next = player.chooseTarget();
 					next.set('filterTarget',function(card,player,target){
 						return target!=player&&target.group==player.group;
@@ -1736,13 +1735,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		
 			InabaHaneru: '因幡はねる',
-			huangtu: '黄兔颂恩',
+			huangtu: '颂恩',
 			huangtu_info: '<font color=#f66>锁定技</font> 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
-			wudao: '病弱五道',
+			wudao: '五道',
 			wudao_info: '出牌阶段，你可以重铸一张基本牌，你以此法重铸的牌须与本回合之前重铸的牌名不同。出牌阶段结束时，若本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			wudao_useEnd_info: '本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
-			yinyuan: '因缘斩断',
-			yinyuan_info: '<font color=#ff4>主公技</font> 若你在出牌阶段结束时发动『病弱五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
+			yinyuan: '缘斩',
+			yinyuan_info: '<font color=#ff4>主公技</font> 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
 
 			UmoriHinako: '宇森ひなこ',
 			hongyi: '红移',
