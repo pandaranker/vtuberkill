@@ -12,6 +12,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KisaragiKoyori:['female','kagura',3,['shinve','juzu']],
 			/**鲨皇 */
 			GawrGura:['female','holo',3,['lingqun','yangliu']],
+			/**Ina */
+			NinomaeInanis:['female','holo',3,['mochu','fuyue']],
 			/**娜娜米 */
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai']],
 			/**海熊猫 */
@@ -25,6 +27,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			huajing:{
 				sea_emperor:['sp_HisekiErio'],
+				HOLOEN:['GawrGura','NinomaeInanis'],
 			},
 		},
 		characterIntro:{
@@ -193,7 +196,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				check:function(card,cards){
 					var player=_status.event.player;
 					if((get.name(card)=='sha'&&(card.nature=='ocean'||(player.getEquip(1)&&get.name(player.getEquip(1))=='sanchaji')))) return 0;
-
 					return 8-get.value(card);
 				},
 				onuse:function(result,player){
@@ -311,6 +313,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
+			//HOLOEN
 			lingqun:{
 				trigger:{player:'phaseDiscardEnd'},
 				frequent:true,
@@ -336,6 +339,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			yangliu:{
+				audio:2,
 				trigger:{player:'useCard1'},
 				filter:function(event,player){
 					return get.tag(event.card,'damage')&&player.hujia;
@@ -381,6 +385,75 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			mochu:{
+				audio:4,
+				trigger:{source:'damageBegin1'},
+				direct:true,
+				filter:function(event,player){
+					return ['ocean','yami'].contains(event.nature);
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					if(trigger.nature=='yami'){
+						player.chooseBool('###'+get.prompt('mochu')+'###摸一张牌，并将伤害改为海洋属性').ai = function(){
+							return 1;
+						}
+					}
+					'step 1'
+					if(result.bool){
+						player.draw();
+						trigger.nature = 'ocean';
+					}
+					'step 2'
+					if(trigger.nature=='ocean'){
+						player.chooseToDiscard('###'+get.prompt('mochu')+'###弃一张牌，并回复伤害值的体力').ai = function(card){
+							var player = _status.event.player;
+							return (get.recoverEffect(player,player,player)>0)?(8-get.value(card)):0;
+						}
+					}
+					'step 3'
+					if(result.bool&&result.cards&&result.cards.length){
+						player.recover(trigger.num);
+					}
+				},
+			},
+			fuyue:{
+				audio:3,
+				trigger:{global:'useCard2'},
+				filter:function(event,player){
+					return get.name(event.card)=='sha'&&lib.linked.contains(get.nature(event.card))&&lib.filter.targetEnabled2({name:'chenmo'},event.player,player);
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					event.card = trigger.card;
+					event.target.useCard({name:'chenmo'},player,false);
+					'step 1'
+					if(result.cards&&result.cards.length){
+						event.num = result.cards.length;
+						player.chooseTarget('为'+get.translation(event.target)+'的'+get.translation(event.card)+'增加至多'+
+						get.cnNumber(event.num)+'个目标',[1,event.num],function(card,player,target){
+							var player=_status.event.source;
+							if(_status.event.targets.contains(target)) return false;
+							return lib.filter.targetEnabled2(_status.event.card,player,target);
+						}).set('source',event.target).set('ai',function(target){
+							var player=_status.event.player;
+							var source=_status.event.source;
+							return get.effect(target,_status.event.card,source,player);
+						}).set('targets',trigger.targets).set('card',event.card);
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.targets&&result.targets.length){
+						event.targets = result.targets;
+						trigger.targets.addArray(event.targets);
+					}
+				}
+			},
+			//VR
 			xieqi:{
 				auido:2,
 				hiddenCard:function(player,name){
@@ -446,19 +519,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var list = get.libCard(function(card){
 							return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 						});
-						list.push('haitao');
-						list.push('haisha');
-						list.push('yamisha');
 						for(var i=0;i<list.length;i++){
 							list[i]=['锦囊','',list[i]];
 						}
+						list.push(['基本','','tao','ocean']);
+						list.push(['基本','','sha','ocean']);
+						list.push(['基本','','sha','yami']);
 						if(list.length==0){
 							return ui.create.dialog('未启用《化鲸篇》');
 						}
 						return ui.create.dialog('『携七』',[list,'vcard']);
 					},
 					filter:function(button,player){
-						return _status.event.getParent().filterCard({name:button.link[2]},player,_status.event.getParent());
+						return _status.event.getParent().filterCard({name:button.link[2],nature:button.link[3]},player,_status.event.getParent());
 					},
 					check:function(button){
 						var player=_status.event.player;
@@ -490,7 +563,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return 6-get.value(card);
 							},
 							position:'he',
-							viewAs:{name:links[0][2]},
+							viewAs:{name:links[0][2],nature:links[0][3]},
 							onuse:function(result,player){
 								player.logSkill('xieqi');
 								if(result.targets&&result.targets.length==1) player.draw(result.cards.length);
@@ -559,6 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					// }
 				},
 			},
+			//特典角色
 			haishou:{
 				audio:3,
 				enable:'chooseToUse',
@@ -607,6 +681,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			jinchen:{
+				audio:2,
 				trigger:{player:'phaseUseEnd'},
 				lastDo:true,
 				check:function(event,player){
@@ -621,6 +696,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			qianyong:{
+				audio:2,
 				trigger:{player:'turnOverBefore'},
 				filter:function(event,player){
 					return player.isTurnedOver();
@@ -632,10 +708,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸一张牌',function(card,player,target){
 						if(player==target) return false;
 						return player.canUse({name:'sha',nature:'ocean'},target,false);
-					});
+					}).ai = function(target){
+						var player=_status.event.player;
+						return get.effect(target,{name:'sha',nature:'ocean'},player,player);
+					}
 					'step 1'
 					if(result.targets&&result.targets.length){
-						player.logSkill('qianyong');
+						player.logSkill('qianyong',result.targets);
 						player.useCard({name:'sha',nature:'ocean'},result.targets,false).card.qianyong=true;
 					}
 					else{
@@ -815,6 +894,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			sea_emperor: '化鲸皇',
+			HOLOEN: 'holoEN',
 
 			sea_SasakiSaku: '海·笹木咲',
 			haishou: '煽动海兽',
@@ -855,6 +935,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lingqun_info: '<font color=#f66>锁定技</font> 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。',
 			yangliu: '洋流',
 			yangliu_info: '当你使用能造成伤害的牌时，可以扣减1点护甲将此伤害改为海洋属性。然后你摸一张牌；或令之不可被响应。',
+
+			NinomaeInanis: '一伊那尔栖',
+			mochu: '墨触',
+			mochu_info: '你造成暗影/海洋属性伤害时，可以摸/弃一张牌，使之改为海洋属性伤害/令你回复等同伤害值的体力。',
+			fuyue: '富岳',
+			fuyue_info: '一名角色使用属性【杀】指定目标时，你可以令其视为对你使用【沉没】，你每因此失去一张牌，便可以为此【杀】额外指定一名目标。',
 
 			Nana7mi: '七海',
 			xieqi: '携七',

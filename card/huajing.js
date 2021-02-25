@@ -3,9 +3,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'huajing',
 		connect:true,
-        card:{
+		card:{
 			//化鲸篇
-            qi:{
+			qi:{
 				fullskin:true,
 				enable:true,
 				type:'basic',
@@ -298,6 +298,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					target.markAuto('chen_card',event.cards);
+					event.result = {cards:event.cards};
 					'step 3'
 					if (target && target.countCards('h') == 0) {
 						target.draw();
@@ -381,6 +382,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					target.markAuto('chen_card',event.cards);
+					event.result = {cards:event.cards};
 					'step 3'
 					if (target && target.countCards('h') == 0) {
 						target.changeHujia();
@@ -650,7 +652,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						player.logSkill('qi');
 						trigger.card.nature=result.control;
 						player.popup(get.translation(trigger.card).slice(0,2),result.control);
-						game.log(trigger.card,'被转为了','#y'+get.translation(result.control),'属性')
+						game.log('#y'+get.translation(get.name(trigger.card)),'被转为了',trigger.card);
 						player.removeSkill('qi');
 					}
 				},

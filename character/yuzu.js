@@ -12,10 +12,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
 
-			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
+			// ShitoAnon: ['female','paryi',3,['jiacan','fuhui']],
 
-//			AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
+			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			KenmochiDouya: ['male','nijisanji',3,['shenglang','nodao']],
+			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
 
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**测试用角色 */
@@ -2977,6 +2978,115 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			//凛月
+			zhuqiao:{
+				audio:5,
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 0;
+				},
+				enable:'phaseUse',
+				filter:function(event,player){
+					return player.storage.zhuqiao<24;
+				},
+				check:function(card,cards){
+					var player=_status.event.player;
+					if(player.storage.zhuqiao_addCard&&player.storage.zhuqiao_addCard.contains(get.suit(card)))	return 6-get.value(card);
+					return 9-get.value(card);
+				},
+				filterCard:true,
+				prepare:function(cards,player){
+					player.$throw(cards,1000);
+					game.log(player,'将',cards,'置入了弃牌堆');
+				},
+				position:'he',
+				discard:false,
+				loseTo:'discardPile',
+				visible:true,
+				delay:0.5,
+				content:function(){
+					player.draw();
+					player.storage.zhuqiao += get.number(cards[0]);
+					if(!player.hasSkill('zhuqiao_addCard'))		player.addTempSkill('zhuqiao_addCard');
+					if(!player.storage.zhuqiao_addCard)			player.storage.zhuqiao_addCard = [];
+					player.storage.zhuqiao_addCard.add(get.suit(cards[0]));
+					player.markSkill('zhuqiao_addCard');
+				},
+				ai:{
+					basic:{
+						order:1,
+					},
+					result:{
+						player:0.5,
+					},
+				},
+				group:['zhuqiao_clear'],
+				subSkill:{
+					clear:{
+						trigger:{player:'phaseAfter'},
+						priority:24,
+						direct:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							player.storage.zhuqiao = 0;
+						},
+					},
+					mark:{
+						trigger:{player:'loseAfter'},
+						priority:24,
+						direct:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player,name){
+							console.log(event);
+							if(!event.visible||event.getParent().name!='useSkill')	return false;
+							return [event.hs[0],event.es[0]].event.cards[0]//&&event.getParent().cards==event.cards;
+						},
+						content:function(){
+							if(!player.hasSkill('zhuqiao_addCard'))		player.addTempSkill('zhuqiao_addCard');
+							if(!player.storage.zhuqiao_addCard)			player.storage.zhuqiao_addCard = [];
+							player.storage.zhuqiao_addCard.add(get.suit(trigger.cards[0]));
+							player.markSkill('zhuqiao_addCard');
+						},
+					},
+					addCard:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = [];
+						},
+						mark:true,
+						intro:{
+							content:'本回合重铸牌的花色：$',
+						},
+						trigger:{player:'phaseEnd'},
+						priority:24,
+						direct:true,
+						filter:function(event,player,name){
+							return game.countPlayer(function(cur){
+								return player.storage.zhuqiao_addCard.length>cur.countCards('h');
+							});
+						},
+						onremove:function(player){
+							delete player.storage.zhuqiao_addCard;
+						},
+						content:function(){
+							'step 0'
+							event.num = player.storage.zhuqiao_addCard.length;
+							player.chooseTarget('###'+get.prompt('zhuqiao')+'###令一名角色将手牌数补至'+get.cnNumber(event.num)+'张',function(card,player,target){
+								return player.storage.zhuqiao_addCard.length>target.countCards('h');
+							}).set('ai',function(target){
+								var player = _status.event.player;
+								return get.attitude(player,target);
+							})
+							'step 1'
+							if(result.bool&&result.targets&&result.targets.length){
+								event.target = result.targets[0];
+								player.logSkill('zhuqiao',event.target);
+								event.target.gain(get.cards(event.num-event.target.countCards('h')),'draw')
+							}
+						},
+					},
+				}
+			},
 			//开司
 			pojie:{
 				init:function(player,skill){
@@ -3274,6 +3384,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			xuanxu:{
+				audio:4,
 				global:'xuanxu_put',
 				group:'ming_niwei',
 				trigger:{player:'phaseUseBegin'},
@@ -3672,6 +3783,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			miaomiao_info: '<font color=#f66>锁定技</font> 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能突击』，摸一张牌。',
 			chengneng: '逞能龙息',
 			chengneng_info: '每回合限一次。其他角色受到伤害，你可以弃一张牌令其来源视为你，且你为其原来源时，本次伤害改为等量体力流失。',
+
+			SakuraRitsuki: '櫻凜月',
+			zhuqiao: '筑巧',
+			zhuqiao_info: '出牌阶段，若你本回合因此进入弃牌堆的牌点数之和小于24，你可重铸一张牌。回合结束时，你可令一名角色将手牌数补至X张（X为你本回合以此重铸牌的花色数）。',
 
 			TenkaiTsukasa: '天开司',
 			pojie: '破戒',
