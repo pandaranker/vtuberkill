@@ -44433,7 +44433,6 @@
 				switch(type){
 					case 'blank':
 					node=ui.create.div('.button.card',position);
-					console.log(node);
 					node.link=item;
 					break;
 
