@@ -2552,7 +2552,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_luecai: {
 				audio:'luecai',
 				enable: 'phaseUse',
-				locked: true,
 				filter:function(event,player){
 					return !player.hasSkill('re_luecai_used')&&!player.isMaxHandcard();
 				},
@@ -2634,8 +2633,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			re_longdan:function(player){
-				if(player.storage.re_longdan) return '<font color=#66f>转换技</font> 每回合限一次。<span class="bluetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
-				return '<font color=#66f>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
+				if(player.storage.re_longdan) return '<font color=#66e>转换技</font> 每回合限一次。<span class="bluetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
+				return '<font color=#66e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
 			},
 		},
 		translate:{
@@ -2713,7 +2712,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_MinamiNami: '新·美波七海',
 			re_longdan: '龙胆雄心',
-			re_longdan_info: '<font color=#66f>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。',
+			re_longdan_info: '<font color=#66e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。',
 
 			re_SisterClearie: '新·克蕾雅',
 			shenyou: '神佑',

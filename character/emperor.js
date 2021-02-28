@@ -4,11 +4,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'emperor',
 		connect:true,
 		character:{
-			sp_KaguraMea:['female','shen',3,['zhigao', 'tiangou']],
-			sp_MinatoAqua:['female','shen',2,['shenghuang','renzhan', 'kuase']],
-			sp_MononobeAlice:['female','shen',3,['xianjing','chahui', 'duandai']],
+			sp_KaguraMea: ['female','shen',3,['zhigao', 'tiangou']],
+			sp_MinatoAqua: ['female','shen',2,['shenghuang','renzhan', 'kuase']],
+			sp_MononobeAlice: ['female','shen',3,['xianjing','chahui', 'duandai']],
+
+			sp_Ava: ['female','shen',Infinity,['shuimu','liuxuan']],
 		},
-        characterIntro:{
+		characterIntro:{
 			sp_MinatoAqua:	 '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
 		},
 		skill:{
@@ -140,6 +142,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//圣皇夸
 			shenghuang:{
+				locked:true,
 				init:function(player){
 					player.storage.shenghuang=0;
 					if(get.zhu(player)==player&&game.players.length>4) player.maxHp--;
@@ -261,8 +264,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'damageEnd'},
 				forced:false,
 				usable:1,
-	//			skillAnimation:true,
-	//			animationColor:'wood',
 				init:function(player){
 					player.storage.renzhan = [];
 				},
@@ -326,22 +327,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}, player)
 					'step 3'
 					if(result.bool){
-						_status.event.target = result.targets[0];
+						event.target = result.targets[0];
 						var target = result.targets[0];
 						console.log(target);
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('renzhan2','phaseEnd');
-						target.storage.renzhan2 = 0;
+						target.storage.renzhan2 = true;
 						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
 					}
 					else{
-						_status.event.finish();
+						event.finish();
 					}
 					'step 4'
 					if(result.bool){
-						var target = _status.event.target;
-						if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+						var target = event.target;
+						if(target.storage.renzhan2&&player.canUse({name:'sha'},target,false)){
 						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
 					}}
 					else{
@@ -349,8 +350,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 5'
 					if(result.bool){
-						var target = _status.event.target;
-						if(!(target.storage.renzhan2||target.isDead()||target.isOut())){
+						var target = event.target;
+						if(target.storage.renzhan2&&player.canUse({name:'sha'},target,false)){
 							event.goto(4);
 						}
 					}
@@ -377,9 +378,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.isAlive();
 				},
+				onremove:function(player){
+					delete player.storage.renzhan2;
+				},
 				content:function(){
-					console.log('OK');
-					player.storage.renzhan2++;
+					target.unmarkSkill('renzhan2');
 				},
 			},
 			kuase:{
@@ -455,7 +458,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.xianjing = [];
 				},
 				marktext:"仙",
-				locked:true,
 				intro:{
 					name:'仙境奇遇',
 					content:function (storage,player,skill){
@@ -471,7 +473,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				trigger:{player:'useCardAfter'},
-				forced:false,
 				priority:555,
 				filter:function(event,player){
 					if(!player.storage.xianjing.length){
@@ -762,7 +763,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player){
 					player.storage.duandai = 0;
 				},
-				locked:true,
 				notemp:true,
 				marktext: 'Alice',
 				intro: {
@@ -785,8 +785,305 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					combo:'xianjing',
 				},
 			},
-		 },
-		 translate:{
+
+			//SP向晚
+			shuimu:{
+				trigger:{player:'damageBegin'},
+				filter:function(event,player){
+					return player.storage.liuxuan&&player.maxHp==Infinity;
+				},
+				locked:true,
+				forced:true,
+				priority:6,
+				content:function(){
+					var num = 0;
+					switch(player.storage.liuxuan){
+						case 'liuxuan_lakua': num = 4;break;
+						case 'liuxuan_huoli': num = 3;break;
+						case 'liuxuan_haixiu': num = 4;break;
+						case 'liuxuan_jiangzui': num = 5;break;
+						case 'liuxuan_keai': num = 7;break;
+					}
+					player.maxHp = num;
+					player.hp = num;
+					player.update();
+				},
+			},
+			liuxuan:{
+				init:function(player,skill){
+					player.storage[skill] = 'liuxuan_lakua';
+					player.addSkill('liuxuan_lakua');
+					if(lib.skill[skill].process)	lib.skill[skill].process(skill,player.storage[skill],player);
+					game.playAudio('skill','liuxuan_lakua1');
+				},
+				mark:true,
+				marktext:'😅',
+				intro:{
+					name:function(storage,player){
+						var skill = player.storage.liuxuan;
+						return '<div class="text center browntext">'+lib.translate[skill]+'小向晚</div>';
+					},
+					content:function(content,player){
+						var list = ['liuxuan_lakua','liuxuan_huoli','liuxuan_haixiu','liuxuan_jiangzui','liuxuan_keai'];
+						var str='';
+						for(var i=0;i<list.length;i++){
+							if(player.hasSkill(list[i]))	str+='<span class="legendtext">';
+							str+=lib.translate[list[i]];
+							str+='：';
+							str+=lib.translate[list[i]+'_describe'];
+							if(player.hasSkill(list[i]))	str+='</span>';
+							str+='<br>';
+						}
+						return str;
+					}
+				},
+				trigger:{player:['useCardBegin','respondBegin']},
+				filter:function(event,player){
+					var number = get.number(event.card);
+					var list = [];
+					if(number){
+						if(number%3==0)	list.add('liuxuan_huoli');
+						if(number%4==0)	list.add('liuxuan_haixiu');
+						if(number%5==0)	list.add('liuxuan_jiangzui');
+						if(number%7==0)	list.add('liuxuan_keai');
+					}
+					if(list.length==0)	list.add('liuxuan_lakua');
+					list.remove(player.storage.liuxuan);
+					return list.length;
+				},
+				process:function(skill,name,player){
+					if(lib.translate[name]){
+						player.node.name.innerHTML = get.verticalStr(lib.translate[name]+'小向晚');
+						lib.translate[skill+'_append']='<span class="bluetext">'+lib.translate[name]+'：'+lib.translate[name+'_describe']+'</span>';
+						player.update();
+					}
+				},
+				locked:true,
+				forced:true,
+				priority:6,
+				content:function(){
+					'step 0'
+					var number = get.number(trigger.card);
+					var list = [];
+					if(number){
+						if(number%3==0)	list.add('liuxuan_huoli');
+						if(number%4==0)	list.add('liuxuan_haixiu');
+						if(number%5==0)	list.add('liuxuan_jiangzui');
+						if(number%7==0)	list.add('liuxuan_keai');
+					}
+					if(list.length==0)	list.add('liuxuan_lakua');
+					event.list = list;
+					'step 1'
+					if(event.list.length==0){
+						event.finish()
+					}else if(event.list.length==1){
+						event.link = event.list.pop();
+						var from = player.storage.liuxuan;
+						player.removeSkill([from]);
+						event.goto(3);
+					}else if(event.list.length>1){
+						var list = event.list.slice(0);
+						player.chooseButton(true,'hidden',['选择一个姿态进入',[list,'vcard'],'hidden']).set('filterButton',function(button){
+							var player = _status.event.player;
+							if(button.link[2]==player.storage.liuxuan)	return false;
+							return true;
+						}).set('prompt','选择一个姿态进入');
+					}
+					'step 2'
+					if(result.bool&&result.links[0]){
+						var from = player.storage.liuxuan;
+						player.removeSkill([from]);
+						var link = result.links[0][2];
+						event.link = link;
+						event.list.remove(link);
+					}
+					'step 3'
+					if(event.link&&event.link!=player.storage.liuxuan){
+						player.storage.liuxuan = event.link;
+						player.popup(player.storage.liuxuan);
+						if(event.link=='liuxuan_jiangzui'&&game.hasPlayer(function(cur){
+							if(player==target) return false;
+							return cur.countGainableCards(player,'he')>0;
+						}))
+						player.chooseTarget(true,'『犟嘴』：'+lib.translate[event.link+'_describe'],function(card,player,target){
+							if(player==target) return false;
+							return target.countGainableCards(player,'he')>0;
+						});
+					}
+					'step 4'
+					if(event.link=='liuxuan_jiangzui'&&result&&result.targets&&result.targets.length){
+						event.target = result.targets[0];
+						player.logSkill(event.link,event.target);
+						player.gainPlayerCard(event.target,'he',true);
+					}else{
+						event.goto(8);
+					}
+					'step 5'
+					if(event.link=='liuxuan_jiangzui'){
+						player.chooseCard('选择一张牌，令其点数增加或减少1',true);
+					}
+					'step 6'
+					if(event.link=='liuxuan_jiangzui'&&result.cards&&result.cards.length){
+						event.cards = result.cards;
+						var list = ['+1','-1','cancel2'];
+						if(event.cards[0].hasGaintag('liuxuan_lose2'))	list.remove('-1');
+						if(event.cards[0].hasGaintag('liuxuan_plus2'))	list.remove('+1');
+						player.chooseControl(['+1','-1','cancel2'],true).set('prompt','选择一张牌，令其点数增加或减少1')
+					}
+					'step 7'
+					if(event.link=='liuxuan_jiangzui'&&result.control){
+						switch(result.control){
+							case 'cancel2':event.goto(5);break;
+							case '+1':{
+								if(event.cards[0].hasGaintag('liuxuan_lose')){
+									event.cards[0].removeGaintag('liuxuan_lose');
+								}
+								else if(event.cards[0].hasGaintag('liuxuan_lose2')){
+									event.cards[0].removeGaintag('liuxuan_lose2');
+									player.addGaintag(event.cards,'liuxuan_lose');
+								}
+								else if(event.cards[0].hasGaintag('liuxuan_plus')){
+									event.cards[0].removeGaintag('liuxuan_plus');
+									player.addGaintag(event.cards,'liuxuan_plus2');
+								}
+								else{
+									player.addGaintag(event.cards,'liuxuan_plus');
+								}
+								break;
+							}
+							case '-1':{
+								if(event.cards[0].hasGaintag('liuxuan_plus')){
+									event.cards[0].removeGaintag('liuxuan_plus');
+								}
+								else if(event.cards[0].hasGaintag('liuxuan_plus2')){
+									event.cards[0].removeGaintag('liuxuan_plus2');
+									player.addGaintag(event.cards,'liuxuan_plus');
+								}
+								else if(event.cards[0].hasGaintag('liuxuan_lose')){
+									event.cards[0].removeGaintag('liuxuan_lose');
+									player.addGaintag(event.cards,'liuxuan_lose2');
+								}
+								else{
+									player.addGaintag(event.cards,'liuxuan_lose');
+								}
+								break;
+							}
+						}
+					}
+					'step 8'
+					if(event.link){
+						player.storage.liuxuan = event.link;
+						player.popup(player.storage.liuxuan);
+						game.log(player,'进入了','#g'+get.translation(event.link),'姿态');
+						if(['liuxuan_lakua','liuxuan_keai','liuxuan_haixiu'].contains(event.link))	player.logSkill(event.link);
+						player.addSkill(event.link);
+						player.markSkill('liuxuan');
+						game.delay();
+						if(lib.skill.liuxuan.process)	lib.skill.liuxuan.process('liuxuan',event.link,player);
+					}
+					event.goto(1);
+				},
+				mod:{
+					number:function(card,player,number){
+						if(card.hasGaintag&&card.hasGaintag('liuxuan_plus2'))	return number+2;
+						if(card.hasGaintag&&card.hasGaintag('liuxuan_lose2'))	return number-2;
+						if(card.hasGaintag&&card.hasGaintag('liuxuan_plus'))	return number+1;
+						if(card.hasGaintag&&card.hasGaintag('liuxuan_lose'))	return number-1;
+					},
+				},
+				subSkill:{
+					lakua:{
+						audio:3,
+						onremove:true,
+						mod:{
+							globalTo:function(from,to,distance){
+								if(to!=from){
+									return distance+1;
+								}
+							}
+						},
+					},
+					huoli:{
+						onremove:function(player){
+							player.popup(player.storage.liuxuan);
+							player.draw(2);
+							game.delay();
+						},
+						ai:{
+							directHit_ai:true,
+							skillTagFilter:function(player,tag,arg){
+								if(tag=='directHit_ai'){
+									if(arg&&get.type(arg.card)=='trick') return true;
+									return false;
+								}
+							}
+						}
+					},
+					haixiu:{
+						audio:3,
+						onremove:true,
+						trigger:{source:'damageBegin2',player:'damageBegin4'},
+						priority:6,
+						forced:true,
+						popup:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							trigger.num ++;
+						},
+						mod:{
+							canBeGained:function(card,source,player){
+								if(get.position(card)=='hej') return false;
+							},
+							canBeDiscarded:function (card,source,player){
+								if(get.position(card)=='hej') return false;
+							},
+							cardDiscardable:function(card,player,name){
+								if(get.position(card)=='hej') return false;
+							}
+						},
+					},
+					jiangzui:{
+						audio:3,
+						onremove:true,
+					},
+					keai:{
+						audio:5,
+						onremove:function(player){
+							player.loseHp(Math.floor(player.hp/2));
+						},
+						init:function(player,skill){
+							player.draw(3);
+						},
+						trigger:{source:'damageBegin2'},
+						priority:6,
+						forced:true,
+						popup:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							trigger.num *= 2;
+						},
+					},
+				}
+			},
+		},
+		dynamicTranslate:{
+			liuxuan:function(player){
+				var str = '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。'
+				switch(player.storage.liuxuan){
+					case 'liuxuan_lakua': return str.replace(/“拉胯”/g,'<span class="bluetext">“拉胯”</span>');
+					case 'liuxuan_huoli': return str.replace('“活力”','<span class="bluetext">“活力”</span>');
+					case 'liuxuan_haixiu': return str.replace('“害羞”','<span class="bluetext">“害羞”</span>');
+					case 'liuxuan_jiangzui': return str.replace('“犟嘴”','<span class="bluetext">“犟嘴”</span>');
+					case 'liuxuan_keai': return str.replace('“可爱”','<span class="bluetext">“可爱”</span>');
+				}
+				return ;
+			 },
+		},
+		translate:{
 			sp_KaguraMea: '皇·神乐めあ',
 			zhigao: '至高权柄',
 			zhigao_info: '<font color=#dfb>限定技</font> 回合内，一名已受伤角色体力值变化时，你可以令此变化改为等量的体力上限变化。',
@@ -811,12 +1108,38 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiaotuzi: '小兔子',
 			xiaotuzi_info: '成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用',
 
+			sp_Ava: '皇·向晚',
+			shuimu: '降雨水母',
+			shuimu_info: '<font color=#f66>锁定技</font> 你首次受到伤害前没有体力牌。首次受到伤害后，你获得当前姿态对应的体力牌。',
+			liuxuan: '无限溜旋',
+			liuxuan_info: '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
+			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离+1。'
+			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸两张牌。'
+			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。'
+			+'<br><span class="firetext">犟嘴</span>：进入此姿态时，你获得其他角色的一张牌然后展示一张手牌，令之点数+1或-1。'
+			+'<br><span class="thundertext">可爱</span>：进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，你失去一半体力（向下取整）。',
+
+			liuxuan_plus: '溜旋:+1',
+			liuxuan_lose: '溜旋:-1',
+			liuxuan_plus2: '溜旋:+2',
+			liuxuan_lose2: '溜旋:-2',
+
+			liuxuan_lakua: '拉胯',
+			liuxuan_lakua_describe: '其他角色计算与你的距离+1。',
+			liuxuan_huoli: '活力',
+			liuxuan_huoli_describe: '你的锦囊牌无法被抵消；离开此姿态时，你摸两张牌。',
+			liuxuan_haixiu: '害羞',
+			liuxuan_haixiu_describe: '你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。',
+			liuxuan_jiangzui: '犟嘴',
+			liuxuan_jiangzui_describe: '进入此姿态时，你获得其他角色的一张牌然后展示一张手牌，令之点数+1或-1。',
+			liuxuan_keai: '可爱',
+			liuxuan_keai_describe: '进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，你失去一半体力（向下取整）。',
 
 			'phaseJudge': '判定阶段',
 			'phaseDraw': '摸牌阶段',
 			'phaseUse': '出牌阶段',
 			'phaseDiscard': '弃牌阶段',
-		 },
+		},
 	};
 });
 	

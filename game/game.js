@@ -62,6 +62,7 @@
 			zhenji_emotion:20,
 			xiaosha_emotion:20,
 			xiaotao_emotion:20,
+			xiaojiu_emotion:20,
 		},
 		animate:{
 			skill:{},
@@ -1681,7 +1682,7 @@
 					},
 					player_style:{
 						name:'角色背景',
-						init:'default',
+						init:'simple',
 						intro:'设置角色的背景图片',
 						item:{
 							wood:'木纹',
@@ -2666,7 +2667,7 @@
 					},
 					name_font:{
 						name:'人名字体',
-						init:'xingkai',
+						init:'LuoLiTi2',
 						unfrequent:true,
 						item:{},
 						textMenu:function(node,link){
@@ -2682,7 +2683,7 @@
 					},
 					identity_font:{
 						name:'身份字体',
-						init:'huangcao',
+						init:'xingkai',
 						unfrequent:true,
 						item:{},
 						textMenu:function(node,link){
@@ -2698,7 +2699,7 @@
 					},
 					cardtext_font:{
 						name:'卡牌字体',
-						init:'default',
+						init:'LuoLiTi2',
 						unfrequent:true,
 						item:{},
 						textMenu:function(node,link){
@@ -10164,6 +10165,7 @@
 			shibing_emotion:'士兵表情',
 			xiaosha_emotion:'小杀表情',
 			xiaotao_emotion:'小桃表情',
+			xiaojiu_emotion:'小酒表情',
 
 			pause:'暂停',
 			config:'选项',
@@ -13557,7 +13559,7 @@
 					var directh=!lib.config.unauto_choose;
 					for(var i=0;i<event.position.length;i++){
 						if(event.position[i]=='h'){
-							var ms = target.getDiscardableCards('h',function(card){
+							var ms = target.getDiscardableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return true;
 								if(card.hasGaintag('an_'))		return false;
 								if(event.visible||player.hasSkillTag('viewHandcard',null,target,true)){
@@ -13570,7 +13572,7 @@
 								ms.randomSort();
 								event.dialog.add(ms);
 							}
-							var ans = target.getDiscardableCards('h',function(card){
+							var ans = target.getDiscardableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return false;
 								if(card.hasGaintag('an_'))		return true;
 								if(event.visible||player.hasSkillTag('viewHandcard',null,target,true)){
@@ -13716,7 +13718,7 @@
 					var directh=!lib.config.unauto_choose;
 					for(var i=0;i<event.position.length;i++){
 						if(event.position[i]=='h'){
-							var ms = target.getGainableCards('h',function(card){
+							var ms = target.getGainableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return true;
 								if(card.hasGaintag('an_'))		return false;
 								if(event.visible||player.hasSkillTag('viewHandcard',null,target,true)){
@@ -13729,7 +13731,7 @@
 								ms.randomSort();
 								event.dialog.add(ms);
 							}
-							var ans = target.getGainableCards('h',function(card){
+							var ans = target.getGainableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return false;
 								if(card.hasGaintag('an_'))		return true;
 								if(event.visible||player.hasSkillTag('viewHandcard',null,target,true)){
@@ -44431,7 +44433,6 @@
 				switch(type){
 					case 'blank':
 					node=ui.create.div('.button.card',position);
-					console.log(node);
 					node.link=item;
 					break;
 
@@ -45991,6 +45992,9 @@
 						list2.remove();
 						list3.remove();
 						uiintro.add(list1);
+						while(list2.childNodes.length){
+							list2.firstChild.remove();
+						}
 					}
 					else{
 						emotionTitle.innerHTML='快捷语音';

@@ -389,7 +389,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					player:"phaseDrawBegin1",
 				},
-				forced:true,
+				direct:true,
 				locked:false,
 				filter:function(event,player){
 					return !event.numFixed;
@@ -403,6 +403,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					"step 1"
 					if(result.bool){
+						player.logSkill(event.name);
 					    trigger.changeToZero();
 					    var cards=get.cards(2);
 					    game.cardsGotoOrdering(cards);
@@ -2060,7 +2061,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				onremove:function(player){
 					player.removeGaintag('youyishiyue');
 				},
-				locked:true,
 				intro:{
 					name:'誓约牌',
 					content:'当前的“誓约”牌为$当你造成伤害时，湊阿库娅可令你将“誓约”牌交给她以防止之。 \n 本回合结束时，你可以弃置“誓约”牌令你或其回复1点体力。',
@@ -2071,6 +2071,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				locked:true,
 				mark:'card',
 				group:['youyishiyue_rec'],
 				subSkill:{
@@ -2131,7 +2132,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.pekoyu=[];
 				},
 				marktext:"peko",
-				locked:true,
 				intro:{
 					name:'嚣张咚鼓',
 					content:function (storage,player,skill){

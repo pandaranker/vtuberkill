@@ -144,6 +144,7 @@ window.noname_package={
 		music_usadaPekora:'兔田佩克拉',
 	},
 	font:{
+		LuoLiTi2: '萝莉',
 		xiaozhuan:'小篆',
 		xinwei:'新魏',
 		huangcao:'黄草',

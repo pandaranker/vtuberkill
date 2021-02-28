@@ -796,7 +796,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return event.nature=='ocean';
 				},
 				content:function(){
-					trigger.num=0;
+					trigger.changeToZero();
 				},
 				ai:{
 					filterDamage:true,

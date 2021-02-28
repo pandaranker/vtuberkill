@@ -284,7 +284,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			zhimao:{
 				trigger:{target:'useCardToBegin'},
-				forced:true,
+			//	forced:true,
 				priority:15,
 				filter:function(event,player){
 					if(!event.player||event.target!=player||event.player==player) return false;
@@ -1368,7 +1368,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					clear:{
 						trigger:{player:'phaseAfter'},
-						forced:true,
+						direct:true,
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){

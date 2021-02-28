@@ -23,12 +23,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**BFM */
 			UmoriHinako:['female','nanashi',4,['hongyi','jueshou']],
 			/**patra */
-			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv']],
+			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv'],['forbidai']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
 			KaguyaLuna:'#p不羁的夜空之月',
 			XiaoxiXiaotao:'#p研虚之实',
+
+			sp_Ava: '#rA-SOUL',
+			Bella: '#rA-SOUL',
 		},
 		characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -53,26 +56,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var trigger=_status.event;
 					'step 0'
 					if(!player.storage.targets) player.storage.targets=[];
-					if(player.countCards('h')>0)
-					{
-					player.chooseTarget('指定一个给予牌的目标',function(card,player,target){
-					    //get.distance(target,current,'pure')==1
+					if(player.countCards('h')>0){
+						player.chooseTarget('指定一个给予牌的目标',function(card,player,target){
+							//get.distance(target,current,'pure')==1
 							if(target==player) return false;
-							//window.console.log(player.storage);get.distance(target,player.storage.targets[i],'pure')<=1
-					    if(player.storage.targets){
+							if(player.storage.targets){
 								if(player.storage.targets.length==0) return true;
-					        for(var i =0; i< player.storage.targets.length;i++){
+								for(var i =0; i< player.storage.targets.length;i++){
 									if(player.storage.targets[i].group==target.group){
 										return false;
 									}
-					        }
+								}
 								return true
 							}
 							else{
 								return true
 							}
-					    return false;
-					});
+						},function(target){
+							var player = _status.event.player;
+							if(get.attitude(player,target)<=0)	return 0;
+							else return get.attitude(player,target);
+						});
 					}
 					else{
 					event.goto(3);
@@ -91,7 +95,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					    }
 					    trigger.target=result.targets[0];
 					}
-					player.chooseCard(true, 'h', '选择要给出的牌',[1,Infinity]);
+					player.chooseCard(true, 'h', '选择要给出的牌',[1,Infinity]).set('ai',function(card){
+						if(player.isZhu)	return 6-get.useful(card);
+						return 7-get.useful(card);
+					})
 					}
 					'step 2'
 					if(result.bool==true){
@@ -233,39 +240,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			    },
 				ai:{
 					order:function(skill,player){
-						if(player.hp<player.maxHp&&player.countCards('h')>1){
-							return 10;
+						if(player.needsToDiscard()){
+							return 5;
 						}
 						return 1;
 					},
 					result:{
-						target:function(player,target){
-							if(target.hasSkillTag('nogain')) return 0;
-							if(ui.selected.cards.length&&ui.selected.cards[0].name=='du'){
-								if(target.hasSkillTag('nodu')) return 0;
-								return -10;
-							}
-							if(target.hasJudge('lebu')) return 0;
-							var nh=target.countCards('h');
-							var np=player.countCards('h');
-							if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
-								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
-							}
-							return Math.max(1,5-nh);
-						}
-					},
-					effect:{
-						target:function(card,player,target){
-							if(player==target&&get.type(card)=='equip'){
-								if(player.countCards('e',{subtype:get.subtype(card)})){
-									var players=game.filterPlayer();
-									for(var i=0;i<players.length;i++){
-										if(players[i]!=player&&get.attitude(player,players[i])>0){
-											return 0;
-										}
-									}
-								}
-							}
+						player:function(player,target){
+							if(player.needsToDiscard()) return Math.random()-0.1;
+							return Math.random()-0.9;
 						}
 					},
 					threaten:0.8
@@ -573,12 +556,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.source.hasSkill('rongyaochengyuan_homolive')) return false;
 					return true;
 				},
-				forced:true,
+				direct:true,
 				content:function (){
 					'step 0'
 					player.chooseBool('是否发动技能,给目标添加homolive标记,并抵挡此次伤害');
 					'step 1'
 					if(result.bool){
+						player.logSkill(trigger.source);
 						trigger.source.addSkill('rongyaochengyuan_homolive');
 					}
 					else{
@@ -780,7 +764,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if (result.bool) {
 						event.starget = result.targets[0];
-						event.starget.chooseCard(true, 'h');
+						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌');
 					}
 					else {
 						event.finish();

@@ -2233,6 +2233,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			//修女
 			zhenxin:{
+				locked:true,
 				group:['zhenxin_from' , 'zhenxin_to'],
 				subSkill:{
 					//防止每回合你第一次对体力值小于你的角色造成的伤害

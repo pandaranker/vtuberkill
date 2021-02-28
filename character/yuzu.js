@@ -6,6 +6,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
+			Bella: ['female','qun',4,['aswusheng', 'gunxun']],
+
 			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
 			
 			Ciyana: ['female','qun',3,['yankui', 'danyan']],
@@ -33,7 +35,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//Ruki
 			beixie:{
 				trigger:{global:'gameDrawBegin',player:'enterGame'},
-				forced:true,
+				direct:true,
 				content:function(){
 					'step 0'
 					event.togain = [];
@@ -45,6 +47,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseButton(['是否获得其中的一张牌？',event.togain]);
 					'step 2'
 					if(result.bool){
+						player.logSkill(event.name);
 						player.gain(result.links,'draw');
 						if(get.subtype(result.links[0])=='equip1'){
 							player.equip(result.links[0]);
@@ -444,7 +447,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage[skill]) player.storage[skill]=true;
 				},
 				marktext:"卒",
-				locked:true,
 				intro:{
 					name:'职业生涯结束',
 					content:function (storage,player,skill){
@@ -453,7 +455,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{player:'useCardAfter'},
 				priority: 998,
-				forced:	true,
+				locked: true,
+				forced: true,
 				filter:function(event,player){
 					return player.storage.shengya&&player.isPhaseUsing()&&get.color(event.card)=='red';
 				},
@@ -490,7 +493,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				marktext:"汉",
-				locked:true,
 				intro:{
 					name:'好汉歌',
 					content:'cards',
@@ -527,6 +529,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							return player.storage.liangshan.length;
 						},
+						prompt2:'一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 						content:function(){
 							'step 0'
 							player.chooseCardButton('交给其一张你武将牌上的牌', 1, player.storage.liangshan);
@@ -551,6 +554,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							return event.player.hp<=0&&player.storage.liangshan.length;
 						},
+						prompt2:'一名角色濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 						content:function(){
 							'step 0'
 							player.chooseCardButton('交给其一张你武将牌上的一张牌', 1, player.storage.liangshan);
@@ -612,9 +616,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				mark:true,
-				onremove:function(player){
-					delete player.storage.zhai;
-				},
+				onremove:true,
 			},
 			zhishu:{
 				trigger:{player:['phaseUseBegin','changeHp']},
@@ -662,7 +664,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	/*			init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
-				locked:true,
 				notemp:true,
 				marktext: '玉',
 				intro: {
@@ -825,8 +826,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					player.storage[skill]=[];
 				},
-				locked:true,
-				notemp:true,
 				marktext: '崛',
 				intro: {
 					content: 'cards',
@@ -961,7 +960,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				priority:996,
 				filter:function(event,player){
-					return true;
+					return game.countPlayer(function(cur){
+						return cur.hp!=Infinity
+					});
 				},
 				check:function(event,player){
 					if(event.player!=player&&get.attitude(player,event.player)<0&&event.player.inRange(player))	return true;
@@ -969,7 +970,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true);
+					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
+						return target.hp!=Infinity
+					});
 					next.set('ai',function(target){
 						if(player.inRange(target))	return 2-get.attitude(player,target);
 						else return target.hp-(get.attitude(player,target)/2);
@@ -1080,6 +1083,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.awakenSkill('qishi');
 					player.addSkill('xiban');
 				},
+				derivation:'xiban',
 				group:['qishi_date','qishi_update'],
 				subSkill:{
 					date:{
@@ -2395,7 +2399,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.discardPlayerCard('###'+get.prompt('helesta')+'###可以弃置装备区的一张牌使伤害-1',player,'e');
+					player.discardPlayerCard('###'+get.prompt('helesta')+'###可以弃置装备区的一张牌使伤害-1',player,'e').set('ai',function(){
+						if(player.isDamaged()||player.countCards('e')==1)	return 5+Math.random();
+						return Math.random()-0.2;
+					})
 					'step 1'
 					if(result.bool){
 						player.logSkill('helesta');
@@ -2619,6 +2626,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			weizhuang:{
 				audio:2,
 				trigger:{player:'useCardAfter'},
+				locked:true,
 				direct:true,
 				lastDo:true,
 				filter:function(event,player){
@@ -3271,7 +3279,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			tiaolv:{
-				audio:3,
+				audio:4,
 				trigger:{player:'useCard1'},
 				filter:function(event,player){
 					return event.cards&&event.cards.length==1;
@@ -3339,6 +3347,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			//狼半仙
 			niwei:{
 				marktext:'弼',
 				intro:{
@@ -3519,14 +3528,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:3,
 				filter:function(event,player){
 					return event.player!=player&&player.countCards('h',function(card){
-						return get.type(card)=='basic'&&card.hasGaintag('ming_niwei');
+						return get.type(card)=='basic'&&card.hasGaintag('ming_');
 					});
 				},
 				content:function(){
 					'step 0'
 					event.target = trigger.player;
 					player.chooseCard(get.prompt2('weizeng'),[1,Infinity],function(card){
-						return get.type(card)=='basic'&&card.hasGaintag('ming_niwei');
+						return get.type(card)=='basic'&&card.hasGaintag('ming_');
 					});
 					'step 1'
 					if(result.bool&&result.cards&&result.cards.length){
@@ -3587,11 +3596,129 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.markSkill('niwei');
 							player.storage.weizeng_put.removeArray(event.cards);
 						},
-						onremove:function (player,skill){
-							delete player.storage[skill]
-						},
+						onremove:true,
 					}
 				},
+			},
+			//贝海王
+			aswusheng:{
+				init:function(player,skill){
+					player.storage[skill] = 0;
+				},
+				trigger:{player:['useCardBegin','respondBegin']},
+				direct:true,
+				priority:5,
+				filter:function(event,player){
+					return get.type(event.card)=='basic'||player.storage.aswusheng>0;
+				},
+				logTarget:function(event,player){
+					if(event.name=='respond')	return event.source;
+					if(['sha','qi','jiu','tao'].contains(event.card.name))	return event.targets[0];
+					if(event.respondTo) return event.respondTo[0];
+				},
+				mark:true,
+				intro:{
+					content:'连续使用或打出了&张基本牌',
+				},
+				content:function(){
+					'step 0'
+					if(get.type(trigger.card)!='basic'&&player.storage.aswusheng>0){
+						player.storage.aswusheng = 0;
+						player.markSkill('aswusheng');
+						event.finish();
+					}
+					event.num = player.storage.aswusheng;
+					'step 1'
+					var goto = false;
+					var target = lib.skill.aswusheng.logTarget(trigger,player);
+					player.storage.aswusheng++;
+					player.markSkill('aswusheng');
+					switch(event.num){
+						case 0:goto = (trigger.name=='useCard');break;
+						case 1:goto = true;break;
+						case 2:goto = (target.countGainableCards(player,'he')>0);break;
+						case 3:goto = (player.hp<player.maxHp);break;
+						default:break;
+					}
+					if(goto){
+						event.target = target;
+						player.chooseBool(get.prompt2('aswusheng').replace(event.num,'<span class="yellowtext">'+event.num+'</span>')).ai=function(){return 1};
+					}else{
+						event.finish(0)
+					}
+					'step 2'
+					if(result.bool){
+						player.logSkill(event.name,event.target);
+						switch(event.num){
+							case 0:{
+								if(trigger.addCount!==false){
+									trigger.addCount=false;
+									var stat=player.getStat();
+									if(stat&&stat.card&&stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
+								}
+							};break;
+							case 1:{
+								player.draw();
+							};break;
+							case 2:player.gainPlayerCard(event.target,'he');break;
+							case 3:player.recover();break;
+						}
+					}
+				},
+			},
+			gunxun:{
+				enable:'phaseUse',
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = true;
+				},
+				filter:function(event,player,cards){
+					if(player.storage.gunxun)	return player.countCards('h',function(card){
+						return !card.hasGaintag('ming_')&&get.color(card)=='red';
+					});
+					return player.countCards('h',function(card){
+						return !card.hasGaintag('ming_')&&get.color(card)=='black';
+					});
+				},
+				selectCard:[1,Infinity],
+				filterCard:function(card,player){
+					if(player.storage.gunxun)	return !card.hasGaintag('ming_')&&get.color(card)=='red';
+					return !card.hasGaintag('ming_')&&get.color(card)=='black';
+				},
+				discard:false,
+				lose:false,
+				content:function(){
+					'step 0'
+					game.log(player,'亮出了',event.cards);
+					if(player.storage.gunxun) player.addGaintag(event.cards,'ming_gunxunshan');
+					else player.addGaintag(event.cards,'ming_gunxunsha');
+					'step 1'
+					player.storage.gunxun = !player.storage.gunxun;
+					var num = event.cards.length;
+					if(game.hasPlayer(function(cur){
+						return cur.countCards('e')<num;
+					})){
+						player.chooseTarget('『棍训』：令装备区牌数少于'+get.cnNumber(num)+'的一名角色失去所有非锁定技直到回合结束',function(card,player,target){
+							return target.countCards('e')<_status.event.num;
+						}).set('num',num).set('ai',function(target){
+							var player = _status.event.player;
+							return -get.attitude(player,target)+Math.random();
+						})
+					}
+					'step 2'
+					if(result.targets&&result.targets.length){
+						var target = result.targets[0];
+						event.target = target;
+						if(!target.hasSkill('fengyin')){
+							target.addTempSkill('fengyin');
+						}
+					}
+				},
+				mod:{
+					cardname:function(card,player){
+						if(card.hasGaintag&&card.hasGaintag('ming_gunxunshan'))	return 'shan';
+						if(card.hasGaintag&&card.hasGaintag('ming_gunxunsha'))	return 'sha';
+					},
+				}
 			},
 		},
 		card:{
@@ -3626,6 +3753,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				if(player.storage.haoren===true) return '<font color=#fcd>一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
 				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
+			gunxun:function(player){
+				if(player.storage.gunxun===true) return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【闪】</span>②【杀】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
+				return '<font color=#66e>转换技</font>出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【闪】<span class="browntext">②【杀】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="bluetext"></span>';
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -3634,6 +3765,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			Bella: '贝拉',
+			aswusheng: '舞圣',
+			aswusheng_info: '你在一回合内连续使用或打出第（）张基本牌时，可以触发对应项：（0）使之不计入次数；（1）摸一张牌；（2）获得对方的一张牌；（3）回复1点体力。',
+			gunxun: '棍训',
+			gunxun_info: '<font color=#66e>转换技</font>出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【闪】②【杀】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。',
+			ming_gunxunshan: '棍训:闪',
+			ming_gunxunsha: '棍训:杀',
 
 			ŌokamiMio: '大神澪',
 			niwei: '逆位',
@@ -3670,8 +3809,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shengya_info: '<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
 			liangshan: '汉歌',
 			liangshan_info: '其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
-			liangshan_use_info: '一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
-			liangshan_save_info: '一名角色濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			chongshi: '铳士',
 			chongshi_info: '你使用【杀】指定目标后，可与其各摸一张牌。',
 

@@ -284,9 +284,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.awakenSkill('juzu');
 					player.addSkill('haigou');
 				},
-				ai:{
-					combo:'tiantang',
-				},
+				derivation:'haigou',
 			},
 			haigou:{
 				trigger:{player:'useCardToPlayer'},
@@ -424,6 +422,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return get.name(event.card)=='sha'&&lib.linked.contains(get.nature(event.card))&&lib.filter.targetEnabled2({name:'chenmo'},event.player,player);
 				},
+				usable:1,
 				logTarget:'player',
 				content:function(){
 					'step 0'
@@ -451,6 +450,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.targets = result.targets;
 						trigger.targets.addArray(event.targets);
 					}
+				},
+				result:{
+					player:1,
 				}
 			},
 			//VR
@@ -940,7 +942,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mochu: '墨触',
 			mochu_info: '你造成暗影/海洋属性伤害时，可以摸/弃一张牌，使之改为海洋属性伤害/令你回复等同伤害值的体力。',
 			fuyue: '富岳',
-			fuyue_info: '一名角色使用属性【杀】指定目标时，你可以令其视为对你使用【沉没】，你每因此失去一张牌，便可以为此【杀】额外指定一名目标。',
+			fuyue_info: '每回合限一次，一名角色使用属性【杀】指定目标时，你可以令其视为对你使用【沉没】，你每因此失去一张牌，便可以为此【杀】额外指定一名目标。',
 
 			Nana7mi: '七海',
 			xieqi: '携七',

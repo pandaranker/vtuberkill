@@ -2,7 +2,7 @@ window.noname_update={
 	version:'1.9.101.27',
 	update:'1.9.100.113.3',
 	changeLog:[
-		'101.27小更新：大家元宵节快乐~ 修复bug，新增角色樱凛月和Ina（化鲸），部分旧角色新增皮肤',
+		'101.28小更新：祝贺向晚Ava第三届V萌夺冠~ 修复bug，新增角色V萌亚军贝拉，新增特典角色V萌冠军皇·向晚，部分旧角色的配音和技能描述修改',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -18,6 +18,13 @@ window.noname_update={
 		'image/card/yalishanda.png',
 		'image/card/zhungangshuo.png',
 		'image/card/lanyinjia.png',
+		
+		'audio/skill/tiaolv1.mp3',
+		'audio/skill/tiaolv2.mp3',
+		'audio/skill/tiaolv3.mp3',
+		'audio/skill/tiaolv4.mp3',
+		'audio/skill/DDzhanshou1.mp3',
+		'audio/skill/DDzhanshou2.mp3',
 		
 		// 'image/mode/longlaoguan/card/chuanjia.png',
 		// 'image/mode/longlaoguan/card/dulun.png',
