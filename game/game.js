@@ -12893,6 +12893,7 @@
 					ui.arena.classList.add('markhidden');
 					for(var i=0;i<event.list.length;i++){
 						var current=event.list[i];
+						if(current[0])
 						current[0].wait();
 						if(current[0].isOnline()){
 							var target=current.shift();
@@ -12917,7 +12918,13 @@
 					'step 1'
 					if(event.list.length){
 						var current=event.list.shift();
-						event.target=current.shift();
+						if(current.length)
+							event.target=current.shift();
+						else
+							{
+								event.target=current;
+								current=null;
+							}
 						var next=event.target.chooseButton.apply(event.target,current);
 						next.callback=event.callback;
 						next.switchToAuto=event.switchToAuto;
@@ -25977,30 +25984,30 @@
 						str+='的结束阶段，是否对其使用暗影属性的牌？';
 
 						var next=player.chooseToUse({
-							// filterCard:function(card,player){
-							// 	if(get.nature(card)!='yami') return false;
-							// 	return lib.filter.cardEnabled(card,player,'forceEnable');
-							// },
-							// filterTarget:target,
-							// prompt:str,
-							// type:'yami',//
-							// state:state,
-							// _global_waiting:true,
-							// ai1:function(){
-							// 	if(target){
-							// 		var triggerevent=_status.event.getTrigger();
-							// 		if(triggerevent&&triggerevent.parent&&
-							// 			triggerevent.parent.postAi&&
-							// 			triggerevent.player.isUnknown(_status.event.player)){
-							// 			return 0;
-							// 		}
-							// 		if(Math.abs(get.attitude(_status.event.player,target))<0) return Math.random()-0.2;
-							// 	}
-							// 	else{
-							// 		return 0;
-							// 	}
-							// },
-							// id:id,
+							filterCard:function(card,player){
+								if(get.nature(card)!='yami') return false;
+								return lib.filter.cardEnabled(card,player,'forceEnable');
+							},
+							filterTarget:target,
+							prompt:str,
+							type:'yami',//
+							state:state,
+							_global_waiting:true,
+							ai1:function(){
+								if(target){
+									var triggerevent=_status.event.getTrigger();
+									if(triggerevent&&triggerevent.parent&&
+										triggerevent.parent.postAi&&
+										triggerevent.player.isUnknown(_status.event.player)){
+										return 0;
+									}
+									if(Math.abs(get.attitude(_status.event.player,target))<0) return Math.random()-0.2;
+								}
+								else{
+									return 0;
+								}
+							},
+							id:id,
 						});
 						if(event.stateplayer&&event.statecard) next.set('respondTo',[event.stateplayer]);
 						if(game.online){
@@ -26122,16 +26129,16 @@
 					}
 					'step 9'
 					if(event.yamiresult){
-						if(result.yamied){
-							event.noyami=result.noyami;
-							event.directHit=result.directHit;
-							event.stateplayer=event.yamiresult;
-							if(event.yamiresult2&&event.yamiresult2.used){
-								event.statecard=event.yamiresult2.used;
-							}
-							else{
-								event.statecard=true;
-							}
+						if(result){
+							// event.noyami=result.noyami;
+							// event.directHit=result.directHit;
+							// event.stateplayer=event.yamiresult;
+							// if(event.yamiresult2&&event.yamiresult2.used){
+							// 	event.statecard=event.yamiresult2.used;
+							// }
+							// else{
+							// 	event.statecard=true;
+							// }
 							event.goto(1);
 						}
 						else event.settle();
