@@ -2044,6 +2044,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(game.players[i].special_identity){
 								str+='（'+get.translation(game.players[i].special_identity)+'）';
 							}
+							//list.push(game.players[i])
 							list.push([game.players[i],[str,[event.list.randomRemove(num+num3),'characterx']],selectButton,true]);
 						}
 					}
@@ -2074,21 +2075,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					event.result2=result;
 					if(shen.length){
+						var buttonList=[];
 						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
 						}
-						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
-							return Math.random();
-						});
-						game.me.chooseButtonOL(shen,function(player,result){
+						// game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
+						// 	return Math.random();
+						// });
+						for(var i=0;i<shen.length;i++){
+							buttonList.push([shen[i],['请选择神武将的势力',[list,'vcard']],true])
+						}
+						game.me.chooseButtonOL(buttonList,function(player,result){
 							if(player==game.me) player.changeGroup(result.links[0][2].slice(6),false,false);
 						}).set('switchToAuto',function(){
- 						_status.event.result='ai';
- 					}).set('processAI',function(){
-						return 'ai';
-					});
+ 							_status.event.result='ai';
+						}).set('processAI',function(){
+							return 'ai';
+						}).set('ai',function(){
+								return Math.random();
+						});
 				   }
 				   else event._result={};
 				   "step 5"
