@@ -13441,6 +13441,7 @@
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
+								directh=false;
 							}
 							var ans = target.getCards('h',function(card){
 								if(target.isUnderControl(true))	return false;
@@ -13573,6 +13574,7 @@
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
+								directh=false;
 							}
 							var ans = target.getDiscardableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return false;
@@ -13732,6 +13734,7 @@
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
+								directh=false;
 							}
 							var ans = target.getGainableCards(player,'h',function(card){
 								if(target.isUnderControl(true))	return false;
