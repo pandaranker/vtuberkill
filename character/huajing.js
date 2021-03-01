@@ -948,7 +948,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xieqi: '携七',
 			xieqi_info: '每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
 			youhai: '佑海',
-			youhai_info: '你使用点数或点数合计为7的牌时，可以将X点护甲分配给任意角色。（X为你已损失的体力值）',
+			youhai_info: '你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲。（X为你已损失的体力值）',
 
 			sp_HisekiErio: '皇•绯赤艾利欧',
 			qiming: '启明星辰',
