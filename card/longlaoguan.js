@@ -22,8 +22,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-                    var list= [['使用无法响应的杀'],['摸一张牌']];;
-		//			if(!target.hasSha())	list.shift();
+                    var list= [['使用无法响应的杀'],['摸一张牌']];
 					event.videoId = lib.status.videoId++;
 					player.line(target,'green')
 					_status.event.target = target;
@@ -34,14 +33,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
                         })
 						dialog.videoId = id;
 					}, event.videoId, list);
-		//			target.storage.onlink.push(trigger.card.cardid);
 					'step 1'
-					var target = _status.event.target;
+					var target = event.target;
 					target.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('dulunche'));
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
                     if(result.bool){
-						var fan = _status.event.target;
+						var fan = event.target;
                         result.links.forEach(element => {
                             if(element[2]=='使用无法响应的杀'){
                                 game.log(target,'的下一张杀无法被响应');
@@ -60,7 +58,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 										var att=get.attitude(_status.event.target,target);
 										return 10-att;
 									},
-								});
+								}).set('target',fan)
                             }
                             if(element[2]=='摸一张牌'){
                                 fan.draw();
@@ -69,24 +67,29 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if(result.targets){
-						var fan = _status.event.target;
+						var fan = event.target;
 						fan.useCard(result.cards[0],result.targets[0]);
 						fan.getStat().card.sha--;
 					}
 				},
 				ai:{
 					basic:{
-						useful:[1,4],
-						value:[1,4],
+						useful:[4,1],
+						value:[4,1],
 					},
-					order:function(item){
+					order:function(item,player){
+						if(player.identity!='fan')	return 0;
 						if(_status.event.player.hasSkillTag('presha',true,null,true)) return 10;
-						if(lib.linked.contains(get.nature(item))) return 3.1;
-						return 3;
+						return 3.6;
+					},
+					result:{
+						target:1,
 					},
 					tag:{
+						draw:0.5,
 						respond:1,
 						respondSha:1,
+						unequip_ai:1,
 					}
 				},
 			},
@@ -105,21 +108,21 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					target.addTempSkill('chuanjia_po','phaseAfter');
 					target.markSkill('chuanjia_po');
+					if(target.hujia) target.changeHujia(-1);
 				},
 				ai:{
 					basic:{
-						useful:[5,0],
-						value:[5,0],
+						useful:[5,1],
+						value:[5,1],
 					},
 					order:function(item){
 						if(_status.event.player.hasSkillTag('presha',true,null,true)) return 10;
 						if(lib.linked.contains(get.nature(item))) return 3.1;
 						return 3;
 					},
-					tag:{
-						respond:1,
-						unequip_ai:1,
-					}
+					result:{
+						target:-1,
+					},
 				},
 			},
 			zhinengdulun:{
@@ -232,7 +235,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					game.cardsGotoSpecial(this.card);
 				},
 				ai:{
-					order:7,
+					order:8,
 					useful:4,
 					value:10,
 				},
@@ -307,11 +310,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					game.cardsGotoSpecial(this.card);
 				},
 				ai:{
-					order:7,
+					order:9,
 					useful:4,
 					value:10,
 					tag:{
-						draw:2
+						gain:2,
+					},
+					result:{
+						target:-1,
 					},
 				},
 			},
@@ -471,6 +477,28 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			longjiao:{
+				equipSkill:true,
+				enable:['chooseToUse','chooseToRespond'],
+				filterCard:true,
+				selectCard:1,
+				position:'he',
+				viewAs:{name:'sha'},
+				complexCard:true,
+				filter:function(event,player){
+					return player.countCards('h')>=1;
+				},
+				audio:true,
+				prompt:'将一张牌当杀使用或打出',
+				check:function(card){
+					if(card.name=='sha') return 0;
+					return 5-get.value(card)
+				},
+				ai:{
+					respondSha:true,
+					skillTagFilter:function(player){
+						return player.countCards('he')>=1;
+					},
+				}
 				// audio:true,
 				// equipSkill:true,
 				// mod:{
@@ -486,30 +514,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				// ai:{
 				// 	hreaten:1,
 				// },
-				zhangba_skill:{
-					equipSkill:true,
-					enable:['chooseToUse','chooseToRespond'],
-					filterCard:true,
-					selectCard:1,
-					position:'he',
-					viewAs:{name:'sha'},
-					complexCard:true,
-					filter:function(event,player){
-						return player.countCards('h')>=1;
-					},
-					audio:true,
-					prompt:'将一张牌当杀使用或打出',
-					check:function(card){
-						if(card.name=='sha') return 0;
-						return 5-get.value(card)
-					},
-					ai:{
-						respondSha:true,
-						skillTagFilter:function(player){
-							return player.countCards('h')>=2;
-						},
-					}
-				},
 			},
 			longwei:{
 				init:function (player){//获得技能时发动
@@ -534,7 +538,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			dulun: '独轮车',
 			dulun_info: '出牌阶段，对一名反抗军使用，其可以立即使用一张不可被响应的【杀】或摸一张牌。',
 			chuanjia: '穿甲弹',
-			chuanjia_info: '出牌阶段，对桐生可可使用，本回合其成为【杀】的目标后需弃置装备区内的一张牌。',
+			chuanjia_info: '出牌阶段，对桐生可可使用（使之减少1护甲），本回合其成为【杀】的目标后需弃置装备区内的一张牌。',
 			zhinengdulun: '智能独轮车',
 			zhinengdulun_info: '回合开始时，你视为使用一张【独轮车】。',
 			longjiao: '龙角',

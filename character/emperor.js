@@ -382,7 +382,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					delete player.storage.renzhan2;
 				},
 				content:function(){
-					target.unmarkSkill('renzhan2');
+					player.unmarkSkill('renzhan2');
 				},
 			},
 			kuase:{
@@ -549,7 +549,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							var suits = [];
 							game.getGlobalHistory('cardMove',function(evt){
-								if(evt==trigger||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+								if(evt.name!='lose'&&evt.name!='cardsDiscard') return false;
 								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 								for(var i=0;i<evt.cards.length;i++){
 											suits.add(get.suit(evt.cards[i]));
@@ -908,7 +908,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.chooseTarget(true,'『犟嘴』：'+lib.translate[event.link+'_describe'],function(card,player,target){
 							if(player==target) return false;
 							return target.countGainableCards(player,'he')>0;
-						});
+						}).set('ai',function(target){
+							var player = _status.event.player;
+							return -get.attitude(player,target)+Math.random();
+						})
 					}
 					'step 4'
 					if(event.link=='liuxuan_jiangzui'&&result&&result.targets&&result.targets.length){
@@ -1006,7 +1009,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					huoli:{
 						onremove:function(player){
 							player.popup(player.storage.liuxuan);
-							player.draw(2);
+							player.draw();
 							game.delay();
 						},
 						ai:{
@@ -1051,7 +1054,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					keai:{
 						audio:5,
 						onremove:function(player){
-							player.loseHp(Math.floor(player.hp/2));
+							if(player.hp!=Infinity) player.loseHp(Math.floor(player.hp/2));
 						},
 						init:function(player,skill){
 							player.draw(3);
@@ -1114,7 +1117,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan: '无限溜旋',
 			liuxuan_info: '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
 			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离+1。'
-			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸两张牌。'
+			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。'
 			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。'
 			+'<br><span class="firetext">犟嘴</span>：进入此姿态时，你获得其他角色的一张牌然后展示一张手牌，令之点数+1或-1。'
 			+'<br><span class="thundertext">可爱</span>：进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，你失去一半体力（向下取整）。',
@@ -1127,7 +1130,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan_lakua: '拉胯',
 			liuxuan_lakua_describe: '其他角色计算与你的距离+1。',
 			liuxuan_huoli: '活力',
-			liuxuan_huoli_describe: '你的锦囊牌无法被抵消；离开此姿态时，你摸两张牌。',
+			liuxuan_huoli_describe: '你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。',
 			liuxuan_haixiu: '害羞',
 			liuxuan_haixiu_describe: '你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。',
 			liuxuan_jiangzui: '犟嘴',

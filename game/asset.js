@@ -187,6 +187,10 @@ window.noname_asset_list=[
 	'audio/effect/throw_ship2.mp3',
 
 	'audio/skill/ailian1.mp3',
+	'audio/skill/aswusheng1.mp3',
+	'audio/skill/aswusheng2.mp3',
+	'audio/skill/aswusheng3.mp3',
+	'audio/skill/aswusheng4.mp3',
 	'audio/skill/bingdielei1.mp3',
 	'audio/skill/bingdielei2.mp3',
 	'audio/skill/bingdielei3.mp3',
@@ -203,6 +207,9 @@ window.noname_asset_list=[
 	'audio/skill/fuyue3.mp3',
 	'audio/skill/guangsuxiabo1.mp3',
 	'audio/skill/guangsuxiabo2.mp3',
+	'audio/skill/gunxun1.mp3',
+	'audio/skill/gunxun2.mp3',
+	'audio/skill/gunxun3.mp3',
 	'audio/skill/haishou1.mp3',
 	'audio/skill/haishou2.mp3',
 	'audio/skill/haishou3.mp3',
@@ -927,6 +934,7 @@ window.noname_asset_list=[
 	'image/character/Artia.jpg',
 	'image/character/Bacharu.jpg',
 	'image/character/Bella.jpg',
+	'audio/die/Bella.mp3',
 	'image/character/Civia.jpg',
 	'image/character/Ciyana.jpg',
 	'image/character/Doris.jpg',
@@ -995,6 +1003,7 @@ window.noname_asset_list=[
 	'image/character/Qiankesaier.jpg',
 	
 	'image/character/sp_Ava.jpg',
+	'audio/die/Ava.mp3',
 	'image/character/sp_HisekiErio.jpg',
 	'image/character/sp_KaguraMea.jpg',
 	'image/character/sp_MinatoAqua.jpg',
@@ -1245,6 +1254,11 @@ window.noname_asset_list=[
 	'image/emotion/xiaowu_emotion/12.gif',
 	'image/emotion/xiaowu_emotion/13.gif',
 	'image/emotion/xiaowu_emotion/14.gif',
+
+	'image/emotion/Diana_emotion/1.gif',
+	'image/emotion/Diana_emotion/2.gif',
+	'image/emotion/Diana_emotion/3.gif',
+	'image/emotion/Diana_emotion/4.gif',
 	//交互表情
 	'image/emotion/throw_emotion/egg1.png',
 	'image/emotion/throw_emotion/egg2.png',

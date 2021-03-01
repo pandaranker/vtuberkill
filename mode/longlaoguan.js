@@ -1094,53 +1094,53 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				group:['jierizhanbei_useE' , 'jierizhanbei_getE'],
 				subSkill:{
 					useE:{
-								init:function(player){
-									player.storage.jierizhanbei=0;
-								},
-								trigger:{player:'useCard'},
-								forced:true,
-								priority:17,
-								usable:1,
-								filter:function(event,player){
-									return get.type(event.card)=='equip';
-								},
-								content:function(){
-									player.storage.jierizhanbei++;
-								},
-								mod:{
-									maxHandcard:function(player,num){
-										if(player.storage.jierizhanbei>0)	return 5;
-									},
-								},
+						init:function(player){
+							player.storage.jierizhanbei=0;
+						},
+						trigger:{player:'useCard'},
+						forced:true,
+						priority:17,
+						usable:1,
+						filter:function(event,player){
+							return get.type(event.card)=='equip';
+						},
+						content:function(){
+							player.storage.jierizhanbei++;
+						},
+						mod:{
+							maxHandcard:function(player,num){
+								if(player.storage.jierizhanbei>0)	return 5;
+							},
+						},
 					},
 					getE:{
-								init:function (player){
-									player.storage.jierizhanbei=0;
-								},
-								trigger:{player:'phaseEnd'},
-								forced:true,
-								priority:13,
-								filter:function(event,player){
-									var num = player.storage.jierizhanbei
-									if(num!=0){									
-										player.storage.jierizhanbei=0;
-										return false;
-									}
-									return true;
-								},
-								content:function(){
-									console.log(player.storage.jierizhanbei);
-										var getC = get.cardPile2(function(card){
-											return get.type(card)=='equip';
-										})
-										if(getC){
-											player.gain(getC,'gain2');
-										}
-										else{
-											game.log(player,'牌堆中没有装备牌了');
-										}
-									
+						init:function (player){
+							player.storage.jierizhanbei=0;
+						},
+						trigger:{player:'phaseEnd'},
+						forced:true,
+						priority:13,
+						filter:function(event,player){
+							var num = player.storage.jierizhanbei
+							if(num!=0){									
+								player.storage.jierizhanbei=0;
+								return false;
+							}
+							return true;
+						},
+						content:function(){
+							console.log(player.storage.jierizhanbei);
+								var getC = get.cardPile2(function(card){
+									return get.type(card)=='equip';
+								})
+								if(getC){
+									player.gain(getC,'gain2');
 								}
+								else{
+									game.log(player,'牌堆中没有装备牌了');
+								}
+							
+						}
 					}
 				}
 			},

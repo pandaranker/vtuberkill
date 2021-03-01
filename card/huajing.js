@@ -26,7 +26,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
                     }
 				},
 				ai:{
-					order:8.5,
+					order:4.5,
 					value:5,
 					useful:[3,2,2,1],
 					result:{
@@ -646,7 +646,22 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					list.remove('kami');
 					if(trigger.card.nature)	list.remove(trigger.card.nature);
 					list.push('cancel2');
-					player.chooseControl(list).set('prompt',get.prompt('qi')).set('prompt2','将'+get.translation(trigger.card)+'转换为以下属性之一');
+					player.chooseControl(list).set('prompt',get.prompt('qi')).set('prompt2','将'+get.translation(trigger.card)+'转换为以下属性之一').set('ai',function(){
+						var player = _status.event.player;
+						var card = _status.event.getTrigger().card;
+						if(get.name(card)=='tao'&&get.nature(card)=='ocean')	return 'cancel2';
+						if(get.name(card)=='tao'&&get.nature(card)!='ocean')	return 'ocean';
+						if(get.name(card)=='sha'){
+							var targets = _status.event.getTrigger().targets;
+							for(var i=0;i<targets.length;i++){
+								if(get.damageEffect(target,player,player)){
+									if(!targets[i].hasSkillTag('noocean')&&targets[i].hujia>0)	return 'ocean';
+									if(targets[i].getEquip('tengjia'))	return 'fire';
+								}
+							}
+						}
+						return list.randomGet();
+					});
 					'step 1'
 					if(result.control!='cancel2'){
 						player.logSkill('qi');

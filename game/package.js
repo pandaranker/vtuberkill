@@ -32,9 +32,9 @@ window.noname_package={
 	card:{
 		standard:'标准',
 		extra:'军争',
-		sp:'SP',
-		yingbian:'应变篇',
 		huajing:'化鲸篇',
+		yingbian:'应变篇',
+		sp:'SP',
 		guozhan:'国战',
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',

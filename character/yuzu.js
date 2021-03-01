@@ -2839,7 +2839,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					aiOrder:function(player,card,num){
-						if(typeof card=='object'&&player==_status.currentPhase&&get.name(card)=='sha'&&get.info(card).notarget!==true&&!player.needsToDiscard()){
+						if(typeof card=='object'&&player==_status.currentPhase&&(get.name(card)=='sha')&&!player.needsToDiscard()){
 							return num-10;
 						}
 					},
@@ -3402,13 +3402,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:3,
 				filter:function(event,player){
 					return player.countCards('h',function(card){
-						return get.type(card)=='basic'&&!card.hasGaintag('ming_niwei');
+						return get.type(card)=='basic'&&!card.hasGaintag('ming_');
 					});
 				},
 				content:function(){
 					'step 0'
 					player.chooseCard(get.prompt2('xuanxu'),[1,Infinity],function(card){
-						return get.type(card)=='basic'&&!card.hasGaintag('ming_niwei');
+						return get.type(card)=='basic'&&!card.hasGaintag('ming_');
+					}).set('ai',function(card){
+						return 7-get.useful(card);
 					});
 					'step 1'
 					if(result.bool&&result.cards&&result.cards.length){
@@ -3536,6 +3538,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.target = trigger.player;
 					player.chooseCard(get.prompt2('weizeng'),[1,Infinity],function(card){
 						return get.type(card)=='basic'&&card.hasGaintag('ming_');
+					}).set('ai',function(card){
+						if(card.hasGaintag('ming_niwei')||['shan','tao'].contains(get.name(card))) return 0;
+						return random()-0.1;
 					});
 					'step 1'
 					if(result.bool&&result.cards&&result.cards.length){
@@ -3665,6 +3670,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&get.name(card)=='sha'){
+							if(player.countCards({name:'sha'})>2&&player.storage.aswusheng==0)	return num+5;
+							if(player.countCards({name:'sha'})==2&&[0,2].contains(player.storage.aswusheng))	return num+3;
+							if(player.storage.aswusheng==2)	return num+10;
+						}
+					},
+				},
 			},
 			gunxun:{
 				enable:'phaseUse',
@@ -3684,13 +3698,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.storage.gunxun)	return !card.hasGaintag('ming_')&&get.color(card)=='red';
 					return !card.hasGaintag('ming_')&&get.color(card)=='black';
 				},
+				check:function(card){return 5-get.value(card)},
 				discard:false,
 				lose:false,
 				content:function(){
 					'step 0'
 					game.log(player,'亮出了',event.cards);
-					if(player.storage.gunxun) player.addGaintag(event.cards,'ming_gunxunshan');
-					else player.addGaintag(event.cards,'ming_gunxunsha');
+					if(player.storage.gunxun) player.addGaintag(event.cards,'ming_gunxunsha');
+					else player.addGaintag(event.cards,'ming_gunxunshan');
 					'step 1'
 					player.storage.gunxun = !player.storage.gunxun;
 					var num = event.cards.length;
@@ -3718,6 +3733,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(card.hasGaintag&&card.hasGaintag('ming_gunxunshan'))	return 'shan';
 						if(card.hasGaintag&&card.hasGaintag('ming_gunxunsha'))	return 'sha';
 					},
+				},
+				ai:{
+					order:7,
+					result:{player:0.5},
 				}
 			},
 		},
@@ -3754,8 +3773,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
 			gunxun:function(player){
-				if(player.storage.gunxun===true) return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【闪】</span>②【杀】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
-				return '<font color=#66e>转换技</font>出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【闪】<span class="browntext">②【杀】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="bluetext"></span>';
+				if(player.storage.gunxun===true) return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【杀】</span>②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
+				return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【杀】<span class="browntext">②【闪】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="bluetext"></span>';
 			},
 		},
 		translate:{
@@ -3768,9 +3787,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Bella: '贝拉',
 			aswusheng: '舞圣',
-			aswusheng_info: '你在一回合内连续使用或打出第（）张基本牌时，可以触发对应项：（0）使之不计入次数；（1）摸一张牌；（2）获得对方的一张牌；（3）回复1点体力。',
+			aswusheng_info: '你连续使用或打出第（）张基本牌时，可以触发对应项：（0）使之不计入次数；（1）摸一张牌；（2）获得对方的一张牌；（3）回复1点体力。',
 			gunxun: '棍训',
-			gunxun_info: '<font color=#66e>转换技</font>出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【闪】②【杀】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。',
+			gunxun_info: '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【杀】②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。',
 			ming_gunxunshan: '棍训:闪',
 			ming_gunxunsha: '棍训:杀',
 
