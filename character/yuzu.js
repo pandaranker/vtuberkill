@@ -7,12 +7,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			Bella: ['female','qun',4,['aswusheng', 'gunxun']],
-
-			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
 			
 			Ciyana: ['female','qun',3,['yankui', 'danyan']],
-
-			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
 
 			// ShitoAnon: ['female','paryi',3,['jiacan','fuhui']],
 
@@ -20,7 +16,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KenmochiDouya: ['male','nijisanji',3,['shenglang','nodao']],
 			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
 
-			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**测试用角色 */
 			Ruki: ['female','VirtuaReal',4,['beixie','hunzhan']],
 		},
@@ -454,7 +449,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				trigger:{player:'useCardAfter'},
-				priority: 998,
+				priority: 996,
 				locked: true,
 				forced: true,
 				filter:function(event,player){
@@ -478,7 +473,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseBefore'},
 						silent: true,
 						forced:	true,
-						priority: 998,
+						priority: 996,
 						content:function(){
 							if(!player.storage.shengya){
 								player.storage.shengya=true;
@@ -506,7 +501,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				trigger:{global:'drawEnd'},
-				priority:998,
+				priority:996,
 				filter:function(event,player){
 					return event.player!=player&&player==_status.currentPhase&&event.player.getHistory('gain').length==1;
 				},
@@ -522,7 +517,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					use:{
 						trigger:{global:'phaseBegin'},
-						priority: 998,
+						priority: 996,
 						check:function(event,player){
 							return get.attitude(player,event.player)>0;
 						},
@@ -547,7 +542,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					save:{
 						trigger:{global:'dying'},
-						priority: 998,
+						priority: 996,
 						check:function(event,player){
 							return get.attitude(player,event.player)>0;
 						},
@@ -574,10 +569,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			chongshi:{
 				trigger:{player:'shaBegin'},
-				priority: 998,
+				priority: 996,
 				content:function(){
-					player.draw();
-					trigger.target.draw();
+					game.asyncDraw([player,trigger.target]);
+					// player.draw();
+					// trigger.target.draw();
 				}
 			},
 			//miu
@@ -3673,8 +3669,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					aiOrder:function(player,card,num){
 						if(typeof card=='object'&&player==_status.currentPhase&&get.name(card)=='sha'){
-							if(player.countCards({name:'sha'})>2&&player.storage.aswusheng==0)	return num+5;
-							if(player.countCards({name:'sha'})==2&&[0,2].contains(player.storage.aswusheng))	return num+3;
+							if(player.countCards('h',{name:'sha'})>2&&player.storage.aswusheng==0)	return num+5;
+							if(player.countCards('h',{name:'sha'})==2&&[0,2].contains(player.storage.aswusheng))	return num+3;
 							if(player.storage.aswusheng==2)	return num+10;
 						}
 					},

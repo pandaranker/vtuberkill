@@ -5,6 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			GawrGura:['female','holo',3,['lingqun','yangliu']],
+			NinomaeInanis:['female','holo',3,['mochu','fuyue']],
 			/**时乃空 */
 			TokinoSora:['female','holo',4,['taiyangzhiyin','renjiazhizhu'],['zhu']],
 			/**夜空梅露 */
@@ -27,6 +28,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			/**兔田佩克拉 */
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
+			/**大神澪 */
+			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
 			
 			/**OG诸人 */
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],

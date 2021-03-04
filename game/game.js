@@ -63,7 +63,7 @@
 			xiaosha_emotion:20,
 			xiaotao_emotion:20,
 			xiaojiu_emotion:20,
-			Diana_emotion:4,
+			Diana_emotion:5,
 		},
 		animate:{
 			skill:{},
@@ -22222,6 +22222,12 @@
 								return true;
 							}
 						}
+						else{
+							var hiddenYami=get.info(skills[i]).hiddenYami;
+							if(typeof hiddenYami=='function'&&hiddenYami(this,false)){
+								return true;
+							}
+						}
 					}
 					return false;
 				},
@@ -25982,7 +25988,7 @@
 						state=state?1:-1;
 						var str='';
 						if(target){
-							str+='对'+get.translation(target);
+							str+='在'+get.translation(target);
 						}
 						str+='的结束阶段，是否对其使用暗影属性的牌？';
 
@@ -26496,6 +26502,7 @@
 					trigger.cancel();
 				},
 				ai:{
+					noyami:true,
 					nofire:true,
 					nothunder:true,
 					noocean:true,
@@ -27932,6 +27939,7 @@
 			eilene:'thunder',
 			paryi:'ice',
 			kagura:'ocean',
+			nanashi:'wood',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 		quickVoice:[

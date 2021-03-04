@@ -1,9 +1,8 @@
 window.noname_update={
-	version:'1.9.101.30',
+	version:'1.9.101.31',
 	update:'1.9.100.113.3',
 	changeLog:[
-		'修改联机时无法选择皇武将bug',
-		'101.29小更新：祝贺向晚Ava第三届V萌夺冠~ 修复bug，贝拉小加强，皇·向晚技能调整，新增嘉然表情',
+		'101.31小更新：祝贺A-SOUL包揽第三届V萌夺冠~ 修复bug，新增特典角色皇·嘉然，皇·向晚技能削弱，嘉然表情包扩容',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -21,11 +20,18 @@ window.noname_update={
 		'audio/skill/tiaolv4.mp3',
 		'audio/skill/DDzhanshou1.mp3',
 		'audio/skill/DDzhanshou2.mp3',
-		
-		// 'image/mode/longlaoguan/card/chuanjia.png',
-		// 'image/mode/longlaoguan/card/dulun.png',
-		// 'image/mode/longlaoguan/card/longjiao.png',
-		// 'image/mode/longlaoguan/card/takeover.png',
+		'audio/effect/throw_sc1.mp3',
+		'audio/effect/throw_sc2.mp3',
+
+		'image/splash/identity.jpg',
+		'audio/skill/aswusheng1.mp3',
+		'audio/skill/aswusheng2.mp3',
+		'audio/skill/aswusheng3.mp3',
+		'audio/skill/aswusheng4.mp3',
+		'audio/skill/gunxun1.mp3',
+		'audio/skill/gunxun2.mp3',
+		'audio/skill/gunxun3.mp3',
+
 		'character/Beginner.js',
 		'character/hololive.js',
 		'character/clubs.js',

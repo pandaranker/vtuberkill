@@ -4,11 +4,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'clubs',
 		connect:true,
 		character:{
-			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
+			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
+			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
+
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
+			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
-			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
@@ -25,6 +27,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
+			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
@@ -949,7 +952,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseCard(get.prompt('jiumao'), 'he', [1, Infinity]).set('ai', function(card) {
 								if (player.needsToDiscard()&&ui.selected.cards.length<player) return 6 - get.useful(card);
 								else return 2 - get.useful(card);
-							});
+							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”')
 							'step 1'
 							if (result.bool) {
 								player.lose(result.cards, ui.special, 'visible', 'toStorage');
@@ -1094,7 +1097,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			shiqi: {
 				audio:1,
-				direct: true,
+				forced: true,
 				trigger: {
 					player: 'phaseZhunbeiBegin',
 				},
@@ -1105,7 +1108,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return cnt == 0;
 				},
 				content: function() {
-					player.logSkill('shiqi');
 					player.addTempSkill('shiqi_addDam');
 
 					var buff = '.player_buff';

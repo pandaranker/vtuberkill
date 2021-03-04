@@ -17,8 +17,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				modTarget:true,
 				content:function(){
                     'step 0'
-                    if(!target.hasSkill('qi')){
-                        target.addTempSkill('qi')
+                    if(!target.hasSkill('qi_skill')){
+                        target.addTempSkill('qi_skill')
                     }
 					'step 1'
                     if(target.isDamaged()){
@@ -26,13 +26,46 @@ game.import('card',function(lib,game,ui,get,ai,_status){
                     }
 				},
 				ai:{
-					order:4.5,
+					order:function(item,player){
+						if(player.isDamaged()) return 5.1;
+						return get.order({name:'sha'})+0.3;
+					},
 					value:5,
 					useful:[3,2,2,1],
 					result:{
 						target:function(player,target){
 							if(target.isDamaged()) return 1.1;
-							else if(target.isPhaseUsing())	return 0.5;
+							else if(!target.isPhaseUsing())	return 0;
+							var shas=player.getCards('h','sha');
+							if(shas.length>1&&(player.getCardUsable('sha')>1||player.countCards('h','zhuge'))){
+								return 0;
+							}
+							shas.sort(function(a,b){
+								return get.order(b)-get.order(a);
+							})
+							var card;
+							if(shas.length){
+								for(var i=0;i<shas.length;i++){
+									if(lib.filter.filterCard(shas[i],target)){
+										card=shas[i];break;
+									}
+								}
+							}
+							if(card){
+								if(game.hasPlayer(function(current){
+									return (get.attitude(target,current)<0&&
+										target.canUse(card,current,true,true)&&
+										!current.hasSkillTag('filterDamage',null,{
+											player:player,
+											card:card,
+											qi:true,
+										})&&
+										get.effect(current,card,target)>0);
+								})){
+									if(card.nature)	return 0.2;
+									return 1;
+								}
+							}
 							return 0;
 						},
 					},
@@ -632,8 +665,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
         },
         skill:{
-			_yami:{},
-            qi:{
+            qi_skill:{
 				trigger:{player:'useCard1'},
 				filter:function(event,player){
 					return ((event.card.name=='sha'||event.card.name=='tao')&&event.card.nature!='kami');
@@ -655,8 +687,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							var targets = _status.event.getTrigger().targets;
 							for(var i=0;i<targets.length;i++){
 								if(get.damageEffect(target,player,player)){
+									if(targets[i].hasSkillTag('nodamage'))	return 'ice';
 									if(!targets[i].hasSkillTag('noocean')&&targets[i].hujia>0)	return 'ocean';
-									if(targets[i].getEquip('tengjia'))	return 'fire';
+									if(!targets[i].hasSkillTag('nofire')&&targets[i].getEquip('tengjia'))	return 'fire';
+									if(!targets[i].hasSkillTag('noyami')&&targets[i].countCards('h')>=player.countCards('h'))	return 'yami';
 								}
 							}
 						}
@@ -668,7 +702,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						trigger.card.nature=result.control;
 						player.popup(get.translation(trigger.card).slice(0,2),result.control);
 						game.log('#y'+get.translation(get.name(trigger.card)),'被转为了',trigger.card);
-						player.removeSkill('qi');
+						player.removeSkill('qi_skill');
 					}
 				},
 			},
@@ -873,7 +907,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
             qi: '气',
+			qi_skill: '聚气',
             qi_info: '目标角色本回合使用下一张牌时可指定属性。若其已受伤，额外获得1点护甲。',
+			qi_skill_info: '本回合使用下一张牌时可指定属性。',
 			jingluo: '鲸落',
 			jingluo_info: '出牌阶段，对所有角色使用，目标依次选择一项：弃置一张牌以获得1点护甲；或横置武将牌以摸一张牌。',
 			haixiao: '海啸',

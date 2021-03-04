@@ -459,6 +459,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xieqi:{
 				auido:2,
 				hiddenCard:function(player,name){
+					if(!lib.skill.xieqi.filter(false,player))	return false;
 					var list = get.libCard(function(card){
 						return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 					});
@@ -466,6 +467,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(list[i]==name) return true;
 					}
 					return false;
+				},
+				hiddenYami:function(player,name){
+					if(!lib.skill.xieqi.filter(false,player))	return false;
+					return true;
 				},
 				enable:'chooseToUse',
 				usable:1,
@@ -703,11 +708,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.isTurnedOver();
 				},
+				locked:true,
 				direct:true,
 				lastDo:true,
 				content:function(){
 					'step 0'
-					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸一张牌',function(card,player,target){
+					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸两张牌',function(card,player,target){
 						if(player==target) return false;
 						return player.canUse({name:'sha',nature:'ocean'},target,false);
 					}).ai = function(target){
@@ -814,7 +820,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						locked:true,
 						notemp:true,
-						marktext: '异',
+						marktext: '明',
 						intro: {
 							content:'声明了$',
 							name:'『启明星辰』',

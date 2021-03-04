@@ -24,6 +24,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			UmoriHinako:['female','nanashi',4,['hongyi','jueshou']],
 			/**patra */
 			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv'],['forbidai']],
+			/**天开司 */
+			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',

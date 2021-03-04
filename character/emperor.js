@@ -9,6 +9,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sp_MononobeAlice: ['female','shen',3,['xianjing','chahui', 'duandai']],
 
 			sp_Ava: ['female','shen',Infinity,['shuimu','liuxuan']],
+			sp_Diana: ['female','shen',2,['tangyan','tianyin']],
 		},
 		characterIntro:{
 			sp_MinatoAqua:	 '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
@@ -165,18 +166,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					draw:{
 						init:function(player){
-							if(get.zhu(player)==player&&game.players.length>4)
-							{player.storage.shenghuang_draw=4;}
-							else
-							{player.storage.shenghuang_draw=3;}
+							if(get.zhu(player)==player&&game.players.length>4){
+								player.storage.shenghuang_draw=4;
+							}
+							else{
+								player.storage.shenghuang_draw=3;
+							}
 							if(player.hasSkill('shenghuang_draw'))  player.markSkill('shenghuang_draw');
 						},
 						marktext: '圣',
 						mark: true,
 						intro: {
-							content:function (storage,player,skill){
-								return '剩余'+storage+'张数值为2的体力卡';
-							},
+							content:'剩余&张数值为2的体力卡',
 							name:'剩余体力卡',
 						},
 						forced:true,
@@ -268,7 +269,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.renzhan = [];
 				},
 				check:function(event,player){
-					return get.attitude(player,event.player)<0&&get.effect(event.player,{name:'sha'},player,player)>0;
+					if(player.storage.shenghuang_draw==0&&player.hp==1)		return false;
+					return player.getUseValue({name:'sha'})>0;
 				},
 				filter:function(event,player){
 					return event.player!=player&&event.player.hp>0;
@@ -292,6 +294,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						'获得其中的【杀】并对一名角色使用任意张【杀】'],
 						true,function(event,player){
 							return _status.event.index;
+						}).set('ai',function(){
+							var player = _status.event.player;
+							if(player.countCards('h',{name:'sha'})>=1&&player.storage.renzhan.length<=3)	return 1;
+							return 0;
 						});
 					'step 1'
 					if(result.index==0)	
@@ -883,7 +889,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.goto(3);
 					}else if(event.list.length>1){
 						var list = event.list.slice(0);
-						player.chooseButton(true,'hidden',['选择一个姿态进入',[list,'vcard'],'hidden']).set('filterButton',function(button){
+						player.chooseButton(true,['选择一个姿态进入',[list,'vcard'],'hidden']).set('filterButton',function(button){
 							var player = _status.event.player;
 							if(button.link[2]==player.storage.liuxuan)	return false;
 							return true;
@@ -917,63 +923,131 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.link=='liuxuan_jiangzui'&&result&&result.targets&&result.targets.length){
 						event.target = result.targets[0];
 						player.logSkill(event.link,event.target);
-						player.gainPlayerCard(event.target,'he',true);
+						event.target.chooseCard('he','无限溜旋-犟嘴：将一张牌交给'+get.translation(player),1,true).ai=function(card){
+							return -get.value(card);
+						};
 					}else{
-						event.goto(8);
+						event.goto(9);
 					}
 					'step 5'
-					if(event.link=='liuxuan_jiangzui'){
-						player.chooseCard('选择一张牌，令其点数增加或减少1',true);
+					if(event.link=='liuxuan_jiangzui'&&result.cards&&result.cards.length){
+						event.target.$giveAuto(result.cards,player);
+						player.gain(result.cards,event.target);
 					}
 					'step 6'
-					if(event.link=='liuxuan_jiangzui'&&result.cards&&result.cards.length){
-						event.cards = result.cards;
-						var list = ['+1','-1','cancel2'];
-						if(event.cards[0].hasGaintag('liuxuan_lose2'))	list.remove('-1');
-						if(event.cards[0].hasGaintag('liuxuan_plus2'))	list.remove('+1');
-						player.chooseControl(['+1','-1','cancel2'],true).set('prompt','选择一张牌，令其点数增加或减少1')
+					if(event.link=='liuxuan_jiangzui'){
+						event.cards = player.getCards('h').removeArray(trigger.cards);
+						event.videoId=lib.status.videoId++;
+						var dialogx=['『犟嘴』：选择一张牌，令其点数增加或减少1'];
+						dialogx.push(event.cards);
+						if(player.isOnline2()){
+							player.send(function(dialogx,id){
+								ui.create.dialog.apply(null,dialogx).videoId=id;
+							},dialogx,event.videoId);
+						}
+						event.dialog=ui.create.dialog.apply(null,dialogx);
+						event.dialog.videoId=event.videoId;
+						if(player!=game.me||_status.auto){
+							event.dialog.style.display='none';
+						}
+						var next = player.chooseButton();
+						next.set('dialog',event.videoId);
+						next.set('ai',function(button){
+							if(get.number(button.link)==7)	return get.value(button.link)*2+Math.random();
+							return get.value(button.link);
+						});
+						next.set('forceAuto',function(){
+							return ui.selected.buttons.length==1||ui.dialog.buttons.length==1;
+						});
+					}else{
+						event.goto(9);
 					}
 					'step 7'
+					if(event.link=='liuxuan_jiangzui'&&result.links&&result.links.length){
+						event.links = result.links;
+						var func=function(cards,id){
+							var dialog=get.idDialog(id);
+							if(dialog){
+								for(var j=0;j<cards.length;j++){
+									for(var i=0;i<dialog.buttons.length;i++){
+										if(dialog.buttons[i].link==cards[j]){
+											dialog.buttons[i].classList.add('glow');
+										}
+										else{
+											dialog.buttons[i].classList.add('unselectable');
+										}
+									}
+								}
+							}
+						}
+						if(player.isOnline2()){
+							player.send(func,event.links,event.videoId);
+						}
+						else if(player==game.me&&!_status.auto){
+							func(event.links,event.videoId);
+						}
+						var list = ['+1','-1','取消选择'];
+						if(event.links[0].hasGaintag('liuxuan_lose2'))	list.remove('-1');
+						if(event.links[0].hasGaintag('liuxuan_plus2'))	list.remove('+1');
+						player.chooseControl(list,true).set('ai',function(){
+							var card = _status.event.card;
+							var controls=_status.event.controls;
+							if([5,10,12].contains(get.number(card)+1)&&controls.contains('+1'))	return '+1';
+							if([5,10,12].contains(get.number(card)-1)&&controls.contains('-1'))	return '-1';
+							return controls.randomGet();
+						}).set('card',event.links[0]);
+					}else{
+						if(player.isOnline2()){
+							player.send('closeDialog',event.videoId);
+						}
+						event.dialog.close();
+						event.finish();					
+					}
+					'step 8'
 					if(event.link=='liuxuan_jiangzui'&&result.control){
 						switch(result.control){
-							case 'cancel2':event.goto(5);break;
+							case '取消选择':event.goto(5);break;
 							case '+1':{
-								if(event.cards[0].hasGaintag('liuxuan_lose')){
-									event.cards[0].removeGaintag('liuxuan_lose');
+								if(event.links[0].hasGaintag('liuxuan_lose')){
+									event.links[0].removeGaintag('liuxuan_lose');
 								}
-								else if(event.cards[0].hasGaintag('liuxuan_lose2')){
-									event.cards[0].removeGaintag('liuxuan_lose2');
-									player.addGaintag(event.cards,'liuxuan_lose');
+								else if(event.links[0].hasGaintag('liuxuan_lose2')){
+									event.links[0].removeGaintag('liuxuan_lose2');
+									player.addGaintag(event.links,'liuxuan_lose');
 								}
-								else if(event.cards[0].hasGaintag('liuxuan_plus')){
-									event.cards[0].removeGaintag('liuxuan_plus');
-									player.addGaintag(event.cards,'liuxuan_plus2');
+								else if(event.links[0].hasGaintag('liuxuan_plus')){
+									event.links[0].removeGaintag('liuxuan_plus');
+									player.addGaintag(event.links,'liuxuan_plus2');
 								}
 								else{
-									player.addGaintag(event.cards,'liuxuan_plus');
+									player.addGaintag(event.links,'liuxuan_plus');
 								}
 								break;
 							}
 							case '-1':{
-								if(event.cards[0].hasGaintag('liuxuan_plus')){
-									event.cards[0].removeGaintag('liuxuan_plus');
+								if(event.links[0].hasGaintag('liuxuan_plus')){
+									event.links[0].removeGaintag('liuxuan_plus');
 								}
-								else if(event.cards[0].hasGaintag('liuxuan_plus2')){
-									event.cards[0].removeGaintag('liuxuan_plus2');
-									player.addGaintag(event.cards,'liuxuan_plus');
+								else if(event.links[0].hasGaintag('liuxuan_plus2')){
+									event.links[0].removeGaintag('liuxuan_plus2');
+									player.addGaintag(event.links,'liuxuan_plus');
 								}
-								else if(event.cards[0].hasGaintag('liuxuan_lose')){
-									event.cards[0].removeGaintag('liuxuan_lose');
-									player.addGaintag(event.cards,'liuxuan_lose2');
+								else if(event.links[0].hasGaintag('liuxuan_lose')){
+									event.links[0].removeGaintag('liuxuan_lose');
+									player.addGaintag(event.links,'liuxuan_lose2');
 								}
 								else{
-									player.addGaintag(event.cards,'liuxuan_lose');
+									player.addGaintag(event.links,'liuxuan_lose');
 								}
 								break;
 							}
 						}
 					}
-					'step 8'
+					if(player.isOnline2()){
+						player.send('closeDialog',event.videoId);
+					}
+					event.dialog.close();
+					'step 9'
 					if(event.link){
 						player.storage.liuxuan = event.link;
 						player.popup(player.storage.liuxuan);
@@ -993,6 +1067,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(card.hasGaintag&&card.hasGaintag('liuxuan_plus'))	return number+1;
 						if(card.hasGaintag&&card.hasGaintag('liuxuan_lose'))	return number-1;
 					},
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'){
+							var key = get.number(card);
+							if([7,14].contains(key)){
+								if(player.hp==Infinity)		return num-20;
+								else if(player.hp<=3&&player.storage.liuxuan!='liuxuan_keai')	return num+10;	
+							}
+							if([5,10].contains(key)){
+								if(player.storage.liuxuan!='liuxuan_jiangzui')	return num+10;	
+							}
+							if([4,8,12].contains(key)){
+								if(get.tag(card,'damage'))	return num+5;	
+							}
+						}
+					},
 				},
 				subSkill:{
 					lakua:{
@@ -1001,7 +1090,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						mod:{
 							globalTo:function(from,to,distance){
 								if(to!=from){
-									return distance+1;
+									return distance-1;
 								}
 							}
 						},
@@ -1054,7 +1143,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					keai:{
 						audio:5,
 						onremove:function(player){
-							if(player.hp!=Infinity) player.loseHp(Math.floor(player.hp/2));
+							if(player.hp==Infinity){
+								player.die();
+							}
+							else{ 
+								player.hp = Math.ceil(player.hp/2);
+								player.update();
+							}
 						},
 						init:function(player,skill){
 							player.draw(3);
@@ -1071,6 +1166,189 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				}
+			},
+			//SP嘉然
+			tangyan:{
+				audio:10,
+				init:function(player,skill){
+					player.storage.tangyan = [];
+				},
+				trigger:{player:['useCardAfter','respondAfter','loseAfter']},
+				filter:function(event,player){
+					if(!player.isDamaged())		return false;
+					if(event.name=='lose'){
+						if(event.getParent().name!='discard')	return false;
+						for(var i=0;i<event.cards.length;i++){
+							var card = event.cards[i];
+							if(get.position(card)=='d'&&get.type(card)=='basic')	return true;
+						}
+					}else{
+						return event.card&&get.type(event.card)=='basic';
+					}
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					event.source = _status.currentPhase;
+					if(event.source!=player&&event.source.countCards('h')){
+						var wanxiang = event.source.getCards('h');
+						for(var i=0;i<wanxiang.length;i++){
+							if(wanxiang[i].hasGaintag('xinjia'))	event.xinjia = true;
+						}
+					}
+					event.filterCards = [];
+					event.cards = (trigger.name=='lose')?(trigger.cards.filter(function(lose){
+						return get.type(lose)=='basic';
+					})):[trigger.card];
+					'step 1'
+					var card = event.cards.shift();
+					var list = [];
+					for(var i of lib.inpile){
+						var type=get.type(i);
+						// if(i==get.name(card))		continue;
+						if(type!='basic')			continue;
+						if(player.storage.tangyan.contains(i))		continue;
+						if(lib.filter.filterCard({name:i},player,trigger)&&player.hasUseTarget({name:i,isCard:false})){ 
+							list.push([type,'',i]);
+							var natures = get.info({name:i}).nature;
+							if(natures&&natures.length){
+								for(var j=0;j<natures.length;j++){
+									if(natures[j]=='kami')	continue;
+									list.push([type,'',i,natures[j]]);
+								}
+							}
+						}
+					}
+					event.filterCards = list;
+					if(event.xinjia){ 
+						if(!event.allBy)	event.allBy = 1;
+						event.goto(3);
+					}
+					'step 2'
+					event.list = ['令一名角色摸一张牌','防止你下一次受到的伤害'];
+					if(event.filterCards.length) event.list.push('视为使用一张本回合未以此法使用过的基本牌');
+					var list = event.list;
+					var choice = [0,1].randomGet();
+					if(player.storage.tangyan_on)	choice = 1;
+					if(list.length>=3)	choice = 2;
+					player.chooseControlList(list,function(){
+						return _status.event.choice;
+					}).set('prompt',get.prompt2('tangyan')).set('choice',choice);
+					'step 3'
+					if(result.control!='cancel2'||(event.xinjia&&event.allBy&&event.allBy<=3)){
+						var str = '';
+						if(event.allBy)	str+='（依次执行每一项）';
+						switch((result.index+1)||event.allBy){
+							case 1:{
+								player.logSkill('tangyan');
+								player.chooseTarget(true,'『穿心糖言』：令一名角色摸一张牌'+str).set('ai',function(target){
+								var player = _status.event.player;
+								return get.attitude(player,target);
+							})};break;
+							case 2:{
+								if(player.storage.tangyan_on!==true){
+									player.logSkill('tangyan');
+									game.log(player,'防止了自己下一次受到的伤害'+str);
+									player.storage.tangyan_on = true;
+								}
+							};break;
+							case 3:{
+								player.logSkill('tangyan');
+								var list = event.filterCards;
+								if(list.length)
+								player.chooseButton(true,['『穿心糖言』：选择一张本回合未以此法使用过的基本牌并使用之'+str,[list,'vcard'],'hidden']).set('ai',function(button){
+									return get.order({name:button.link[2],nature:button.link[3]});
+								})
+								event.goto(5);
+							};break;
+						}
+					}else{
+						event.finish();
+					}
+					'step 4'
+					if(result.targets&&result.targets.length){
+						result.targets[0].draw();
+					}
+					if(event.xinjia&&event.allBy<=2){ 
+						event.allBy++;
+						if(event.filterCards.length>0||event.allBy<=2) event.goto(3);
+					}
+					'step 5'
+					if(result.links&&result.links.length){
+						var card = result.links[0];
+						player.storage.tangyan.add(card[2]);
+						player.chooseUseTarget({name:card[2],nature:card[3]},true,'noTargetDelay','nodelayx');
+					}
+					// if(event.xinjia&&event.allBy<=2){ 
+					// 	event.allBy++;
+					// 	event.goto(3);
+					// }
+					'step 6'
+					if(event.cards.length){
+						event.goto(1);
+					}
+				},
+				group:['tangyan_on','tangyan_clear'],
+				subSkill:{
+					on:{
+						init:function(player,skill){
+							player.storage.tangyan_on = false;
+							player.markSkill('tangyan_on');
+						},
+						marktext:'糖',
+						intro:{
+							mark:function(dialog,content,player){
+								if(player.storage.tangyan_on)	return '穿心糖言：防止'+get.translation(player)+'下一次受到的伤害';
+							},
+							content:function(content,player){
+								if(player.storage.tangyan_on)	return '穿心糖言：防止'+get.translation(player)+'下一次受到的伤害';
+							}
+						},
+						trigger:{player:'damageBegin3'},
+						priority:29,
+						locked:true,
+						forced:true,
+						filter:function(event,player){
+							return player.storage.tangyan_on;
+						},
+						content:function(){
+							player.storage.tangyan_on = false;
+							trigger.cancel();
+						}
+					},
+					clear:{
+						trigger:{global:'phaseAfter'},
+						priority:29,
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.tangyan&&player.storage.tangyan.length){
+								player.storage.tangyan.length = 0;
+							}
+						}
+					}
+				}
+			},
+			tianyin:{
+				audio:5,
+				enable:'phaseUse',
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = true;
+				},
+				filter:function(event,player,cards){
+					return player.countCards('h')
+				},
+				filterCard:true,
+				discard:false,
+				lose:false,
+				filterTarget:function(card,player,target){
+					return target!=player;
+				},
+				content:function(){
+					player.damage('nosource');
+					targets[0].gain(cards[0],player,'gainAuto').gaintag.add('xinjia');
+				},
 			},
 		},
 		dynamicTranslate:{
@@ -1111,16 +1389,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiaotuzi: '小兔子',
 			xiaotuzi_info: '成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用',
 
+			sp_Diana: '皇·嘉然',
+			tangyan: '穿心糖言',
+			tangyan_info: '若你已受伤，你使用、打出或弃置一张基本牌后，可以选择一项：1.令一名角色摸一张牌；2.防止你下一次受到的伤害；3.视为使用一张本回合未以此法使用过的基本牌。',
+			tianyin: '万象天引',
+			tianyin_info: '出牌阶段，你可以受到1点无来源的伤害，并将一张手牌交给一名其他角色，此牌称为“心嘉”牌。在持有“心嘉”牌角色的回合中，你发动『穿心糖言』改为依次执行所有选项。',
+			xinjia: '心嘉',
+
 			sp_Ava: '皇·向晚',
 			shuimu: '降雨水母',
 			shuimu_info: '<font color=#f66>锁定技</font> 你首次受到伤害前没有体力牌。首次受到伤害后，你获得当前姿态对应的体力牌。',
 			liuxuan: '无限溜旋',
 			liuxuan_info: '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
-			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离+1。'
+			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离-1。'
 			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。'
 			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。'
-			+'<br><span class="firetext">犟嘴</span>：进入此姿态时，你获得其他角色的一张牌然后展示一张手牌，令之点数+1或-1。'
-			+'<br><span class="thundertext">可爱</span>：进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，你失去一半体力（向下取整）。',
+			+'<br><span class="firetext">犟嘴</span>：进入此姿态时，你令其他角色交给你一张牌，然后你展示一张手牌，令之点数+1或-1。'
+			+'<br><span class="thundertext">可爱</span>：进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，将你的体力值调整为当前的一半（向上取整），若没有体力牌，你死亡。',
 
 			liuxuan_plus: '溜旋:+1',
 			liuxuan_lose: '溜旋:-1',
@@ -1128,15 +1413,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan_lose2: '溜旋:-2',
 
 			liuxuan_lakua: '拉胯',
-			liuxuan_lakua_describe: '其他角色计算与你的距离+1。',
+			liuxuan_lakua_describe: '其他角色计算与你的距离-1。',
 			liuxuan_huoli: '活力',
 			liuxuan_huoli_describe: '你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。',
 			liuxuan_haixiu: '害羞',
 			liuxuan_haixiu_describe: '你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。',
 			liuxuan_jiangzui: '犟嘴',
-			liuxuan_jiangzui_describe: '进入此姿态时，你获得其他角色的一张牌然后展示一张手牌，令之点数+1或-1。',
+			liuxuan_jiangzui_describe: '进入此姿态时，你令其他角色交给你一张牌，然后你展示一张手牌，令之点数+1或-1。',
 			liuxuan_keai: '可爱',
-			liuxuan_keai_describe: '进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，你失去一半体力（向下取整）。',
+			liuxuan_keai_describe: '进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，将你的体力值调整为当前的一半（向上取整），若没有体力牌，你死亡。',
 
 			'phaseJudge': '判定阶段',
 			'phaseDraw': '摸牌阶段',
