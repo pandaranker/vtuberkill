@@ -663,9 +663,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-        },
-        skill:{
-            qi_skill:{
+		},
+		skill:{
+			qi_skill:{
 				trigger:{player:'useCard1'},
 				filter:function(event,player){
 					return ((event.card.name=='sha'||event.card.name=='tao')&&event.card.nature!='kami');

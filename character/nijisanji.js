@@ -36,6 +36,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
 			/**社长 */
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
+			/**山神歌流多 */
+			YagamiKaruta: ['female', 'nijisanji', 3, ['suisi', 'liefeng']],
 		},
 		characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
@@ -266,7 +268,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player:['damage','damageCancelled','damageZero'],
 					target:['shaMiss','useCardToExcluded'],
 				},
-				charlotte:true,
 				filter:function(event,player){
 					return player.storage.leyan2&&event.card&&player.storage.leyan2.contains(event.card);
 				},
@@ -350,8 +351,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.logSkill('tinenghuifu');
 						}
 					}
+				},
+				ai:{
+					maixie:true,
+					maixie_hp:true
 				}
-				
 			},
 			dianmingguzhen:{
 				audio:2,
@@ -1343,6 +1347,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
+				ai:{
+					maixie:true,
+				},
 			},
 			mark_quanxinquanyi:{
 				audio:'quanxinquanyi',
@@ -2195,7 +2202,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						// _status.event.untrigger(true);
 					}
 				},
-
+				ai:{
+					maixie:true,
+				},
 				group: ['guangsuxiabo_clear', 'guangsuxiabo_cnt1', 'guangsuxiabo_cnt2'],
 				subSkill: {
 					clear: {
@@ -2379,6 +2388,214 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},			
 			},
+			suisi:{
+                locked: true,
+                direct: true,
+                trigger:{
+                    player: ['cardsDiscardAfter', 'chooseToDiscardAfter', 'discardAfter']
+                },
+                filter:function(event, player){
+                    var cards = event.cards;
+                    if(!cards)return false;
+                    var ret = false;
+                    if(!player.storage.suisi) player.storage.suisi ={lastCnt:0};
+                    else player.storage.suisi.lastCnt = 0;
+
+                    for(var i=0;i<cards.length;++i){
+                        if(cards[i]&&(cards[i].name == 'shan'||cards[i].name=='wuxie'))++player.storage.suisi.lastCnt;
+                    }
+                    return player.storage.suisi.lastCnt > 0;
+                },
+                content:function(){
+                    if(player.storage.suisi&&player.storage.suisi.lastCnt>0){
+                         player.draw(Math.ceil(player.storage.suisi.lastCnt/2));
+                         player.logSkill('suisi');
+                    }
+                },
+                group: [
+					'suisi_shaBegin', 'suisi_useShan', 'suisi_shaAfter',
+					'suisi_wuxieBegin', 'suisi_useWuxie','suisi_wuxieAfter'
+				], 
+				subSkill:{
+                    shaBegin:{
+                        trigger:{target:'shaBegin'},
+						direct: true,
+						content:function(){
+							player.lastHasShan = player.hasShan;
+							player.hasShan= function(){
+								var basicCards = this.getCards('h', {type: 'basic'});
+								if(basicCards&&basicCards.length){
+									for(var i=0;i<basicCards.length;++i){
+										if(basicCards[i]&&basicCards[i].name != 'shan'){
+											return true;
+										}
+									}
+								}
+								if(this.hasSkillTag('respondShan',true,null,true)) return true;
+								return false;
+							};
+						}
+                    },
+					useShan:{
+						trigger:{player:'chooseToUseBegin'},
+						direct: true,
+						filter:function(event){
+							var trigger = event.getParent();
+							if(trigger && trigger.name == 'sha')return true;
+						},
+						content:function(){
+							lib.skill.suisi.mod = {
+								cardname:function(card, player){
+									if(card&&card.name!='shan'&&lib.card[card.name].type=='basic')return 'shan';
+								}
+							};
+							trigger.lastFilterCard = trigger.filterCard;
+							trigger.filterCard = function(card, player){
+								if(!card|| card.name == 'shan'|| get.name(card) != 'shan') return false;
+								return lib.filter.cardEnabled(card,player,'forceEnable');
+							};
+						}
+					},
+					shaAfter:{
+                        trigger:{target:'shaAfter'},
+						direct: true,
+						content:function(){
+							if(player.lastHasShan){
+								player.hasShan = lib.element.player.hasShan;
+								delete player.lastHasShan;
+							}
+							
+							if(typeof lib.skill.suisi.mod !== 'undefined') delete lib.skill.suisi.mod;
+						}
+					},
+					wuxieBegin:{
+						trigger:{player:'_wuxieBegin'},
+						direct:true,
+						content:function(){
+							player.lastHasWuxie = player.hasWuxie;
+							player.hasWuxie = function(){
+								var trickCards = this.getCards('h', {type: 'trick'});
+								if(trickCards&&trickCards.length){
+									for(var i=0;i<trickCards.length;++i){
+										if(trickCards[i]&&trickCards[i].name != 'wuxie'){
+											return true;
+										}
+									}
+								}
+								var skills=this.getSkills(true).concat(lib.skill.global);
+								game.expandSkills(skills);
+								for(var i=0;i<skills.length;i++){
+									var ifo=get.info(skills[i]);
+									if(ifo.viewAs&&typeof ifo.viewAs!='function'&&ifo.viewAs.name=='wuxie'){
+										if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
+											return true;
+										}
+									}
+									else{
+										var hiddenCard=get.info(skills[i]).hiddenCard;
+										if(typeof hiddenCard=='function'&&hiddenCard(this,'wuxie')){
+											return true;
+										}
+									}
+								}
+								return false;
+							};
+						}
+					},
+                    useWuxie:{
+                        trigger:{player:'chooseToUseBegin'},
+						direct:true,
+						filter:function(event){
+							var trigger = event.getParent();
+							if(trigger&&trigger.name == '_wuxie')return true;
+						},
+						content:function(){
+							lib.skill.suisi.mod = {
+								cardname:function(card, player){
+									if(card&&card.name!='wuxie'&&(lib.card[card.name].type=='trick'||lib.card[card.name].type=='delay'))return 'wuxie';
+								}
+							};
+							trigger.lastFilterCard = trigger.filterCard;
+							trigger.filterCard = function(card, player){
+								if(!card || card.name == 'wuxie' || get.name(card)!='wuxie')return false;
+								return lib.filter.cardEnabled(card,player,'forceEnable');
+							};
+						}
+                    },
+					wuxieAfter:{
+						trigger:{player:'_wuxieAfter'},
+						direct:true,
+						content:function(){
+							if(player.lastHasWuxie){
+								player.hasWuxie = player.lastHasWuxie;
+								delete player.lastHasWuxie;
+							}
+							if(typeof lib.skill.suisi.mod !== 'undefined') delete lib.skill.suisi.mod;
+						}
+					}
+                }
+            },
+            liefeng:{
+				audio:4,
+                trigger:{
+                    player: 'phaseJieshu'
+                },
+                forced: false,
+                popup: false,
+                filter:function(event, player){
+                    return player.getCards('h').length > 0;
+                },
+                content:function(){
+                    'step 0'
+
+                    var handCards = player.getCards('h').slice(0);
+                    player.showCards(handCards);
+                    event.handCards = handCards;
+                    player.logSkill('liefeng');
+                    'step 1'
+                    if(!event.handCards||!event.handCards.length){
+                        event.finish();
+                        return;
+                    }
+                    var shaCnt = 0;
+                    for(var i =0;i<event.handCards.length;++i){
+                        if(event.handCards[i]&&(
+							event.handCards[i].name=='shan'
+							||event.handCards[i].name=='wuxie'
+							||!lib.filter.cardEnabled(event.handCards[i], player))){
+							 ++shaCnt;
+						}
+                    }
+                    if(shaCnt >= event.handCards.length){
+                        event.shaCnt = shaCnt;
+                        event.handCnt = shaCnt;
+						event._result = {bool: true};
+                    }else{
+                        event.finish();
+                        return;
+                    }
+                    'step 2'
+					if(!result.bool||event.shaCnt<=0){
+						event.finish();
+						return;
+					}
+
+					player.chooseUseTarget(
+						'###选择一个目标，视为对其使用一张【暗】杀。(【暗】杀：'+event.shaCnt+'/'+event.handCnt+'）张',
+						{name:'sha',nature:'yami'}
+					);
+					--event.shaCnt;
+					if(event.shaCnt<event.handCards.length&&event.handCards[event.shaCnt]) event.handCards[event.shaCnt].discard();
+
+					event.redo();
+
+                },
+                ai:{
+					threaten:function(player,target){
+						return 1.6;
+					}
+				}
+            },
 		},
 		characterReplace:{
 			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
@@ -2464,7 +2681,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhuwei: '助危之心',
 			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			zhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
-
+			
+			YagamiKaruta: '山神歌流多',
+			suisi: '髓思',
+			suisi_info: '锁定技，你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
+			liefeng: '猎风',
+			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。'
 		}
 	}
 }

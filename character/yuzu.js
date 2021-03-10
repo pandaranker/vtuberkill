@@ -6,10 +6,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"yuzu",
 		connect:true,
 		character:{
-			Bella: ['female','qun',4,['aswusheng', 'gunxun']],
-			
-			Ciyana: ['female','qun',3,['yankui', 'danyan']],
-
 			// ShitoAnon: ['female','paryi',3,['jiacan','fuhui']],
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
@@ -901,7 +897,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							event.finish();
 							'step 3'
-							var next = player.chooseButton(1 ,true);
+							var next = player.chooseButton(1);
 							next.set('dialog',event.videoId);
 							next.set('ai',function(button){
 								return player.getUseValue({name:button.link[2],isCard:true});
@@ -916,6 +912,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.markSkill('qiepian');
 							}
 						},
+					},
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&!player.needsToDiscard()&&Math.abs(player.storage.qiepian_start-player.countCards('h'))%3==0){
+							return num-10;
+						}
 					},
 				},
 			},
@@ -1424,6 +1427,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filterCard:function(card,player){
 					return true;
 				},
+				check:function(card){
+					return 7-get.value(card);
+				},
 		//		selectTarget:-1,
 		//		filterTarget:function(card,player,target){
 		//			return player==target;
@@ -1441,19 +1447,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['tianyi_drawBy','tianyi_cancelBy','tianyi_clear'],
 				subSkill:{
 					drawBy:{
-						trigger:{player:'useCard'},
+						trigger:{player:'useCard',target:'useCardToTarget'},
 						priority:77,
 						lastDo:true,
 						forced:true,
 						filter:function(event,player){
 							if(get.type(event.card,'trick')!='trick')	return false;
-							if(player.getHistory('useCard',function(evt){
-								return get.suit(evt.card)==get.suit(event.card);
-							}).length>1)	return false;
+							if(player.storage.tianyi_drawBy && player.storage.tianyi_drawBy.contains(get.suit(event.card)))	return false;
 							return player.storage.tianyi.length && get.suit(player.storage.tianyi[0])!=get.suit(event.card);
 						},
 						content:function(){
 							player.draw();
+							if(!player.storage.tianyi_drawBy)	player.storage.tianyi_drawBy = [];
+							player.storage.tianyi_drawBy.add(get.suit(trigger.card));
 						}
 					},
 					cancelBy:{
@@ -1476,16 +1482,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							trigger.getParent().cancel();
 							'step 2'
-							player.gain(trigger.getParent().card);
+							player.gain(trigger.getParent().cards,'gainAuto');
 						}
 					},
 					clear:{
-						trigger:{global:'gameDrawAfter',player:['enterGame','phaseZhunbeiBegin']},
+						trigger:{global:['gameDrawAfter','phaseAfter'],player:['enterGame','phaseZhunbeiBegin']},
 						direct:true,
 						firstDo:true,
 						content:function(){
 							'step 0'
-							if(trigger.name=='phaseZhunbei'&&player.storage.tianyi.length){
+							if(trigger.name=='phase'){
+								delete player.storage.tianyi_drawBy;
+								event.finish();
+							}
+							else if(trigger.name=='phaseZhunbei'&&player.storage.tianyi.length){
 								event.moveCard = true;
 							}
 							'step 1'
@@ -1497,6 +1507,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				ai:{order:4,result:{player:1}},
 			},
 			nveyu:{
 				trigger:{source:'damageEnd'},
@@ -1532,6 +1543,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							},
 						},
 						onremove:true,
+					}
+				},
+				ai:{
+					effect:{
+						player:function(card,player,target,current){
+							if(get.tag(card,'damage')==1&&!player.hasSkill('nveyu_eff')&&!target.hujia&&target.hp>1){
+								if(target.hasSkillTag('maixie'))	return [1,1,0,3];
+								return [1,1,0,1];
+							}
+						}
 					}
 				}
 			},
@@ -2388,6 +2409,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			helesta:{
+				audio:'yubing',
 				trigger:{player:'damageBegin3'},
 				direct:true,
 				filter:function(event,player,name){
@@ -2398,12 +2420,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.discardPlayerCard('###'+get.prompt('helesta')+'###可以弃置装备区的一张牌使伤害-1',player,'e').set('ai',function(){
 						if(player.isDamaged()||player.countCards('e')==1)	return 5+Math.random();
 						return Math.random()-0.2;
-					})
+					});
 					'step 1'
 					if(result.bool){
-						player.logSkill('helesta');
 						trigger.num--;
-					}
+					};
 				},
 				mod:{
 					aiValue:function(player,card,num){
@@ -2430,6 +2451,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseUseTarget('###'+get.prompt('helesta')+'###视为使用一张冰【杀】并摸一张牌',{name:'sha',nature:'ice',isCard:true},false);
 							'step 1'
 							if(result.targets&&result.targets.length){
+								player.logSkill('helesta');
 								player.draw();
 							}
 						},
@@ -2835,13 +2857,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					aiOrder:function(player,card,num){
-						if(typeof card=='object'&&player==_status.currentPhase&&(get.name(card)=='sha')&&!player.needsToDiscard()){
+						if(typeof card=='object'&&player==_status.currentPhase&&!player.needsToDiscard()){
 							return num-10;
 						}
 					},
 				},
 				ai:{
 					notricksource:true,
+					effect:{
+						player:function(card,player,target,current){
+							if(get.tag(card,'damage')==1){
+								var num = get.recoverEffect(target,player,player);
+								return [0,num,0,num];
+							}
+						}
+					}
 				}
 			},
 			chengneng:{

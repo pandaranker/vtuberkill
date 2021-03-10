@@ -908,16 +908,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.liuxuan = event.link;
 						player.popup(player.storage.liuxuan);
 						if(event.link=='liuxuan_jiangzui'&&game.hasPlayer(function(cur){
-							if(player==target) return false;
+							if(player==cur) return false;
 							return cur.countGainableCards(player,'he')>0;
-						}))
+						})){
 						player.chooseTarget(true,'『犟嘴』：'+lib.translate[event.link+'_describe'],function(card,player,target){
 							if(player==target) return false;
 							return target.countGainableCards(player,'he')>0;
 						}).set('ai',function(target){
 							var player = _status.event.player;
 							return -get.attitude(player,target)+Math.random();
-						})
+						})}else{
+							event.goto(9);
+						}
 					}
 					'step 4'
 					if(event.link=='liuxuan_jiangzui'&&result&&result.targets&&result.targets.length){

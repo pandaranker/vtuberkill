@@ -26,6 +26,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv'],['forbidai']],
 			/**天开司 */
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
+			/**贝拉 */
+			Bella: ['female','qun',4,['aswusheng', 'gunxun']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -33,6 +35,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaoxiXiaotao:'#p研虚之实',
 
 			sp_Ava: '#rA-SOUL',
+			sp_Diana: '#rA-SOUL',
 			Bella: '#rA-SOUL',
 		},
 		characterIntro:{
@@ -1388,7 +1391,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						event.target=result.targets[0];
 						if(!player.storage.huangtu2) player.storage.huangtu2=[];
-						player.storage.huangtu2.push(event.target);
+						player.storage.huangtu2.add(event.target);
 						player.addSkill('huangtu2');
 						player.addSkill('huangtu3');
 					}
@@ -1408,9 +1411,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					name:'颂恩',
 					content:'当你在$的回合外体力变化时，$体力进行同样的变化，当$在自己的回合内合体力变化时，你体力进行同样的变化'
 				},
+				onremove:true,
 			},
 			huangtu2:{
-				charlotte:true,
 				trigger:{global:['damageEnd','recoverEnd','loseHpEnd']},
 				forced:true,
 				filter:function(event,player){
@@ -1442,13 +1445,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				onremove:function(player){
 					if(!player.storage.huangtu2) return;
-					game.countPlayer(function(current){
-						if(player.storage.huangtu2.contains(current)&&current.storage.huangtu_mark){
-							current.storage.huangtu_mark.remove(player);
-							if(!current.storage.huangtu_mark.length) current.unmarkSkill('huangtu_mark');
-							else current.markSkill('huangtu_mark');
-						}
-					});
+					var splayer = player.storage.huangtu2[0];
+					splayer.removeSkill('huangtu_mark');
 					delete player.storage.huangtu2;
 				},
 			},
@@ -1459,7 +1457,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.player==player||player.storage.huangtu2&&player.storage.huangtu2.contains(player);
 				},
 				content:function(){
-					if(player==event.player) lib.skill.huangtu2.onremove(player);
+					if(player==event.player) player.removeSkill('huangtu2');
 					else player.storage.huangtu2.remove(event.player);
 				}
 			},

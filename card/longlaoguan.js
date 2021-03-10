@@ -381,7 +381,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			
 			bigong_clear:{
-				//charlotte:true,
 				firstDo:true,
 				trigger:{
 					global:'roundStart',

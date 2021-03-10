@@ -1022,8 +1022,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 			},
 			ranyouxielou:{
-					forced:true,
-				//charlotte:true,
+				forced:true,
 				trigger:{player:'damageBegin4'},
 				filter:function(event){
 					if(event.nature!=null) return true;
@@ -2375,7 +2374,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//				target:['shaMiss','useCardToExcluded'],
 					player:['damage'],
 				},
-				charlotte:true,
 				filter:function(event,player){
 					return player.storage.kuangxin2&&event.card&&player.storage.kuangxin2.contains(event.card);
 				},

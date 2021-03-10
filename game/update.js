@@ -1,18 +1,19 @@
 window.noname_update={
-	version:'1.9.101.31',
+	version:'1.9.101.32',
 	update:'1.9.100.113.3',
 	changeLog:[
-		'101.31小更新：祝贺A-SOUL包揽第三届V萌夺冠~ 修复bug，新增特典角色皇·嘉然，皇·向晚技能削弱，嘉然表情包扩容',
+		'101.32小更新：祝贺A-SOUL包揽第三届V萌前四~ 修复皇·向晚的bug，新增角色山神歌流多、黑川，新增皇角色噶呜·古拉，莉泽增加配音',
 		'101.14大更新：新增《化鲸篇》',
 		'在菜单-其他-帮助里，新增“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
-		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景和海·sasaki、HOLO的海·aqua、HOLOEN的噶呜·古拉和一伊那尔栖、巧可拉拉的皇·绯赤艾莉欧',
+		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景和海·sasaki、HOLO的海·aqua、HOLOEN的噶呜·古拉和一伊那尔栖、特典皇阵营的绯赤艾莉欧和噶呜·古拉',
 	],
 	files:[
 		//化鲸篇
 		'image/card/yalishanda.png',
 		'image/card/zhungangshuo.png',
 		'image/card/lanyinjia.png',
+		'image/card/waiguge.png',
 		
 		'audio/skill/tiaolv1.mp3',
 		'audio/skill/tiaolv2.mp3',

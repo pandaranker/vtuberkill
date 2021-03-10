@@ -23,6 +23,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			/**皇团 */
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
+			/**鲨皇 */
+			sp_GawrGura: ['female','shen',3,['sp_guaisheng', 'sp_guiliu']],
 		},
 		characterSort:{
 			huajing:{
@@ -265,6 +267,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.draw(event.num);
 						},
 					}
+				},
+				ai:{
+					maixie:true,
+					maixie_hp:true
 				},
 			},
 			juzu:{
@@ -891,6 +897,229 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//SP鲨皇
+			sp_guaisheng:{
+				audio:5,
+                trigger:{global:'damageBegin1'},
+				priority:-10,
+				init:function(player){
+					player.storage.sp_guaisheng={one:false,two:false,three:false,four:false};
+				},
+				onremove:function(player){
+					delete player.storage.sp_guaisheng;
+				},
+				direct:true,
+				filter:function(event,player){
+					if(player.storage.sp_guaisheng){
+						var num=0;
+						for (var i in player.storage.sp_guaisheng){
+					       if(player.storage.sp_guaisheng[i]==false) num++;
+						}
+					}
+				   return num>1&&event.nature=='ocean';
+				},
+				content:function(){
+					'step 0'
+					event.num=2;
+					event.list = {one:'选项一',two:'选项二',three:'选项三',four:'选项四'};
+					'step 1'
+					for (var i in player.storage.sp_guaisheng){
+						if(player.storage.sp_guaisheng[i]==true){
+							event.list[i]='';
+						}
+					}
+					if(trigger.source==undefined) event.list['two']='';
+					var list = [];
+					for (var i in event.list){
+						if(event.list[i]!='') list.push(event.list[i]);
+					}
+					var choice = list.randomGet();
+					if(list.length){
+						var str='『海洋怪声』你可选择以下多项构成未执行过的组合以执行：<br><br><br>';
+						if(player.storage.sp_guaisheng['one']==false) str+='<div class="popup text" style="width:calc(100% - 10px);display:inline-block">选项一：'+'令一名其他角色摸一张牌'+'</div>'; 
+						if(player.storage.sp_guaisheng['two']==false&&trigger.source!=undefined) str+='<div class="popup text" style="width:calc(100% - 10px);display:inline-block">选项二：'+'弃置来源一张牌'+'</div>'; 
+						if(player.storage.sp_guaisheng['three']==false) str+='<div class="popup text" style="width:calc(100% - 10px);display:inline-block">选项三：'+'将本次伤害改为冰属性'+'</div>'; 
+						if(player.storage.sp_guaisheng['four']==false) str+='<div class="popup text" style="width:calc(100% - 10px);display:inline-block">选项四：'+'摸一张牌'+'</div>'; 
+						if(event.num!=-1&&((event.num<=0)||(event.num==2))) list.push('cancel2');
+					    player.chooseControl(list,function(){
+						   return _status.event.choice;
+					    }).set('prompt',str).set('choice',choice);
+					}
+					else{
+					    var uncomplete=false;
+					    for (var i in player.storage.sp_guaisheng){
+						    if(player.storage.sp_guaisheng[i]!=true){
+							    uncomplete=true;break;
+						    }
+					    }
+                        if(!uncomplete){					
+					        player.storage.sp_guaisheng={one:false,two:false,three:false,four:false};
+					        player.changeHujia();
+					    }							
+						event.finish();
+					}
+					'step 2'
+					if(result.control!='cancel2'){
+						event.num--;
+						switch(result.control){
+						    case '选项一':{
+							    player.storage.sp_guaisheng['one']=true;
+								player.chooseTarget(true,'『海洋怪声』：令其他一名角色摸一张牌',function(card,player,target){
+							           return target!=player;
+						           }).set('ai',function(target){
+								       var player = _status.event.player;
+								       return get.attitude(player,target);
+							        });							   
+							    break;
+						    }
+						    case '选项二':{
+							    if(trigger.source&&trigger.source.num('he')) player.discardPlayerCard('he',true,trigger.source);player.logSkill('sp_guaisheng',trigger.source);
+							    player.storage.sp_guaisheng['two']=true;
+							    break;
+						    }	
+						    case '选项三':{
+							    trigger.nature='ice';
+								player.logSkill('sp_guaisheng');
+							    player.storage.sp_guaisheng['three']=true;
+							    break;
+						    }	
+						    case '选项四':{
+							    player.draw();
+								player.logSkill('sp_guaisheng');
+							    player.storage.sp_guaisheng['four']=true;
+							    break;
+						    }								
+						}
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					if(result.targets&&result.targets.length){
+						player.logSkill('sp_guaisheng',result.targets[0]);
+						result.targets[0].draw();
+					}
+					for (var i in player.storage.sp_guaisheng){
+						if(player.storage.sp_guaisheng[i]!=true){
+							event.goto(1);
+						}
+					}
+					'step 4'
+					var uncomplete=false;
+					for (var i in player.storage.sp_guaisheng){
+						if(player.storage.sp_guaisheng[i]!=true){
+							uncomplete=true;break;
+						}
+					}
+                    if(!uncomplete){					
+					    player.storage.sp_guaisheng={one:false,two:false,three:false,four:false};
+					    player.changeHujia();
+					}					
+				},
+			},
+			sp_guiliu:{
+				audio:5,
+				trigger:{global:'loseAfter'},
+				filter:function(event,player){
+				   if(event.getParent().name!='discard')	return false;
+					var cards=player.getCards('h');
+					for(var i=0;i<event.cards.length;i++){
+						if(get.position(event.cards[i])=='d'){
+					        for(var j=0;j<cards.length;j++){
+						         if(get.color(event.cards[i])==get.color(cards[j])) return true;
+					        }
+						}
+					}
+					return false;
+				},
+				check:function(event,player){
+					return true;
+				},
+				usable:1,
+				content:function(){
+					'step 0'
+					var list=['海','沉','浪','落','涌','漩','涡','没','浮','淹','洪','河','酒','渡','洞'],cards=[];
+					for(var j=0;j<trigger.cards.length;j++){
+						var card=trigger.cards[j];
+						if(card.classList[2]=='ocean') cards.push(trigger.cards[j]);
+					}					
+					for (var i in list){
+						if(trigger.cards&&trigger.cards.length){
+							for(var j=0;j<trigger.cards.length;j++){
+								var names=get.translation(trigger.cards[j].name);
+								for(var k=0;k<names.length;k++){
+						            if(names[k]==list[i]&&!cards.contains(trigger.cards[j])) cards.push(trigger.cards[j]);
+								}
+							}  
+						}
+					}
+					player.gain(cards,'gain2');
+					event.cards=[],event.cards2={};
+					if(trigger.cards&&trigger.cards.length) event.num=trigger.cards.length;
+					'step 1'
+					event.num--;
+					if(event.num>=0){
+						var str='『百川归流』：选择并展示任意张同色的牌可以将';
+						str+=get.translation(trigger.cards[event.num]);
+						str+='等量复制洗入牌堆';
+					    player.chooseCard(true,[0,player.num('h')],function(card,player){
+						    return get.color(card)==get.color(trigger.cards[event.num]);
+					    }).set('ai',function(card){
+						    return 10-get.value(card);
+					    }).set('prompt',str);
+					}
+					else{
+						if(event.cards.length){
+						    event.goto(4);
+						}
+						else{
+						   event.finish();
+						}
+					}
+                    'step 2'
+					if(result.cards&&result.cards.length){
+						player.showCards(result.cards);
+						event.numx=result.cards.length;
+						event.goto(3);
+					}
+					else{
+					     if(event.num>=0){
+					         event.goto(1);
+					     }
+					     else if(event.cards.length){
+					         event.goto(4);
+					     }
+						else{
+						     event.finish();
+						}					     
+					}
+					'step 3'
+					 var card=game.createCard(trigger.cards[event.num].name,trigger.cards[event.num].suit,trigger.cards[event.num].number,trigger.cards[event.num].nature);	
+					if(!event.cards2[event.numx]) event.cards2[event.numx]=[];
+				    event.cards2[event.numx].push(card);					
+					while(event.numx--){
+					   var card=game.createCard(trigger.cards[event.num].name,trigger.cards[event.num].suit,trigger.cards[event.num].number,trigger.cards[event.num].nature);
+					   for(var i=0;i<trigger.cards[event.num]['classList'].length;i++){
+					         if(!card.classList.contains(trigger.cards[event.num]['classList'][i])) card.classList.add(trigger.cards[event.num]['classList'][i]);
+					   }
+					   event.cards.push(card);
+					}			
+					if(event.num>=0) event.goto(1);
+					'step 4'
+					event.cards.randomSort();
+					for(var i=0;i<event.cards.length;i++){
+						ui.cardPile.appendChild(event.cards[i]);
+					}	 	
+					for (var i in event.cards2){
+						if(event.cards2[i].length>1){
+							game.log(player,'将',event.cards2[i],'各',i,'张洗入了牌堆');
+						}
+						else{
+							game.log(player,'将',event.cards2[i],i,'张洗入了牌堆');
+						}
+					}						
+				},
+			},
 		},
 		characterReplace:{
 		},
@@ -963,6 +1192,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shengbian_info: '<font color=#f66>锁定技</font> 当你的体力或护甲变化后，若你体力与护甲之和大于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
 			tulong: '屠龙伐彼',
 			tulong_info: '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。',
+
+			sp_GawrGura: '皇•嘎呜·古拉',
+			sp_guaisheng: '海洋怪声',
+			sp_guaisheng_info: '当一名角色造成海洋伤害时，你可选择以下多项构成未执行过的组合以执行：1.令一名其他角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性；4.摸一张牌。然后若你执行过所有的组合，获得1点护甲，重置此技能。',
+			sp_guiliu: '百川归流',
+			sp_guiliu_info: '每回合限一次。当一张牌不因使用进入弃牌堆时，你可以展示任意同色的牌，将此牌的等量复制洗入牌堆。且若此牌牌面中有“氵”，你获得之。',
+
 		},
 	}
 });

@@ -478,7 +478,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardAfter'},
 				priority:123,
 				filter:function(event,player){
-					console.log('OK');
 					var repeat = 0;
 					var another =0;
 					game.hasPlayer(function(cur){
@@ -1391,6 +1390,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					notrick:1,
+					effect:{
+						target:function (card,player,target,current){
+							if(get.name(card,player)=='sha') return [0,-4];
+						},
+					},
 				},
 			},
 			shenfa:{
@@ -1437,6 +1441,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//莉泽
 			yubing:{
+				audio:5,
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill] = 0;
 				},
@@ -1466,9 +1471,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					clear:{
 						trigger:{global:'phaseAfter'},
 						forced: true,
-						silent: true,
 						priority:42,
+						filter: function(event, player) {
+							return player.hasMark('yubing');
+						},
 						content:function(){
+							player.unmarkSkill('yubing');
 							player.storage.yubing = 0;
 						}
 					},
@@ -1677,7 +1685,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			re_chongdian:{
 				forced:true,
-				//charlotte:true,
 				trigger:{player:'damageBegin4'},
 				filter:function(event){
 					return event.nature=='thunder';
@@ -1699,7 +1706,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ai:{
 							effect:{
 								target:function(card,player,target,current){
-									if(get.tag(card,'respondSha')&&current<0) return 0.8
+									if(get.tag(card,'respondSha')&&current<0) return 0.1;
 								}
 							},
 							respondSha:true,
@@ -1799,6 +1806,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.chooseUseTarget({name:'sha',isCard:false},false);
 					}
 				},
+				ai:{
+					effect:{
+						player:function(card,player,target,current){
+							if(['sha','guohe'](card.name)&&current<0) return [0,0.7];
+						}
+					}
+				}
 			},
 			//reAKI
 			re_huichu: {
