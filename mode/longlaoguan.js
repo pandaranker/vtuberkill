@@ -1227,7 +1227,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(i=='KiryuuCoco'||i=='AjatarCoco') continue;
 						if(i=='Civia'||i=='SpadeEcho'||i=='Artia'||i=='Doris'||i=='Yogiri'||i=='Rosalyn') continue;
 						var group=lib.character[i][1];
-						if(group=='shen') continue;
+						//if(group=='shen') continue;
 						if(group=='holo'){
 							if(game.filterPlayer(function(current){
 								if(current.name==i){

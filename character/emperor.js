@@ -1074,13 +1074,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var key = get.number(card);
 							if([7,14].contains(key)){
 								if(player.hp==Infinity)		return num-20;
-								else if(player.hp<=3&&player.storage.liuxuan!='liuxuan_keai')	return num+10;	
+								else if(player.hp<=3&&player.storage.liuxuan!='liuxuan_keai')	return num+10;
+								else if(player.storage.liuxuan=='liuxuan_keai')	return num-3;
 							}
 							if([5,10].contains(key)){
 								if(player.storage.liuxuan!='liuxuan_jiangzui')	return num+10;	
+								if(player.storage.liuxuan=='liuxuan_jiangzui')	return num-3;	
 							}
 							if([4,8,12].contains(key)){
-								if(get.tag(card,'damage'))	return num+5;	
+								if(get.tag(card,'damage'))	return num+5;
 							}
 						}
 					},
@@ -1119,7 +1121,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{source:'damageBegin2',player:'damageBegin4'},
 						priority:6,
 						forced:true,
-						popup:true,
+						popup:'溜旋-害羞',
 						filter:function(event,player){
 							return true;
 						},
@@ -1128,13 +1130,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mod:{
 							canBeGained:function(card,source,player){
-								if(get.position(card)=='hej') return false;
+								if(source!=player&&['h'].contains(get.position(card))) return false;
 							},
 							canBeDiscarded:function (card,source,player){
-								if(get.position(card)=='hej') return false;
+								if(source!=player&&['h'].contains(get.position(card))) return false;
 							},
 							cardDiscardable:function(card,player,name){
-								if(get.position(card)=='hej') return false;
+								if(['h'].contains(get.position(card))) return false;
 							}
 						},
 					},
@@ -1405,7 +1407,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan_info: '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
 			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离-1。'
 			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。'
-			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。'
+			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你的手牌无法被其他角色获得或弃置。'
 			+'<br><span class="firetext">犟嘴</span>：进入此姿态时，你令其他角色交给你一张牌，然后你展示一张手牌，令之点数+1或-1。'
 			+'<br><span class="thundertext">可爱</span>：进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，将你的体力值调整为当前的一半（向上取整），若没有体力牌，你死亡。',
 
@@ -1419,7 +1421,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan_huoli: '活力',
 			liuxuan_huoli_describe: '你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。',
 			liuxuan_haixiu: '害羞',
-			liuxuan_haixiu_describe: '你造成或受到的伤害+1，你区域内的牌不能被获得或弃置。',
+			liuxuan_haixiu_describe: '你造成或受到的伤害+1，你的手牌无法被其他角色获得或弃置。',
 			liuxuan_jiangzui: '犟嘴',
 			liuxuan_jiangzui_describe: '进入此姿态时，你令其他角色交给你一张牌，然后你展示一张手牌，令之点数+1或-1。',
 			liuxuan_keai: '可爱',

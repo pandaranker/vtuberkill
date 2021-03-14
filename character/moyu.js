@@ -704,7 +704,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					'step 0'
-					if (trigger.player == player && player.countDiscardableCards('he')) {
+					if (trigger.player == player && player.countDiscardableCards(player,'he')) {
                     	player.getStat().card.sha--;
 					}
 					else {
@@ -964,7 +964,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.player != player 
 						&& event.player.hasSkill('wolf')
 						&& player.hasZhuSkill('zhuosheng')
-						&& player.countDiscardableCards('he') >= 5;
+						&& player.countDiscardableCards(player,'he') >= 5;
 				},
 				content: function() {
 					'step 0'

@@ -705,6 +705,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:'DDzhanshou',
 				trigger:{global:'phaseEnd'},
 				priority:77,
+				frequent:true,
 				filter:function(event,player){
 					var history = event.player.getHistory('useCard');
 					var DD = false;
@@ -832,22 +833,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re凛
 			re_mozhaotuji:{
-				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_Ready','re_mozhaotuji_Judge','re_mozhaotuji_PhaseDraw','re_mozhaotuji_Discard','re_mozhaotuji_End'],
+				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_useCard','re_mozhaotuji_Ready','re_mozhaotuji_Judge','re_mozhaotuji_PhaseDraw','re_mozhaotuji_Discard','re_mozhaotuji_End'],
 				/**转化阶段 */
 				contentx:function(trigger,player){
 					'step 0'
 					trigger.cancel();
-					var stat=player.getStat();
-					stat.card={};
-					for(var i in stat.skill){
-						var bool=false;
-						var info=lib.skill[i];
-						if(info.enable!=undefined){
-							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
-							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
-						}
-						if(bool) stat.skill[i]=0;
-					}
 					'step 1'
 					player.addTempSkill('re_mozhaotujiStop');
 					player.phaseUse();
@@ -866,21 +856,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					DrawOrStop:{
-						trigger:{global:'phaseUseAfter'},
+						trigger:{global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']},
 						filter:function(event,player){
-							if((player.getHistory('useCard').length)>=2)
+							if((player.storage.re_mozhaotuji_useCard)>=1)
 								return true;
-							else if((player.getHistory('useCard').length)==0)
+							else if((player.storage.re_mozhaotuji_useCard)==0)
 								return player==_status.currentPhase;
 							else
 								return false;
 						},
 						priority: 14,
-						forced:true,
+						direct:true,
 						content:function(){
 							'step 0'
-							if((player.getHistory('useCard').length)>=2)
+							if((player.storage.re_mozhaotuji_useCard)>=2){
+								player.logSkill('re_mozhaotuji');
 								player.draw(1);
+							}
+							'step 1'
+							player.storage.re_mozhaotuji_useCard = 0;
+						},
+					},
+					useCard:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = 0;
+						},
+						trigger:{player:'useCardAfter'},
+						direct:true,
+						silent:true,
+						priority: 1,
+						content:function(){
+							player.storage.re_mozhaotuji_useCard++;
 						},
 					},
 					Ready:{
@@ -1307,7 +1313,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:['chooseToUse','chooseToRespond'],
 				usable:1,
 				filter:function(event,player){
-					return !player.hasSkill('haruka_kanata');
+					return player.countCards('h',{type:'basic'});
 				},
 				chooseButton:{
 					dialog:function(event,player){
@@ -1355,7 +1361,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					prompt:function(links,player){
-						return '请选择'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'的目标';
+						return '将一张基本牌当作'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'使用或打出';
 					}
 				},
 				ai:{
@@ -1809,7 +1815,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					effect:{
 						player:function(card,player,target,current){
-							if(['sha','guohe'](card.name)&&current<0) return [0,0.7];
+							if(['sha','guohe'].contains(card.name)&&current<0) return [0,0.7];
 						}
 					}
 				}
@@ -1954,6 +1960,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re夏色祭
 			re_huxi1:{
+				audio:'huxi1',
 				trigger:{player:'gainEnd'},
 				filter:function(event,player){
 					return game.hasPlayer(function(cur){

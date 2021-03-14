@@ -56,8 +56,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(player.hasSkill('ailianUsable')) return false;
 					return player.countCards('h')>0;
-			    },
-			    content: function(){
+				},
+				content: function(){
 					var trigger=_status.event;
 					'step 0'
 					if(!player.storage.targets) player.storage.targets=[];
@@ -89,33 +89,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					//console.log(result);
 					if(result&&result.bool==false){
-					event.goto(3);
+						event.goto(3);
 					}
 					else{
-					if(result.targets){
-							if(!player.storage.targets) player.storage.targets=[];
-					    if(!trigger.targets.contains(result.targets[0])){
-					        trigger.targets.addArray(result.targets);
-					        player.storage.targets.addArray(result.targets);
-					    }
-					    trigger.target=result.targets[0];
-					}
-					player.chooseCard(true, 'h', '选择要给出的牌',[1,Infinity]).set('ai',function(card){
-						if(player.isZhu)	return 6-get.useful(card);
-						return 7-get.useful(card);
-					})
+						if(result.targets){
+								if(!player.storage.targets) player.storage.targets=[];
+							if(!trigger.targets.contains(result.targets[0])){
+								trigger.targets.addArray(result.targets);
+								player.storage.targets.addArray(result.targets);
+							}
+							trigger.target=result.targets[0];
+						}
+						player.chooseCard(true, 'h', '选择要给出的牌',[1,Infinity]).set('ai',function(card){
+							if(player.isZhu)	return 6-get.useful(card);
+							return 7-get.useful(card);
+						})
 					}
 					'step 2'
 					if(result.bool==true){
-					trigger.cards.addArray(result.cards);
-					    trigger.target.gain(result.cards,event.player,'give');
-					if(player.countCards('h')){
-					    event.goto(0);
-					}
+						trigger.cards.addArray(result.cards);
+						trigger.target.gain(result.cards,event.player,'give');
+						if(player.countCards('h')){
+							event.goto(0);
+						}
 					}
 					else{
 						trigger.targets.pop();
-					player.storage.targets.pop();
+						player.storage.targets.pop();
 					}
 					'step 3'
 					var difType=true;
@@ -141,9 +141,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 5'
 					if(result.bool==true){
-					result.targets.forEach(element => {
-					   element.link(); 
-					});
+						result.targets.forEach(element => {
+							element.link(); 
+						});
 					}
 					'step 6'
 					var distanceGroup=false;
@@ -242,9 +242,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						delete player.storage.targets;
 						event.finish();
 					}
-			    },
+				},
 				ai:{
 					order:function(skill,player){
+						if(!game.hasPlayer(function(cur){
+							if(get.attitude(player,cur)<=0)	return 0;
+							else return get.attitude(player,cur);
+						})){
+							return 0;
+						}
 						if(player.needsToDiscard()){
 							return 5;
 						}

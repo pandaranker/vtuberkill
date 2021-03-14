@@ -259,10 +259,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					player.line(target,'green')
 					//_status.event.target = target;
 					game.broadcastAll(function(id, choicelist){
-                        var dialog=ui.create.dialog('选择一项');
-                        choicelist.forEach(element=>{
-                            dialog.add([element,'vcard']);
-                        })
+						var dialog=ui.create.dialog('选择一项');
+						choicelist.forEach(element=>{
+							dialog.add([element,'vcard']);
+						})
 						dialog.videoId = id;
 					}, event.videoId, list);
 					'step 1'
@@ -270,15 +270,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					target.chooseButton(true).set('dialog',event.videoId).set('prompt',get.prompt('bigong'));
 					'step 2'
 					game.broadcastAll('closeDialog', event.videoId);
-                    if(result.bool){
+					if(result.bool){
 						//var target = _status.event.target;
-                        result.links.forEach(element => {
-                            if(element[2]=='本轮内失去所有技能'){
-                                game.log(target,'失去了所有技能');
+						result.links.forEach(element => {
+							if(element[2]=='本轮内失去所有技能'){
+								game.log(target,'失去了所有技能');
 								//target.clearSkills();
 								target.addTempSkill('bigong_clear',{global:'roundStart'});
-                            }
-                            if(element[2]=='交给桐生可可两张不同类型的牌'){
+							}
+							if(element[2]=='交给桐生可可两张不同类型的牌'){
 								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌(取消则依然发动效果1)',2,target.getCards('he'));
 								next.set('filterButton',function(button){
 									if(ui.selected.buttons.length){
@@ -291,8 +291,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 										return true;
 									}
 								});
-                            }
-                        });
+							}
+						});
 					}
 					'step 3'
 					if(result.bool){

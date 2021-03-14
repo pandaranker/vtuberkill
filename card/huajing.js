@@ -906,9 +906,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-            qi: '气',
+			qi: '气',
 			qi_skill: '聚气',
-            qi_info: '目标角色本回合使用下一张牌时可指定属性。若其已受伤，额外获得1点护甲。',
+			qi_info: '目标角色本回合使用下一张牌时可指定属性。若其已受伤，额外获得1点护甲。',
 			qi_skill_info: '本回合使用下一张牌时可指定属性。',
 			jingluo: '鲸落',
 			jingluo_info: '出牌阶段，对所有角色使用，目标依次选择一项：弃置一张牌以获得1点护甲；或横置武将牌以摸一张牌。',
