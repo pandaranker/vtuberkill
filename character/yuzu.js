@@ -573,6 +573,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chongshi:{
 				trigger:{player:'shaBegin'},
 				priority: 996,
+				frequent:true,
 				content:function(){
 					game.asyncDraw([player,trigger.target]);
 					// player.draw();
@@ -835,7 +836,80 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content: 'cards',
 					name:'以『连崛』使用过的锦囊牌',
 				},
-				group:['qiepian_start','qiepian_end'],
+				trigger:{player:'phaseEnd'},
+				priority:66,
+				frequent:true,
+				prompt2: '你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',
+				filter:function(event,player){
+					return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian_start-player.countCards('h'))%3==0);
+				},
+				content:function(){
+					'step 0'
+					player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以此使用过的通常锦囊牌'],function(){
+						return 1;
+					});
+					'step 1'
+					switch(result.index){
+						case 0: {
+							player.chooseTarget([1,3],'令至多三名角色各摸一张牌').set('ai',function(target){
+								var att=get.attitude(_status.event.player,target);
+								if(att>1){
+									return att;
+								}
+								return 0;
+							});
+							event.goto(2);
+							break;
+						}
+						case 1: {
+							event.videoId = lib.status.videoId++;
+							var list=[];
+							for(var i=0;i<lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								var reapeat = 0;
+								if(player.storage.qiepian.length){
+									player.storage.qiepian.forEach(function(his){	
+										if(get.name(his)==name) reapeat ++;
+									});
+								}
+						/*		if(player.storage.xiaogui.length){
+									player.storage.xiaogui.forEach(function(his){	
+										if(get.name(his)==name) reapeat ++;
+									});
+								}*/
+								if(reapeat||name=='wuxie'||name=='jinchan') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							game.broadcastAll(function(id, list){
+								var dialog=ui.create.dialog('使用一张未以此使用过的通常锦囊牌',[list,'vcard']);
+								dialog.videoId = id;
+							}, event.videoId, list);
+							event.goto(3);
+							break;
+						}
+					}
+					'step 2'
+					if(result.targets&&result.targets.length){
+						game.asyncDraw(result.targets);
+					}
+					event.finish();
+					'step 3'
+					var next = player.chooseButton(1);
+					next.set('dialog',event.videoId);
+					next.set('ai',function(button){
+						return player.getUseValue({name:button.link[2],isCard:true});
+					});
+					'step 4'
+					game.broadcastAll('closeDialog', event.videoId);
+					if (result.bool){
+						var card = result.links[0];
+						player.chooseUseTarget({name:card[2]},true);
+						player.storage.qiepian.add(game.createCard(card[2]));
+						player.syncStorage('qiepian');
+						player.markSkill('qiepian');
+					}
+				},
+				group:['qiepian_start'],
 				subSkill:{
 					start:{
 						init:function(player,skill){
@@ -849,81 +923,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:66,
 						content:function(){
 							player.storage.qiepian_start = player.countCards('h');
-						},
-					},
-					end:{
-						trigger:{player:'phaseEnd'},
-						priority:66,
-						frequent:true,
-						prompt2: '你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',
-						filter:function(event,player){
-							return /*(player.storage.qiepian-player.countCards('h'))&&*/(Math.abs(player.storage.qiepian_start-player.countCards('h'))%3==0);
-						},
-						content:function(){
-							'step 0'
-							player.chooseControlList(['令至多三名角色各摸一张牌','视为使用一张未以此使用过的通常锦囊牌'],function(){
-								return 1;
-							});
-							'step 1'
-							switch(result.index){
-								case 0: {
-									player.chooseTarget([1,3],'令至多三名角色各摸一张牌').set('ai',function(target){
-										var att=get.attitude(_status.event.player,target);
-										if(att>1){
-											return att;
-										}
-										return 0;
-									});
-									event.goto(2);
-									break;
-								}
-								case 1: {
-									event.videoId = lib.status.videoId++;
-									var list=[];
-									for(var i=0;i<lib.inpile.length;i++){
-										var name=lib.inpile[i];
-										var reapeat = 0;
-										if(player.storage.qiepian.length){
-											player.storage.qiepian.forEach(function(his){	
-												if(get.name(his)==name) reapeat ++;
-											});
-										}
-								/*		if(player.storage.xiaogui.length){
-											player.storage.xiaogui.forEach(function(his){	
-												if(get.name(his)==name) reapeat ++;
-											});
-										}*/
-										if(reapeat||name=='wuxie'||name=='jinchan') continue;
-										else if(get.type(name)=='trick') list.push(['锦囊','',name]);
-									}
-									game.broadcastAll(function(id, list){
-										var dialog=ui.create.dialog('使用一张未以此使用过的通常锦囊牌',[list,'vcard']);
-										dialog.videoId = id;
-									}, event.videoId, list);
-									event.goto(3);
-									break;
-								}
-							}
-							'step 2'
-							if(result.targets&&result.targets.length){
-								game.asyncDraw(result.targets);
-							}
-							event.finish();
-							'step 3'
-							var next = player.chooseButton(1);
-							next.set('dialog',event.videoId);
-							next.set('ai',function(button){
-								return player.getUseValue({name:button.link[2],isCard:true});
-							});
-							'step 4'
-							game.broadcastAll('closeDialog', event.videoId);
-							if (result.bool){
-								var card = result.links[0];
-								player.chooseUseTarget({name:card[2]},true);
-								player.storage.qiepian.add(game.createCard(card[2]));
-								player.syncStorage('qiepian');
-								player.markSkill('qiepian');
-							}
 						},
 					},
 				},
@@ -1232,6 +1231,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.source&&event.source == player)	return get.attitude(player,event.player)<1;
 					return true;
 				},
+				frequent:true,
 				prompt:function(event,player){
 					if(event.source&&event.source == player)	return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('niaoji');
 					return '受到来自'+get.translation(event.source)+'的伤害，'+get.prompt('niaoji');
@@ -1258,8 +1258,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						if(result.suit=='spade'){
+							game.playAudio('skill','niaoji_spade'+Math.ceil(3*Math.random()));
 							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(event.target)+get.cnNumber(event.target.hp)+'张牌',event.target,event.target.hp,true,'he');
 						}else if(result.suit=='heart'){
+							game.playAudio('skill','niaoji_heart'+Math.ceil(3*Math.random()));
 							player.draw(player.hp);
 						}
 					}
@@ -3811,7 +3813,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					var suit = get.suit(event.card);
-					return event.cards&&event.cards.length&&event.player!=player&&player.countCards('h',function(card){
+					return event.cards&&event.cards.length&&suit!='none'&&event.player!=player&&player.countCards('h',function(card){
 						return suit==get.suit(card);
 					})==0;
 				},
@@ -3865,7 +3867,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.awakenSkill('wulian');
 					player.draw(player.maxHp-player.hp);
 					'step 1'
-					player.addTempSkill('lianpo',{global:'roundStart'});
+					player.addTempSkill('lianpo','roundStart');
 				},
 				derivation:'lianpo',
 				ai:{
@@ -3878,9 +3880,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			lianpo:{
 				audio:4,
-				audioname:['Diana'],
+				//audioname:['Diana'],
 				trigger:{global:'phaseAfter'},
 				frequent:true,
+				onremove:true,
 				filter:function(event,player){
 					return player.getStat('kill')>0;
 				},
@@ -4065,7 +4068,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<ui.selected.cards.length;i++){
 						num+=get.number(ui.selected.cards[i]);
 					}
-					return get.number(card)+num<=18;
+					return get.number(card)+num<18;
 				},
 				discard:false,
 				toStorage:true,

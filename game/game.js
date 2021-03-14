@@ -49799,7 +49799,7 @@
 					var next={
 						name:get.name(card),
 						suit:get.suit(card),
-						number:card.number,
+						number:get.number(card),
 						nature:get.nature(card),
 						isCard:true,
 						cardid:card.cardid,

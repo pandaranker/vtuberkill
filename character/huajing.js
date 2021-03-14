@@ -321,7 +321,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lingqun:{
 				trigger:{player:'phaseDiscardEnd'},
 				frequent:true,
-				//forced:true,
 				filter:function(event,player){
 					return event.cards&&event.cards.length;
 				},
@@ -1190,7 +1189,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_GawrGura: '皇•嘎呜·古拉',
 			sp_guaisheng: '海洋怪声',
-			sp_guaisheng_info: '当一名角色造成海洋伤害时，你可选择以下多项构成未执行过的组合以执行：1.令一名其他角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性；4.摸一张牌。然后若你执行过所有的组合，获得1点护甲，重置此技能。',
+			sp_guaisheng_info: '当一名角色造成海洋伤害时，你可选择以下任意项构成未执行过的组合以执行：1.令一名角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性。然后若你执行过所有的组合，获得1点护甲，重置此技能。',
 			sp_guiliu: '百川归流',
 			sp_guiliu_info: '每回合限一次。当一张牌不因使用进入弃牌堆时，你可以展示任意同色的牌，将此牌的等量复制洗入牌堆。且若此牌牌面中有“氵”，你获得之。',
 

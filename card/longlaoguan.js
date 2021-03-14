@@ -276,7 +276,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(element[2]=='本轮内失去所有技能'){
 								game.log(target,'失去了所有技能');
 								//target.clearSkills();
-								target.addTempSkill('bigong_clear',{global:'roundStart'});
+								target.addTempSkill('bigong_clear','roundStart');
 							}
 							if(element[2]=='交给桐生可可两张不同类型的牌'){
 								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌(取消则依然发动效果1)',2,target.getCards('he'));
