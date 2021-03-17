@@ -509,7 +509,6 @@ window.noname_asset_list=[
 	'image/background/alice3_bg.jpg',
 	'image/background/alice4_bg.jpg',
 	
-	'image/background/Aqua_bg.jpg',
 
 	'image/card/minguangkai.png',
 	'image/card/db_atk1.jpg',
