@@ -128,7 +128,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ui.arena.classList.remove('only_dialog');
 				};
 				var step1=function(){
-					ui.create.dialog('欢迎来到无名杀，是否进入新手向导？');
+					ui.create.dialog('欢迎来到V杀（VtuberKill），是否进入新手向导？');
 					game.saveConfig('new_tutorial',true);
 					ui.dialog.add('<div class="text center">跳过后，你可以在选项-其它中重置新手向导');
 					ui.auto.hide();
@@ -205,7 +205,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				};
 				var step5=function(){
 					clear();
-					ui.create.dialog('如果还有其它问题，欢迎来到百度无名杀吧进行交流');
+					ui.create.dialog('如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流');
 					ui.create.control('完成',function(){
 						clear();
 						clear2();
@@ -1481,13 +1481,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(_status.brawl&&_status.brawl.chooseCharacterFilter){
 						_status.brawl.chooseCharacterFilter(event.list,list2,list3);
 					}
-					var num=get.config('choice_'+game.me.identity);
+					var num=Number(get.config('choice_'+game.me.identity));
 					if(event.zhongmode){
 						num=6;
 						if(game.me.identity=='zhu'||game.me.identity=='nei'||game.me.identity=='mingzhong'){
 							num=8;
 						}
 					}
+					num += Number(get.config('choice_ex'));
 					if(game.zhu!=game.me){
 						event.ai(game.zhu,event.list,list2)
 						event.list.remove(get.sourceCharacter(game.zhu.name1));
@@ -1952,11 +1953,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					_status.characterlist=list4.slice(0);
 					if(event.zhongmode){
-						list=event.list.randomGets(8);
+						list=event.list.randomGets(8+Number(get.config('choice_ex')));
 					}
 					else{
 						list2.sort(lib.sort.character);
-						list=list2.concat(list3.randomGets(5));
+						list=list2.concat(list3.randomGets(5+Number(get.config('choice_ex'))));
 					}
 					var next=game.zhu.chooseButton(true);
 					next.set('selectButton',(lib.configOL.double_character?2:1));
@@ -2045,7 +2046,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								str+='（'+get.translation(game.players[i].special_identity)+'）';
 							}
 							//list.push(game.players[i])
-							list.push([game.players[i],[str,[event.list.randomRemove(num+num3),'characterx']],selectButton,true]);
+							list.push([game.players[i],[str,[event.list.randomRemove(num+num3+Number(get.config('choice_ex'))),'characterx']],selectButton,true]);
 						}
 					}
 					game.me.chooseButtonOL(list,function(player,result){
@@ -2231,6 +2232,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			sheshen:'舍身',
 			sheshen_info:'锁定技，主公处于濒死状态即将死亡时，令主公+1体力上限，回复体力至X点（X为你的体力值数），获得你的所有牌，然后你死亡',
 			yexinbilu:'野心毕露',
+
+			tianming:'天命',
+			tianming_info:'当你成为【杀】的目标时，你可以弃置两张牌（不足则全弃，无牌则不弃），然后摸两张牌；若此时全场体力值最多的角色仅有一名且不是你，该角色也可以如此做。',
+		
 		},
 		element:{
 			player:{
@@ -2853,6 +2858,50 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		skill:{
+			tianming:{
+				audio:2,
+				trigger:{target:'useCardToTargeted'},
+				check:function(event,player){
+					var cards=player.getCards('h');
+					if(cards.length<=2){
+						for(var i=0;i<cards.length;i++){
+							if(cards[i].name=='shan'||cards[i].name=='tao') return false;
+						}
+					}
+					return true;
+				},
+				filter:function(event,player){
+					return event.card.name=='sha';
+				},
+				content:function(){
+					"step 0"
+					player.chooseToDiscard(2,true,'he');
+					player.draw(2);
+					var players=game.filterPlayer();
+					players.sort(function(a,b){
+						return b.hp-a.hp;
+					});
+					if(players[0].hp>players[1].hp&&players[0]!=player){
+						players[0].chooseBool(get.prompt2('tianming'));
+						event.player=players[0];
+					}
+					else{
+						event.finish();
+					}
+					"step 1"
+					if(result.bool){
+						player.chooseToDiscard(2,true,'he');
+						player.draw(2);
+					}
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(card.name=='sha') return [1,0.5];
+						}
+					}
+				}
+			},
 			yexinbilu:{
 				enable:'phaseUse',
 				filter:function(event,player){

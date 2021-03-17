@@ -26,8 +26,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv'],['forbidai']],
 			/**天开司 */
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
+			/**泠鸢 */
+			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
 			/**贝拉 */
 			Bella: ['female','qun',4,['aswusheng', 'gunxun']],
+			/**嘉然 */
+			Diana: ['female','qun',4,['quanyu', 'wulian']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -856,7 +860,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.hasSkill('zhongxinghezou')){
 						player.addTempSkill('zhongxinghezou',{player:'phaseAfter'});
 					}
-				}
+				},
+				derivation:'zhongxinghezou',
 			},
 			baidao:{
 				enable:'phaseUse',

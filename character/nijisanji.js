@@ -38,8 +38,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
 			/**山神歌流多 */
 			YagamiKaruta: ['female', 'nijisanji', 3, ['suisi', 'liefeng']],
-			/**泠鸢 */
-			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
+			/**雪城真寻 */
+			YukishiroMahiro: ['female', 'nijisanji', 3, ['jiaoming', 'changhe']],
+			/**小野町春香 */
+			OnomachiHaruka: ['female', 'nijisanji', 3, ['nvjiangrouhao', 'yinlaiyaotang']],
 		},
 		characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
@@ -2379,6 +2381,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},			
 			},
 			suisi:{
+				audio:4,
 				locked: true,
 				direct: true,
 				trigger:{
@@ -2554,6 +2557,359 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//雪城真寻
+			jiaoming:{
+				trigger:{
+					global: ['loseAfter', 'cardsDiscardAfter']
+				},
+				forced: true,
+				popup: false,
+				filter:function(event, player){
+					if(!player||player.hasSkill('jiaoming_invalid'))return false;
+					
+					event = event&&(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return false;
+					//是此player的回合
+					if(player!=event.player) return false;
+					
+					return true;
+				},
+				content:function(){
+					//获得当前event的parent，phaseUse，
+					//如果不存在就返回
+					event = event&&(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return;
+					//倒序遍历globalHistory的cardMove，
+					//对其中每个lose事件，遍历卡牌，并记录位于弃牌堆的牌
+					var cardnames = {};
+					game.getGlobalHistory('cardMove', function(evt){
+						if(evt.cards&&evt.name=='lose'&&evt.getParent('phaseUse') == event){
+							for(var i=evt.cards.length-1; i>=0; --i){
+								if(get.position(evt.cards[i], true) != 'd')continue;
+								if(typeof cardnames[evt.cards[i].name] === 'undefined'){
+									cardnames[evt.cards[i].name] = [];
+								}
+								if(!cardnames[evt.cards[i].name].contains(evt.cards[i])){
+									cardnames[evt.cards[i].name].push(evt.cards[i]);
+								}
+							}
+						}
+						return true;
+					});
+					//如果弃牌堆存在某个牌名重复，则添加空事件jiaoming_invalid，
+					//用于判定jiaoming本回合能否触发/使用
+					for(var nm in cardnames){
+						if(cardnames[nm]&&cardnames[nm].length>1){
+							player.addTempSkill('jiaoming_invalid');
+						};
+					}
+					if(nm != undefined){
+						player.addTempSkill('jiaoming_main', 'phaseUseAfter');
+					}
+				},
+				subSkill:{
+					invalid:{
+
+					},
+					main:{
+						enable:'phaseUse',
+						check:function(event, player){
+							return true;
+						},
+						filter:function(event, player){
+							return !player.hasSkill('jiaoming_invalid');
+						},
+						content:function(){
+							'step 0'
+							player.chooseTarget('你可选择攻击范围内有你的一名其他角色',function(card,player,target){
+								return target != player &&target.canUse('sha',player);
+							}).set('choice',get.attitude(event.jmTarget, player)>=0?undefined:-1).set('ai',function(){return _status.event.choice});;
+							'step 1'
+							if(result.bool&&result.targets&&result.targets.length){
+								if(event.directHit||(!_status.connectMode&&lib.config.skip_shan&&!target.hasSha())){
+									event.directfalse=true;
+								}
+								else{
+									event.jmTarget = result.targets[0];
+									var next = result.targets[0].chooseToUse(
+										'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去“骄名”。',
+										function(card, player){
+											if(get.name(card)!='sha') return false;
+											return lib.filter.filterCard.apply(this,arguments);
+										}
+									);
+									next.set('filterTarget', function(card, player , target){
+										return _status.event.shaTarget == target;
+									}).set('shaTarget', player).set('targetRequired',true);
+									//ai
+									next.set('choice',get.attitude(event.jmTarget, player)>=0?undefined:0).set('ai',function(){return _status.event.choice});
+								}
+							}else{
+								event.finish();
+								return;
+							}
+							'step 2'
+							if(event.jmTarget){
+								if(event.directfalse||result.bool==false){
+									player.addTempSkill('jiaoming_invalid');
+									event.jmTarget.loseHp();
+								}
+							}
+		
+						},
+					}
+				}
+			},
+			changhe:{
+				trigger:{
+					player: 'phaseUseEnd'
+				},
+				forced: false,
+				check:function(event, player){
+					return true;
+				},
+				filter:function(event, player){
+					event = event&&(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return false;
+					if(!player)return false;
+					var cardnames = {};
+					game.getGlobalHistory('cardMove', function(evt){
+						if(evt.cards&&evt.name=='lose'&&evt.getParent('phaseUse') == event){
+							for(var i=evt.cards.length-1; i>=0; --i){
+								if(get.position(evt.cards[i], true) != 'd')continue;
+								if(typeof cardnames[evt.cards[i].name] === 'undefined'){
+									cardnames[evt.cards[i].name] = [];
+								}
+								if(!cardnames[evt.cards[i].name].contains(evt.cards[i])){
+									cardnames[evt.cards[i].name].push(evt.cards[i]);
+								}
+							}
+						}
+						return true;
+					});
+					//弃牌堆有大于等于三张同名牌，即可触发，返回true
+					for(var nm in cardnames){
+						if(cardnames[nm]&&cardnames[nm].length>2)return true;
+					}
+					return false;
+				},
+				content:function(){
+					'step 0'
+					player.chooseControl(['cancel2']).set('choiceList',[
+						'摸两张牌',
+						'回复1点体力'
+					]).set('prompt', '请选择一项').set('ai', function(){
+						if(_status.event.chPlayer){
+							return _status.event.chPlayer.maxHp > _status.event.chPlayer.hp;
+						}
+						return 0;
+					}).set('chPlayer', player);
+					'step 1'
+					if(result.control!='cancel2'){
+						if(result.index == 0){
+							player.draw(2);
+						}else{
+							player.recover();
+						}
+					}
+				}
+			},
+			//小野町春香
+			nvjiangrouhao:{
+				group:['nvjiangrouhao_shaTrigger', 'nvjiangrouhao_distanceTrigger'],
+				subSkill:{
+					shaTrigger:{
+						trigger:{
+							player:'useCardToPlayered',
+						},
+						filter:function(event){
+							return event.card.name=='sha';
+						},
+						forced:true,
+						content:function(){
+							//对杀的对象添加临时mod技能，限制使用牌的花色
+							var suit = trigger.card.suit;
+							var target  = trigger.target;
+							target.addTempSkill('nvjiangrouhao_filterShan', 'shaAfter', 'nvjiangrouhao_distanceTemp');
+							
+							if(!target.storage.nvjiangrouhao){
+								target.storage.nvjiangrouhao = {
+									shaTrigger:{}
+								};
+							}
+							target.storage.nvjiangrouhao.shaTrigger.suit = suit;
+							//同步的数据
+							if(target.isOnline()){
+								target.send(function(target,suit){
+									if(!target.storage.nvjiangrouhao){
+										target.storage.nvjiangrouhao = {
+											shaTrigger:{}
+										};
+									}
+									target.storage.nvjiangrouhao.shaTrigger.suit = suit;
+								}, target, suit);
+							}
+						},
+					},
+					//特定牌花色mod
+					filterShan:{
+						mod:{
+							cardEnabled2:function(card, player){
+								//如果player有杀，且有花色
+								var sha = (player&&player.storage&&player.storage.nvjiangrouhao)
+									&& player.storage.nvjiangrouhao.shaTrigger;
+								if(!sha||!sha.suit)return;
+								//只有同花色的闪能响应
+								if(get.name(card) == 'shan' && get.suit(card) != sha.suit){
+									return false;
+								}
+							}
+						}
+					},
+					distanceTrigger:{
+						trigger:{
+							source:'damageSource'
+						},
+						forced:true,
+						content:function(){
+							player.addTempSkill('nvjiangrouhao_distanceTemp', {player:'phaseBegin'});
+						}
+					},
+					//距离mod
+					distanceTemp:{
+						mark: true,
+						mod:{
+							globalFrom:function(player,target,distance){
+								return distance-1;
+							}
+						},
+						intro:{
+							content: '锁定技，直到你的下一个回合开始，你计算与其他角色的距离-1。'
+						}
+					}
+				}
+			},
+			yinlaiyaotang:{
+				group:['yinlaiyaotang_phaseUse', 'yinlaiyaotang_loseCheck'],
+				subSkill:{
+					phaseUse:{
+						enable: 'phaseUse',
+						usable: 1,
+						filter:function(event, player){
+							return player.getCards('h').length > 0;
+						},
+						content:function(){
+							'step 0'
+							player.chooseControl(['cancel2']).set('choiceList',[
+								'你可将任意数量手牌交给你攻击范围内的任意角色',
+								'将任意手牌置于武将牌上'
+							]).set('prompt', '请选择一项').set('ai', function(){
+								return Math.random()>0.5?0:1;
+							});
+							'step 1'
+							if(result.control!='cancel2'){
+								//选择任意数量手牌
+								player.chooseCard('h', '选择你的手牌',true, [1, player.getCards('h').length||1]);
+								event.selecetedChoice = result.index;
+							}else{
+								event.finish();
+							}
+							'step 2'
+							if(result.bool){
+								//选中的牌
+								event.prepareCards = result.cards.slice(0);
+								if(event.selecetedChoice == 0){
+									event.goto(3);
+									//选择player攻击范围内的角色
+									player.chooseTarget('将选中的手牌交给你攻击范围内的任意角色', true, function(card, player, target){
+										return player.canUse('sha',target);
+									}).set('ai',function(target){
+										return get.damageEffect(target, _status.event.player, _status.event.player);
+									});
+								}else{
+									event.goto(4);
+								}
+							}else{
+								event.finish();
+							}
+							'step 3'
+							if(result.bool&&event.prepareCards&&event.prepareCards.length>0&&result.targets){
+								//选择的角色获得选中的牌
+								var prepareTarget = result.targets[0];
+								prepareTarget.gain(event.prepareCards, player);
+							}
+							event.finish();
+							'step 4'
+							//从手牌移除
+							player.lose(event.prepareCards,ui.special,'toStorage');
+							//同步mark，保存至player.storage.yinlaiyaotang_phaseUse 
+							player.storage.yinlaiyaotang_phaseUse = player.storage.yinlaiyaotang_phaseUse.concat(event.prepareCards);
+							player.syncStorage('yinlaiyaotang_phaseUse');
+							player.markSkill('yinlaiyaotang_phaseUse');
+							game.log(player,'将',event.prepareCards,'置于武将牌上');
+						},
+						init:function(player){
+							if(!player.storage.yinlaiyaotang_phaseUse)player.storage.yinlaiyaotang_phaseUse = [];
+						},
+						intro:{
+							content:'cards'
+						}
+					},
+					loseCheck:{
+						trigger:{global:'loseBegin'},
+						forced: true,
+						filter:function(event, player){
+							//在有牌置于武将牌上时继续检查
+							if(!player.storage.yinlaiyaotang_phaseUse)return;
+							//仅对距离为1的角色
+							if(get.distance(player, event.player) == 1){
+								if(!event.cards||!event.cards.length)return false;
+								for(var i=0;i<event.cards.length;++i){
+									//仅查找当前牌的位置为手牌时
+									if(get.position(event.cards[i]) != 'h') continue;
+									//对武将牌上的牌遍历，找到同名牌则通过
+									for(var j=0;j<player.storage.yinlaiyaotang_phaseUse.length;++j){
+										if(player.storage.yinlaiyaotang_phaseUse[j].name == event.cards[i].name){
+											//保存检索的位置信息
+											player.storage.loseCheck = [i, j];
+											return true;
+										}
+									}
+								}
+							}
+							return false;
+						},
+						content:function(){
+							'step 0'
+							
+							//其回复1点体力
+							trigger.player.recover();
+							'step 1'
+							
+							//武将牌上的那张牌返回你的手牌
+							//从player.storage.yinlaiyaotang_phaseUse移除该牌
+							var removedCard = player.storage.yinlaiyaotang_phaseUse.splice(player.storage.loseCheck[1], 1)[0];
+							if(player.storage.yinlaiyaotang_phaseUse.length == 0){
+								player.unmarkSkill('yinlaiyaotang_phaseUse');
+							}else{
+								//更新mark
+								player.markSkill('yinlaiyaotang_phaseUse');
+							}
+							player.syncStorage('yinlaiyaotang_phaseUse');
+							//获得卡牌
+							
+							player.gain(removedCard,'fromStorage');
+							game.log(player, '从武将牌上获得一张', removedCard);
+							//延时
+							
+							game.delayx();
+							'step 2'
+							//你摸一张牌。
+							player.draw();
+						}
+					}
+				}
+			},
 		},
 		characterReplace:{
 			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
@@ -2644,7 +3000,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			suisi: '髓思',
 			suisi_info: '<font color=#f66>锁定技</font> 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
 			liefeng: '猎风',
-			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。'
+			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。',
+			
+			YukishiroMahiro:'雪城真寻',
+			jiaoming: '骄名',
+			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
+			changhe: '唱和',
+			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：摸两张牌；或回复1点体力。',
+
+			OnomachiHaruka: '小野町春香',
+			nvjiangrouhao: '女将柔豪',
+			nvjiangrouhao_info: '<font color=#f66>锁定技</font> 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
+			yinlaiyaotang: '引徕药汤',
+			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
+
 		}
 	}
 }

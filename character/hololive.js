@@ -2041,13 +2041,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageBegin'},
 						priority:80,
 						check:function(event,player){
-							return (get.attitude(player,event.player)>0);
+							return -get.damageEffect(player,event.player,player);
 						},	
 						filter:function(event,player){
 							if(!event.source.hasSkill('youyishiyue'))	return false;
 							var shi = event.source.storage.youyishiyue;
 							shi = player.storage.youyi||shi;
-							return event.source.countGainableCards(player,'hej',shi);
+							return event.source.countGainableCards(player,'hej',function(card){
+								return card==shi;
+							});
 						},
 						prompt:'是否收回“誓约”牌？',
 						content:function(){
@@ -2095,7 +2097,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							});
 							shi = player.storage.youyishiyue||shi;
-							return damaged&&player.countDiscardableCards(player,'hej',shi);
+							return damaged&&player.countDiscardableCards(player,'hej',function(card){
+								return card==shi;
+							});
 						},
 						content:function(){
 							'step 0'

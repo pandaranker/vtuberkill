@@ -819,29 +819,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					player.storage[skill] = 'liuxuan_lakua';
 					player.addSkill('liuxuan_lakua');
+					game.broadcastAll(function(player){
+						player._liuxuan_mark=player.mark('😅',{
+							name:function(storage,player){
+								var skill = player.storage.liuxuan;
+								return '<div class="text center browntext">'+lib.translate[skill]+'小向晚</div>';
+							},
+							content:function(content,player){
+								var list = ['liuxuan_lakua','liuxuan_huoli','liuxuan_haixiu','liuxuan_jiangzui','liuxuan_keai'];
+								var str='';
+								for(var i=0;i<list.length;i++){
+									if(player.hasSkill(list[i]))	str+='<span class="legendtext">';
+									str+=lib.translate[list[i]];
+									str+='：';
+									str+=lib.translate[list[i]+'_describe'];
+									if(player.hasSkill(list[i]))	str+='</span>';
+									str+='<br>';
+								}
+								return str;
+							}
+						});
+					},player);
 					if(lib.skill[skill].process)	lib.skill[skill].process(skill,player.storage[skill],player);
 					game.playAudio('skill','liuxuan_lakua1');
-				},
-				mark:true,
-				marktext:'😅',
-				intro:{
-					name:function(storage,player){
-						var skill = player.storage.liuxuan;
-						return '<div class="text center browntext">'+lib.translate[skill]+'小向晚</div>';
-					},
-					content:function(content,player){
-						var list = ['liuxuan_lakua','liuxuan_huoli','liuxuan_haixiu','liuxuan_jiangzui','liuxuan_keai'];
-						var str='';
-						for(var i=0;i<list.length;i++){
-							if(player.hasSkill(list[i]))	str+='<span class="legendtext">';
-							str+=lib.translate[list[i]];
-							str+='：';
-							str+=lib.translate[list[i]+'_describe'];
-							if(player.hasSkill(list[i]))	str+='</span>';
-							str+='<br>';
-						}
-						return str;
-					}
 				},
 				trigger:{player:['useCardBegin','respondBegin']},
 				filter:function(event,player){
@@ -859,9 +859,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				process:function(skill,name,player){
 					if(lib.translate[name]){
-						player.node.name.innerHTML = get.verticalStr(lib.translate[name]+'小向晚');
-						lib.translate[skill+'_append']='<span class="bluetext">'+lib.translate[name]+'：'+lib.translate[name+'_describe']+'</span>';
-						player.update();
+						game.broadcastAll(function(skill,name,player){
+							if(!player._liuxuan_mark) return;
+							switch(name){
+								case 'liuxuan_lakua': player._liuxuan_mark.firstChild.innerHTML= '😅';;break;
+								case 'liuxuan_huoli': player._liuxuan_mark.firstChild.innerHTML= '🤗';;break;
+								case 'liuxuan_haixiu': player._liuxuan_mark.firstChild.innerHTML= '🤣';;break;
+								case 'liuxuan_jiangzui': player._liuxuan_mark.firstChild.innerHTML= '😡';;break;
+								case 'liuxuan_keai': player._liuxuan_mark.firstChild.innerHTML= '😭';;break;
+							}
+							player.node.name.innerHTML = get.verticalStr(lib.translate[name]+'小向晚');
+							lib.translate[skill+'_append']='<span class="bluetext">'+lib.translate[name]+'：'+lib.translate[name+'_describe']+'</span>';
+							player.update();
+						},skill,name,player);
 					}
 				},
 				locked:true,
@@ -1056,7 +1066,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log(player,'进入了','#g'+get.translation(event.link),'姿态');
 						if(['liuxuan_lakua','liuxuan_keai','liuxuan_haixiu'].contains(event.link))	player.logSkill(event.link);
 						player.addSkill(event.link);
-						player.markSkill('liuxuan');
 						game.delay();
 						if(lib.skill.liuxuan.process)	lib.skill.liuxuan.process('liuxuan',event.link,player);
 					}
@@ -1161,7 +1170,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{source:'damageBegin2'},
 						priority:6,
 						forced:true,
-						popup:true,
+						popup:'溜旋-可爱',
 						filter:function(event,player){
 							return true;
 						},

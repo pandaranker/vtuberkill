@@ -10,8 +10,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			
-			/**嘉然 */
-			Diana: ['female','qun',4,['quanyu', 'wulian']],
+			/**乃琳 */
+			Queen: ['female','qun',4,['yehua', 'fengqing']],
 
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
@@ -122,7 +122,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.card = result.links[0];
 						if(get.type(event.card)!='basic'){
 							event.target.skip('phaseJudge');
-							event.target.skip('phaseJudge');
+							event.target.skip('phaseDiscard');
 							event.target.addTempSkill('yankui1');
 						}else{
 							event.target.addTempSkill('yankui2');
@@ -3018,7 +3018,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				visible:true,
 				delay:0.5,
 				content:function(){
+					'step 0'
 					player.draw();
+					'step 1'
+					if(result.cards&&get.typr(result.cards[0])=='equip'){
+						player.equip(result.cards[0]);
+						player.recover();
+					}
 				},
 				ai:{
 					basic:{
@@ -3891,6 +3897,100 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.insertPhase();
 				},
 			},
+			//乃琳
+			yehua:{
+				audio:true,
+				trigger:{player:'phaseBegin'},
+				//frequent:true,
+				filter:function(event,player){
+					return !player.isMaxHandcard(true);
+				},
+				content:function(){
+					'step 0'
+					var num = 1;
+					var targets = game.filterPlayer(function(cur){
+						return cur.isMaxHandcard();
+					});
+					num+=targets[0].countCards('h');
+					num-=player.countCards('h');
+					event.cards = get.cards(num);
+					'step 1'
+					player.gain(event.cards,'draw');
+					'step 2'
+					player.turnOver();
+				},
+			},
+			fengqing:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 1;
+				},
+				trigger:{player:['linkBegin','turnOverBegin']},
+				frequent:true,
+				filter:function(event,player){
+					return true;
+				},
+				process:function(change){
+					switch(change){
+						case 1:return '其下个准备阶段视为使用了【酒】';break;
+						case 2:return '其下个准备阶段视为使用了【桃】';break;
+						case 3:return '其跳过本回合的判定和弃牌阶段';break;
+					}
+				},
+				content:function(){
+					'step 0'
+					event.change = player.storage.fengqing;
+					player.chooseTarget('『风情』:选择技能的目标').set('ai',function(target){
+						var player = _status.event.player;
+						return get.attitude(player,target)+Math.random();
+					}).set('prompt2',lib.skill.fengqing.process(event.change))
+					'step 1'
+					if(result.targets&&result.targets.length){
+						event.target = result.targets[0];
+						switch(event.change){
+							case 1:player.addSkill('fengqing_jiu');break;
+							case 2:player.addSkill('fengqing_tao');break;
+							case 3:{
+								event.target.skip('phaseJudge');
+								event.target.skip('phaseDiscard');
+								break;
+							}
+						}
+						player.storage.fengqing = (player.storage.fengqing==3)?1:player.storage.fengqing+1;
+					}
+				},
+				subSkill:{
+					jiu:{
+						audio:2,
+						trigger:{player:'phaseZhunbeiEnd'},
+						forced:true,
+						onremove:true,
+						popup:'风情-酒',
+						audioname:['Queen'],
+						filter:function(event,player){
+							return lib.filter.filterCard({name:'jiu',isCard:false},player,event);
+						},
+						content:function(){
+							player.chooseUseTarget({name:'jiu'},true,'noTargetDelay');
+							player.removeSkill(event.name);
+						},
+					},
+					tao:{
+						audio:2,
+						trigger:{player:'phaseZhunbeiEnd'},
+						forced:true,
+						onremove:true,
+						popup:'风情-桃',
+						audioname:['Queen'],
+						filter:function(event,player){
+							return lib.filter.filterCard({name:'tao',isCard:false},player,event);
+						},
+						content:function(){
+							player.chooseUseTarget({name:'tao'},true,'noTargetDelay');
+							player.removeSkill(event.name);
+						},
+					},
+				},
+			},
 			//三三
 			zhezhuan:{
 				enable:'chooseToUse',
@@ -4151,6 +4251,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				if(player.storage.gunxun===true) return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【杀】</span>②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
 				return '<font color=#66e>转换技</font> 出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【杀】<span class="browntext">②【闪】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="bluetext"></span>';
 			},
+			fengqing:function(player){
+				var str = '<font color=#66e>转换技</font> 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。';
+				switch(player.storage.fengqing){
+					case 1: return str.replace(/①视为使用了【酒】/g,'<span class="bluetext">①视为使用了【酒】</span>');
+					case 2: return str.replace(/②视为使用了【桃】/g,'<span class="bluetext">②视为使用了【桃】</span>');
+					case 3: return str.replace(/③跳过本回合的判定和弃牌阶段/g,'<span class="bluetext">③跳过本回合的判定和弃牌阶段</span>');
+				}
+				return str;
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -4159,6 +4268,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			Queen: '乃琳',
+			yehua: '夜话',
+			yehua_info: '回合开始时，你可以将手牌调整至场上唯一最多并翻面，然后本回合你使用卡牌能且只能指定多个目标。',
+			fengqing: '风情',
+			fengqing_info: '<font color=#66e>转换技</font> 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。',
+			fengqing_jiu: '风情-酒',
+			fengqing_tao: '风情-桃',
 
 			Diana: '嘉然',
 			quanyu: '全域',

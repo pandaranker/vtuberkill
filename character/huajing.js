@@ -1003,8 +1003,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 3'
-					player.chooseTarget(true,'『海洋怪声』：令其他一名角色摸一张牌',function(card,player,target){
-						return target!=player;
+					player.chooseTarget(true,'『海洋怪声』：令一名角色摸一张牌',function(card,player,target){
+						return true;
 					}).set('ai',function(target){
 						var player = _status.event.player;
 						return get.attitude(player,target);

@@ -4287,6 +4287,20 @@
 						restart:true,
 						intro:'为主公增加一个额外技能'
 					},
+					choice_ex:{
+						name:'额外选将框',
+						init:'0',
+						restart:true,
+						item:{
+							'0':'〇',
+							'1':'一',
+							'2':'二',
+							'3':'三',
+							'4':'四',
+							'5':'五',
+						},
+						intro:'为所有玩家分配额外选将框'
+					},
 				},
 				config:{
 					update:function(config,map){
@@ -4295,6 +4309,7 @@
 							map.enhance_zhu.hide();
 							map.double_nei.hide();
 							map.auto_identity.hide();
+							map.choice_ex.hide();
 							map.choice_zhu.hide();
 							map.choice_zhong.hide();
 							map.choice_nei.hide();
@@ -4322,6 +4337,7 @@
 							map.enhance_zhu.hide();
 							map.double_nei.hide();
 							map.auto_identity.hide();
+							map.choice_ex.hide();
 							map.choice_zhu.hide();
 							map.choice_zhong.hide();
 							map.choice_nei.hide();
@@ -4349,6 +4365,7 @@
 							else{
 								map.double_nei.hide();
 							}
+							map.choice_ex.show();
 							map.choice_zhu.show();
 							map.choice_zhong.show();
 							map.choice_nei.show();
@@ -4662,6 +4679,20 @@
 							normal:'一般',
 							hard:'仇视',
 						},
+					},
+					choice_ex:{
+						name:'额外选将框',
+						init:'0',
+						restart:true,
+						item:{
+							'0':'〇',
+							'1':'一',
+							'2':'二',
+							'3':'三',
+							'4':'四',
+							'5':'五',
+						},
+						intro:'为所有玩家分配额外选将框'
 					},
 					choice_zhu:{
 						name:'主公候选武将数',
@@ -20359,7 +20390,7 @@
 					if(typeof proceed=='function') proceed();
 					else if(_status.paused&&!noresume) game.resume();
 				},
-				logSkill:function(name,targets,nature,logv){
+				logSkill:function(name,targets,nature,logv,audio){
 					if(get.itemtype(targets)=='player') targets=[targets];
 					var nopop=false;
 					var popname=name;
@@ -20395,7 +20426,9 @@
 						this.syncStorage(roundname);
 						this.markSkill(roundname);
 					}
-					game.trySkillAudio(name,this,true);
+					if(audio!==false){
+						game.trySkillAudio(name,this,true);
+					}
 					if(game.chess){
 						this.chessFocus();
 					}
