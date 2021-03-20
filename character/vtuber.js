@@ -141,7 +141,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 4'
 					player.chooseTarget('是否令'+ trigger.cards.length.toString() +'名角色横置？',trigger.cards.length,function(card,player,target){
-					return true;
+						return true;
 					});
 					'step 5'
 					if(result.bool==true){
@@ -1582,9 +1582,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						player.loseMaxHp();
 						if(trigger._result&&trigger._result.length){
-							result.targets[0].recover();
+							result.targets[0].recover(player);
 						}else if(trigger._result&&trigger._result.links&&trigger._result.links[0][3]=='回复体力'){
-							result.targets[0].draw(2);
+							result.targets[0].draw(2,player);
 						}
 					}
 				}

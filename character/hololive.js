@@ -1038,17 +1038,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						])
 					}
 					else{
-						player.recover(trigger.num);
+						player.recover(trigger.num,trigger.source);
 						event.finish();
 					}
 					'step 1'
 					if(result.index==0){
-						player.recover(trigger.num);
+						player.recover(trigger.num,trigger.source);
 						trigger.cancel();
 					}
 					else{
 						if(trigger.cards){
-							player.gain(trigger.cards,'gain2')
+							player.gain(trigger.cards,'gain2',trigger.source)
 						}
 					}
 					},
@@ -2124,7 +2124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								event.target = result.targets[0];
 								player.discard(event.card);
 								player.logSkill('youyishiyue',event.target);
-								event.target.recover();
+								event.target.recover(player);
 							}
 						},
 					},
@@ -2157,21 +2157,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!(get.type(event.card) =='basic'||get.type(event.card)=='trick'))	return false;
 					if(event.result.bool == false || event.result.wuxied)					return false;
 					if(!player.storage.pekoyu.length)										return true;
-			//		console.log(player.getLastUsed(1));
-		/*			var evt=player.getLastUsed(1);
-					if(!evt||!evt.card) return true;
-						var ark=[get.suit(evt.card)];
-						for(var i=2;;i++){
-							var evt=player.getLastUsed(i);
-							if(!evt||!evt.card){
-								ark.push(get.suit(evt.card));
-							}
-							else break;
-						}
-					for(var i=0;i<ark.length;i++){
-						if(get.suit(event.card)==ark[i])							return false
-					}
-		*/			for(var i=0;i<player.storage.pekoyu.length;i++){
+					for(var i=0;i<player.storage.pekoyu.length;i++){
 						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
 					}
 					return !(event.result.bool == false || event.result.wuxied);			
@@ -2179,7 +2165,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content: function() {
 					'step 0'
 					player.storage.pekoyu.add(get.suit(trigger.card));
-					console.log(player.storage.pekoyu);
 					player.draw(),
 					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h',true).set('ai',function(card){
 						var name = card.name;
@@ -2201,7 +2186,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool&&result.targets&&result.targets.length){
 						var target = result.targets[0];
 						player.line(target,'thunder');
-						target.draw(2);
+						target.draw(2,player);
 					}
 				},
 				group:['pekoyu_update', 'pekoyu_back'],
@@ -2234,62 +2219,63 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:"phaseUse",
 				usable:1,
 				content:function(){
-					player.link();
+					player.link(true);
 					player.addMark('hongshaoturou',1,false);
 					player.addTempSkill('hongshaoturou_viewAs','phaseAfter');
 					player.addTempSkill('hongshaoturou_shao','phaseAfter');
 					var buff = '.player_buff';
-							game.broadcastAll(function(player, buff){
-								player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
-							}, player, buff);
-				},	
+					game.broadcastAll(function(player, buff){
+						player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
+					}, player, buff);
+				},
 				onremove: function(player, skill) {
 					player.removeSkill('hongshaoturou_shao');
-				},		
-			},
-			hongshaoturou_viewAs:{
-				mod:{
-					cardname:function(card,player){
-						if(card.name=='shan'||card.name=='tao')														return 'jiu';
-						if(get.subtype(card)=='equip3'||get.subtype(card)=='equip4'||get.subtype(card)=='equip6')	return 'tiesuo';
+				},
+				subSkill:{
+					viewAs:{
+						mod:{
+							cardname:function(card,player){
+								if(card.name=='shan'||card.name=='tao')														return 'jiu';
+								if(get.subtype(card)=='equip3'||get.subtype(card)=='equip4'||get.subtype(card)=='equip6')	return 'tiesuo';
+							},
+						},
+						trigger:{player:['useCard1','respond','loseBeign']},
+						firstDo:true,
+						forced:	true,
+						filter:function(event,player){
+							return event.card.name=='jiu'&&!event.skill&&
+							event.cards.length==1&&(event.cards[0].name=='tao'||event.cards[0].name=='shan');
+						},
+						content:function(){
+						},
 					},
-				},
-				trigger:{player:['useCard1','respond','loseBeign']},
-				firstDo:true,
-				forced:	true,
-				filter:function(event,player){
-					return event.card.name=='jiu'&&!event.skill&&
-					event.cards.length==1&&(event.cards[0].name=='tao'||event.cards[0].name=='shan');
-				},
-				content:function(){
-				},
-			},
-			hongshaoturou_shao:{
-				trigger:{player:['phaseEnd']},
-				marktext: '炎',
-				mark: true,
-				forced: true,
-				intro: {
-					content:'当前回合结束后受到一点火焰伤害',
-					name:'自煲自足',
-				},
-				onremove: function(player, skill) {
-					game.broadcastAll(function(player){
-						if(player.node.hongshaoturou){
-							player.node.hongshaoturou.delete();
-							delete player.node.hongshaoturou;
+					shao:{
+						trigger:{player:'phaseEnd'},
+						marktext: '炎',
+						mark: true,
+						forced: true,
+						intro: {
+							content:'当前回合结束后受到一点火焰伤害',
+							name:'自煲自足',
+						},
+						onremove:function(player, skill) {
+							game.broadcastAll(function(player){
+								if(player.node.hongshaoturou){
+									player.node.hongshaoturou.delete();
+									delete player.node.hongshaoturou;
+								}
+							}, player);
+						},
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							player.damage('fire');
+							player.removeSkill('hongshaoturou_shao');	
 						}
-					}, player);
-				},
-				filter:function(event,player){
-					return true;
-				},
-				content:function(){
-					player.damage('fire');
-					player.removeSkill('hongshaoturou_shao');	
+					},
 				}
 			},
-			
 			//Civia
 			kuangxin:{
 				trigger:{global:'useCardToPlayered'},
@@ -2350,7 +2336,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							'step 1'
 							if(result.bool){
-								result.targets[0].draw();
+								result.targets[0].draw(player);
 							}
 						},
 					},
@@ -3510,6 +3496,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			Ciyana:['Ciyana','Civia'],
+			SasakiSaku:['MinatoAqua','sea_MinatoAqua'],
 		},
 		translate:{
 			hololive_1:'一期生',

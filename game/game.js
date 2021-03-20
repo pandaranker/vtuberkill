@@ -19861,30 +19861,48 @@
 				loseMaxHp:function(){
 					var next=game.createEvent('loseMaxHp');
 					next.player=this;
+					var nosource;
+					var event=_status.event;
 					next.num=1;
 					for(var i=0;i<arguments.length;i++){
-						if(typeof arguments[i]==='number'){
+						if(get.itemtype(arguments[i])=='player'){
+							next.source=arguments[i];
+						}
+						else if(typeof arguments[i]==='number'){
 							next.num=arguments[i];
 						}
 						else if(typeof arguments[i]==='boolean'){
 							next.forced=arguments[i];
 						}
+						else if(arguments[i]=='nosource'){
+							nosource=true;
+						}
 					}
+					if(next.source==undefined&&!nosource) next.source=event.player;
 					next.setContent('loseMaxHp');
 					return next;
 				},
 				gainMaxHp:function(){
 					var next=game.createEvent('gainMaxHp');
 					next.player=this;
+					var nosource;
+					var event=_status.event;
 					next.num=1;
 					for(var i=0;i<arguments.length;i++){
 						if(typeof arguments[i]==='number'){
 							next.num=arguments[i];
 						}
+						else if(get.itemtype(arguments[i])=='player'){
+							next.source=arguments[i];
+						}
 						else if(typeof arguments[i]==='boolean'){
 							next.forced=arguments[i];
 						}
+						else if(arguments[i]=='nosource'){
+							nosource=true;
+						}
 					}
+					if(next.source==undefined&&!nosource) next.source=event.player;
 					next.setContent('gainMaxHp');
 					return next;
 				},
@@ -20256,6 +20274,17 @@
 					}
 					var next=game.createEvent('turnOver');
 					next.player=this;
+					var nosource;
+					var event=_status.event;
+					for(var i=0;i<arguments.length;i++){
+						if(get.itemtype(arguments[i])=='player'){
+							next.source=arguments[i];
+						}
+						else if(arguments[i]=='nosource'){
+							nosource=true;
+						}
+					}
+					if(next.source==undefined&&!nosource) next.source=event.player;
 					next.setContent('turnOver');
 					return next;
 				},
@@ -20317,6 +20346,17 @@
 					}
 					var next=game.createEvent('link');
 					next.player=this;
+					var nosource;
+					var event=_status.event;
+					for(var i=0;i<arguments.length;i++){
+						if(get.itemtype(arguments[i])=='player'){
+							next.source=arguments[i];
+						}
+						else if(arguments[i]=='nosource'){
+							nosource=true;
+						}
+					}
+					if(next.source==undefined&&!nosource) next.source=event.player;
 					next.setContent('link');
 					return next;
 				},

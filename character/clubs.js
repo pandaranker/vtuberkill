@@ -24,7 +24,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Paryi:['male','paryi',4,['tiantang','haoren'],['forbidai']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
-			OtomeOto:['female','paryi',3,['xiaogui','qiepian','changxiang'],['zhu']],
+			OtomeOto:['female','paryi',3,['yuxia','qiepian','changxiang'],['zhu']],
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 
@@ -802,7 +802,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function() {
 					'step 0'
 					player.logSkill('seqinghuashen');
-					trigger.player.draw();
+					trigger.player.draw(player);
 					'step 1'
 					var target = trigger.player;
 					if (target.countGainableCards(player, 'he')) {
@@ -914,7 +914,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return current.hasZhuSkill('xinluezhili');
 					});
 					if (target.length) {
-						target[0].draw();
+						target[0].draw(player);
 					}
 				}
 			},
@@ -1966,25 +1966,25 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.cancel();
 					}
 				},
-				init:function(player, skill){
-					player.lastRecover = player.recover;
-					player.recover = function(){
-						var next = this.lastRecover();
-						if(!next)return;
-						for(var i=0;i<arguments.length;++i){
-							if(get.itemtype(arguments[i])=='player'){
-								next.source = _status.event.player;
-							}
-						}
-						if(typeof(next.source)==='undefined') next.source = _status.event.player;
-					};
-				},
-				onremove:function(player, skill){
-					if(!player.lastRecover) return;
-					delete player.recover;
-					player.recover = player.lastRecover;
-					delete player.lastRecover;
-				},
+				// init:function(player, skill){
+				// 	player.lastRecover = player.recover;
+				// 	player.recover = function(){
+				// 		var next = this.lastRecover();
+				// 		if(!next)return;
+				// 		for(var i=0;i<arguments.length;++i){
+				// 			if(get.itemtype(arguments[i])=='player'){
+				// 				next.source = _status.event.player;
+				// 			}
+				// 		}
+				// 		if(typeof(next.source)==='undefined') next.source = _status.event.player;
+				// 	};
+				// },
+				// onremove:function(player, skill){
+				// 	if(!player.lastRecover) return;
+				// 	delete player.recover;
+				// 	player.recover = player.lastRecover;
+				// 	delete player.lastRecover;
+				// },
 				subSkill:{
 					onDie:{
 						trigger:{player:'die'},

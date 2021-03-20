@@ -532,7 +532,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 						});
 						for(var i=0;i<list.length;i++){
-							list[i]=['锦囊','',list[i]];
+							if(get.type(list[i],'trick')=='trick') list[i]=['锦囊','',list[i]];
+							if(get.type(list[i],'trick')=='equip') list[i]=['装备','',list[i]];
 						}
 						list.push(['基本','','tao','ocean']);
 						list.push(['基本','','sha','ocean']);
@@ -540,7 +541,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(list.length==0){
 							return ui.create.dialog('未启用《化鲸篇》');
 						}
-						return ui.create.dialog('『携七』',[list,'vcard']);
+						else return ui.create.dialog('『携七』',[list,'vcard']);
 					},
 					filter:function(button,player){
 						return _status.event.getParent().filterCard({name:button.link[2],nature:button.link[3]},player,_status.event.getParent());
@@ -567,9 +568,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(num>0&&num%7==0) return [ui.selected.cards.length,ui.selected.cards.length+1];
 								return ui.selected.cards.length+2;
 							},
-							forceAuto:function(){
-								return ui.selected.buttons.length==1;
-							},
+							// forceAuto:function(){
+							// 	return ui.selected.buttons.length==1;
+							// },
 							popname:true,
 							check:function(card){
 								return 7-get.value(card);
@@ -583,7 +584,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					prompt:function(links,player){
-						return '###『携七』###任意张点数合计为7倍数的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+						return '###『携七』###将任意张点数合计为7倍数的牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 					}
 				},
 				ai:{
@@ -593,7 +594,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var players=game.filterPlayer();
 							for(var i=0;i<players.length;i++){
 								if(players[i]!=player&&get.attitude(player,players[i])>0){
-									return 1;
+									return 0.5;
 								}
 							}
 							return 0;
@@ -794,7 +795,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var list=[];
 							for(var i=0;i<lib.inpile.length;i++){
 								var name=lib.inpile[i];
-								if(get.type(name)!='basic') list.push(['锦囊','',name]);
+								if(get.type(name,'trick')=='trick') list.push(['锦囊','',name]);
+								if(get.type(name,'trick')=='equip') list.push(['装备','',name]);
 							}
 							game.broadcastAll(function(id, list){
 								var dialog=ui.create.dialog('###『启明星辰』###声明一张牌',[list,'vcard']);
@@ -842,7 +844,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							trigger.player.draw();
-							player.recover();
+							player.recover(trigger.player);
 						}
 					},
 				},
@@ -935,7 +937,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					var choice = list.randomGet();				
 					var str='『海洋怪声』：你可选择以下任意项构成未执行过的组合以执行：<br><br>';
-					str+='<div class="popup text" style="width:calc(100% - 10px);margin-top:8px;display:inline-block">选项一：'+'令一名其他角色摸一张牌'+'</div>'; 
+					str+='<div class="popup text" style="width:calc(100% - 10px);margin-top:8px;display:inline-block">选项一：'+'令一名角色摸一张牌'+'</div>'; 
 					str+='<div class="popup text" style="width:calc(100% - 10px);margin-top:8px;display:inline-block">选项二：'+'弃置来源一张牌'+'</div>'; 
 					str+='<div class="popup text" style="width:calc(100% - 10px);margin-top:8px;display:inline-block">选项三：'+'将本次伤害改为冰属性'+'</div>'; 
 					str+='<div class="popup text" style="width:calc(100% - 10px);margin-top:8px;display:inline-block">选项四：'+'选项一和选项二组合'+'</div>'; 

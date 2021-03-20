@@ -507,7 +507,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}, player);
 					'step 1'
 					if(result.bool){
-						result.targets[0].draw();
+						result.targets[0].draw(player);
 					}
 				},
 				group:['xianjing_update', 'xianjing_back', 'xianjing_discard'],

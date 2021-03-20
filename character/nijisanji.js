@@ -2716,6 +2716,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//小野町春香
 			nvjiangrouhao:{
+				audio:true,
 				group:['nvjiangrouhao_shaTrigger', 'nvjiangrouhao_distanceTrigger'],
 				subSkill:{
 					shaTrigger:{
@@ -2767,6 +2768,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					distanceTrigger:{
+						audio:'nvjiangrouhao',
 						trigger:{
 							source:'damageSource'
 						},
@@ -2790,119 +2792,184 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			yinlaiyaotang:{
+				audio:3,
 				group:['yinlaiyaotang_phaseUse', 'yinlaiyaotang_loseCheck'],
 				subSkill:{
 					phaseUse:{
 						enable: 'phaseUse',
 						usable: 1,
+						log:false,
 						filter:function(event, player){
 							return player.getCards('h').length > 0;
 						},
 						content:function(){
 							'step 0'
-							player.chooseControl(['cancel2']).set('choiceList',[
-								'你可将任意数量手牌交给你攻击范围内的任意角色',
-								'将任意手牌置于武将牌上'
-							]).set('prompt', '请选择一项').set('ai', function(){
-								return Math.random()>0.5?0:1;
+							player.chooseCardTarget({
+								position:'he',
+								prompt: '###『引徕药汤』###将任意数量手牌交给你攻击范围内的任意角色（指定自己时表示置于武将牌上）', 
+								selectCard:[1, Infinity],
+								filterCard:true,
+								filterTarget:function(card,player,target){
+									return target==player||player.inRange(target);//自己或自己攻击范围内的角色
+								},
+								ai1:function(card){
+									var player = _status.event.player;
+									if(ui.selected.cards.length||player.storage.yinlaiyaotang_phaseUse){
+										var tang = ui.selected.cards.concat(player.storage.yinlaiyaotang_phaseUse);
+										for(var i=0;i<tang.length;i++){
+											if(get.name(tang[i])==card.name)	return 0;
+										}
+									}
+									if(player.needsToDiscard()) return 7.5-get.value(card);
+									return 6-get.value(card);//选牌收益判断
+								},
+								ai2:function(target){
+									if(target!=player)	return get.recoverEffect(target, _status.event.player, _status.event.player);
+									return 1;//选人收益判断
+								},
 							});
 							'step 1'
-							if(result.control!='cancel2'){
-								//选择任意数量手牌
-								player.chooseCard('h', '选择你的手牌',true, [1, player.getCards('h').length||1]);
-								event.selecetedChoice = result.index;
-							}else{
-								event.finish();
-							}
-							'step 2'
 							if(result.bool){
-								//选中的牌
-								event.prepareCards = result.cards.slice(0);
-								if(event.selecetedChoice == 0){
-									event.goto(3);
-									//选择player攻击范围内的角色
-									player.chooseTarget('将选中的手牌交给你攻击范围内的任意角色', true, function(card, player, target){
-										return player.canUse('sha',target);
-									}).set('ai',function(target){
-										return get.damageEffect(target, _status.event.player, _status.event.player);
-									});
+								player.logSkill('yinlaiyaotang');
+								event.cards = result.cards.slice(0);
+								event.target = result.targets[0];
+								if(event.target==player){
+									player.lose(event.cards,ui.special,'toStorage');
+									player.$give(event.cards,player,false);//处理牌动画
+									player.markAuto('yinlaiyaotang_phaseUse',event.cards);//自动标记
 								}else{
-									event.goto(4);
+									event.target.gain(event.cards,player,'gainAuto');
 								}
-							}else{
-								event.finish();
 							}
-							'step 3'
-							if(result.bool&&event.prepareCards&&event.prepareCards.length>0&&result.targets){
-								//选择的角色获得选中的牌
-								var prepareTarget = result.targets[0];
-								prepareTarget.gain(event.prepareCards, player);
-							}
-							event.finish();
-							'step 4'
-							//从手牌移除
-							player.lose(event.prepareCards,ui.special,'toStorage');
-							//同步mark，保存至player.storage.yinlaiyaotang_phaseUse 
-							player.storage.yinlaiyaotang_phaseUse = player.storage.yinlaiyaotang_phaseUse.concat(event.prepareCards);
-							player.syncStorage('yinlaiyaotang_phaseUse');
-							player.markSkill('yinlaiyaotang_phaseUse');
-							game.log(player,'将',event.prepareCards,'置于武将牌上');
+							// 'step 0'
+							// player.chooseControl(['cancel2']).set('choiceList',[
+							// 	'你可将任意数量手牌交给你攻击范围内的任意角色',
+							// 	'将任意手牌置于武将牌上'
+							// ]).set('prompt', '请选择一项').set('ai', function(){
+							// 	return Math.random()>0.5?0:1;
+							// });
+							// 'step 1'
+							// if(result.control!='cancel2'){
+							// 	//选择任意数量手牌
+							// 	player.chooseCard('h', '选择你的手牌',true, [1, player.getCards('h').length||1]);
+							// 	event.selecetedChoice = result.index;
+							// }else{
+							// 	event.finish();
+							// }
+							// 'step 2'
+							// if(result.bool){
+							// 	//选中的牌
+							// 	event.prepareCards = result.cards.slice(0);
+							// 	if(event.selecetedChoice == 0){
+							// 		event.goto(3);
+							// 		//选择player攻击范围内的角色
+							// 		player.chooseTarget('将选中的手牌交给你攻击范围内的任意角色', true, function(card, player, target){
+							// 			return player.canUse('sha',target);
+							// 		}).set('ai',function(target){
+							// 			return get.damageEffect(target, _status.event.player, _status.event.player);
+							// 		});
+							// 	}else{
+							// 		event.goto(4);
+							// 	}
+							// }else{
+							// 	event.finish();
+							// }
+							// 'step 3'
+							// if(result.bool&&event.prepareCards&&event.prepareCards.length>0&&result.targets){
+							// 	//选择的角色获得选中的牌
+							// 	var prepareTarget = result.targets[0];
+							// 	prepareTarget.gain(event.prepareCards, player);
+							// }
+							// event.finish();
+							// 'step 4'
+							// //从手牌移除
+							// player.lose(event.prepareCards,ui.special,'toStorage');
+							// //同步mark，保存至player.storage.yinlaiyaotang_phaseUse 
+							// player.storage.yinlaiyaotang_phaseUse = player.storage.yinlaiyaotang_phaseUse.concat(event.prepareCards);
+							// player.syncStorage('yinlaiyaotang_phaseUse');
+							// player.markSkill('yinlaiyaotang_phaseUse');
+							// game.log(player,'将',event.prepareCards,'置于武将牌上');
 						},
 						init:function(player){
 							if(!player.storage.yinlaiyaotang_phaseUse)player.storage.yinlaiyaotang_phaseUse = [];
 						},
 						intro:{
+							name: '引徕药汤',
 							content:'cards'
+						},
+						ai:{
+							order:5,//决定AI会不会主动释放技能
+							result:{player:0.5},
 						}
 					},
 					loseCheck:{
-						trigger:{global:'loseBegin'},
+						audio:'yinlaiyaotang',
+						trigger:{global:'loseAfter'},
 						forced: true,
 						filter:function(event, player){
 							//在有牌置于武将牌上时继续检查
 							if(!player.storage.yinlaiyaotang_phaseUse)return;
-							//仅对距离为1的角色
-							if(get.distance(player, event.player) == 1){
-								if(!event.cards||!event.cards.length)return false;
-								for(var i=0;i<event.cards.length;++i){
-									//仅查找当前牌的位置为手牌时
-									if(get.position(event.cards[i]) != 'h') continue;
-									//对武将牌上的牌遍历，找到同名牌则通过
-									for(var j=0;j<player.storage.yinlaiyaotang_phaseUse.length;++j){
-										if(player.storage.yinlaiyaotang_phaseUse[j].name == event.cards[i].name){
-											//保存检索的位置信息
-											player.storage.loseCheck = [i, j];
+							if(event.hs&&event.hs.length&&get.distance(player, event.player)==1){
+								var tang = player.storage.yinlaiyaotang_phaseUse;
+								for(var i=0;i<event.hs.length;i++){
+									for(var j=0;j<tang.length;j++){
+										if(get.name(tang[j])==get.name(event.hs[i])){
 											return true;
 										}
 									}
 								}
 							}
-							return false;
+							
+							//仅对距离为1的角色
+							// if(get.distance(player, event.player) == 1){
+							// 	if(!event.cards||!event.cards.length)return false;
+							// 	for(var i=0;i<event.cards.length;++i){
+							// 		//仅查找当前牌的位置为手牌时
+							// 		if(get.position(event.cards[i]) != 'h') continue;
+							// 		//对武将牌上的牌遍历，找到同名牌则通过
+							// 		for(var j=0;j<player.storage.yinlaiyaotang_phaseUse.length;++j){
+							// 			if(player.storage.yinlaiyaotang_phaseUse[j].name == event.cards[i].name){
+							// 				//保存检索的位置信息
+							// 				player.storage.loseCheck = [i, j];
+							// 				return true;
+							// 			}
+							// 		}
+							// 	}
+							// }
+							// return false;
 						},
 						content:function(){
 							'step 0'
-							
-							//其回复1点体力
 							trigger.player.recover();
 							'step 1'
-							
-							//武将牌上的那张牌返回你的手牌
-							//从player.storage.yinlaiyaotang_phaseUse移除该牌
-							var removedCard = player.storage.yinlaiyaotang_phaseUse.splice(player.storage.loseCheck[1], 1)[0];
-							if(player.storage.yinlaiyaotang_phaseUse.length == 0){
-								player.unmarkSkill('yinlaiyaotang_phaseUse');
-							}else{
-								//更新mark
-								player.markSkill('yinlaiyaotang_phaseUse');
+							var hs = trigger.hs
+							var tang = player.storage.yinlaiyaotang_phaseUse;
+							event.cards = [];
+							for(var i=0;i<hs.length;i++){
+								for(var j=0;j<tang.length;j++){
+									if(get.name(tang[j])==get.name(hs[i])){
+										event.cards.push(tang[j]);
+									}
+								}
 							}
-							player.syncStorage('yinlaiyaotang_phaseUse');
-							//获得卡牌
+							player.gain(event.cards,'gain2');
+							player.unmarkAuto('yinlaiyaotang_phaseUse',event.cards);
+							// 'step 1'
+							// var removedCard = player.storage.yinlaiyaotang_phaseUse.splice(player.storage.loseCheck[1], 1)[0];
+							// if(player.storage.yinlaiyaotang_phaseUse.length == 0){
+							// 	player.unmarkSkill('yinlaiyaotang_phaseUse');
+							// }else{
+							// 	//更新mark
+							// 	player.markSkill('yinlaiyaotang_phaseUse');
+							// }
+							// player.syncStorage('yinlaiyaotang_phaseUse');
+							// //获得卡牌
 							
-							player.gain(removedCard,'fromStorage');
-							game.log(player, '从武将牌上获得一张', removedCard);
-							//延时
+							// player.gain(removedCard,'fromStorage');
+							// game.log(player, '从武将牌上获得一张', removedCard);
+							// //延时
 							
-							game.delayx();
+							// game.delayx();
 							'step 2'
 							//你摸一张牌。
 							player.draw();

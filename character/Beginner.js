@@ -55,6 +55,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_InuyamaTamaki:['male','key',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
+			/**OTO */
+			re_OtomeOto: ['female', 'paryi', 3, ['re_yuxia', 'hanyin']],
 
 			/**美波 */
 			re_MinamiNami: ['female','qun',4,['re_longdan']],
@@ -346,7 +348,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						player.logSkill('qingmi');
-						player.draw();
+						player.draw(trigger.player);
 					}
 				}
 			},
@@ -2844,25 +2846,147 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					player:"useCard",
 				},
-				// filter:function(event,player){
-				// 	return event.card
-				// 		&& (
-				// 			get.type(event.card)=='trick'||get.type(event.card)=='basic' 
-				// 			&& !['shan','tao','jiu','du'].contains(event.card.name)
-				// 		)
-				// 		&& game.hasPlayer(function(current){
-				// 			return current!=player && current.countCards('h') < player.countCards('h')
-				// 				&& event.targets.contains(current);
-				// 		});
-				// },
 				content:function(){
 					trigger.directHit.addArray(game.filterPlayer(function(current){
 						return current.countCards('h') < player.countCards('h')
 					}));
 				},
 			},
-
-		   },
+			re_yuxia:{
+				audio:'yuxia',
+				hiddenCard:function(player,name){
+					if(!lib.skill.re_yuxia.filter(false,player))	return false;
+					var list = get.inpile('trick');
+					for(var i=0;i<list.length;i++){
+						if(list[i]==name) return true;
+					}
+					return false;
+				},
+				enable:'chooseToUse',
+				filter:function(event,player){
+					return player.countCards('he')>=3;
+				},
+				chooseButton:{
+					dialog:function(event,player){
+						var list = get.inpile('trick');
+						for(var i=0;i<list.length;i++){
+							list[i]=['锦囊','',list[i]];
+						}
+						return ui.create.dialog('『玉匣』',[list,'vcard']);
+					},
+					filter:function(button,player){
+						return _status.event.getParent().filterCard({name:button.link[2],nature:button.link[3]},player,_status.event.getParent());
+					},
+					check:function(button){
+						var player=_status.event.player;
+						if(player.countCards('h',button.link[2])>0) return 0;
+						if(['wugu','jingluo'].contains(button.link[2])) return 0;
+						var effect=player.getUseValue(button.link[2]);
+						if(effect>0) return effect;
+						return 0;
+					},
+					backup:function(links,player){
+						return {
+							audio:true,
+							filterCard:function(card){
+								return true;
+							},
+							selectCard:3,
+							forceAuto:function(){
+								return ui.selected.buttons.length==3;
+							},
+							popname:true,
+							check:function(card){
+								return 7-get.value(card);
+							},
+							position:'he',
+							viewAs:function(cards,player){
+								var number = 0;
+								for(var i=0;i<cards.length;i++){
+									number+=get.number(cards[i]);
+								}
+								if(number)	return {name:links[0][2],nature:links[0][3],number:number};
+								return {name:links[0][2],nature:links[0][3]};
+							},
+							onuse:function(result,player){
+								player.logSkill('re_yuxia');
+							},
+						}
+					},
+					prompt:function(links,player){
+						return '###『玉匣』###将三张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+					}
+				},
+				ai:{
+					order:6,
+					result:{
+						player:function(player){
+							var players=game.filterPlayer();
+							for(var i=0;i<players.length;i++){
+								if(players[i]!=player&&get.attitude(player,players[i])>0){
+									return 0.5;
+								}
+							}
+							return 0;
+						}
+					},
+				},
+				group:'re_yuxia_after',
+				subSkill:{
+					after:{
+						trigger:{player:'useCardEnd'},
+						priority:66,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return event.cards.length==3&&event.skill=='re_yuxia_backup'&&get.position(event.cards[0])=='d';
+						},
+						content:function(){
+							'step 0'
+							event.cards = trigger.cards;
+							game.broadcastAll(function(player,cards){
+								player.chooseCardButton([0,1],true,cards,'『玉匣』：可以将其中一张牌置于牌堆顶').set('ai',function(button){
+									return get.value(button.link)+Math.random();;
+								});
+							}, player, event.cards);
+							'step 1'
+							if(result.bool&&result.links){
+								var list=result.links.slice(0);
+								event.cards.removeArray(list);
+								while(list.length){
+									ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
+								}
+								game.log(player,'将牌放在牌堆顶')
+								if(event.cards.length){
+									game.cardsDiscard(event.cards);
+									game.log(event.cards,'进入了弃牌堆')
+								}
+							}else{
+								game.cardsDiscard(event.cards);
+								game.log(event.cards,'进入了弃牌堆')
+							}
+						}
+					}
+				},
+			},
+			hanyin:{
+				trigger:{global:['useCard','respond']},
+				frequent:true,
+				filter:function(event,player){
+					if(Array.isArray(event.respondTo)&&event.respondTo[0]==player){
+						console.log(event.respondTo[1])
+						var num = get.number(event.respondTo[1]);
+						return (event.cards&&event.cards.filter(function(i){
+							return get.number(i)<num;
+						}).length)||get.number(event.card)<num;
+					};
+				},
+				content:function(){
+					player.draw();
+				}
+			},
+		},
 		characterReplace:{
 			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
 			ShizukaRin:['re_ShizukaRin','ShizukaRin'],
@@ -2880,6 +3004,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
 			
 			KaguraMea:['re_KaguraMea','KaguraMea'],
+			OtomeOto:['re_OtomeOto','OtomeOto'],
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
@@ -3058,6 +3183,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
 			re_xiaoyan: '嚣言',
 			re_xiaoyan_info: '<font color=#f66>锁定技</font> 你对手牌数小于你的角色使用牌不可被响应。',
+
+			re_OtomeOto: '新·乙女音',
+			re_yuxia: '玉匣',
+			re_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中的一张置于牌堆顶。',
+			hanyin: '瀚音',
+			hanyin_info: '你使用牌被点数小于之的牌响应或抵消时，摸一张牌。',
 
 		   }
 	}
