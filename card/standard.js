@@ -354,7 +354,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					target.recover(event.baseDamage||1);
-					if(get.nature(event.card)=='ocean')	target.changeHujia();
+					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
 				ai:{
 					basic:{
@@ -849,6 +849,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(get.damageEffect(evt.target,evt.player,evt.target)>=0) return 0;
 							if(evt.player.hasSkillTag('notricksource')) return 0;
 							if(evt.target.hasSkillTag('notrick')) return 0;
+							if(evt.target.hp>=2&&evt.player.hasSkillTag('directHit_ai',true,{
+								target:evt.target,
+								card:evt.card,
+							},true)){
+								return 0;
+							}
 							return 11-get.value(card);
 						});
 						next.autochoose=lib.filter.autoRespondSha;
@@ -923,6 +929,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(evt.target.hasSkillTag('noShan')){
 								return -1;
 							}
+							if(evt.target.hp>=2&&evt.player.hasSkillTag('directHit_ai',true,{
+								target:evt.target,
+								card:evt.card,
+							},true)){
+								return 0;
+							}
 						return 11-get.value(card);
 						});
 						next.autochoose=lib.filter.autoRespondShan;
@@ -976,6 +988,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			wuzhong:{
 				audio:true,
 				fullskin:true,
+				nature:['ocean'],
 				type:'trick',
 				enable:true,
 				selectTarget:-1,
@@ -999,6 +1012,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					target.draw(2);
+					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
 				ai:{
 					basic:{
@@ -1017,6 +1031,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			juedou:{
 				audio:true,
 				fullskin:true,
+				nature:['ocean','yami'],
 				type:'trick',
 				enable:true,
 				yingbian_prompt:'你令此牌不可被响应',
@@ -1054,9 +1069,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							var event=_status.event;
 							var player=event.splayer;
 							var target=event.starget;
+							var evt=_status.event.getParent();
 							if(player.hasSkillTag('notricksource')) return 0;
 							if(target.hasSkillTag('notrick')) return 0;
 							if(event.shaRequired>1&&player.countCards('h','sha')<event.shaRequired) return 0;
+							if(evt.target.hp>=2&&evt.player.hasSkillTag('directHit_ai',true,{
+								target:evt.target,
+								card:evt.card,
+							},true)){
+								return 0;
+							}
 							if(event.player==target){
 								if(player.hasSkill('naman')) return -1;
 								if(get.attitude(target,player)<0||event.player.hp<=1){
@@ -1109,10 +1131,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 						else{
 							if(event.turn==target){
-								target.damage(event.baseDamage+event.extraDamage);
+								target.damage(get.nature(event.card),event.baseDamage+event.extraDamage);
 							}
 							else{
-								player.damage(target,event.baseDamage+event.extraDamage);
+								player.damage(get.nature(event.card),event.baseDamage+event.extraDamage);
 							}
 						}
 					}

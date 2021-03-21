@@ -668,13 +668,17 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			qi_skill:{
 				trigger:{player:'useCard1'},
 				filter:function(event,player){
-					return ((event.card.name=='sha'||event.card.name=='tao')&&event.card.nature!='kami');
+					if(!get.info(event.card).nature)	return false;
+					var natures = get.info(event.card).nature.slice(0);
+					natures.remove('kami');
+					if(event.card.nature)	list.remove(event.card.nature);
+					return natures.length;
 				},
 				direct:true,
 				onremove:true,
 				content:function(){
 					'step 0'
-					var list=lib.card[get.name(trigger.card)].nature.slice(0);
+					var list=get.info(trigger.card).nature.slice(0);
 					list.remove('kami');
 					if(trigger.card.nature)	list.remove(trigger.card.nature);
 					list.push('cancel2');
@@ -1017,7 +1021,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		],
 		help:{
 			'化鲸篇':('<div style="margin:10px">海洋与暗影</div><ul style="margin-top:0">'+
-			'<li>当带有护甲的角色受到海洋伤害时，本次伤害+1且不引起传递；而除海【杀】外，其他海洋属性的牌，会使目标额外获得一点护甲。'+
+			'<li>当带有护甲的角色受到海洋伤害时，本次伤害+1且不引起传递；而非伤害类的海洋属性的牌，会使没有护甲的目标额外获得一点护甲。'+
 			'<br><li>一名角色对手牌数多于自己的目标使用暗影属性的牌时，此牌不可被目标响应；暗影属性的牌可以在其他角色的结束阶段对其使用。</ul></ul>'),
 		},
 	}

@@ -18,8 +18,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
 
-			KenmochiDouya: ['male','nijisanji',3,['shenglang','nodao']],
-			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
+			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
 
 			/**测试用角色 */
 			Ruki: ['female','VirtuaReal',4,['beixie','hunzhan']],
@@ -443,6 +442,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//ggl
 			shengya:{
+				audio:4,
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=true;
 				},
@@ -584,6 +584,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//miu
 			guanzhai:{
+				audio:5,
 				trigger:{global:'phaseEnd'},
 				priority:997,
 				prompt2:function(event,player){
@@ -621,6 +622,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				onremove:true,
 			},
 			zhishu:{
+				audio:3,
 				trigger:{player:['phaseUseBegin','changeHp']},
 				priority:997,
 				filter:function(event,player){
@@ -697,7 +699,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					backup:function(links,player){
 						return {
-							audio:true,
+							audio:'yuxia',
 							filterCard:function(card){
 								return true;
 							},
@@ -711,9 +713,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							},
 							position:'he',
 							viewAs:{name:links[0][2],nature:links[0][3]},
-							onuse:function(result,player){
-								player.logSkill('yuxia');
-							},
 						}
 					},
 					prompt:function(links,player){
@@ -1205,7 +1204,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(event.target)+get.cnNumber(event.target.hp)+'张牌',event.target,event.target.hp,true,'he');
 						}else if(result.suit=='heart'){
 							game.playAudio('skill','niaoji_heart'+Math.ceil(3*Math.random()));
-							player.draw(player.hp);
+							player.draw(player.maxHp-player.hp);
 						}
 					}
 				},
@@ -2914,7 +2913,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					basic:{
 						order:10
-					}
+					},
+					directHit_ai:true,
+					skillTagFilter:function(player,tag,arg){
+						if(tag=='directHit_ai'){
+							if(arg&&get.name(arg.card)=='juedou') return true;
+							return false;
+						}
+					},
 				},
 				group:'shenglang_drawBy',
 				subSkill:{
@@ -2923,17 +2929,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:7,
 						direct:true,
 						filter:function(event,player){
-							if(!player.getStat().card.juedou)	return false
-							var num = 0;
+							var num = 0,going = 0;
 							game.getGlobalHistory('cardMove',function(evt){
 								if(evt==event||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
 								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+								if(evt.player==player)	going++;
 								for(var i=0;i<evt.cards.length;i++){
 									var card=evt.cards[i];
-									if(get.name(card)=='sha')	num++;
+									if(get.name(card)=='sha'&&get.suit(card)=='spade')	num++;
 								}
 							},event);
-							return num>0;
+							return going&&num;
 						},
 						content:function(){
 							var num = 0;
@@ -2942,7 +2948,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 								for(var i=0;i<evt.cards.length;i++){
 									var card=evt.cards[i];
-									if(get.name(card)=='sha')	num++;
+									if(get.name(card)=='sha'&&get.suit(card)=='spade')	num++;
 								}
 							},event);
 							event.num = num;
@@ -4558,7 +4564,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Yousa: '泠鸢',
 			niaoji: '鸟肌',
-			niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸等同你当前体力值的牌；若为♠️，你弃置目标/来源等同于其当前体力值的牌。',
+			niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸等同你已损失体力值的牌；若为♠️，你弃置目标/来源等同于其当前体力值的牌。（X为你已损失的体力值+1）',
 			ysxiangxing: '翔星',
 			ysxiangxing_info: '出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对攻击范围内一名角色造成1点伤害。',
 
@@ -4598,7 +4604,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			KenmochiDouya: '剑持刀也',
 			shenglang: '声浪燃烈',
-			shenglang_info: '出牌阶段限一次，你可以将一张【杀】当【决斗】使用，你使用过【决斗】的回合结束时，你摸等同于该回合进入弃牌堆的【杀】数量的牌。',
+			shenglang_info: '出牌阶段限一次，你可以将一张【杀】当【决斗】使用。你失去过牌的回合结束时，摸等同于该回合进入弃牌堆的♠【杀】数量的牌',
 			nodao: '无刀之咎',
 			nodao_info: '你没有装备武器时，可以于出牌阶段重铸【杀】，若你以此法获得武器牌，你可以立即装备之并回复1点体力。',
 

@@ -18,6 +18,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_Nekomasu: ['female', 'qun', 3, ['milijianying', 're_dianyin']],
 			/**下地 */
 			re_XiaDi: ['male', 'qun', 4, ['re_yinliu', 'dunzou']],
+
 			/**物述有栖 */
 			re_MononobeAlice:['female','nijisanji',3,['tinenghuifu1','re_dianmingguzhen']],
 			/**静凛 */
@@ -475,6 +476,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.logSkill('dianyin');
 						event.goto(1);
 					}
+				},
+				ai:{
+					maixie:true,
 				},
 			},
 			//reYuNi
@@ -2855,7 +2859,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_yuxia:{
 				audio:'yuxia',
 				hiddenCard:function(player,name){
-					if(!lib.skill.re_yuxia.filter(false,player))	return false;
+					if(!lib.skill.re_yuxia.filter(false,player)||player.getStat('skill').re_yuxia)	return false;
 					var list = get.inpile('trick');
 					for(var i=0;i<list.length;i++){
 						if(list[i]==name) return true;
@@ -2864,7 +2868,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				enable:'chooseToUse',
 				filter:function(event,player){
-					return player.countCards('he')>=3;
+					return player.countCards('he')>=3&&!player.getStat('skill').re_yuxia;
 				},
 				chooseButton:{
 					dialog:function(event,player){
@@ -2887,7 +2891,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					backup:function(links,player){
 						return {
-							audio:true,
+							audio:'yuxia',
 							filterCard:function(card){
 								return true;
 							},
@@ -2907,9 +2911,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 								if(number)	return {name:links[0][2],nature:links[0][3],number:number};
 								return {name:links[0][2],nature:links[0][3]};
-							},
-							onuse:function(result,player){
-								player.logSkill('re_yuxia');
 							},
 						}
 					},
@@ -2975,7 +2976,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				frequent:true,
 				filter:function(event,player){
 					if(Array.isArray(event.respondTo)&&event.respondTo[0]==player){
-						console.log(event.respondTo[1])
 						var num = get.number(event.respondTo[1]);
 						return (event.cards&&event.cards.filter(function(i){
 							return get.number(i)<num;
@@ -2984,7 +2984,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					player.draw();
-				}
+				},
+				ai:{
+					directHit_ai:true,
+					skillTagFilter:function(player,tag,arg){
+						if(tag=='directHit_ai'&&arg){
+							if(get.attitude(arg.target,player)>0) return false;
+							return get.number(arg.card)&&get.number(arg.card)>=13;
+						}
+					},
+				},
 			},
 		},
 		characterReplace:{

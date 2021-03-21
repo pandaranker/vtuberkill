@@ -1189,7 +1189,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tulong: '屠龙伐彼',
 			tulong_info: '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。',
 
-			sp_GawrGura: '皇•嘎呜·古拉',
+			sp_GawrGura: '皇•噶呜·古拉',
 			sp_guaisheng: '海洋怪声',
 			sp_guaisheng_info: '当一名角色造成海洋伤害时，你可选择以下任意项构成未执行过的组合以执行：1.令一名角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性。然后若你执行过所有的组合，获得1点护甲，重置此技能。',
 			sp_guiliu: '百川归流',
