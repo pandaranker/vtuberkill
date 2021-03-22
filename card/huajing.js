@@ -671,7 +671,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					if(!get.info(event.card).nature)	return false;
 					var natures = get.info(event.card).nature.slice(0);
 					natures.remove('kami');
-					if(event.card.nature)	list.remove(event.card.nature);
+					if(event.card.nature)	natures.remove(event.card.nature);
 					return natures.length;
 				},
 				direct:true,

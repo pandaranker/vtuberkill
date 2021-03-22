@@ -9620,6 +9620,7 @@
 							case 'paryi':m++;if(lib.config.banned.contains(i)) sm++;break;
 							case 'kagura':n++;if(lib.config.banned.contains(i)) sn++;break;
 							case 'nanashi':n++;if(lib.config.banned.contains(i)) so++;break;
+							case 'psp':n++;if(lib.config.banned.contains(i)) sp++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -10109,6 +10110,7 @@
 			paryi:'帕',
 			kagura:'神楽',
 			nanashi:'774',
+			psp:'P',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -10125,6 +10127,7 @@
 			paryi2:'帕里',
 			kagura2:'神楽组',
 			nanashi2:'774inc',
+			psp2:'P-SP',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -10152,6 +10155,7 @@
 			VirtuaRealColor:"#77aaee",
 			kaguraColor:"#55deef",
 			nanashiColor:"#e27b6b",
+			nanashiColor:"#4d3d11",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -25853,7 +25857,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 16;
+					if(!lib.character[name]) return 17;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -25870,7 +25874,8 @@
 					if(lib.character[name][1]=='VirtuaReal') return 12;
 					if(lib.character[name][1]=='kagura') return 13;
 					if(lib.character[name][1]=='nanashi') return 14;
-					return 15;
+					if(lib.character[name][1]=='psp') return 15;
+					return 16;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -28249,7 +28254,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi','psp'],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
 		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{
@@ -28269,6 +28274,7 @@
 			paryi:'ice',
 			kagura:'ocean',
 			nanashi:'wood',
+			psp:'fire',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 		quickVoice:[
@@ -37957,7 +37963,8 @@
 							if(info[name][1]=='paryi') return 13;
 							if(info[name][1]=='kagura') return 14;
 							if(info[name][1]=='nanashi') return 15;
-							return 16;
+							if(info[name][1]=='psp') return 16;
+							return 17;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -42948,7 +42955,7 @@
 				},true,true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi',function(link,node){//'wei','shu','wu','western',
+				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp',function(link,node){//'wei','shu','wu','western',
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -43375,7 +43382,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi'];//'wei','shu','wu',
+					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -43607,7 +43614,8 @@
 						if(lib.character[name][1]=='VirtuaReal') return 10;
 						if(lib.character[name][1]=='kagura') return 11;
 						if(lib.character[name][1]=='nanashi') return 12;
-						return 13;
+						if(lib.character[name][1]=='psp') return 13;
+						return 14;
 					}
 				}
 				list.sort(function(a,b){
@@ -53124,7 +53132,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp'];
 		},
 		types:function(){
 			var types=[];

@@ -1202,6 +1202,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					"step 3"
 					if(result.bool&&result.links&&result.links.length)	event.linkcards=result.links.slice(0);
+					else	event.finish();
 					game.delay();
 					'step 4'
 					var cards=event.linkcards;
@@ -1654,8 +1655,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 1.5-(target.countCards('h')/2);
 						},
 						target:function(player,target){
-							if(player.countCards('h')==1)	return -1;
-							return 1;
+							if(player.countCards('h')==1||target.countCards('h')<=1)	return -1;
+							return 0.5;
 						}
 					}
 				},

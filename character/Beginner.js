@@ -722,7 +722,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				clickableFilter:function(player){
-					return player.storage.gwjingtian==true&&player.countDiscardableCards('h');
+					return player.storage.yayun==true&&player.countDiscardableCards(player,'h');
 				},
 				laohuji:function(player){
 					console.log('Outter')
@@ -732,7 +732,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						'step 0'
 						var audio = [player.name,player.name1,player.name2].contains('re_NijikawaRaki');
 						player.logSkill('yayun',true,true,true,audio);
-						event.discards = player.getDiscardableCards('h');
+						event.discards = player.getDiscardableCards(player,'h');
 						player.discard(event.discards);
 						if(event.discards.length==0)	event.finish();
 						else event.cards = [];
@@ -793,7 +793,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.isUnderControl(true)){
 							if(_status.gameStarted){
 								if(player.storage.yayun){
-									dialog.add(ui.create.div('.menubutton.pointerdiv','点击发动',function(){
+									if(!player.getDiscardableCards(player,'h'))		dialog.addText('不可发动');
+									else	dialog.add(ui.create.div('.menubutton.pointerdiv','点击发动',function(){
 										if(!this.disabled){
 											this.disabled=true;
 											this.classList.add('disabled');
@@ -1992,6 +1993,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					"step 2"
 					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
+					else	event.finish();
 					game.delay();
 					'step 3'
 					var cards=event.linkcards;

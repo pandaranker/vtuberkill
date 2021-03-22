@@ -7,7 +7,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**长尾景 */
 			NagaoKei:['male','nijisanji',3,['fumo','chidu']],
 			/**白神遥 */
-			ShirakamiHaruka:['female','qun',3,['baoxiao','quru']],
+			ShirakamiHaruka:['female','psp',3,['baoxiao','quru']],
 			/**海狗 */
 			KisaragiKoyori:['female','kagura',3,['shinve','juzu']],
 			/**鲨皇 */
@@ -230,6 +230,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:22,
 						filter:function(event,player){
 							return player.hujia&&event.getParent().skill=='quru';
+						},
+						prompt2:function(event,player){
+							return '你可以失去所有护甲，令'+get.translation(event.player)+'伤害等量增加';
 						},
 						content:function(){
 							'step 0'
@@ -1153,7 +1156,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			baoxiao_info: '<font color=#f66>锁定技</font> 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。',
 			quru: '取乳',
 			quru_info: '出牌阶段，你可以将两张非基本牌当作海【杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。',
-			quru_addDam_info: '你可以失去所有护甲，令此伤害等量增加。',
 
 			KisaragiKoyori: '如月こより',
 			shinve: '尸虐',

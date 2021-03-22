@@ -101,7 +101,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				enable:function(card,player){
 					return player.identity=='fan';
 				},
-				selectTarget:1,
+				selectTarget:-1,
 				filterTarget:function(card,player,target){
 					return target.identity=='zhu';
 				},
@@ -328,7 +328,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['loseAfter']},
 				forced:true,
 				filter:function(event,player){
-					if(_status.currentPhase.identity=='zhu') return false;
+					if(_status.currentPhase&&_status.currentPhase.identity=='zhu') return false;
 					if(player.isPhaseUsing()) return false;
 					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
 					for(var i=0;i<event.cards.length;i++){
@@ -351,7 +351,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['loseAfter']},
 				forced:true,
 				filter:function(event,player){
-					if(_status.currentPhase.identity=='zhu') return false;
+					if(_status.currentPhase&&_status.currentPhase.identity=='zhu') return false;
 					if(player.isPhaseUsing()) return false;
 					if(!(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard')))	return false;
 					for(var i=0;i<event.cards.length;i++){
