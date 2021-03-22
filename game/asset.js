@@ -581,6 +581,7 @@ window.noname_asset_list=[
 	'image/card/group_paryi.png',
 	'image/card/group_kagura.png',
 	'image/card/group_nanashi.png',
+	'image/card/group_psp.png',
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',
 	'image/card/kamome_suitcase.png',
