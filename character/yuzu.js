@@ -4557,15 +4557,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					pcr:{
 						onremove:function(player,skill){
-							if(player.hasSkill('P_SP')&&player.storage[skill]&&player.storage.P_SP.contains(player.storage[skill])){
+							if(player.storage[skill]&&player.storage.P_SP.contains(player.storage[skill])){
+								console.log(player.storage[skill])
 								player.storage.P_SP.remove(player.storage[skill]);
-								delete player.storage[skill]
 								if(player.storage.P_SP.length==0){
 									player.unmarkSkill('P_SP');
 								}else{
 									player.markSkill('P_SP');
 								}
 							}
+							delete player.storage[skill]
 						}
 					},
 				}
@@ -4622,7 +4623,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'erni_change',
 				subSkill:{
 					change:{
-						trigger:{global:['shouruAfter','chonghuangAfter','quruAfter','tianlveAfter','luxianAfter']},
+						trigger:{global:['shouruAfter','chonghuangAfter','baoxiaoAfter','tianlveAfter','luxianAfter']},
 						priority:199,
 						prompt2:'转换一次『耳匿』',
 						filter:function(event,player){
@@ -4643,18 +4644,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:true,
 				trigger:{player:['damageAfter','useCardAfter']},
 				priority:199,
-				//direct:true,
+				frequent:true,
 				filter:function(event,player){
 					if(player.storage.shouru_clear&&player.storage.shouru_clear.contains(event.name))	return false;
-					return event.name=='useCard'&&event.skill=='erni'&&game.hasPlayer(function(cur){
-						return _status.currentPhase.inRange(cur)&&cur.countCards('hej');
+					return (event.name=='damage'||event.name=='useCard'&&event.skill=='erni')&&game.hasPlayer(function(cur){
+						return cur!=player&&get.distance(_status.currentPhase,cur,'pure')==1&&cur.countCards('hej');
 					});
 				},
 				content:function(){
 					'step 0'
 					event.source = trigger.player;
 					player.chooseTarget(get.prompt2('shouru'),function(card,player,target){
-						return _status.currentPhase.inRange(target)&&target.countCards('hej');
+						return target!=player&&get.distance(_status.currentPhase,target,'pure')==1&&target.countCards('hej');
 					},function(target){
 						var player = _status.event.player;
 						return 8-get.attitude(target,player,player);
@@ -4756,6 +4757,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					kamen:{
 						onremove:function(player,skill){
+							console.log(player.storage.P_SP)
 							if(player.hasSkill('P_SP')&&player.storage[skill]&&player.storage.P_SP.contains(player.storage[skill])){
 								player.storage.P_SP.remove(player.storage[skill]);
 								delete player.storage[skill]
@@ -4780,12 +4782,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:'P',
 				intro:{
 					onunmark:function(storage,player){
-						_status.characterlist.addArray(storage.character);
+						_status.characterlist.addArray(storage);
 						storage=[];
 					},
 					mark:function(dialog,storage,player){
 						if(storage&&storage.length){
-							console.log(storage)
 							dialog.addText('已叠加：'+get.cnNumber(storage.length)+'位P-SP角色');
 							dialog.addSmall([storage,'character']);
 						}

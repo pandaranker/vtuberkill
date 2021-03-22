@@ -208,7 +208,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.position(card)=='h')	hu.add(card);
 						if(get.position(card)=='e')	eu.add(card);
 					})
-					if(hu.length==hs.length||eu.length==es.length)	player.changeHujia();
+					if((hu.length&&hu.length==hs.length)||(eu.length&&eu.length==es.length))	player.changeHujia();
 				},
 				mod:{
 					aiOrder:function(player,card,num){
