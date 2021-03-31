@@ -4,6 +4,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'clubs',
 		connect:true,
 		character:{
+			/**阿梓 */
+			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu']],
 			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
@@ -27,12 +29,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			OtomeOto:['female','paryi',3,['yuxia','qiepian','changxiang'],['zhu']],
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
+			/**真白花音 */
+			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
+
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
 			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
 			/*黑川*/
 			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai']],//, 'mingyunniezao'
+			/**进击的冰糖 */
+			bingtang: ['female', 'qun', 4, ['xiou']],
+			/**张京华 */
+			zhangjinghua: ['female', 'qun', 3, ['xiemen', 'jiai']],
 		},
 		characterSort:{
 			clubs:{
@@ -2110,6 +2119,460 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.finish();
 						}
 				}
+			},
+			//真白花音
+			chenzhu:{
+				intro:{
+					name: '辰铸',
+					content: 'cards'
+				},
+				init:function(player){
+					if(!player.storage.chenzhu)player.storage.chenzhu = [];
+				},
+				group: ['chenzhu_useWeapon', 'chenzhu_phaseBegin'],
+				subSkill:{
+					useWeapon:{
+						trigger:{global:'useCardEnd'},
+						direct: true,
+						filter:function(event, player){
+							//使用武器牌
+							return get.subtype(event.cards[0])=='equip1';
+						},
+						content:function(){
+							//牌堆顶一张牌
+							var cards = get.cards();
+							//置于武将牌上
+							player.markAuto('chenzhu', cards);
+
+							player.$draw(cards);
+							game.log(player, '将', cards, '置于武将牌上');
+						}
+					},
+					phaseBegin:{
+						trigger:{global:'phaseBegin'},
+						filter:function(event, player){
+							//回合开始的角色有装备武器牌
+							return player.storage.chenzhu&&player.storage.chenzhu.length
+							&&event.player&&event.player.getCards('e', {subtype:'equip1'}).length > 0;
+						},
+						content:function(){
+							'step 0'
+							if(player.storage.chenzhu&&player.storage.chenzhu.length>0){
+								player.chooseButton(['从武将牌上选择一张牌', player.storage.chenzhu], 1, true);
+							}else{
+								event._result = {bool: false};
+							}
+							'step 1'
+							if(result.bool){
+								//从武将牌上选择一张牌
+								var cards = result.links;
+								player.gain(cards,'gain2');
+								player.unmarkAuto('chenzhu',cards);
+							}
+							'step 2'
+							//获取武器牌名
+							var weapon = trigger.player.getCards('e', {subtype:'equip1'})[0];
+							var oriName = weapon.name;
+							var weaponCards = [];
+							
+							for(var i=0;i<lib.inpile.length;++i){
+								if(get.subtype(lib.inpile[i]) == 'equip1') {
+									weapon.name = lib.inpile[i];
+									weaponCards.push(game.createCard(weapon));
+								}
+							}
+							weapon.name = oriName;
+
+							if(!weaponCards.length){
+								event.finish();
+								return;
+							}
+							if(!trigger.player.storage.chenzhu_weaponNameTemp)trigger.player.storage.chenzhu_weaponNameTemp = {};
+							trigger.player.storage.chenzhu_weaponNameTemp.card = weapon;
+							trigger.player.storage.chenzhu_weaponNameTemp.oriName = oriName;
+							event.weapon = weapon;
+							//选择一个武器牌名
+							player.chooseButton(['将'+get.translation(weapon)+'改变为：', weaponCards], true, 1);
+							'step 3'
+							if(result.bool){
+								//更新武器牌
+								game.broadcastAll(function(card, name){
+									if(card&&name){
+										card.name = name;
+										card.init(card);
+									}
+								}, event.weapon, result.links[0].name);
+								//直到下一回合
+								trigger.player.addTempSkill('chenzhu_weaponNameTemp', {player:'phaseAfter'});
+							}else{
+								delete player.storage.chenzhu_weaponNameTemp;
+							}
+						}
+					},
+					weaponNameTemp:{
+						onremove:function(player){
+							if(!player.storage.chenzhu_weaponNameTemp){
+								return;
+							}
+							//恢复原武器牌
+							game.broadcastAll(function(card, name){
+								if(card&&name){
+									card.name = name;
+									card.init(card);
+								}
+							}, player.storage.chenzhu_weaponNameTemp.card, player.storage.chenzhu_weaponNameTemp.oriName);
+							delete player.storage.chenzhu_weaponNameTemp;
+						}
+					}
+				}
+			},
+			yutuo:{
+				audio:2,
+				mark: true,
+				trigger:{player: 'damageBegin'},
+				filter:function(event, player){
+					return !player.hasSkill('yutuo_disableTag');
+				},
+				content:function(){
+					'step 0'
+					player.addSkill('yutuo_disableTag');
+					//令你受到的伤害-1
+					--trigger.num;
+					//如果有其他未废除的装备栏，则废除当前栏；
+					//否则结束事件
+					var cntDisabled = player.countDisabled();
+					if(!player.isDisabled(player.storage.yutuo))++cntDisabled;
+					
+					if(cntDisabled<5&&!player.getCards('e', {subtype:'equip'+player.storage.yutuo}).length ){
+						//player.disableEquip(player.storage.yutuo);
+					}else{
+						event.finish();
+						return;
+					}
+					//equip list
+					var list=[];
+					for(var i=1;i<6;i++){
+						if(i==player.storage.yutuo)continue;
+						if(player.isDisabled(i)) continue;
+						list.push('equip'+i);
+					}
+					list.push('cancel2');
+					//选择一个其他未废除的装备栏
+					var next=player.chooseControl(list);
+					next.set('prompt','请选择一个其他未废除的装备栏');
+					next.set('ai', function(event,player,list){
+						var list = _status.event.list;
+						if(list) return list.randomGet();
+						return 'cancel2';
+					}).set('list', list);
+					'step 1'
+					if(!result.control||result.control=='cancel2'){
+						event.finish();
+						return;
+					}
+					player.disableEquip(player.storage.yutuo);
+					player.storage.yutuo = parseInt(result.control[5]);
+					player.syncStorage('yutuo');
+					player.markSkill('yutuo');
+					player.removeSkill('yutuo_disableTag');
+				},
+				init:function(player){
+					if(!player.storage.yutuo)player.storage.yutuo=2;
+					player.syncStorage('yutuo');
+					player.markSkill('yutuo');
+				},
+				intro:{
+					content:function(storage,player){
+						
+						var pos={equip1:'武器栏',equip2:'防具栏',equip3:'+1马栏',equip4:'-1马栏',equip5:'宝物栏'}['equip'+storage];
+						if(pos) return '若你的<'+pos+'>没有牌，你可废除<'+pos+'>并以一个未废除的装备栏修改<'+pos+'>，重置此技能。';
+					}
+				},
+				group: 'yutuo_reset',
+				subSkill:{
+					disableTag:{},
+					reset:{
+						direct: true,
+						log: false,
+						trigger:{global:'roundStart'},
+						content:function(){
+							player.removeSkill('yutuo_disableTag');
+						}
+					}
+				}
+			},
+			//进击的冰糖 bintang
+			xiou:{
+				audio:5,
+				group: 'xiou_gainHand',
+				init:function(player){
+					player.storage.xiou = {};
+				},
+				subSkill:{
+					gainHand:{
+						audio:'xiou',
+						trigger:{player: 'phaseZhunbeiBegin' },
+						filter:function(event, player){
+							return player.getCards('he').length > 0;//手牌或装备牌至少有一张可弃置时，才可以触发
+						},
+						content:function(){
+							'step 0'
+							player.chooseToDiscard('弃置一张牌', true).set('ai', function(card){
+								return 8 - get.value(card);
+							});
+							'step 1'
+							var filterTarget = function(card,player,target){
+								return player!=target&&target.getCards('he').length> 0;
+							};
+							var players = game.players.slice(0);
+							var card = get.card();
+							for(var i=0;i<players.length;++i){ //遍历角色
+								if(filterTarget(card, player, players[i])){
+									break;
+								}
+							}
+							if(i>=players.length){ //如果没有可选角色就结束事件
+								event.finish();
+								return;
+							}
+							player.chooseTarget(
+								'选择一名其他角色，获取其所有手牌',
+								filterTarget, true
+							).set('ai', function(target){
+								var evt = _status.event;
+								var att = get.attitude(evt.player, target);
+								if(evt.player == target||att>0) return Math.random()-1;
+								return 10 - att + target.getCards('h').length;
+							});
+							'step 2'
+							var p1 = result.targets[0];
+							//添加临时技能xiou_phaseJieshuTrigger
+							player.addTempSkill('xiou_phaseJieshuTrigger', 'phaseJieshuAfter');
+							player.storage.xiou.p1 = p1;
+							//获取其所有手牌
+							var hardCards = p1.getCards('h');
+							if(!hardCards||!hardCards.length){
+								event.finish();
+								return;
+							}
+							//暂存P1和P1手牌数量
+							event.p1HandCardCount = hardCards.length;
+							event.p1 = p1;
+							//调用gain获取P1手牌
+							player.gain(hardCards, p1, 'giveAuto', 'bySelf');
+							'step 3'
+							var cnt = player.getCards('he').length;
+							cnt = Math.min(event.p1HandCardCount, cnt);
+							if(cnt>0){
+								//选择等量(如果不足则全部)的牌
+								player.chooseCard('he', cnt, '交给'+get.translation(event.p1)+get.cnNumber(cnt)+'张牌', true).set('ai', function(card){
+									return 8 - get.value(card) + Math.random()*2;
+								});
+							}else{
+								event.finish();
+							}
+							'step 4'
+							//选择的牌交给P1
+							event.p1.gain(result.cards, player, 'giveAuto');
+						}
+					},
+					phaseJieshuTrigger:{
+						audio:'xiou',
+						trigger:{player:'phaseJieshuBegin'},
+						log: false,
+						prompt2: function(event, player){
+							if(player.storage.xiou&&player.storage.xiou.p1)
+								return '你与'+get.translation(player.storage.xiou.p1)+'各摸一张牌';
+							return '你与其各摸一张牌';  
+						},
+						filter:function(event, player){
+							//伤害’次数
+							var dCnt = 0;
+							player.getHistory('sourceDamage',function(evt){
+								if(evt.player==player.storage.xiou.p1)	++dCnt;
+							});
+							//本回合没有造成伤害
+							return dCnt <=0;
+						},
+						content:function(){
+							//各摸一张牌
+							game.asyncDraw([player,player.storage.xiou.p1]);
+							// //你摸一张牌
+							// player.draw();
+							// //P1摸一张牌
+							// if(!player.storage.xiou)return;
+							// if(player.storage.xiou.p1)player.storage.xiou.p1.draw();
+							//清除storage
+							delete player.storage.xiou.p1;
+						},
+						ai:{
+							expose:0.1,
+						},
+					}
+				}
+			},
+			//张京华 zhangjinghua
+			xiemen:{
+				trigger:{
+					player: ['useCardBegin', 'respondBegin'], //你使用或打出牌时
+				},
+				frequent: true,
+				content:function(){
+					var players = game.players.slice(0);//遍历角色
+					for(var i=0;i<players.length;++i){
+						var p = players[i];
+						//跳过自己
+						if(p == player) continue;
+						//随机获得角色p的一张手牌
+						var card = p.getCards('h').randomGet();
+						if(!card) continue;//没有手牌则跳过
+						if(!p.storage.xiemen_reset)p.storage.xiemen_reset=[];
+						p.storage.xiemen_reset.push(card);
+						p.lose(card, ui.special, 'toStorage');
+						p.$throw(card,null,'nobroadcast');
+						game.log(p, '移除一张', card);
+						//角色p添加临时技能xiemen_reset，用于在回合结束时重新获得被移除的手牌
+						if(!p.hasSkill('xiemen_reset')) p.addSkill('xiemen_reset');
+						p.markAuto('xiemen_reset', card);
+					}
+				},
+				subSkill:{
+					reset:{
+						trigger:{
+							global: 'phaseEnd'
+						},
+						direct: true,
+						content:function(){
+							if(player.storage.xiemen_reset){
+								player.gain(player.storage.xiemen_reset, 'gain2', 'fromStorage');
+							}
+							player.unmarkAuto('xiemen_reset', player.storage.xiemen_reset);
+							player.removeSkill('xiemen_reset');
+						},
+						intro:{
+							name: '斜门',
+							content:'cards'
+						}
+					}
+				}
+
+			},
+			jiai:{
+				audio:5,
+				enable: ['chooseToUse','chooseToRespond'],
+				hiddenCard:function(player,name){
+					var event = _status.event;
+					var filterCard = event.filterCard||function(card, player, event){
+						return true;
+					};
+					var jiaiCards = lib.skill.jiai.jiaiCards.slice(0);
+					for(var i=0;i<jiaiCards.length;++i){
+						if(!filterCard(jiaiCards[i], player, event)){
+							jiaiCards.splice(i--, 1);
+						}
+					}
+					for(var i=0; i< lib.inpile.length;++i){
+						if( get.type(lib.inpile[i]) != 'basic') continue;
+						var card = {name: lib.inpile[i]};
+						if( filterCard(card, player, event)){
+							jiaiCards.push(card);
+						}
+						
+					}
+					if(!jiaiCards.contains(name)||player.getCards('h').length<2) return false;
+					return true;
+				},
+				filter:function(event, player){
+					if( player.getCards('h').length < 2) return false;
+					var filterCard = event.filterCard||function(card, player, event){
+						return true;
+					};
+					var jiaiCards = lib.skill.jiai.jiaiCards.slice(0);
+					for(var i=0;i<jiaiCards.length;++i){
+						if(!filterCard(jiaiCards[i], player, event)){
+							jiaiCards.splice(i--, 1);
+						}
+					}
+					for(var i=0; i< lib.inpile.length;++i){
+						if( get.type(lib.inpile[i]) != 'basic') continue;
+						var card = {name: lib.inpile[i]};
+						if( filterCard(card, player, event)){
+							jiaiCards.push(card);
+						}
+						
+					}
+					return jiaiCards.length>0; 
+				},
+				//如果需要非普通牌，可以在这里添加
+				jiaiCards:[
+					// {name:'sha', nature:'yami'},
+				],
+				chooseButton:{
+					dialog:function(event,player){
+						//选择可使用的基本牌，使用或打出
+						var jiaiCards = lib.skill.jiai.jiaiCards.slice(0);
+						for(var i=0;i<jiaiCards.length;++i){
+							if(!event.filterCard(jiaiCards[i], player, event)){
+								jiaiCards.splice(i--, 1);
+							}
+						}
+						for(var i=0; i< lib.inpile.length;++i){
+							if( get.type(lib.inpile[i]) != 'basic') continue;
+							var card = {name: lib.inpile[i]};
+							if( event.filterCard(card, player, event)){
+								jiaiCards.push(card);
+							}
+							
+						}
+						return ui.create.dialog('###『集爱』###选择一张基本牌',[jiaiCards,'vcard'],'hidden');
+					},
+					check:function(button){
+						var player=_status.event.player;
+						var card={name:button.link.name, nature: button.link.nature};
+						if(_status.event.getParent().type!='phase'||game.hasPlayer(function(current){
+							return player.canUse(card,current)&&get.effect(current,card,player,player)>0;
+						})){
+							return Math.random()*5;
+						}
+						return 0;
+					},
+					backup:function(links,player){
+						//将两张手牌当作选择的基本牌
+						return {
+							audio:'jiai',
+							selectCard:2,
+							position:'h',
+							filterCard:function(card, player, target){
+								return true;
+							},
+							check:function(card,player,target){
+								if(!ui.selected.cards.length&&get.type(card)=='basic') return 6;
+								else return 6-get.value(card);
+							},
+							viewAs:{name:links[0].name, nature: links[0].nature},
+							onrespond:function(result, player){
+								//当你以此法响应其他角色使用的牌时，摸一张牌
+								if(_status.event.getParent('phase').player!=player)player.draw();
+							}
+						}
+					},
+					prompt:function(links,player){
+						var str = '使用或打出';
+						if(_status.event.name == 'chooseToUse')str='使用';
+						else if(_status.event.name == 'chooseToRespond')str = '打出';
+						return '选择两张手牌当作'+get.translation(links[0])+str;
+					}
+				},
+				ai:{
+					order: 0.5,
+					respondSha:true,
+					respondShan:true,
+					respondTao:true,
+					result:{
+						player: 1
+					}
+				},
+				
 			}
 		},
 		characterReplace:{
@@ -2118,6 +2581,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Siro:['re_Siro','Siro'],
 			Nekomasu:['re_Nekomasu','Nekomasu'],
 			XiaDi:['re_XiaDi','XiaDi'],
+			KaguraMea:['re_KaguraMea','KaguraMea'],
+			OtomeOto:['re_OtomeOto','OtomeOto'],
 		},
 		translate:{
 			
@@ -2168,6 +2633,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			enfan_info: '发动过“啾猫”的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力',
 			shiqi: '势起',
 			shiqi_info: '<font color=#f66>锁定技</font> 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
+
+			MashiroKanon: '真白花音',
+			chenzhu: '辰铸',
+			chenzhu_info: '有武器牌被使用时，你将牌堆顶牌置于你的武将牌上。装备武器的角色的回合开始时，你可获得武将牌上的一张牌，改变其武器牌名直到回合结束。',
+			yutuo: '玉托',
+			yutuo_info: '每轮限一次，你可以令你受到的伤害-1，然后若你的<防具栏>没有牌，你可废除<>并以一个未废除的装备栏修改<>，重置此技能。', 
+			
+			bingtang: '进击的冰糖',
+			xiou: '戏偶',
+			xiou_info: '准备阶段，你可以弃置一张牌，获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
+			xiou_gainHand_info: '准备阶段，你可以弃置一张牌，获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
+
+			zhangjinghua: '张京华',
+			xiemen: '斜门',
+			xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
+			jiai: '集爱',
+			jiai_info: '你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
 
 			XiaDi: '下地',
 			yinliu: '引流',

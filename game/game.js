@@ -4331,6 +4331,7 @@
 							else{
 								map.double_hp.hide();
 							}
+							map.continue_game.show();
 						}
 						else if(config.identity_mode=='purple'){
 							map.player_number.hide();
@@ -4354,8 +4355,10 @@
 							map.change_choice.hide();
 							map.free_choose.hide();
 							map.change_identity.hide();
+							map.continue_game.hide();
 						}
 						else{
+							map.continue_game.show();
 							map.player_number.show();
 							map.enhance_zhu.show();
 							map.auto_identity.show();
@@ -4582,7 +4585,7 @@
 						onclick:function(bool){
 							game.saveConfig('continue_game',bool,this._link.config.mode);
 							if(get.config('continue_game')){
-								if(!ui.continue_game&&_status.over&&!_status.brawl){
+								if(!ui.continue_game&&_status.over&&!_status.brawl&&!game.no_continue_game){
 									ui.continue_game=ui.create.control('再战',game.reloadCurrent);
 								}
 							}
@@ -5049,7 +5052,7 @@
 						onclick:function(bool){
 							game.saveConfig('continue_game',bool,this._link.config.mode);
 							if(get.config('continue_game')){
-								if(!ui.continue_game&&_status.over&&!_status.brawl){
+								if(!ui.continue_game&&_status.over&&!_status.brawl&&!game.no_continue_game){
 									ui.continue_game=ui.create.control('再战',game.reloadCurrent);
 								}
 							}
@@ -5608,7 +5611,13 @@
 				name:'斗地主',
 				connect:{
 					update:function(config,map){
-						if(config.connect_doudizhu_mode=='kaihei'||config.connect_doudizhu_mode=='huanle'){
+						if(config.connect_doudizhu_mode=='online'){
+							map.connect_change_card.hide();
+						}
+						else{
+							map.connect_change_card.show();
+						}
+						if(config.connect_doudizhu_mode=='kaihei'||config.connect_doudizhu_mode=='huanle'||config.connect_doudizhu_mode=='online'){
 							map.connect_double_character.hide();
 						}
 						else{
@@ -5622,6 +5631,7 @@
 							normal:'休闲',
 							kaihei:'开黑',
 							huanle:'欢乐',
+							online:'智斗',
 						},
 						restart:true,
 						frequent:true,
@@ -5641,11 +5651,37 @@
 				},
 				config:{
 					update:function(config,map){
-						if(config.doudizhu_mode=='kaihei'||config.doudizhu_mode=='huanle'){
+						if(config.doudizhu_mode=='online'){
+							map.change_card.hide();
+							map.edit_character.show();
+							map.reset_character.show();
+						}
+						else{
+							map.change_card.show();
+							map.edit_character.hide();
+							map.reset_character.hide();
+						}
+						if(config.doudizhu_mode=='kaihei'||config.doudizhu_mode=='huanle'||config.doudizhu_mode=='online'){
 							map.double_character.hide();
+							map.free_choose.hide();
+							map.change_identity.hide();
+							map.change_choice.hide();
+							map.continue_game.hide();
+							map.dierestart.hide();
+							map.choice_zhu.hide();
+							map.choice_fan.hide();
+							map.revive.hide();
 						}
 						else{
 							map.double_character.show();
+							map.free_choose.show();
+							map.change_identity.show();
+							map.change_choice.show();
+							map.continue_game.show();
+							map.dierestart.show();
+							map.choice_zhu.show();
+							map.choice_fan.show();
+							map.revive.show();
 						}
 						if(config.double_character&&config.doudizhu_mode!='kaihei'&&config.doudizhu_mode!='huanle'){
 							map.double_hp.show();
@@ -5661,6 +5697,7 @@
 							normal:'休闲',
 							kaihei:'开黑',
 							huanle:'欢乐',
+							online:'智斗',
 						},
 						restart:true,
 						frequent:true,
@@ -5741,7 +5778,7 @@
 						onclick:function(bool){
 							game.saveConfig('continue_game',bool,this._link.config.mode);
 							if(get.config('continue_game')){
-								if(!ui.continue_game&&_status.over&&!_status.brawl){
+								if(!ui.continue_game&&_status.over&&!_status.brawl&&!game.no_continue_game){
 									ui.continue_game=ui.create.control('再战',game.reloadCurrent);
 								}
 							}
@@ -5808,6 +5845,124 @@
 							'6':'六',
 							'8':'八',
 							'10':'十',
+						},
+					},
+					edit_character:{
+						name:'编辑将池',
+						clear:true,
+						onclick:function(){
+							if(get.mode()!='doudizhu'){
+								alert('请进入斗地主模式，然后再编辑将池');
+								return;
+							}
+							var container=ui.create.div('.popup-container.editor');
+							var editorpage=ui.create.div(container);
+							var discardConfig=ui.create.div('.editbutton','取消',editorpage,function(){
+								ui.window.classList.remove('shortcutpaused');
+								ui.window.classList.remove('systempaused');
+								container.delete(null);
+								delete window.saveNonameInput;
+							});
+							var node=container;
+							var map=get.config('character_online')||lib.characterOnline;
+							node.code='character='+get.stringify(map)+'\n/*\n    这里是智斗三国模式的武将将池。\n    您可以在这里编辑对武将将池进行编辑，然后点击“保存”按钮即可保存。\n    将池中的Key势力武将，仅同时在没有被禁用的情况下，才会出现在选将框中。\n    而非Key势力的武将，只要所在的武将包没有被隐藏，即可出现在选将框中。\n    该将池为单机模式/联机模式通用将池。在这里编辑后，即使进入联机模式，也依然会生效。\n    但联机模式本身禁用的武将（如神貂蝉）不会出现在联机模式的选将框中。\n*/';
+							ui.window.classList.add('shortcutpaused');
+							ui.window.classList.add('systempaused');
+							var saveInput=function(){
+								var code;
+								if(container.editor){
+									code=container.editor.getValue();
+								}
+								else if(container.textarea){
+									code=container.textarea.value;
+								}
+								try{
+									var character=null;
+									eval(code);
+									if(!get.is.object(character)){
+										throw('err');
+									}
+									var groups=[];
+									for(var i in character){
+										if(!Array.isArray(character[i])) throw('type');
+										if(character[i].length>=3) groups.push(i);
+									}
+									if(groups.length<3) throw('enough');
+								}
+								catch(e){
+									if(e=='type'){
+										alert('请严格按照格式填写，不要写入不为数组的数据');
+									}
+									else if(e=='enough'){
+										alert('请保证至少写入了3个势力，且每个势力至少有3个武将');
+									}
+									else if(e=='err'){
+										alert('代码格式有错误，请对比示例代码仔细检查');
+									}
+									else{
+										alert('代码语法有错误，请仔细检查（'+e+'）')
+									}
+									return;
+								}
+								game.saveConfig('character_online',character,'doudizhu');
+								ui.window.classList.remove('shortcutpaused');
+								ui.window.classList.remove('systempaused');
+								container.delete();
+								container.code=code;
+								delete window.saveNonameInput;
+							};
+							window.saveNonameInput=saveInput;
+							var saveConfig=ui.create.div('.editbutton','保存',editorpage,saveInput);
+							var editor=ui.create.div(editorpage);
+							if(node.aced){
+								ui.window.appendChild(node);
+								node.editor.setValue(node.code,1);
+							}
+							else if(lib.device=='ios'){
+								ui.window.appendChild(node);
+								if(!node.textarea){
+									var textarea=document.createElement('textarea');
+									editor.appendChild(textarea);
+									node.textarea=textarea;
+									lib.setScroll(textarea);
+								}
+								node.textarea.value=node.code;
+							}
+							else{
+								var aceReady=function(){
+									ui.window.appendChild(node);
+									var mirror = window.CodeMirror(editor, {
+										value:node.code,
+										mode:"javascript",
+										lineWrapping:!lib.config.touchscreen&&lib.config.mousewheel,
+										lineNumbers:true,
+										indentUnit:4,
+										autoCloseBrackets:true,
+										theme:'mdn-like'
+									});
+									lib.setScroll(editor.querySelector('.CodeMirror-scroll'));
+									node.aced=true;
+									node.editor=mirror;
+								}
+								if(!window.ace){
+									lib.init.js(lib.assetURL+'game','codemirror',aceReady);
+									lib.init.css(lib.assetURL+'layout/default','codemirror');
+								}
+								else{
+									aceReady();
+								}
+							};
+						},
+					},
+					reset_character:{
+						name:'重置将池',
+						intro:'将智斗三国模式下的将池重置为默认将池',
+						clear:true,
+						onclick:function(){
+							if(confirm('该操作不可撤销！是否清除智斗三国模式的自定义将池，并将其重置为默认将池？')){
+								game.saveConfig('character_online',null,'doudizhu');
+								alert('将池已重置');
+							}
 						},
 					},
 				}
@@ -5988,7 +6143,20 @@
 						restart:true,
 						frequent:true,
 					},
-					update:function(config,map){},
+					connect_enable_jin:{
+						name:'启用晋势力武将',
+						init:false,
+						restart:true,
+						frequent:true,
+					},
+					update:function(config,map){
+						if(config.connect_single_mode!='normal'){
+							map.connect_enable_jin.hide();
+						}
+						else{
+							map.connect_enable_jin.show();
+						}
+					},
 				},
 				config:{
 					single_mode:{
@@ -6002,7 +6170,19 @@
 						restart:true,
 						frequent:true,
 					},
+					enable_jin:{
+						name:'启用晋势力武将',
+						init:false,
+						restart:true,
+						frequent:true,
+					},
 					update:function(config,map){
+						if(config.single_mode!='normal'){
+							map.enable_jin.hide();
+						}
+						else{
+							map.enable_jin.show();
+						}
 					},
 				}
 			},
@@ -8728,6 +8908,11 @@
 								lib.card.list[i][2]='tao';
 								lib.card.list[i][3]='ocean';
 							}
+							if(lib.card.list[i][2]=='haijiu'){
+								lib.card.list[i]=lib.card.list[i].slice(0);
+								lib.card.list[i][2]='jiu';
+								lib.card.list[i][3]='ocean';
+							}
 							if(!lib.card[lib.card.list[i][2]]){
 								lib.card.list.splice(i,1);i--;
 							}
@@ -9621,6 +9806,7 @@
 							case 'kagura':n++;if(lib.config.banned.contains(i)) sn++;break;
 							case 'nanashi':n++;if(lib.config.banned.contains(i)) so++;break;
 							case 'psp':n++;if(lib.config.banned.contains(i)) sp++;break;
+							case 'asoul':n++;if(lib.config.banned.contains(i)) sq++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -10111,6 +10297,7 @@
 			kagura:'神楽',
 			nanashi:'774',
 			psp:'P',
+			asoul:'魂',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -10128,6 +10315,7 @@
 			kagura2:'神楽组',
 			nanashi2:'774inc',
 			psp2:'P-SP',
+			asoul2:'一个魂',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -10145,6 +10333,7 @@
 			qunColor:"#f6f6f6",
 			shenColor:"#ffe14c",
 			westernColor:"#ffe14c",
+			jinColor:"#ffe14c",
 			keyColor:"#c9b1fd",
 			holoColor:"#ffddb9",
 			nijisanjiColor:"#b0d0e2",
@@ -10155,7 +10344,8 @@
 			VirtuaRealColor:"#77aaee",
 			kaguraColor:"#55deef",
 			nanashiColor:"#e27b6b",
-			nanashiColor:"#4d3d11",
+			pspColor:"#4d3d11",
+			asoulColor:"#ffddcc",
 			basic:'基本',
 			equip:'装备',
 			trick:'锦囊',
@@ -10186,7 +10376,7 @@
 			_oceansha:'海杀',
 			_icesha:'冰杀',
 			_yamisha:'暗杀',
-			_yamisha2:'暗杀',
+			_yamisha2:'暗影',
 			qianxing:'潜行',
 			mianyi:'免疫',
 			fengyin:'封印',
@@ -10923,15 +11113,16 @@
 						if(typeof num=='function'){
 							numx=num(player);
 						}
-						player.directgain(get.cards(numx));
-						if(player.singleHp===true&&get.mode()!='guozhan'){
+						if(player.getTopCards) player.directgain(player.getTopCards(numx));
+						else player.directgain(get.cards(numx));
+						if(player.singleHp===true&&get.mode()!='guozhan'&&(lib.config.mode!='doudizhu'||_status.mode!='online')){
 							player.doubleDraw();
 						}
 						player=player.next;
 					}
 					while(player!=end);
 					event.changeCard=get.config('change_card');
-					if(_status.connectMode||lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'&&lib.config.mode!='longlaoguan'){
+					if(_status.connectMode||(lib.config.mode=='doudizhu'&&_status.mode=='online')||lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'&&lib.config.mode!='longlaoguan'){
 						event.changeCard='disabled';
 					}
 					"step 1"
@@ -12360,6 +12551,13 @@
 					}
 					if(event.dialog&&event.dialog.close) event.dialog.close();
 				},
+				chooseToCompareLose:function(){
+					for(var i=0;i<event.lose_list.length;i++){
+						var next=event.lose_list[i][0].lose(event.lose_list[i][1],ui.ordering);
+						next.relatedEvent=event.getParent();
+						next.getlx=false;
+					}
+				},
 				chooseToCompareMultiple:function(){
 					"step 0"
 					if(player.countCards('h')==0){
@@ -12398,17 +12596,19 @@
 					}
 					"step 2"
 					var cards=[];
+					var lose_list=[];
 					if(event.fixedResult&&event.fixedResult[player.playerid]){
 						event.list.unshift(player);
 						result.unshift({bool:true,cards:[event.fixedResult[player.playerid]]});
+						lose_list.push([player,[event.fixedResult[player.playerid]]]);
 					}
 					else{
 						if(result[0].skill&&lib.skill[result[0].skill]&&lib.skill[result[0].skill].onCompare){
 							player.logSkill(result[0].skill);
 							result[0].cards=lib.skill[result[0].skill].onCompare(player)
 						}
+						else lose_list.push([player,result[0].cards]);
 					};
-					player.lose(result[0].cards,ui.ordering);
 					for(var j=0;j<targets.length;j++){
 						if(event.list.contains(targets[j])){
 							var i=event.list.indexOf(targets[j]);
@@ -12416,13 +12616,18 @@
 								event.list[i].logSkill(result[i].skill);
 								result[i].cards=lib.skill[result[i].skill].onCompare(event.list[i]);
 							}
-							event.list[i].lose(result[i].cards,ui.ordering);
+							else lose_list.push([targets[j],result[i].cards]);
 							cards.push(result[i].cards[0]);
 						}
 						else if(event.fixedResult&&event.fixedResult[targets[j].playerid]){
-							targets[j].lose(event.fixedResult[targets[j].playerid],ui.ordering);
 							cards.push(event.fixedResult[targets[j].playerid]);
+							lose_list.push([targets[j],[event.fixedResult[targets[j].playerid]]]);
 						}
+					}
+					if(lose_list.length){
+						game.loseAsync({
+							lose_list:lose_list,
+						}).setContent('chooseToCompareLose');
 					}
 					event.cardlist=cards;
 					event.cards=cards;
@@ -12510,6 +12715,7 @@
 						return;
 					}
 					game.log(player,'对',target,'发起拼点');
+					event.lose_list=[];
 					"step 1"
 					var sendback=function(){
 						if(_status.event!=event){
@@ -12518,7 +12724,10 @@
 							};
 						}
 					};
-					if(event.fixedResult&&event.fixedResult[player.playerid]) event.card1=event.fixedResult[player.playerid];
+					if(event.fixedResult&&event.fixedResult[player.playerid]){
+						event.card1=event.fixedResult[player.playerid];
+						event.lose_list.push([player,event.card1]);
+					}
 					else if(player.isOnline()){
 						player.wait(sendback);
 						event.ol=true;
@@ -12531,7 +12740,10 @@
 						event.localPlayer=true;
 						player.chooseCard('请选择拼点牌',true).set('type','compare').set('glow_result',true).ai=event.ai;
 					}
-					if(event.fixedResult&&event.fixedResult[target.playerid]) event.card2=event.fixedResult[target.playerid];
+					if(event.fixedResult&&event.fixedResult[target.playerid]){
+						event.card2=event.fixedResult[target.playerid];
+						event.lose_list.push([target,event.card2]);
+					}
 					else if(target.isOnline()){
 						target.wait(sendback);
 						event.ol=true;
@@ -12549,6 +12761,7 @@
 							result.cards=lib.skill[result.skill].onCompare(player);
 							player.logSkill(result.skill);
 						}
+						else event.lose_list.push([player,result.cards[0]]);
 						event.card1=result.cards[0];
 					}
 					if(event.localTarget){
@@ -12560,6 +12773,7 @@
 							target.logSkill(result.skill);
 							result.cards=lib.skill[result.skill].onCompare(target);
 						}
+						else event.lose_list.push([target,result.cards[0]]);
 						event.card2=result.cards[0];
 					}
 					if(!event.resultOL&&event.ol){
@@ -12572,13 +12786,15 @@
 								player.logSkill(event.resultOL[player.playerid].skill);
 								event.resultOL[player.playerid].cards=lib.skill[event.resultOL[player.playerid].skill].onCompare(player);
 							}
-							event.card1=event.resultOL[player.playerid].cards[0]
+							else event.lose_list.push([player,event.resultOL[player.playerid].cards[0]]);
+							event.card1=event.resultOL[player.playerid].cards[0];
 						};
 						if(!event.card2){
 							if(event.resultOL[target.playerid].skill&&lib.skill[event.resultOL[target.playerid].skill]&&lib.skill[event.resultOL[target.playerid].skill].onCompare){
 								target.logSkill(event.resultOL[target.playerid].skill);
 								event.resultOL[target.playerid].cards=lib.skill[event.resultOL[target.playerid].skill].onCompare(player);
 							}
+							else event.lose_list.push([target,event.resultOL[target.playerid].cards[0]]);
 							event.card2=event.resultOL[target.playerid].cards[0];
 						}
 						if(!event.card1||!event.card2){
@@ -12596,8 +12812,11 @@
 							event.addToAI=true;
 						}
 					}
-					player.lose(event.card1,ui.ordering);
-					target.lose(event.card2,ui.ordering);
+					if(event.lose_list.length){
+						game.loseAsync({
+							lose_list:event.lose_list,
+						}).setContent('chooseToCompareLose');
+					}
 					"step 5"
 					game.broadcast(function(){
 						ui.arena.classList.add('thrownhighlight');
@@ -12688,7 +12907,7 @@
 					};
 					if(event.isMine()){
 						var dialog=ui.create.dialog('forcebutton');
-						dialog.add(event.prompt||'选择获得��项技能');
+						dialog.add(event.prompt||'选择获得一项技能');
 						_status.event.list=list;
 						var clickItem=function(){
 							_status.event._result=this.link;
@@ -14611,6 +14830,7 @@
 								var losecard=player.lose(cards,ui.special);
 								if(info.visible) losecard.visible=true;
 								if(info.loseTo) losecard.position=ui[info.loseTo];
+								if(info.insert) losecard.insert_card=true;
 								if(losecard.position==ui.special&&info.toStorage) losecard.toStorage=true;
 							}
 						}
@@ -14834,6 +15054,7 @@
 					var cards;
 					if(num>0){
 						if(event.bottom) cards=get.bottomCards(num);
+						else if(player.getTopCards) cards=player.getTopCards(num);
 						else cards=get.cards(num);
 					}
 					else{
@@ -14944,31 +15165,42 @@
 					'step 0'
 					event.cards1=event.cards1||player.getCards('h');
 					event.cards2=event.cards2||target.getCards('h');
+					game.loseAsync({
+						player:player,
+						target:target,
+						cards1:event.cards1,
+						cards2:event.cards2,
+					}).setContent('swapHandcardsx');
+					'step 1'
+					player.gain(event.cards2);
+					target.gain(event.cards1);
+				},
+				swapHandcardsx:function(){
+					'step 0'
 					player.$giveAuto(event.cards1,target);
 					target.$giveAuto(event.cards2,player);
 					'step 1'
 					event.cards=event.cards1;
-					var next=player.lose(event.cards,ui.ordering);
+					var next=player.lose(event.cards,ui.ordering).getlx=false;
+					next.relatedEvent=event.getParent();
 					if(player==game.me){
 						event.delayed=true;
 					}
 					else{
 						next.delay=false;
 					}
-					'step 1'
+					'step 2'
 					event.cards=event.cards2;
-					var next=target.lose(event.cards,ui.ordering);
+					var next=target.lose(event.cards,ui.ordering).getlx=false;
+					next.relatedEvent=event.getParent();
 					if(target==game.me){
 						event.delayed=true;
 					}
 					else{
 						next.delay=false;
 					}
-					'step 2'
-					if(!event.delayed) game.delay();
 					'step 3'
-					player.gain(event.cards2);
-					target.gain(event.cards1);
+					if(!event.delayed) game.delay();
 				},
 				gainMultiple:function(){
 					'step 0'
@@ -15150,6 +15382,7 @@
 					"step 0"
 					var evt=event.getParent();
 					if(evt.name!='discard'&&event.type!='discard') return;
+					if(evt.delay===false) event.delay=false;
 					if(evt.animate!=false){
 						evt.discardid=lib.status.videoId++;
 						game.broadcastAll(function(player,cards,id){
@@ -15190,6 +15423,7 @@
 					"step 1"
 					event.gaintag_map={};
 					var hs=[],es=[],js=[];
+					if(event.insert_card&&event.position==ui.cardPile) event.cards.reverse();
 					var hej=player.getCards('hej');
 					event.stockcards=cards.slice(0);
 					for(var i=0;i<cards.length;i++){
@@ -15200,6 +15434,7 @@
 						cards[i].style.transform+=' scale(0.2)';
 						cards[i].classList.remove('glow');
 						cards[i].recheck();
+						if(!cards[i])	return;
 						var info=lib.card[cards[i].name];
 						if(info.destroy||cards[i]._destroy){
 							cards[i].delete();
@@ -15214,10 +15449,18 @@
 									_status.discarded.remove(cards[i]);
 								}
 							}
-							cards[i].goto(event.position);
+							if(event.insert_card){
+								event.position.insertBefore(cards[i],event.position.firstChild);
+								cards[i].fix();
+							}
+							else if(event.position==ui.cardPile){
+								event.position.appendChild(cards[i]);
+								cards[i].fix();
+							}
+							else cards[i].goto(event.position);
 						}
 						else{
-							cards[i].delete();
+							cards[i].remove();
 						}
 						if(!hej.contains(cards[i])){
 							cards.splice(i--,1);
@@ -15245,7 +15488,8 @@
 					game.broadcast(function(player,cards,num){
 						for(var i=0;i<cards.length;i++){
 							cards[i].classList.remove('glow');
-							cards[i].delete();
+							cards[i].fix();
+							cards[i].remove();
 						}
 						if(player==game.me){
 							ui.updatehl();
@@ -15261,7 +15505,7 @@
 					game.addVideo('loseAfter',player);
 					event.num=0;
 					if(event.position==ui.ordering){
-						var evt=event.getParent();
+						var evt=event.relatedEvent||event.getParent();
 						if(!evt.orderingCards)	evt.orderingCards=[];
 						if(!event.noOrdering&&!event.cardsOrdered){
 							event.cardsOrdered=true;
@@ -15270,6 +15514,9 @@
 							next.setContent('orderingDiscard');
 						}
 						if(!event.noOrdering) evt.orderingCards.addArray(cards);
+					}
+					else if(event.position==ui.cardPile){
+						game.updateRoundNumber();
 					}
 					event.hs=hs;
 					event.es=es;
@@ -15345,7 +15592,11 @@
 					"step 3"
 					event.trigger('damageBegin4');
 					"step 4"
-					if(num>0&&player.hujia&&!player.hasSkillTag('nohujia')&&!(source&&source.hasSkillTag('overHujia'))){
+					if(num>0&&player.hujia&&!player.hasSkillTag('nohujia')&&!(source&&source.hasSkillTag('overHujia',true,{
+						name:event.card?event.card.name:null,
+						target:player,
+						card:event.card
+					}))){
 						if(num>=player.hujia){
 							event.hujia=player.hujia;
 							num-=player.hujia;
@@ -15557,9 +15808,10 @@
 					player.$damagepop((num>0?'+'+num:num),'gray');
 					if(num>0){
 						game.log(player,'获得了'+get.cnNumber(num)+'点护甲');
-					}else if(event.type){
+					}else if(num<0){
 						if(event.type=='damage')	game.log(player,'的护甲抵挡了'+get.cnNumber(-num)+'点伤害');
-						if(event.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
+						//else if(event.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
+						else	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
 					}
 					if(player.hujia<0){
 						player.hujia=0;
@@ -15744,7 +15996,7 @@
 						if(get.config('revive')&&lib.mode[lib.config.mode].config.revive&&!ui.revive){
 							ui.revive=ui.create.control('revive',ui.click.dierevive);
 						}
-						if(get.config('continue_game')&&!ui.continue_game&&lib.mode[lib.config.mode].config.continue_game&&!_status.brawl){
+						if(get.config('continue_game')&&!ui.continue_game&&lib.mode[lib.config.mode].config.continue_game&&!_status.brawl&&!game.no_continue_game){
 							ui.continue_game=ui.create.control('再战',game.reloadCurrent);
 						}
 						if(get.config('dierestart')&&lib.mode[lib.config.mode].config.dierestart&&!ui.restart){
@@ -15990,7 +16242,11 @@
 					"step 0"
 					var judgestr=get.translation(player)+'的'+event.judgestr+'判定';
 					event.videoId=lib.status.videoId++;
-					var cardj=event.directresult||get.cards()[0];
+					var cardj=event.directresult;
+					if(!cardj){
+						if(player.getTopCards) cardj=player.getTopCards()[0];
+						else cardj=get.cards()[0];
+					}
 					var nextj=game.cardsGotoOrdering(cardj);
 					if(event.position!=ui.discardPile) nextj.noOrdering=true;
 					player.judging.unshift(cardj);
@@ -16379,8 +16635,6 @@
 						}
 						if(!player.isUnseen(2)){
 							delete player.storage.nohp;
-							player.hp=player.storage.rawHp+player.maxHp-1;
-							player.maxHp=player.storage.rawMaxHp+player.maxHp-1;
 							player.node.hp.show();
 							player.update();
 						}
@@ -19734,6 +19988,9 @@
 						}
 						else if(arguments[i]=='visible'){
 							next.visible=true;
+						}
+						else if(arguments[i]=='insert'){
+							next.insert_card=true;
 						}
 					}
 					if(next.cards){
@@ -23989,6 +24246,10 @@
 							card[2]='tao';
 							card[3]='ocean';
 						}
+						if(card[2]=='haijiu'){
+							card[2]='jiu';
+							card[3]='ocean';
+						}
 					}
 					else if(typeof card=='object'){
 						card=[card.suit,card.number,card.name,card.nature];
@@ -24225,7 +24486,7 @@
 					this.node.name.innerHTML='';
 					this.node.image.className='image';
 					var name=get.translation(card[2]);
-					if(card[2]=='sha'||card[2]=='tao'){
+					if(card[2]=='sha'||card[2]=='tao'||card[2]=='jiu'){
 						if(card[3]=='fire'){
 							name='火'+name;
 							this.node.image.classList.add('fire');
@@ -24264,9 +24525,11 @@
 							this.node.image.classList.add('ice');
 						}
 						else if(card[3]=='ocean'){
+							name=name.replace(name.charAt(0),'海');
 							this.node.image.classList.add('ocean');
 						}
 						else if(card[3]=='yami'){
+							name=name.replace(name.charAt(0),'暗');
 							this.node.image.classList.add('yami');
 						}
 					}
@@ -25857,7 +26120,7 @@
 		sort:{
 			character:function(a,b){
 				var groupSort=function(name){
-					if(!lib.character[name]) return 17;
+					if(!lib.character[name]) return 18;
 					if(lib.character[name][1]=='shen') return -1;
 					if(lib.character[name][1]=='wei') return 0;
 					if(lib.character[name][1]=='shu') return 1;
@@ -25875,7 +26138,8 @@
 					if(lib.character[name][1]=='kagura') return 13;
 					if(lib.character[name][1]=='nanashi') return 14;
 					if(lib.character[name][1]=='psp') return 15;
-					return 16;
+					if(lib.character[name][1]=='asoul') return 16;
+					return 17;
 				}
 				var del=groupSort(a)-groupSort(b);
 				if(del!=0) return del;
@@ -26269,6 +26533,8 @@
 				forced:true,
 				priority:7,
 				logTarget:'player',
+				equipSkill:false,
+				ruleSkill:true,
 				filter:function(event,player){
 					return event.nature=='ocean'&&event.num>0&&event.player.hujia>0;
 				},
@@ -26284,6 +26550,8 @@
 				forced:true,
 				priority:7,
 				logTarget:'target',
+				equipSkill:false,
+				ruleSkill:true,
 				filter:function(event,player){
 					return event.card.nature=='yami'&&event.target.countCards('h')>player.countCards('h');
 				},
@@ -26329,7 +26597,7 @@
 						var next=player.chooseToUse({
 							filterCard:function(card,player){
 								if(get.nature(card)!='yami') return false;
-								return lib.filter.cardEnabled(card,player,'forceEnable');
+								return player.canUse(card,target,false);
 							},
 							filterTarget:target,
 							prompt:str,
@@ -27829,6 +28097,11 @@
 									lib.skill[i]=mode.skill[i];
 								}
 							}
+							if(mode.card){
+								for(var i in mode.card){
+									lib.card[i]=mode.card[i];
+								}
+							}
 							game.finishCards();
 							if(mode.characterPack){
 								for(var i in mode.characterPack){
@@ -28254,7 +28527,7 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi','psp'],
+		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi','psp','asoul'],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
 		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{
@@ -28275,6 +28548,7 @@
 			kagura:'ocean',
 			nanashi:'wood',
 			psp:'fire',
+			asoul:'fire',
 		},
 		phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
 		quickVoice:[
@@ -28304,6 +28578,34 @@
 		],
 	};
 	var game={
+		loseAsync:function(arg){
+			var next=game.createEvent('loseAsync');
+			next.getl=function(player){
+				var that=this;
+				var map={
+					player:player,
+					hs:[],
+					es:[],
+					js:[],
+					cards:[],
+					cards2:[],
+				};
+				player.getHistory('lose',function(evt){
+					if(evt.parent==that){
+						map.hs.addArray(evt.hs);
+						map.es.addArray(evt.es);
+						map.js.addArray(evt.js);
+						map.cards.addArray(evt.cards);
+						map.cards2.addArray(evt.cards2);
+					}
+				});
+				if(map.cards.length>0) return map;
+			};
+			if(arg&&get.is.object(arg)){
+				for(var i in arg) next[i]=arg[i];
+			}
+			return next;
+		},
 		getRarity:function(name){
 			var rank=lib.rank.rarity;
 			if(rank.legend.contains(name)) return 'legend';
@@ -30719,7 +31021,7 @@
 						for(var i=0;i<l1.length;i++){
 							for(var j=0;j<l2.length;j++){
 								if(l2[j].suit==l1[i][0]&&l2[j].number==l1[i][1]&&l2[j].name==l1[i][2]){
-									l2[j].delete();
+									l2[j].remove();
 									l2.splice(j--,1);
 									break;
 								}
@@ -32616,7 +32918,7 @@
 						});
 					}
 				}
-				else if(!_status.connectMode&&get.config('continue_game')&&!ui.continue_game&&!_status.brawl){
+				else if(!_status.connectMode&&get.config('continue_game')&&!ui.continue_game&&!_status.brawl&&!game.no_continue_game){
 					ui.continue_game=ui.create.control('再战',game.reloadCurrent);
 				}
 			}
@@ -33696,6 +33998,11 @@
 							lib.card.list[i][2]='tao';
 							lib.card.list[i][3]='ocean';
 						}
+						if(lib.card.list[i][2]=='haijiu'){
+							lib.card.list[i]=lib.card.list[i].slice(0);
+							lib.card.list[i][2]='jiu';
+							lib.card.list[i][3]='ocean';
+						}
 						if(!lib.card[lib.card.list[i][2]]){
 							lib.card.list.splice(i,1);i--;
 						}
@@ -33768,6 +34075,7 @@
 			if(num==undefined) next.num=4;
 			else next.num=num;
 			next.setContent('gameDraw');
+			return next;
 		},
 		chooseCharacterDouble:function(){
 			var next=game.createEvent('chooseCharacter',false);
@@ -37964,7 +38272,8 @@
 							if(info[name][1]=='kagura') return 14;
 							if(info[name][1]=='nanashi') return 15;
 							if(info[name][1]=='psp') return 16;
-							return 17;
+							if(info[name][1]=='asoul') return 17;
+							return 18;
 						}
 						list.sort(function(a,b){
 							var del=groupSort(a)-groupSort(b);
@@ -41525,7 +41834,7 @@
 								return;
 							}
 							else if(!game.download){
-								alert('此版本不支持游戏内更新，请手动更新');
+								// alert('此版本不支持游戏内更新，请手动更新');
 								return;
 							}
 							else{
@@ -42955,7 +43264,7 @@
 				},true,true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp',function(link,node){//'wei','shu','wu','western',
+				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul',function(link,node){//'wei','shu','wu','western',
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -43382,7 +43691,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp'];//'wei','shu','wu',
+					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];//'wei','shu','wu',
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -43615,7 +43924,8 @@
 						if(lib.character[name][1]=='kagura') return 11;
 						if(lib.character[name][1]=='nanashi') return 12;
 						if(lib.character[name][1]=='psp') return 13;
-						return 14;
+						if(lib.character[name][1]=='asoul') return 14;
+						return 15;
 					}
 				}
 				list.sort(function(a,b){
@@ -48791,7 +49101,6 @@
 				}
 				ui.system.hide();
 				game.pause2();
-				//这个地方有问题
 				var node=ui.create.pause().animate('start');
 				ui.sidebar3.innerHTML='';
 				if(lib.config.show_discardpile){
@@ -50314,6 +50623,7 @@
 				switch(config.doudizhu_mode){
 					case 'kaihei':return '开黑斗地主';
 					case 'huanle':return '欢乐斗地主';
+					case 'online':return '智斗三国';
 					default:return '休闲斗地主';
 				}
 			}
@@ -51068,7 +51378,7 @@
 			if(!lib.card[obj.name]) return;
 			return lib.card[obj.name].subtype;
 		},
-		equiptype:function(card){
+		equiptype:function(card,player){
 			var subtype=get.subtype(card,player);
 			if(subtype.indexOf('equip')==0) return parseInt(subtype[5]);
 			return 0;
@@ -51433,7 +51743,7 @@
 				else{
 					str2=get.translation(str.name);
 				}
-				if(str2=='杀'||str2=='桃'){
+				if(['杀','桃','酒'].contains(str2)){
 					if(str.nature=='fire'){
 						str2='火'+str2;
 					}
@@ -52291,7 +52601,7 @@
 					td.innerHTML=node.countCards('h');
 					tr.appendChild(td);
 					td=document.createElement('td');
-					td.innerHTML=node.stat.length-1;
+					td.innerHTML=node.phaseNumber;
 					tr.appendChild(td);
 					td=document.createElement('td');
 
@@ -53132,7 +53442,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp'];
+			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];
 		},
 		types:function(){
 			var types=[];

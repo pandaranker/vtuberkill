@@ -56,11 +56,11 @@ window.noname_package={
 	mode:{
 		identity:'身份',
 		//guozhan:'国战',
-		versus:'对决',
+		doudizhu:'斗地主',
 		connect:'联机',
 		boss:'挑战',
-		doudizhu:'斗地主',
 		longlaoguan:'龙牢关', 
+		versus:'对决',
 		single:'单挑',
 	},
 	submode:{

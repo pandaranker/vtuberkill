@@ -1451,25 +1451,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				usable: 1,
 				filter: function(event, player) {
-					return get.color(event.card) == 'black' && event.targets.length == 1
+					return get.color(event.card) == 'black' && event.targets.length == 1&&game.hasPlayer(function(cur){
+						return cur != player && cur != event.player;
+					});
 				},
 				content: function() {
 					'step 0'
-					if (!game.hasPlayer(function(cur) {
-						return cur != player && cur != trigger.player;
-					})) event.finish();
-					else
-					game.broadcastAll(
-						function(player,tplayer){
-							player.chooseTarget('###『魅舞』###转移给一名其它角色', function(card, player, target) {
-								return player != target && target != tplayer;
-							}).set('ai',function(target){
-								var player=_status.event.player;
-								var att=get.attitude(player,target);
-								return 2-att;
-							});
-						},player,trigger.player
-					)
+					player.chooseTarget('###『魅舞』###转移给一名其它角色', function(card, player, target) {
+						return player != target && target != _status.event.tplayer;
+					}).set('ai',function(target){
+						var player=_status.event.player;
+						return get.effect(target,_status.event.card,_status.event.tplayer,player)>0;
+					}).set('tplayer',trigger.player).set('card',trigger.card);
 					'step 1'
 					if (result.bool) {
 						var target=result.targets[0];
@@ -3497,7 +3490,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			Ciyana:['Ciyana','Civia'],
-			SasakiSaku:['MinatoAqua','sea_MinatoAqua'],
+			MinatoAqua:['MinatoAqua','sea_MinatoAqua'],
 		},
 		translate:{
 			hololive_1:'一期生',

@@ -183,6 +183,8 @@ window.config={
 	current_mode:{},
 	customforbid:[],
 	forbid:[
+		['yubing','maoge'],
+
 		['huashen'],
 		['rehuashen'],
 		['xinmanjuan'],

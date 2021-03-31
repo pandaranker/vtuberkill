@@ -40,6 +40,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			jiu:{
 				audio:true,
 				fullskin:true,
+				nature:['ocean'],
 				type:"basic",
 				toself:true,
 				enable:function(event,player){
@@ -88,6 +89,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
+					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
 				ai:{
 					basic:{

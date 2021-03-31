@@ -74,7 +74,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Omesis */
 			re_Omesis:['female','upd8',4,['yaozhan','chongxin']],
 			/**虹河 */
-			re_NijikawaRaki:['female','upd8',4,['yayun','jidao']],//,'gwjingtian'
+			re_NijikawaRaki:['female','upd8',4,['yayun','jidao']],
 		},
 		characterIntro:{
 			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
@@ -257,11 +257,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.discardCards.addArray(event.onlyOne.result.cards);
 					}
 					"step 2"
-					target.lose(event.onlyOne.result.cards,ui.ordering);
-					target.$throw(event.onlyOne.result.cards);
-					game.log(target,'弃置了',event.onlyOne.result.cards)
-					game.delayx();
-					//game.cardsDiscard(event.discardCards);
 					event.isJiu=false;
 					event.discardCards.forEach(discard => {
 						if(get.suit(discard)=='spade'||get.number(discard)==9)
@@ -741,7 +736,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						for(var i=0;i<event.discards.length;i++){
 							suits.add(get.suit(event.discards[i]));
 						}
-						console.log(suits)
 						var next=player.judge(function(card){
 							var suits = _status.event.suits;
 							if(suits.contains(get.suit(card))) return 1;
@@ -848,97 +842,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					lib.skill.yayun.laohuji(event.target);
 				},
 			},
-			gwjingtian:{
-				clickable:function(player){
-					player.addTempSkill('gwjingtian2');
-					player.directgain(get.cards());
-					player.$draw();
-					player.storage.gwjingtian--;
-					player.updateMark('gwjingtian',true);
-					player.logSkill('gwjingtian');
-					if(_status.imchoosing){
-						delete _status.event._cardChoice;
-						delete _status.event._targetChoice;
-						game.check();
-					}
-				},
-				clickableFilter:function(player){
-					return player.storage.gwjingtian>0&&!player.hasSkill('gwjingtian2');
-				},
-				init:function(player){
-					player.storage.gwjingtian=0;
-				},
-				trigger:{player:'phaseDrawBefore'},
-				forced:true,
-				content:function(){
-					trigger.cancel();
-					player.storage.gwjingtian+=3;
-					player.updateMark('gwjingtian',true);
-				},
-				group:'gwjingtian_ai',
-				mark:true,
-				intro:{
-					mark:function(dialog,content,player){
-						if(player.isUnderControl(true)){
-							if(_status.gameStarted&&player.storage.gwjingtian>0&&!player.hasSkill('gwjingtian2')){
-								dialog.add(ui.create.div('.menubutton.pointerdiv','点击发动',function(){
-									if(!this.disabled){
-										this.disabled=true;
-										this.classList.add('disabled');
-										this.style.opacity=0.5;
-										lib.skill.gwjingtian.clickable(player);
-									}
-								}));
-							}
-							var list=[];
-							var num=Math.min(9,ui.cardPile.childElementCount);
-							for(var i=0;i<num;i++){
-								list.push(ui.cardPile.childNodes[i]);
-							}
-							dialog.addSmall(list);
-						}
-						else{
-							dialog.addText('剩余'+content+'次');
-						}
-					},
-					content:function(content,player){
-						if(player.isUnderControl(true)){
-							var list=[];
-							var num=Math.min(9,ui.cardPile.childElementCount);
-							for(var i=0;i<num;i++){
-								list.push(ui.cardPile.childNodes[i]);
-							}
-							return get.translation(list);
-						}
-						else{
-							return '剩余'+content+'次';
-						}
-					}
-				},
-				subSkill:{
-					ai:{
-						trigger:{global:'drawAfter'},
-						filter:function(event,player){
-							return (_status.auto||!player.isUnderControl(true))&&player.storage.gwjingtian>0&&!player.hasSkill('gwjingtian2');
-						},
-						popup:false,
-						check:function(event,player){
-							var value=0,card=ui.cardPile.firstChild;
-							if(card){
-								value=get.value(card);
-							}
-							if(value>=6) return true;
-							if(value>=5&&get.type(card)!='equip'&&player.storage.gwjingtian>=3) return true;
-							if(player.storage.gwjingtian>3&&value>3) return true;
-							return false;
-						},
-						content:function(){
-							lib.skill.gwjingtian.clickable(player);
-						}
-					}
-				}
-			},
-			gwjingtian2:{},
 			//re狗妈
 			re_DDzhanshou:{
 				audio:'DDzhanshou',
@@ -1840,6 +1743,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				ai:{
+					expose:0.2,
+				},
 				group:'liancheng_init',
 				subSkill:{
 					init:{
@@ -2034,6 +1940,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						target:1,
 					},
+					expose:0.1,
 					threaten:0.6,
 				},
 			},
@@ -2507,6 +2414,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					damage:{
 						trigger:{player:'phaseUseBegin'},
 						priority:199,
+						check:function(event,player){
+							return player.getCardUsable('shunshou')&&player.hp>=1;
+						},
 						prompt2:'『战吼』出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
 						content:function(){
 							player.damage();
@@ -2922,17 +2832,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:6,
-					result:{
-						player:function(player){
-							var players=game.filterPlayer();
-							for(var i=0;i<players.length;i++){
-								if(players[i]!=player&&get.attitude(player,players[i])>0){
-									return 0.5;
-								}
-							}
-							return 0;
-						}
-					},
+					result:{player:1},
 				},
 				group:'re_yuxia_after',
 				subSkill:{
@@ -3014,16 +2914,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
 			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
 			
-			KaguraMea:['re_KaguraMea','KaguraMea'],
-			OtomeOto:['re_OtomeOto','OtomeOto'],
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
 		},
 		dynamicTranslate:{
 			re_longdan:function(player){
-				if(player.storage.re_longdan) return '<font color=#66e>转换技</font> 每回合限一次。<span class="bluetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
-				return '<font color=#66e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
+				if(player.storage.re_longdan) return '<font color=#88e>转换技</font> 每回合限一次。<span class="bluetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。';
+				return '<font color=#88e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="bluetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>';
 			},
 		},
 		translate:{
@@ -3055,9 +2953,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yayun_info: '<font color=#fc2>轮次技</font> 在合适的时机，你可以弃置所有手牌，连续判定三次，每有一张判定牌花色包含于弃牌中，你便摸一张牌；若三次判定结果均为同一花色，你额外摸三张牌。',
 			jidao: '极道',
 			jidao_info: '你可以防止对其他角色造成的伤害，改为令其发动一次『押运』。',
-			gwjingtian:'经天',
-			gwjingtian_info:'锁定技，牌堆顶的9张牌对你始终可见；你始终跳过摸牌阶段，改为获得3枚“经天”标记；每名角色的回合限一次，你可以在任意时间点移去一枚“经天”标记，然后获得牌堆顶的一张牌',
-			
 
 			re_KaguyaLuna: '新·辉夜月',
 			re_jiajiupaidui: '假酒派对',
@@ -3111,7 +3006,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_MinamiNami: '新·美波七海',
 			re_longdan: '龙胆雄心',
-			re_longdan_info: '<font color=#66e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。',
+			re_longdan_info: '<font color=#88e>转换技</font> 每回合限一次。阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。',
 
 			re_SisterClearie: '新·克蕾雅',
 			shenyou: '神佑',

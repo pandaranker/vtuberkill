@@ -6,10 +6,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			sp_KaguraMea: ['female','shen',3,['zhigao', 'tiangou']],
 			sp_MinatoAqua: ['female','shen',2,['shenghuang','renzhan', 'kuase']],
+			sp_UsadaPekora: ['female','shen','3/4',['tuqi', 'shizu']],
 			sp_MononobeAlice: ['female','shen',3,['xianjing','chahui', 'duandai']],
 
 			sp_Ava: ['female','shen',Infinity,['shuimu','liuxuan']],
 			sp_Diana: ['female','shen',2,['tangyan','tianyin']],
+			
+			sp_KizunaAI:['female', 'shen', 4, ['ai', 'ban']],
 		},
 		characterIntro:{
 			sp_MinatoAqua:	 '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
@@ -1249,6 +1252,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}).set('prompt',get.prompt2('tangyan')).set('choice',choice);
 					'step 3'
 					if(result.control!='cancel2'||(event.xinjia&&event.allBy&&event.allBy<=3)){
+						game.delayx();
 						var str = '';
 						if(event.allBy)	str+='（依次执行每一项）';
 						switch((result.index+1)||event.allBy){
@@ -1288,6 +1292,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 5'
 					if(result.links&&result.links.length){
+						game.delayx();
 						var card = result.links[0];
 						player.storage.tangyan.add(card[2]);
 						player.chooseUseTarget({name:card[2],nature:card[3]},true,'noTargetDelay','nodelayx');
@@ -1362,6 +1367,905 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.damage('nosource');
 					targets[0].gain(cards[0],player,'gainAuto').gaintag.add('xinjia');
 				},
+				ai:{
+					order:function(skill,player){
+						if(player.hp=player.maxHp&&player.countCards('h')>1){
+							if(player.storage.tangyan_on)	return 5;
+							return 10;
+						}
+						return 0;
+					},
+					result:{
+						player:function(player,target){
+							if(player.storage.tangyan_on)	return 0;
+							if(player.hp = 1)	return -2;
+							return -0.5
+						},
+						target:function(player,target){
+							if(target.hasSkillTag('nogain')) return 0;
+							if(ui.selected.cards.length&&ui.selected.cards[0].name=='du'){
+								if(target.hasSkillTag('nodu')) return 0;
+								return -10;
+							}
+							if(target.hasJudge('lebu')) return 0;
+							var nh=target.countCards('h');
+							var np=player.countCards('h');
+							if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
+								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
+							}
+							return Math.max(1,5-nh);
+						}
+					},
+					effect:{
+						target:function(card,player,target){
+							if(player==target&&get.type(card)=='equip'){
+								if(player.countCards('e',{subtype:get.subtype(card)})){
+									var players=game.filterPlayer();
+									for(var i=0;i<players.length;i++){
+										if(players[i]!=player&&get.attitude(player,players[i])>q){
+											return 0;
+										}
+									}
+								}
+							}
+						}
+					},
+					threaten:0.1,
+				},
+			},
+			ai:{
+				audio:7,
+				priority: -10,
+				trigger:{
+					global: 'roundStart'
+				},
+				onremove:function(player){
+					delete player.storage.ai;
+				},
+				forced: true,
+				skillList: ['ai_xu', 'ai_po', 'ai_ji', 'ai_zhong'],
+				content:function(){
+					
+					'step 0'
+					//对点数最少的一名角色造成1点伤害，清空所有点数
+					var players = game.players.slice(0);
+					event.players= players;
+
+					var minPoint = Infinity;
+					for(var i=0;i<players.length;++i){
+						if(!players[i].hasSkill('ai_point')) players[i].addSkill('ai_point');
+						var point = players[i].storage.ai_point.point;
+						if(point < minPoint)minPoint = point;
+					}
+					
+					var minPointPlayers = [];
+					for(var i=0;i< players.length;++i){
+						if(players[i].storage.ai_point.point == minPoint){
+							minPointPlayers.push(players[i]);
+						}
+					}
+					if(!player.storage.ai){
+						player.storage.ai = true;
+						event.goto(2);
+						return;
+					}
+					if(minPointPlayers.length>1){
+						player.chooseTarget('选择一个角色，给其一点伤害', true, function(card, player, target){
+							return _status.event.minPointPlayers.contains(target);
+						}).set('ai', function(target){
+							var player=_status.event.player;
+							return get.damageEffect(target,player,player);
+						}).set('minPointPlayers', minPointPlayers);
+					}else if(minPointPlayers.length == 1){
+						event._result = {bool:true, targets: minPointPlayers};
+					}else{
+						event._result = {bool:false};
+					}
+					'step 1'
+					if(result.targets) result.targets[0].damage();
+					for(var i=0;i<event.players.length;++i){
+						//清空所有点数
+						event.players[i].storage.ai_point.point = 0;
+						event.players[i].syncStorage('ai_point');
+						event.players[i].markSkill('ai_point');
+
+					}
+					'step 2'
+					var skillList = [];
+
+					for(var i=0;i<lib.skill.ai.skillList.length;++i){
+						var skill =  lib.skill.ai.skillList[i];
+						if(!lib.skill.global.contains(skill)&&skill!='ai_point'){
+							skillList.push(skill);
+						}
+					}
+					event.set('skillList', skillList);
+					if(skillList.length > 1){
+						event.videoId = lib.status.videoId++;
+						game.broadcastAll(function(id, skillList){
+							var dialog=ui.create.dialog('令所有角色获得以下一项效果');
+							dialog.forcebutton=true;
+							dialog.videoId = id;
+							for(var i=0;i<skillList.length;++i){
+								dialog.add(
+									'<div class="popup text" style="width:calc(100% - 10px);display:inline-block">'
+									+get.translation(skillList[i])+'<font class="firetext">▷</font>'+get.skillInfoTranslation(skillList[i])
+									+'</div>'
+								);
+							}
+							dialog.op
+						}, event.videoId, skillList);
+						
+						console.log('before chooseControl');
+						player.chooseControl(skillList, true).set('ai', function(button){
+							return _status.event.aiChoice;
+						}).set('aiChoice', skillList.randomGet());
+						
+						
+					}else if(skillList.length == 1){
+						event._result = {bool:true, control:skillList[0]};
+					}else{
+						event.finish();
+					}
+					'step 3'
+					if(typeof event.videoId != 'undefined')game.broadcastAll('closeDialog', event.videoId);
+					//添加为全局效果
+					var players= game.players.slice(0);
+
+					//效果，终，初始化
+					
+					if(result.control == 'ai_zhong'){
+						var zhongMark = {
+							x: players.length+1,
+							usedCardCount: 0
+						};
+						var deadMark = {
+							lastDeadList: [],
+						};
+						game.addGlobalSkill('ai_zhong_deadSkillTrigger');
+						game.addGlobalSkill('ai_zhong_onplayerdie');
+						for(var i=0;i<players.length;++i){
+							players[i].addSkill('ai_zhongMark');
+							players[i].storage.ai_zhongMark = zhongMark;
+							player.syncStorage('ai_zhongMark');
+							players[i].storage.ai_deadMark = deadMark;
+							player.syncStorage('ai_deadMark');
+						}
+						var deadPlayers = game.dead.slice(0);
+						for(var i=0;i<deadPlayers.length;++i){
+							lib.skill.ai_zhong.syncDeadPlayer(deadPlayers[i]);
+						}
+
+					}else{
+						event.finish();
+					}
+					var skills = game.expandSkills([result.control]);
+					for(var i=0;i<skills.length;++i){
+						if(skills[i]) game.addGlobalSkill(skills[i]);
+					}
+					
+					//记录已使用的技能
+					
+					for(var i=0;i<players.length;++i){
+						players[i].storage.ai_point.skillList.push(result.control);
+					}
+					if(result.control == 'ai_zhong'){
+						//生成dialog
+						event.firstNum = game.countPlayer()+1;
+						var firstNum = event.firstNum;
+
+						var cards = [];
+							
+						var leftCard = game.createCard('👈', 'noclick', '');
+						cards.push(leftCard);
+
+						for(var i=0;i<10;++i){
+							var card  =game.createCard(''+(i+firstNum), 'noclick', '');
+							cards.push(card);
+						}
+
+						var rightCard = game.createCard('👉', 'noclick', '');
+						cards.push(rightCard);
+
+						event.cards = cards;
+						event.videoId = lib.status.videoId++;
+						var func =function(id, cards){
+							var firstNum = game.countPlayer()+1;
+
+
+							var dialog = ui.create.dialog('选择一个数字',[cards,'card'], 'hidden');
+							dialog.videoId = id;
+							for(var i=0;i<dialog.buttons.length;++i){
+								dialog.buttons[i].childNodes[1].style.visibility = 'hidden';
+								dialog.buttons[i].childNodes[2].style.visibility = 'hidden';
+								dialog.buttons[i].childNodes[3].style.visibility = 'hidden';
+								dialog.buttons[i].node.background.innerHTML = dialog.buttons[i].name;
+							}
+							dialog.open();
+						};
+
+						if(player.isOnline2()){
+							player.send(func, event.videoId, cards);
+						}
+						else{
+							func(event.videoId, cards);
+						}
+					}
+
+
+					'step 4'
+					//生成十个数字牌
+					var firstNum = event.firstNum;
+					if(firstNum <= game.countPlayer()) firstNum = game.countPlayer() + 1;
+					event.firstNum = firstNum;
+					var func = function(id,firstNum, hiddenLeft){
+						var dialog = get.idDialog(id);
+						if(!dialog)return;
+						if(hiddenLeft){
+							dialog.buttons[0].style.display = 'none';
+						}else{
+							dialog.buttons[0].style.display = '';
+						}
+						for(var i=1;i<dialog.buttons.length-1;++i){
+							dialog.buttons[i].name = ''+(firstNum+i-1);
+							dialog.buttons[i].link.name = ''+(firstNum+i-1);
+							dialog.buttons[i].node.background.innerHTML = dialog.buttons[i].name;
+						}
+					};
+					if(player.isOnline2()){
+						player.send(func, event.videoId, firstNum, firstNum == game.countPlayer() + 1);
+					}else{
+						func(event.videoId, firstNum, firstNum == game.countPlayer() + 1);
+					}
+					for(var i=1;i<event.cards.length-1;++i){
+						event.cards[i].name = (firstNum+i-1);
+					}
+
+					'step 5'
+					
+					player.chooseButton(true).set('dialog', event.videoId).set('ai', function(button){
+						if(button.link.name == '👈'){
+							if(button.style.display != 'none') return Infinity;
+							else return -50;
+						}else if(button.link.name == '👉'){
+							return -10;
+						}
+						return 100 / parseInt(button.link.name);
+					});
+					'step 6'
+					var x = parseInt(result.links[0].name);
+					if(!isNaN(x)){
+						if(player.isOnline2()){
+							player.send('closeDialog',event.videoId);
+						}else{
+							var dialog = get.idDialog(event.videoId);
+							if(dialog) dialog.close();  
+						}
+						//为技能 终 设置X
+						player.storage.ai_zhongMark.x = x;
+						var players = game.players.slice(0);
+						for(var i=0;i<players.length;++i){
+							player.syncStorage('ai_zhongMark');
+							players[i].markSkill('ai_zhongMark');
+						}
+					}else{
+						if(result.links[0].name == '👈'){
+							event.firstNum -= 10;
+						}else{
+							event.firstNum += 10;
+						}
+						event.goto(4);
+					}
+				},
+				group: 'ai_extraPoint',
+				subSkill:{
+					point:{
+						marktext:'爱',
+						mark:true,
+						init:function(player){
+							if(!player.storage.ai_point) {
+								player.storage.ai_point = {};
+							}
+							if(typeof player.storage.ai_point.point != 'number')player.storage.ai_point.point=0;
+							if(!Array.isArray(player.storage.ai_point.skillList))player.storage.ai_point.skillList=[];
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+						},
+
+						intro:{
+							name:'爱',
+							content:'mark',
+							mark:function(dialog, storage, player){
+								if(storage.skillList.length > 0){
+									dialog.addText('获得的效果：');
+									for(var i=0;i<storage.skillList.length;++i){
+										dialog.add('<div><div class="skill firetext">'+get.translation(storage.skillList[i]).slice(0,2)+'</div><div>'
+											+get.skillInfoTranslation(storage.skillList[i],player)+'</div></div>'
+										);
+									}
+								}
+								
+								if(storage.point > 0)dialog.addText('共有'+get.cnNumber(storage.point)+'个“●标记”');
+								else dialog.addText('没有●标记');;
+							},
+							markcount:function(storage, player){
+								return storage.point;
+							}
+						},
+
+					},
+					zhongMark:{
+						marktext: '终',
+						mark:true, 
+						intro:{
+							name: '终',
+							content: 'mark',
+							mark:function(dialog, storage, player){
+								dialog.addText('每第X张牌之使用者+❸');
+								if(!storage) return;
+								dialog.addText('已使用'+get.cnNumber(storage.usedCardCount)+'牌');
+								dialog.addText('距离下一次触发还需使用'+get.cnNumber(storage.x - storage.usedCardCount%storage.x)+'张牌');
+							},
+							markcount:function(storage, player){
+								if(!storage) return;
+								return storage.x -storage.usedCardCount %storage.x;
+							}
+						}
+					},
+					extraPoint:{
+						trigger:{
+							player: 'addAiPoint'
+						},
+						direct: true,
+						log:false,
+						filter:function(event, player){
+							return player.hasSkill('ai_point');
+						},
+						content:function(){
+							player.storage.ai_point.point+=1;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+						}
+					}
+				}
+			},
+			ai_xu:{
+				init:function(player){
+				// player.addSkill('ai_point');//test
+				},
+				group:['ai_xu_ondraw', 'ai_xu_ondiscard', 'ai_xu_onblacksha'],
+				subSkill:{
+					ondraw:{
+						trigger:{
+							player: 'drawBegin'
+						},
+						filter:function(event, player){
+							return player.hasSkill('ai_point');
+						},
+						forced: true,
+						content:function(){
+							player.storage.ai_point.point += 1;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+							event.trigger('addAiPoint');
+						}
+					},
+					ondiscard:{
+						trigger:{
+							player: 'discardBegin'
+						},
+						forced: true,
+						filter:function(event, player){
+							return player.hasSkill('ai_point')&&player.storage.ai_point.point >=1;
+						},
+						direct:true,
+						content:function(){
+							player.storage.ai_point.point -=1;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+						}
+					},
+					onblacksha:{
+						trigger:{
+							target:'shaBefore'
+						},
+						filter:function(event, player){
+							return player.hasSkill('ai_point')&&event.card&&get.color(event.card) == 'black'&&player.storage.ai_point.point >= 2;
+						},
+						content:function(){
+							player.storage.ai_point.point -= 2;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+							trigger.cancel();
+						},
+						ai:{
+							respondShan: true,
+						}
+					}
+				}
+			},
+			ai_po:{
+				group:['ai_po_onhurt', 'ai_po_onphaseJieshu'],
+				subSkill:{
+					onhurt:{
+						trigger:{
+							source:'damageSource'
+						},
+						forced: true,
+						filter:function(event, player){
+							return player.hasSkill('ai_point');
+						},
+						content:function(){
+							player.storage.ai_point.point += 3;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+							event.trigger('addAiPoint');
+						}
+					},
+					onphaseJieshu:{
+						trigger:{
+							player: 'phaseJieshu'
+						},
+						filter:function(event, player){
+							return player.hasSkill('ai_point')&&player.storage.ai_point.point >= 4;
+						},
+						content:function(){
+							'step 0'
+							player.storage.ai_point.point -= 4;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+							//移动场上的一张牌
+						player.moveCard(true);
+						},
+						check:function(event, player){
+							var players = game.players.slice(0);
+							for(var i=0;i<players.length;++i){
+								var target = players[i];
+								var att=get.attitude(player,target);
+								var sgnatt=get.sgn(att);
+								if(att>0){
+									if(!_status.event.nojudge&&target.countCards('j',function(card){
+										return game.hasPlayer(function(current){
+											return current!=target&&current.canAddJudge(card)&&get.attitude(player,current)<0;
+										})
+									})) return true;
+									if(target.countCards('e',function(card){
+										return get.value(card,target)<0&&game.hasPlayer(function(current){
+											return current!=target&&get.attitude(player,current)<0&&current.isEmpty(get.subtype(card))&&get.effect(target,card,player,player)<0;
+										});
+									})>0) return true;
+								}
+								else if(att<0){
+									if(game.hasPlayer(function(current){
+										if(current!=target&&get.attitude(player,current)>0){
+											var es=target.getCards('e');
+											for(var i=0;i<es.length;i++){
+												if(get.value(es[i],target)>0&&current.isEmpty(get.subtype(es[i]))&&get.effect(current,es[i],player,player)>0) return true;
+											}
+										}
+									})){
+										return true;
+									}
+								}
+							}
+							return false;
+						}
+					}
+				}
+			},
+			ai_ji:{
+				group:['ai_ji_ondiscard', 'ai_ji_onusecard'],
+				subSkill:{
+					//准备阶段，弃置任意牌以获得两倍的●
+					ondiscard:{
+						trigger:{
+							player: 'phaseZhunbei'
+						},
+						direct:true,
+						filter:function(event, player){
+							return player.hasSkill('ai_point')&&player.getCards('he').length>0;
+						},
+						content:function(){
+							'step 0'
+							player.chooseToDiscard('he', '弃置任意牌', [1, Infinity], true).set('ai', function(card){
+								return 1-get.value(card);
+							});
+							'step 1'
+							if(result.bool&&result.cards.length>0){
+								player.storage.ai_point.point+=result.cards.length*2;
+								player.syncStorage('ai_point');
+								player.markSkill('ai_point');
+								event.trigger('addAiPoint');
+							}
+						}
+
+					},
+					//你可以–❷为你使用的牌增加或减少一名目标。
+					onusecard:{
+						trigger:{
+							player: 'useCard2'
+						},
+						filter:function(event, player){
+							if(!player.hasSkill('ai_point'))return false;
+							if(!event.targets||!event.targets.length) return false;
+							var info=get.info(event.card);
+							if(info.allowMultiple==false) return false;
+							if(event.targets&&!info.multitarget){
+								if(game.hasPlayer(function(current){
+									return !event.targets.contains(current)&&lib.filter.targetEnabled2(event.card,player,current)&&lib.filter.targetInRange(event.card,player,current);
+								})){
+									return true;
+								}
+							}
+							return false;
+						},
+						content:function(){
+							'step 0'
+							//–❷
+							player.storage.ai_point.point -=2;
+							player.syncStorage('ai_point');
+							player.markSkill('ai_point');
+							//为你使用的牌增加或减少一名目标
+							var prompt2='为'+get.translation(trigger.card)+'增加或减少一个目标'
+							player.chooseTarget(get.prompt('ai_ji'),function(card,player,target){
+								var player=_status.event.player;
+								if(_status.event.targets.contains(target)) return true;
+								return lib.filter.targetEnabled2(_status.event.card,player,target)&&lib.filter.targetInRange(_status.event.card,player,target);
+							}).set('prompt2',prompt2).set('ai',function(target){
+								var trigger=_status.event.getTrigger();
+								var player=_status.event.player;
+								return get.effect(target,trigger.card,player,player)*(_status.event.targets.contains(target)?-1:1);
+							}).set('targets',trigger.targets).set('card',trigger.card);
+							'step 1'
+							if(result.bool){
+								if(!event.isMine()) game.delayx();
+								event.targets=result.targets;
+							}
+							else{
+								event.finish();
+							}
+							'step 2'
+							if(event.targets){
+								player.logSkill('ai_ji',event.targets);
+								if(trigger.targets.contains(event.targets[0])) trigger.targets.removeArray(event.targets);
+								else trigger.targets.addArray(event.targets);
+							}
+						}
+					}
+				}
+			},
+			ai_zhong:{
+				group: ['ai_zhong_onusexcard'],
+				subSkill:{
+					onusexcard:{
+						trigger:{
+							player: 'useCard1'
+						},
+						direct:true,
+						filter:function(event, player){
+							return player.hasSkill('ai_point')&&player.hasSkill('ai_zhongMark');
+						},
+						content:function(){       
+							'step 0'                     
+							var players = game.players.slice(0);
+							var storage;
+							for(var i=0;i<players.length;++i){
+								if(players[i].storage.ai_zhongMark){
+									storage = players[i].storage.ai_zhongMark;
+									break;
+								}
+							}
+							if(!storage){
+								var skills = get.expandSkills('ai_zhong');
+								for(var i=0;i<skills.length;++i){
+									game.removeGlobalSkill(skills[i]);
+								}
+								for(var i=0;i<players.length;++i){
+									delete players[i].storage.ai_zhongMark;
+								}
+								event.finish();
+								return;
+							}
+							++storage.usedCardCount;
+
+							for(var i=0;i<players.length;++i){
+								if(!players[i].storage.ai_zhongMark){
+									players[i].storage.ai_zhongMark = storage;
+								}
+								players[i].syncStorage('ai_zhongMark');
+								players[i].markSkill('ai_zhongMark');
+							}
+							
+							
+							if(storage.usedCardCount % storage.x == 0){
+								player.storage.ai_point.point+=3;
+								player.syncStorage('ai_point');
+								player.markSkill('ai_point');
+								event.trigger('addAiPoint');
+							}
+						}
+					},
+					onplayerdie:{
+						trigger:{
+							global: 'dieAfter'
+						},
+						direct: true,
+						log:false,
+						content:function(){
+							var diePlayer = trigger.player;
+							lib.skill.ai_zhong.syncDeadPlayer(diePlayer);
+						}
+					},
+					deadSkillTrigger:{
+						trigger:{
+							player: []
+						},
+						direct:true,
+						log:false,
+						content:function(){
+							'step 0'
+							if(!player.storage.ai_point||player.storage.ai_point.point<3){
+								trigger.cancel();
+								event.finish();
+								return;
+							}
+							player.chooseBool('是否–❸以触发'+get.translation(trigger.name)||'技能'+'？').set('ai',function(){
+								return Math.random()>= 0.5;
+							});
+							'step 1'
+							if(result.bool){
+								player.storage.ai_point.point -= 3;
+								player.syncStorage('ai_point');
+								player.markSkill('ai_point');
+							}else{
+								trigger.cancel();
+							}
+						}
+					}
+				},
+				banned:[],
+				characterFilter:function(character){//true is right.
+					return character.indexOf('KizunaAI')==-1&&!lib.skill.ai_zhong.banned.contains(character);
+				},
+				bannedSkill:[],
+				skillFilter:function(skill){//true is right.
+					if(lib.character['sp_KizunaAI'][3].contains(skill) || lib.skill.ai_zhong.bannedSkill.contains(skill)){
+						return false;
+					}
+					var info = lib.skill[skill];
+					if(!info)return false;
+					if(info.charlotte||(info.unique&&!info.gainable)||info.juexingji||info.limited||info.zhuSkill||info.hiddenSkill)return false;
+					return true;
+				},
+				syncDeadPlayer:function(diePlayer){
+					//filter character
+					if(!lib.skill.ai_zhong.characterFilter(diePlayer.name))return;
+
+					//获取 ai_deadMark
+					var storage;
+					var players = game.players.slice(0);
+					var storagePlayer;
+					for(var i=0;i<players.length;++i){
+						if(players[i].storage.ai_deadMark){
+							storage = players[i].storage.ai_deadMark;
+							storagePlayer = players[i];
+							break;
+						}
+					}
+
+					//获取lastDeadList
+					var lastDeadList = storage.lastDeadList;
+					var addPlayer = function(player){
+						lastDeadList.add(player);
+						var skills = lib.character[player.name][3];
+						for(var i=0;i<skills.length;++i){
+							var skill = skills[i];
+							//filter skill
+							if(!lib.skill.ai_zhong.skillFilter(skill))continue;
+							var info=lib.skill[skill];
+							if(!info) continue;
+							if(info.trigger){
+								for(var i=0;i<players.length;++i){
+									players[i].addSkill(skill);
+								}
+								var setTrigger=function(i,evt){
+									var name=i+'_'+evt;
+									if(!lib.hook.globalskill[name]){
+										lib.hook.globalskill[name]=[];
+									
+									}
+									lib.skill.ai_zhong.subSkill.deadSkillTrigger.trigger.player.push(skill+'Before');
+									lib.hook.globalskill[name].add('ai_zhong_deadSkillTrigger');
+									lib.hookmap[evt]=true;
+								}
+								setTrigger('player', skill+'Before');
+							}
+						}
+					};
+					var removePlayer = function(player){
+						var skills = lib.character[player.name][3];
+						
+						for(var j=0; j< skills.length;++j){
+							if(!lib.skill.ai_zhong.skillFilter(skills[j]))continue;
+							for(var i=0;i<players.length;++i){
+								if(players[i] == player)continue;
+								players[i].removeSkill(skills[j]);    
+							}
+							var name = 'player_'+skills[j]+'Before';
+							lib.skill.ai_zhong.subSkill.deadSkillTrigger.trigger.player.remove(skills[j]+'Before');
+							if(lib.hook.globalskill[name]) lib.hook.globalskill[name].remove('ai_zhong_deadSkillTrigger');
+						}
+						lastDeadList.remove(player);
+					};
+					//添加死亡角色
+					if(diePlayer.isDead()&&!lastDeadList.contains(diePlayer)){
+						addPlayer(diePlayer);
+					}
+					//删除复活角色
+					for(var i=0;i<lastDeadList.length;++i){
+						if(!lastDeadList[i].isDead()){
+							removePlayer(lastDeadList[i]);
+						}
+					}
+
+					for(var i=0;i<players.length;++i){
+						if(!players[i].storage.ai_deadMark){
+							players[i].storage.ai_deadMark = storage;
+							players[i].syncStorage('ai_deadMark');
+						}
+					}
+					storagePlayer.syncStorage('ai_deadMark');
+				}
+			},
+			ban:{
+				audio:2,
+				priority: 256,
+				frequent: true,
+				trigger:{
+					global: 'roundStart'
+				},
+				filter:function(event, player){
+					if(game.hasPlayer(function(current){
+						if(current.hasSkill('ai_point')){
+							return true;
+						}
+					}))return true;
+					return false;
+				},
+				check:function(event, player){
+					var friends = player.getFriends(true);
+					var players = game.players.slice(0);
+					var sameGroupCount = 0;
+					var othersCount = 0;
+					for(var i=0;i<players.length;++i){
+						if(friends.contains(players[i])){
+							if(players[i].storage.ai_point) sameGroupCount+=players[i].storage.ai_point.point;
+						}else{
+							if(players[i].storage.ai_point) othersCount+=players[i].storage.ai_point.point;
+						}
+					}
+					return sameGroupCount>0 &&sameGroupCount > othersCount*2;
+				},
+				content:function(){
+					'step 0'
+					//你可以令与你同阵营的角色亮出身份牌
+					var friends = player.getFriends(true);
+					event.friends = friends;
+					for(var i=0;i<friends.length;i++){
+						if(friends[i].identityShown)continue;
+						if(friends[i].showIdentity) friends[i].showIdentity();
+					}
+					'step 1'
+					game.delay();
+					'step 2'
+					var friends = event.friends;
+					var players = game.players.slice(0);
+					var sameGroupCount = 0;
+					var othersCount = 0;
+					for(var i=0;i<players.length;++i){
+						if(friends.contains(players[i])){
+							if(players[i].storage.ai_point) sameGroupCount+=players[i].storage.ai_point.point;
+						}else{
+							if(players[i].storage.ai_point) othersCount+=players[i].storage.ai_point.point;
+						}
+					}
+					//若你们●的合计值大于其他阵营●的两倍，获得胜利。
+					if( sameGroupCount>0 &&sameGroupCount > othersCount*2){
+						var func = game.checkOnlineResult;
+						game.checkOnlineResult = function(player){
+							return event.friends.contains(player);
+						};
+						game.over(game.checkOnlineResult(game.me));
+						game.checkOnlineResult = func;
+					}
+					
+				}
+			},
+			tuqi:{
+				audio:6,
+				trigger:{target:'useCardToTarget'},
+				forced:true,
+				filter:function(event,player){
+					var name = get.translation(get.name(event.card));
+					if(typeof name=='string')	return true;
+				},
+				content:function(){
+					'step 0'
+					var name = get.translation(get.name(trigger.card));
+					if(name.length>player.hp){
+						trigger.excluded.add(player);
+					}
+					if(name.length<=player.hp){
+						player.draw();
+					}
+					'step 1'
+					if(trigger.getParent().targets&&trigger.getParent().targets.filter(function(cur){
+						return cur.isIn();
+					}).length==1&&game.countPlayer(function(cur){
+						var source = event.getTrigger().player;
+						var targets = event.getTrigger().targets;
+						var card = event.getTrigger().card;
+						return cur.isIn()&&lib.filter.targetEnabled2(card,source,cur)&&!targets.contains(cur);
+					})){
+						var prompt2='为'+get.translation(trigger.card)+'增加一个目标';
+						player.chooseTarget().set('filterTarget',function(card,player,target){
+							var source = _status.event.getTrigger().player;
+							var targets = _status.event.getTrigger().targets;
+							var card = _status.event.getTrigger().card;
+							return lib.filter.targetEnabled2(card,source,target)&&!targets.contains(target);
+						}).set('prompt2',prompt2).set('ai',function(target){
+							var player = _status.event.player;
+							var source = _status.event.getTrigger().player;
+							var card = _status.event.getTrigger().card;
+							return get.effect(target,card,source,player);
+						});
+					}
+					'step 2'
+					if(result.bool){
+						if(!event.isMine()) game.delayx();
+						event.targets=result.targets;
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					if(result.bool&&result.targets){
+						player.logSkill('tuqi',event.targets);
+						trigger.getParent().targets.addArray(event.targets);
+					}
+				},
+				ai:{
+					threaten:function(player,target){
+						if(target.hp==1) return 0.5;
+					},
+					effect:{
+						target:function(card,player,target,current){
+							var name = get.translation(get.name(card));
+							if(name.length>player.hp){
+								return [0.1,0.5];
+							}
+							if(name.length<=player.hp){
+								return [1,0.8];
+							}
+						}
+					}
+				}
+			},
+			shizu:{
+				audio:6,
+				trigger:{source:'damageEnd'},
+				forced:true,
+				filter:function(event,player){
+					var name = get.translation(event.player);
+					if(typeof name=='string'&&event.player.isIn())	return true;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					var name = get.translation(trigger.player);
+					if(name.length>player.countCards('h'))	player.swapHandcards(trigger.player);
+					if(name.length<=player.countCards('h'))	player.swapEquip(trigger.player);
+				}
 			},
 		},
 		dynamicTranslate:{
@@ -1402,6 +2306,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiaotuzi: '小兔子',
 			xiaotuzi_info: '成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用',
 
+			sp_UsadaPekora: '皇·兔田佩克拉',
+			tuqi: '兔起乌沉',
+			tuqi_info: '<font color=#f66>锁定技</font> 牌名字数大于/不大于你体力的牌指定你为目标时，你令其对你无效/摸一张牌，若你为唯一目标，你可以为之指定额外目标。',
+			shizu: '簪缨世族',
+			shizu_info: '<font color=#f66>锁定技</font> 武将名字数大于/不大于你手牌数的角色受到你造成的伤害时，你与其交换手牌/装备区的牌。',
+			
+
 			sp_Diana: '皇·嘉然',
 			tangyan: '穿心糖言',
 			tangyan_info: '若你已受伤，你使用、打出或弃置一张基本牌后，可以选择一项：1.令一名角色摸一张牌；2.防止你下一次受到的伤害；3.视为使用一张本回合未以此法使用过的基本牌。',
@@ -1440,6 +2351,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			'phaseDraw': '摸牌阶段',
 			'phaseUse': '出牌阶段',
 			'phaseDiscard': '弃牌阶段',
+			
+			sp_KizunaAI: '皇·绊爱',
+			ai: '爱',
+			ai_info:
+				'一轮开始时，你对●最少的一名角色造成1点伤害，清空所有●，然后令所有角色获得以下一项效果：'
+				+'<br>序<span class="firetext">▷</span>每次摸牌时+❶，弃牌时–❶。你可以–❷以抵消黑色【杀】。'
+				+'<br>破<span class="firetext">▷</span>每次造成伤害时+❸。结束阶段，你可以–❹以移动场上一张牌。'
+				+'<br>急<span class="firetext">▷</span>准备阶段，弃置任意牌以获得两倍的●。你可以–❷为你使用的牌增加或减少一名目标。'
+				+'<br>终<span class="firetext">▷</span>皇·绊爱声明一个大于存活角色数的数字X，从现在开始每第X张牌之使用者+❸，你可以–❸以触发一项已死亡角色的通常技。'
+				+'<br>你每次获得●时，额外+❶。',
+			ai_xu: '序',
+			ai_xu_info: '每次摸牌时+❶，弃牌时–❶。你可以–❷以抵消黑色【杀】。',
+			ai_po: '破',
+			ai_po_info: '每次造成伤害时+❸。结束阶段，你可以–❹以移动场上一张牌。',
+			ai_ji: '急',
+			ai_ji_info: '准备阶段，弃置任意牌以获得两倍的●。你可以–❷为你使用的牌增加或减少一名目标。',
+			ai_zhong: '终',
+			ai_zhong_info: '皇·绊爱声明一个大于存活角色数的数字X，从现在开始每第X张牌之使用者+❸，你可以–❸以触发一项已死亡角色的通常技。',
+			ban:'绊',
+			ban_info:'一轮结束时，你可以令与你同阵营的角色亮出身份牌，若你们●的合计值大于其他阵营●的两倍，获得胜利。'
 		},
 	};
 });

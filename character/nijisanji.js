@@ -44,6 +44,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			OnomachiHaruka: ['female', 'nijisanji', 3, ['nvjiangrouhao', 'yinlaiyaotang']],
 			/**樱凛月 */
 			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
+			/**刀也 */
+			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
 		},
 		characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
@@ -2178,8 +2180,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.hp = 0;
 					player.storage.loseCount = 0;
 				},
-				trigger: {
-					global: ['phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd'],
+				trigger:{
+					global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']
 				},
 				filter: function(event, player) {
 					return player.storage.hp || player.storage.loseCount > 2;
@@ -2913,7 +2915,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event, player){
 							//在有牌置于武将牌上时继续检查
 							if(!player.storage.yinlaiyaotang_phaseUse)return;
-							if(event.hs&&event.hs.length&&get.distance(player, event.player)==1){
+							if(event.hs&&event.hs.length&&event.player!=player&&get.distance(player, event.player)<=1){
 								var tang = player.storage.yinlaiyaotang_phaseUse;
 								for(var i=0;i<event.hs.length;i++){
 									for(var j=0;j<tang.length;j++){

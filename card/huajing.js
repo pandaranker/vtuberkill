@@ -238,9 +238,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					target.chooseControl('弃置装备区所有牌','受到海样伤害').set('ai',function(){
+					target.chooseControl('dialogcontrol','弃置装备区所有牌','受到海样伤害').set('ai',function(){
 						var evt=_status.event.getParent();
 						if(evt.player.hasSkillTag('notricksource')) return 1;
+						if(evt.player.hasSkillTag('noocean')) return 1;
 						if(evt.target.hasSkillTag('notrick')) return 1;
 						if(evt.target.hp==1)	return 0;
 						return Math.random()<0.5?1:0;
@@ -261,31 +262,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					result:{
 						target:function(player,target){
 							if(player.hasSkill('miaomiao'))	return get.recoverEffect(target,player,player);
-							var att=get.attitude(player,target);
-							var nh=target.countCards('h');
-							if(att>0){
-								var js=target.getCards('j');
-								if(js.length){
-									var jj=js[0].viewAs?{name:js[0].viewAs}:js[0];
-									if(jj.name=='guohe'||js.length>1||get.effect(target,jj,target,player)<0){
-										return 3;
-									}
-								}
-								if(target.getEquip('baiyin')&&target.isDamaged()&&
-									get.recoverEffect(target,player,player)>0){
-									if(target.hp==1&&!target.hujia) return 1.6;
-									if(target.hp==2) return 0.01;
-									return 0;
-								}
-							}
-							var es=target.getCards('e');
-							var noe=(es.length==0||target.hasSkillTag('noe'));
-							var noe2=(es.filter(function(esx){
-							return esx.name=='tengjia'||get.value(esx)>0
-							}).length==0);
-							var noh=(nh==0||target.hasSkillTag('noh'));
-							if(noh&&(noe||noe2)) return 0;
-							if(att<=0&&!target.countCards('he')) return 1.5;
+							if(target.hasSkillTag('noocean')) return 0;
 							return -1.5;
 						},
 					},
@@ -663,6 +640,237 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//二扩
+			qinshi:{
+				fullskin:true,
+				type:'trick',
+				enable:function(card,player){
+					return player.countDiscardableCards('he',function(i){
+						return i!=card;
+					});
+				},
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return target!=player&&target.hujia;
+				},
+				content:function(){
+					'step 0'
+					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					event.discard = player.chooseToDiscard('he',true).set('prompt2','若弃置装备牌，则额外对目标造成一点暗影伤害').set('ai',function(card){
+						var target = _status.event.getParent().target;
+						var player = _status.event.player;
+						if(get.type(card)=='equip') return get.damageEffect(target,player,player)+7-get.value(card);
+						return 7-get.value(card);
+					})
+					'step 1'
+					event.num = target.hujia;
+					target.changeHujia(-event.num);
+					game.delay(0.5);
+					'step 2'
+					var card = event.discard.result.cards[0];
+					if(get.type(card)=='equip')	target.damage(event.baseDamage,'yami');
+				},
+				ai:{
+					basic:{
+						order:10.5,
+						useful:[5,3,1],
+						value:[5,3,1],
+					},
+					result:{
+						player:function(player,target){
+							if(player.isDamaged)	return 2;
+							else return 1;
+						},
+						target:-1,
+					},
+					tag:{
+						huajing:1,
+						damage:1,
+						yamiDamage:1,
+						oceanDamage:1,
+					}
+				}
+			},
+			bowen:{
+				fullskin:true,
+				type:'trick',
+				enable:true,
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return target!=player&&target.hujia;
+				},
+				content:function(){
+					'step 0'
+					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					event.num = target.hujia;
+					target.chooseToDiscard(event.num,true);
+					'step 1'
+					if(result.cards.length<event.num)	target.damage(event.baseDamage,'ocean');
+				},
+				ai:{
+					basic:{
+						order:10.5,
+						useful:[5,3,1],
+						value:[5,3,1],
+					},
+					result:{
+						target:function(player,target){
+							var hs = target.countCards('h');
+							var hujia = target.hujia;
+							if(hs<hujia)	return -(2+hs);
+							else return -hujia;
+						},
+					},
+					tag:{
+						huajing:1,
+						damage:1,
+						natureDamage:1,
+						oceanDamage:1,
+					}
+				}
+			},
+			huiliu:{
+				fullskin:true,
+				type:'trick',
+				enable:true,
+				range:{global:2},
+				selectTarget:1,
+				filterTarget:function(card,player,target){
+					return target!=player&&target.hujia;
+				},
+				content:function(){
+					'step 0'
+					target.changeHujia(-1);
+					game.delay(0.5);
+					'step 1'
+					if(player.isDamaged())	player.changeHujia(2);
+					else					player.changeHujia();
+				},
+				ai:{
+					basic:{
+						order:10.5,
+						useful:[5,3,1],
+						value:[5,3,1],
+					},
+					result:{
+						player:function(player,target){
+							if(player.isDamaged())	return 2;
+							else return 1;
+						},
+						target:-1,
+					},
+					tag:{
+						huajing:1,
+						gainHujia:1.5,
+					}
+				}
+			},
+			suansuyulei:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip1',
+				distance:{attackFrom:-2},
+				ai:{
+					basic:{
+						equipValue:4
+					},
+					tag:{
+						huajing:1,
+					}
+				},
+				skills:['suansuyulei_skill']
+			},
+			shenshuizhadan:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip1',
+				ai:{
+					equipValue:function(card,player){
+						if(player.countCards('h')) return 7;
+						if(player.countCards('e')>1) return 6;
+						return 4;
+					},
+					basic:{
+						equipValue:5
+					},
+					tag:{
+						huajing:1,
+					}
+				},
+				skills:['shenshuizhadan_skill']
+			},
+			qianshuifu:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip2',
+				equipDelay:false,
+				onLose:function(){
+					player.logSkill('qianshuifu_skill');
+					var next=game.createEvent('qianshuifu_draw');
+					event.next.remove(next);
+					event.getParent().after.push(next);
+					next.player=player;
+					next.setContent(function(){
+						player.draw();
+					});
+				},
+				filterLose:function(card,player){
+					if(player.hasSkillTag('unequip2')) return false;
+					return true;
+				},
+				skills:['qianshuifu_skill'],
+				tag:{
+					draw:1,
+				},
+				ai:{
+					order:9.5,
+					equipValue:function(card,player){
+						if(player.countCards('h','qianshuifu')) return 6;
+						return 0;
+					},
+					basic:{
+						equipValue:5
+					},
+					tag:{
+						huajing:1,
+					}
+				}
+			},
+			fanchuan:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip3',
+				distance:{globalTo:1},
+				ai:{
+					basic:{
+						equipValue:4,
+					},
+					tag:{
+						huajing:1,
+					}
+				},
+			},
+			yatelandisi:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip5',
+				nomod:true,
+				forceDie:true,
+				clearLose:true,
+				skills:['yatelandisi_skill1','yatelandisi_skill2'],
+				ai:{
+					equipValue:function(card,player){
+						if(player.countCards('e')>=3) return 8;
+						return 7;
+					},
+					basic:{
+						equipValue:7
+					},
+					tag:{
+						huajing:1,
+					}
+				}
+			},
 		},
 		skill:{
 			qi_skill:{
@@ -809,6 +1017,40 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
+			suansuyulei_skill:{
+				equipSkill:true,
+				trigger:{source:'damageBegin4'},
+				forced:true,
+				logTarget:'player',
+				filter:function(event,player){
+					return event.card&&(get.tag(event.card,'damage')&&get.nature(event.card)=='ocean'
+					||get.tag(event.card,'oceanDamage'))&&event.player.hujia>0;
+				},
+				content:function(){},
+				ai:{
+					unequip:true,
+					overHujia:true,
+					skillTagFilter:function(player,tag,arg){
+						if(!arg||!arg.card||!(get.tag(arg.card,'damage')&&get.nature(arg.card)=='ocean'
+						||get.tag(arg.card,'oceanDamage'))) return false;
+					},
+				},
+			},
+			shenshuizhadan_skill:{
+				equipSkill:true,
+				hiddenYami:function(player,name){
+					return player.countCards('h',function(card){
+						if(!lib.skill.shenshuizhadan_skill.filterCard(card,false,player))	return false;
+						return true
+					});
+				},
+				enable:'chooseToUse',
+				viewAs:{name:'sha',nature:'yami'},
+				position:'h',
+				filterCard:function(card,player,event){
+					return get.type(card,'trick')=='trick';
+				},
+			},
 			yinghua_skill:{
 				trigger:{player:'shaBegin'},
 				filter:function(event,player){
@@ -871,6 +1113,24 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			qianshuifu_skill:{
+				equipSkill:true,
+				trigger:{player:'damageBegin4'},
+				forced:true,
+				lastDo:true,
+				filter:function(event,player){
+					if(player.hasSkillTag('unequip2')) return false;
+					if(!event.source||event.source.inRange(player)||event.source.hasSkillTag('unequip',false,{
+						name:event.card?event.card.name:null,
+						target:player,
+						card:event.card
+					})) return false;
+					return event.num>0;
+				},
+				content:function(){
+					trigger.num--;
+				},
+			},
 			yalishanda_skill:{
 				equipSkill:true,
 				trigger:{source:'damageBegin1'},
@@ -908,6 +1168,137 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					trigger.player.chooseToDiscard('he',2,true);
 				},
 			},
+			yatelandisi_skill1:{
+				equipSkill:true,
+				trigger:{global:'phaseBegin'},//
+				direct:true,
+				firstDo:true,
+				filter:function(event,player){
+					return player.countCards('e',function(i){
+						var subtype = get.subtype(i)
+						if(player.storage.yatelandisi_skill2&&player.storage.yatelandisi_skill2.contains(subtype))	return false;
+						return ['equip1','equip2'].contains(subtype);
+					});
+				},
+				content:function(){
+					'step 0'
+					var att = get.attitude(player,_status.currentPhase)>=0;
+					att = (att)?0:1;
+					var list = [];
+					event.equip1 = player.getEquip(1);
+					event.equip2 = player.getEquip(2);
+					if(event.equip1&&(!player.storage.yatelandisi_skill1||!player.storage.yatelandisi_skill2.contains('equip1'))){
+						list.push('武器栏');
+					}
+					if(event.equip2&&(!player.storage.yatelandisi_skill2||!player.storage.yatelandisi_skill2.contains('equip2'))){
+						list.push('防具栏');
+					}
+					if(list.length==1&&att==1)	att = -1;
+					list.push('取消');
+					player.chooseControl('dialogcontrol',list,function(){
+						return _status.event.att;
+					}).set('att',att).set('prompt',get.prompt2('yatelandisi'))
+					'step 1'
+					if(result.control!='取消'){
+						player.logSkill('yatelandisi');
+						switch(result.control){
+							case '武器栏':event.subtype = 'equip1';break;
+							case '防具栏':event.subtype = 'equip2';break;
+						}
+						player.popup(result.control);
+						game.delay(0.5);
+						var list=[];
+						for(var i=0;i<lib.inpile.length;i++){
+							var name=lib.inpile[i];
+							if(get.subtype(name)==event.subtype) list.push(['装备','',name]);
+						}
+						game.broadcastAll(function(id, list){
+							var dialog=ui.create.dialog('###『亚特兰蒂斯』###声明一张牌',[list,'vcard']);
+							dialog.videoId = id;
+						}, event.videoId, list);
+					}else{
+						event.finish();
+					}
+					'step 2'
+					var next = player.chooseButton(1 ,true);
+					next.set('dialog',event.videoId);
+					next.set('ai',function(button){
+						var value = player.getUseValue({name:button.link[2],isCard:true});
+						if(player.hasCard({name:button.link[2]}))	return 2*value;
+						return value;
+					});
+					'step 3'
+					game.broadcastAll('closeDialog', event.videoId);
+					if (result.bool&&event[event.subtype]) {
+						player.popup(result.links[0][2]);
+						game.delay(0.5);
+						var originalName = event[event.subtype].name;
+						var cardid = event[event.subtype].cardid;
+						event[event.subtype].originalName = originalName;
+						event[event.subtype].viewAs = result.links[0][2];
+						event[event.subtype].name = result.links[0][2];
+						console.log(cardid);
+						if(!player.storage.yatelandisi_skill3)	player.storage.yatelandisi_skill3 = [];
+						if(!player.storage.yatelandisi_skill2)	player.storage.yatelandisi_skill2 = [];
+						player.storage.yatelandisi_skill2.add(event.subtype);
+						player.storage.yatelandisi_skill3.add(cardid);
+						player.storage.yatelandisi_skill3.add(originalName);
+						game.log(player,'的『',event.name,'』声明了【',event[event.subtype].viewAs,'】');
+						player.syncStorage('yatelandisi_skill3');
+						player.addTempSkill('yatelandisi_skill3');
+					}
+					'step 4'
+					player.useCard({name:'chenjing'},[player]);
+				},
+			},
+			yatelandisi_skill2:{
+				equipSkill:true,
+				trigger:{global:'roundStart'},
+				forced:true,
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return player.storage.yatelandisi_skill2;
+				},
+				content:function(){
+					player.storage.yatelandisi_skill2 = [];
+				}
+			},
+			yatelandisi_skill3:{
+				mark:true,
+				intro:{
+					content:function(storage,player){
+						if(storage.length==2)	return '更改了装备区【'+get.translation(storage[1])+'】的名称';
+					},
+					markcount:function(storage,player){
+						return 0;
+					},
+				},
+				equipSkill:true,
+				onremove:function(player,skill){
+					var args = player.storage.yatelandisi_skill3;
+					console.log(args);
+					var change = player.getCards('e',function(i){
+						return i.cardid = args[0];
+					});
+					if(change&&change[0]&&change[0].originalName==args[1]){
+						change[0].name = args[1];
+						change[0].viewAs = args[1];
+					}
+				},
+				forced:true,
+				trigger:{player:'loseAfter'},
+				filter:function(event,player){
+					var args = player.storage.yatelandisi_skill3;
+					console.log(args);
+					return args&&event.es.filter(function(i){
+						return i.cardid = args[0];
+					}).length;
+				},
+				content:function(){
+					player.removeSkill('yatelandisi_skill3');
+				}
+			},
 		},
 		translate:{
 			qi: '气',
@@ -926,6 +1317,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			chenjing_info: '出牌阶段，对一名角色使用，移除目标的至多三张牌直到回合结束，若因此移除了所有手牌，其获得1点护甲。',
 			chen_card:'消失之牌',
 
+			huiliu: '回流',
+			huiliu_info: '出牌阶段，对距离2以内且有护甲的一名其他角色使用。你获取其一点护甲，若你已受伤，则额外获得一点护甲。',
+			qinshi: '浸蚀',
+			qinshi_info: '出牌阶段，对有护甲的一名其他角色使用，你弃置一张牌，移除其所有护甲，若你弃置了装备牌，则额外对目标造成一点暗影伤害。',
+			bowen: '波纹',
+			bowen_info: '出牌阶段，对有护甲的一名其他角色使用，令其弃置自身护甲数量的手牌，若不足，则额外对其造成一点海洋伤害。',
+
 			xuanwo: '漩涡',
 			xuanwo_info: '出牌阶段，对一名其他角色使用（横置于判定区内）；若判定结果不为♦，该角色与其相邻的角色各弃置一张牌；然后将此牌移至当前回合角色下家。',
 			haidi: '海底宝藏',
@@ -942,10 +1340,31 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			linghunshouge_info: '<font color=#f66>锁定技</font> 你造成的伤害无视护甲。',
 			linghunshouge_skill_info: '<font color=#f66>锁定技</font> 你造成的伤害无视护甲。',
 			yinghua: '樱华水刃',
-			yinghua_info: '樱',
+			yinghua_bg: '樱',
 			yinghua_skill: '樱华水刃',
 			yinghua_info: '你使用【杀】指定装备区里有牌的角色为目标时，你可以将之效果改为【浪涌】。',
 			yinghua_skill_info: '你使用【杀】指定装备区里有牌的角色为目标时，你可以将之效果改为【浪涌】。',
+			suansuyulei: '酸素鱼雷',
+			suansuyulei_bg: '酸',
+			suansuyulei_skill: '酸素鱼雷',
+			suansuyulei_info: '<font color=#f66>锁定技</font> 你使用的海洋属性的牌无视护甲与防具。',
+			suansuyulei_skill_info: '<font color=#f66>锁定技</font> 你使用的海洋属性的牌无视护甲与防具。',
+			shenshuizhadan: '深水炸弹',
+			shenshuizhadan_bg: '炸',
+			shenshuizhadan_info: '你可以将任意锦囊牌当作暗影属性的【杀】使用。',
+			shenshuizhadan_skill: '炸鱼',
+			shenshuizhadan_skill_info: '你可以将任意锦囊牌当作暗影属性的【杀】使用。',
+			qianshuifu: '潜水服',
+			qianshuifu_skill: '潜水服',
+			qianshuifu_bg: '服',
+			qianshuifu_info: ' <font color=#f66>锁定技</font> 你在一名角色攻击距离外时，受到来源为其的伤害-1；当你失去装备区里的【潜水服】时，你摸一张牌。',
+			fanchuan: '帆船',
+			fanchuan_bg: '帆',
+			fanchuan_info: '<font color=#f66>锁定技</font> 其他角色计算与你的距离+1。',
+			yatelandisi: '亚特兰蒂斯',
+			yatelandisi_info: ' 每轮每项限一次，一个回合开始时，你可以声明一张武器/防具的技能并视为对自己使用一张【沉静】，然后直到回合结束，将自己装备区内武器/防具的技能改为之。',
+			yatelandisi_skill1: '亚特兰',
+			yatelandisi_skill3: '失落之城',
 
 			waiguge: '外骨骼',
 			waiguge_bg: '骨',
@@ -953,7 +1372,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			waiguge_info: '<font color=#f66>锁定技</font> 装备时获得1点护甲，防止你受到的海洋伤害。',
 			waiguge_skill_info: '<font color=#f66>锁定技</font> 装备时获得1点护甲，防止你受到的海洋伤害。',
 			qiyu: '旗鱼',
-			qiyu_info: '鱼',
+			qiyu_bg: '鱼',
 			qiyu_info: '<font color=#f66>锁定技</font> 你计算与其他角色的距离-1。',
 			yalishanda: '亚历山大石',
 			yalishanda_info: '石',
@@ -965,59 +1384,110 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		},
 		list:[
 			['spade',1,'qi'],
+			['spade',1,'qinshi'],
 			['spade',2,'sha','yami'],
+			['spade',2,'huiliu'],
 			['spade',3,'sanchaji'],
+			['spade',3,'suansuyulei'],
 			['spade',4,'sha','ocean'],
+			['spade',4,'sha','yami'],
+			['spade',5,'langyong'],
 			['spade',5,'langyong'],
 			['spade',6,'sha','ocean'],
+			['spade',6,'sha','ocean'],
 			['spade',7,'haixiao'],
+			['spade',7,'qi'],
 			['spade',8,'waiguge'],
+			['spade',8,'juedou','yami'],
 			['spade',9,'sha','yami'],
+			['spade',9,'jiu','ocean'],
 			['spade',10,'qi'],
+			['spade',10,'sha','ocean'],
+			['spade',11,'wuxie',null,['yingbian_kongchao']],
 			['spade',11,'sha','ocean'],
 			['spade',12,'wuxie',null,['yingbian_kongchao']],
-			['club',13,'tiesuo'],
+			['spade',12,'huiliu'],
+			['spade',13,'tiesuo'],
+			['spade',13,'haixiao'],
 
 			['heart',1,'qi'],
+			['heart',1,'bowen'],
 			['heart',2,'shan'],
+			['heart',2,'sha'],
 			['heart',3,'sha','ocean'],
+			['heart',3,'lebu'],
 			['heart',4,'tao','ocean'],
+			['heart',4,'tao'],
 			['heart',5,'tao','ocean'],
+			['heart',5,'qi'],
 			['heart',6,'chenjing'],
+			['heart',6,'tao'],
 			['heart',7,'chenmo'],
+			['heart',7,'huiliu'],
 			['heart',8,'sha','ocean'],
+			['heart',8,'tao','ocean'],
 			['heart',9,'jiu'],
+			['heart',9,'lebu'],
 			['heart',10,'yinghua'],
+			['heart',10,'shan'],
 			['heart',11,'qi'],
+			['spade',11,'jiu','ocean'],
 			['heart',12,'wuxie',null,['yingbian_kongchao']],
+			['heart',12,'yatelandisi'],
+			['heart',13,'jingluo'],
+			['heart',13,'wuxie',null,['yingbian_kongchao']],
 
 			['club',1,'chenmo'],
+			['club',1,'shenshuizhadan'],
 			['club',2,'sha','yami'],
+			['club',2,'sha','thunder'],
 			['club',3,'jiu'],
+			['club',3,'sha','yami'],
 			['club',4,'sha','yami'],
+			['club',4,'tiesuo'],
 			['club',5,'qi'],
+			['club',5,'sha','yami'],
 			['club',6,'langyong'],
+			['club',6,'haixiao'],
 			['club',7,'sha','ocean'],
+			['club',7,'juedou','ocean'],
 			['club',8,'sha','yami'],
+			['club',8,'chenmo'],
 			['club',9,'sha','yami'],
+			['club',9,'jingluo'],
 			['club',10,'haixiao'],
+			['club',10,'bowen','yami'],
 			['club',11,'tiesuo'],
+			['club',11,'qianshuifu'],
 			['club',12,'qiyu'],
+			['club',12,'qinshi'],
 			['club',13,'jingluo'],
+			['club',13,'tiesuo'],
 
 			['diamond',1,'xuanwo'],
 			['diamond',2,'tao','ocean'],
+			['diamond',2,'qinshi'],
 			['diamond',3,'shan'],
+			['diamond',3,'wuzhong','ocean'],
 			['diamond',4,'sha','yami'],
+			['diamond',4,'tao','ocean'],
 			['diamond',5,'linghunshouge'],
+			['diamond',5,'shan',null,['yingbian_kongchao']],
 			['diamond',6,'sha','ocean'],
+			['diamond',6,'bowen'],
 			['diamond',7,'xuanwo'],
+			['diamond',7,'qi'],
 			['diamond',8,'qi'],
+			['diamond',8,'shan',null,['yingbian_kongchao']],
 			['diamond',9,'shan'],
+			['diamond',9,'jiu'],
 			['diamond',10,'waiguge'],
 			['diamond',11,'wuxie',null,['yingbian_kongchao']],
+			['diamond',11,'shan',null,['yingbian_kongchao']],
 			['diamond',12,'shan'],
+			['diamond',12,'wuxie'],
 			['diamond',13,'haidi'],
+			['diamond',13,'fanchuan'],
 		],
 		help:{
 			'化鲸篇':('<div style="margin:10px">海洋与暗影</div><ul style="margin-top:0">'+

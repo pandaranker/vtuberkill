@@ -39,7 +39,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCard1'},
 				priority:42,
 				check:function(event,player){
-					return event.targets[0]!=player;
+					var effect = 0;
+					for(var i=0;i<event.targets.length;i++){
+						effect += get.effect(event.targets[i],{name:'langyong'},event.player,player);
+					}
+					return effect>0;
 				},
 				filter:function(event,player){
 					if(event.targets.length!=1) return false;
@@ -357,17 +361,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.addedSkill.add('yangliu');
 					'step 1'
 					var controls=['摸一张牌','不可响应'];
-					player.chooseControl(controls).set('ai',function(event,player){
+					controls.push('取消');
+					player.chooseControl('dialogcontrol',controls).set('ai',function(event,player){
 						return _status.event.index;
 					}).set('index',0);
 					'step 2'
-					switch(result.index){
-						case 0:{
+					switch(result.control){
+						case '摸一张牌':{
 							player.draw();
 							break;
 						}
-						case 1:{
-							trigger.directHit.add(trigger.targets);
+						case '不可响应':{
+							trigger.directHit.addArray(trigger.targets);
 							break;
 						}
 					}
@@ -603,7 +608,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 0;
 						}
 					},
-					threaten:1.5,
+					threaten:0.5,
 				},
 			},
 			youhai:{
@@ -724,7 +729,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸两张牌',function(card,player,target){
 						if(player==target) return false;
-						return player.canUse({name:'sha',nature:'ocean'},target,false);
+						return player.inRange(target)&&player.canUse({name:'sha',nature:'ocean'},target,false);
 					}).ai = function(target){
 						var player=_status.event.player;
 						return get.effect(target,{name:'sha',nature:'ocean'},player,player);
@@ -1033,12 +1038,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			sp_guiliu:{
 				audio:5,
-				trigger:{global:'loseAfter'},
+				trigger:{global:['loseAfter','cardsDiscardAfter']},
 				filter:function(event,player){
-				if(event.getParent().name!='discard')	return false;
+					if(event.name=='cardsDiscard'&&event.getParent().name=='orderingDiscard'&&event.getParent().relatedEvent.name=='useCard') return false;
+					if(event.name=='lose'&&(event.getParent().name=='useCard'||event.position!=ui.discardPile)) return false;
 					var cards=player.getCards('h');
 					for(var i=0;i<event.cards.length;i++){
-						if(get.position(event.cards[i])=='d'){
+						if(get.position(event.cards[i],true)=='d'){
 							for(var j=0;j<cards.length;j++){
 								if(get.color(event.cards[i])==get.color(cards[j])) return true;
 							}
