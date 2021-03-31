@@ -424,7 +424,6 @@ window.noname_asset_list=[
 	'audio/skill/xiou2.mp3',
 	'audio/skill/xiou3.mp3',
 	'audio/skill/xiou4.mp3',
-	'audio/skill/xiou5.mp3',
 	'audio/skill/xuanxu1.mp3',
 	'audio/skill/xuanxu2.mp3',
 	'audio/skill/xuanxu3.mp3',
