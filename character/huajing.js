@@ -693,7 +693,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				trigger:{player:'changeHujiaEnd'},
 				filter:function(event,player){
-					return event.num<0;
+					return event.num<0&&player.hujia==0;
 				},
 				forced:true,
 				lastDo:true,
@@ -1142,7 +1142,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			haishou: '煽动海兽',
 			haishou_info: '每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。',
 			lishi: '幕下力士',
-			lishi_info: '<font color=#f66>锁定技</font> 当你的护甲减少时，摸一张牌。',
+			lishi_info: '<font color=#f66>锁定技</font> 你失去最后一点护甲时，摸一张牌。',
 			
 			sea_MinatoAqua: '海·湊阿夸',
 			jinchen: '浸沉',

@@ -2197,9 +2197,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				'Azusa',
 			],
 			holo:[
-				'TokinoSora','AkaiHaato','NatsuiroMatsuri','RobokoSan','ShirakamiFubuki','AkiRosenthal','HoshimatiSuisei',
+				'TokinoSora','NatsuiroMatsuri','RobokoSan','ShirakamiFubuki','AkiRosenthal','HoshimatiSuisei',
 				'SakuraMiko','MinatoAqua','UsadaPekora','ŌokamiMio','re_UruhaRushia',
-				'Civia','SpadeEcho','Artia','Doris',
+				'Civia','SpadeEcho','Artia','Doris','Yogiri',
 			],
 			vtuber:[
 				'ShirayukiMishiro','KaguyaLuna','UmoriHinako','SuouPatra','TenkaiTsukasa','Yousa','MiraiAkari',

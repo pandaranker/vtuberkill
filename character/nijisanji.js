@@ -2206,8 +2206,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					clear: {
 						forced: true,
 						silent: true,
-						trigger: {
-							global: ['phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin'],
+						trigger:{
+							global:['phaseJudgeBegin','phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin','phaseJieshuBegin']
 						},
 						content: function() {
 							player.storage.hp = player.storage.loseCount = 0;

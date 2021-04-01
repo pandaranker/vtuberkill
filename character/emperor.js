@@ -1733,38 +1733,71 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player){
 				// player.addSkill('ai_point');//test
 				},
-				group:['ai_xu_ondraw', 'ai_xu_ondiscard', 'ai_xu_onblacksha'],
+				group:['ai_xu_ongain', 'ai_xu_ondiscard', 'ai_xu_onPhaseEnd', 'ai_xu_onblacksha'],
 				subSkill:{
-					ondraw:{
+					//一个阶段内首次获得牌的角色
+					ongain:{
 						trigger:{
-							player: 'drawBegin'
+							player: ['gainBegin']
 						},
 						filter:function(event, player){
-							return player.hasSkill('ai_point');
+							if(game.countPlayer(function(current){
+								return current.hasSkill('ai_point')&&!current.storage.ai_xu_ongain;
+							}))return true;
+							return false;
 						},
-						forced: true,
+						direct: true,
+						log: false,
 						content:function(){
-							player.storage.ai_point.point += 1;
-							player.syncStorage('ai_point');
-							player.markSkill('ai_point');
-							event.trigger('addAiPoint');
+							player.storage.ai_xu_ongain = true;
 						}
 					},
+					//一个阶段内首次失去牌的角色
 					ondiscard:{
 						trigger:{
 							player: 'discardBegin'
 						},
-						forced: true,
+						direct: true,
+						log: false,
 						filter:function(event, player){
-							return player.hasSkill('ai_point')&&player.storage.ai_point.point >=1;
+							if(game.countPlayer(function(current){
+								return current.hasSkill('ai_point')&&!current.storage.ai_xu_ondiscard;
+							}))return true;
+							return false;
 						},
-						direct:true,
 						content:function(){
-							player.storage.ai_point.point -=1;
-							player.syncStorage('ai_point');
-							player.markSkill('ai_point');
+							player.storage.ai_xu_ondiscard = true;
 						}
 					},
+					//一个阶段内首次获得牌的角色+❶，失去牌的–❶。
+					onPhaseEnd:{
+						trigger:{
+							player: ['phaseZhunbeiEnd', 'phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd', 'phaseJieshuEnd']
+						},
+						priority: 257,
+						direct:true,
+						log: false,
+						content:function(){
+							var players=game.players.slice(0);
+							for(var i=0;i<players.length;++i){
+								if(players[i].storage.ai_xu_ongain){
+									players[i].storage.ai_point.point +=1;
+									if(players[i].hasSkill('ai_extraPoint')) players[i].storage.ai_point.point +=1;
+									players[i].syncStorage('ai_point');
+									players[i].markSkill('ai_point');
+								}
+								delete players[i].storage.ai_xu_ongain;
+								if(players[i].storage.ai_xu_ondiscard&&players[i].storage.ai_point.point>=1){
+									players[i].storage.ai_point.point -=1;
+									players[i].syncStorage('ai_point');
+									players[i].markSkill('ai_point');
+								}
+								delete players[i].storage.ai_xu_ondiscard;
+							}
+
+						}
+					},
+					//你可以–❷以抵消黑色【杀】。
 					onblacksha:{
 						trigger:{
 							target:'shaBefore'
@@ -1861,7 +1894,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{
 							player: 'phaseZhunbei'
 						},
-						direct:true,
 						filter:function(event, player){
 							return player.hasSkill('ai_point')&&player.getCards('he').length>0;
 						},
@@ -1886,7 +1918,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player: 'useCard2'
 						},
 						filter:function(event, player){
-							if(!player.hasSkill('ai_point'))return false;
+							if(!player.hasSkill('ai_point')||player.storage.ai_point.point <2)return false;
 							if(!event.targets||!event.targets.length) return false;
 							var info=get.info(event.card);
 							if(info.allowMultiple==false) return false;
@@ -1999,6 +2031,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					deadSkillTrigger:{
 						trigger:{
 							player: []
+						},
+						filter:function(event, player){
+							return player.hasSkill('ai_point');
 						},
 						direct:true,
 						log:false,

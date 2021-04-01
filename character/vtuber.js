@@ -185,7 +185,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							// console.log(lib.filter.filterTarget({name:'sha',isCard:true},player,game.players[0]));
 							if(playersNum>=trigger.targets.length&&player.getCardUsable({name:'sha'}))
-								player.chooseControl(['jiu','sha','tao','leisha','huosha','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
+								player.chooseControl(['jiu','sha','tao','雷杀','火杀','冰杀','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
 							else
 								player.chooseControl(['jiu','tao','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
 						}
@@ -197,13 +197,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.control!='cancel2'){
 						var usecard={name:result.control,isCard:true};
 						switch (usecard.name) {
-							case 'huosha':
+							case '雷杀':
+								usecard.name='sha';
+								usecard.nature='thunder';
+								break;
+							case '火杀':
 								usecard.name='sha';
 								usecard.nature='fire';
 								break;
-							case 'leisha':
+							case '冰杀':
 								usecard.name='sha';
-								usecard.nature='thunder';
+								usecard.nature='ice';
 								break;
 							default:
 								break;
@@ -252,21 +256,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:function(skill,player){
-						if(!game.hasPlayer(function(cur){
-							if(get.attitude(player,cur)<=0)	return 0;
-							else return get.attitude(player,cur);
+						if(game.hasPlayer(function(cur){
+							return cur!=player&&get.attitude(player,cur)>0;
 						})){
-							return 0;
+							if(player.needsToDiscard()){
+								return 1+Math.random();
+							}
+							return 5+Math.random();
 						}
-						if(player.needsToDiscard()){
-							return 5;
-						}
-						return 1;
+						else	return 0;
 					},
 					result:{
 						player:function(player,target){
-							if(player.needsToDiscard()) return Math.random()-0.1;
-							return Math.random()-0.9;
+							if(player.needsToDiscard()) return Math.random();
+							return Math.random()-0.6;
 						}
 					},
 					threaten:0.8
@@ -1294,6 +1297,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target:-1,
 						expose:0.4,
 					},
+					threaten:0.8
 				},
 				subSkill:{
 					tag:{
