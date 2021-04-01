@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.101.40',
+	version:'1.9.101.41',
 	update:'1.9.100.113.6',
 	changeLog:[
 		'101.41微型更新：修复bug，调整皇绊爱一技能，调整斗地主杏势力奖池，削弱海熊猫',
