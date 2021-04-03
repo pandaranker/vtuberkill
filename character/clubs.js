@@ -2313,55 +2313,40 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						audio:'xiou',
 						trigger:{player: 'phaseZhunbeiBegin' },
 						filter:function(event, player){
-							return player.getCards('he').length > 0;//手牌或装备牌至少有一张可弃置时，才可以触发
+							return game.hasPlayer(function(cur){
+								return cur!=player&&cur.countGainableCards('h');
+							});
 						},
 						content:function(){
 							'step 0'
-							player.chooseToDiscard('弃置一张牌', true).set('ai', function(card){
-								return 8 - get.value(card);
-							});
-							'step 1'
 							var filterTarget = function(card,player,target){
-								return player!=target&&target.getCards('he').length> 0;
+								return player!=target&&target.countGainableCards('h');
 							};
-							var players = game.players.slice(0);
-							var card = get.card();
-							for(var i=0;i<players.length;++i){ //遍历角色
-								if(filterTarget(card, player, players[i])){
-									break;
-								}
-							}
-							if(i>=players.length){ //如果没有可选角色就结束事件
-								event.finish();
-								return;
-							}
 							player.chooseTarget(
 								'选择一名其他角色，获取其所有手牌',
 								filterTarget, true
 							).set('ai', function(target){
 								var evt = _status.event;
 								var att = get.attitude(evt.player, target);
-								if(evt.player == target||att>0) return Math.random()-1;
-								return 10 - att + target.getCards('h').length;
+								if(target.hasSkill('yiqu')) return 2+3*att+target.countGainableCards('h');
+								return att+target.countGainableCards('h');
 							});
-							'step 2'
+							'step 1'
 							var p1 = result.targets[0];
 							//添加临时技能xiou_phaseJieshuTrigger
 							player.addTempSkill('xiou_phaseJieshuTrigger', 'phaseJieshuAfter');
 							player.storage.xiou.p1 = p1;
-							//获取其所有手牌
-							var hardCards = p1.getCards('h');
+							var hardCards = p1.getGainableCards('h');
 							if(!hardCards||!hardCards.length){
 								event.finish();
 								return;
 							}
-							//暂存P1和P1手牌数量
 							event.p1HandCardCount = hardCards.length;
 							event.p1 = p1;
 							//调用gain获取P1手牌
 							player.gain(hardCards, p1, 'giveAuto', 'bySelf');
-							'step 3'
-							var cnt = player.getCards('he').length;
+							'step 2'
+							var cnt = player.countCards('he');
 							cnt = Math.min(event.p1HandCardCount, cnt);
 							if(cnt>0){
 								//选择等量(如果不足则全部)的牌
@@ -2371,7 +2356,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}else{
 								event.finish();
 							}
-							'step 4'
+							'step 3'
 							//选择的牌交给P1
 							event.p1.gain(result.cards, player, 'giveAuto');
 						}
@@ -2397,12 +2382,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							//各摸一张牌
 							game.asyncDraw([player,player.storage.xiou.p1]);
-							// //你摸一张牌
-							// player.draw();
-							// //P1摸一张牌
-							// if(!player.storage.xiou)return;
-							// if(player.storage.xiou.p1)player.storage.xiou.p1.draw();
-							//清除storage
 							delete player.storage.xiou.p1;
 						},
 						ai:{
@@ -2642,7 +2621,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			bingtang: '进击的冰糖',
 			xiou: '戏偶',
-			xiou_info: '准备阶段，你可以弃置一张牌，获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
+			xiou_info: '准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
 			xiou_gainHand_info: '准备阶段，你可以弃置一张牌，获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
 
 			zhangjinghua: '张京华',

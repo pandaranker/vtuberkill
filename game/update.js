@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.41',
+	version:'1.9.101.42',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.41微型更新：修复bug，调整皇绊爱一技能，调整斗地主杏势力奖池，削弱海熊猫',
+		'101.42小更新：修复绫奈奈奈等角色的大量bug，加强冰糖（发动技能不再需要弃牌），新增角色向晚（测试包）',
 		'101.40大更新：增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，《化鲸篇》追加扩展包（平衡护甲系），修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -10,11 +10,6 @@ window.noname_update={
 	],
 	files:[
 		//化鲸篇
-		'image/card/yalishanda.png',
-		'image/card/zhungangshuo.png',
-		'image/card/lanyinjia.png',
-		'image/card/waiguge.png',
-
 		'character/Beginner.js',
 		'character/hololive.js',
 		'character/clubs.js',

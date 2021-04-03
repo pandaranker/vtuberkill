@@ -32,6 +32,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Bella: ['female','asoul',4,['aswusheng', 'gunxun']],
 			/**嘉然 */
 			Diana: ['female','asoul',4,['quanyu', 'wulian']],
+			/**珈乐 */
+			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -40,10 +42,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_Ava: '#rA-SOUL',
 			sp_Diana: '#rA-SOUL',
+			Ava: '#rA-SOUL',
 			Bella: '#rA-SOUL',
 			Diana: '#rA-SOUL',
-			Queen: '#rA-SOUL',
 			Carol: '#rA-SOUL',
+			EQueen: '#rA-SOUL',
 		},
 		characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',

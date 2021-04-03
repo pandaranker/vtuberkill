@@ -2204,7 +2204,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			vtuber:[
 				'ShirayukiMishiro','KaguyaLuna','UmoriHinako','SuouPatra','TenkaiTsukasa','Yousa','MiraiAkari',
 				're_YuNi','re_TomariMari','re_Omesis','re_NijikawaRaki','re_KizunaAI',
-				'Bella','Diana','Queen',
+				'Bella','Diana','EQueen',
 			],
 			clubs:[
 				'KaguraMea','TakatsukiRitsu','MorinagaMiu','OtomeOto','HanazonoSerena','MashiroKanon',

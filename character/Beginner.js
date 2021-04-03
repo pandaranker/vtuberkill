@@ -136,44 +136,62 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.re_ailian_clear+=cards.length;
 					'step 2'
 					if(player.storage.re_ailian_clear>=2&&event.num<2){
-						var list=get.inpile('basic',function(name){
-							return name!='du'&&name!='shan';
-						});
-						for(var i=0;i<list.length;i++){
-							list[i]=['基本','',list[i]];
+						var list=[];
+						if(lib.filter.cardUsable({name:'sha'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
+							return player.canUse('sha',current);
+						})){
+							list.push(['基本','','sha']);
+							list.push(['基本','','sha','fire']);
+							list.push(['基本','','sha','thunder']);
+							list.push(['基本','','sha','ice']);
 						}
-						event.videoId = lib.status.videoId++;
-						game.broadcastAll(function(id, list){
-							var dialog = ui.create.dialog('『爱链』选择使用一张基本牌',[list,'vcard']);
-							dialog.videoId = id;
-						}, event.videoId, list);
-					}else{
-						event.finish();
+						if(lib.filter.cardUsable({name:'tao'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
+							return player.canUse('tao',current);
+						})){
+							list.push(['基本','','tao']);
+						}
+						if(lib.filter.cardUsable({name:'jiu'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
+							return player.canUse('jiu',current);
+						})){
+							list.push(['基本','','jiu']);
+						}
+						if(list.length){
+							player.chooseButton(['是否视为使用一张基本牌？',[list,'vcard']]).set('ai',function(button){
+								var player=_status.event.player;
+								var card={name:button.link[2],nature:button.link[3]};
+								switch(card.name){
+									case 'tao':
+										if(player.hp==1||(player.hp==2&&!player.hasShan())||player.needsToDiscard()){
+											return 5;
+										}
+										return 1+Math.random();
+									case 'sha':
+										if(game.hasPlayer(function(current){
+											return player.canUse(card,current)&&get.effect(current,card,player,player)>0
+										})){
+											if(card.nature=='fire') return 2.95;
+											if(card.nature=='thunder'||card.nature=='ice') return 2.92;
+											return 2.9;
+										}
+										return 0;
+									case 'jiu':
+										if(player.getCardUsable('sha')==0||!player.hasSha()||!player.hasUseTarget('sha')) return 0;
+										return 0.8+Math.random();
+									case 'qi':
+										if(player.isDamaged()) return 1.1+Math.random();
+										return 0.1;
+									default: return 0;
+								}
+							});
+						}
+						else{
+							event.finish();
+						}
 					}
 					'step 3'
-					player.chooseButton().set('dialog',event.videoId).set('ai',function(button){
-						var player=_status.event.player;
-						var name=button.link[2];
-						switch(name){
-							case 'tao':
-								if(player.hp<player.maxHp) return 1.7+Math.random();
-								return 0;
-							case 'sha':
-								if(player.hasUseTarget('sha')) return 1.2+Math.random();
-								return 0;
-							case 'jiu':
-								if(player.getCardUsable('sha')==0||!player.hasSha()) return 0;
-								return 1.2+Math.random();
-							case 'qi':
-								if(player.hp<player.maxHp) return 1.1+Math.random();
-								return 0.9+Math.random();
-							default: return 0;
-						}
-					});
-					'step 4'
-					game.broadcastAll('closeDialog', event.videoId);
-					if(result.bool){
-						player.chooseUseTarget({name:result.buttons[0].link[2]},false);
+					if(result&&result.bool&&result.links[0]){
+						var card={name:result.links[0][2],nature:result.links[0][3]};
+						player.chooseUseTarget(card,true);
 					}
 				},
 				ai:{
@@ -193,7 +211,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(target.hasJudge('lebu')) return 0;
 							var nh=target.countCards('h');
 							var np=player.countCards('h');
-							if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
+							if(player.hp==player.maxHp||player.storage.re_ailian_clear<0||player.countCards('h')<=1){
 								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
 							}
 							return Math.max(1,5-nh);
@@ -1496,6 +1514,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							},
 							position:'he',
 							viewAs:{name:links[0][2],nature:links[0][3],isCard:true},
+							onrespond:function(){return this.onuse.apply(this,arguments)},
 							onuse:function(result,player){
 								if(player.storage.re_longdan==false)	player.storage.re_longdan = true;
 								else	player.storage.re_longdan = false;

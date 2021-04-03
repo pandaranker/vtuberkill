@@ -408,20 +408,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.storage.kuase_date;
 				},
+				check:function(event,player){
+					return !player.storage.shenghuang_draw||player.storage.kuase_date>=player.storage.shenghuang_draw;
+				},
 				content:function(){
-					var dream = player.storage.kuase_date ;
-		//			game.hasPlayer(function(cur){
-		//				dream += (cur.hp-cur.storage.shenghuang_put);
-		//				var damT = cur.getHistory('damage');
-		//				var dam = 0;
-		//				damT.forEach(function(da){
-		//					if(da.num){
-		//						dam += da.num;
-		//					}
-		//				});
-		//				dream += dam;			
-		//				console.log(dream);
-		//			});
+					var dream = player.storage.kuase_date;
 					player.draw(dream);
 					player.getStat().card.sha=0;
 					player.phaseUse();
@@ -1369,7 +1360,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:function(skill,player){
-						if(player.hp=player.maxHp&&player.countCards('h')>1){
+						if(player.hp=player.maxHp&&player.needsToDiscard()){
 							if(player.storage.tangyan_on)	return 5;
 							return 10;
 						}
@@ -1390,7 +1381,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(target.hasJudge('lebu')) return 0;
 							var nh=target.countCards('h');
 							var np=player.countCards('h');
-							if(player.hp==player.maxHp||player.storage.rende<0||player.countCards('h')<=1){
+							if(player.hp==player.maxHp||player.countCards('h')<=1){
 								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
 							}
 							return Math.max(1,5-nh);
