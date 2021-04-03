@@ -4957,7 +4957,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			shouru:{
-				audio:true,
+				audio:4,
 				trigger:{player:['damageAfter','useCardAfter','respondAfter']},
 				priority:199,
 				frequent:true,
