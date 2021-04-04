@@ -21373,7 +21373,7 @@
 				addSkillLog:function(skill){
 					this.addSkill(skill);
 					this.popup(skill);
-					game.log(this,'获得了技能','#g【'+get.translation(skill)+'】');
+					game.log(this,'获得了技能','#g『'+get.translation(skill)+'』');
 				},
 				addSkill:function(skill,checkConflict,nobroadcast){
 					if(Array.isArray(skill)){

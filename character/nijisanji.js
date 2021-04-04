@@ -2207,10 +2207,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced: true,
 						silent: true,
 						trigger:{
-							global:['phaseJudgeBegin','phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin','phaseJieshuBegin']
+							global:['phaseZhunbeiBegin','phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin','phaseJieshuBegin']
 						},
 						content: function() {
-							player.storage.hp = player.storage.loseCount = 0;
+							player.storage.hp = 0;
+							player.storage.loseCount = 0;
 						}
 					},
 					cnt1: {

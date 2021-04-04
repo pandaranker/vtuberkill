@@ -32,6 +32,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
+			Pudding: ['female','psp',4,['tianlve','luxian']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
@@ -1362,7 +1363,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.index == 0){
 						event.finish();
-					}else{
+					}else if(result.index){
 						player.storage.shushi += result.index;
 						game.broadcastAll(function(player){
 							player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
@@ -2622,7 +2623,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bingtang: '进击的冰糖',
 			xiou: '戏偶',
 			xiou_info: '准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
-			xiou_gainHand_info: '准备阶段，你可以弃置一张牌，获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
+			xiou_gainHand_info: '准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
 
 			zhangjinghua: '张京华',
 			xiemen: '斜门',
