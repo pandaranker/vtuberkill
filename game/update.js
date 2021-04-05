@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.43',
+	version:'1.9.101.44',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.43小更新：继续修复绫奈奈奈的bug，新增角色秋凛子（测试包）',
+		'101.44小更新：调整向晚的描述和秋凛子的技能，新增角色机萪（测试包），新增身份模式下的“点将模式”（联机限定）和“装备回调”功能',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -26,6 +26,8 @@ window.noname_update={
 		'card/sp.js',
 		'card/standard.js',
 		'card/guozhan.js',
+		'card/remark.js',
+		'image/card/huiliu.png',
 		//'card/swd.js',
 		//'card/mtg.js',
 		//'card/gujian.js',
