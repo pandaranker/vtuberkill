@@ -4273,22 +4273,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.card = trigger.card;
 					var list1 = player.storage.juehuo.ans.slice(0);
 					var list2 = player.storage.juehuo.ms.slice(0);
-					var dialog = ui.create.dialog('『指月』：选择绝活翻面');
+					var list = ['『指月』：选择绝活翻面'];
 					if(list1&&list1.length){
-						dialog.addText('暗置绝活');
-						dialog.add([list1, 'card']);
+						list.push('暗置绝活');
+						list.push([list1,'card']);
 					}
 					if(list2&&list2.length){
-						dialog.addText('明置绝活');
-						dialog.add([list2, 'card']);
+						list.push('明置绝活');
+						list.push([list2,'card']);
 					}
-					dialog.videoId = event.videoId;
+					list.push('hidden');
 					event.list1 = list1;
 					event.list2 = list2;
-					game.delay(0.5);
-					'step 1'
-					var next = player.chooseButton().set('visible', true);
-					next.set('dialog',event.videoId);
+					var next = player.chooseButton(list);
 					next.set('selectButton',[1,event.list2.length+1]);
 					next.set('filterButton',function(button){
 						var card = _status.event.card;
@@ -4308,8 +4305,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					});
 					next.set('card',event.card);
-					'step 2'
-					game.broadcastAll('closeDialog', event.videoId);
+					'step 1'
 					if(result.bool&&result.links&&result.links.length){
 						var cards1 = result.links.slice(0);
 						var cards2 = result.links.slice(0);
@@ -5333,7 +5329,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.skillai=function(){
 						return get.max(list,get.skillRank,'item');
 					};
-					if(event.isMine()){
+					var fun=function(list){
 						var dialog=ui.create.dialog('forcebutton');
 						dialog.add('选择获得一项技能');
 						var clickItem=function(){
@@ -5364,8 +5360,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						};
 						_status.imchoosing=true;
 						game.pause();
-					}
-					else{
+					};
+					if(player.isOnline2()){
+						player.send(func,list);
+					}else if(event.isMine()){
+						fun(list);
+					}else{
 						event._result=event.skillai();
 					}
 					'step 3'
@@ -5378,10 +5378,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}else{
 						player.addAdditionalSkill('qianjiwanbian',link,true);
 						player.addSkillLog(link);
-						if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
-							event.reapeat = true;
-							event.goto(2);
-						}
+					}
+					if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
+						event.reapeat = true;
+						event.goto(2);
 					}
 				},
 				subSkill:{
