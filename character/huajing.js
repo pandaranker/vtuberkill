@@ -608,7 +608,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 0;
 						}
 					},
-					threaten:0.5,
+					threaten:1.2,
 				},
 			},
 			youhai:{
@@ -867,9 +867,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				content:function(){
 					'step 0'
-					event.num = player.hujia*(player.hp-1);
+					var hp = lib.character[player.name][2];
+					hp = (typeof hp=='string')?Number(hp.substring(0,1)):hp;
+					event.num = player.hujia*(player.hp-hp);
 					player.hujia = 0;
-					player.hp = 1;
+					player.hp = hp;
 					player.update();
 					game.log(player,'体力和护甲重置为初始状态');
 					'step 1'

@@ -1281,6 +1281,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
+				},
+				ai:{
+					threaten:0.6,
 				}
 			},
 			jinyuan:{
@@ -1330,7 +1333,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						target:1,
 					},
-					threaten:0.6,
 				},
 			},
 			zhongjian:{

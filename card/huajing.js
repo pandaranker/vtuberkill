@@ -723,7 +723,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					tag:{
 						huajing:1,
-						damage:1,
+						discard:1,
+						damage:0.2,
 						natureDamage:1,
 						oceanDamage:1,
 					}

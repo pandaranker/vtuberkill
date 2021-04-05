@@ -2192,10 +2192,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					var evt=_status.event.getParent('phase');
 					if(evt){
-						//game.resetSkills();
 						_status.event=evt;
 						_status.event.finish();
-						// _status.event.untrigger(true);
 					}
 				},
 				ai:{

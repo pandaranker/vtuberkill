@@ -15,11 +15,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**向晚 */
 			Ava: ['female','asoul',4,['yiqu','wanxian']],
 
+			/**机萪 */
+			jike: ['female','qun',3,['qianjiwanbian']],
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
-			/**粉兔 */
-			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu']],
-			/**残心 */
+			/**阿秋 */
 			AkiRinco: ['female','psp',4,['jiren','canxin']],
 			/**测试用角色 */
 			Ruki: ['female','VirtuaReal',4,['beixie','hunzhan']],
@@ -3211,7 +3211,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else return -0.5;
 						},
 					},
-					threaten:0.4,
+					threaten:1.2,
 				},
 			},
 			//ptr
@@ -3410,6 +3410,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var fun = lib.card['niwei_'+trigger.name].content;
 					if(fun)	trigger.setContent(fun);
 				},
+				ai:{
+					threaten:0.8,
+				}
 			},
 			xuanxu:{
 				audio:4,
@@ -3538,9 +3541,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
-				ai:{
-					threaten:1.5
-				}
 			},
 			weizeng:{
 				init:function(player,skill){
@@ -3705,6 +3705,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				ai:{
+					threaten:0.8,
+				}
 			},
 			gunxun:{
 				enable:'phaseUse',
@@ -4136,6 +4139,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//向晚
 			yiqu:{
 				trigger:{global:['chooseTargetAfter','chooseCardTargetAfter','chooseUseTargetAfter','useSkillAfter']},
+				frequent:true,
 				filter:function(event,player){
 					var name = lib.skill.yiqu.process(event);
 					var info=lib.skill[name];
@@ -4149,7 +4153,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						targets = result.targets.slice(0);
 					}
 					console.log(targets);
-					return lib.translate[name]&&!player.hasSkill(name)&&targets.contains(player);
+					return lib.translate[name+'_info']&&!player.hasSkill(name)&&targets.contains(player);
 				},
 				prompt2:function(event,player){
 					var name = lib.skill.yiqu.process(event);
@@ -4191,7 +4195,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					return event.player!=player&&event.parent.name=='damage'
-					&&event.parent.source&&[event.player,player].contains(event.parent.source);
+					&&event.parent.source&&[event.player,player].contains(event.parent.source)
+					&&player.additionalSkills['yiqu']&&player.additionalSkills['yiqu'].length;
 				},
 				content:function(){
 					'step 0'
@@ -4974,7 +4979,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return target!=player&&get.distance(_status.currentPhase,target,'pure')==1&&target.countGainableCards('he',player);
 					},function(target){
 						var player = _status.event.player;
-						return 8-get.attitude(target,player,player);
+						return 8-get.attitude(player,target);
 					});
 					'step 1'
 					if(result.targets&&result.targets.length){
@@ -5000,6 +5005,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.storage.shouru_clear = [];
 						},
 					}
+				},
+				ai:{
+					threaten:0.8,
 				}
 			},
 			chonghuang:{
@@ -5095,6 +5103,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				unique:true,
 				zhuSkill:true,
 			},
+			//阿秋
 			jiren:{
 				audio:6,
 				init:function(player,skill){
@@ -5114,9 +5123,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return 0;
 					};
-					if(player.storage.jiren1&&player.storage.jiren1.length<4){
+					if(player.storage.jiren1&&player.storage.jiren1.length&&player.storage.jiren1.length<4){
 						func=function(result){
-							var suits = _status.event.player.storage.jiren1.slice(0);
+							var suits = _status.event.player.storage.jiren1||[];
 							if(get.subtype(result)=='equip1'){
 								player.gain(result.card,'gainAuto')
 								return 3;
@@ -5136,6 +5145,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				group:'jiren2',
 				ai:{
+					threaten:1.2,
 					order:18,
 					result:{player:1},
 				}
@@ -5155,7 +5165,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				onremove:true,
 				trigger:{global:['loseEnd','cardsDiscardEnd']},
 				filter:function(event,player){
-					var record = player.storage.jiren1.slice(0);
+					var record = player.storage.jiren1;
 					if(!record)		return false;
 					return event.cards&&event.cards.filter(function(card){
 						return get.position(card,true)=='d'&&record.contains(get.suit(card));
@@ -5214,15 +5224,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				animationColor:'fire',
 				forceunique:true,
 				filter:function(event,player){
-					return player.countCards('he');
+					return player.countCards('he',function(card){
+						return get.tag(card,'damage')
+					})&&player.isDamaged();
 				},
 				content:function(){
 					'step 0'
 					player.awakenSkill('canxin');
 					'step 1'
-					var next=player.chooseCard('he','###重铸一张牌###若你以此法重铸了【杀】或非基本牌，重复此操作');
+					var next=player.chooseCard('he','###重铸一张牌###若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作');
 					next.set('ai',function(card){
-						if(get.name(card)=='sha'||get.type(card)!='basic')	return 15-get.value(card);
+						if(get.tag(card,'damage'))	return 15-get.value(card);
 						return 6-get.value(card);
 					});
 					'step 2'
@@ -5232,7 +5244,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log(player, '将', result.cards, '置入了弃牌堆');
 						player.draw();
 						var card = result.cards[0];
-						if(get.name(card)=='sha'||get.type(card)!='basic')	event.goto(1);
+						if(get.tag(card,'damage'))	event.goto(1);
+						else{
+							player.recover();
+							var evt=_status.event.getParent('phase');
+							if(evt){
+								evt.finish();
+							}
+						}
 					}
 				}
 			},
@@ -5261,6 +5280,146 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//机萪
+			qianjiwanbian:{
+				audio:4,
+				trigger:{source:'damageAfter',global:'roundStart'},
+				priority:199,
+				frequent:true,
+				group:['qianjiwanbian_change','qianjiwanbian_clear'],
+				filter:function(event,player){
+					console.log(event.getParent())
+					if(event.name=='damage'&&event.getParent()&&event.getParent().name!="trigger"&&event.getParent(2)&&event.getParent(2).qianjiwanbian)	return false;
+					return true;
+				},
+				gainable:['前','千','钱','签','欠','浅','迁','倩','谦','倩','牵','乾','铅','遣','仟','纤','黔','嵌','钳','歉','虔','谴','堑',
+					'技','级','及','机','祭','集','籍','基','即','记','急','吉','寄','季','极','继','计','纪','姬','己',
+					'挤','剂','济','积','击','肌','忌','棘','疾','激','际','系','寂','迹','脊','辑','藉','稷','戟','骑','悸','觊','嫉',
+					'完','玩','晚','碗','万','湾','丸','弯','婉','挽','腕','顽','绾','蜿','宛',
+					'边','变','便','编','遍','扁','辩','鞭','辨','贬','匾','辫',
+				],
+				content:function(){
+					'step 0'
+					if(!player.storage.qianjiwanbian_change)	player.storage.qianjiwanbian_change = 'thunder';
+					var list=lib.linked.slice(0);
+					list.remove('kami');
+					list.remove(player.storage.qianjiwanbian_change);
+					event.map = {};
+					for(var i=0;i<list.length;i++){
+						event.map[get.rawName(list[i])] = list[i];
+						list[i] = get.rawName(list[i]);
+					}
+					list.push('取消');
+					player.chooseControl('dialogcontrol',list).set('ai',function(){
+						return list.randomGets();
+					}).set('prompt','『千机万变』：将（'+(get.rawName(player.storage.qianjiwanbian_change))+'）改写为：');
+					'step 1'
+					if(result.control!='取消'){
+						player.storage.qianjiwanbian_change = event.map[result.control];
+					}else{
+						event.finish();
+					}
+					'step 2'
+					var list=get.gainableSkills(function(info,skill){
+						var name = get.translation(skill);
+						for(var i=0;i<name.length;i++){
+							if(lib.skill.qianjiwanbian.gainable.contains(name.substring(i,i+1)))	return true;
+						}
+					});
+					//console.log(list);
+					list.remove(player.getSkills());
+					list.add('qianjiwanbian');
+					list=list.randomGets(3);
+					event.skillai=function(){
+						return get.max(list,get.skillRank,'item');
+					};
+					if(event.isMine()){
+						var dialog=ui.create.dialog('forcebutton');
+						dialog.add('选择获得一项技能');
+						var clickItem=function(){
+							_status.event._result=this.link;
+							dialog.close();
+							game.resume();
+						};
+						for(var i=0;i<list.length;i++){
+							if(lib.translate[list[i]+'_info']){
+								var translation=get.translation(list[i]);
+								if(translation[0]=='新'&&translation.length==3){
+									translation=translation.slice(1,3);
+								}
+								else{
+									translation=translation.slice(0,2);
+								}
+								var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+								translation+'</div><div>'+lib.translate[list[i]+'_info']+'</div></div>');
+								item.firstChild.addEventListener('click',clickItem);
+								item.firstChild.link=list[i];
+							}
+						}
+						dialog.add(ui.create.div('.placeholder'));
+						event.switchToAuto=function(){
+							event._result=event.skillai();
+							dialog.close();
+							game.resume();
+						};
+						_status.imchoosing=true;
+						game.pause();
+					}
+					else{
+						event._result=event.skillai();
+					}
+					'step 3'
+					_status.imchoosing=false;
+					var link=result;
+					if(trigger.getParent().name!="trigger"&&!trigger.getParent(2).qianjiwanbian)	trigger.getParent(2).qianjiwanbian = true;
+					if(link=='qianjiwanbian'){
+						player.storage.qianjiwanbian_clear = true;
+						game.log(player,'改写了','#y『千机万变』');
+					}else{
+						player.addAdditionalSkill('qianjiwanbian',link,true);
+						player.addSkillLog(link);
+						if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
+							event.reapeat = true;
+							event.goto(2);
+						}
+					}
+				},
+				subSkill:{
+					change:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = 'thunder';
+						},
+						trigger:{source:'damageBegin2'},
+						priority:199,
+						prompt:function(event){
+							var str = '可以将本次对'+get.translation(event.player)+'造成的伤害改为（';
+							str+=get.rawName(_status.event.player.storage.qianjiwanbian_change);
+							str+='）属性';
+							return str;
+						},
+						filter:function(event,player){
+							return player.storage.qianjiwanbian_change&&event.nature!=player.storage.qianjiwanbian_change;
+						},
+						content:function(){
+							trigger.nature = player.storage.qianjiwanbian_change;
+						}
+					},
+					clear:{
+						audio:4,
+						trigger:{global:'roundStart'},
+						priority:200,
+						direct:true,
+						silent:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							player.storage.qianjiwanbian_clear = false;
+							player.removeAdditionalSkill('qianjiwanbian');
+						}
+					}
+				}
+			}
 		},
 		card:{
 			niwei_sha:{
@@ -5325,6 +5484,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 				return str;
 			},
+			qianjiwanbian:function(player){
+				var str = '你可将你造成的伤害改为（雷电）属性。一轮开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在本轮内获得之。若选择“千机万变”，其效果改为你此后触发此技能时额外发现一次。';
+				if(player.storage.qianjiwanbian_change){
+					return str.replace(/雷电/g,'<span class="bluetext">'+get.rawName(player.storage.qianjiwanbian_change)+'</span>');
+				}
+				return str;
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -5334,6 +5500,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
+			jike: '机萪',
+			qianjiwanbian: '千机万变',
+			qianjiwanbian_info: '你可将你造成的伤害改为（雷电）属性。一轮开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在本轮内获得之。若选择“千机万变”，其效果改为你此后触发此技能时额外发现一次。',
+			
 			Azusa: '阿梓',
 			zhiyue: '指月',
 			juehuo: '绝活',
@@ -5362,7 +5532,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yiqu: '亦趋',
 			yiqu_info: '若你在其他角色执行技能的过程中被指定为目标，你可以获得该技能直到下次进入濒死状态。',
 			wanxian: '挽弦',
-			wanxian_info: '<font color=#f33>锁定技</font> 你令其他角色进入濒死状态时，你失去所有额外技能并摸等量的牌。',
+			wanxian_info: '<font color=#f66>锁定技</font> 你令其他角色进入濒死状态时，你失去来自『亦趋』额外技能并摸等量的牌。',
 
 			Diana: '嘉然',
 			quanyu: '全域',
@@ -5565,9 +5735,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiren2: '祭刃-重置',
 			jiren_info: '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
 			canxin: '残心',
-			canxin_info: '<font color=#fda>限定技</font> 出牌阶段结束时，你可以重铸一张牌，若你以此法重铸了【杀】或非基本牌，重复此操作。',
+			canxin_info: '<font color=#fda>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。',
 
 			P_SP: 'P-SP',
+
 		},
 	};
 });

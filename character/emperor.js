@@ -2262,15 +2262,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					threaten:function(player,target){
-						if(target.hp==1) return 0.5;
+						if(target.hp==1) return 1.5;
 					},
 					effect:{
 						target:function(card,player,target,current){
 							var name = get.translation(get.name(card));
-							if(name.length>player.hp){
+							if(name.length>target.hp){
 								return [0.1,0.5];
 							}
-							if(name.length<=player.hp){
+							if(name.length<=target.hp){
 								return [1,0.8];
 							}
 						}

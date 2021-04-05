@@ -40,6 +40,7 @@ window.noname_package={
 		// zhenfa:'阵法',
 		yunchou:'运筹帷幄',
 		longlaoguan:'龙牢关',
+		remark:'回调牌堆',
 		// swd:'轩辕剑',
 		// gujian:'古剑奇谭',
 		// hearth:'炉石传说',

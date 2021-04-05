@@ -1932,6 +1932,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
 						game.updateRoundNumber();
 					}
+				},
+				ai:{
+					threaten:0.6,
 				}
 			},
 			re_jinyuan:{
@@ -1960,7 +1963,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target:1,
 					},
 					expose:0.1,
-					threaten:0.6,
 				},
 			},
 			//re星姐

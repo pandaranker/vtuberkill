@@ -32,7 +32,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
+			/**步玎 */
 			Pudding: ['female','psp',4,['tianlve','luxian']],
+			/**粉兔 */
+			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */

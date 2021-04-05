@@ -4177,6 +4177,8 @@
 				connect:{
 					update:function(config,map){
 						if(config.connect_identity_mode=='zhong'){
+							map.connect_change_choice.hide();
+							map.choice_ex.hide();
 							map.connect_player_number.hide();
 							map.connect_enhance_zhu.hide();
 							map.connect_double_nei.hide();
@@ -4185,6 +4187,8 @@
 							map.connect_double_character.show();
 						}
 						else if(config.connect_identity_mode=='purple'){
+							map.connect_change_choice.hide();
+							map.choice_ex.hide();
 							map.connect_player_number.hide();
 							map.connect_enhance_zhu.hide();
 							map.connect_double_nei.hide();
@@ -4193,6 +4197,8 @@
 							map.connect_double_character.hide();
 						}
 						else{
+							map.connect_change_choice.show();
+							map.choice_ex.show();
 							map.connect_double_character.show();
 							map.connect_player_number.show();
 							map.connect_enhance_zhu.show();
@@ -4264,6 +4270,12 @@
 						frequent:true,
 						restart:true,
 					},
+					connect_change_choice:{
+						name:'点将模式',
+						init:false,
+						frequent:true,
+						restart:true,
+					},
 					connect_special_identity:{
 						name:'特殊身份',
 						init:false,
@@ -4301,6 +4313,13 @@
 						},
 						intro:'为所有玩家分配额外选将框'
 					},
+					card_remark:{
+						name:'装备回调',
+						init:false,
+						frequent:true,
+						restart:true,
+						intro:'将军争和基础包的装备牌回调至《三国杀》原版'
+					}
 				},
 				config:{
 					update:function(config,map){
@@ -4750,6 +4769,13 @@
 							'10':'十',
 						},
 					},
+					card_remark:{
+						name:'装备回调',
+						init:false,
+						frequent:true,
+						restart:true,
+						intro:'将军争和基础包的装备牌回调至《三国杀》原版'
+					}
 				}
 			},
 			guozhan:{
@@ -6134,11 +6160,11 @@
 				connect:{
 					connect_single_mode:{
 						name:'游戏模式',
-						init:'normal',
+						init:'dianjiang',
 						item:{
-							normal:'新1v1',
 							dianjiang:'点将单挑',
-							changban:'血战长坂坡',
+							// normal:'新1v1',
+							// changban:'血战长坂坡',
 						},
 						restart:true,
 						frequent:true,
@@ -6161,11 +6187,11 @@
 				config:{
 					single_mode:{
 						name:'游戏模式',
-						init:'normal',
+						init:'dianjiang',
 						item:{
-							normal:'新1v1',
 							dianjiang:'点将单挑',
-							changban:'血战长坂坡',
+							// normal:'新1v1',
+							// changban:'血战长坂坡',
 						},
 						restart:true,
 						frequent:true,
@@ -10280,6 +10306,13 @@
 			ocean:'海',
 			ice:'冰',
 			yami:'暗',
+
+			fire_ab:'火焰',
+			thunder_ab:'雷电',
+			ocean_ab:'海洋',
+			ice_ab:'冰冻',
+			yami_ab:'暗影',
+
 			wei:'魏',
 			shu:'蜀',
 			wu:'吴',
@@ -11099,7 +11132,7 @@
 					if(lib.filter.judge(card,player,target)&&cards.length&&get.position(cards[0],true)=='o') target.addJudge(card,cards);
 				},
 				equipCard:function(){
-					if(cards.length&&get.position(cards[0],true)=='o') target.equip(event.card,cards);
+					if(cards.length&&get.position(cards[0],true)=='o') target.equip(this,cards);
 				},
 				gameDraw:function(){
 					"step 0"
@@ -13251,10 +13284,12 @@
 										event.dialog.add(event.promptx[i]);
 									}
 								}
-								event.promptbar=event.dialog.add('0/'+get.numStr(event.selectCard[1],'card'));
-								event.custom.add.card=function(){
-									_status.event.promptbar.innerHTML=
-									ui.selected.cards.length+'/'+get.numStr(_status.event.selectCard[1],'card');
+								if(Array.isArray(event.selectCard)){
+									event.promptbar=event.dialog.add('0/'+get.numStr(event.selectCard[1],'card'));
+									event.custom.add.card=function(){
+										_status.event.promptbar.innerHTML=
+										ui.selected.cards.length+'/'+get.numStr(_status.event.selectCard[1],'card');
+									}
 								}
 							}
 						}
@@ -13698,7 +13733,7 @@
 								}
 								return card.hasGaintag('ming_');
 							});
-							if(ms.length){
+							if(ms.length>0){
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
@@ -13712,7 +13747,7 @@
 								}
 								return !card.hasGaintag('ming_');
 							});
-							if(ans.length){
+							if(ans.length>0){
 								event.dialog.addText('暗置区');
 								ans.randomSort();
 								event.dialog.add([ans,'blank']);
@@ -13831,7 +13866,7 @@
 								}
 								return card.hasGaintag('ming_');
 							});
-							if(ms.length){
+							if(ms.length>0){
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
@@ -13845,7 +13880,7 @@
 								}
 								return !card.hasGaintag('ming_');
 							});
-							if(ans.length){
+							if(ans.length>0){
 								event.dialog.addText('暗置区');
 								ans.randomSort();
 								event.dialog.add([ans,'blank']);
@@ -13991,7 +14026,7 @@
 								}
 								return card.hasGaintag('ming_');
 							});
-							if(ms.length){
+							if(ms.length>0){
 								event.dialog.addText('明置区');
 								ms.randomSort();
 								event.dialog.add(ms);
@@ -14005,7 +14040,7 @@
 								}
 								return !card.hasGaintag('ming_');
 							});
-							if(ans.length){
+							if(ans.length>0){
 								event.dialog.addText('暗置区');
 								ans.randomSort();
 								event.dialog.add([ans,'blank']);
@@ -14881,7 +14916,7 @@
 					}
 					str+='发动了';
 					if(!info.direct){
-						game.log(player,str,'『'+get.skillTranslation(skill,player)+'』');
+						game.log(player,str,'#p『'+get.skillTranslation(skill,player)+'』');
 						if(info.logv!==false) game.logv(player,skill,targets);
 						player.trySkillAnimate(skill,skill,checkShow);
 					}
@@ -15434,7 +15469,28 @@
 						cards[i].style.transform+=' scale(0.2)';
 						cards[i].classList.remove('glow');
 						cards[i].recheck();
-						if(!cards[i])	return;
+						
+						if(!hej.contains(cards[i])){
+							cards.splice(i--,1);
+						}
+						else if(cards[i].parentNode){
+							if(cards[i].parentNode.classList.contains('equips')){
+								cards[i].original='e';
+								es.push(cards[i]);
+							}
+							else if(cards[i].parentNode.classList.contains('judges')){
+								cards[i].original='j';
+								js.push(cards[i]);
+							}
+							else if(cards[i].parentNode.classList.contains('handcards')){
+								cards[i].original='h';
+								hs.push(cards[i]);
+							}
+							else{
+								cards[i].original=null;
+							}
+						}
+						
 						var info=lib.card[cards[i].name];
 						if(info.destroy||cards[i]._destroy){
 							cards[i].delete();
@@ -15461,26 +15517,6 @@
 						}
 						else{
 							cards[i].remove();
-						}
-						if(!hej.contains(cards[i])){
-							cards.splice(i--,1);
-						}
-						else if(cards[i].parentNode){
-							if(cards[i].parentNode.classList.contains('equips')){
-								cards[i].original='e';
-								es.push(cards[i]);
-							}
-							else if(cards[i].parentNode.classList.contains('judges')){
-								cards[i].original='j';
-								js.push(cards[i]);
-							}
-							else if(cards[i].parentNode.classList.contains('handcards')){
-								cards[i].original='h';
-								hs.push(cards[i]);
-							}
-							else{
-								cards[i].original=null;
-							}
 						}
 					}
 					if(player==game.me) ui.updatehl();
@@ -24335,7 +24371,11 @@
 								this.node.image.setBackgroundImage('image/mode/'+lib.card[bg].modeimage+'/card/'+bg+'.png');
 							}
 							else{
-								if(lib.config.replace_image){
+								if(bg.indexOf('rm_')==0){
+									var bg = bg.slice(3);
+									this.node.image.setBackgroundImage('image/replace/'+bg+'.png');
+								}
+								else if(lib.config.replace_image){
 									this.node.image.setBackgroundImage('image/replace/'+bg+'.png');
 								}
 								else{
@@ -25357,7 +25397,7 @@
 							this._notrigger.add(player);
 							if(!evt||!evt.map) return;
 							for(var i=0;i<evt.map.length;i++){
-								if(evt.map[i].player==player) evt.map[i].list=[];
+								if(evt.map[i].player==player) evt.map[i].list.length=0;
 							}
 						}
 					}

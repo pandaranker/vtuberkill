@@ -1152,6 +1152,7 @@ window.noname_asset_list=[
 	'image/character/IenagaMugi.jpg',
 	'image/character/InabaHaneru.jpg',
 	'image/character/InuyamaTamaki.jpg',
+	'image/character/jike.jpg',
 	'image/character/Kaf.jpg',
 	'image/character/KagamiHayato.jpg',
 	'image/character/KaguraMea.jpg',

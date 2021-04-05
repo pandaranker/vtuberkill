@@ -1300,7 +1300,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target:-1,
 						expose:0.4,
 					},
-					threaten:0.8
+					threaten:1.2
 				},
 				subSkill:{
 					tag:{

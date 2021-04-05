@@ -83,6 +83,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			}
+			if(get.config('card_remark')){
+				for(var i=0;i<lib.card.list.length;i++){
+					if(get.type(lib.card.list[i][2])=='equip'){
+						lib.card.list[i][2]='rm_'+lib.card.list[i][2];
+					}
+				}
+			}
 			"step 1"
 			var playback=localStorage.getItem(lib.configprefix+'playback');
 			if(playback){
@@ -1777,7 +1784,180 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				});
 			},
+			chooseCharacterChangeOL:function(){
+				var next=game.createEvent('chooseCharacter',false);
+				next.showConfig=true;
+				next.setContent(function(){
+					"step 0"
+					var i;
+					var identityList;
+					identityList=lib.config.mode_config.identity.identity[game.players.length-2].slice(0);
+					if(lib.configOL.double_nei){
+						switch(lib.configOL.number){
+							case 8:
+							identityList.remove('fan');
+							identityList.push('nei');
+							break;
+							case 7:
+							identityList.remove('zhong');
+							identityList.push('nei');
+							break;
+							case 6:
+							identityList.remove('fan');
+							identityList.push('nei');
+							break;
+							case 5:
+							identityList.remove('fan');
+							identityList.push('nei');
+							break;
+							case 4:
+							identityList.remove('zhong');
+							identityList.push('nei');
+							break;
+							case 3:
+							identityList.remove('fan');
+							identityList.push('nei');
+							break;
+						}
+					}
+					identityList.randomSort();
+					for(i=0;i<game.players.length;i++){
+						game.players[i].identity=identityList[i];
+						game.players[i].setIdentity('cai');
+						game.players[i].node.identity.classList.add('guessing');
+						if(event.zhongmode){
+							if(identityList[i]=='mingzhong'){
+								game.zhu=game.players[i];
+							}
+							else if(identityList[i]=='zhu'){
+								game.zhu2=game.players[i];
+							}
+						}
+						else{
+							if(identityList[i]=='zhu'){
+								game.zhu=game.players[i];
+							}
+						}
+						game.players[i].identityShown=false;
+					}
+					if(lib.configOL.special_identity&&!event.zhongmode&&game.players.length==8){
+						var map={};
+						var zhongs=game.filterPlayer(function(current){
+							return current.identity=='zhong';
+						});
+						var fans=game.filterPlayer(function(current){
+							return current.identity=='fan';
+						});
+						if(fans.length>=1){
+							map.identity_zeishou=fans.randomRemove();
+						}
+						if(zhongs.length>1){
+							map.identity_dajiang=zhongs.randomRemove();
+							map.identity_junshi=zhongs.randomRemove();
+						}
+						else if(zhongs.length==1){
+							if(Math.random()<0.5){
+								map.identity_dajiang=zhongs.randomRemove();
+							}
+							else{
+								map.identity_junshi=zhongs.randomRemove();
+							}
+						}
+						game.broadcastAll(function(zhu,map){
+							for(var i in map){
+								map[i].special_identity=i;
+							}
+						},game.zhu,map);
+						event.special_identity=map;
+					}
+					
+					game.zhu.setIdentity();
+					game.zhu.identityShown=true;
+					game.zhu.isZhu=(game.zhu.identity=='zhu');
+					game.zhu.node.identity.classList.remove('guessing');
+					game.me.setIdentity();
+					game.me.node.identity.classList.remove('guessing');
+					if(game.me.special_identity){
+						game.me.node.identity.firstChild.innerHTML=get.translation(game.me.special_identity+'_bg');
+					}
+
+					for(var i=0;i<game.players.length;i++){
+						game.players[i].send(function(zhu,zhuid,me,identity){
+							for(var i in lib.playerOL){
+								lib.playerOL[i].setIdentity('cai');
+								lib.playerOL[i].node.identity.classList.add('guessing');
+							}
+							zhu.identityShown=true;
+							zhu.identity=zhuid;
+							zhu.setIdentity();
+							zhu.node.identity.classList.remove('guessing');
+							me.setIdentity(identity);
+							me.node.identity.classList.remove('guessing');
+							if(me.special_identity){
+								me.node.identity.firstChild.innerHTML=get.translation(me.special_identity+'_bg');
+							}
+						},game.zhu,game.zhu.identity,game.players[i],game.players[i].identity);
+					}
+					"step 1"
+					event.videoId=lib.status.videoId++;
+					var list=[];
+					var libCharacter={};
+					for(var i=0;i<lib.configOL.characterPack.length;i++){
+						var pack=lib.characterPack[lib.configOL.characterPack[i]];
+						for(var j in pack){
+							if(lib.character[j]) libCharacter[j]=pack[j];
+						}
+					}
+					for(i in libCharacter){
+						if(lib.filter.characterDisabled(i,libCharacter)) continue;
+						list.push(i);
+					}
+					game.broadcastAll(function(list,id){
+						_status.characterlist=list;
+						var filter=function(name){
+							return !_status.characterlist.contains(name);
+						};
+						var dialog=ui.create.characterDialog('heightset',filter).open();
+						dialog.videoId=id;
+						ui.arena.classList.add('choose-character');
+					},list,event.videoId);
+					game.zhu.chooseButton(true).set('ai',function(button){
+						return Math.random();
+					}).set('dialog',event.videoId);
+					event.player = game.zhu;
+					"step 2"
+					game.broadcastAll(function(player,character,id){
+						player.init(character);
+						if(player==game.me) game.addRecentCharacter(character);
+					},event.player,result.links[0]);
+					event.player.next.chooseButton(true).set('ai',function(button){
+						return Math.random();
+					}).set('dialog',event.videoId);
+					"step 3"
+					event.player = event.player.next
+					if(event.player.next.name1){
+						game.broadcastAll('closeDialog',event.videoId);
+						game.broadcastAll(function(player,character,id){
+							var dialog=get.idDialog(id);
+							if(dialog){
+								dialog.close();
+							}
+							player.init(character);
+							if(player==game.me) game.addRecentCharacter(character);
+							setTimeout(function(){
+								ui.arena.classList.remove('choose-character');
+							},500);
+						},event.player,result.links[0],event.videoId);
+					}else{
+						event.goto(2);
+					}
+				});
+			},
 			chooseCharacterOL:function(){
+				if(get.config('connect_change_choice')){
+					game.chooseCharacterChangeOL();
+					return;
+				}
 				if(_status.mode=='purple'){
 					game.chooseCharacterPurpleOL();
 					return;
@@ -2101,7 +2281,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}).set('processAI',function(){
 							return 'ai';
 						}).set('ai',function(){
-								return Math.random();
+							return Math.random();
 						});
 				   }
 				   else event._result={};
