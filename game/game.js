@@ -5171,7 +5171,7 @@
 							'2v2':'2v2',
 							'3v3':'3v3',
 							'4v4':'4v4',
-							'guandu':'官渡',
+							//'guandu':'官渡',
 						},
 						frequent:true
 					},
@@ -5307,7 +5307,7 @@
 							four:'对抗',
 							three:'统率',
 							two:'欢乐',
-							guandu:'官渡',
+							//guandu:'官渡',
 							jiange:'剑阁',
 							siguo:'四国',
 							standard:'自由'
@@ -10312,6 +10312,11 @@
 			ocean_ab:'海洋',
 			ice_ab:'冰冻',
 			yami_ab:'暗影',
+
+			vtuber: '企',
+			clubs: '社',
+			vtuber2: '企业联合',
+			clubs2: '社团联合',
 
 			wei:'魏',
 			shu:'蜀',
@@ -28567,7 +28572,11 @@
 			}
 		},
 		suit:['club','spade','diamond','heart'],
-		group:['wei','shu','wu','qun','shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi','psp','asoul'],
+		group:[
+			'vtuber','clubs',
+			'wei','shu','wu','qun',
+			'shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','key','paryi','kagura','nanashi','psp','asoul'
+		],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
 		linked:['fire','thunder','ocean','ice','kami','yami'],
 		groupnature:{

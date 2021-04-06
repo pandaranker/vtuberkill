@@ -865,7 +865,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.logSkill('zuodun',trigger.player);
 					trigger.player = player;
-					player.draw();
+					game.asyncDraw([player,trigger.source]);
 					if(!player.hasSkill('zhongxinghezou')){
 						player.addTempSkill('zhongxinghezou',{player:'phaseAfter'});
 					}
@@ -1721,7 +1721,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Bacharu: '巴恰鲁',
 			zuodun: '我身作盾',
-			zuodun_info: '每回合限一次，其他角色受到伤害时，你可将此伤害转移给你，然后你摸一张牌并获得“众星合奏”直到你的回合结束。',
+			zuodun_info: '每回合限一次，其他角色受到伤害时，你可将此伤害转移给你，然后你与伤害来源各摸一张牌并获得“众星合奏”直到你的回合结束。',
 			baidao: '白道游星',
 			baidao_info: '出牌阶段限一次，你可以展示所有手牌，每有一张点数大于J便回复1点体力；每有一张点数小于3，你本回合便可额外发动一次“众星合奏”。',
 

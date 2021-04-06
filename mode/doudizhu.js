@@ -1483,9 +1483,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		translate:{
-			vtuber: '企业联合',
-			clubs: '社团联合',
-
 			zhu:"主",
 			fan:"反",
 			zhu2:"地主",
