@@ -1646,10 +1646,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 					event.list=[];
 					event.filterChoice=function(name){
+						return false;
 						if(get.config('enable_all')) return false;
 						for(var j in lib.characterPack){
 							if(lib.choiceVtuberkill.contains(j)&&lib.characterPack[j][i])	return false;
 						}
+						return true
 						return !lib.choiceFour.contains(name);
 					}
 					for(i in lib.character){
@@ -1968,16 +1970,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						game.chooseCharacterDouble(function(i){
-							if(get.config('enable_all_three')){
-								if(lib.filter.characterDisabled(i)) return false;
-								return !lib.filter.characterDisabled(i);
-							}
-							else{
-								for(var j in lib.characterPack){
-									if(lib.choiceVtuberkill.contains(j)&&lib.characterPack[j][i])	return false;
-								}
-								//return lib.choiceThree.contains(i);
-							}
+							if(lib.filter.characterDisabled(i)) return false;
+							return !lib.filter.characterDisabled(i);
+							// if(get.config('enable_all_three')){
+							// }
+							// else{
+							// 	for(var j in lib.characterPack){
+							// 		if(lib.choiceVtuberkill.contains(j)&&lib.characterPack[j][i])	return false;
+							// 	}
+							// 	return lib.choiceThree.contains(i);
+							// }
 						},function(i){
 							return i==1?'主帅':'前锋';
 						});
