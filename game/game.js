@@ -4256,7 +4256,7 @@
 						init:false,
 						restart:true,
 						// frequent:true,
-						intro:'开启后游戏中将有两个内奸（内奸胜利条件仍为主内1v1时击杀主公）'
+						intro:'开启后游戏中将有两个内奸（�����奸胜利条件仍为主内1v1时击杀主公）'
 					},
 					connect_double_character:{
 						name:'双将模式',
@@ -4844,19 +4844,6 @@
 						// frequent:true,
 						intro:'主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
 					},
-				//	connect_guozhanpile:{
-				//		name:'使用国战牌堆',
-				//		init:true,
-				//		frequent:true,
-				//		restart:true,
-				//	},
-				//	connect_onlyguozhan:{
-				//		name:'使用国战武将',
-				//		init:true,
-				//		frequent:true,
-				//		restart:true,
-				//		intro:'开启武将技能将替换为国战版本并禁用非国战武将'
-				//	},
 					connect_junzhu:{
 						name:'替换君主',
 						init:true,
@@ -5308,7 +5295,7 @@
 							three:'统率',
 							two:'欢乐',
 							//guandu:'官渡',
-							jiange:'剑阁',
+							jiange:'战场',
 							siguo:'四国',
 							standard:'自由'
 							// endless:'无尽',
@@ -24531,7 +24518,7 @@
 					this.node.name.innerHTML='';
 					this.node.image.className='image';
 					var name=get.translation(card[2]);
-					if(card[2]=='sha'||card[2]=='tao'||card[2]=='jiu'){
+					if(name.length==1){
 						if(card[3]=='fire'){
 							name='火'+name;
 							this.node.image.classList.add('fire');
@@ -29469,7 +29456,7 @@
 							game.editExtension(obj.name);
 						}
 						else{
-							alert('无法编辑未启用的扩展，请启用此扩展并重启后重试')
+							alert('无法���辑未启用的扩展，请启用此扩展并重启后重试')
 						}
 					}
 				}
@@ -38132,7 +38119,7 @@
 								placeholder.style.display='block';
 								placeholder.style.width='100%';
 								placeholder.style.height='14px';
-								createDash2('技','技能配音','audio/skill',page);
+								createDash2('���','技能配音','audio/skill',page);
 								createDash2('卡','男性卡牌','audio/card/male',page);
 								createDash2('牌','女性卡牌','audio/card/female',page);
 								createDash2('亡','阵亡配音','audio/die',page);
@@ -51792,7 +51779,7 @@
 				else{
 					str2=get.translation(str.name);
 				}
-				if(['杀','桃','酒'].contains(str2)){
+				if(str2.length==1){
 					if(str.nature=='fire'){
 						str2='火'+str2;
 					}
@@ -52171,7 +52158,7 @@
 		},
 		//标记
 		cardtag:function(item,tag){
-			if(_status.cardtag.yuzu&&_status.cardtag.yuzu.contains(tag))	return true;
+			if(_status.cardtag&&_status.cardtag.yuzu&&_status.cardtag.yuzu.contains(tag))	return true;
 			if(item.cardid&&(get.itemtype(item)=='card'||!item.cards||!item.cards.length||item.name==item.cards[0].name)&&_status.cardtag){
 				if(_status.cardtag[tag]&&_status.cardtag[tag].contains(item.cardid))	return true;
 			}

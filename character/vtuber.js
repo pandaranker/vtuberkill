@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Mishiro */
 			ShirayukiMishiro:['female','key',3,['tianyi','nveyu']],
 			/**小白 */
-			Siro:['female', 'dotlive', 4, ['zhongxinghezou'],['zhu']],
+			Siro:['female', 'dotlive', 4, ['zhongxinghezou','xiugong'],['zhu']],
 			/**巴恰鲁 */
 			Bacharu:['male', 'dotlive', 4, ['zuodun','baidao']],
 			/**小希小桃 */
@@ -29,7 +29,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**泠鸢 */
 			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
 			/**贝拉 */
-			Bella: ['female','asoul',4,['aswusheng', 'gunxun']],
+			Bella: ['female','asoul','3/4',['aswusheng', 'gunxun']],
 			/**嘉然 */
 			Diana: ['female','asoul',4,['quanyu', 'wulian']],
 			/**珈乐 */
@@ -775,7 +775,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if (!(get.itemtype(event.cards) == 'cards')) return false
 					// if (event.getParent().triggeredTargets3.length > 1) return false;
-					return !player.hasSkill('zhongxinghezou_used');
+					return get.number(event.card)&&!player.hasSkill('zhongxinghezou_used');
+				},
+				check:function(event,player){
+					var effect=0;
+					if(event.card.name=='wuxie'||event.card.name=='shan'){
+						if(get.attitude(player,event.starget)<-1){
+							effect=-1;
+						}
+					}
+					else if(event.targets&&event.targets.length){
+						for(var i=0;i<event.targets.length;i++){
+							effect+=get.effect(event.targets[i],event.card,event.player,player);
+						}
+					}
+					return get.number(event.card)<6||effect<3;
 				},
 				content: function() {
 					'step 0'
@@ -786,9 +800,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return 2-get.attitude(_status.event.player,target);
 					}).set('targets',trigger.targets);
 					'step 1'
-					if (result.bool) {
+					if (result.bool&&result.targets[0]) {
 						event.starget = result.targets[0];
-						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌');
+						var att = get.attitude(event.starget,player);
+						var num = get.number(trigger.card);
+						var effect=0;
+						if(trigger.card.name=='wuxie'||trigger.card.name=='shan'){
+							if(get.attitude(player,event.starget)<-1){
+								effect=-1;
+							}
+						}
+						else if(trigger.targets&&trigger.targets.length){
+							for(var i=0;i<trigger.targets.length;i++){
+								effect+=get.effect(trigger.targets[i],trigger.card,event.starget,player);
+							}
+						}
+						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌').set('ai',function(card){
+							var att = _status.event.att;
+							var num = _status.event.num;
+							var player = _status.event.player;
+							var effect = _status.event.effect;
+							if(get.number(card)+num==12){
+								if(att>0||get.recoverEffect(player,player,player)) return	8-get.useful(card);
+								else	return 0;
+							}
+							else if(get.number(card)+num<12){
+								return -effect-get.useful(card);
+							}
+							else{
+								return 4-get.useful(card);
+							}
+						}).set('att',att).set('num',num).set('effect',effect)
 					}
 					else {
 						event.finish();
@@ -848,6 +890,92 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					used:{},
+				}
+			},
+			xiugong:{
+				trigger:{player:'phaseUseBegin'},
+				priority:199,
+				filter:function(event,player){
+					return game.hasPlayer(function(cur){
+						return cur!=player;
+					});
+				},
+				check:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					player.chooseTarget('选择『天道宿宫』的目标',true,function(card,player,target){
+						return target!=player
+					});
+					'step 1'
+					if(result.bool){
+						console.log(result);
+						event.target = result.targets[0];
+						event.num = event.target.countCards('h');
+						if(event.num>0){
+							event.reality = event.target.countCards('h',{type:['trick','delay']});
+							var rand = 1.5*Math.pow(Math.random(),event.num)
+							if(player.hasSkillTag('viewHandcard',null,event.target,true))	rand = 1;
+							var list = ['0张'];
+							for(var i=1;i<=event.num;i++){
+								list.push(i+'张');
+							}
+							player.chooseControl('dialogcontrol',list,true).set('ai',function(){
+								var num = _status.event.num;
+								console.log(event.getRand());
+								if(_status.event.rand>event.getRand()){
+									console.log(_status.event.reality)
+									return _status.event.reality+'张';
+								}
+								if(event.getRand()<1/num)	return _status.event.reality+'张';
+								return list.randomGet();
+							}).set('prompt','猜测'+get.translation(event.target)+'手牌中锦囊牌的数量').set('num',event.num).set('rand',rand).set('reality',event.reality);
+						}else{
+							player.draw();
+							event.finish();
+						}
+					}
+					'step 2'
+					if(result.control){
+						var num = result.control.substring(0,1);
+						event.target.showHandcards();
+						if(num==event.reality){
+							player.draw();
+							if(player.storage.xiugong_times==0)	player.storage.xiugong_times = num;
+						}
+					}
+				},
+				group:['xiugong_times','xiugong_clear'],
+				subSkill:{
+					times:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill]=0;
+						},
+						trigger:{player:'useCard2'},
+						firstDo:true,
+						forced:true,
+						filter:function(event,player){
+							console.log(player.storage.xiugong_times)
+							return player.storage.xiugong_times>0&&player.hasSkill('zhongxinghezou_used');
+						},
+						content:function(){
+							player.storage.xiugong_times--;
+							player.removeSkill('zhongxinghezou_used');
+						},
+					},
+					clear:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return player.storage.baidao_times!=0;
+						},
+						content:function(){
+							player.storage.baidao_times=0;
+						},
+					}
 				}
 			},
 			zuodun:{
@@ -912,17 +1040,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
-				group:['baidao_put','baidao_times','baidao_clear'],
+				group:['baidao_times','baidao_clear'],
 				subSkill:{
-					put:{
-						trigger:{player:'zhongxinghezouAfter'},
-						forced:true,
-						silent:true,
-						popup:false,
-						content:function(){
-							player.storage.baidao_times--;
-						},
-					},
 					times:{
 						init:function(player,skill){
 							if(!player.storage[skill]) player.storage[skill]=0;
@@ -932,12 +1051,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						filter:function(event,player){
 							console.log(player.storage.baidao_times)
-							return player.storage.baidao_times>0;
+							return player.storage.baidao_times>0&&player.hasSkill('zhongxinghezou_used');
 						},
 						content:function(){
-							if(player.hasSkill('zhongxinghezou')){
-								player.removeSkill('zhongxinghezou_used');
-							}
+							player.storage.baidao_times--;
+							player.removeSkill('zhongxinghezou_used');
 						},
 					},
 					clear:{
@@ -1718,6 +1836,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Siro: '电脑少女小白',
 			zhongxinghezou: '众星合奏',
 			zhongxinghezou_info: '每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12，你获得亮出牌令你使用的牌无效；不小于12，你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12，你获得亮出牌并令亮出牌的角色回复1点体力。',
+			xiugong: '天道宿宫',
+			xiugong_info: '出牌阶段开始时，你可以猜测一名其他角色手牌中锦囊牌的数量并令其展示手牌，若猜测正确，你摸一张牌并令你本回合的『众星合奏』增加等量次数上限。',
 
 			Bacharu: '巴恰鲁',
 			zuodun: '我身作盾',

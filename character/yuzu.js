@@ -19,8 +19,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jike: ['female','qun',3,['qianjiwanbian']],
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
-			/**阿秋 */
-			AkiRinco: ['female','psp',4,['jiren','canxin']],
 			/**测试用角色 */
 			Ruki: ['female','VirtuaReal',4,['beixie','hunzhan']],
 		},
@@ -3051,7 +3049,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					clear:{
 						trigger:{player:'phaseAfter'},
 						priority:24,
-						direct:true,
+						forced:true,
 						silent:true,
 						popup:false,
 						content:function(){
@@ -3061,7 +3059,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					mark:{
 						trigger:{player:'loseAfter'},
 						priority:24,
-						direct:true,
+						forced:true,
 						silent:true,
 						popup:false,
 						filter:function(event,player,name){
@@ -4149,10 +4147,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='useSkill')		targets = event.targets||[event.target];
 					else if(!result||result.bool!=true)		return false;
 					else{
-						console.log(targets);
 						targets = result.targets.slice(0);
 					}
-					console.log(targets);
 					return lib.translate[name+'_info']&&!player.hasSkill(name)&&targets.contains(player);
 				},
 				prompt2:function(event,player){
@@ -4963,7 +4959,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:199,
 				frequent:true,
 				filter:function(event,player){
-					if(player.storage.shouru_clear&&player.storage.shouru_clear.contains(event.name))	return false;
+					if(player.hasSkill('shouru_used'))	return false;
 					return (event.name=='damage'||['useCard','respond'].contains(event.name)&&event.skill=='erni_going')&&game.hasPlayer(function(cur){
 						return cur!=player&&get.distance(_status.currentPhase,cur,'pure')==1&&cur.countGainableCards('he',player);
 					});
@@ -4979,28 +4975,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.targets&&result.targets.length){
-						player.storage.shouru_clear.add(trigger.name);
+						player.addTempSkill('shouru_used')
 						player.gainPlayerCard('he',result.targets[0],'『耳匿』：获得其一张牌');
 					}
 				},
 				ai:{
 					expose:0.1,
 				},
-				group:'shouru_clear',
 				subSkill:{
-					clear:{
-						init:function(player,skill){
-							if(!player.storage[skill]) player.storage[skill] = [];
-						},
-						trigger:{player:['phaseAfter']},
-						priority:199,
-						direct:true,
-						silent:true,
-						popup:false,
-						content:function(){
-							player.storage.shouru_clear = [];
-						},
-					}
+					used:{}
 				},
 				ai:{
 					threaten:0.8,
@@ -5119,9 +5102,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return 0;
 					};
-					if(player.storage.jiren1&&player.storage.jiren1.length&&player.storage.jiren1.length<4){
+					if(player.storage.jiren_going&&player.storage.jiren_going.length&&player.storage.jiren_going.length<4){
 						func=function(result){
-							var suits = _status.event.player.storage.jiren1||[];
+							var suits = _status.event.player.storage.jiren_going||[];
 							if(get.subtype(result)=='equip1'){
 								player.gain(result.card,'gainAuto')
 								return 3;
@@ -5133,10 +5116,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.judge(func);
 					'step 1'
 					if(result.card){
-						if(!player.storage.jiren1)	player.storage.jiren1 = [];
-						player.storage.jiren1.add(get.suit(result));
-						if(!player.hasSkill('jiren1'))	player.addTempSkill('jiren1');
-						player.markSkill('jiren1');
+						if(!player.storage.jiren_going)	player.storage.jiren_going = [];
+						player.storage.jiren_going.add(get.suit(result));
+						if(!player.hasSkill('jiren_going'))	player.addTempSkill('jiren_going');
+						player.markSkill('jiren_going');
 					}
 				},
 				group:'jiren2',
@@ -5144,57 +5127,59 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					threaten:1.2,
 					order:18,
 					result:{player:1},
-				}
-			},
-			jiren1:{
-				audio:false,
-				marktext:"祭",
-				locked:true,
-				intro:{
-					name:'祭刃',
-					content:function (storage,player,skill){
-						if(storage.length){
-							return '本回合已产生的『祭刃』判定结果：'+ get.translation(storage);
+				},
+				subSkill:{
+					going:{
+						audio:false,
+						marktext:"祭",
+						locked:true,
+						intro:{
+							name:'祭刃',
+							content:function (storage,player,skill){
+								if(storage.length){
+									return '本回合已产生的『祭刃』判定结果：'+ get.translation(storage);
+								}
+							},
+						},
+						onremove:true,
+						trigger:{global:['loseEnd','cardsDiscardEnd']},
+						filter:function(event,player){
+							var record = player.storage.jiren_going;
+							if(!record)		return false;
+							return event.cards&&event.cards.filter(function(card){
+								return get.position(card,true)=='d'&&record.contains(get.suit(card));
+							}).length;
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							if(player.storage.jiren==1){
+								player.chooseTarget('是否视为使用一张杀？',function(card,player,target){
+									return player.canUse('sha',target);
+								}).set('ai',function(target){
+									var player=_status.event.player;
+									return get.effect(target,{name:'sha'},player,player);
+								}).set('prompt2',get.skillInfoTranslation('jiren',player));
+							}else if(player.storage.jiren==2){
+								player.chooseBool().set('prompt','###'+get.prompt('jiren')+'###'+get.skillInfoTranslation('jiren',player));
+							}else{
+								player.chooseCard('he').set('ai',function(card){
+									var player=_status.event.player;
+									if(['shan','wuxie','jiedao'].contains(get.name(card)))	return 12-get.value(card);
+									if(player.storage.jiren.contains(get.suit(card)))		return 10-get.value(card);
+									return 6-get.value(card);
+								}).set('prompt','###'+get.prompt('jiren')+'###'+get.skillInfoTranslation('jiren',player));
+							}
+							'step 1'
+							if(result.bool){
+								if(player.storage.jiren<3)	player.storage.jiren++;
+								else	player.storage.jiren = 1;
+								if(result.targets&&result.targets.length)	player.useCard({name:'sha'},result.targets,false);
+								else if(result.cards&&result.cards.length)	player.discard(result.cards);
+								else	player.draw();
+							}
 						}
 					},
-				},
-				onremove:true,
-				trigger:{global:['loseEnd','cardsDiscardEnd']},
-				filter:function(event,player){
-					var record = player.storage.jiren1;
-					if(!record)		return false;
-					return event.cards&&event.cards.filter(function(card){
-						return get.position(card,true)=='d'&&record.contains(get.suit(card));
-					}).length;
-				},
-				direct:true,
-				content:function(){
-					'step 0'
-					if(player.storage.jiren==1){
-						player.chooseTarget('是否视为使用一张杀？',function(card,player,target){
-							return player.canUse('sha',target);
-						}).set('ai',function(target){
-							var player=_status.event.player;
-							return get.effect(target,{name:'sha'},player,player);
-						}).set('prompt2',get.skillInfoTranslation('jiren',player));
-					}else if(player.storage.jiren==2){
-						player.chooseBool().set('prompt','###'+get.prompt('jiren')+'###'+get.skillInfoTranslation('jiren',player));
-					}else{
-						player.chooseCard('he').set('ai',function(card){
-							var player=_status.event.player;
-							if(['shan','wuxie','jiedao'].contains(get.name(card)))	return 12-get.value(card);
-							if(player.storage.jiren.contains(get.suit(card)))		return 10-get.value(card);
-							return 6-get.value(card);
-						}).set('prompt','###'+get.prompt('jiren')+'###'+get.skillInfoTranslation('jiren',player));
-					}
-					'step 1'
-					if(result.bool){
-						if(player.storage.jiren<3)	player.storage.jiren++;
-						else	player.storage.jiren = 1;
-						if(result.targets&&result.targets.length)	player.useCard({name:'sha'},result.targets,false);
-						else if(result.cards&&result.cards.length)	player.discard(result.cards);
-						else	player.draw();
-					}
 				}
 			},
 			jiren2:{
@@ -5279,7 +5264,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//机萪
 			qianjiwanbian:{
 				audio:4,
-				trigger:{source:'damageAfter',global:'roundStart'},
+				trigger:{source:'damageAfter',player:'phaseBegin'},
 				priority:199,
 				frequent:true,
 				group:['qianjiwanbian_change','qianjiwanbian_clear'],
@@ -5372,16 +5357,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					_status.imchoosing=false;
 					var link=result;
 					if(trigger.getParent().name!="trigger"&&!trigger.getParent(2).qianjiwanbian)	trigger.getParent(2).qianjiwanbian = true;
-					if(link=='qianjiwanbian'){
-						player.storage.qianjiwanbian_clear = true;
-						game.log(player,'改写了','#y『千机万变』');
-					}else{
+					if(link!='qianjiwanbian'){
 						player.addAdditionalSkill('qianjiwanbian',link,true);
 						player.addSkillLog(link);
 					}
 					if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
 						event.reapeat = true;
 						event.goto(2);
+					}
+					if(link=='qianjiwanbian'){
+						player.storage.qianjiwanbian_clear = true;
+						game.log(player,'改写了','#y『千机万变』');
 					}
 				},
 				subSkill:{
@@ -5406,9 +5392,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					clear:{
 						audio:4,
-						trigger:{global:'roundStart'},
+						trigger:{player:'phaseBegin'},
 						priority:200,
-						direct:true,
+						forced:true,
 						silent:true,
 						filter:function(event,player){
 							return true;
@@ -5485,7 +5471,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			qianjiwanbian:function(player){
-				var str = '你可将你造成的伤害改为（雷电）属性。一轮开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在本轮内获得之。若选择“千机万变”，其效果改为你此后触发此技能时额外发现一次。';
+				var str = '你可将你造成的伤害改为（雷电）属性。一个回合开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在本轮内获得之。若选择“千机万变”，其效果改为你此后触发此技能时额外发现一次。';
 				if(player.storage.qianjiwanbian_change){
 					return str.replace(/雷电/g,'<span class="bluetext">'+get.rawName(player.storage.qianjiwanbian_change)+'</span>');
 				}
@@ -5502,7 +5488,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			jike: '机萪',
 			qianjiwanbian: '千机万变',
-			qianjiwanbian_info: '你可将你造成的伤害改为（雷电）属性。一轮开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在本轮内获得之。若选择“千机万变”，其效果改为你此后触发此技能时额外发现一次。',
+			qianjiwanbian_info: '你可将你造成的伤害改为（雷电）属性。一个回合开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在你下个回合开始之前获得之。若选择『千机万变』，直到你的下个回合开始前此技能触发时额外发现一次。',
 			
 			Azusa: '阿梓',
 			zhiyue: '指月',
@@ -5723,7 +5709,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			erni: '耳匿',
 			erni_info: '<font color=#88e>转换技</font> 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。',
 			shouru: '受乳',
-			shouru_info: '每回合每项限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。',
+			shouru_info: '每回合限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。',
 			chonghuang: '崇皇',
 			chonghuang_info: '<font color=#dac>限定技</font> 当你体力值变为1时，你可以扣减1点体力上限，然后发现一次P-SP角色，本轮次内你视为拥有其所有技能。',
 			yinzun: '隐尊',
@@ -5731,7 +5717,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			AkiRinco: '秋凛子',
 			jiren: '祭刃',
-			jiren1: '祭刃',
+			jiren_going: '祭刃',
 			jiren2: '祭刃-重置',
 			jiren_info: '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
 			canxin: '残心',

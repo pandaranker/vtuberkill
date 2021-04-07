@@ -637,7 +637,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  					case 'endless':str2='无尽模式';break;
  					case 'three':str2='统率三军';break;
  					case 'siguo':str2='同舟共济';break;
- 					case 'jiange':str2='守卫剑阁';break;
+ 					case 'jiange':str2='虹杏战场';break;
  					case 'four':str2='对决 - 4v4';break;
  					case 'guandu':str2='官渡之战';break;
  					default:str2='对决 - '+lib.storage.number+'v'+lib.storage.number
@@ -3840,6 +3840,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		jiangeboss:{
+			boss_MinatoAqua: ['female','holo',2,['boss_shenghuang','boss_renzhan', 'boss_kuase'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			boss_KiryuuCoco:['female','holo',5,['boss_zaoankeke', 'boss_jierizhanbei','boss_esuyingye','boss_zuoyututan'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 
 			boss_liedixuande:['male','nijisanji',5,['boss_lingfeng','boss_jizhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
@@ -3847,7 +3848,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_tianhoukongming:['male','nijisanji',4,['boss_biantian','bazhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_yuhuoshiyuan:['male','nijisanji',4,['boss_yuhuojg','boss_qiwu','boss_tianyujg'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_qiaokuijunyi:['male','holo',4,['boss_huodi','boss_jueji'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
-			boss_jiarenzidan:['male','holo',5,['boss_chiying','boss_jingfan'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
+			//boss_jiarenzidan:['male','holo',5,['boss_chiying','boss_jingfan'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			boss_duanyuzhongda:['male','holo',5,['boss_fanshi','boss_xuanlei','boss_skonghun'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			boss_juechenmiaocai:['male','holo',5,['boss_chuanyun','boss_leili','boss_fengxing'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 
@@ -3861,7 +3862,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_lieshiyazi:['male','holo',5,['boss_jiguan','boss_nailuo'],['jiangemech','hiddenboss','bossallowed'],'holo'],
 			
 			boss_kumuyuanrang:['male','holo',5,['boss_bashi','boss_danjing'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
-			boss_baijiwenyuan:['male','holo',5,['boss_jiaoxie'],['jiangeboss','hiddenboss','bossallowed'],'wei'],
+			//boss_baijiwenyuan:['male','holo',5,['boss_jiaoxie'],['jiangeboss','hiddenboss','bossallowed'],'wei'],
 			boss_yihanyunchang:['male','nijisanji',5,['boss_xiaorui','boss_huchen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_fuweizilong:['male','nijisanji',5,['boss_fengjian','boss_keding'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 		},
@@ -4258,7 +4259,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			versus_number_config:'对阵人数',
 			replace_number_config:'替补人数',
 			choice_config:'候选人数',
-			mode_versus_character_config:'剑阁武将',
+			mode_versus_character_config:'战场武将',
 			mode_versus_card_config:'同舟共济',
 
 			tangzi:'唐咨',
@@ -4299,7 +4300,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_fuweizilong:'扶危子龙',
 
 			
-			boss_KiryuuCoco:'桐生可可',
+			boss_KiryuuCoco:'邪龙可可',
 			boss_zaoankeke: '早安一刀',
 			boss_zaoankeke_info: '<font color=#f66>锁定技</font> 当你使用【杀】指定目标后，目标需弃置一张牌；若此【杀】为属性杀，则改为交给你一张牌。',
 			boss_jierizhanbei: '扳手战备',
@@ -4307,8 +4308,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_esuyingye: '滥觞之至',
 			boss_esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
 			boss_zuoyututan:'坐於涂炭',
-			boss_zuoyututan_info:'<font color=#f66>锁定技</font> 转换技。一轮开始时，令所有敌方角色①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
-			
+			boss_zuoyututanLimit: '手牌减少',
+			boss_zuoyututan_info:'<font color=#f66>锁定技</font> <font color=#88e>转换技</font> 一轮开始时，令所有敌方角色①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
+
+			boss_MinatoAqua:'天使阿夸',
+			boss_shenghuang: '圣皇之愈',
+			boss_shenghuang_info: '<font color=#f66>锁定技</font> 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，友方角色将体力回复至回合开始时的状态。',
+			boss_renzhan: '瞬息刃斩',
+			boss_renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
+			boss_kuase: '夸色梦想',
+			boss_kuase_info: '<font color=#f5c>限定技</font> 一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
+						
 			boss_xiaorui:'骁锐',
 			boss_xiaorui2:'骁锐',
 			boss_xiaorui_info:'友方角色于其回合内使用【杀】造成伤害后，其使用【杀】的次数+1。',
@@ -4362,7 +4372,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_biantian:'变天',
 			boss_biantian_info:'<font color=#f66>锁定技</font> 准备阶段，你进行一次判定，若为红色，直到下个回合开始前，令敌方所有角色处于“狂风”状态，若为黑色，直到下个回合开始前，令己方所有角色处于“大雾”状态',
 			boss_biantian2:'大雾',
+			dawu:'大雾',
 			boss_biantian3:'狂风',
+			kuangfeng:'狂风',
 			boss_lingfeng:'灵锋',
 			boss_lingfeng_info:'摸牌阶段，你可以改为亮出牌堆顶的两张牌，然后获得之，若这些牌的颜色不同，你令一名敌方角色失去1点体力',
 			boss_jizhen:'激阵',
@@ -4411,6 +4423,323 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			shishengshibai_info:'<font color=#f66>锁定技</font> 一名角色使用牌时，若此牌是整局游戏使用的第整十张牌且此牌不为延时锦囊牌或装备牌，则此牌所有目标角色再次成为此牌的目标角色。',
 		},
 		skill:{
+			//boss夸
+			boss_shenghuang:{
+				locked:true,
+				init:function(player){
+					player.storage.boss_shenghuang=0;
+					if(get.mode()=='identity'&&get.zhu(player)==player&&game.players.length>4) player.maxHp--;
+				},
+				global:['boss_shenghuang_put'],
+				group:['boss_shenghuang_draw', 'boss_shenghuang_lose', 'boss_shenghuang_ret', 'boss_shenghuang_rec'],
+				subSkill:{
+					put:{
+						trigger:{global:'phaseBegin'},
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:777,
+						filter:function (event,player){
+							return player.hp;
+						},
+						content:function(){
+							player.storage.boss_shenghuang_put = player.hp;
+						}
+					},
+					draw:{
+						init:function(player){
+							if(get.zhu(player)==player&&game.players.length>4){
+								player.storage.boss_shenghuang_draw=4;
+							}
+							else{
+								player.storage.boss_shenghuang_draw=3;
+							}
+							if(player.hasSkill('boss_shenghuang_draw'))  player.markSkill('boss_shenghuang_draw');
+						},
+						marktext: '圣',
+						mark: true,
+						intro: {
+							content:'剩余&张数值为2的体力卡',
+							name:'剩余体力卡',
+						},
+						forced:true,
+						priority:777,
+						skillAnimation:true,
+						animationColor:'gray',
+						trigger:{
+							player:"dying",
+						},
+						filter:function (event,player){
+							return player.storage.boss_shenghuang_draw>0
+						},
+						content:function(){
+							player.maxHp=2;
+							player.recover(player.maxHp-player.hp);
+							player.storage.boss_shenghuang_draw--;
+							player.syncStorage('boss_shenghuang_draw');
+							if(!player.storage.boss_shenghuang_draw){
+								player.unmarkSkill('boss_shenghuang_draw');
+								player.removeSkill('boss_shenghuang_draw');
+							}
+						},
+					},
+					lose:{
+						marktext: '愈',
+						intro: {
+							content:'当前回合已失去了黑色牌，在本回合结束时，其他角色将体力回复至回合开始时的状态。',
+							name:'圣皇之愈',
+						},
+						trigger:{player:'loseAfter'},
+						forced:true,
+						priority:777,
+						filter:function(event,player){
+							if(!(event.getParent().cards||event.card))									return false;
+		//					if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
+							var cards = event.getParent().cards;
+							var bc=0;
+							for(var i=0;i<cards.length;i++){
+								if(get.color(cards[i]) == 'black')	bc++;
+							}
+							return bc;
+						},
+						content:function(){
+							player.storage.boss_shenghuang++;
+							player.markSkill('boss_shenghuang_lose');
+						},
+					},
+					ret:{
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:888,
+						trigger:{global:'phaseAfter'},
+						filter:function(event,player){
+							return player.storage.boss_shenghuang;
+						},
+						content:function(){
+							player.storage.boss_shenghuang=0;
+							player.unmarkSkill('boss_shenghuang_lose');
+						}
+					},
+					rec:{
+						forced:true,
+						priority:777,
+						trigger:{global:'phaseEnd'},
+						filter:function(event,player){
+							if(!cur.hasSkill('boss_shenghuang')||!cur.storage.boss_shenghuang>0)	return false;
+							if(!game.hasPlayer(function(cur){
+								return cur.isAlive()&&cur.isFriendOf(player)&&cur.storage.boss_shenghuang_put;
+							}))	return false;
+							return true;
+						},
+						content:function(){
+							'step 0'
+							event.targets = game.filter(function(cur){
+								return cur.isAlive()&&cur.isFriendOf(player)&&cur.storage.boss_shenghuang_put;
+							})
+							'step 1'
+							if(event.targets.length){
+								var target=event.targets.shift();
+								var vq=target.storage.boss_shenghuang_put-target.hp;
+								if(vq>0){
+									target.recover(vq);
+								}
+								player.line(target,'water');
+								event.redo();
+							}
+						},
+					}
+				},
+			},
+			boss_renzhan:{
+				priority:777,
+				trigger:{global:'damageEnd'},
+				forced:false,
+				usable:1,
+				init:function(player){
+					player.storage.boss_renzhan = [];
+				},
+				check:function(event,player){
+					if(player.storage.boss_shenghuang_draw==0&&player.hp==1)		return false;
+					return player.getUseValue({name:'sha'})>0;
+				},
+				filter:function(event,player){
+					return event.player!=player&&event.player.hp>0;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					player.loseHp();
+					var card=get.cards()[0];
+					var cards=[];
+					cards.push(card);
+					while(get.name(card)!='sha'){
+						card=get.cards()[0];
+						cards.push(card);
+					}
+					player.storage.boss_renzhan = cards;
+					player.showCards(player.storage.boss_renzhan,'瞬息刃斩亮出牌堆');
+					game.delay(2);
+					player.chooseControlList(
+						['获得这些牌',
+						'获得其中的【杀】并对一名角色使用任意张【杀】'],
+						true,function(event,player){
+							return _status.event.index;
+						}).set('ai',function(){
+							var player = _status.event.player;
+							if(player.countCards('h',{name:'sha'})>=1&&player.storage.boss_renzhan.length<=3)	return 1;
+							return 0;
+						});
+					'step 1'
+					if(result.index==0)	
+					{
+						cards = player.storage.boss_renzhan;
+						game.log(player,'获得了', cards);
+						player.gain(cards);
+						_status.event.finish();
+					}
+					else if(result.index==1)
+					{
+						var cards = [];
+						player.storage.boss_renzhan.forEach(function(card){
+							if(get.name(card)!='sha')	return;
+							cards.push(card);
+						});
+						player.storage.boss_renzhan = cards;
+						player.showCards(player.storage.boss_renzhan,'获得其中的【杀】');
+						game.delay(2);
+						player.gain(cards);
+					}
+					'step 2'
+					game.broadcastAll(function(player){
+						var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
+							return player!=target;
+						});
+						next.set('targetprompt',['RUA']);
+						next.set('forced',false);
+						next.set('ai',function(target){
+							var att=get.attitude(player,target);
+							return 50-att;
+						});
+					}, player)
+					'step 3'
+					if(result.bool){
+						event.target = result.targets[0];
+						var target = result.targets[0];
+						console.log(target);
+						game.log(player,'刃斩的目标为',target);
+						target.addTempSkill('boss_renzhan2','phaseEnd');
+						target.storage.boss_renzhan2 = true;
+						player.logSkill('boss_renzhan',target);
+						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
+					}
+					else{
+						event.finish();
+					}
+					'step 4'
+					if(result.bool){
+						var target = event.target;
+						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
+						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+					}}
+					else{
+						event.finish();
+					}
+					'step 5'
+					if(result.bool){
+						var target = event.target;
+						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
+							event.goto(4);
+						}
+					}
+					target.unmarkSkill('boss_renzhan2');
+					target.removeSkill('boss_renzhan2');
+				},
+				ai:{
+					　　maixie:true,
+				},
+			},
+			boss_renzhan2:{
+				marktext:"危",
+				locked:true,
+				intro:{
+					name:'危',
+					content:'成为瞬息刃斩的目标',
+				},
+				mark:true,
+				firstDo:true,
+				silent:true,
+				forced:true,
+				popup:false,
+				trigger:{player:'dying'},
+				filter:function(event,player){
+					return player.isAlive();
+				},
+				onremove:function(player){
+					delete player.storage.boss_renzhan2;
+				},
+				content:function(){
+					player.unmarkSkill('boss_renzhan2');
+				},
+			},
+			boss_kuase:{
+				unique:true,
+				limited:true,
+				skillAnimation:true,
+				priority:888,
+				animationStr:'夸色☆超级梦想',
+				trigger:{global:'phaseAfter'},
+				prompt:function(){
+					var player=_status.event.player;
+					return '是否发动“阿库娅色☆超级梦想” \n （本回合所有角色回复体力之和为'+player.storage.boss_kuase_date+'点）';
+				},
+				filter:function(event,player){
+					return player.storage.boss_kuase_date;
+				},
+				check:function(event,player){
+					return !player.storage.boss_shenghuang_draw||player.storage.boss_kuase_date>=player.storage.boss_shenghuang_draw;
+				},
+				content:function(){
+					var dream = player.storage.boss_kuase_date;
+					player.draw(dream);
+					player.getStat().card.sha=0;
+					player.phaseUse();
+					player.storage.boss_kuase = true;
+					player.awakenSkill('boss_kuase');
+				},
+				group:['boss_kuase_date','boss_kuase_ret'],
+				subSkill:{
+					date:{
+						init:function(player){
+							player.storage.boss_kuase_date = 0;
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:777,
+						trigger:{global:'recoverAfter'},
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							player.storage.boss_kuase_date += trigger.num;
+						},
+					},
+					ret:{
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:666,
+						trigger:{global:'phaseAfter'},
+						filter:function(event,player){
+							return player.storage.boss_kuase_date;
+						},
+						content:function(){
+							player.storage.boss_kuase_date=0;
+						}
+					}
+				}
+			},
 			//boss可可
 			boss_zaoankeke:{
 				trigger:{player:'useCardToPlayered'},
@@ -6672,15 +7001,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.log(source,'出场');
 					source.node.identity.dataset.color=get.translation(source.side+'Color');
 					source.draw(4);
-					_status.event.parent.parent.parent.untrigger(false,source);
-					var evt=_status.event.parent.parent.parent;
-					for(var i=0;i<100;i++){
+					var evt=event.getParent('dying');
+					if(evt&&evt.parent){
 						evt=evt.parent;
-						if(evt.player==source){
-							evt.finish();
-						}
-						if(evt.name=='phase'){
-							break;
+						evt.untrigger(false,source);
+						for(var i=0;i<100;i++){
+							evt=evt.parent;
+							if(evt.player==source){
+								evt.finish();
+							}
+							if(evt.name=='phase'){
+								break;
+							}
 						}
 					}
 					if(lib.storage.single_control){
@@ -6712,15 +7044,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.log(source,'出场');
 					// source.node.identity.dataset.color=source.side+'zhu';
 					source.draw(4);
-					_status.event.parent.parent.parent.untrigger(false,source);
-					var evt=_status.event.parent.parent.parent;
-					for(var i=0;i<100;i++){
+					var evt=event.getParent('dying');
+					if(evt&&evt.parent){
 						evt=evt.parent;
-						if(evt.player==source){
-							evt.finish();
-						}
-						if(evt.name=='phase'){
-							break;
+						evt.untrigger(false,source);
+						for(var i=0;i<100;i++){
+							evt=evt.parent;
+							if(evt.player==source){
+								evt.finish();
+							}
+							if(evt.name=='phase'){
+								break;
+							}
 						}
 					}
 					game.triggerEnter(source);
@@ -6855,6 +7190,20 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.log(source,'出场');
 
 					source.draw(4);
+					var evt=event.getParent('dying');
+					if(evt&&evt.parent){
+						evt=evt.parent;
+						evt.untrigger(false,source);
+						for(var i=0;i<100;i++){
+							evt=evt.parent;
+							if(evt.player==source){
+								evt.finish();
+							}
+							if(evt.name=='phase'){
+								break;
+							}
+						}
+					}
 					_status.event.parent.parent.parent.untrigger(false,source);
 					game.addVideo('reinit',source,[name,color]);
 					game.triggerEnter(source);

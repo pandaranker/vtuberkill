@@ -36,6 +36,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Pudding: ['female','psp',4,['tianlve','luxian']],
 			/**粉兔 */
 			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu']],
+			/**阿秋 */
+			AkiRinco: ['female','psp',4,['jiren','canxin']],
 
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
 			/**茜科塞尔 */
@@ -1391,7 +1393,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					clear:{
 						trigger:{player:'phaseAfter'},
-						direct:true,
+						forced:true,
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){
@@ -2412,11 +2414,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(!p.storage.xiemen_reset)p.storage.xiemen_reset=[];
 						p.storage.xiemen_reset.push(card);
 						p.lose(card, ui.special, 'toStorage');
-						p.$throw(card,null,'nobroadcast');
-						game.log(p, '移除一张', card);
+
 						//角色p添加临时技能xiemen_reset，用于在回合结束时重新获得被移除的手牌
 						if(!p.hasSkill('xiemen_reset')) p.addSkill('xiemen_reset');
-						p.markAuto('xiemen_reset', card);
+						// p.markAuto('xiemen_reset', card);
 					}
 				},
 				subSkill:{
@@ -2427,14 +2428,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						direct: true,
 						content:function(){
 							if(player.storage.xiemen_reset){
-								player.gain(player.storage.xiemen_reset, 'gain2', 'fromStorage');
+								player.gain(player.storage.xiemen_reset, 'fromStorage');
 							}
-							player.unmarkAuto('xiemen_reset', player.storage.xiemen_reset);
+
 							player.removeSkill('xiemen_reset');
-						},
-						intro:{
-							name: '斜门',
-							content:'cards'
 						}
 					}
 				}

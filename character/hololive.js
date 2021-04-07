@@ -280,32 +280,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 			},
 			juhun:{
-					trigger:{
-					global:'damageEnd'
-					},
+					trigger:{global:'damageEnd'},
 					forced:true,
 					usable:1,
 					filter:function(event,player){return true},
 					content:function(){
-					"step 0"
-					event.card=get.cards()[0];
-					if(player.storage.juhun==undefined) player.storage.juhun=[];
-					player.storage.juhun.push(event.card);
-					player.syncStorage('juhun');
-					//event.trigger("addCardToStorage");
-					game.cardsGotoSpecial(event.card);
-					player.showCards(player.storage.juhun,'聚魂')
-					player.markSkill('juhun');
+						"step 0"
+						event.card=get.cards()[0];
+						if(player.storage.juhun==undefined) player.storage.juhun=[];
+						player.storage.juhun.push(event.card);
+						player.syncStorage('juhun');
+						//event.trigger("addCardToStorage");
+						game.cardsGotoSpecial(event.card);
+						player.showCards(player.storage.juhun,'聚魂')
+						player.markSkill('juhun');
 					},
-				intro:{
-					content:'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							delete player.storage.juhun;
+					intro:{
+						content:'cards',
+						onunmark:function(storage,player){
+							if(storage&&storage.length){
+								player.$throw(storage,1000);
+								game.cardsDiscard(storage);
+								delete player.storage.juhun;
+							}
 						}
-					}
 					},
 					group:['juhun_get','juhun_draw'],
 					subSkill:{
@@ -2037,7 +2035,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageBegin'},
 						priority:80,
 						check:function(event,player){
-							return -get.damageEffect(player,event.player,player);
+							return 1-get.damageEffect(player,event.player,player);
 						},	
 						filter:function(event,player){
 							if(!event.source.hasSkill('youyishiyue'))	return false;

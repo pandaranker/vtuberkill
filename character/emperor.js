@@ -149,7 +149,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				locked:true,
 				init:function(player){
 					player.storage.shenghuang=0;
-					if(get.zhu(player)==player&&game.players.length>4) player.maxHp--;
+					if(get.mode()=='identity'&&get.zhu(player)==player&&game.players.length>4) player.maxHp--;
 				},
 				global:['shenghuang_put', 'shenghuang_rec'],
 				group:['shenghuang_draw', 'shenghuang_lose', 'shenghuang_ret'],
@@ -214,8 +214,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						priority:777,
 						filter:function(event,player){
-							if(!(event.getParent().cards||event.card))									return false;
-		//					if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
+							if(!(event.getParent().cards||event.card))	return false;
 							var cards = event.getParent().cards;
 							var bc=0;
 							for(var i=0;i<cards.length;i++){

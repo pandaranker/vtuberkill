@@ -29,6 +29,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_UshimiIchigo: ['female', 'nijisanji', 3, ['re_shuangren', 're_jitui']],
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
+
 			/**时乃空 */
 			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
 			/**萝卜子 */
@@ -49,6 +50,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
 			/**润羽露西娅 */
 			re_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
+			/**大神澪 */
+			re_ŌokamiMio:['female','holo',4,['re_yuzhan','re_bizuo']],
 			
 			/**小希小桃 */
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
@@ -850,6 +853,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:9,
 				filter:function(event,player){
 					return event.num>0;
+				},
+				check:function(event,player){
+					return player.countCards('h')>(-get.attitude(player,event.player));
 				},
 				logTarget:'player',
 				content:function(){
@@ -2563,19 +2569,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'shaMiss'},
 				forced: true,
 				content:function(){
+					'step 0'
 					player.judge(function(card){
 						if(get.suit(card)=='spade') {
-							game.broadcastAll(function(player,target){
-								player.discardPlayerCard('结果为♠，请弃置对方一张牌',target,'he',true);
-							},player,trigger.target);
 							return 1;
 						}
 						else if(get.suit(card)=='heart'){ 
-							player.chooseToDiscard('结果为♥，请弃置一张牌','he',true);
 							return -1;
 						}
-			//			return 0;
+						return 0;
 					});
+					'step 1'
+					if(result.bool){
+						if(result.suit=='spade'){
+							player.discardPlayerCard('结果为♠，请弃置对方一张牌',target,'he',true);
+						}else if(result.suit=='heart'){
+							player.chooseToDiscard('结果为♥，请弃置一张牌','he',true);
+						}
+					}
 				},
 			},
 			//re希桃
@@ -2918,6 +2929,175 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			re_yuzhan:{
+				audio:'xuanxu',
+				enable:'phaseUse',
+				usable:1,
+				content:function(){
+					'step 0'
+					var cards=get.cards(4);
+					event.cards=cards;
+					var rednum=0,blacknum=0;
+					for(var i=0;i<cards.length;i++){
+						if(get.color(cards[i])=='red') rednum++;
+						if(get.color(cards[i])=='black') blacknum++;
+					}
+					if(rednum==2&&blacknum==2){
+						var next=player.chooseCardButton(2,'预占:选择令当前回合角色获得其中一对',event.cards,true);
+						next.set('filterButton',function(button){
+							for(var i=0;i<ui.selected.buttons.length;i++){
+								if(get.color(ui.selected.buttons[i].link)!=get.color(button.link)) return false;
+							}
+							return true;
+						});	
+						next.set('ai',function(button){
+							if(_status.currentPhase!=_status.event.player){
+								return -get.value(button.link,_status.event.player);
+							}
+							return get.value(button.link,_status.event.player);
+						});		
+					}
+					else{
+						var str='预占：牌堆顶的牌不为两对颜色相同的牌，按确定结束技能';
+						event.dialog=ui.create.dialog(str,cards);
+						event.control=ui.create.control('ok');
+						event.dialog.open();
+						game.pause();
+					}			
+					'step 1'
+					if(result.bool&&result.links&&result.links.length){
+						var player2=_status.currentPhase;
+						event.cards.remove(result.links[0]);
+						event.cards.remove(result.links[1]);
+						player2.gain(result.links,'gain2');
+						if(player!=player2){
+							player.gain(event.cards,'gain2');
+							event.cards=[];
+						}
+					}
+					else{
+						if(event.dialog) event.dialog.close();
+						if(event.control) event.control.close();
+						game.resume();
+						for(var i=0;i<event.cards.length;i++){
+							event.cards[i].discard();
+						}						
+						event.finish();
+					}
+					'step 2'
+					if(_status.currentPhase==player&&event.cards.length){
+						for(var i=0;i<event.cards.length;i++){
+							ui.cardPile.insertBefore(event.cards[i],ui.cardPile.firstChild);
+						}
+						player.chooseToGuanxing(2);
+					}
+					
+				},
+				ai:{
+					order:8,
+					result:{
+						player:1,
+					},
+				},				
+			},
+			re_bizuo:{
+				trigger:{global: 'phaseBegin'},
+				direct: true,
+				filter:function(event, player){	
+					return player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					var next=player.chooseCard(get.prompt2('re_bizuo'),'h',[1,player.countCards('h')]);
+					next.set('ai',function(card){
+						return 6-get.value(card);
+					});
+					'step 1'
+					if(result.cards&&result.cards.length){
+						player.logSkill('re_bizuo');
+						player.lose(result.cards,ui.special);
+						player.$throw(result.cards,1000);						
+					}	
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.cards&&result.cards.length){
+						for(var i=0;i<result.cards.length;i++){
+							result.cards[i].fix();
+							result.cards[i].storage.bizuo=true;
+							ui.cardPile.insertBefore(result.cards[i],ui.cardPile.firstChild);
+						}					
+						game.log(player,'将'+get.cnNumber(result.cards.length)+'张牌置于牌堆顶');			
+					}
+				},	
+				group:['re_bizuo_use','re_bizuo_end'],
+				subSkill:{				
+					use:{
+						trigger: {
+							global: 'useCard',
+						},
+						check:function(event,player){
+							return true;
+						},	
+						filter:function(event,player){
+							if(event.card&&event.card.storage.bizuo==true)	return true;
+							if(event.cards&&event.cards.length){
+								for(var i=0;i<event.cards.length;i++){
+									if(event.cards[i].storage.bizuo==true)	return true;
+								}
+							}
+							return false;
+						},
+						prompt:'弼佐:是否发动一次【预占】？',
+						content:function(){
+							'step 0'
+							if(player.isOnline()){
+								player.send(function(){
+									player.useSkill('re_yuzhan',player,false);
+								});
+							}
+							else{
+								player.useSkill('re_yuzhan',player,false);
+							}
+							'step 1'
+							if(trigger.card&&trigger.card.storage.bizuo==true)	delete trigger.card.storage.bizuo;
+							if(trigger.cards&&trigger.cards.length){
+								for(var i=0;i<trigger.cards.length;i++){
+									if(trigger.cards[i].storage.bizuo==true)	delete trigger.cards[i].storage.bizuo;
+								}
+							}								
+					
+						}
+					},
+					end:{
+						trigger:{global:'phaseAfter'},
+						direct: true,
+						content:function(){
+							for(var i=0;i<ui.cardPile.childElementCount;i++){
+								if(ui.cardPile.childNodes[i].storage.bizuo==true){
+									delete ui.cardPile.childNodes[i].storage.bizuo;
+								}
+							}
+							for(var i=0;i<ui.discardPile.childElementCount;i++){
+								if(ui.discardPile.childNodes[i].storage.bizuo==true){
+									delete ui.discardPile.childNodes[i].storage.bizuo;
+								}
+							}
+							var cards=[];
+							for(var i=0;i<game.players.length;i++){
+								var cards2=game.players[i].getCards('hej');
+								cards=cards.concat(cards2);
+							}
+							for(var i=0;i<cards.length;i++){
+								if(cards[i].storage.bizuo==true){
+									delete cards[i].storage.bizuo;
+								}								
+							}
+						}
+					},
+				},				
+			},
 		},
 		characterReplace:{
 			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
@@ -3003,6 +3183,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_ShizukaRin:'新·静凛',
 			re_mozhaotuji:'魔爪突击',
+			re_mozhaotuji_DrawOrStop:'魔爪突击',
 			re_mozhaotuji_info:'每回合限一次。你可以将你的一个阶段变为出牌阶段。你使用过至少两张牌的出牌阶段结束时，摸一张牌。',
 
 			re_MitoTsukino:'新·月之美兔',
@@ -3117,7 +3298,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hanyin: '瀚音',
 			hanyin_info: '你使用牌被点数小于之的牌响应或抵消时，摸一张牌。',
 
+			re_ŌokamiMio: '新·大神澪',
+			re_yuzhan: '预占',
+			re_yuzhan_info: '出牌阶段限一次，你可以观看牌堆顶的四张牌，若有两对颜色相同，你令当前回合角色获得其中一对，若不为你，你获得另一对。然后你将剩余牌以任意顺序置于牌堆顶或牌堆底。',
+			re_bizuo: '弼佐',
+			re_bizuo_info: '一名角色的回合开始时，你可以将任意张牌置于牌堆顶，其本回合使用这些牌时，你可以发动一次【预占】。',
+
 		   }
 	}
-}
-)
+})

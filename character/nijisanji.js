@@ -3006,6 +3006,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			ShizukaRin:'静凛',
 			mozhaotuji:'魔爪突击',
+			mozhaotuji_DrawOrStop:'魔爪突击',
 			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。',
 
 			IenagaMugi:'家长麦',

@@ -88,7 +88,7 @@ window.noname_package={
 			leader:'战棋君主'
 		},
 		single:{
-			normal:'新1v1',
+			//normal:'新1v1',
 		},
 	},
 	background:{
