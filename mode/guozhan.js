@@ -346,6 +346,34 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		characterPack:{
 			mode_guozhan:{
+				/**时乃空 */
+				gz_TokinoSora:['female','holo',4,['re_taiyangzhiyin']],
+				/**萝卜子 */
+				gz_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
+				/**白上吹雪 */
+				gz_ShirakamiFubuki:['female','holo',3,['gz_yuanlv','re_jinyuan']],
+				/**星街慧星 */
+				gz_HoshimatiSuisei:['female','holo',4,['cansha']],
+				/**夜空梅露 */
+				YozoraMel:['female','holo',3,['juhun','meilu']],
+				/**aki */
+				gz_AkiRosenthal: ['female', 'holo', 3, ['fuyi', 'xihun']],
+				/**樱巫女 */
+				gz_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
+				 /**夏色祭 */
+				gz_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
+				/**兔田佩克拉 */
+				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
+				/**润羽露西娅 */
+				gz_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
+				/**月之美兔 */
+				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei']],
+				/**樋口枫 */
+				gz_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
+
+
+
+
 				gz_shibing1wei:['male','wei',0,[],['unseen']],
 				gz_shibing2wei:['female','wei',0,[],['unseen']],
 				gz_shibing1shu:['male','shu',0,[],['unseen']],
@@ -356,6 +384,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_shibing2qun:['female','qun',0,[],['unseen']],
 				gz_shibing1jin:['male','qun',0,[],['unseen']],
 				gz_shibing2jin:['female','qun',0,[],['unseen']],
+				
+				gz_shibing1jin:['male','holo',0,[],['unseen']],
+				gz_shibing2jin:['female','holo',0,[],['unseen']],
 
 				gz_caocao:['male','wei',4,['jianxiong']],
 				gz_simayi:['male','wei',3,['fankui','guicai']],
@@ -478,6 +509,115 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		skill:{
+			//gz梅露
+			fuyi:{
+				locked:true,
+				mod:{
+					globalFrom:function(from,to,current){
+						if(to==_status.currentPhase) return current-1;
+					},
+					globalTo:function(from,to,current){
+						if(to!=_status.currentPhase) return current+1;
+					},
+				}
+			},
+			xihun:{
+				trigger:{global:'damageEnd'},
+				forced:true,
+				usable:1,
+				filter:function(event,player){return get.name(event.card)=='sha'&&!player.hasSkill('xihun_used')},
+				content:function(){
+					'step 0'
+					player.draw();
+					'step 1'
+					if(player.getHandcardLimit()<player.countCards('h')){
+						player.addTempSkill('xihun_used','roundStart');
+					}
+				},
+				subSkill:{used:{}},
+			},
+			//gz狐狸
+			gz_yuanlv:{
+				trigger:{player:['damageAfter','useCardAfter']},
+				priority:2,
+				usable:1,
+				filter:function(event,player){
+					if(event.name=='damage'||(event.name=='useCard'&&get.type(event.card,'trick')=='trick')){
+						return true;
+					}
+					else
+						return false;
+				},
+				content:function(){
+					'step 0'
+					player.draw(2);
+					player.chooseCard(1,'he','选择放置到牌堆顶部的牌',true);
+					'step 1'
+					if(result.bool&&result.cards&&result.cards.length) event.linkcards=result.cards.slice(0);
+					else	event.finish();
+					game.delay();
+					'step 2'
+					var cards=event.linkcards;
+					player.lose(cards,ui.special);
+					game.delay();
+					'step 3'
+					var cards=event.linkcards;
+					while(cards.length>0){
+						var card=cards.pop();
+						card.fix();
+						ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+						game.updateRoundNumber();
+					}
+				},
+				ai:{
+					threaten:0.6,
+				}
+			},
+			//gz兔头
+			gz_bingdielei:{
+				group:'gz_bingdielei_on',
+				subSkill:{
+					on:{
+						trigger:{player:'damageAfter',source:'damageAfter'},
+						priority:99,
+						silent:true,
+						popup: false,
+						forced:true,
+						filter:function(event,player){
+							return !player.hasSkill('gz_bingdielei_anotherPhase');
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							player.markSkill(event.name);
+							player.addTempSkill('gz_bingdielei_anotherPhase');
+						},
+					},
+					anotherPhase:{
+						audio:'bingdielei',
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						round:1,
+						intro: {
+							content:'当前回合结束后若本轮没有获得过，可以获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						onremove:true,
+						prompt2: '获得一个额外回合',
+						filter:function(event,player){
+							return player.getHistory('damage').length;
+						},
+						content:function(){
+							player.unmarkSkill(event.name);
+							player.logSkill(event.name);
+							player.insertPhase();
+						},
+					},
+				},
+			},
 			yigui:{
 				hiddenCard:function(player,name){
 					var storage=player.storage.yigui;
@@ -7354,7 +7494,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			junling6:'军令六',
 			junling6_bg:'令',
 			junling6_info:'若被执行，执行者选择一张手牌和一张装备区内牌（若有），然后弃置其余的牌。',
-					
+
+
+			fuyi: '蝠翼',
+			fuyi_info: '锁定技。回合内你计算与其他角色的距离-1，回合外其他角色计算与你的距离+1。',
+			xihun: '吸魂',
+			xihun_info: '一名角色受到【杀】造成的伤害后，你可以摸一张牌。然后若你的手牌数大于手牌上限，你本轮无法再发动此技能。',
+
+			gz_yuanlv:'远虑',
+			gz_yuanlv_info:'每回合限一次。你使用锦囊后或受到伤害后，你可以摸两张牌，然后将一张牌置于牌堆顶。',
+
+			
+			gz_bingdielei:'并蒂恶蕾',
+			gz_bingdielei_anotherPhase: '并蒂恶蕾',
+			gz_bingdielei_info:'每轮限一次。你造成或受到过伤害的回合结束时，可以获得一个额外回合。',
+
+
 			gz_cuimao:'崔琰毛玠',
 			gzzhengbi:'征辟',
 			gzzhengbi_info:'出牌阶段开始时，你可以选择一项：选择一名未确定势力的角色，你对其使用的牌无距离限制且不计入使用次数，直到其明置武将牌或回合结束；或将一张基本牌交给一名有明置武将牌的角色，然后其交给你一张非基本牌或两张基本牌。',
@@ -7365,7 +7520,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gzjieyue_info:'准备阶段开始时，你可以将一张手牌交给一名非魏势力角色，然后选择一个“军令”并令其选择一项：执行该军令，然后你摸一张牌；或令你于此回合摸牌阶段额外摸三张牌。',
 			gz_wangping:'王平',
 
-		jianglue:'将略',
+			jianglue:'将略',
 			jianglue_info:'限定技，出牌阶段，你可以选择一个“军令”，然后与你势力相同的其他角色可以执行该军令（未确定势力角色可以在此时明置一张武将牌）。你与所有执行该军令的角色增加一点体力上限，然后回复一点体力，然后你摸X张牌（X为以此法回复了体力的角色数）。',
 			gz_fazheng:'法正',
 			gzxuanhuo:'眩惑',

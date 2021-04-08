@@ -63,7 +63,7 @@
 			xiaosha_emotion:20,
 			xiaotao_emotion:20,
 			xiaojiu_emotion:20,
-			Diana_emotion:5,
+			Diana_emotion:6,
 		},
 		animate:{
 			skill:{},
@@ -4256,7 +4256,7 @@
 						init:false,
 						restart:true,
 						// frequent:true,
-						intro:'开启后游戏中将有两个内奸（�����奸胜利条件仍为主内1v1时击杀主公）'
+						intro:'开启后游戏中将有两个内奸（内奸胜利条件仍为主内1v1时击杀主公）'
 					},
 					connect_double_character:{
 						name:'双将模式',
@@ -11124,7 +11124,7 @@
 					if(lib.filter.judge(card,player,target)&&cards.length&&get.position(cards[0],true)=='o') target.addJudge(card,cards);
 				},
 				equipCard:function(){
-					if(cards.length&&get.position(cards[0],true)=='o') target.equip(this,cards);
+					if(cards.length&&get.position(cards[0],true)=='o') target.equip(cards[0]);
 				},
 				gameDraw:function(){
 					"step 0"
@@ -15641,6 +15641,9 @@
 						delete event.filterStop;
 						event.finish();
 						event._triggered=null;
+					}
+					if(num>0){
+						event.trigger('damageHit');
 					}
 					"step 5"
 					if(lib.config.background_audio){
@@ -23655,7 +23658,8 @@
 								_status.discarded.remove(card);
 							}
 						}
-						var info=get.info(viewAs?{name:viewAs}:card);
+						var ecard = viewAs?{name:viewAs}:card;
+						var info=get.info(ecard);
 						if(info.skills){
 							for(var i=0;i<info.skills.length;i++){
 								player.addSkillTrigger(info.skills[i]);
@@ -38119,7 +38123,7 @@
 								placeholder.style.display='block';
 								placeholder.style.width='100%';
 								placeholder.style.height='14px';
-								createDash2('���','技能配音','audio/skill',page);
+								createDash2('技','技能配音','audio/skill',page);
 								createDash2('卡','男性卡牌','audio/card/male',page);
 								createDash2('牌','女性卡牌','audio/card/female',page);
 								createDash2('亡','阵亡配音','audio/die',page);
@@ -38289,7 +38293,13 @@
 							}
 						}
 						alterableCharacters.sort();
+						var getGroup=function(name){
+							var group=get.is.double(name,true);
+							if(group) return group[0];
+							return lib.character[name][1];
+						};
 						var groupSort=function(name){
+							if(!lib.character[name]) return 20;
 							if(info[name][1]=='shen') return -1;
 							if(info[name][1]=='wei') return 0;
 							if(info[name][1]=='shu') return 1;
@@ -43449,7 +43459,7 @@
 				//      			return ui.create.characterDialog2.apply(this,arguments);
 				//     }
 				// }
-				var filter,str,noclick,thisiscard,seperate,expandall,onlypack,heightset,precharacter;
+				var filter,str,noclick,thisiscard,seperate,expandall,onlypack,heightset,precharacter,characterx;
 				for(var i=0;i<arguments.length;i++){
 					if(arguments[i]==='thisiscard'){
 						thisiscard=true;
@@ -43462,6 +43472,9 @@
 					}
 					else if(arguments[i]=='precharacter'){
 						precharacter=true;
+					}
+					else if(arguments[i]=='characterx'){
+						characterx=true;
 					}
 					else if(typeof arguments[i]=='string'&&arguments[i].indexOf('onlypack:')==0){
 						onlypack=arguments[i].slice(9);
@@ -43731,6 +43744,7 @@
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
+					var bool4=(get.mode()!='guozhan');
 					for(var i in lib.character){
 						if(lib.character[i][1]=='shen'){
 							bool1=true;
@@ -43738,10 +43752,12 @@
 						if(bool3||lib.character[i][1]=='key'){
 							bool2=true;
 						}
-						if(bool1&&bool2) break;
+						if(!bool4&&get.is.double(i)) bool4=true;
+						if(bool1&&bool2&&bool4) break;
 					}
 					if(bool1) groups.add('shen');
 					if(bool2&&!bool3) groups.add('key');
+					if(bool4&&get.mode()=='guozhan') groups.add('double');
 					var natures=['water','soil','wood','metal'];
 					var span=document.createElement('span');
 					newlined.appendChild(span);
@@ -43785,11 +43801,17 @@
 								else if(dialog.currentcapt2&&dialog.buttons[i].capt!=dialog.getCurrentCapt(dialog.buttons[i].link,dialog.buttons[i].capt,true)){
 									dialog.buttons[i].classList.add('nodisplay');
 								}
-								else if(dialog.buttons[i].group!=dialog.currentgroup){
-									dialog.buttons[i].classList.add('nodisplay');
+								else if(dialog.currentgroup=='double'){
+									if(dialog.buttons[i]._changeGroup) dialog.buttons[i].classList.remove('nodisplay');
+									else dialog.buttons[i].classList.add('nodisplay');
 								}
 								else{
-									dialog.buttons[i].classList.remove('nodisplay');
+									if(dialog.buttons[i]._changeGroup||dialog.buttons[i].group!=dialog.currentgroup){
+									dialog.buttons[i].classList.add('nodisplay');
+								}
+									else{
+										dialog.buttons[i].classList.remove('nodisplay');
+									}
 								}
 							}
 						}
@@ -43944,6 +43966,11 @@
 					};
 				}
 				else{
+					var getGroup=function(name){
+						var group=get.is.double(name,true);
+						if(group) return group[0];
+						return lib.character[name][1];
+					}
 					groupSort=function(name){
 						if(lib.character[name][1]=='shen') return -1;
 						if(lib.character[name][1]=='wei') return 0;
@@ -44061,6 +44088,9 @@
 				else{
 					if(precharacter){
 						dialog.add([list,'precharacter'],noclick);
+					}
+					else if(characterx){
+						dialog.add([list,'characterx'],noclick);
 					}
 					else{
 						dialog.add([list,'character'],noclick);
@@ -45190,7 +45220,16 @@
 					}
 					node.link=item;
 					if(type=='character'||type=='characterx'){
-						if(type=='characterx'&&lib.characterReplace[node._link]&&lib.characterReplace[node._link].length>1) node._replaceButton=true;
+						if(type=='characterx'&&item.indexOf('gz_')==0&&lib.character[item]&&lib.character[item][4]){
+							for(var ix of lib.character[item][4]){
+								if(ix.indexOf('doublegroup:')==0){
+									node._replaceButton=true;
+									node._changeGroup=ix.split(':').slice(1);
+									break;
+								}
+							}
+						}
+						else if(type=='characterx'&&lib.characterReplace[node._link]&&lib.characterReplace[node._link].length>1) node._replaceButton=true;
 						var func=function(node,item){
 							node.setBackground(item,'character');
 							if(node.node){
@@ -45275,7 +45314,23 @@
 								node.node.replaceButton=intro;
 								intro.innerHTML='切换';
 								intro._node=node;
-								intro.addEventListener(lib.config.touchscreen?'touchend':'click',function(){
+								if(node._changeGroup) intro.addEventListener(lib.config.touchscreen?'touchend':'click',function(){
+									_status.tempNoButton=true;
+									var node=this._node;
+									var list=node._changeGroup;
+									var link=lib.character[node.link][1];
+									var index=list.indexOf(link);
+									if(index==list.length-1) index=0;
+									else index++;
+									lib.character[node.link][1]=list[index];
+									node.refresh(node,node.link);
+									game.uncheck();
+									game.check();
+									setTimeout(function(){
+										delete _status.tempNoButton;
+									},200);
+								});
+								else intro.addEventListener(lib.config.touchscreen?'touchend':'click',function(){
 									_status.tempNoButton=true;
 									var node=this._node;
 									var list=lib.characterReplace[node._link];
@@ -46391,7 +46446,7 @@
 				}
 				else{
 					if(get.mode()=='guozhan'){
-						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏',nijisanji:'虹'};//wei:'魏',shu:'蜀',wu:'吴',dotlive:'点',upd8:'U'
+						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏',nijisanji:'虹',vtuber:'企',clubs:'社'};//wei:'魏',shu:'蜀',wu:'吴',dotlive:'点',upd8:'U'
 					}
 					var list2=get.copy(list);
 					if(game.getIdentityList2){
@@ -49890,6 +49945,16 @@
 			return 0;
 		},
 		is:{
+			double:function(name,array){
+				if(!lib.character[name]||!lib.character[name][4]||name.indexOf('gz_')!=0) return false;
+				for(var i of lib.character[name][4]){
+					if(i.indexOf('doublegroup:')==0){
+						if(!array) return true;
+						return i.split(':').slice(1);
+					}
+				}
+				return false;
+			},
 			yingbian:function(node){
 				return get.cardtag(node,'yingbian_zhuzhan')||get.cardtag(node,'yingbian_fujia')||get.cardtag(node,'yingbian_canqu')||get.cardtag(node,'yingbian_kongchao');
 			},
@@ -51726,7 +51791,6 @@
 						}
 					}
 					if(lib.translate[str3]&&lib.translate[str]==lib.translate[str3]){
-						console.log(str3)
 						if(player.hasSkill(str3)){
 							return '新·'+lib.translate[str];
 						}
@@ -51884,6 +51948,15 @@
 				return str.toString();
 			}
 			return '';
+		},
+		strNumber:function(num){
+			switch(num){
+				case 1:return 'A';
+				case 11:return 'J';
+				case 12:return 'Q';
+				case 13:return 'K';
+				default:return num.toString();
+			}
 		},
 		cnNumber:function(num,two){
 			if(num==Infinity) return '∞';
@@ -53132,7 +53205,16 @@
 			else if(node.classList.contains('character')){
 				var character=node.link;
 				if(lib.character[node.link]&&lib.character[node.link][1]){
-					uiintro.add(get.translation(character)+'&nbsp;&nbsp;'+lib.translate[lib.character[node.link][1]]);
+					var group=get.is.double(node.link,true);
+					if(group){
+						var str=get.translation(character)+'&nbsp;&nbsp;';
+						for(var i=0;i<group.length;i++){
+							str+=get.translation(group[i]);
+							if(i<group.length-1) str+='/';
+						}
+						uiintro.add(str);
+					}
+					else uiintro.add(get.translation(character)+'&nbsp;&nbsp;'+lib.translate[lib.character[node.link][1]]);
 				}
 				else{
 					uiintro.add(get.translation(character));
@@ -53478,7 +53560,7 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];
+			return ['wei','shu','wu','qun','jin','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];
 		},
 		types:function(){
 			var types=[];

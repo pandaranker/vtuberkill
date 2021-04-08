@@ -16,8 +16,8 @@ window.config={
 	all:{
 		sgscharacters:['Beginner'],
 		sgscards:['standard','extra'],
-		sgsmodes:['identity','doudizhu','versus','longlaoguan','single','brawl','connect'],//,'guozhan'
-		stockmode:['identity','doudizhu','versus','boss','longlaoguan','single','connect','brawl'],//,'guozhan','tafang','chess','stone'
+		sgsmodes:['identity','doudizhu','versus','longlaoguan','guozhan','single','brawl','connect'],//
+		stockmode:['identity','doudizhu','versus','boss','longlaoguan','guozhan','single','connect','brawl'],//,'guozhan','tafang','chess','stone'
 		stockextension:['boss','cardpile'],//,'coin','wuxing'
 		layout:['default','newlayout'],
 		theme:['woodden','music','simple'],

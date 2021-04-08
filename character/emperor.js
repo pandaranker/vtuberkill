@@ -807,6 +807,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.hp = num;
 					player.update();
 				},
+				ai:{
+					combo:'liuxuan',
+				},
 			},
 			liuxuan:{
 				init:function(player,skill){
@@ -1358,6 +1361,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					targets[0].gain(cards[0],player,'gainAuto').gaintag.add('xinjia');
 				},
 				ai:{
+					combo:'tangyan',
 					order:function(skill,player){
 						if(player.hp=player.maxHp&&player.needsToDiscard()){
 							if(player.storage.tangyan_on)	return 5;

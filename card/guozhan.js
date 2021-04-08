@@ -1458,8 +1458,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			jingfanma:'三轮摩托',
 			jingfanma_info:'你的进攻距离+1',
 			huxinjing_bg:'镜',
-			huxinjing:'护心镜',
-			huxinjing_info:'当你受到伤害时，若伤害值大于或等于你的体力值，则你可以将【护心镜】置入弃牌堆，然后防止此伤害。',
+			huxinjing:'烤阿草',
+			huxinjing_info:'当你受到伤害时，若伤害值大于或等于你的体力值，则你可以将【烤阿草】置入弃牌堆，然后防止此伤害。',
 		},
 		list:[
 			['heart',9,'yuanjiao'],

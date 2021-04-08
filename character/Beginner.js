@@ -40,6 +40,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_HoshimatiSuisei:['female','holo',4,['cansha']],
 			/**aki */
 			re_AkiRosenthal: ['female', 'holo', 3, ['meiwu', 're_huichu']],
+			/**梅露 */
+			re_YozoraMel:['female','holo',3,['fuyi','xihun']],
 			/**樱巫女 */
 			re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
 			 /**夏色祭 */
@@ -85,7 +87,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			Beginner:{
 		//		界限突破:[],
-				hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia'],
+				hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia','re_ŌokamiMio'],
 			}
 		},
 		skill:{
@@ -376,12 +378,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.draw(2);
 					player.chooseToDiscard(2,'he',true).set('ai',function(card){
-						if(get.type(card)=='basic'&&player.countCards('h',{type:'basic'})){
+						if(get.type(card)=='basic'&&player.countCards('h',{type:'basic'})&&player.hasUseTarget('sha')){
 							return 12-get.value(card)+Math.random();
 						}else if(get.type(card)!='basic'&&(player.countCards('he')-player.countCards('h',{type:'basic'})>=2)&&player.hp<player.maxHp){
 							return 6+Math.random();
 						}
-						return Math.random();
+						return 6-get.value(card);
 					});
 				},
 				ai:{
@@ -408,7 +410,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							var prompt2 = '可以';
 							if(num1>=2){
-								prompt2 += '视为打出一张杀';
+								prompt2 += '视为使用一张杀';
 								if(num2>=2){
 									prompt2 += ',且令一名角色回复一点体力';
 								}
@@ -515,6 +517,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					return repeat==1&&another;
 				},
+				frequent:true,
 				content:function(){
 					var stats = 0;
 					game.hasPlayer(function(cur){
@@ -1193,18 +1196,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					
 				},
 				content: function() {
-					'step 1'
-					game.broadcastAll(function(player,targets){
-						player.chooseTarget('选择目标',function(card,player,target){
-							return targets.contains(target);
-						}).set('targets',targets);
-					},player,trigger.targets)
 					'step 0'
+					player.chooseTarget('选择目标',function(card,player,target){
+						return _status.event.targets.contains(target);
+					}).set('targets',trigger.targets);
+					'step 1'
 					event.A = result.targets[0];
 					event.B = event.A.next;
 					if (!event.A.countCards('hej')) event.finish();
-					player.choosePlayerCard('hej', event.A);
-					'step 1'
+					player.choosePlayerCard('hej', event.A).set('ai',function(button){
+						var player = _status.event.player;
+						var source = _status.event.target;
+						var target = source.next;
+						var link = button.link;
+						if(get.position(link)=='j'){
+							if(target.canAddJudge(link))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}else if(get.position(link)=='e'){
+							var subtype = get.subtype(link);
+							if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}
+					});
+					'step 2'
 					if (result.bool) {
 						var card = result.links[0];
 						var dam = false;
@@ -1591,12 +1605,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					next.set('ai',function(target){
 						var player = _status.event.player;
 						var evt = _status.event.getTrigger().getParent();
-						if((player.hasSha()&&player.getCardUsable('sha')&&(player.countCards('h',function(card){
+						var current = _status.currentPhase;
+						if((player==current&&player.hasSha()&&player.getCardUsable('sha')&&(player.countCards('h',function(card){
 							return get.tag(card,'damage')&&get.type('card')=='trick';
 						})<1)||(evt.name=='useCard'&&evt.card.name=='sha')
 						)&&player.inRange(target))	return get.damageEffect(target,player,player);
+						if(player!=current){
+							if(current.hasSkillTag('useSha')&&get.attitude(current,player)>0)	return 10-get.attitude(player,target);
+							if(current.getCardUsable('sha')&&current.hasSha())		return 4+get.attitude(player,current)-get.attitude(player,target);
+						}
 						return get.attitude(player,target);
-					})
+					});
 					'step 2'
 					if(result.bool){
 						player.logSkill('shenfa',result.targets[0])
@@ -1623,6 +1642,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter: function(event, player) {
 					return player.getHandcardLimit()&&(get.type(event.card)=='basic'||get.type(event.card)=='trick')
 						&&!(event.result.bool == false || event.result.wuxied);
+				},
+				check: function(event, player) {
+					return player!=_status.currentPhase||(player.getHandcardLimit()*2)>=player.countCards('h');
 				},
 				content:function(){
 					player.storage.yubing++;
@@ -1987,6 +2009,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				ai:{
+					useSha:2,
+					skillTagFilter:function(player,tag,arg){
+						if(player.countCards('h','guohe')>0) return true;
+					},
 					effect:{
 						player:function(card,player,target,current){
 							if(['sha','guohe'].contains(card.name)&&current<0) return [0,0.7];
@@ -2023,6 +2049,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.draw(result.cards.length);
 					}
 				}
+			},
+			//re梅露
+			fuyi:{
+				locked:true,
+				mod:{
+					globalFrom:function(from,to,current){
+						if(from==_status.currentPhase) return current-1;
+					},
+					globalTo:function(from,to,current){
+						if(to!=_status.currentPhase) return current+1;
+					},
+				}
+			},
+			xihun:{
+				trigger:{global:'damageEnd'},
+				frequent:true,
+				usable:1,
+				filter:function(event,player){return event.card&&get.name(event.card)=='sha'&&!player.hasSkill('xihun_used')},
+				content:function(){
+					'step 0'
+					player.draw();
+					'step 1'
+					if(player.getHandcardLimit()<player.countCards('h')){
+						player.addTempSkill('xihun_used','roundStart');
+					}
+				},
+				subSkill:{used:{}},
 			},
 			//reMIKO
 			huangyou:{
@@ -2244,7 +2297,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				firstDo:true,
 				direct:true,
 				filter:function(event,player){
-					console.log(get.name(event.card));
 					return get.name(event.card)=='sha';
 				},
 				content:function(){
@@ -2774,13 +2826,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:4,
 					result:{
-						target:function (player,target){
-							if(target.countCards('h')>player.countCards('h')){
-								return -1;
-							}
-							else{
-								return 0;
-							}
+						target:function(player,target){
+							return lib.card.shunshou.ai.result.target.apply(this,arguments);
 						},
 					},
 				},
@@ -2942,7 +2989,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.color(cards[i])=='red') rednum++;
 						if(get.color(cards[i])=='black') blacknum++;
 					}
-					if(rednum==2&&blacknum==2){
+					if((rednum==2&&blacknum==2)||rednum==4||blacknum==4){
 						var next=player.chooseCardButton(2,'预占:选择令当前回合角色获得其中一对',event.cards,true);
 						next.set('filterButton',function(button){
 							for(var i=0;i<ui.selected.buttons.length;i++){
@@ -3041,10 +3088,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},	
 						filter:function(event,player){
-							if(event.card&&event.card.storage.bizuo==true)	return true;
+							if(event.card&&event.card.storage&&event.card.storage.bizuo==true)	return true;
 							if(event.cards&&event.cards.length){
 								for(var i=0;i<event.cards.length;i++){
-									if(event.cards[i].storage.bizuo==true)	return true;
+									if(event.cards[i].storage&&event.cards[i].storage.bizuo==true)	return true;
 								}
 							}
 							return false;
@@ -3249,6 +3296,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_AkiRosenthal: '新·亚琦',
 			re_huichu: '慧厨',
 			re_huichu_info: '每轮限一次。一名角色的回合开始时，你可以展示所有手牌，若均为红色，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
+
+			re_YozoraMel: '新·夜空梅露',
+			fuyi: '蝠翼',
+			fuyi_info: '<font color=#f66>锁定技</font> 回合内你计算与其他角色的距离-1，回合外其他角色计算与你的距离+1。',
+			xihun: '吸魂',
+			xihun_info: '一名角色受到【杀】造成的伤害后，你可以摸一张牌。然后若你的手牌数大于手牌上限，你本轮无法再发动此技能。',
 			
 			re_SakuraMiko: '新·樱巫女',
 			huangyou: '黄油',

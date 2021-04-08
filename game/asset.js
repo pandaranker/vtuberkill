@@ -1173,6 +1173,7 @@ window.noname_asset_list=[
 	'image/character/Nekomasu.jpg',
 	'image/character/NekomiyaHinata.jpg',
 	'image/character/NinomaeInanis.jpg',
+	'image/character/NoiR.jpg',
 	'image/character/OnomachiHaruka.jpg',
 	'image/character/ŌokamiMio.jpg',
 	'image/character/OtomeOto.jpg',
@@ -1185,6 +1186,7 @@ window.noname_asset_list=[
 	'image/character/SakuraMiko.jpg',
 	'image/character/SakuraRitsuki.jpg',
 	'image/character/SasakiSaku.jpg',
+	'image/character/Shaun.jpg',
 	'image/character/ShirakamiFubuki.jpg',
 	'image/character/ShirayukiMishiro.jpg',
 	'image/character/ShirayukiTomoe.jpg',
@@ -1265,6 +1267,7 @@ window.noname_asset_list=[
 	'image/character/re_UshimiIchigo.jpg',
 	'image/character/re_XiaDi.jpg',
 	'image/character/re_XiaoxiXiaotao.jpg',
+	'image/character/re_YozoraMel.jpg',
 	'image/character/re_YuNi.jpg',
 
 	//化鲸篇
@@ -1283,6 +1286,7 @@ window.noname_asset_list=[
 	'image/skin/AmamiyaKokoro/1.jpg',
 	'image/skin/Artia/1.jpg',
 	'image/skin/AyanaNana/1.jpg',
+	'image/skin/Azusa/1.jpg',
 	'image/skin/Civia/1.jpg',
 	'image/skin/Doris/1.jpg',
 	'image/skin/HisekiErio/1.jpg',
@@ -1491,6 +1495,7 @@ window.noname_asset_list=[
 	'image/emotion/Diana_emotion/3.gif',
 	'image/emotion/Diana_emotion/4.gif',
 	'image/emotion/Diana_emotion/5.gif',
+	'image/emotion/Diana_emotion/6.gif',
 	//交互表情
 	'image/emotion/throw_emotion/egg1.png',
 	'image/emotion/throw_emotion/egg2.png',

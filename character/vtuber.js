@@ -457,7 +457,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:function(){
 						return get.order({name:'sha'})-0.1;
 					},
-					result:{target:-1},
 				}
 			},
 			qixu3:{
@@ -645,8 +644,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						else{
 							return true
 						}
-						return false;
-					}).set(function(target){
+					}).set('ai',function(target){
 						return get.attitude(_status.event.player,target)<1;
 					});
 					'step 1'
@@ -756,7 +754,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:7,
 					result:{
 						player:function(player,target){
-							if(game.roundNumber>1&&player.countCards('h')>1)	return 1;
+							if((get.mode()!='identity'||game.roundNumber>1)&&player.countCards('h')>1)	return 1;
 							else return -0.2;
 						},
 					},
@@ -910,7 +908,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.bool){
-						console.log(result);
 						event.target = result.targets[0];
 						event.num = event.target.countCards('h');
 						if(event.num>0){
@@ -924,6 +921,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseControl('dialogcontrol',list,true).set('ai',function(){
 								var num = _status.event.num;
 								console.log(event.getRand());
+								console.log(_status.event.rand);
 								if(_status.event.rand>event.getRand()){
 									console.log(_status.event.reality)
 									return _status.event.reality+'张';
@@ -938,6 +936,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(result.control){
+						game.log(player,'猜测',event.target,'手中有'+result.control+'锦囊牌');
+						player.popup(result.control);
 						var num = result.control.substring(0,1);
 						event.target.showHandcards();
 						if(num==event.reality){

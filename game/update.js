@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.47',
+	version:'1.9.101.48',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.47小更新：新增角色新大神mio（初心包），调整京华（不再明牌移出），调整机萪（『千机万变』获得和失去技能的时机改为回合开始时），加强小白（获得二技能），削弱绫奈奈奈（『受乳』由每回合每项限一次改为每回合限一次），削弱贝拉（因为缺乏热身导致抽筋，从初始体力由4改为了3/4），修复部分bug',
+		'101.48小更新：新增角色新梅露（初心包），NoiR（社团包），勺宝（测试包），替换阿梓卡图（原卡图作为皮肤），加强部分ai，修复部分bug',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -28,6 +28,8 @@ window.noname_update={
 		'card/guozhan.js',
 		'card/remark.js',
 		'image/card/huiliu.png',
+		'image/card/huxinjing.png',
+		'image/character/Azusa.jpg',
 		//'card/swd.js',
 		//'card/mtg.js',
 		//'card/gujian.js',

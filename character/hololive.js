@@ -1049,9 +1049,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.gain(trigger.cards,'gain2',trigger.source)
 						}
 					}
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(card.name=='tiesuo') return 0;
+							if(get.tag(card,'natureDamage')) return 0;
+						}
 					},
-					group:'ranyouxielou_fire',
-					subSkill:{
+				},
+				group:'ranyouxielou_fire',
+				subSkill:{
 					fire:{
 						trigger:{global:'damageBegin3'},
 						forced:true,
@@ -1069,7 +1077,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							//player.recover();
 						}
 					}
-					}
+				}
 			},
 			baihuqingguo:{
 				trigger:{global:'phaseBegin'},
@@ -3338,6 +3346,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						result.targets[0].draw();
 					}
 				},
+				ai:{
+					combo:'maoge',
+				},
 				group:'bianlan_init',
 				subSkill:{
 					init:{
@@ -3540,7 +3551,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pekoyu_info: '回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou: '自煲自足',
 			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
-			
+
+			UruhaRushia: '润羽露西娅',
+
 			Civia: '希薇娅',
 			kuangxin: '旷心',
 			kuangxin2: '旷心',

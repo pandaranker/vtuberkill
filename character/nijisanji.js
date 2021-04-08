@@ -398,6 +398,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var att=get.attitude(player,target);
 						var sgnatt=get.sgn(att);
 						if(ui.selected.targets.length==0){
+							if(target==player){
+								var es=player.getCards('e');
+								for(var i=0;i<es.length;i++){
+									var effect = 0;
+									game.filterPlayer(function(cur){
+										if(cur.isEmpty(get.subtype(es[i]))) effect++;
+									})
+									return 3*effect;
+								}
+							}
 							if(att>0){
 								if(target.countCards('e',function(card){
 									return get.value(card,target)<0&&game.hasPlayer(function(current){
@@ -423,6 +433,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var i;
 						var att2=get.sgn(get.attitude(player,ui.selected.targets[0]));
 						for(i=0;i<es.length;i++){
+							if(ui.selected.targets[0]==player&&target.isEmpty(get.subtype(es[i]))){
+								var effect = 0;
+								game.filterPlayer(function(cur){
+									if(cur.isEmpty(get.subtype(es[i]))&&cur!=target) effect+=get.effect(cur,{name:'sha'},player,player);
+								});
+								console.log(effect+att)
+								return 2*(effect+att);
+							}
 							if(sgnatt!=0&&att2!=0&&
 								get.sgn(get.value(es[i],ui.selected.targets[0]))==-att2&&
 								get.sgn(get.value(es[i],target))==sgnatt&&
@@ -451,10 +469,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delay();
 					'step 4'
 					if(targets.length==2){
-						player.choosePlayerCard('e',true,function(button){
+						player.choosePlayerCard('e',true,targets[0]).set('ai',function(button){
 							var player=_status.event.player;
 							var targets0=_status.event.targets0;
 							var targets1=_status.event.targets1;
+							if(targets0==player&&targets1.isEmpty(get.subtype(button.link))){
+								var effect = 0;
+								game.filterPlayer(function(cur){
+									if(cur.isEmpty(get.subtype(button.link))&&cur!=targets1) effect+=get.effect(cur,{name:'sha'},player,player);
+								});
+								if(effect>2)	return 2*effect;
+							}
 							if(get.attitude(player,targets0)>get.attitude(player,targets1)){
 								if(get.value(button.link,targets0)<0) return 10;
 								return 0;
@@ -462,7 +487,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else{
 								return get.equipValue(button.link);
 							}
-						},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
+						}).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
 							var targets1=_status.event.targets1;
 							return targets1.isEmpty(get.subtype(button.link));
 						});
@@ -573,6 +598,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 				},
 				ai:{
+					useSha:2,
 					order:7,
 					result:{
 						player:function(player,target){
@@ -950,12 +976,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!event.player||event.player==player||player.countCards('h')==0) return false;
 					return event.player.hp==1;
 				},
+				check:function (event,player){
+					var att = get.attitude(player,event.player);
+					return (att>0&&event.player!=_status.currentPhase)||(att<0&&event.player==_status.currentPhase&&(event.player.countCards('h')-player.countCards('h'))<=1);
+				},
 				content:function(){
 					'step 0'
 					player.chooseCard('h',[1,Infinity],true,'请选择要给对方的牌').set('ai',function(card){
-						if((event.player.countCards('h')+ui.selected.cards.length)>(player.countCards('h')-ui.selected.cards.length)) return -1;
+						var target = _status.event.getTrigger().player;
+						console.log(target);
+						if((target.countCards('h')+ui.selected.cards.length)>(player.countCards('h')-ui.selected.cards.length)) return -1;
 						return 7-get.value(card);
-					});;
+					});
 					'step 1'
 					if(result.cards){
 						trigger.player.gain(result.cards,player,'giveAuto');
@@ -1812,7 +1844,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.targets[0];
 					event.B = event.A.next;
 					if (!event.A.countCards('ej')) event.finish();
-					player.choosePlayerCard('ej', event.A);
+					player.choosePlayerCard('ej', event.A).set('ai',function(button){
+						var player = _status.event.player;
+						var source = _status.event.target;
+						var target = source.next;
+						var link = button.link;
+						if(get.position(link)=='j'){
+							if(target.canAddJudge(link))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}else if(get.position(link)=='e'){
+							var subtype = get.subtype(link);
+							if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}
+					});
 					'step 1'
 					if (result.bool) {
 						var card = result.links[0];
@@ -1911,7 +1956,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									player.markSkill('saqi_use');
 								}
 							}
-						}
+						},
+						mod:{
+							aiOrder:function(player,card,num){
+								if(get.itemtype(card)=='card'&&!get.info(card).notarget) return num+1;
+							},
+							aiValue:function(player,card,num){
+								if(get.itemtype(card)=='card'&&!get.info(card).notarget) return num+1;
+							},
+						},
 					},
 					banG: {
 						mod: {
@@ -1944,7 +1997,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			meici: {
-				audio:6,
+				audio:4,
 				group: ['meici_set', 'meici_use'],
 				subSkill: {
 					mark: {
@@ -1988,16 +2041,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content: function() {
 							'step 0'
 							game.delay(0.5);
-							player.logSkill('meici', trigger.player);
 							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target',trigger.player).ai=function(button){
 								var val = get.buttonValue(button);
 								var player = _status.event.player;
 								var target = _status.event.target;
-								if(get.attitude(player,target)>0) return 2-val+Math.random();
+								if(get.attitude(player,target)>0) return 4-val+Math.random();
 								return val+Math.random();
 							};
 							'step 1'
 							if (result.bool && result.cards.length) {
+								player.logSkill('meici', trigger.player,true,false,false);
 								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
 								trigger.player.$throw(result.cards);
 								game.log(trigger.player, '将', result.cards, '置入了弃牌堆');
@@ -2507,17 +2560,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					player: 'phaseJieshu'
 				},
-				direct: true,
-				popup: false,
+				//direct: true,
+				//popup: false,
 				filter:function(event, player){
-					return player.getCards('h').length > 0;
+					return player.countCards('h');
+				},
+				check:function(event, player){
+					return player.countCards('h',{name:['shan','wuxie']})==player.countCards('h');
 				},
 				content:function(){
 					'step 0'
 					var handCards = player.getCards('h').slice(0);
 					player.showCards(handCards);
 					event.handCards = handCards;
-					player.logSkill('liefeng');
+					//player.logSkill('liefeng');
 					'step 1'
 					if(!event.handCards||!event.handCards.length){
 						event.finish();

@@ -47,7 +47,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**进击的冰糖 */
 			bingtang: ['female', 'qun', 4, ['xiou']],
 			/**张京华 */
-			zhangjinghua: ['female', 'qun', 3, ['xiemen', 'jiai']],
+			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
+			/**NoiR */
+			NoiR: ['female', 'qun', 3 ,['mozouqiyin', 'budingpaidui']]
 		},
 		characterSort:{
 			clubs:{
@@ -404,6 +406,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					}
 				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(get.name(card)=='sha'){
+								if(target.hasSha())		return [1,0,0,-2];
+								if(target.hp==1)		return [1,0,1,0];
+								return [1,1,0,-1];
+							}
+						}
+					}
+				}
 			},
 			gutai:{
 				trigger:{global:'damageEnd'},
@@ -471,6 +484,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('h')&&game.countPlayer2(function(cur){
 						return cur.getHistory('damage').length;
 					});
+				},
+				check:function(event,player){
+					return player.countCards('h')<=2||!player.storage.liuhua||player.storage.liuhua.length<=1;
 				},
 				content:function(){
 					'step 0'
@@ -623,7 +639,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.markSkill('caibu');
 					player.showCards(player.storage.caibu, '财布');
 				},
-				ai:{order:10,result:{target:-1},expose:0.4,},
+				ai:{
+					order:10,
+					result:{
+						target:function(player,target){
+							return lib.card.shunshou.ai.result.target.apply(this,arguments);
+						},
+						player:1,
+					},
+					expose:0.4,
+					threaten:1.1
+				},
 				subSkill: {
 					draw: {
 						//audio:false,
@@ -653,6 +679,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 2'
 							if (!player.storage.caibu.length) {
 								player.unmarkSkill('caibu');
+							}
+						}
+					}
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(get.tag(card,'damage')&&target.storage.caibu&&target.storage.caibu.length){
+								var chk = false;
+								target.storage.caibu.forEach(function(c) {
+									if (get.suit(c) == get.suit(event.card)) chk = true;
+								});
+								if(chk)	return [1,0,2,-1];
+							}
+						},
+						player:function(card,player,target,current){
+							if(get.tag(card,'damage')&&player.storage.caibu&&player.storage.caibu.length){
+								var chk = false;
+								player.storage.caibu.forEach(function(c) {
+									if (get.suit(c) == get.suit(event.card)) chk = true;
+								});
+								if(chk)	return [1,0,2,-1];
 							}
 						}
 					}
@@ -847,6 +895,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget(get.prompt2('DDzhanshou'),function(card,player,target){
 						return _status.event.targets.contains(target);
 					}).set('ai',function(target){
+						if(get.attitude(_status.event.player,target)>0&&target.countCards('h')<=3)	return 4;
 						return 2-get.attitude(_status.event.player,target);
 					}).set('targets',trigger.targets);
 					'step 1'
@@ -859,7 +908,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var count = (event.tar.countCards('h') >= player.countCards('h')) 
 									+ (event.tar.hp >= player.hp) 
 									+ (event.tar.countCards('e') >= player.countCards('e'));
-						player.choosePlayerCard(event.tar, 'he', [1, count], "移除至多" + count + "张牌");
+						player.choosePlayerCard(event.tar, 'he', [1, count], "移除至多" + count + "张牌").set('ai',function(button){
+							var player=_status.event.player;
+							var target=_status.event.target;
+							var count=_status.event.count;
+							var info = get.info(button.link)
+							if(get.attitude(player,target)>=0){
+								if(target.countCards('h')<=count){
+									console.log(ui.selected.buttons);
+									if(ui.selected.buttons.length<target.countCards('h')&&get.position(button.link)=='h'){
+										return 12;
+									}
+								}
+								if(info.onLose&&get.position(button.link)=='e')		return 8;
+								if(get.value(button.link,target)<0)	return 6;
+								return 0;
+							}
+							else{
+								if(info.onLose&&get.position(button.link)=='e')		return 0;
+								return get.value(button.link);
+							}
+						}).set('count',count)
 					}
 					'step 2'
 					if(result.bool){
@@ -924,12 +993,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					return event.hs&&event.hs.length>0 && target.length;
 				},
-				content: function() {
-					var target = game.filterPlayer(function(current){
+				filter: function(event, player) {
+					var targets = game.filterPlayer(function(current){
 						return current.hasZhuSkill('xinluezhili');
 					});
-					if (target.length) {
-						target[0].draw(player);
+					return get.attitude(player,targets[0])>0;
+				},
+				content: function() {
+					var targets = game.filterPlayer(function(current){
+						return current.hasZhuSkill('xinluezhili');
+					});
+					if (targets.length) {
+						targets[0].draw(player);
 					}
 				}
 			},
@@ -2553,6 +2628,289 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				
+			},
+			//NoiR
+			mozouqiyin:{
+				trigger:{
+					global: 'phaseBegin'
+				},
+				popup: false,
+				log:false,
+				init:function(player){
+					if(!player.storage.mozouqiyin) player.storage.mozouqiyin = '小';
+				},
+				filter:function(event, player){
+					//有牌可以使用，且角色不是自己时可以使用
+					if(player.storage.budingpaidui.current&&player.storage.budingpaidui.current!=player.storage.mozouqiyin){
+						player.storage.mozouqiyin = player.storage.budingpaidui.current;
+					}
+					if(event.player == player) return false;
+					if(player.countCards('h', function(card){
+						return lib.filter.cardEnabled(card,player,'forceEnable');
+					})){
+						return true;
+					};
+					return false;
+				},
+				prompt:function(event,player){
+					return '你可使用一张牌，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin||'小'+'）于此牌的牌';
+				},
+				check:function(event, player){
+					if(player.countCards('h', function(card){
+						return lib.filter.cardEnabled(card,player,'forceEnable')&&lib.filter.cardUsable(card,player);
+					})){
+						return true;
+					};
+					return false;
+				},
+				content:function(){
+					'step 0'
+					var p = trigger.player;
+					player.chooseToUse('使用一张牌').set('ai1', function(card){
+						var att =  get.attitude(player, p);
+						if(att > 0){
+							if(player.storage.mozouqiyin == '小'){
+								return 100 - p.countCards('h', function(current){
+									return current.number < card.number;
+								});
+							}else if(player.storage.mozouqiyin == '大'){
+								return 100 - p.countCards('h', function(current){
+									return current.number > card.number;
+								});
+							}else{
+								return p.countCards('h', function(current){
+									return current.number == card.number;
+								})?10:100;
+							}
+						}else if(att < 0){
+							if(player.storage.mozouqiyin == '小'){
+								return p.countCards('h', function(current){
+									return current.number < card.number;
+								});
+							}else if(player.storage.mozouqiyin == '大'){
+								return p.countCards('h', function(current){
+									return current.number > card.number;
+								});
+							}else{
+								return -100;
+							}
+						}else{
+							return 0;
+						}
+					});
+					'step 1'
+					var p = trigger.player;
+
+					if(!result.bool){
+						event.finish();
+						return;
+					}
+					var card = result.cards[0]||result.used||result.card;
+					
+					
+					if(!card){
+						event.finish();
+						return;
+					}
+					//本回合其跳过弃牌阶段，且不能使用点数（storage.cond）于(storage.nmber)的牌
+					p.storage.mozouqiyin_disableCard = {
+						number: card.number,
+						cond: player.storage.mozouqiyin
+					};
+					p.syncStorage('mozouqiyin_disableCard');
+					p.addTempSkill('mozouqiyin_disableCard', {player:'phaseEnd'});
+					player.logSkill('mozouqiyin');
+				},
+				subSkill:{
+					disableCard:{
+						trigger:{
+							player: 'phaseDiscardBefore'
+						},
+						direct: true,
+						log: false,
+						content:function(){
+							//跳过弃牌阶段
+							trigger.cancel();
+						},
+						mark: true,
+						//禁止使用xxx
+						mod:{
+							cardUsable:function(card,player,num){
+								if(typeof card != 'object') return true;
+								var number = get.number(card, player);
+								if(typeof number != 'number'){
+									number = parseInt(number);
+									if(isNaN(number)) return true;
+								}
+								var storage = player.storage.mozouqiyin_disableCard;
+								return lib.skill.budingpaidui.checkNumber( storage.number, number, storage.cond)?0:num;
+							},
+							cardEnabled2:function(card, player, ori){
+								var number = get.number(card, player);
+								if(typeof number != 'number'){
+									number = parseInt(number);
+									if(isNaN(number)) return true;
+								}
+								var storage = player.storage.mozouqiyin_disableCard;
+								return lib.skill.budingpaidui.checkNumber( storage.number, number, storage.cond)?false:ori;
+							}
+						},
+						marktext:'默',
+						intro:{
+							name:'默奏起音的效果',
+							mark:function(dialog, storage, player){
+								var cardnum = storage.number;
+								if([1,11,12,13].contains(cardnum)){
+									cardnum={'1':'A','11':'J','12':'Q','13':'K'}[cardnum];
+								}
+								dialog.addText('禁止使用点数（'+storage.cond+'）于'+cardnum+'的牌');
+								dialog.addText('本回合跳过弃牌阶段');
+							}
+						},
+						onremove:function(player){
+							delete player.storage.mozouqiyin_disableCard;
+						}
+					}
+				}
+			},
+			budingpaidui:{
+				trigger:{
+					player: 'useCardAfter'
+				},
+				mark: true,
+				init:function(player){
+					if(!player.storage.budingpaidui) player.storage.budingpaidui = {};
+					if(!player.storage.budingpaidui.current) player.storage.budingpaidui.current = '小';
+					if(!player.storage.budingpaidui.left) player.storage.budingpaidui.left = ['小', '大', '等'];
+				},
+				filter:function(event, player){
+					//有剩余选项时才能触发
+					if(!player.storage.budingpaidui||!player.storage.budingpaidui.left||player.storage.budingpaidui.left.length<=0){
+						return false;
+					}
+					var curCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-1];
+					var lstCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-2];
+					//跳过第一次使用牌
+					if(lstCard == null||curCard == null) return;
+					return lib.skill.budingpaidui.checkNumber(lstCard.number, curCard.number, player);
+				},
+				check:function(event, player){
+					if(player.storage.budingpaidui&&player.storage.budingpaidui.left&&player.storage.budingpaidui.left.length>1){
+						return true;
+					}
+					return false;
+				},
+				//检查点数是否满足条件
+				//lstNum:   上一张牌点数
+				//curNum:   当前使用的牌点数
+				//item:     条件
+				//      string:         传入比较条件直接比较，['小','大','等'] 任意一个，返回结果
+				//      player:         传入角色，通过角色的storage比较，如果对应storage不存在就返回false
+				//      其他(undefined): 默认使用当前事件（_status.event）角色
+				//return:
+				//      true:   满足条件
+				//      false:  不满足条件或者条件获取失败
+				checkNumber:function(lstNum, curNum, item){
+					if(typeof item == 'string') var str = item;
+					else{
+						var player = item;
+						if(!player) player = _status.event.player;
+						if(!player||!player.storage.budingpaidui||!player.storage.budingpaidui.current) return false;
+						var str = player.storage.budingpaidui.current;
+					}
+
+					if(str == '小'){
+						return curNum < lstNum;
+					}
+					if(str == '大'){
+						return curNum > lstNum;
+					}
+					if(str == '等'){
+						return curNum == lstNum;
+					}
+					return false;
+				},
+				content:function(){
+					'step 0'
+					player.draw();
+					'step 1'
+					var curCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-1];
+					var left = player.storage.budingpaidui.left;
+					var aiChoice = left[0];
+					for(var i=0; i<left.length;++i){
+						if(player.countCards('h', function(card){
+							return player.hasUseTarget(card) && lib.skill.budingpaidui.checkNumber(curCard.number, card.number, left[i]);
+						})>0){
+							aiChoice = left[i];
+							break;
+						}
+					}
+					player.chooseControl(player.storage.budingpaidui.left)
+						.set('prompt', '选择一项替代之前（）内的内容')
+						.set('ai', function(){
+							return _status.event.aiChoice;
+						}).set('aiChoice', aiChoice);
+					'step 2'
+					player.storage.budingpaidui.current = result.control;
+					player.storage.budingpaidui.left.splice(result.index, 1);
+					player.syncStorage('budingpaidui');
+					player.markSkill('budingpaidui');
+					
+					if(player.storage.mozouqiyin) player.storage.mozouqiyin = result.control;
+					game.countPlayer(function(current){
+						if(current.hasSkill('mozouqiyin_disableCard')){
+							current.storage.mozouqiyin_disableCard.cond = result.control;
+							current.syncStorage('mozouqiyin_disableCard');
+							current.markSkill('mozouqiyin_disableCard');
+						}
+					});
+				},
+				intro:{
+					mark:function(dialog, storage, player){
+						var lstCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-1];
+						if(!lstCard){
+							dialog.addText('你使用的下一张牌可能无法发动'+get.translation('budingpaidui'));
+							return;
+						}
+						var cardnum = lstCard.number;
+						if([1,11,12,13].contains(cardnum)){
+							cardnum={'1':'A','11':'J','12':'Q','13':'K'}[cardnum];
+						}
+						dialog.addText('你使用的下一张牌点数（'+storage.current+'）于'+cardnum+'可能发动');
+					}
+				},
+				group: 'budingpaidui_reset',
+				subSkill:{
+					reset:{
+						trigger:{
+							global: 'phaseBegin'
+						},
+						priority: 253,
+						direct: true,
+						log: false,
+						content:function(){
+							player.storage.budingpaidui.left =  ['小', '大', '等'];
+							player.syncStorage('budingpaidui');
+							player.markSkill('budingpaidui');
+						}
+					}
+				}
+			},
+			_usedCardRecord:{
+				trigger:{
+					player: 'useCard'
+				},
+				direct: true,
+				log: false,
+				content:function(){
+					if(!player.storage._usedCardRecord) player.storage._usedCardRecord = [];
+					player.storage._usedCardRecord.push(trigger.card);
+					player.syncStorage('_usedCardRecord');
+					if(player.hasSkill('budingpaidui')){
+						player.syncStorage('budingpaidui');
+						player.markSkill('budingpaidui');
+					}
+				}
 			}
 		},
 		characterReplace:{
@@ -2563,6 +2921,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi:['re_XiaDi','XiaDi'],
 			KaguraMea:['re_KaguraMea','KaguraMea'],
 			OtomeOto:['re_OtomeOto','OtomeOto'],
+		},
+		dynamicTranslate:{
+			mozouqiyin:function(player){
+				var str = '小';
+				if(player.storage.mozouqiyin) str = player.storage.mozouqiyin;
+				return '其他角色的回合开始时，你可使用一张牌，然后本回合其跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin+'）于此牌的牌。';
+			},
+			budingpaidui:function(player){
+				var str = 'xiao';
+				if(player.storage.budingpaidui&&player.storage.budingpaidui.current){
+					str = player.storage.budingpaidui.current;
+				}
+				return '当你使用一张牌后，若点数（'+str+'）于前一张，你可摸一张牌，然后用以下本回合未选过的一项替代之前（）内的内容：小，大，等。';
+			}
 		},
 		translate:{
 			
@@ -2679,8 +3051,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lunhuizuzhou: '轮回诅咒',
 			lunhuizuzhou_info: '<font color=#f66>锁定技</font> 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
 			mingyunniezao: '命运捏造',
-			mingyunniezao_info: '主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。'
-			
+			mingyunniezao_info: '主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。',
+				
+			NoiR: 'NoiR',
+			mozouqiyin: '默奏起音',
+			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
+			budingpaidui: '布丁派对',
+			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张，你可摸一张牌，然后用以下本回合未选过的一项替代之前（）内的内容：小，大，等。',
+
 		},
 	};
 });
