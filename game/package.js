@@ -56,7 +56,7 @@ window.noname_package={
 	},
 	mode:{
 		identity:'身份',
-		//guozhan:'国战',
+		guozhan:'国战',
 		doudizhu:'斗地主',
 		connect:'联机',
 		boss:'挑战',

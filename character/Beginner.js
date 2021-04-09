@@ -54,6 +54,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
 			/**大神澪 */
 			re_ŌokamiMio:['female','holo',4,['re_yuzhan','re_bizuo']],
+			/**百鬼绫目 */
+			re_NakiriAyame:['female','holo',4,['guiren']],
+			/**角卷绵芽 */
+			//re_TsunomakiWatame:['female','holo',4,['disui','dengyan']],
 			
 			/**小希小桃 */
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
@@ -387,6 +391,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 				},
 				ai:{
+					useSha:1,
 					order:9,
 					result:{
 						player:1,
@@ -852,6 +857,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			jidao:{
+				audio:3,
+				audioname:['jike'],
 				trigger:{source:'damageBegin2'},
 				priority:9,
 				filter:function(event,player){
@@ -1002,6 +1009,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re凛
 			re_mozhaotuji:{
+				audio:true,
+				audioname:['jike'],
 				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_useCard','re_mozhaotuji_Ready','re_mozhaotuji_Judge','re_mozhaotuji_PhaseDraw','re_mozhaotuji_Discard','re_mozhaotuji_End'],
 				/**转化阶段 */
 				contentx:function(trigger,player){
@@ -1059,6 +1068,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					Ready:{
+						audio:'re_mozhaotuji',
 						trigger:{
 							player:'phaseZhunbeiBegin'
 						},
@@ -1073,6 +1083,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					Judge:{
+						audio:'re_mozhaotuji',
 						trigger:{
 							player:'phaseJudgeBefore'
 						},
@@ -1087,6 +1098,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					PhaseDraw:{
+						audio:'re_mozhaotuji',
 						trigger:{
 							player:'phaseDrawBefore'
 						},
@@ -1101,6 +1113,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					Discard:{
+						audio:'re_mozhaotuji',
 						trigger:{
 							player:'phaseDiscardBefore'
 						},
@@ -1115,6 +1128,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					End:{
+						audio:'re_mozhaotuji',
 						trigger:{
 							player:'phaseJieshuBegin'
 						},
@@ -1878,6 +1892,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.draw(2);
 							}
 						},
+						ai:{
+							useSha:1,
+							effect:{
+								player:function(card,player,target,current){
+									if(['sha'].contains(card.name)&&player.getStat().card.sha==2) return [1,2];
+								}
+							}
+						}
 					}
 				}
 			},
@@ -2015,7 +2037,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					effect:{
 						player:function(card,player,target,current){
-							if(['sha','guohe'].contains(card.name)&&current<0) return [0,0.7];
+							if(['sha','guohe'].contains(card.name)&&current<0) return [0,0.9];
 						}
 					}
 				}
@@ -3108,7 +3130,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.useSkill('re_yuzhan',player,false);
 							}
 							'step 1'
-							if(trigger.card&&trigger.card.storage.bizuo==true)	delete trigger.card.storage.bizuo;
+							if(trigger.card&&trigger.card.storage&&trigger.card.storage.bizuo==true)	delete trigger.card.storage.bizuo;
 							if(trigger.cards&&trigger.cards.length){
 								for(var i=0;i<trigger.cards.length;i++){
 									if(trigger.cards[i].storage.bizuo==true)	delete trigger.cards[i].storage.bizuo;
@@ -3144,6 +3166,88 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},				
+			},
+			guiren:{
+				audio:2,
+				enable:['chooseToUse'],
+				viewAs:{name:'sha'},
+				selectCard:2,
+				complexCard:true,
+				position:'he',
+				filterCard:function(card){
+					if(ui.selected.cards.length) return get.color(card)!=get.color(ui.selected.cards[0]);
+					return true;
+				},
+				check:function(card){
+					if(ui.selected.cards.length&&get.type(cards,'trick')!=get.type(ui.selected.cards[0],'trick')) return 10-get.value(card);
+					return 4-get.value(card);
+				},
+				precontent:function(){
+					'step 0'
+					console.log(event.result);
+					var cards = event.result.cards.slice(0);
+					var types = [];
+					for(var i=0;i<cards.length;i++){
+						types.add(get.type(cards[i],'trick'));
+					}
+					event.types = types;
+					console.log(event.types);
+					event.targets = event.result.targets.slice(0);
+					'step 1'
+					if(event.types.contains('basic')){
+						var list=get.info(event.result.card).nature.slice(0);
+						list.remove('kami');
+						list.push('cancel2');
+						player.chooseControl(list).set('prompt',get.prompt('guiren')).set('prompt2','将'+get.translation(event.result.card)+'转换为以下属性之一').set('ai',function(){
+							var player = _status.event.player;
+							var card = _status.event.card;
+							if(get.name(card)=='tao'&&get.nature(card)=='ocean')	return 'cancel2';
+							if(get.name(card)=='tao'&&get.nature(card)!='ocean')	return 'ocean';
+							if(get.name(card)=='sha'){
+								var targets = _status.event.targets;
+								for(var i=0;i<targets.length;i++){
+									if(get.damageEffect(target,player,player)){
+										if(targets[i].hasSkillTag('nodamage'))	return 'ice';
+										if(!targets[i].hasSkillTag('noocean')&&targets[i].hujia>0)	return 'ocean';
+										if(!targets[i].hasSkillTag('nofire')&&targets[i].getEquip('tengjia'))	return 'fire';
+										if(!targets[i].hasSkillTag('noyami')&&targets[i].countCards('h')>=player.countCards('h'))	return 'yami';
+									}
+								}
+							}
+							return list.randomGet();
+						}).set('card',event.result.card).set('targets',event.targets);
+					}else{
+						event.goto(3);
+					}
+					'step 2'
+					if(result.control!='cancel2'){
+						event.result.card.nature=result.control;
+						player.popup(get.translation(event.result.card).slice(0,2),result.control);
+						game.log('#y'+get.translation(get.name(event.result.card)),'被转为了',event.result.card);
+					}
+					'step 3'
+					if(event.types.contains('trick')){
+						var target=event.targets.shift();
+						if(target.countGainableCards(player,'he')>0) player.gainPlayerCard(target,'he');
+						if(event.targets.length) event.redo();
+					}
+				},
+				group:'guiren_num',
+				subSkill:{
+					num:{
+						trigger:{player:'useCard'},
+						forced:true,
+						popup:false,
+						filter:function(event){
+							return event.skill=='guiren'&&['sha'].contains(event.card.name)&&event.cards&&event.cards.filter(function(card){
+								return get.type(card)=='equip';
+							}).length;
+						},
+						content:function(){
+							trigger.baseDamage++;
+						}
+					},
+				}
 			},
 		},
 		characterReplace:{
@@ -3316,7 +3420,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
 			chixin_info: '当有本回合未以此技能获得的♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
-			
+
+			re_NakiriAyame: '百鬼绫目',
+			guiren: '鬼刃',
+			guiren_info: '你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~本回合你造成的下一次伤害+1。',
+
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
 			qiangyun_info: '你的判定牌生效前，你可以打出一张牌代替之，然后你可以立即使用打出牌，且此牌造成伤害后，你摸一张牌。',
@@ -3328,6 +3436,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			juebi_info: '在你未受到伤害的回合，你可以将非基本牌当【闪】使用或打出；你受到伤害后，可以令本回合下一次造成的伤害+1。',
 			zhanhou: '战吼',
 			zhanhou_info: '出牌阶段开始时/其他角色阵亡时，你可以受到1点伤害/回复1点体力，视为使用一张【顺手牵羊】。',
+
+			re_TsunomakiWatame: '角卷绵芽',
+			disui: '抵碎',
+			disui_info: '角卷绵芽',
+			dengyan: '瞪眼',
+			dengyan_info: '角卷绵芽',
 
 			re_XiaoxiXiaotao: '新·小希小桃',
 			re_doupeng: '逗捧',
@@ -3357,6 +3471,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_bizuo: '弼佐',
 			re_bizuo_info: '一名角色的回合开始时，你可以将任意张牌置于牌堆顶，其本回合使用这些牌时，你可以发动一次【预占】。',
 
-		   }
+		}
 	}
 })

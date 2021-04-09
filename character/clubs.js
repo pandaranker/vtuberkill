@@ -92,6 +92,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			yaoji:{
+				audio:true,
+				audioname:['jike'],
 				enable:"phaseUse", 
 				usable:1,
 				filter:function(event,player){
@@ -689,7 +691,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(get.tag(card,'damage')&&target.storage.caibu&&target.storage.caibu.length){
 								var chk = false;
 								target.storage.caibu.forEach(function(c) {
-									if (get.suit(c) == get.suit(event.card)) chk = true;
+									if (get.suit(c) == get.suit(card)) chk = true;
 								});
 								if(chk)	return [1,0,2,-1];
 							}
@@ -698,7 +700,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(get.tag(card,'damage')&&player.storage.caibu&&player.storage.caibu.length){
 								var chk = false;
 								player.storage.caibu.forEach(function(c) {
-									if (get.suit(c) == get.suit(event.card)) chk = true;
+									if (get.suit(c) == get.suit(card)) chk = true;
 								});
 								if(chk)	return [1,0,2,-1];
 							}
@@ -2502,7 +2504,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						direct: true,
 						content:function(){
-							if(player.storage.xiemen_reset){
+							if(player.storage.xiemen_reset&&player.storage.xiemen_reset.length){
 								player.gain(player.storage.xiemen_reset, 'fromStorage');
 							}
 
@@ -2514,6 +2516,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			jiai:{
 				audio:5,
+				audioname2:{jike:'qianjiwanbian'},
 				enable: ['chooseToUse','chooseToRespond'],
 				hiddenCard:function(player,name){
 					var event = _status.event;
@@ -2653,7 +2656,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				prompt:function(event,player){
-					return '你可使用一张牌，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin||'小'+'）于此牌的牌';
+					return '你可使用一张牌，若未造成伤害，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+(player.storage.mozouqiyin||'小')+'）于此牌的牌';
 				},
 				check:function(event, player){
 					if(player.countCards('h', function(card){
@@ -2666,7 +2669,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var p = trigger.player;
-					player.chooseToUse('使用一张牌').set('ai1', function(card){
+					event.chooseToUseEvt = player.chooseToUse('使用一张牌').set('ai1', function(card){
 						var att =  get.attitude(player, p);
 						if(att > 0){
 							if(player.storage.mozouqiyin == '小'){
@@ -2698,6 +2701,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 0;
 						}
 					});
+                    event.sourceDamageHistory = player.getHistory('sourceDamage').slice(0);
 					'step 1'
 					var p = trigger.player;
 
@@ -2712,6 +2716,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 						return;
 					}
+
+                    //如果造成伤害则结束
+                    var history = player.getHistory('sourceDamage');
+                    for(var i=0; i< history.length;++i){
+                        if(event.sourceDamageHistory.contains(history[i])) continue;
+                        var causeDamage = true;
+                        break;
+                    }
+                    if(causeDamage){
+                        event.finish();
+                        return;
+                    }
 					//本回合其跳过弃牌阶段，且不能使用点数（storage.cond）于(storage.nmber)的牌
 					p.storage.mozouqiyin_disableCard = {
 						number: card.number,
@@ -2784,9 +2800,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage.budingpaidui.left) player.storage.budingpaidui.left = ['小', '大', '等'];
 				},
 				filter:function(event, player){
-					//有剩余选项时才能触发
-					if(!player.storage.budingpaidui||!player.storage.budingpaidui.left||player.storage.budingpaidui.left.length<=0){
-						return false;
+					//没有剩余选项时重置
+					if(!player.storage.budingpaidui.left||player.storage.budingpaidui.left.length<=0){
+						player.storage.budingpaidui.left = ['小', '大', '等'];
+                        player.syncStorage('budingpaidui');
+                        player.markSkill('budingpaidui');
 					}
 					var curCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-1];
 					var lstCard = player.storage._usedCardRecord&&player.storage._usedCardRecord[player.storage._usedCardRecord.length-2];
@@ -2883,8 +2901,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					reset:{
 						trigger:{
-							global: 'phaseBegin'
+							global: 'roundStart'
 						},
+                        firstDo: true,
 						priority: 253,
 						direct: true,
 						log: false,
@@ -2926,14 +2945,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozouqiyin:function(player){
 				var str = '小';
 				if(player.storage.mozouqiyin) str = player.storage.mozouqiyin;
-				return '其他角色的回合开始时，你可使用一张牌，然后本回合其跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin+'）于此牌的牌。';
+				return '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin+'）于此牌的牌。';
 			},
 			budingpaidui:function(player){
 				var str = 'xiao';
 				if(player.storage.budingpaidui&&player.storage.budingpaidui.current){
 					str = player.storage.budingpaidui.current;
 				}
-				return '当你使用一张牌后，若点数（'+str+'）于前一张，你可摸一张牌，然后用以下本回合未选过的一项替代之前（）内的内容：小，大，等。';
+				return '当你使用一张牌后，若点数（'+str+'）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。';
 			}
 		},
 		translate:{
@@ -3052,12 +3071,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lunhuizuzhou_info: '<font color=#f66>锁定技</font> 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
 			mingyunniezao: '命运捏造',
 			mingyunniezao_info: '主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。',
-				
+
 			NoiR: 'NoiR',
 			mozouqiyin: '默奏起音',
-			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
+			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
 			budingpaidui: '布丁派对',
-			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张，你可摸一张牌，然后用以下本回合未选过的一项替代之前（）内的内容：小，大，等。',
+			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。'
 
 		},
 	};

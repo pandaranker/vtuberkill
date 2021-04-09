@@ -29323,6 +29323,7 @@
 					}
 				}
 				if(typeof audioinfo=='number'){
+					console.log(audioname)
 					game.playAudio('skill',audioname+Math.ceil(audioinfo*Math.random()));
 				}
 				else if(audioinfo){

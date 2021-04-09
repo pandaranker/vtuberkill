@@ -196,19 +196,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ui.control.style.top='calc(100% - 105px)';
 					ui.create.control('在菜单中，可以进行各项设置',function(){
 						ui.click.menuTab('选项');
-						ui.controls[0].replace('如果你感到游戏较卡，可以开启流畅模式',function(){
-							ui.controls[0].replace('在技能一栏中，可以设置自动发动或双将禁配的技能',function(){
+						ui.controls[0].replace('如果你感到游戏较卡，可以开启流畅模式<br>同样是在[选项]中，如果觉得背景太花，[选项]-[外观]中可以更换背景或改为模糊状态',function(){
+							ui.controls[0].replace('在[选项]-[技能]一栏中，可以设置自动发动或双将禁配的技能',function(){
 								ui.click.menuTab('武将');
-								ui.controls[0].replace('在武将或卡牌一栏中，单击武将/卡牌可以将其禁用',function(){
-									ui.click.menuTab('战局');
-									ui.controls[0].replace('在战局中可以输入游戏命令，或者管理录像',function(){
-										ui.click.menuTab('帮助');
-										ui.controls[0].replace('在帮助中，可以检查更新和下载素材',function(){
-											ui.click.configMenu();
-											ui.window.classList.remove('noclick_important');
-											ui.control.classList.remove('noclick_click_important');
-											ui.control.style.top='';
-											step5();
+								ui.controls[0].replace('进入游戏之后左上角[武将]和[卡牌]可以调节武将包与卡牌包到适宜的状态',function(){
+									ui.click.menuTab('卡牌');
+									ui.controls[0].replace('新手推荐: 武将包只开初心；卡牌包标准+军争<br>应变篇中包含一个完整的标准包，所以如果要玩应变不用开标准<br>化鲸篇是V杀原创拓展，日前更新第二次拓展版本)',function(){
+										ui.click.menuTab('开始');
+										ui.controls[0].replace('联机时可以在[开始]-[联机]设置头像和昵称方便辨认',function(){
+											ui.click.menuTab('其它');
+											ui.controls[0].replace('在[其他]中，可以检查更新和下载素材',function(){
+												ui.click.configMenu();
+												ui.window.classList.remove('noclick_important');
+												ui.control.classList.remove('noclick_click_important');
+												ui.control.style.top='';
+												step5();
+											});
 										});
 									});
 								});

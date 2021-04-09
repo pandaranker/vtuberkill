@@ -1372,7 +1372,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:function(player,target){
 							if(player.storage.tangyan_on)	return 0;
-							if(player.hp = 1)	return -2;
+							if(player.hp==1)	return -2;
 							return -0.5
 						},
 						target:function(player,target){
@@ -2274,7 +2274,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return [0.1,0.5];
 							}
 							if(name.length<=target.hp){
-								return [1,0.8];
+								return [1,1];
 							}
 						}
 					}

@@ -35,7 +35,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**阿喵喵 */
 			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
 			/**社长 */
-			KagamiHayato:['male','nijisanji',3,['liebo','zhimeng']],
+			KagamiHayato:['male','nijisanji',3,['liebo','zhongjizhimeng']],
 			/**山神歌流多 */
 			YagamiKaruta: ['female', 'nijisanji', 3, ['suisi', 'liefeng']],
 			/**雪城真寻 */
@@ -642,6 +642,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					DrawOrStop:{
+						audio:true,
+						audioname:['jike'],
 						trigger:{global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']},
 						filter:function(event,player){
 							if((player.storage.mozhaotuji_useCard)>=1)
@@ -2229,6 +2231,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			guangsuxiabo: {
 				audio:2,
+				audioname:['jike'],
 				init: function(player) {
 					player.storage.hp = 0;
 					player.storage.loseCount = 0;
@@ -2611,6 +2614,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 				},
 				ai:{
+					useSha:1,
+					skillTagFilter:function(player,tag,arg){
+						if(tag=='useSha')	return player.countCards('h',{name:['shan','wuxie']})==player.countCards('h');
+					},
 					threaten:function(player,target){
 						return 1.6;
 					}

@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.48',
+	version:'1.9.101.49',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.48小更新：新增角色新梅露（初心包），NoiR（社团包），勺宝（测试包），替换阿梓卡图（原卡图作为皮肤），加强部分ai，修复部分bug',
+		'101.49小更新：新增角色新百鬼绫目（初心包），削弱NoiR，削弱珈乐，加强勺宝（移除二技能的基本牌限制），替换机萪卡图（原卡图作为皮肤），增加机萪配音，加强部分ai，修复部分bug',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -30,6 +30,7 @@ window.noname_update={
 		'image/card/huiliu.png',
 		'image/card/huxinjing.png',
 		'image/character/Azusa.jpg',
+		'image/character/jike.jpg',
 		//'card/swd.js',
 		//'card/mtg.js',
 		//'card/gujian.js',
