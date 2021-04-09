@@ -272,7 +272,6 @@ window.noname_asset_list=[
 	'audio/skill/jiren_jike1.mp3',
 	'audio/skill/jiren_jike2.mp3',
 	'audio/skill/jiren_jike3.mp3',
-	'audio/skill/jiren_jike4.mp3',
 	'audio/skill/jiumao1.mp3',
 	'audio/skill/jiumao2.mp3',
 	'audio/skill/kuangbaoshuangren1.mp3',
