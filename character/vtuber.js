@@ -34,6 +34,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Diana: ['female','asoul',4,['quanyu', 'wulian']],
 			/**珈乐 */
 			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi']],
+			/**乃琳 */
+			EQueen: ['female','asoul',4,['yehua', 'fengqing']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -1399,13 +1401,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.dying=player;
 							event.type='dying';
 						}
-						player.useCard({name:'jiu',isCard:true},player);
+						player.useCard({name:'jiu',isCard:true},player,false);
 					}
 					else{
 						event.finish();
 					}
 					"step 4"
-					player.getStat().card.jiu--;
+					//player.getStat().card.jiu--;
 					if(event.allJiu){
 						player.removeSkill('jiajiupaidui_tag');
 						player.draw();

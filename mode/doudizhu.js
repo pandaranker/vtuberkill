@@ -2191,22 +2191,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			nijisanji:[
 				'MononobeAlice','ShizukaRin','UshimiIchigo','SisterClearie','LizeHelesta','SuzuharaLulu','KagamiHayato',
 				'KenmochiDouya','YukishiroMahiro','OnomachiHaruka','SakuraRitsuki','re_AngeKatrina',
-				'Azusa',
+				'Azusa','Shaun',
 			],
 			holo:[
 				'TokinoSora','NatsuiroMatsuri','RobokoSan','ShirakamiFubuki','AkiRosenthal','HoshimatiSuisei',
-				'SakuraMiko','MinatoAqua','UsadaPekora','ŌokamiMio','re_UruhaRushia',
+				'SakuraMiko','MinatoAqua','UsadaPekora','ŌokamiMio','re_UruhaRushia','re_NakiriAyame',
 				'Civia','SpadeEcho','Artia','Doris','Yogiri',
 			],
 			vtuber:[
 				'ShirayukiMishiro','KaguyaLuna','UmoriHinako','SuouPatra','TenkaiTsukasa','Yousa','MiraiAkari',
 				're_YuNi','re_TomariMari','re_Omesis','re_NijikawaRaki','re_KizunaAI',
-				'Bella','Diana','EQueen',
+				'Bella','Carol','Diana','EQueen',
 			],
 			clubs:[
 				'KaguraMea','TakatsukiRitsu','MorinagaMiu','OtomeOto','HanazonoSerena','MashiroKanon',
 				'Nekomasu','Eilene','Yomemi','ShizukuLulu','re_MinamiNami','kaguraNaNa',
-				'Ciyana','Pudding','AyanaNana',
+				'Ciyana','Pudding','AyanaNana','AkiRinco',
 			],
 		},
 		online_cardPile:[

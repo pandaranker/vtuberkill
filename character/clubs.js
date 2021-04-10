@@ -92,7 +92,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			yaoji:{
-				audio:true,
+				audio:2,
 				audioname:['jike'],
 				enable:"phaseUse", 
 				usable:1,
@@ -1561,7 +1561,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.draw(1);
 						}
 						if(player==event.replayer){
-							player.getStat().card.sha--;
+							if(trigger.getParent().addCount!==false){
+								trigger.getParent().addCount=false;
+								var stat=player.getStat();
+								if(stat&&stat.card&&stat.card[trigger.card.name]) stat.card.sha--;
+							}
 						}
 					}
 					event.replayers.shift();
@@ -2506,6 +2510,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							if(player.storage.xiemen_reset&&player.storage.xiemen_reset.length){
 								player.gain(player.storage.xiemen_reset, 'fromStorage');
+                                delete player.storage.xiemen_reset;
 							}
 
 							player.removeSkill('xiemen_reset');
@@ -2516,7 +2521,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			jiai:{
 				audio:5,
-				audioname2:{jike:'qianjiwanbian'},
 				enable: ['chooseToUse','chooseToRespond'],
 				hiddenCard:function(player,name){
 					var event = _status.event;
@@ -2533,7 +2537,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if( get.type(lib.inpile[i]) != 'basic') continue;
 						var card = {name: lib.inpile[i]};
 						if( filterCard(card, player, event)){
-							jiaiCards.push(card);
+							jiaiCards.push(lib.inpile[i]);
 						}
 						
 					}
@@ -2598,6 +2602,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						//将两张手牌当作选择的基本牌
 						return {
 							audio:'jiai',
+							audioname:['jike'],
 							selectCard:2,
 							position:'h',
 							filterCard:function(card, player, target){
@@ -2625,12 +2630,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order: 0.5,
 					respondSha:true,
 					respondShan:true,
-					respondTao:true,
+					save:true,
+					skillTagFilter:function(player,tag){
+						switch(tag){
+							case 'respondSha':{
+								if(player.countCards('h')<2) return false;
+								break;
+							}
+							case 'respondShan':{
+								if(player.countCards('h')<2) return false;
+								break;
+							}
+							case 'save':{
+								if(player.countCards('h')<2) return false;
+								break;
+							}
+						}
+					},
 					result:{
-						player: 1
+						player: 0.5,
 					}
 				},
-				
 			},
 			//NoiR
 			mozouqiyin:{

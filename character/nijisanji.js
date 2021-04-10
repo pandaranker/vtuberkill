@@ -19,7 +19,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**樋口枫 */
 			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
 			/**修女克蕾雅 */
-			SisterClearie:['female','nijisanji',3,['zhenxin','zhuwei']],
+			SisterClearie:['female','nijisanji',3,['zhenxin','sczhuwei']],
 			/**健屋花那 */
 			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			/**熊猫人 */
@@ -2327,9 +2327,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			zhuwei:{
-				global:'zhuwei_put',
-				group:['zhuwei_moveC'],
+			sczhuwei:{
+				global:'sczhuwei_put',
+				group:['sczhuwei_moveC'],
 				subSkill:{
 					put:{
 						trigger:{player:'phaseEnd'},
@@ -2337,31 +2337,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:24,
 						check: function(event, player) {
 							var target = game.findPlayer(function(cur){
-								return cur.hasSkill('zhuwei');
+								return cur.hasSkill('sczhuwei');
 							});
-							return target && get.attitude(player, target) > 0;
+							return target && get.attitude(player, target) >= 0;
 						},
 						filter:function(event,player){
-							if(		!game.hasPlayer(function(cur){
-								return cur.hasSkill('zhuwei');
+							if(player.hasSkill('sczhuwei'))		return false;
+							if(!game.hasPlayer(function(cur){
+								return cur.hasSkill('sczhuwei');
 							}))									return false;
-							if(player.hasSkill('zhuwei'))		return false;
-							return	!game.hasPlayer(function(cur){
-								return cur.countCards('h') < event.player.countCards('h');
-							})||!game.hasPlayer(function(cur){
-								return cur.hp < event.player.hp
-							});
+							return	player.isMinHandcard()||player.isMinHp();
 						},
 						content:function(){
-							player.draw();
 							var target = game.findPlayer(function(cur) {
-								return cur.hasSkill('zhuwei');
+								return cur.hasSkill('sczhuwei');
 							});
-							target.draw();
+							if(target) game.asyncDraw([player,target]);
 						},
 					},
 					moveC:{
-						trigger:{global:'zhuwei_putAfter'},
+						trigger:{global:'sczhuwei_putAfter'},
 						forced:false,
 						filter:function(event,player){
 							var canbeM=function(a,b){
@@ -3128,9 +3123,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SisterClearie:'修女·克蕾雅',
 			zhenxin: '真信之诚',
 			zhenxin_info: '<font color=#f66>锁定技</font> 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
-			zhuwei: '助危之心',
-			zhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
-			zhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
+			sczhuwei: '助危之心',
+			sczhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
+			sczhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
 			
 			YagamiKaruta: '山神歌流多',
 			suisi: '髓思',

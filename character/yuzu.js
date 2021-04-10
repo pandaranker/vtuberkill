@@ -10,8 +10,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			
-			/**乃琳 */
-			EQueen: ['female','asoul',4,['yehua', 'fengqing']],
 			/**向晚 */
 			Ava: ['female','asoul',4,['yiqu','wanxian']],
 
@@ -2871,6 +2869,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			zhongjizhimeng:{
+				audio:true,
 				audioname:['jike'],
 				enable:'phaseUse',
 				usable:1,
@@ -5813,7 +5812,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
-			}
+			},
 		},
 		card:{
 			niwei_sha:{

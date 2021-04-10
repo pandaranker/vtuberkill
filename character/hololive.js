@@ -3553,6 +3553,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 
 			UruhaRushia: '润羽露西娅',
+			NakiriAyame: '百鬼绫目',
+			TsunomakiWatame: '角卷绵芽',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',
