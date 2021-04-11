@@ -11,7 +11,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
 
 			Ciyana: ['female','qun',3,['yankui', 'danyan']],
-			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			NekomiyaHinata:['female','qun',3,['yuchong', 'songzang', 'zhimao']],
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
@@ -854,10 +853,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			seqinghuashen: {
 				audio:2,
-				popup: false,
-				trigger: {
-					global:'useCardAfter'
-				},
+				trigger: {global:'useCardAfter'},
+				logTarget:'player',
 				filter:function(event,player){
 					return event.card.name=='tao'
 						&&event.player!=player
@@ -866,7 +863,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function() {
 					'step 0'
-					player.logSkill('seqinghuashen');
 					trigger.player.draw(player);
 					'step 1'
 					var target = trigger.player;
@@ -2401,13 +2397,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player: 'phaseZhunbeiBegin' },
 						filter:function(event, player){
 							return game.hasPlayer(function(cur){
-								return cur!=player&&cur.countGainableCards('h');
+								return cur!=player&&cur.countGainableCards(player,'h');
 							});
 						},
 						content:function(){
 							'step 0'
 							var filterTarget = function(card,player,target){
-								return player!=target&&target.countGainableCards('h');
+								return player!=target&&target.countGainableCards(player,'h');
 							};
 							player.chooseTarget(
 								'选择一名其他角色，获取其所有手牌',
@@ -2415,15 +2411,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							).set('ai', function(target){
 								var evt = _status.event;
 								var att = get.attitude(evt.player, target);
-								if(target.hasSkill('yiqu')) return 2+3*att+target.countGainableCards('h');
-								return att+target.countGainableCards('h');
+								if(target.hasSkill('yiqu')) return 2+3*att+target.countGainableCards(player,'h');
+								return att+target.countGainableCards(player,'h');
 							});
 							'step 1'
 							var p1 = result.targets[0];
 							//添加临时技能xiou_phaseJieshuTrigger
 							player.addTempSkill('xiou_phaseJieshuTrigger', 'phaseJieshuAfter');
 							player.storage.xiou.p1 = p1;
-							var hardCards = p1.getGainableCards('h');
+							var hardCards = p1.getGainableCards(player,'h');
 							if(!hardCards||!hardCards.length){
 								event.finish();
 								return;

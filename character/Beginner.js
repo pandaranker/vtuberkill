@@ -33,6 +33,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
 			/**铃原露露 */
 			re_SuzuharaLulu:['female','nijisanji',5,['tunshi']],
+			/**本间向日葵 */
+			re_HonmaHimawari:['female','nijisanji',4,['tianqing','kuiquan']],
 
 			/**时乃空 */
 			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
@@ -358,16 +360,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			qingmi: {
 				audio:'seqinghuashen',
-				popup: false,
-				trigger: {
-					global:'useCardAfter'
-				},
+				trigger: {global:'useCardAfter'},
 				direct:true,
 				filter:function(event,player){
 					return event.card.name=='tao'
-						&&event.player!=player
-						&&get.itemtype(event.cards)=='cards'
-						&&get.position(event.cards[0],true)=='o';
+						&&event.player!=player;
 				},
 				content:function() {
 					'step 0'
@@ -612,7 +609,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					var check = player.countCards('h')>2;
-					if(trigger.name=='phaseUse'&&player.getHandcardLimit()>2)	check = player.countCards('h')<player.getHandcardLimit();
+					if(trigger.name=='phaseUse'&&player.getHandcardLimit()>2)	check = player.countCards('h')<=player.getHandcardLimit();
 					player.chooseTarget('###是否发动『邀战』？###跳过'+get.translation(trigger.name)+'，视为对一名其他角色使用一张【决斗】',function(card,player,target){
 						if(player==target) return false;
 						return player.canUse({name:'juedou'},target);
@@ -1950,7 +1947,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ai:{
 							effect:{
 								target:function(card,player,target,current){
-									if(get.tag(card,'respondSha')&&current<0) return 0.1;
+									if(get.tag(card,'respondSha')&&current<0) return 0.2;
 								}
 							},
 							respondSha:true,
@@ -1965,6 +1962,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re狐狸
 			re_yuanlv:{
+				audio:'yuanlv',
 				trigger:{player:['damageAfter','useCardAfter']},
 				priority:2,
 				usable:1,
@@ -2012,6 +2010,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			re_jinyuan:{
+				audio:'jinyuan',
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
@@ -3092,7 +3091,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			re_bizuo:{
 				trigger:{global: 'phaseBegin'},
-				direct: true,
+				round:1,
 				filter:function(event, player){	
 					return player.countCards('h');
 				},
@@ -3104,7 +3103,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.cards&&result.cards.length){
-						player.logSkill('re_bizuo');
+						player.logSkill('re_bizuo',trigger.player);
 						player.lose(result.cards,ui.special);
 						player.$throw(result.cards,1000);						
 					}	
@@ -3131,6 +3130,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},	
 						filter:function(event,player){
+							if(player!=_status.currentPhase)	return false;
 							if(event.card&&event.card.storage&&event.card.storage.bizuo==true)	return true;
 							if(event.cards&&event.cards.length){
 								for(var i=0;i<event.cards.length;i++){
@@ -3188,6 +3188,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},				
 			},
+			//re狗狗
 			guiren:{
 				audio:2,
 				enable:['chooseToUse'],
@@ -3200,7 +3201,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(card){
-					if(ui.selected.cards.length&&get.type(cards,'trick')!=get.type(ui.selected.cards[0],'trick')) return 10-get.value(card);
+					if(ui.selected.cards.length&&get.type(card,'trick')!=get.type(ui.selected.cards[0],'trick')) return 10-get.value(card);
 					return 4-get.value(card);
 				},
 				precontent:function(){
@@ -3418,6 +3419,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re露露
 			tunshi:{
+				audio:'xinhuo',
 				trigger:{global: 'dyingBegin' },
 				frequent:true,
 				priority:24,
@@ -3434,6 +3436,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global: 'loseAfter' },
 						priority:24,
 						filter:function(event,player){
+							if(event.getParent().name=='gain')		return false;
 							if(event.player==player||event.player==_status.currentPhase)	return false;
 							if(event.player.countCards('e')==0){
 								for(var i=0;i<event.cards.length;i++){
@@ -3458,6 +3461,86 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							_status.currentPhase.gain(trigger.cards,'draw');
 						},
+					}
+				}
+			},
+			//re葵
+			tianqing:{
+				trigger:{global:'damageBegin3'},
+				filter:function(event,player){
+					return player.storage.tianqing_record;
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0;
+				},
+				logTarget:'player',
+				content:function(){
+					trigger.changeToZero();
+				},
+				group:'tianqing_record',
+				subSkill:{
+					record:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = true;
+						},
+						trigger:{global:['damageZero','damageEnd','phaseAfter']},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							console.log(trigger)
+							if(trigger.name == 'damageZero'||trigger.numFixed==true){
+								player.storage.tianqing_record = false;
+							}
+							else{
+								player.storage.tianqing_record = true;
+							}
+						}
+					}
+				}
+			},
+			kuiquan:{
+				audio:2,
+				enable:'chooseToUse',
+				filterCard:function(card,player){
+					return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
+				},
+				viewAs:{name:'huogong',nature:'fire'},
+				viewAsFilter:function(player){
+					if(!player.countCards('h',function(card){
+						return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
+					})) return false;
+				},
+				check:function(card){
+					var player=_status.currentPhase;
+					if(player.countCards('h')>player.hp||player.countCards('h',{name:'sha'})>0){
+						if(card.name=='sha')	return 4-get.value(card);
+						return 6-get.value(card);
+					}
+					return 3-get.value(card)
+				},
+				onuse:function(result,player){
+					player.storage.kuiquan_record.add(get.type(result.cards[0],'trick'));
+				},
+				ai:{
+					fireAttack:true,
+				},
+				group:'kuiquan_record',
+				subSkill:{
+					record:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = [];
+						},
+						trigger:{global:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.storage.kuiquan_record = [];
+						}
 					}
 				}
 			},
@@ -3599,6 +3682,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liancheng: '链成',
 			liancheng_info: '一轮限两次。一个回合结束时，你可以重铸任意张类型不同的手牌。若你重铸了装备牌，你可以令当前回合角色调整手牌与你相同。',
 
+			re_HonmaHimawari: '新·本间向日葵',
+			tianqing: '天晴烂漫',
+			tianqing_info: '一名角色受到伤害时，若本回合上一次伤害没有被防止，你可以防止本次伤害。',
+			kuiquan: '葵拳连打',
+			kuiquan_info: '你可以将一张牌当【火攻】使用，此牌类型不得为本回合你使用过的类型。当你在【火攻】中弃置了【杀】后，获得目标的展示牌。',
+
 			re_TokinoSora: '新·时乃空',
 			re_taiyangzhiyin:'太阳之音',
 			re_taiyangzhiyin_info:'你使用牌指定目标时，若此牌点数大于10，你可选择一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
@@ -3687,7 +3776,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_yuzhan: '预占',
 			re_yuzhan_info: '出牌阶段限一次，你可以观看牌堆顶的四张牌，若有两对颜色相同，你令当前回合角色获得其中一对，若不为你，你获得另一对。然后你将剩余牌以任意顺序置于牌堆顶或牌堆底。',
 			re_bizuo: '弼佐',
-			re_bizuo_info: '一名角色的回合开始时，你可以将任意张牌置于牌堆顶，其本回合使用这些牌时，你可以发动一次【预占】。',
+			re_bizuo_info: '<font color=#fc2>轮次技</font> 一名角色的回合开始时，你可以将任意张牌置于牌堆顶，其本回合使用这些牌时，你可以发动一次【预占】。',
 
 		}
 	}

@@ -886,9 +886,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool)
 					player.useCard({name:'tao'},trigger.player);
 				}
-		//		viewAsFilter:function(player){
-		//			return player.countCards('he')>=player.hp;
-		//		},
 			},
 			//团长
 			huanshi:{
@@ -2830,7 +2827,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					effect:{
 						player:function(card,player,target,current){
 							if(get.color(card)=='black'&&get.tag(card,'damage')){
-								if(player.countDiscardableCards('e',target))	return [1,-0.5,1,-1];
+								if(player.countDiscardableCards(target,'e'))	return [1,-0.5,1,-1];
 								return [1,1,1,-1];
 							}
 						}
@@ -2965,7 +2962,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//阿喵喵
 			miaomiao:{
-				trigger:{source:'damageBegin'},
+				trigger:{source:'damageBegin1'},
 				priority:3,
 				lastDo:true,
 				direct:true,
@@ -4115,6 +4112,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.fengqing = (player.storage.fengqing==3)?1:player.storage.fengqing+1;
 					}
 				},
+				effect:{
+					target:function(card,player,target,current){
+						if(['tiesuo','lulitongxin'].contains(card.name)){
+							return [1,2];
+						}
+					},
+				},
 				subSkill:{
 					jiu:{
 						audio:2,
@@ -4654,7 +4658,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				frequent:true,
 				content:function(){
 					'step 0'
-					player.chooseTarget([1,2],true,'###『句销』：令至多两名角色各摸一张牌###依次摸牌的角色不能使用【杀】直到回合结束').set('ai',function(target){
+					player.chooseTarget([1,2],true,'###『句销』：令至多两名角色各摸一张牌###摸牌的角色不能使用【杀】直到回合结束').set('ai',function(target){
 						var att = get.attitude(_status.event.player);
 						if(target==currentPhase&&(target.hasSha()||target.hasSkillTag('useSha'))){
 							if(target.hasS)	return 2-att;
@@ -4686,13 +4690,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					expose:0.1,
 					threaten:0.8,
 					maixie:true,
-					result:{
-						target:function(card,player,target){
-							if(get.tag(card,'damage')&&get.attitude(target,player)<0){
-								return [1,0,0,-player.countCards('he',{color:'red'})];
-							}
-						}
-					}
 				}
 			},
 			shenyan:{
@@ -5246,6 +5243,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var suit = get.suit(cards[i],player);
 								if(filter({name:name,suit:suit},player,event)) return true;
 							}
+							return false;
 						},
 						filterCard:function(card,player,event){
 							event=event||_status.event;
@@ -5320,14 +5318,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(player.hasSkill('shouru_used'))	return false;
 					return (event.name=='damage'||['useCard','respond'].contains(event.name)&&event.skill=='erni_going')&&game.hasPlayer(function(cur){
-						return cur!=player&&get.distance(_status.currentPhase,cur,'pure')==1&&cur.countGainableCards('he',player);
+						return cur!=player&&get.distance(_status.currentPhase,cur,'pure')==1&&cur.countGainableCards(player,'he');
 					});
 				},
 				content:function(){
 					'step 0'
 					event.source = trigger.player;
 					player.chooseTarget(get.prompt2('shouru'),true,function(card,player,target){
-						return target!=player&&get.distance(_status.currentPhase,target,'pure')==1&&target.countGainableCards('he',player);
+						return target!=player&&get.distance(_status.currentPhase,target,'pure')==1&&target.countGainableCards(player,'he');
 					},function(target){
 						var player = _status.event.player;
 						return 8-get.attitude(player,target);
@@ -5604,7 +5602,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				animationColor:'fire',
 				forceunique:true,
 				filter:function(event,player){
-					return player.countCards('he')>0;
+					return player.countCards('he')>0&&player.isDamaged();
 				},
 				check:function(event,player){
 					return player.storage.jiren_going&&player.countCards('he',function(card){

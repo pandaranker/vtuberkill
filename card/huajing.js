@@ -645,7 +645,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				enable:function(card,player){
-					return player.countDiscardableCards('he',function(i){
+					return player.countDiscardableCards(player,'he',function(i){
 						return i!=card;
 					});
 				},

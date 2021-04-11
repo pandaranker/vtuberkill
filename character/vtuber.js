@@ -14,12 +14,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Siro:['female', 'dotlive', 4, ['zhongxinghezou','xiugong'],['zhu']],
 			/**巴恰鲁 */
 			Bacharu:['male', 'dotlive', 4, ['zuodun','baidao']],
+			/**小明 */
+			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			/**小希小桃 */
 			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha']],
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**兔妈妈 */
-			InabaHaneru:['female','nanashi',1,['huangtu','wudao','yinyuan'],['zhu']],
+			InabaHaneru:['female','nanashi','2/3',['jiance','chanbing','buyu'],['zhu']],
 			/**BFM */
 			UmoriHinako:['female','nanashi',4,['hongyi','jueshou']],
 			/**patra */
@@ -80,7 +82,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.storage.targets){
 								if(player.storage.targets.length==0) return true;
 								for(var i =0; i< player.storage.targets.length;i++){
-									if(player.storage.targets[i].group==target.group){
+									if(player.storage.targets[i]==target){
 										return false;
 									}
 								}
@@ -112,7 +114,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							trigger.target=result.targets[0];
 						}
-						player.chooseCard(true, 'h', '选择要给出的牌',[1,Infinity]).set('ai',function(card){
+						player.chooseCard(true, 'h', '选择要交给'+get.translation(trigger.target)+'的牌',[1,Infinity]).set('ai',function(card){
 							if(player.isZhu)	return 6-get.useful(card);
 							return 7-get.useful(card);
 						})
@@ -150,6 +152,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 4'
 					player.chooseTarget('是否令'+ trigger.cards.length.toString() +'名角色横置？',trigger.cards.length,function(card,player,target){
 						return true;
+					}).set('ai',function(target){
+						var player = _status.event.player;
+						return get.effect(target,{name:'tiesuo'},player,player);
 					});
 					'step 5'
 					if(result.bool==true){
@@ -179,28 +184,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 7'
 					if(trigger.targets.length>1){
-						if(trigger.targets.length>game.countPlayer()-1)
-							player.chooseControl(['jiu','tao','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
-						else{
-							var playersNum=0;
-							for(var i=0;i<game.players.length;i++){
-								if(lib.filter.filterTarget({name:'sha',isCard:true},player,game.players[i])){
-									playersNum++;
-								}
+						trigger.num = trigger.targets.length;
+						if(player.hasUseTarget('sha')&&player.getCardUsable({name:'sha'}))
+							var next = player.chooseControl(['jiu','sha','tao','qi','雷杀','火杀','冰杀','cancel2']).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
+						else
+							var next = player.chooseControl(['jiu','tao','qi','cancel2']).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
+						next.set('ai',function(){
+							var player = _status.event.player;
+							if(player.hp==1||(player.hp==2&&!player.hasShan())||player.needsToDiscard()){
+								return 'tao';
 							}
-							// console.log(lib.filter.filterTarget({name:'sha',isCard:true},player,game.players[0]));
-							if(playersNum>=trigger.targets.length&&player.getCardUsable({name:'sha'}))
-								player.chooseControl(['jiu','sha','tao','雷杀','火杀','冰杀','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
-							else
-								player.chooseControl(['jiu','tao','cancel2']).set('prompt','是否视为对'+ trigger.targets.length.toString() +'名角色使用一次基本牌？');
-						}
+							if(game.hasPlayer(function(current){
+								return player.canUse('sha',current)&&get.effect(current,'sha',player,player)>0;
+							})){
+								return ['雷杀','火杀'].randomGet();
+							}
+							if(player.isDamaged()&&!player.needsToDiscard()) return 'qi';
+						})
 					}
 					else{
 						event.goto(10);
 					}
 					'step 8'
 					if(result.control!='cancel2'){
-						var usecard={name:result.control,isCard:true};
+						var usecard={name:result.control,isCard:false};
 						switch (usecard.name) {
 							case '雷杀':
 								usecard.name='sha';
@@ -216,22 +223,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								break;
 							default:
 								break;
-					}
+						}
 						trigger.usecard=usecard;
-						if(trigger.usecard.name=='sha'){
-							player.chooseTarget('选择'+ trigger.targets.length.toString() +'个目标',trigger.targets.length,function(card,player,target){
-								if(player==target) return false;
-								return lib.filter.filterTarget({name:'sha',isCard:true},player,target)
-							});
-						}
-						else if(trigger.usecard.name!='sha'){
-							player.chooseTarget('选择'+ trigger.targets.length.toString() +'个目标',trigger.targets.length,function(card,player,target){
-								return true;
-							});
-						}
-						else{
-							event.goto(10);
-						}
+						player.chooseTarget('选择至多'+ trigger.targets.length.toString() +'个目标',[1,trigger.num],function(card,player,target){
+							return lib.filter.targetEnabled(_status.event.card,player,target)
+						}).set('ai',function(target){
+							var player = _status.event.player;
+							var card = _status.event.card;
+							return	get.effect(target,card,player,player);
+						}).set('card',trigger.usecard)
 					}
 					else{
 					event.goto(10);
@@ -240,18 +240,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					//console.log(result);
 					if(result.targets)
 						trigger.targets=result.targets;
-					else
-						trigger.targets=[];
-					for(var i=0;i<trigger.targets.length;i++){
-					//console.log(trigger.usecard);
-						player.useCard(trigger.usecard,trigger.targets[i],false);
-						if(trigger.usecard.name=='sha') player.getStat().card.sha++;
-						// console.log(player.getStat().card.sha);
-					}
+					else	trigger.targets=[];
+					player.useCard(trigger.usecard,trigger.targets,true);
 					'step 10'
 					if(trigger.targets&&trigger.targets.length==0&&trigger.cards.length==0){
-						if(player.hasSkill('ailianUsable'))
-							player.removeSkill('ailianUsable');
+						if(player.hasSkill('ailianUsable'))	player.removeSkill('ailianUsable');
 					}
 					else{
 						player.addSkill('ailianUsable');
@@ -1505,6 +1498,145 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			//黄兔
+			jiance:{
+				frequent:true,
+				trigger:{player:['loseHpEnd','damageEnd']},
+				content:function(){
+					'step 0'
+					player.chooseTarget(get.prompt2('jiance'),function(card,player,target){
+						return target.countCards('h');
+					}).set('ai',function(target){
+						var player = _status.event.player;
+						if(target.countCards('h')<=4||get.attitude(player,target)<=0)	return 1+_status.event.rand();
+						return 0;
+					});
+					'step 1'
+					if(result.bool&&result.targets){
+						event.target = result.targets[0];
+						event.target.showHandcards();
+						var types = ['basic','trick','equip'];
+						var cards = event.target.getCards('h').slice(0);
+						for(var i=0;i<cards.length;i++){
+							var type = get.type(cards[i],'trick');
+							if(types.contains(type))	types.remove(type);
+						}
+						event.num = types.length;
+						if(event.num){
+							player.chooseTarget('『监策』：选择令一名角色摸'+get.cnNumber(event.num)+'张牌',function(card,player,target){
+								return target!=_status.event.source;
+							}).set('ai',function(target){
+								var player = _status.event.player;
+								return target.needsToDiscard()?get.attitude(target,player)/2:get.attitude(target,player);
+							}).set('source',event.target)
+						}else	event.finish();
+					}
+					'step 2'
+					if(result.bool&&result.targets){
+						result.targets[0].draw(event.num);
+					}
+				},
+				ai:{
+					maixie:true,
+				}
+			},
+			chanbing:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = [];
+				},
+				trigger:{global:'roundStart'},
+				forced:true,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var numbers = [];
+					for(var i=0;i<player.storage.chanbing.length;i++){
+						numbers.add(get.number(player.storage.chanbing[i]));
+					}
+					var next=player.judge(function(card){
+						var numbers = _status.event.suits;
+						if(numbers.contains(get.number(card))) return -1;
+						return 1;
+					});
+					next.set('suits',numbers);
+					'step 1'
+					if(result.bool){
+						var cards = [result.card];
+						game.cardsGotoSpecial(cards,ui.special);
+						player.$gain(cards,false);
+						player.markAuto('chanbing',cards);
+						player.recover();
+					}else{
+						player.loseHp();
+					}
+				},
+				marktext:'缠',
+				intro:{
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
+						 storage.length=0;
+						}
+					},
+					mark:function(dialog,content,player){
+						if(content&&content.length){
+							dialog.addAuto(content);
+						}
+					},
+					content:function(content,player){
+						if(content&&content.length){
+							return get.translation(content);
+						}
+					}
+				},
+			},
+			buyu:{
+				trigger:{global:'die'},
+				filter:function(event,player){
+					return event.player.getStockSkills('黄兔颂恩','因缘斩断').filter(function(skill){
+						var info=get.info(skill);
+						return info&&!info.juexingji&&!info.hiddenSkill&&!info.zhuSkill&&!info.charlotte&&!info.limited;
+					}).length>0&&player.countCards('h');
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					var cards = player.getCards('h');
+					player.lose(cards,ui.special,'toStorage');
+					player.$give(cards,player,false);
+					player.markAuto('chanbing',cards);
+					'step 1'
+					var list=trigger.player.getStockSkills('黄兔颂恩','因缘斩断').filter(function(skill){
+						var info=get.info(skill);
+						return info&&!info.juexingji&&!info.hiddenSkill&&!info.zhuSkill&&!info.charlotte&&!info.limited;
+					});
+					if(list.length==1) event._result={control:list[0]};
+					else player.chooseControl(list).set('prompt','『不渝』：选择获得一个技能').set('forceDie',true).set('ai',function(){
+						return list.randomGet();
+					});
+					'step 2'
+					if(player.storage.buyu) player.removeSkill(player.storage.buyu);
+					player.storage.buyu=result.control;
+					player.markSkill('buyu');
+					player.addSkillLog(result.control);
+					game.broadcastAll(function(skill){
+						var list=[skill];
+						game.expandSkills(list);
+						for(var i of list){
+							var info=lib.skill[i];
+							if(!info) continue;
+							if(!info.audioname2) info.audioname2={};
+							info.audioname2.InabaHaneru='buyu';
+						}
+					},result.control);
+				},
+				mark:true,
+				intro:{content:'当前『不渝』技能：$'},
+			},
+			//旧黄兔
 			huangtu:{
 				trigger:{
 					global:'gameDrawAfter',
@@ -1724,7 +1856,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'judgeAfter'},
 				usable:1,
 				filter:function(event,player){
-					return event.result.color=='red'&&player!=_status.currentPhase&&_status.currentPhase.countCards('he');
+					return event.result.color=='red'&&player!=_status.currentPhase&&_status.currentPhase&&_status.currentPhase.countCards('he');
 				},
 				content:function(){
 					'step 0'
@@ -1862,6 +1994,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 		
 			InabaHaneru: '因幡はねる',
+			jiance: '监策',
+			jiance_info: '你体力减少后，可以令一名角色展示所有手牌，若不包含所有类型的牌，你可以令另一名其他角色摸X张牌（X为其中不包含的类型数）。',
+			chanbing: '缠病',
+			chanbing_info: '<font color=#f66>锁定技</font> 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
+			buyu: '不渝',
+			buyu_info: '一名角色死亡时，你可以将所有手牌置于武将牌上并获得其的一个技能直到你下次以此法获得技能。',
+			
 			huangtu: '颂恩',
 			huangtu_info: '<font color=#f66>锁定技</font> 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
 			wudao: '五道',

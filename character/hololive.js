@@ -1030,10 +1030,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(trigger.source){
-						trigger.source.chooseControl(true).set('choiceList',[
+						var list = [
 							'令'+get.translation(player)+'回复'+trigger.num+'点生命',
 							'将'+get.translation(trigger.cards)+'交给'+get.translation(player),
-						])
+						];
+						if(!trigger.cards||trigger.cards.length==0)	list.pop();
+						trigger.source.chooseControl(true).set('choiceList',list)
 					}
 					else{
 						player.recover(trigger.num,trigger.source);
@@ -1179,6 +1181,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 			},
 			yuanlv:{
+				audio:6,
 				trigger:{global:'phaseEnd'},
 				priority:2,
 				filter:function(event,player){
@@ -1293,6 +1296,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			jinyuan:{
+				audio:4,
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
@@ -1342,13 +1346,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			zhongjian:{
+				audio:true,
 				unique:true,
 				group:['zhongjian1'],
 				zhuSkill:true,
 			},
 			zhongjian1:{
-					zhuSkill:true,
-					trigger:{global:'useCard2'},
+				audio:'zhongjian',
+				zhuSkill:true,
+				trigger:{global:'useCard2'},
 				//enable:'chooseToUse',
 				//popup:false,
 					//forced:false,
@@ -2046,7 +2052,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return 1-get.damageEffect(player,event.player,player);
 						},	
 						filter:function(event,player){
-							if(!event.source.hasSkill('youyishiyue'))	return false;
+							if(!event.source||!event.source.hasSkill('youyishiyue'))	return false;
 							var shi = event.source.storage.youyishiyue;
 							shi = player.storage.youyi||shi;
 							return event.source.countGainableCards(player,'hej',function(card){

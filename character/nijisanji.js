@@ -2462,45 +2462,45 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group: [
 					'suisi_shanMod', 'suisi_wuxieMod'
 				], 
-				hasShan:function(){
-					var basicCards = this.getCards('h', {type: 'basic'});
-					if(basicCards&&basicCards.length){
-						for(var i=0;i<basicCards.length;++i){
-							if(basicCards[i]&&basicCards[i].name != 'shan'){
-								return true;
-							}
-						}
-					}
-					if(this.hasSkillTag('respondShan',true,null,true)) return true;
-					return false;
-				},
-				hasWuxie:function(){
-					var trickCards = this.getCards('h', {type: 'trick'});
-					if(trickCards&&trickCards.length){
-						for(var i=0;i<trickCards.length;++i){
-							if(trickCards[i]&&trickCards[i].name != 'wuxie'){
-								return true;
-							}
-						}
-					}
-					var skills=this.getSkills(true).concat(lib.skill.global);
-					game.expandSkills(skills);
-					for(var i=0;i<skills.length;i++){
-						var ifo=get.info(skills[i]);
-						if(ifo.viewAs&&typeof ifo.viewAs!='function'&&ifo.viewAs.name=='wuxie'){
-							if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
-								return true;
-							}
-						}
-						else{
-							var hiddenCard=get.info(skills[i]).hiddenCard;
-							if(typeof hiddenCard=='function'&&hiddenCard(this,'wuxie')){
-								return true;
-							}
-						}
-					}
-					return false;
-				},
+				// hasShan:function(){
+				// 	var basicCards = this.getCards('h', {type: 'basic'});
+				// 	if(basicCards&&basicCards.length){
+				// 		for(var i=0;i<basicCards.length;++i){
+				// 			if(basicCards[i]&&basicCards[i].name != 'shan'){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	if(this.hasSkillTag('respondShan',true,null,true)) return true;
+				// 	return false;
+				// },
+				// hasWuxie:function(){
+				// 	var trickCards = this.getCards('h', {type: 'trick'});
+				// 	if(trickCards&&trickCards.length){
+				// 		for(var i=0;i<trickCards.length;++i){
+				// 			if(trickCards[i]&&trickCards[i].name != 'wuxie'){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	var skills=this.getSkills(true).concat(lib.skill.global);
+				// 	game.expandSkills(skills);
+				// 	for(var i=0;i<skills.length;i++){
+				// 		var ifo=get.info(skills[i]);
+				// 		if(ifo.viewAs&&typeof ifo.viewAs!='function'&&ifo.viewAs.name=='wuxie'){
+				// 			if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
+				// 				return true;
+				// 			}
+				// 		}
+				// 		else{
+				// 			var hiddenCard=get.info(skills[i]).hiddenCard;
+				// 			if(typeof hiddenCard=='function'&&hiddenCard(this,'wuxie')){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	return false;
+				// },
 				subSkill:{
 					shanMod:{
 						hiddenCard:function(player,name){

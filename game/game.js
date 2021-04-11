@@ -10323,6 +10323,7 @@
 			nanashi:'774',
 			psp:'P',
 			asoul:'魂',
+			double:'双',
 			wei2:'魏国',
 			shu2:'蜀国',
 			wu2:'吴国',
@@ -26155,26 +26156,34 @@
 		},
 		sort:{
 			character:function(a,b){
+				var getGroup=function(name){
+					var group=get.is.double(name,true);
+					if(group) return group[0];
+					return lib.character[name][1];
+				}
 				var groupSort=function(name){
 					if(!lib.character[name]) return 18;
-					if(lib.character[name][1]=='shen') return -1;
-					if(lib.character[name][1]=='wei') return 0;
-					if(lib.character[name][1]=='shu') return 1;
-					if(lib.character[name][1]=='wu') return 2;
-					if(lib.character[name][1]=='qun') return 3;
-					if(lib.character[name][1]=='key') return 4;
-					if(lib.character[name][1]=='western') return 5;
-					if(lib.character[name][1]=='holo') return 6;
-					if(lib.character[name][1]=='nijisanji') return 7;
-					if(lib.character[name][1]=='dotlive') return 8;
-					if(lib.character[name][1]=='upd8') return 9;
-					if(lib.character[name][1]=='eilene') return 10;
-					if(lib.character[name][1]=='paryi') return 11;
-					if(lib.character[name][1]=='VirtuaReal') return 12;
-					if(lib.character[name][1]=='kagura') return 13;
-					if(lib.character[name][1]=='nanashi') return 14;
-					if(lib.character[name][1]=='psp') return 15;
-					if(lib.character[name][1]=='asoul') return 16;
+					var group=getGroup(name);
+					if(group=='shen') return -1;
+					if(group=='wei') return 0;
+					if(group=='shu') return 1;
+					if(group=='wu') return 2;
+					if(group=='qun') return 3;
+					if(group=='key') return 4;
+					if(group=='western') return 5;
+					if(group=='holo') return 6;
+					if(group=='nijisanji') return 7;
+					if(group=='dotlive') return 8;
+					if(group=='upd8') return 9;
+					if(group=='eilene') return 10;
+					if(group=='paryi') return 11;
+					if(group=='VirtuaReal') return 12;
+					if(group=='kagura') return 13;
+					if(group=='nanashi') return 14;
+					if(group=='psp') return 15;
+					if(group=='asoul') return 16;
+					if(group=='vtuber') return 30;
+					if(group=='clubs') return 30;
 					return 17;
 				}
 				var del=groupSort(a)-groupSort(b);
@@ -28580,11 +28589,13 @@
 			key:'key',
 			holo:'soil',
 			upd8:'metal',
+			vtuber:'metal',
 			dotlive:'wood',
 			nijisanji:'water',
 			VirtuaReal:'ocean',
 			eilene:'thunder',
 			paryi:'ice',
+			clubs:'ice',
 			kagura:'ocean',
 			nanashi:'wood',
 			psp:'fire',
@@ -36087,6 +36098,18 @@
 					}
 					else button.node.group.style.backgroundColor=get.translation('weiColor');
 				}
+				var group=get.is.double(button.link,true);
+				if(group&&group.length==2){
+					var str='';
+					for(var i of group){
+						str+=get.translation(i);
+					}
+					button.node.group.innerHTML=str;
+					if(button.classList.contains('newstyle')){
+						button.node.name.dataset.nature=get.groupnature(group[0]);
+						button.node.group.dataset.nature=get.groupnature(group[1]);
+					}
+				}
 			},
 			div:function(){
 				var str,innerHTML,position,position2,style,divposition,listen;
@@ -38301,25 +38324,28 @@
 						};
 						var groupSort=function(name){
 							if(!lib.character[name]) return 20;
-							if(info[name][1]=='shen') return -1;
-							if(info[name][1]=='wei') return 0;
-							if(info[name][1]=='shu') return 1;
-							if(info[name][1]=='wu') return 2;
-							if(info[name][1]=='qun') return 3;
-							if(info[name][1]=='jin') return 4;
-							if(info[name][1]=='western') return 5;
-							if(info[name][1]=='key') return 6;
-							if(info[name][1]=='holo') return 7;
-							if(info[name][1]=='nijisanji') return 8;
-							if(info[name][1]=='VirtuaReal') return 9;
-							if(info[name][1]=='dotlive') return 10;
-							if(info[name][1]=='upd8') return 11;
-							if(info[name][1]=='eilene') return 12;
-							if(info[name][1]=='paryi') return 13;
-							if(info[name][1]=='kagura') return 14;
-							if(info[name][1]=='nanashi') return 15;
-							if(info[name][1]=='psp') return 16;
-							if(info[name][1]=='asoul') return 17;
+							var group=getGroup(name);
+							if(group=='shen') return -1;
+							if(group=='wei') return 0;
+							if(group=='shu') return 1;
+							if(group=='wu') return 2;
+							if(group=='qun') return 3;
+							if(group=='jin') return 4;
+							if(group=='western') return 5;
+							if(group=='key') return 6;
+							if(group=='holo') return 7;
+							if(group=='nijisanji') return 8;
+							if(group=='VirtuaReal') return 9;
+							if(group=='dotlive') return 10;
+							if(group=='upd8') return 11;
+							if(group=='eilene') return 12;
+							if(group=='paryi') return 13;
+							if(group=='kagura') return 14;
+							if(group=='nanashi') return 15;
+							if(group=='psp') return 16;
+							if(group=='asoul') return 17;
+							if(group=='vtuber') return 30;
+							if(group=='clubs') return 30;
 							return 18;
 						}
 						list.sort(function(a,b){
@@ -43742,6 +43768,7 @@
 				}
 				if(!thisiscard){
 					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];//'wei','shu','wu',
+					if(get.mode()=='guozhan') groups=['holo','nijisanji','vtuber','clubs'];
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
@@ -43973,22 +44000,24 @@
 						return lib.character[name][1];
 					}
 					groupSort=function(name){
-						if(lib.character[name][1]=='shen') return -1;
-						if(lib.character[name][1]=='wei') return 0;
-						if(lib.character[name][1]=='shu') return 1;
-						if(lib.character[name][1]=='wu') return 2;
-						if(lib.character[name][1]=='qun') return 3;
-						if(lib.character[name][1]=='holo') return 4;
-						if(lib.character[name][1]=='nijisanji') return 5;
-						if(lib.character[name][1]=='dotlive') return 6;
-						if(lib.character[name][1]=='upd8') return 7;
-						if(lib.character[name][1]=='eilene') return 8;
-						if(lib.character[name][1]=='paryi') return 9;
-						if(lib.character[name][1]=='VirtuaReal') return 10;
-						if(lib.character[name][1]=='kagura') return 11;
-						if(lib.character[name][1]=='nanashi') return 12;
-						if(lib.character[name][1]=='psp') return 13;
-						if(lib.character[name][1]=='asoul') return 14;
+						if(!lib.character[name]) return 40;
+						var group=getGroup(name);
+						if(group=='shen') return -1;
+						if(group=='wei') return 0;
+						if(group=='shu') return 1;
+						if(group=='wu') return 2;
+						if(group=='qun') return 3;
+						if(group=='holo') return 4;
+						if(group=='nijisanji') return 5;
+						if(group=='dotlive') return 6;
+						if(group=='upd8') return 7;
+						if(group=='eilene') return 8;
+						if(group=='paryi') return 9;
+						if(group=='VirtuaReal') return 10;
+						if(group=='kagura') return 11;
+						if(group=='nanashi') return 12;
+						if(group=='psp') return 13;
+						if(group=='asoul') return 14;
 						return 15;
 					}
 				}
@@ -53561,7 +53590,11 @@
 			}
 		},
 		groups:function(){
-			return ['wei','shu','wu','qun','jin','western','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];
+			return [
+				'vtuber','clubs',
+				'wei','shu','wu','qun','jin','western',
+				'key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'
+			];
 		},
 		types:function(){
 			var types=[];
