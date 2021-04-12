@@ -35918,6 +35918,7 @@
 					if(info.group) skills2=skills2.concat(info.group);
 				}
 				else{
+					console.log(skills);
 					console.log(skills[i]);
 				}
 			}
@@ -43768,7 +43769,7 @@
 				}
 				if(!thisiscard){
 					var groups=['qun','holo','key','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul'];//'wei','shu','wu',
-					if(get.mode()=='guozhan') groups=['holo','nijisanji','vtuber','clubs'];
+					if(get.mode()=='guozhan'||(get.mode()=='versus'&&_status.mode!='jiange')) groups=['holo','nijisanji','vtuber','clubs'];
 					var bool1=false;
 					var bool2=false;
 					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));

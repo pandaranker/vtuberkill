@@ -15,8 +15,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**机萪 */
 			jike: ['female','qun',3,['qianjiwanbian']],
-			/**勺宝 */
-			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan']],
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
 			/**测试用角色 */
@@ -593,6 +591,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					var num = event.player.countUsed();
+					console.log(num)
 					return event.player!=player&&event.player.countCards('h')&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
 				content:function(){
@@ -909,7 +908,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:996,
 				filter:function(event,player){
 					return game.countPlayer(function(cur){
-						return cur.hp!=Infinity
+						return cur.hp!=Infinity;
 					});
 				},
 				check:function(event,player){
@@ -919,7 +918,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
-						return target.hp!=Infinity
+						return target.hp!=Infinity;
 					});
 					next.set('ai',function(target){
 						if(player.inRange(target))	return 2-get.attitude(player,target);
@@ -980,6 +979,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			qishi:{
+				audio:true,
 				skillAnimation:true,
 				animationStr:'希望之花',
 				unique:true,
@@ -1123,6 +1123,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			yongtuan:{
+				audio:true,
 				skillAnimation:true,
 				animationStr:'一袋米要扛几楼',
 				unique:true,
@@ -2573,6 +2574,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chuangzuo:{},
 			//露露
 			zhongli:{
+				audio:3,
+				audioname:['jike'],
 				mark:true,
 				intro:{
 					name:'本回合因『重力牵引』获得的牌',
@@ -3227,24 +3230,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.storage.zhuqiao = 0;
 						},
 					},
-					mark:{
-						trigger:{player:'loseAfter'},
-						priority:24,
-						forced:true,
-						silent:true,
-						popup:false,
-						filter:function(event,player,name){
-							console.log(event);
-							if(!event.visible||event.getParent().name!='useSkill')	return false;
-							return [event.hs[0],event.es[0]].event.cards[0]//&&event.getParent().cards==event.cards;
-						},
-						content:function(){
-							if(!player.hasSkill('zhuqiao_addCard'))		player.addTempSkill('zhuqiao_addCard');
-							if(!player.storage.zhuqiao_addCard)			player.storage.zhuqiao_addCard = [];
-							player.storage.zhuqiao_addCard.add(get.suit(trigger.cards[0]));
-							player.markSkill('zhuqiao_addCard');
-						},
-					},
+					// mark:{
+					// 	trigger:{player:'loseAfter'},
+					// 	priority:24,
+					// 	forced:true,
+					// 	silent:true,
+					// 	popup:false,
+					// 	filter:function(event,player,name){
+					// 		if(!event.visible||event.getParent().name!='useSkill')	return false;
+					// 		return [event.hs[0],event.es[0]].event.cards[0]//&&event.getParent().cards==event.cards;
+					// 	},
+					// 	content:function(){
+					// 		if(!player.hasSkill('zhuqiao_addCard'))		player.addTempSkill('zhuqiao_addCard');
+					// 		if(!player.storage.zhuqiao_addCard)			player.storage.zhuqiao_addCard = [];
+					// 		player.storage.zhuqiao_addCard.add(get.suit(trigger.cards[0]));
+					// 		player.markSkill('zhuqiao_addCard');
+					// 	},
+					// },
 					addCard:{
 						init:function(player,skill){
 							if(!player.storage[skill]) player.storage[skill] = [];
@@ -3268,11 +3270,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							event.num = player.storage.zhuqiao_addCard.length;
 							player.chooseTarget('###'+get.prompt('zhuqiao')+'###令一名角色将手牌数补至'+get.cnNumber(event.num)+'张',function(card,player,target){
-								return player.storage.zhuqiao_addCard.length>target.countCards('h');
+								return _status.event.num>target.countCards('h');
 							}).set('ai',function(target){
 								var player = _status.event.player;
-								return get.attitude(player,target);
-							})
+								return (_status.event.num-target.countCards('h'))*get.attitude(player,target);
+							}).set('num',event.num)
 							'step 1'
 							if(result.bool&&result.targets&&result.targets.length){
 								event.target = result.targets[0];
@@ -5643,7 +5645,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:'P',
 				intro:{
 					onunmark:function(storage,player){
-						_status.characterlist.addArray(storage);
+						if(_status.characterlist) _status.characterlist.addArray(storage);
 						storage=[];
 					},
 					mark:function(dialog,storage,player){

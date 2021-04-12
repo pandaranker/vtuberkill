@@ -344,6 +344,7 @@ window.noname_asset_list=[
 	'audio/skill/qiming3.mp3',
 	'audio/skill/qiming4.mp3',
 	'audio/skill/qiming5.mp3',
+	'audio/skill/qishi.mp3',
 	'audio/skill/quanxinquanyi.mp3',
 	'audio/skill/quanyu1.mp3',
 	'audio/skill/quanyu2.mp3',
@@ -483,6 +484,7 @@ window.noname_asset_list=[
 	'audio/skill/yinlaiyaotang1.mp3',
 	'audio/skill/yinlaiyaotang2.mp3',
 	'audio/skill/yinlaiyaotang3.mp3',
+	'audio/skill/yongtuan.mp3',
 	'audio/skill/yuanlv1.mp3',
 	'audio/skill/yuanlv2.mp3',
 	'audio/skill/yuanlv3.mp3',
@@ -1273,6 +1275,7 @@ window.noname_asset_list=[
 	'image/character/re_AkiRosenthal.jpg',
 	'image/character/re_AngeKatrina.jpg',
 	'image/character/re_HiguchiKaede.jpg',
+	'image/character/re_HisekiErio.jpg',
 	'image/character/re_HonmaHimawari.jpg',
 	'image/character/re_HoshimatiSuisei.jpg',
 	'image/character/re_InuyamaTamaki.jpg',
@@ -1308,8 +1311,24 @@ window.noname_asset_list=[
 	'image/character/re_XiaDi.jpg',
 	'image/character/re_XiaoxiXiaotao.jpg',
 	'image/character/re_YozoraMel.jpg',
+	'image/character/re_YukihanaLamy.jpg',
 	'image/character/re_YuNi.jpg',
 
+	//国战
+	/**holo */
+	'image/character/gz_UruhaRushia.jpg',
+	'image/character/gz_UsadaPekora.jpg',
+	'image/character/gz_SakuraMiko.jpg',
+	'image/character/gz_NakiriAyame.jpg',
+	'image/character/gz_TsunomakiWatame.jpg',
+	'image/character/gz_RobokoSan.jpg',
+	'image/character/gz_YukihanaLamy.jpg',
+	/**niji */
+	'image/character/gz_HonmaHimawari.jpg',
+	'image/character/gz_ganfuren.jpg',
+	'image/character/gz_guojia.jpg',
+	'image/character/gz_hetaihou.jpg',
+	'image/character/gz_huangyueying.jpg',
 	//化鲸篇
 	'image/character/NagaoKei.jpg',
 	'image/character/ShirakamiHaruka.jpg',

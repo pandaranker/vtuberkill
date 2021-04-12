@@ -6,6 +6,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			/**阿梓 */
 			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu']],
+			/**勺宝 */
+			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan']],
+
 			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
@@ -52,7 +55,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			clubs:{
-				ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio'],
+				ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
 				KurokawaPresents:['Qiankesaier','heichuan'],
 			}
 		},
@@ -102,8 +105,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(card){
+					if(ui.selected.cards.length&&(get.type(card)==get.type(ui.selected.cards[0],'trick')||
+					ui.selected.cards[1]&&get.type(card)==get.type(ui.selected.cards[0],'trick')||
+					ui.selected.cards[2])) return 0;
 					return 5-get.value(card);
 				},
+				complexCard:true,
 				selectCard:[1,Infinity],
 				position:'he',
 				filterTarget:function(card,player,target){
@@ -2609,9 +2616,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								else return 6-get.value(card);
 							},
 							viewAs:{name:links[0].name, nature: links[0].nature},
-							onrespond:function(result, player){
-								//当你以此法响应其他角色使用的牌时，摸一张牌
-								if(_status.event.getParent('phase').player!=player)player.draw();
+							// onrespond:function(result, player){
+							// 	//当你以此法响应其他角色使用的牌时，摸一张牌
+							// 	if(_status.event.respondTo&&_status.event.respondTo[0]!=player) player.draw();
+							// },
+							onrespond:function(){return this.onuse.apply(this,arguments)},
+							onuse:function(result, player){
+								if(_status.event.respondTo&&_status.event.respondTo[0]!=player) player.draw();
 							}
 						}
 					},
@@ -2956,6 +2967,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi:['re_XiaDi','XiaDi'],
 			KaguraMea:['re_KaguraMea','KaguraMea'],
 			OtomeOto:['re_OtomeOto','OtomeOto'],
+			HisekiErio:['re_HisekiErio','HisekiErio'],
 		},
 		dynamicTranslate:{
 			mozouqiyin:function(player){

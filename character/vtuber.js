@@ -1995,7 +1995,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		
 			InabaHaneru: '因幡はねる',
 			jiance: '监策',
-			jiance_info: '你体力减少后，可以令一名角色展示所有手牌，若不包含所有类型的牌，你可以令另一名其他角色摸X张牌（X为其中不包含的类型数）。',
+			jiance_info: '你体力减少后，可以令一名角色展示所有手牌，若不包含所有类型的牌，你可以令另一名角色摸X张牌（X为其中不包含的类型数）。',
 			chanbing: '缠病',
 			chanbing_info: '<font color=#f66>锁定技</font> 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
 			buyu: '不渝',

@@ -356,7 +356,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**时乃空 */
 				gz_TokinoSora:['female','holo',4,['re_taiyangzhiyin']],
 				/**萝卜子 */
-				gz_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
+				gz_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian'],['gzskin']],
 				/**白上吹雪 */
 				gz_ShirakamiFubuki:['female','holo',3,['gz_yuanlv','re_jinyuan']],
 				/**星街慧星 */
@@ -366,19 +366,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**aki */
 				gz_AkiRosenthal: ['female', 'holo', 3, ['fuyi', 'xihun']],
 				/**樱巫女 */
-				gz_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
+				gz_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao'],['gzskin']],
 				 /**夏色祭 */
 				gz_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
 				/**兔田佩克拉 */
-				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
+				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan'],['gzskin']],
 				/**润羽露西娅 */
-				gz_UruhaRushia:['female','holo',3,['juebi','zhanhou']],
+				gz_UruhaRushia:['female','holo',3,['juebi','zhanhou'],['gzskin']],
 				/**大神澪 */
 				gz_ŌokamiMio:['female','holo',4,['re_yuzhan','re_bizuo']],
 				/**百鬼绫目 */
-				gz_NakiriAyame:['female','holo',4,['gz_guiren']],
+				gz_NakiriAyame:['female','holo',4,['gz_guiren'],['gzskin']],
 				/**角卷绵芽 */
-				gz_TsunomakiWatame:['female','holo',4,['disui','dengyan']],
+				gz_TsunomakiWatame:['female','holo',4,['disui','dengyan'],['gzskin']],
+				/**雪花菈米 */
+				gz_YukihanaLamy:['female','holo',4,['hanling'],['gzskin']],
 
 				/**月之美兔 */
 				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei']],
@@ -397,7 +399,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**铃鹿诗子 */
 				gz_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
 				/**本间向日葵 */
-				gz_HonmaHimawari:['female','nijisanji',4,['tianqing','kuiquan']],
+				gz_HonmaHimawari:['female','nijisanji',4,['mark_tianqing','kuiquan'],['gzskin']],
 
 				/**绊爱 */
 				gz_KizunaAI:['female','vtuber',4,['re_ailian']],
@@ -405,7 +407,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_MiraiAkari: ['female', 'vtuber', 4, ['gz_duanli','qingyi']],
 				/**辉夜月 */
 				gz_KaguyaLuna:['female','vtuber',3,['jiajiupaidui','kuangzuiluanwu']],
+				/**嘉然 */
+				gz_Diana: ['female','vtuber',4,['quanyu']],
 
+				/**狗妈 */
+				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
+				/**狐叔 */
+				gz_Nekomasu: ['female', 'clubs', 3, ['milijianying', 're_dianyin']],
+				/**Yomemi */
+				gz_Yomemi:['female','clubs',3,['mokuai','yaoji']],
+				//神乐组
+				gz_KaguraMea: ['female', 'clubs', 4, ['gz_luecai', 're_xiaoyan']],
+				/**团长 */
+				gz_HisekiErio:['female','clubs',4,['re_huange']],
 
 
 
@@ -420,8 +434,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_shibing1jin:['male','qun',0,[],['unseen']],
 				gz_shibing2jin:['female','qun',0,[],['unseen']],
 				
-				gz_shibing1jin:['male','holo',0,[],['unseen']],
-				gz_shibing2jin:['female','holo',0,[],['unseen']],
+				gz_shibing1holo:['male','holo',0,[],['unseen']],
+				gz_shibing2holo:['female','holo',0,[],['unseen']],
 
 				// gz_caocao:['male','wei',4,['jianxiong']],
 				// gz_simayi:['male','wei',3,['fankui','guicai']],
@@ -606,10 +620,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						types.add(get.type(cards[i],'trick'));
 					}
 					event.types = types;
+					event.cards = cards;
 					event.targets = event.result.targets.slice(0);
 					event.getParent().addCount=false;
 					'step 1'
 					if(event.types.contains('basic')){
+						var cards = event.cards;
 						if(get.color(cards[0])=='red'&&get.color(cards[1])=='red'){
 							event.result.card.nature='fire';
 							player.popup('fire');
@@ -1042,7 +1058,61 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			
+			zhanni:{
+				audio:'DDzhanshou',
+				trigger: {
+					player:'useCard2'
+				},
+				filter:function(event,player){
+					return event.targets.length;
+				},
+				check: function(event, player) {
+					return true;
+				},
+				inherit:'DDzhanshou',
+			},
+			//gzMEA
+			gz_luecai: {
+				audio:'luecai',
+				trigger: {
+					player:'useCard2'
+				},
+				filter:function(event,player){
+					return event.targets&&event.targets.length==1&&event.targets[0].countCards('h')>player.countCards('h');
+				},
+				check:function(event,player){
+					return event.targets[0].countCards('h')-player.countCards('h')>=2;
+				},
+				content: function() {
+					'step 0'
+					event.target = trigger.targets[0];
+					event.target.chooseCard('he','『掠财』：将一张牌交给'+get.translation(player), true);
+					'step 1'
+					if(result.bool&&result.cards){
+						player.gain(result.cards[0],target,'giveAuto');
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(event.target.countCards('h')<player.countCards('h')){
+						player.disableSkill('gz_luecai','gz_luecai');
+					}
+				},
+				ai:{
+					order:4,
+					result:{
+						target:function(player,target){
+							return lib.card.shunshou.ai.result.target.apply(this,arguments);
+						},
+					},
+				},
+				subSkill:{
+					used:{}
+				},
+			},
+
+
+
 			yigui:{
 				hiddenCard:function(player,name){
 					var storage=player.storage.yigui;
@@ -6821,6 +6891,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return '出牌阶段限一次，你可以弃置至多X张牌（X为你的体力上限），然后摸等量的牌';
 				}
 			},
+			zhiheng:{
+				audio:2,
+				audioname:['gz_jun_sunquan'],
+				enable:'phaseUse',
+				usable:1,
+				position:'he',
+				filterCard:true,
+				selectCard:[1,Infinity],
+				prompt:'弃置任意张牌并摸等量的牌',
+				check:function(card){
+					return 6-get.value(card)
+				},
+				content:function(){
+					player.draw(cards.length);
+				},
+				ai:{
+					order:1,
+					result:{
+						player:1
+					},
+					threaten:1.5
+				},
+			},
 			duoshi:{
 				enable:'chooseToUse',
 				viewAs:{name:'yiyi'},
@@ -7439,16 +7532,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					for(var i=0;i<list.length-1;i++){
 						for(var j=i+1;j<list.length;j++){
-							if(lib.character[list[i]][1]==lib.character[list[j]][1]){
+							if(lib.character[list[i]][1]==lib.character[list[j]][1]&&(!get.is.double(list[i])||!get.is.double(list[j]))){
 								var mainx=list[i];
 								var vicex=list[j];
-								if(get.guozhanReverse(mainx,vicex)){
+								if(get.is.double(mainx)||get.guozhanReverse(mainx,vicex)){
 									mainx=list[j];
 									vicex=list[i];
 								}
 								player.init(mainx,vicex,false);
 								if(back){
-									list.remove(player.name);
+									list.remove(player.name1);
 									list.remove(player.name2);
 									for(var i=0;i<list.length;i++){
 										back.push(list[i]);
@@ -7983,7 +8076,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
 			qingyi: '情遗',
 			qingyi_info: '其他角色使用的【桃】进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
+			
+			zhanni: '斩逆',
+			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
 
+			gz_luecai: '掠财',
+			gz_luecai_info: '你使用牌指定唯一目标时，若其手牌数大于你，你可以令其交给你一张牌。然后若你的手牌数大于其，你失去此技能。',
+
+
+
+
+			
 			gz_cuimao:'崔琰毛玠',
 			gzzhengbi:'征辟',
 			gzzhengbi_info:'出牌阶段开始时，你可以选择一项：选择一名未确定势力的角色，你对其使用的牌无距离限制且不计入使用次数，直到其明置武将牌或回合结束；或将一张基本牌交给一名有明置武将牌的角色，然后其交给你一张非基本牌或两张基本牌。',
@@ -8263,6 +8366,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gzrende_info:'出牌阶段，你可以将任意张手牌交给其他角色，然后若你于此阶段内给出第三张“仁德”牌时，你回复1点体力',
 			gzzhiheng:'制衡',
 			gzzhiheng_info:'出牌阶段限一次，你可以弃置至多X张牌（X为你的体力上限），然后摸等量的牌。',
+			zhiheng:'制衡',
+			zhiheng_info:'出牌阶段一次，你可以弃置任意张牌，然后摸等量的牌。',
 			duoshi:'度势',
 			duoshi_info:'出牌阶段限四次，你可以将一张红色手牌当做【以逸待劳】使用。',
 			gzxiaoguo:'骁果',

@@ -2333,7 +2333,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.chooseTarget('令你或其摸一张牌').set('filterTarget',function(card,player,target){
+							player.chooseTarget('『旷心』：令你或其摸一张牌').set('filterTarget',function(card,player,target){
 								return target==player||target==player.storage.kuangxin_draw[1];
 							})
 							'step 1'
@@ -2378,28 +2378,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			danyan:{
 				trigger:{player:'loseEnd'},
 				priority:22,
+				frequent:true,
 				filter:function(event,player){
-					if(game.hasPlayer(function(cur){
-						return	cur.getHistory('damage',function(evt){
-							return evt.source==player;
-						}).length>0
-					}))
-					{
-						return false;
-					}
+					// if(game.hasPlayer(function(cur){
+					// 	return	cur.getHistory('damage',function(evt){
+					// 		return evt.source==player;
+					// 	}).length>0
+					// }))
+					// {
+					// 	return false;
+					// }
+					var num=0;
+					player.getHistory('sourceDamage',function(evt){
+						num+=evt.num;
+					});
+					if(num||!event.hs.length)	return false;
 					var canG=0;
-					event.cards.forEach(function(car){
+					event.hs.forEach(function(car){
 						game.hasPlayer(function(cur){
 							if(player.canUse(car,cur))	canG++;
 						});;
 					})
-					if(!event.hs.length)	return false;	
 					return canG&&(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard'));
 				},
 				content:function(){
 					'step 0'
 					event.cards = trigger.hs;
-					var next=player.chooseCardButton(1,'选择使用的牌',event.cards);
+					var next=player.chooseCardButton(1,'『弹言』：选择使用的牌',event.cards);
 					next.set('filterButton',function(button){
 						var player = _status.event.player;
 						return game.hasPlayer(function(cur){
@@ -3561,6 +3566,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			UruhaRushia: '润羽露西娅',
 			NakiriAyame: '百鬼绫目',
 			TsunomakiWatame: '角卷绵芽',
+			YukihanaLamy: '雪花菈米',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',

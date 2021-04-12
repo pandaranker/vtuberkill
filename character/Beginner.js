@@ -30,11 +30,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
 			/**铃鹿诗子 */
-			re_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
+			//re_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
 			/**铃原露露 */
 			re_SuzuharaLulu:['female','nijisanji',5,['tunshi']],
 			/**本间向日葵 */
-			re_HonmaHimawari:['female','nijisanji',4,['tianqing','kuiquan']],
+			re_HonmaHimawari:['female','nijisanji',4,['mark_tianqing','kuiquan']],
 
 			/**时乃空 */
 			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
@@ -62,6 +62,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ŌokamiMio:['female','holo',4,['re_yuzhan','re_bizuo']],
 			/**百鬼绫目 */
 			re_NakiriAyame:['female','holo',4,['guiren']],
+			/**雪花菈米 */
+			re_YukihanaLamy:['female','holo',4,['hanling']],
 			/**角卷绵芽 */
 			//re_TsunomakiWatame:['female','holo',4,['disui','dengyan']],
 			
@@ -72,7 +74,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
 			/**OTO */
-			re_OtomeOto: ['female', 'paryi', 3, ['re_yuxia', 'hanyin']],
+			re_OtomeOto: ['female', 'paryi', 3, ['re_yuxia', 'hanyin'],['zhu']],
+			/**团长 */
+			re_HisekiErio:['female','paryi',4,['re_huange']],
 
 			/**美波 */
 			re_MinamiNami: ['female','qun',4,['re_longdan']],
@@ -97,7 +101,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			Beginner:{
 		//		界限突破:[],
-				hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia','re_ŌokamiMio','re_NakiriAyame'],
+				hololive:['re_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_YozoraMel','re_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia','re_ŌokamiMio','re_NakiriAyame','re_YukihanaLamy'],
 			}
 		},
 		skill:{
@@ -1316,6 +1320,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			re_jitui: {
 				audio:'guangsuxiabo',
+				audioname:['jike'],
 				trigger: {
 					player: ['loseAfter', 'damageAfter'],
 				},
@@ -2543,7 +2548,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseUseBegin'},
 						priority:199,
 						check:function(event,player){
-							return player.getCardUsable('shunshou')&&player.hp>=1;
+							return player.getCardUsable('shunshou')&&player.hp>1;
 						},
 						prompt2:'『战吼』出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
 						content:function(){
@@ -2867,7 +2872,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				multitarget:false,
 				content: function() {
 					'step 0'
-					target.chooseCard('he', true);
+					target.chooseCard('he','『掠财』：将一张牌交给'+get.translation(player), true);
 					'step 1'
 					player.gain(result.cards[0],target,'giveAuto');
 					player.addTempSkill('re_luecai_used','phaseUseEnd')
@@ -2896,6 +2901,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}));
 				},
 			},
+			//reOto
 			re_yuxia:{
 				audio:'yuxia',
 				hiddenCard:function(player,name){
@@ -3016,6 +3022,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw();
 				},
 				ai:{
+					effect:{
+						player:function(card,player){
+							if (['nanman','wanjian','haixiao'].contains(get.name(card))){
+								var num = game.countPlayer(function(cur){
+									return cur!=player;
+								});
+								if(get.number(card))	num *= get.number(card)/12;
+								return [1,num];
+							}
+						}
+					},
 					directHit_ai:true,
 					skillTagFilter:function(player,tag,arg){
 						if(tag=='directHit_ai'&&arg){
@@ -3023,6 +3040,71 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return get.number(arg.card)&&get.number(arg.card)>=13;
 						}
 					},
+				},
+			},
+			//re团长
+			re_huange:{
+				trigger:{global:'phaseBegin'},
+				round:1,
+				priority:996,
+				filter:function(event,player){
+					return game.countPlayer(function(cur){
+						return cur.hp!=Infinity;
+					});
+				},
+				check:function(event,player){
+					if(event.player!=player&&get.attitude(event.player,player)<0&&event.player.inRange(player))	return true;
+					return event.player==player&&!player.hasJudge('lebu')&&(!player.hasUnknown(2)||!player.needsToDiscard());
+				},
+				content:function(){
+					'step 0'
+					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
+						return target.hp!=Infinity;
+					});
+					next.set('ai',function(target){
+						if(player.inRange(target))	return 2-get.attitude(player,target);
+						else return target.hp-(get.attitude(player,target)/2);
+					})
+					'step 1'
+					if(result.bool){
+						player.logSkill('re_huange',result.targets);
+						player.draw(result.targets[0].hp);
+						player.storage.re_huange_disc = result.targets[0];
+						player.markSkill('re_huange_disc');
+						player.addTempSkill('re_huange_disc');
+					}
+				},
+				subSkill:{
+					disc:{
+						mark:'character',
+						intro:{
+							name:'幻歌',
+							content:'回合结束时弃置$体力值的牌',
+							onunmark:true,
+						},
+						trigger:{global:'phaseEnd'},
+						priority:996,
+						onremove:true,
+						forced:true,
+						filter:function(event,player){
+							return player.countDiscardableCards(player,'he');
+						},
+						content:function(){
+							'step 0'
+							if(player.storage.re_huange_disc.isIn()&&player.countCards('he')){
+								player.chooseCard('he','###『幻歌』###弃置'+get.cnNumber(player.storage.re_huange_disc.hp)+'张牌',player.storage.re_huange_disc.hp,true,lib.filter.cardDiscardable);
+							}else{
+								event.goto(2);
+							}
+							'step 1'
+							if(result.bool){
+								player.discard(result.cards);
+							}
+							'step 2'
+							player.unmarkSkill('re_huange_disc');
+							delete player.storage.re_huange_disc;
+						},
+					}
 				},
 			},
 			re_yuzhan:{
@@ -3290,6 +3372,65 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//re雪花菈米
+			hanling:{
+				trigger:{player:'damageBegin3'},
+				filter:function(event,player){
+					return event.source&&player.countCards('h')>event.source.countCards('h');
+				},
+				check:function(event,player){
+					return player.countCards('h')-event.source.countCards('h')<=event.num;
+				},
+				prompt:function(event,player){
+					return '你受到来源为'+get.translation(event.source)+'的伤害，可以将手牌弃至'+get.cnNumber(event.source)+'张以防止此伤害';
+				},
+				logTarget:'source',
+				content:function(){
+					'step 0'
+					event.num = player.countCards('h')-trigger.source.countCards('h');
+					player.chooseToDiscard('『寒灵』：需要弃置'+event.num+'张牌',event.num,true,'h');
+					'step 1'
+					trigger.changeToZero();
+				},
+				group:'hanling_drawBy',
+				subSkill:{
+					drawBy:{
+						trigger:{player:'phaseEnd'},
+						filter:function(event,player){
+							var num=0;
+							player.getHistory('sourceDamage',function(evt){
+								if(evt.getParent('phase')==event) num+=evt.num;
+							});
+							console.log(num);
+							return !num&&game.hasPlayer(function(cur){
+								return cur.countCards('h')<player.countCards('h');
+							});
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							player.chooseTarget(get.prompt2('hanling'),function(card,player,target){
+								return target.countCards('h')<player.countCards('h');
+							}).set('ai',function(target){
+								var player = _status.event.player;
+								var num = player.countCards('h')-target.countCards('h');
+								return num*get.attitude(player,target);
+							})
+							'step 1'
+							if(result.bool&&result.targets){
+								event.num = player.countCards('h');
+								event.target = result.targets[0];
+							}else{
+								event.finish();
+							}
+							'step 2'
+							if(event.target){
+								event.target.drawTo(event.num);
+							}
+						},
+					}
+				}
+			},
 			//re诗子
 			re_meici:{
 				zhuanhuanji:true,	
@@ -3425,7 +3566,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:24,
 				filter:function(event,player){
 					if(event.player==player)	return false;
-					return true;
+					return _status.currentPhase==player;
 				},
 				content:function(){
 					player.recover();
@@ -3465,11 +3606,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			//re葵
-			tianqing:{
+			mark_tianqing:{
 				trigger:{global:'damageBegin3'},
 				filter:function(event,player){
-					return player.storage.tianqing_record;
+					return player.storage.mark_tianqing_record;
 				},
+				round:1,
 				check:function(event,player){
 					return get.attitude(player,event.player)>0;
 				},
@@ -3477,13 +3619,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					trigger.changeToZero();
 				},
-				group:'tianqing_record',
+				group:'mark_tianqing_record',
 				subSkill:{
 					record:{
 						init:function(player,skill){
-							if(!player.storage[skill]) player.storage[skill] = true;
+							if(!player.storage[skill]) player.storage[skill] = false;
 						},
-						trigger:{global:['damageZero','damageEnd','phaseAfter']},
+						trigger:{global:['damageEnd','phaseAfter']},
 						forced:true,
 						silent:true,
 						firstDo:true,
@@ -3491,17 +3633,53 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},
 						content:function(){
-							console.log(trigger)
-							if(trigger.name == 'damageZero'||trigger.numFixed==true){
-								player.storage.tianqing_record = false;
+							if(trigger.name == 'damage'||trigger.numFixed==true){
+								player.storage.mark_tianqing_record = true;
 							}
 							else{
-								player.storage.tianqing_record = true;
+								player.storage.mark_tianqing_record = false;
 							}
 						}
 					}
 				}
 			},
+			// tianqing:{
+			// 	trigger:{global:'damageBegin3'},
+			// 	filter:function(event,player){
+			// 		return player.storage.tianqing_record;
+			// 	},
+			// 	check:function(event,player){
+			// 		return get.attitude(player,event.player)>0;
+			// 	},
+			// 	logTarget:'player',
+			// 	content:function(){
+			// 		trigger.changeToZero();
+			// 	},
+			// 	group:'tianqing_record',
+			// 	subSkill:{
+			// 		record:{
+			// 			init:function(player,skill){
+			// 				if(!player.storage[skill]) player.storage[skill] = true;
+			// 			},
+			// 			trigger:{global:['damageZero','damageEnd','phaseAfter']},
+			// 			forced:true,
+			// 			silent:true,
+			// 			firstDo:true,
+			// 			filter:function(event,player){
+			// 				return true;
+			// 			},
+			// 			content:function(){
+			// 				console.log(trigger)
+			// 				if(trigger.name == 'damageZero'||trigger.numFixed==true){
+			// 					player.storage.tianqing_record = false;
+			// 				}
+			// 				else{
+			// 					player.storage.tianqing_record = true;
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// },
 			kuiquan:{
 				audio:2,
 				enable:'chooseToUse',
@@ -3685,6 +3863,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_HonmaHimawari: '新·本间向日葵',
 			tianqing: '天晴烂漫',
 			tianqing_info: '一名角色受到伤害时，若本回合上一次伤害没有被防止，你可以防止本次伤害。',
+			mark_tianqing: '天晴烂漫',
+			mark_tianqing_info: '<font color=#fc2>轮次技</font> 一名角色受到伤害时，若本回合已有角色受过伤，你可以防止本次伤害。',
 			kuiquan: '葵拳连打',
 			kuiquan_info: '你可以将一张牌当【火攻】使用，此牌类型不得为本回合你使用过的类型。当你在【火攻】中弃置了【杀】后，获得目标的展示牌。',
 
@@ -3748,6 +3928,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhanhou: '战吼',
 			zhanhou_info: '出牌阶段开始时/其他角色阵亡时，你可以受到1点伤害/回复1点体力，视为使用一张【顺手牵羊】。',
 
+			re_YukihanaLamy: '新·雪花菈米',
+			hanling: '寒灵',
+			hanling_info: '当你受到伤害时，若来源手牌数小于你，你可以将手牌弃至与其相等防止此伤害。你的回合结束时，若本回合你未使用过牌，你可以令一名角色摸牌至与你手牌相同。',
+
 			re_TsunomakiWatame: '新·角卷绵芽',
 
 			re_XiaoxiXiaotao: '新·小希小桃',
@@ -3771,6 +3955,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中的一张置于牌堆顶。',
 			hanyin: '瀚音',
 			hanyin_info: '你使用牌被点数小于之的牌响应或抵消时，摸一张牌。',
+
+			re_HisekiErio: '新·绯赤艾莉欧',
+			re_huange: '幻歌',
+			re_huange_info: '<font color=#fc2>轮次技</font> 一个回合开始时，你可以摸等同一名角色体力值的牌，然后于回合结束时，弃置等同于该角色当前体力值的牌。',
 
 			re_ŌokamiMio: '新·大神澪',
 			re_yuzhan: '预占',

@@ -2231,7 +2231,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			guangsuxiabo: {
 				audio:2,
-				audioname:['jike'],
 				init: function(player) {
 					player.storage.hp = 0;
 					player.storage.loseCount = 0;
@@ -3126,7 +3125,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sczhuwei: '助危之心',
 			sczhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			sczhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
-			
+
+			HonmaHimawari: '本间向日葵',
+
 			YagamiKaruta: '山神歌流多',
 			suisi: '髓思',
 			suisi_info: '<font color=#f66>锁定技</font> 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
