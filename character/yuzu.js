@@ -448,7 +448,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					name:'职业生涯结束',
 					content:function (storage,player,skill){
-						return '失去【职业生涯】技能直到下个回合开始';
+						return '失去『职业生涯』直到下个回合开始';
 					},
 				},
 				trigger:{player:'useCardAfter'},
@@ -2006,8 +2006,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								saves.forEach(function(save){
 									list1.forEach(function(card){
 										if(_status.event.process(save,card)){
-											dones.push(save);
-											dones.push(card);
+											dones.add(save);
+											dones.add(card);
 										}
 									})
 								})
@@ -2019,7 +2019,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var done = [list1[i]];
 								var choices = cards.slice(0).remove(list1[i]);
 								for(var j=0;j<choices.length;j++){
-									console.log(done)
 									if(done.length==6)	break;
 									if(_status.event.process(done,choices[j])){
 										done.push(choices[j]);
@@ -2027,13 +2026,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										j = 0;
 									}
 								}
+								if(done.length%2==1)	done.pop();
 								dones.push(done);
 							}
-							console.log(dones)
 							if(dones.length>0){
 								dones.sort(function(a,b){
 									return b.length-a.length;
 								});
+								console.log(dones)
 								links.addArray(dones[0]);
 							}
 						}
@@ -2050,6 +2050,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							number:0
 						};
 						var going = [];
+						var overOne = 0;
 						if(last.length%2==1){
 							var pack = selected[selected.length-1];
 						}
@@ -2062,19 +2063,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							}
 							if(!go.length)	continue;
-							for(var i=0;i<go.length;i++){
-								going.add(go[i]);
-								over[go[i]]+=(1/go.length);
+							for(var j=0;j<go.length;j++){
+								going.add(go[j]);
+								over[go[j]]+=(1/go.length);
 							}
 						}
 						var list1 = _status.event.list1;
 						var list2 = _status.event.list2;
+						for(var j in over){
+							overOne = Math.max(over[j]-1,overOne);
+						}
 						if(!pack){
 							if(list1.contains(now)){
 								for(var i=0;i<list2.length;i++){
 									for(var j in over){
+										if(over[j]+overOne>=1||(going.contains(j)&&going.length*2<=last.length))	continue;
 										if((j=='trye'&&get.type(list2[i],'trick')==get.type(now,'trick'))||get[j](list2[i])==get[j](now)){
-											if(!going.contains(j)||over[j]<1)	return true;
+											return true;
 										}
 									}
 								}
@@ -2082,8 +2087,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(list2.contains(now)){
 								for(var i=0;i<list1.length;i++){
 									for(var j in over){
+										if(over[j]+overOne>=1||(going.contains(j)&&going.length*2<=last.length))	continue;
 										if((j=='trye'&&get.type(list1[i],'trick')==get.type(now,'trick'))||get[j](list1[i])==get[j](now)){
-											if(!going.contains(j)||over[j]<1)	return true;
+											return true;
 										}
 									}
 								}
@@ -2093,16 +2099,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(list1.contains(pack)){
 								if(!list2.contains(now))	return false;
 								for(var j in over){
+									if(over[j]+overOne>=1||(going.contains(j)&&going.length*2<=last.length))	continue;
 									if((j=='trye'&&get.type(pack,'trick')==get.type(now,'trick'))||get[j](pack)==get[j](now)){
-										if(!going.contains(j)||over[j]<1)	return true;
+										return true;
 									}
 								}
 							}
 							if(list2.contains(pack)){
 								if(!list1.contains(now))	return false;
 								for(var j in over){
+									if(over[j]+overOne>=1||(going.contains(j)&&going.length*2<=last.length))	continue;
 									if((j=='trye'&&get.type(pack,'trick')==get.type(now,'trick'))||get[j](pack)==get[j](now)){
-										if(!going.contains(j)||over[j]<1)	return true;
+										return true;
 									}
 								}
 							}
@@ -2142,7 +2150,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				group:'huawen_clear',
 				ai:{
-					order:7,
+					order:8.5,
 					result:{
 						target:function (player,target){
 							if(target.countCards('h')>=3){
@@ -5748,7 +5756,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.pause();
 					};
 					if(player.isOnline2()){
-						player.send(func,list);
+						player.send(fun,list);
 					}
 					// else{
 					// 	fun(list);

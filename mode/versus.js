@@ -45,7 +45,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			}
-			console.log('ok0');
 			_status.mode=get.config('versus_mode');
 			if(_status.connectMode) _status.mode=lib.configOL.versus_mode;
 			if(_status.brawl&&_status.brawl.submode){
@@ -166,7 +165,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ui.create.cardsAsync();
 				game.finishCards();
 			}
-			console.log('ok1');
 			// game.delay();
 			"step 2"
 			if(!_status.connectMode&&_status.brawl&&_status.brawl.chooseCharacterBefore){
@@ -3843,6 +3841,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_MinatoAqua: ['female','holo',2,['boss_shenghuang','boss_renzhan', 'boss_kuase'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			boss_KiryuuCoco:['female','holo',5,['boss_zaoankeke', 'boss_jierizhanbei','boss_esuyingye','boss_zuoyututan'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 
+			boss_HonmaHimawari: ['female','nijisanji',5,['tianqing', 'boss_kuiquan'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
+			boss_MitoTsukino:['female','nijisanji',4,['boss_bingdielei','boss_zhenyin'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
+
 			boss_liedixuande:['male','nijisanji',5,['boss_lingfeng','boss_jizhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_gongshenyueying:['female','nijisanji',4,['boss_gongshenjg','boss_jingmiao','boss_zhinang'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_tianhoukongming:['male','nijisanji',4,['boss_biantian','bazhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
@@ -4309,15 +4310,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
 			boss_zuoyututan:'坐於涂炭',
 			boss_zuoyututanLimit: '手牌减少',
-			boss_zuoyututan_info:'<font color=#f66>锁定技</font> <font color=#88e>转换技</font> 一轮开始时，令所有敌方角色①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。形态切换后，复原反抗军。',
+			boss_zuoyututan_info:'<font color=#f66>锁定技</font> <font color=#88e>转换技</font> 一轮开始时，令所有敌方角色①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。',
 
 			boss_MinatoAqua:'天使阿夸',
 			boss_shenghuang: '圣皇之愈',
 			boss_shenghuang_info: '<font color=#f66>锁定技</font> 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，友方角色将体力回复至回合开始时的状态。',
-			boss_renzhan: '瞬息刃斩',
-			boss_renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
-			boss_kuase: '夸色梦想',
-			boss_kuase_info: '<font color=#f5c>限定技</font> 一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
+			
+			boss_HonmaHimawari:'自在武葵',
+			boss_kuiquan: '阳光烈焰',
+			boss_kuiquan_info: '你的【火攻】没有目标数量限制。出牌阶段，你可以将一张牌当的【火攻】使用。当你在【火攻】中弃置了【杀】后，获得目标的展示牌。',
+
+			boss_MitoTsukino:'衔月脱兔',
+			boss_bingdielei: '并蒂恶蕾',
+			boss_bingdielei_info:'乙方角色受到伤害或令一名角色进入濒死状态的额定回合结束时，你可以获得一个额外回合。',
+			boss_zhenyin: '协和音震',
+			boss_zhenyin_info: '当你使用黑色牌指定目标后，可以将一名目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
+			
 						
 			boss_xiaorui:'骁锐',
 			boss_xiaorui2:'骁锐',
@@ -4428,7 +4436,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				locked:true,
 				init:function(player){
 					player.storage.boss_shenghuang=0;
-					if(get.mode()=='identity'&&get.zhu(player)==player&&game.players.length>4) player.maxHp--;
 				},
 				global:['boss_shenghuang_put'],
 				group:['boss_shenghuang_draw', 'boss_shenghuang_lose', 'boss_shenghuang_ret', 'boss_shenghuang_rec'],
@@ -4448,12 +4455,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},
 					draw:{
 						init:function(player){
-							if(get.zhu(player)==player&&game.players.length>4){
-								player.storage.boss_shenghuang_draw=4;
-							}
-							else{
-								player.storage.boss_shenghuang_draw=3;
-							}
+							player.storage.boss_shenghuang_draw=4;
 							if(player.hasSkill('boss_shenghuang_draw'))  player.markSkill('boss_shenghuang_draw');
 						},
 						marktext: '圣',
@@ -4494,7 +4496,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						priority:777,
 						filter:function(event,player){
 							if(!(event.getParent().cards||event.card))									return false;
-		//					if(event.getParent().name=="useCard"||event.getParent().name=="useSkill")	return false;
 							var cards = event.getParent().cards;
 							var bc=0;
 							for(var i=0;i<cards.length;i++){
@@ -4526,7 +4527,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						priority:777,
 						trigger:{global:'phaseEnd'},
 						filter:function(event,player){
-							if(!cur.hasSkill('boss_shenghuang')||!cur.storage.boss_shenghuang>0)	return false;
+							if(!player.hasSkill('boss_shenghuang')||!player.storage.boss_shenghuang>0)	return false;
 							if(!game.hasPlayer(function(cur){
 								return cur.isAlive()&&cur.isFriendOf(player)&&cur.storage.boss_shenghuang_put;
 							}))	return false;
@@ -4534,8 +4535,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							event.targets = game.filter(function(cur){
-								return cur.isAlive()&&cur.isFriendOf(player)&&cur.storage.boss_shenghuang_put;
+							event.targets = game.filterPlayer(function(cur){
+								return cur.isAlive()&&cur.isFriendOf(player)&&cur!=player&&cur.storage.boss_shenghuang_put;
 							})
 							'step 1'
 							if(event.targets.length){
@@ -5056,6 +5057,140 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					maxHandcard:function(player,num){
 						return num-player.storage.boss_zuoyututanLimit;
 					},
+				}
+			},
+			//boss阿葵
+			boss_kuiquan:{
+				audio:2,
+				enable:'chooseToUse',
+				filterCard:true,
+				viewAs:{name:'huogong',nature:'fire'},
+				viewAsFilter:function(player){
+					if(!player.isPhaseUsing()) return false;
+				},
+				check:function(card){
+					var player=_status.currentPhase;
+					if(player.countCards('h')>player.hp||player.countCards('h',{name:'sha'})>0){
+						if(card.name=='sha')	return 4-get.value(card);
+						return 6-get.value(card);
+					}
+					return 3-get.value(card)
+				},
+				ai:{
+					kuiquan:true,
+					fireAttack:true,
+				},
+				mod:{
+					selectTarget:function(card,player,range){
+						if(range[1]==-1) return;
+						if(card.name=='huogong') range[1]+=Infinity;
+					},
+				},
+			},
+			//boss美兔
+			boss_bingdielei:{
+				group:'boss_bingdielei_damageBy',
+				subSkill:{
+					damageBy:{
+						trigger:{global:['damageBegin4','dying']},
+						priority:99,
+						filter:function(event,player){
+							if(_status.event.getParent('phase').skill)	return false;
+							if(event.name=='damage')	return event.player.isFriendOf(player);
+							else	return event.getParent()&&event.getParent().source&&event.getParent().source.isFriendOf(player);
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							player.logSkill(event.name);
+							player.addTempSkill('boss_bingdielei_anotherPhase');
+						},
+					},
+					anotherPhase:{
+						audio:'bingdielei',
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						frequent:true,
+						intro: {
+							content:'当前回合结束后获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						content:function(){
+							player.markSkill(event.name);
+							game.delayx();
+							player.insertPhase();
+						},
+					},
+				},
+			},
+			boss_zhenyin: {
+				audio:'zhenyin',
+				trigger: {
+					player: 'useCardToPlayered',
+				},
+				filter: function(event, player) {
+					var num=0;
+					event.targets.forEach(function(tar){
+						num+=tar.countCards('ej');
+					})
+					return event.targets.length
+						&& num>0
+						&& get.color(event.card)=='black';
+					
+				},
+				content: function() {
+					'step 0'
+					player.chooseTarget('选择『协和音震』的目标',function(card,player,target){
+						return _status.event.targets.contains(target);
+					}).set('targets',trigger.targets);
+					'step 1'
+					event.A = result.targets[0];
+					event.B = event.A.next;
+					if (!event.A.countCards('hej')) event.finish();
+					player.choosePlayerCard('hej', event.A).set('ai',function(button){
+						var player = _status.event.player;
+						var source = _status.event.target;
+						var target = source.next;
+						var link = button.link;
+						if(get.position(link)=='j'){
+							if(target.canAddJudge(link))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}else if(get.position(link)=='e'){
+							var subtype = get.subtype(link);
+							if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}
+					});
+					'step 2'
+					if (result.bool) {
+						var card = result.links[0];
+						var dam = false;
+						if(get.position(card)=='e'){
+							var c = event.B.getEquip(get.subtype(card));
+							if (c) {
+								dam = true;
+								game.log(c, '掉落了');
+							}
+							re = event.B.equip(card);
+						}
+						else {
+							var cname = card.viewAs ? card.viewAs : get.name(card);
+							event.B.getCards('j').forEach(function(c) {
+								if (get.name(c) == cname) {
+									game.log(c, '掉落了');
+									game.cardsDiscard(c);
+									dam = true;
+								}
+							})
+							event.B.addJudge({name: cname}, [card]);
+						}
+						event.A.$give(card, event.B)
+						if (dam) event.B.damage('nocard');
+						game.delay();
+					}
 				}
 			},
 

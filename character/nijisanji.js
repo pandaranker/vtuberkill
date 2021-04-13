@@ -1345,8 +1345,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							"step 0"
 							if(trigger.delay==false) game.delay();
 							"step 1"
-							player.markSkill(event.name);
-							//player.logSkill(event.name);
 							player.addTempSkill('mark_bingdielei_anotherPhase');
 						},
 					},

@@ -68,7 +68,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'roundStart'},
 				content:function(){
 					'step 0'
-					var list= player.storage.tiangou_list;;
+					var list= player.storage.tiangou_list;
 					list.removeArray(player.storage.tiangou);
 					event.videoId = lib.status.videoId++;
 					for(var i=0;i<list.length;i++){
@@ -2376,10 +2376,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan_keai: '可爱',
 			liuxuan_keai_describe: '进入此姿态时摸三张牌；你造成的伤害翻倍；离开此姿态时，将你的体力值调整为当前的一半（向上取整），若没有体力牌，你死亡。',
 
+			'phaseZhunbei': '准备阶段',
 			'phaseJudge': '判定阶段',
 			'phaseDraw': '摸牌阶段',
 			'phaseUse': '出牌阶段',
 			'phaseDiscard': '弃牌阶段',
+			'phaseJieshu': '结束阶段',
 			
 			sp_KizunaAI: '皇·绊爱',
 			ai: '爱',

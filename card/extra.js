@@ -193,7 +193,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					event._result={};
 					player.chooseToDiscard({suit:get.suit(event.card2)},function(card){
 						var evt=_status.event.getParent();
-						if(evt.skill=='kuiquan'&&evt.card2&&get.value(evt.card2,player,'raw')>get.value(card)&&card.name=='sha')	return 7;	
+						if(evt.player.hasSkillTag('kuiquan')&&evt.card2&&get.value(evt.card2,player,'raw')>get.value(card)&&card.name=='sha')	return 7;	
 						if(get.damageEffect(evt.target,evt.player,evt.player,'fire')>0){
 							return 7-get.value(card,evt.player);
 						}
@@ -202,7 +202,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					game.delay(2);
 					"step 2"
 					if(result.bool){
-						if(event.skill=='kuiquan'&&result.cards&&result.cards[0].name=='sha')	player.gain(event.card2,'gain2');
+						if(player.hasSkillTag('kuiquan')&&result.cards&&result.cards[0].name=='sha')	player.gain(event.card2,'gainAuto');
 						target.damage('fire');
 					}
 					else{

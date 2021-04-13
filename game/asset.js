@@ -1323,12 +1323,9 @@ window.noname_asset_list=[
 	'image/character/gz_TsunomakiWatame.jpg',
 	'image/character/gz_RobokoSan.jpg',
 	'image/character/gz_YukihanaLamy.jpg',
+	'image/character/gz_ŌzoraSubaru.jpg',
 	/**niji */
 	'image/character/gz_HonmaHimawari.jpg',
-	'image/character/gz_ganfuren.jpg',
-	'image/character/gz_guojia.jpg',
-	'image/character/gz_hetaihou.jpg',
-	'image/character/gz_huangyueying.jpg',
 	//化鲸篇
 	'image/character/NagaoKei.jpg',
 	'image/character/ShirakamiHaruka.jpg',
@@ -2045,6 +2042,8 @@ window.noname_asset_list=[
 	'image/mode/versus/character/tangzi.jpg',
 	'image/mode/versus/character/boss_KiryuuCoco.jpg',
 	'image/mode/versus/character/boss_MinatoAqua.jpg',
+	'image/mode/versus/character/boss_HonmaHimawari.jpg',
+	'image/mode/versus/character/boss_MitoTsukino.jpg',
 	'image/mode/longlaoguan/character/AjatarCoco.jpg',
 	'image/mode/longlaoguan/character/KiryuuCoco.jpg',
 	'image/mode/longlaoguan/card/takeover.png',

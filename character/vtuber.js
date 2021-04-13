@@ -1507,7 +1507,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return target.countCards('h');
 					}).set('ai',function(target){
 						var player = _status.event.player;
-						if(target.countCards('h')<=4||get.attitude(player,target)<=0)	return 1+_status.event.rand();
+						if(target.countCards('h')<=4)	return 2-get.attitude(player,target);
 						return 0;
 					});
 					'step 1'
@@ -1604,10 +1604,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:'player',
 				content:function(){
 					'step 0'
-					var cards = player.getCards('h');
-					player.lose(cards,ui.special,'toStorage');
-					player.$give(cards,player,false);
-					player.markAuto('chanbing',cards);
+					event.togain=trigger.player.getCards('he');
+					trigger.player.lose(event.togain,ui.special,'toStorage');
+					trigger.player.$give(event.togain,player,false);
+					player.markAuto('chanbing',event.togain);
 					'step 1'
 					var list=trigger.player.getStockSkills('黄兔颂恩','因缘斩断').filter(function(skill){
 						var info=get.info(skill);
@@ -1951,7 +1951,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KizunaAI:'绊爱',
 			KizunaAI_info:'绊爱',
 			ailian:'爱链',
-			ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给势力不重复的其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
+			ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
 			qixu:'启虚',
 			qixu1:'启虚',
 			qixu2:'启虚',
@@ -1999,7 +1999,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chanbing: '缠病',
 			chanbing_info: '<font color=#f66>锁定技</font> 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
 			buyu: '不渝',
-			buyu_info: '一名角色死亡时，你可以将所有手牌置于武将牌上并获得其的一个技能直到你下次以此法获得技能。',
+			buyu_info: '一名角色死亡时，你可以将其所有牌置于武将牌上并获得其的一个技能直到你下次以此法获得技能。',
 			
 			huangtu: '颂恩',
 			huangtu_info: '<font color=#f66>锁定技</font> 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',

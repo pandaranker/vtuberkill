@@ -62,6 +62,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ŌokamiMio:['female','holo',4,['re_yuzhan','re_bizuo']],
 			/**百鬼绫目 */
 			re_NakiriAyame:['female','holo',4,['guiren']],
+			/**大空昴 */
+			re_ŌzoraSubaru:['female','holo',4,['cejing']],
 			/**雪花菈米 */
 			re_YukihanaLamy:['female','holo',4,['hanling']],
 			/**角卷绵芽 */
@@ -553,13 +555,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.sex = 'male';
 						player.markSkill('liansheng');
 						game.log(player,'的性别变更为','#g'+get.translation(player.sex));
-						if(_status.currentPhase.sex=='female')	player.draw();
+						if(_status.currentPhase&&_status.currentPhase.sex=='female')	player.draw();
 					}
 					if(player.hp<player.maxHp&&player.sex=='male'){
 						player.sex = 'female';
 						player.markSkill('liansheng');
 						game.log(player,'的性别变更为','#g'+get.translation(player.sex));
-						if(_status.currentPhase.sex=='female')	player.draw();
+						if(_status.currentPhase&&_status.currentPhase.sex=='female')	player.draw();
 					}
 				},
 				mark:true,
@@ -1203,20 +1205,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger: {
 					player: 'useCardToPlayered',
 				},
+				usable:1,
 				filter: function(event, player) {
-					var num;
+					var num=0;
 					event.targets.forEach(function(tar){
 						num+=tar.countCards('ej');
 					})
-					return event.name == 'useCardToPlayered' 
-						&& event.targets.length
-						&& num
+					return event.targets.length
+						&& num>0
 						&& get.color(event.card)=='black';
 					
 				},
 				content: function() {
 					'step 0'
-					player.chooseTarget('选择目标',function(card,player,target){
+					player.chooseTarget('选择『震音』的目标',function(card,player,target){
 						return _status.event.targets.contains(target);
 					}).set('targets',trigger.targets);
 					'step 1'
@@ -3401,7 +3403,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.getHistory('sourceDamage',function(evt){
 								if(evt.getParent('phase')==event) num+=evt.num;
 							});
-							console.log(num);
 							return !num&&game.hasPlayer(function(cur){
 								return cur.countCards('h')<player.countCards('h');
 							});
@@ -3427,6 +3428,93 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(event.target){
 								event.target.drawTo(event.num);
 							}
+						},
+					}
+				}
+			},
+			//re鸭鸭
+			cejing:{
+				trigger:{global:'phaseEnd'},
+				firstDo:true,
+				filter:function(event,player){
+					if(player.hasSkill('cejing_disable'))	return false;
+					return event.player.isIn()&&player.countDiscardableCards('he')>=1;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					var target = trigger.player;
+					event.target = target;
+					var check = (get.attitude(player,target)>0)||(get.attitude(player,target)<0&&target.countCards('h')-target.getHandcardLimit()>=2);
+					player.chooseToDiscard(get.prompt2('cejing'),'he').set('ai',function(card){
+						if(_status.event.check)		return 6-get.value(card);
+						return -1;
+					}).set('check',check)
+					'step 1'
+					if(result.bool&&result.cards){
+						var att = get.attitude(player,event.target);
+						var list0= ['phaseZhunbei','phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard','phaseJieshu'];
+						// for(var i=0;i<list0.length;i++){
+						// 	list0[i] = [['','',list0[i],list0[i]]]
+						// }
+						var list = ['『策竞』：选择一个阶段'];
+						list.push([list0,'vcard']);
+						list.push('hidden');
+						var next = player.chooseButton(list,true);
+						next.set('ai',function(button){
+							var link = button.link[2];
+							var att = _status.event.att;
+							if(att>0){
+								return link==['phaseDraw'];
+							}
+							if(att<=0)	return link=='phaseDiscard';
+						});
+						next.set('att',att);
+					}
+					'step 2'
+					if(result.bool&&result.links){
+						var phase = result.links[0][2];
+						event.target[phase]();
+					}
+				},
+				group:'cejing_drawBy',
+				subSkill:{
+					drawBy:{
+						trigger:{
+							global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']
+						},
+						filter:function(event,player){
+							return event.getParent().name=='cejing';
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							var num = 0;
+							var name = trigger.name;
+							trigger.player.getHistory('sourceDamage',function(evt){
+								var phase = evt.getParent(name)
+								if(phase.getParent().name=='cejing') num+=evt.num;
+							});
+							event.num = num;
+							'step 1'
+							if(event.num>0){
+								var list = [player];
+								list.add(trigger.player);
+								player.logSkill('cejing',list);
+								game.asyncDraw(list,event.num);
+							}else{
+								player.addTempSkill('cejing_disable','roundStart');
+							}
+						},
+					},
+					disable:{
+						mark:true,
+						marktext:"竞",
+						intro:{
+							name:'策竞失败',
+							content:function (storage,player,skill){
+								return '失去『策竞』直到下个回合开始';
+							},
 						},
 					}
 				}
@@ -3577,7 +3665,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global: 'loseAfter' },
 						priority:24,
 						filter:function(event,player){
-							if(event.getParent().name=='gain')		return false;
+							if(event.getParent().name=='gain'||!_status.currentPhase)		return false;
 							if(event.player==player||event.player==_status.currentPhase)	return false;
 							if(event.player.countCards('e')==0){
 								for(var i=0;i<event.cards.length;i++){
@@ -3607,6 +3695,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re葵
 			mark_tianqing:{
+				audio:'tianqing',
 				trigger:{global:'damageBegin3'},
 				filter:function(event,player){
 					return player.storage.mark_tianqing_record;
@@ -3643,45 +3732,46 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			// tianqing:{
-			// 	trigger:{global:'damageBegin3'},
-			// 	filter:function(event,player){
-			// 		return player.storage.tianqing_record;
-			// 	},
-			// 	check:function(event,player){
-			// 		return get.attitude(player,event.player)>0;
-			// 	},
-			// 	logTarget:'player',
-			// 	content:function(){
-			// 		trigger.changeToZero();
-			// 	},
-			// 	group:'tianqing_record',
-			// 	subSkill:{
-			// 		record:{
-			// 			init:function(player,skill){
-			// 				if(!player.storage[skill]) player.storage[skill] = true;
-			// 			},
-			// 			trigger:{global:['damageZero','damageEnd','phaseAfter']},
-			// 			forced:true,
-			// 			silent:true,
-			// 			firstDo:true,
-			// 			filter:function(event,player){
-			// 				return true;
-			// 			},
-			// 			content:function(){
-			// 				console.log(trigger)
-			// 				if(trigger.name == 'damageZero'||trigger.numFixed==true){
-			// 					player.storage.tianqing_record = false;
-			// 				}
-			// 				else{
-			// 					player.storage.tianqing_record = true;
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// },
+			tianqing:{
+				audio:6,
+				trigger:{global:'damageBegin3'},
+				filter:function(event,player){
+					return player.storage.tianqing_record;
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0;
+				},
+				logTarget:'player',
+				content:function(){
+					trigger.changeToZero();
+				},
+				group:'tianqing_record',
+				subSkill:{
+					record:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = true;
+						},
+						trigger:{global:['damageZero','damageEnd','phaseAfter']},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							console.log(trigger)
+							if(trigger.name == 'damageZero'||trigger.numFixed==true){
+								player.storage.tianqing_record = false;
+							}
+							else{
+								player.storage.tianqing_record = true;
+							}
+						}
+					}
+				}
+			},
 			kuiquan:{
-				audio:2,
+				audio:3,
 				enable:'chooseToUse',
 				filterCard:function(card,player){
 					return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
@@ -3704,6 +3794,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.kuiquan_record.add(get.type(result.cards[0],'trick'));
 				},
 				ai:{
+					kuiquan:true,
 					fireAttack:true,
 				},
 				group:'kuiquan_record',
@@ -3818,7 +3909,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_HiguchiKaede: '新·樋口枫',
 			re_zhenyin: '震音',
-			re_zhenyin_info: '每回合限一次。当你使用黑色牌指定目标后，可以将目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
+			re_zhenyin_info: '每回合限一次。当你使用黑色牌指定目标后，可以将一名目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
 			
 			re_UshimiIchigo: '新·宇志海莓',
 			re_shuangren: '双刃',
@@ -3912,9 +4003,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chixin: '赤心',
 			chixin_info: '当有本回合未以此技能获得的♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
 
-			re_NakiriAyame: '百鬼绫目',
+			re_NakiriAyame: '新·百鬼绫目',
 			guiren: '鬼刃',
-			guiren_info: '你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~本回合你造成的下一次伤害+1。',
+			guiren_info: '你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。',
 
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
@@ -3931,6 +4022,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_YukihanaLamy: '新·雪花菈米',
 			hanling: '寒灵',
 			hanling_info: '当你受到伤害时，若来源手牌数小于你，你可以将手牌弃至与其相等防止此伤害。你的回合结束时，若本回合你未使用过牌，你可以令一名角色摸牌至与你手牌相同。',
+			
+			re_ŌzoraSubaru: '新·大空昴',
+			cejing: '策竞',
+			cejing_info: '一名角色的回合结束时，若其于此回合未造成伤害，你可以弃一张牌令其执行一个指定的额外阶段。此阶段结束时，你与其各摸等同本阶段造成伤害数的牌，若未因此摸牌，本轮此技能失效。',
 
 			re_TsunomakiWatame: '新·角卷绵芽',
 

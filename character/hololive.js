@@ -2049,7 +2049,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageBegin'},
 						priority:80,
 						check:function(event,player){
-							return 1-get.damageEffect(player,event.player,player);
+							return 1-get.damageEffect(event.player,event.source,player);
 						},	
 						filter:function(event,player){
 							if(!event.source||!event.source.hasSkill('youyishiyue'))	return false;
@@ -3567,6 +3567,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NakiriAyame: '百鬼绫目',
 			TsunomakiWatame: '角卷绵芽',
 			YukihanaLamy: '雪花菈米',
+			ŌzoraSubaru: '新·大空昴',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',

@@ -381,6 +381,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_TsunomakiWatame:['female','holo',4,['disui','dengyan'],['gzskin']],
 				/**雪花菈米 */
 				gz_YukihanaLamy:['female','holo',4,['hanling'],['gzskin']],
+				/**大空昴 */
+				gz_ŌzoraSubaru:['female','holo',4,['cejing'],['gzskin']],
 
 				/**月之美兔 */
 				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei']],
@@ -609,7 +611,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(card){
-					if(ui.selected.cards.length&&get.type(cards,'trick')!=get.type(ui.selected.cards[0],'trick')) return 10-get.value(card);
+					if(ui.selected.cards.length&&get.type(card,'trick')!=get.type(ui.selected.cards[0],'trick')) return 10-get.value(card);
 					return 4-get.value(card);
 				},
 				precontent:function(){
