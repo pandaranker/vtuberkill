@@ -5716,60 +5716,58 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(lib.skill.qianjiwanbian.gainable.contains(name.substring(i,i+1)))	return true;
 						}
 					});
+					player.discoverSkill(list);
 					//console.log(list);
-					list.remove(player.getSkills());
-					list.add('qianjiwanbian');
-					list=list.randomGets(3);
-					event.skillai=function(){
-						return get.max(list,get.skillRank,'item');
-					};
-					var fun=function(list){
-						var dialog=ui.create.dialog('forcebutton');
-						dialog.add('选择获得一项技能');
-						var clickItem=function(){
-							_status.event._result=this.link;
-							dialog.close();
-							game.resume();
-						};
-						for(var i=0;i<list.length;i++){
-							if(lib.translate[list[i]+'_info']){
-								var translation=get.translation(list[i]);
-								if(translation[0]=='新'&&translation.length==3){
-									translation=translation.slice(1,3);
-								}
-								else{
-									translation=translation.slice(0,2);
-								}
-								var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
-								translation+'</div><div>'+lib.translate[list[i]+'_info']+'</div></div>');
-								item.firstChild.addEventListener('click',clickItem);
-								item.firstChild.link=list[i];
-							}
-						}
-						dialog.add(ui.create.div('.placeholder'));
-						// event.switchToAuto=function(){
-						// 	event._result=event.skillai();
-						// 	dialog.close();
-						// 	game.resume();
-						// };
-						_status.imchoosing=true;
-						game.pause();
-					};
-					if(player.isOnline2()){
-						player.send(fun,list);
-					}
-					// else{
+					// list.remove(player.getSkills());
+					// list.add('qianjiwanbian');
+					// list=list.randomGets(3);
+					// event.skillai=function(){
+					// 	return get.max(list,get.skillRank,'item');
+					// };
+					// var fun=function(list){
+					// 	var dialog=ui.create.dialog('forcebutton');
+					// 	dialog.add('选择获得一项技能');
+					// 	var clickItem=function(){
+					// 		_status.event._result=this.link;
+					// 		dialog.close();
+					// 		game.resume();
+					// 	};
+					// 	for(var i=0;i<list.length;i++){
+					// 		if(lib.translate[list[i]+'_info']){
+					// 			var translation=get.translation(list[i]);
+					// 			if(translation[0]=='新'&&translation.length==3){
+					// 				translation=translation.slice(1,3);
+					// 			}
+					// 			else{
+					// 				translation=translation.slice(0,2);
+					// 			}
+					// 			var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+					// 			translation+'</div><div>'+lib.translate[list[i]+'_info']+'</div></div>');
+					// 			item.firstChild.addEventListener('click',clickItem);
+					// 			item.firstChild.link=list[i];
+					// 		}
+					// 	}
+					// 	dialog.add(ui.create.div('.placeholder'));
+					// 	event.switchToAuto=function(){
+					// 		event._result=event.skillai();
+					// 		dialog.close();
+					// 		game.resume();
+					// 	};
+					// 	_status.imchoosing=true;
+					// 	game.pause();
+					// };
+					// if(player.isOnline2()){
+					// 	player.send(fun,list);
+					// }
+					// else if(event.isMine()){
 					// 	fun(list);
 					// }
-					else if(event.isMine()){
-						fun(list);
-					}
-					else{
-						event._result=event.skillai();
-					}
+					// else{
+					// 	event._result=event.skillai();
+					// }
 					'step 3'
-					_status.imchoosing=false;
-					var link=result;
+					var link=result.skill;
+					console.log(link)
 					if(trigger.getParent().name!="trigger"&&!trigger.getParent(2).qianjiwanbian)	trigger.getParent(2).qianjiwanbian = true;
 					if(link!='qianjiwanbian'){
 						player.addAdditionalSkill('qianjiwanbian',link,true);

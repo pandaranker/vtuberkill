@@ -12914,6 +12914,69 @@
 						event.preserve=!event.result.bool;
 					}
 				},
+				discoverSkill:function(){
+					'step 0'
+					var num=event.num||3;
+					var choice;
+					if(typeof event.list=='string'||typeof event.list=='function'){
+						choice=get.gainableSkills(event.list).randomGets(num);
+					}
+					else if(Array.isArray(event.list)){
+						choice=event.list.randomGets(num);
+					}
+					else{
+						choice=Array.from(event.list).randomGets(num);
+					}
+					if(!choice.length){
+						event.finish();
+						event.result={bool:false};
+						return;
+					}
+					event.skillai=event.ai||function(list){
+						return get.max(list,get.skillRank,'item');
+					};
+					if(event.isMine()){
+						var dialog=ui.create.dialog('forcebutton');
+						dialog.add(event.prompt||'选择获得一项技能');
+						_status.event.choice=choice;
+						var clickItem=function(){
+							_status.event._result=this.link;
+							game.resume();
+						};
+						for(i=0;i<choice.length;i++){
+							if(lib.translate[choice[i]+'_info']){
+								var translation=get.translation(choice[i]);
+								if(translation[0]=='新'&&translation.length==3){
+									translation=translation.slice(1,3);
+								}
+								else{
+									translation=translation.slice(0,2);
+								}
+								var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+								translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
+								item.firstChild.addEventListener('click',clickItem);
+								item.firstChild.link=choice[i];
+							}
+						}
+						dialog.add(ui.create.div('.placeholder'));
+						event.dialog=dialog;
+						event.switchToAuto=function(){
+							event._result=event.skillai(event.choice);
+							game.resume();
+						};
+						_status.imchoosing=true;
+						game.pause();
+					}
+					else{
+						event._result=event.skillai(choice);
+					}
+					'step 1'
+					_status.imchoosing=false;
+					if(event.dialog){
+						event.dialog.close();
+					}
+					event.result={bool:true,skill:result};
+				},
 				chooseSkill:function(){
 					'step 0'
 					var list;
@@ -18864,6 +18927,26 @@
 					}
 					next._args=Array.from(arguments);
 					return next;
+				},
+				discoverSkill:function(list){
+					var next=game.createEvent('chooseSkill');
+					next.player=this;
+					next.setContent('discoverSkill');
+					next.list=list;
+					for(var i=1;i<arguments.length;i++){
+						if(typeof arguments[i]=='boolean'){
+							next.forced=arguments[i];
+						}
+						else if(typeof arguments[i]=='number'){
+							next.num=arguments[i];
+						}
+						else if(typeof arguments[i]=='string'){
+							next.prompt=arguments[i];
+						}
+						else if(typeof arguments[i]==='function'){
+							next.ai=arguments[i];
+						}
+					}
 				},
 				chooseSkill:function(target){
 					var next=game.createEvent('chooseSkill');
