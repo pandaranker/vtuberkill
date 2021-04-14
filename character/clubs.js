@@ -890,17 +890,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				direct:true,
 				filter:function(event,player){
-					return event.targets.length;
+					return event.targets&&event.targets.length;
 				},
 				check: function(event, player) {
-					return true;
+					return event.targets.filter(function(target){
+						if(get.attitude(_status.event.player,target)>0&&target.countCards('h')<=3)	return true;
+						if(get.attitude(_status.event.player,target)<=0&&target.countCards('he')>3)	return false;
+						return false;
+					});
 				},
 				content:function(){
 					'step 0'
 					player.chooseTarget(get.prompt2('DDzhanshou'),function(card,player,target){
 						return _status.event.targets.contains(target);
 					}).set('ai',function(target){
-						if(get.attitude(_status.event.player,target)>0&&target.countCards('h')<=3)	return 4;
+						if(get.attitude(_status.event.player,target)>0&&target.countCards('h')<=3)	return 4+get.attitude(_status.event.player,target);
 						return 2-get.attitude(_status.event.player,target);
 					}).set('targets',trigger.targets);
 					'step 1'

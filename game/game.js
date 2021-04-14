@@ -10538,6 +10538,7 @@
 						}
 						var next=player.useCard(card,event.targets2||result.targets);
 						if(cards) next.cards=cards.slice(0);
+						if(event.skill&&['yingdan_sha'].contains(event.skill)) next.skill=event.skill;
 						if(event.nopopup) next.nopopup=true;
 						if(event.animate===false) next.animate=false;
 						if(event.throw===false) next.throw=false;
@@ -12935,42 +12936,47 @@
 					event.skillai=event.ai||function(list){
 						return get.max(list,get.skillRank,'item');
 					};
-					if(event.isMine()){
-						var dialog=ui.create.dialog('forcebutton');
-						dialog.add(event.prompt||'选择获得一项技能');
-						_status.event.choice=choice;
-						var clickItem=function(){
-							_status.event._result=this.link;
-							game.resume();
-						};
-						for(i=0;i<choice.length;i++){
-							if(lib.translate[choice[i]+'_info']){
-								var translation=get.translation(choice[i]);
-								if(translation[0]=='新'&&translation.length==3){
-									translation=translation.slice(1,3);
-								}
-								else{
-									translation=translation.slice(0,2);
-								}
-								var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
-								translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
-								item.firstChild.addEventListener('click',clickItem);
-								item.firstChild.link=choice[i];
+					var dialog=ui.create.dialog('forcebutton');
+					dialog.add(event.prompt||'选择获得一项技能');
+					_status.event.choice=choice;
+					var clickItem=function(){
+						_status.event._result=this.link;
+						game.resume();
+					};
+					for(i=0;i<choice.length;i++){
+						if(lib.translate[choice[i]+'_info']){
+							var translation=get.translation(choice[i]);
+							if(translation[0]=='新'&&translation.length==3){
+								translation=translation.slice(1,3);
 							}
+							else{
+								translation=translation.slice(0,2);
+							}
+							var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+							translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
+							item.firstChild.addEventListener('click',clickItem);
+							item.firstChild.link=choice[i];
 						}
-						dialog.add(ui.create.div('.placeholder'));
-						event.dialog=dialog;
-						event.switchToAuto=function(){
-							event._result=event.skillai(event.choice);
-							game.resume();
-						};
-						_status.imchoosing=true;
+					}
+					dialog.add(ui.create.div('.placeholder'));
+					event.dialog=dialog;
+					event.switchToAuto=function(){
+						event._result=event.skillai(event.choice);
+						game.resume();
+					};
+					event.choosing=true;
+					_status.imchoosing=true;
+					if(event.isMine()){
 						game.pause();
+					}
+					else if(event.isOnline()){
+						event.send();
 					}
 					else{
 						event._result=event.skillai(choice);
 					}
 					'step 1'
+					event.choosing=false;
 					_status.imchoosing=false;
 					if(event.dialog){
 						event.dialog.close();

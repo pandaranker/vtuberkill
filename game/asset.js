@@ -1271,6 +1271,7 @@ window.noname_asset_list=[
 	'image/character/sp_UsadaPekora.jpg',
 
 
+	'image/character/re_AibaUiha.jpg',
 	'image/character/re_AkaiHaato.jpg',
 	'image/character/re_AkiRosenthal.jpg',
 	'image/character/re_AngeKatrina.jpg',
@@ -1291,8 +1292,10 @@ window.noname_asset_list=[
 	'image/character/re_NakiriAyame.jpg',
 	'image/character/re_NatsuiroMatsuri.jpg',
 	'image/character/re_Nekomasu.jpg',
+	'image/character/re_NekomiyaHinata.jpg',
 	'image/character/re_NijikawaRaki.jpg',
 	'image/character/re_ŌokamiMio.jpg',
+	'image/character/re_ŌzoraSubaru.jpg',
 	'image/character/re_Omesis.jpg',
 	'image/character/re_OtomeOto.jpg',
 	'image/character/re_RobokoSan.jpg',

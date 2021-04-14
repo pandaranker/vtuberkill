@@ -187,8 +187,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.playersIndex<event.players.length){
 						//console.log(event.playersIndex);
 						event.players[event.playersIndex].chooseCard('是否交给'+get.translation(player)+'一张手牌').set('ai',function(card){
-							return 7-get.value(card);
-						})
+							if(get.attitude(_status.event.player,_status.event.kong)>=0) return 7-get.value(card);
+							return -1;
+						}).set('kong',player)
 					}
 					else{
 						event.playersIndex=0;
@@ -1563,6 +1564,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filterTarget: function(card, player, target) {
 					return player != target;
 				},
+				check:function(card){
+					if(ui.selected.cards.length) return 0;
+					return (get.type(card)!='basic'?(6-get.value(card)):7-get.value(card));
+				},
+				complexCard:true,
 				content: function() {
 					'step 0'
 					target.gain(cards,player,'giveAuto');
@@ -1610,6 +1616,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return true;
 					});
+					next.set('filterButton',function(button) {
+						var card = _status.event.card;
+						var now = button.link;
+						if([get.type(card,'trick'),get.suit(card),get.number(card)].contains(now[3]))	return true;
+						return 0;
+					});
+					next.set('card',cards[0]);
 					'step 3'
 					game.broadcastAll('closeDialog', event.videoId);
 					if (result.bool) {
@@ -1627,7 +1640,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var str = "『豪赌』展示<br>";
 						game.log(player,'选择了',event.chi);
 						if (event.chi.contains(get.number(event.card))) str += "你与其交换手牌<br>";
-						if (event.chi.contains(get.type(event.card))) str += "你弃置其两张牌<br>";
+						if (event.chi.contains(get.type(event.card,'trick'))) str += "你弃置其两张牌<br>";
 						if (event.chi.contains(get.suit(event.card))) str += "你获得其一张牌<br>";
 						player.showCards(event.card, str);
 						game.delay(2);
@@ -1656,14 +1669,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				ai:{
-					order:9,
+					order:7,
 					result:{
 						player:function(player,target){
-							return 1.5-(target.countCards('h')/2);
+							return 2.5+(target.countCards('h')/2)-player.countCards('h');
 						},
 						target:function(player,target){
-							if(player.countCards('h')==1||target.countCards('h')<=1)	return -1;
-							return 0.5;
+							if(player.countCards('h')<=target.countCards('h')||target.countCards('h')<=target.countCards('e'))	return -1;
+							return 0;
 						}
 					}
 				},

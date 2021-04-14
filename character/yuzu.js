@@ -600,7 +600,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.choosePlayerCard(trigger.player,[1,(trigger.player.hasSkill('zhai')?trigger.player.countMark('zhai')+1:1)],'h').set('visible', true).set('prompt',str);
 					'step 1'
 					if(result.bool){
-						player.logSkill('guanzhai',trigger.player);
+						player.logSkill('guanzhai',trigger.player,true,true,false);
 						player.gain(result.cards,trigger.player,'giveAuto');
 					}
 				},
@@ -5255,6 +5255,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							return false;
 						},
+						check:function(card){
+							return 7-get.value(card);
+						},
 						filterCard:function(card,player,event){
 							event=event||_status.event;
 							var filter=event._backup.filterCard;
@@ -5716,10 +5719,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(lib.skill.qianjiwanbian.gainable.contains(name.substring(i,i+1)))	return true;
 						}
 					});
-					player.discoverSkill(list);
 					//console.log(list);
-					// list.remove(player.getSkills());
-					// list.add('qianjiwanbian');
+					list.remove(player.getSkills());
+					list.add('qianjiwanbian');
+					player.discoverSkill(list);
 					// list=list.randomGets(3);
 					// event.skillai=function(){
 					// 	return get.max(list,get.skillRank,'item');
@@ -5782,6 +5785,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.qianjiwanbian_clear = true;
 						game.log(player,'改写了','#y『千机万变』');
 					}
+				},
+				ai:{
+					effect:{
+						player:function(card,player,target){
+							if(get.tag(card,'damage')) return [1,0.5];
+						},
+					},
 				},
 				subSkill:{
 					change:{
