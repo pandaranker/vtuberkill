@@ -411,13 +411,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='damage')	evt = event.getParent();
 					if(!evt||!evt.card||evt.skill)		return false;
 					var name = get.name(evt.card);
-					return evt.skill == 'yingdan_'+name;
+					var tri = false;
+					if(name=='sha')	tri = evt.getParent('chooseUseTarget');
+					else			tri = evt.getParent('pre_yingdan_'+name);
+					console.log(evt,tri)
+					return tri&&tri.addedSkill&&tri.addedSkill.contains('number')&&evt.skill == 'yingdan_'+name;
 				},
 				content:function() {
 					trigger.untrigger(true);
 				},
-				group:['yingdan_shan','yingdan_wuxie'],
+				group:['yingdan_shan','yingdan_wuxie'],//,'yingdan_directHit'
 				subSkill:{
+					// directHit:{
+					// 	trigger:{
+					// 		player:"useCard",
+					// 	},
+					// 	filter:function(event,player){
+					// 		var evt = event;
+					// 		//if(!evt||!evt.card||evt.skill)		return false;
+					// 		var name = get.name(evt.card);
+					// 		var tri = false;
+					// 		if(name=='sha')	tri = evt.getParent('chooseUseTarget');
+					// 		else			tri = evt.getParent('pre_yingdan_'+name);
+					// 		console.log(evt,tri)
+					// 		return tri&&tri.addedSkill&&tri.addedSkill.contains('inRange')&&evt.skill == 'yingdan_'+name;
+					// 	},
+					// 	direct:true,
+					// 	firstDo:true,
+					// 	content:function(){
+					// 		trigger.directHit.addArray(game.players);
+					// 	},
+					// },
 					sha:{},
 					shan:{
 						//技能发动时机
@@ -448,9 +472,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.result.card.cards=[];
 							event.result.cards=[];
 							'step 1'
-							console.log(event);
+							event.addedSkill = [];
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
 							next.skill = 'yingdan_sha';
+							next.addedSkill = [];
+							if(event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
+								event.addedSkill.add('inRange');
+								next.addedSkill.add('inRange');
+							}
+							if(get.number(event.card)&&get.number(event.card)<=player.getAttackRange()){
+								event.addedSkill.add('number');
+								next.addedSkill.add('number');
+							}
+							console.log(event);
 						},
 						ai:{
 							respondShan:true,
