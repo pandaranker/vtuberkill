@@ -12954,7 +12954,7 @@
 							}
 							var item=event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
 							translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
-							item.firstChild.addEventListener('click',clickItem);
+							item.firstChild.addEventListener(lib.config.touchscreen?'touchend':'click',clickItem);
 							item.firstChild.link=choice[i];
 						}
 					}
@@ -12970,6 +12970,8 @@
 					game.check();
 					if(event.isMine()){
 						game.pause();
+						game.countChoose();
+						event.choosing=true;
 					}
 					else if(event.isOnline()){
 						event.send();
@@ -12981,6 +12983,7 @@
 					if(event.dialog){
 						event.dialog.close();
 					}
+					event.choosing=false;
 					event.result={bool:true,skill:result};
 				},
 				chooseSkill:function(){

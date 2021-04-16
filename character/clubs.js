@@ -2962,6 +2962,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
+			MiraiAkari:['re_NekomiyaHinata','NekomiyaHinata'],
 			kaguraNaNa:['re_kaguraNaNa','kaguraNaNa'],
 			Siro:['re_Siro','Siro'],
 			Nekomasu:['re_Nekomasu','Nekomasu'],

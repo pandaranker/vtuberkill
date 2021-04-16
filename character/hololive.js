@@ -3486,6 +3486,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 		},
 		characterReplace:{
+			TokinoSora:['re_TokinoSora','TokinoSora'],
+			RobokoSan:['re_RobokoSan','RobokoSan'],
+			ShirakamiFubuki:['re_ShirakamiFubuki','ShirakamiFubuki'],
+			HoshimatiSuisei:['re_HoshimatiSuisei','HoshimatiSuisei'],
+			AkiRosenthal:['re_AkiRosenthal','AkiRosenthal'],
+			SakuraMiko:['re_SakuraMiko','SakuraMiko'],
+			NatsuiroMatsuri:['re_NatsuiroMatsuri','NatsuiroMatsuri'],
+			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
+			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
+			ŌokamiMio:['re_ŌokamiMio','ŌokamiMio'],
+
 			Ciyana:['Ciyana','Civia'],
 			MinatoAqua:['MinatoAqua','sea_MinatoAqua'],
 		},

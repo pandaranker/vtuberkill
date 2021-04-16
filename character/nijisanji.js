@@ -2068,7 +2068,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
-				}
+				},
+				ai:{
+					threaten:1.5,
+				},
 			},
 			danlian: {
 				audio:3,
@@ -2135,6 +2138,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.addTempSkill('danlian_' + get.suit(event.card), 'roundStart');
 					}
 					game.delay(0.5);
+				},
+				ai:{
+					threaten:1.5,
 				},
 				subSkill: {
 					diamond: {},

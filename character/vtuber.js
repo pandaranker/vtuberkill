@@ -1908,6 +1908,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					used:{},
 				},
 				ai:{
+					effect:function(card){
+						if(get.name(card)=='shandian') return [1,1];
+					},
 					result:{
 						target:function(player,target){
 							return get.effect(target,{name:'bingliang'},player,target);

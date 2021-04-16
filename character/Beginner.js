@@ -1336,12 +1336,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					anotherPhase:{
 						audio:'bingdielei',
 						trigger:{global:'phaseEnd'},
-						marktext: '并',
+						marktext: '蕾',
 						mark:true,
 						round:1,
 						intro: {
 							content:'当前回合结束后若本轮没有获得过，可以获得一个额外回合',
-							name:'并蒂恶蕾',
+							name:'盛蕾',
 						},
 						onremove:true,
 						prompt2: '获得一个额外回合',
@@ -3031,7 +3031,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				multitarget:false,
 				content: function() {
 					'step 0'
-					target.chooseCard('he','『极财』：将一张牌交给'+get.translation(player), true);
+					target.chooseCard('he','『奉纳』：将一张牌交给'+get.translation(player), true);
 					'step 1'
 					player.gain(result.cards[0],target,'giveAuto');
 					player.addTempSkill('re_luecai_used','phaseUseEnd')
@@ -4168,7 +4168,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							player.chooseTarget('选择一个角色拼点，赢则视为使用一张【决斗】', function(card, player, target){
-								return playe.canCompare(target);
+								return player.canCompare(target);
 							}).set('ai', function(target){
 								return -get.attitude(_status.event.player, target);
 							});
@@ -4192,7 +4192,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						ai:{
 							order:function(){
-								return get.order({name:'juedou'})-0.2;
+								return get.order({name:'sha'})-0.2;
 							},
 							result:{
 								player:function(player){
@@ -4259,15 +4259,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
 			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
 			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
-			TokinoSora:['re_TokinoSora','TokinoSora'],
-			RobokoSan:['re_RobokoSan','RobokoSan'],
-			ShirakamiFubuki:['re_ShirakamiFubuki','ShirakamiFubuki'],
-			HoshimatiSuisei:['re_HoshimatiSuisei','HoshimatiSuisei'],
-			AkiRosenthal:['re_AkiRosenthal','AkiRosenthal'],
-			SakuraMiko:['re_SakuraMiko','SakuraMiko'],
-			NatsuiroMatsuri:['re_NatsuiroMatsuri','NatsuiroMatsuri'],
-			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
-			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
 			
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
@@ -4338,7 +4329,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_dianyin_info: '当你受到 1 点伤害后，你可以令一名角色摸两张牌，若其手牌数少于你或为全场最少，改为摸三张牌。',
 
 			re_XiaDi: '新·下地',
-			re_yinliu: '引流',
+			re_yinliu: '逐流',
 			re_yinliu_info: '出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。',
 
 			re_ShizukaRin:'新·静凛',
@@ -4348,8 +4339,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_MitoTsukino:'新·月之美兔',
 			re_MitoTsukino_info:'月之美兔',
-			re_bingdielei:'并蒂恶蕾',
-			re_bingdielei_anotherPhase: '并蒂恶蕾',
+			re_bingdielei:'盛蕾',
+			re_bingdielei_anotherPhase: '盛蕾',
 			re_bingdielei_info:'每轮限一次。你失去过牌的回合结束时，你可以获得一个额外回合。',
 			
 			re_HiguchiKaede: '新·樋口枫',
@@ -4384,7 +4375,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_SuzuharaLulu: '铃原露露',
 			tunshi:'吞食',
-			tunshi_info:'他角色于其回合外失去某区域最后一张牌时，你可以令当前回合角色获得之。你的回合内其他角色进入濒死状态时，你可以回复1点体力。',
+			tunshi_info:'其他角色于其回合外失去某区域最后一张牌时，你可以令当前回合角色获得之。你的回合内其他角色进入濒死状态时，你可以回复1点体力。',
 
 			re_LizeHelesta: '新·莉泽',
 			yubing: '语冰',
@@ -4423,7 +4414,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ShirakamiFubuki: '新·白上吹雪',
 			re_yuanlv:'狐虑',
 			re_yuanlv_info:'每回合限一次。你使用锦囊后或受到伤害后，你可以摸三张牌，然后将两张牌置于牌堆顶。',
-			re_jinyuan:'援迁',
+			re_jinyuan:'边援',
 			re_jinyuan_info:'出牌阶段，你可以弃一张牌令一名其他角色摸一张牌，然后其可以立即使用那张牌。',
 			
 			re_HoshimatiSuisei:'新·星街彗星',
@@ -4431,7 +4422,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			cansha_info: '当你的实体【杀】生效后，你可以视为使用一张【过河拆桥】；当你的实体【过河拆桥】生效后，你可以视为使用一张【杀】。',
 
 			re_AkiRosenthal: '新·亚琦',
-			re_huichu: '慧厨',
+			re_huichu: '烩料',
 			re_huichu_info: '每轮限一次。一名角色的回合开始时，你可以展示所有手牌，若均为红色，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
 
 			re_YozoraMel: '新·夜空梅露',
@@ -4447,8 +4438,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qidao_info: '当一张判定牌生效前，你可以弃一张牌重新判定。',
 
 			re_NatsuiroMatsuri:'新·夏色祭',
-			re_huxi1:'呼吸',
-			re_huxi1_info:'当你不因此技能获得牌后，你可以与一名本回合未“呼吸”过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。',
+			re_huxi1:'恋上',
+			re_huxi1_info:'当你不因此技能获得牌后，你可以与一名本回合未“恋上”过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。',
 
 			re_AkaiHaato: '新·赤井心',
 			chixin: '赤心',
@@ -4491,7 +4482,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
 			
 			re_KaguraMea: '新·神乐めあ',
-			re_luecai: '极财',
+			re_luecai: '奉纳',
 			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
 			re_xiaoyan: '嚣言',
 			re_xiaoyan_info: '<font color=#f66>锁定技</font> 你对手牌数小于你的角色使用牌不可被响应。',

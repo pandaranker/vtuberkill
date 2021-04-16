@@ -1191,6 +1191,7 @@ window.noname_asset_list=[
 	'image/character/Azusa.jpg',
 	'audio/die/Azusa.mp3',
 	'image/character/Bacharu.jpg',
+	'image/character/Bafuko.jpg',
 	'image/character/Bella.jpg',
 	'audio/die/Bella.mp3',
 	'image/character/bingtang.jpg',
