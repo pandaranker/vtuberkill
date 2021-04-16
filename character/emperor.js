@@ -865,7 +865,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								case 'liuxuan_keai': player._liuxuan_mark.firstChild.innerHTML= '😭';;break;
 							}
 							player.node.name.innerHTML = get.verticalStr(lib.translate[name]+'小向晚');
-							lib.translate[skill+'_append']='<span class="bluetext">'+lib.translate[name]+'：'+lib.translate[name+'_describe']+'</span>';
+							lib.translate[skill+'_append']='<span class="changetext">'+lib.translate[name]+'：'+lib.translate[name+'_describe']+'</span>';
 							player.update();
 						},skill,name,player);
 					}
@@ -2301,11 +2301,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuxuan:function(player){
 				var str = '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。'
 				switch(player.storage.liuxuan){
-					case 'liuxuan_lakua': return str.replace(/“拉胯”/g,'<span class="bluetext">“拉胯”</span>');
-					case 'liuxuan_huoli': return str.replace('“活力”','<span class="bluetext">“活力”</span>');
-					case 'liuxuan_haixiu': return str.replace('“害羞”','<span class="bluetext">“害羞”</span>');
-					case 'liuxuan_jiangzui': return str.replace('“犟嘴”','<span class="bluetext">“犟嘴”</span>');
-					case 'liuxuan_keai': return str.replace('“可爱”','<span class="bluetext">“可爱”</span>');
+					case 'liuxuan_lakua': return str.replace(/“拉胯”/g,'<span class="changetext">“拉胯”</span>');
+					case 'liuxuan_huoli': return str.replace('“活力”','<span class="changetext">“活力”</span>');
+					case 'liuxuan_haixiu': return str.replace('“害羞”','<span class="changetext">“害羞”</span>');
+					case 'liuxuan_jiangzui': return str.replace('“犟嘴”','<span class="changetext">“犟嘴”</span>');
+					case 'liuxuan_keai': return str.replace('“可爱”','<span class="changetext">“可爱”</span>');
 				}
 				return ;
 			 },

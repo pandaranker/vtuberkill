@@ -399,7 +399,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**铃原露露 */
 				gz_SuzuharaLulu:['female','nijisanji',5,['tunshi']],
 				/**铃鹿诗子 */
-				gz_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
+				//gz_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
 				/**本间向日葵 */
 				gz_HonmaHimawari:['female','nijisanji',4,['mark_tianqing','kuiquan'],['gzskin']],
 
@@ -411,6 +411,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_KaguyaLuna:['female','vtuber',3,['jiajiupaidui','kuangzuiluanwu']],
 				/**嘉然 */
 				gz_Diana: ['female','vtuber',4,['quanyu']],
+				/**泠鸢 */
+				gz_Yousa:['female','vtuber',3,['gz_niaoji','ysxiangxing'],['doublegroup:vtuber:nijisanji']],
+				/**道明寺晴翔 */
+				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi']],
 
 				/**狗妈 */
 				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
@@ -1060,6 +1064,54 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//gz冷鸟
+			gz_niaoji:{
+				audio:true,
+				trigger:{source:'damageEnd',player:'damageEnd'},
+				priority:99,
+				lastDo:true,
+				check:function(event,player){
+					if(event.source&&event.source == player)	return get.attitude(player,event.player)<1;
+					return true;
+				},
+				frequent:true,
+				prompt:function(event,player){
+					if(event.source&&event.source == player)	return '对'+get.translation(event.player)+'造成伤害，'+get.prompt('gz_niaoji');
+					return '受到来自'+get.translation(event.source)+'的伤害，'+get.prompt('gz_niaoji');
+				},
+				filter:function(event,player){
+					return event.source;
+				},
+				content:function(){
+					'step 0'
+					var func=function(result){
+						if(get.suit(result)=='spade') return 2;
+						if(get.suit(result)=='heart') return 2;
+						return -1;
+					};
+					event.target = (player==trigger.source)?trigger.player:trigger.source;
+					if(!event.target||!event.target.isIn()||event.target.countCards('he')<=0){
+						func=function(result){
+							if(get.suit(result)=='spade') return 0;
+							if(get.suit(result)=='heart') return 2;
+							return -1;
+						};
+					}
+					player.judge(func);
+					'step 1'
+					if(result.bool){
+						event.num = (player.maxHp-player.hp)||1;
+						if(result.suit=='spade'){
+							if([player.name,player.name1].contains('Yousa')) game.playAudio('skill','niaoji_spade'+Math.ceil(3*Math.random()));
+							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(event.target)+get.cnNumber(event.num)+'张牌',event.target,event.num,true,'he');
+						}else if(result.suit=='heart'){
+							if([player.name,player.name1].contains('Yousa')) game.playAudio('skill','niaoji_heart'+Math.ceil(3*Math.random()));
+							player.draw(event.num);
+						}
+					}
+				},
+			},
+			//gz狗妈
 			zhanni:{
 				audio:'DDzhanshou',
 				trigger: {
@@ -7234,7 +7286,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				var choice=list.splice(0,num).sort(function(a,b){
 					return (get.is.double(a)?1:-1)-(get.is.double(b)?1:-1);
 				});
-				var map={wei:[],shu:[],wu:[],qun:[],key:[],jin:[]};
+				var map={holo:[],nijisanji:[],vtuber:[],clubs:[],key:[],jin:[]};
 				for(var i=0;i<choice.length;i++){
 					if(get.is.double(choice[i])){
 						var group=get.is.double(choice[i],true);
@@ -7363,29 +7415,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(!player.isUnseen()) return;
 				if(player==game.me) return;
 				var list={
-					wei:'魏',
-					shu:'蜀',
-					wu:'吴',
-					qun:'群',
+					holo:'杏',
+					nijisanji:'虹',
+					vtuber:'企',
+					clubs:'社',
 					ye:'野',
 					unknown:'猜'
 				}
 				var num=Math.floor((game.players.length+game.dead.length)/2);
 				var noye=true;
-				if(get.population('wei')>=num){
-					delete list.wei;
+				if(get.population('holo')>=num){
+					delete list.holo;
 					noye=false;
 				}
-				if(get.population('shu')>=num){
-					delete list.shu;
+				if(get.population('nijisanji')>=num){
+					delete list.nijisanji;
 					noye=false;
 				}
-				if(get.population('wu')>=num){
-					delete list.wu;
+				if(get.population('vtuber')>=num){
+					delete list.vtuber;
 					noye=false;
 				}
-				if(get.population('qun')>=num){
-					delete list.qun;
+				if(get.population('clubs')>=num){
+					delete list.clubs;
 					noye=false;
 				}
 				if(noye){
@@ -7401,6 +7453,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						case 'qun':list[i]+='雄';break;
 						case 'key':list[i]='Key';break;
 						case 'jin':list[i]+='朝';break;
+						case 'vtuber':list[i]+='联';break;
+						case 'clubs':list[i]+='联';break;
 						default:list[i]+='国';
 					}
 				}
@@ -8078,6 +8132,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
 			qingyi: '情遗',
 			qingyi_info: '其他角色使用的【桃】进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
+			
+			gz_niaoji: '鸟肌',
+			niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
 			
 			zhanni: '斩逆',
 			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',

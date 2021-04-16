@@ -2682,7 +2682,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							player.chooseTarget('你可选择攻击范围内有你的一名其他角色',function(card,player,target){
 								return target != player &&target.canUse('sha',player);
-							}).set('choice',get.attitude(event.jmTarget, player)>=0?undefined:-1).set('ai',function(){return _status.event.choice});;
+							}).set('choice',get.attitude(event.jmTarget, player)>=0?undefined:-1).set('ai',function(target){
+								return 1-get.attitude(_status.event.player,target);
+							});
 							'step 1'
 							if(result.bool&&result.targets&&result.targets.length){
 								if(event.directHit||(!_status.connectMode&&lib.config.skip_shan&&!target.hasSha())){
@@ -2716,6 +2718,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 		
 						},
+						ai:{
+							pretao:true,
+							order:5,
+							result:{
+								player:function(player,target){
+									if(player.hp!=1)	return 1;
+									else return -1;
+								},
+							}
+						}
 					}
 				}
 			},

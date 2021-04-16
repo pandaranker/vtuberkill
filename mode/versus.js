@@ -3847,7 +3847,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_liedixuande:['male','nijisanji',5,['boss_lingfeng','boss_jizhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_gongshenyueying:['female','nijisanji',4,['boss_gongshenjg','boss_jingmiao','boss_zhinang'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_tianhoukongming:['male','nijisanji',4,['boss_biantian','bazhen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
-			boss_yuhuoshiyuan:['male','nijisanji',4,['boss_yuhuojg','boss_qiwu','boss_tianyujg'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
+			//boss_yuhuoshiyuan:['male','nijisanji',4,['boss_yuhuojg','boss_qiwu','boss_tianyujg'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 			boss_qiaokuijunyi:['male','holo',4,['boss_huodi','boss_jueji'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			//boss_jiarenzidan:['male','holo',5,['boss_chiying','boss_jingfan'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			boss_duanyuzhongda:['male','holo',5,['boss_fanshi','boss_xuanlei','boss_skonghun'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
@@ -3865,7 +3865,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_kumuyuanrang:['male','holo',5,['boss_bashi','boss_danjing'],['jiangeboss','hiddenboss','bossallowed'],'holo'],
 			//boss_baijiwenyuan:['male','holo',5,['boss_jiaoxie'],['jiangeboss','hiddenboss','bossallowed'],'wei'],
 			boss_yihanyunchang:['male','nijisanji',5,['boss_xiaorui','boss_huchen'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
-			boss_fuweizilong:['male','nijisanji',5,['boss_fengjian','boss_keding'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
+			//boss_fuweizilong:['male','nijisanji',5,['boss_fengjian','boss_keding'],['jiangeboss','hiddenboss','bossallowed'],'nijisanji'],
 		},
 		cardsFour:[
 			["spade",7,"sha"],

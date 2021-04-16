@@ -4403,6 +4403,9 @@ div[data-decoration="bronze"]::after{
 .bluetext {
 	color: rgb(150, 202, 255);
 }
+.changetext {
+	color: rgb(180, 233, 57);
+}
 .greentext {
 	color: rgb(104,221,127);
 }

@@ -2015,6 +2015,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jueshou: '绝收',
 			jueshou_info: '出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。',
 
+			DoumyoujiHaruto: '道明寺晴翔',
 		},
 	};
 });

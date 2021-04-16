@@ -238,7 +238,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					target.chooseControl('dialogcontrol','弃置装备区所有牌','受到海样伤害').set('ai',function(){
+					target.chooseControl('dialogcontrol',['弃置装备区所有牌','受到海样伤害']).set('ai',function(){
 						var evt=_status.event.getParent();
 						if(evt.player.hasSkillTag('notricksource')) return 1;
 						if(evt.player.hasSkillTag('noocean')) return 1;

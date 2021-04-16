@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.54',
+	version:'1.9.101.55',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.54小更新：新增角色新·完全重置·猫宫和相羽初叶（初心包），优化部分ai（比如miko现在是强强豪赌王），修复部分bug（比如miu技能语音重叠的bug）',
+		'101.55小更新：新增角色Bafuko（测试包）和道明寺晴翔（初心包），增加NoiR的配音，优化部分ai，修复部分bug，修改转换技强调颜色，修改部分初心包技能名（使之不与标准包重复）',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -59,6 +59,7 @@ window.noname_update={
 		//'character/yxs.js',
 		//'extension/boss/extension.js',
 		'layout/default/layout.css',
+		'layout/default/menu.css',
 		//'layout/nova/layout.css',
 		'mode/identity.js',
 		'mode/doudizhu.js',

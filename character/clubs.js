@@ -2668,8 +2668,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					global: 'phaseBegin'
 				},
-				popup: false,
-				log:false,
+				direct:true,
 				init:function(player){
 					if(!player.storage.mozouqiyin) player.storage.mozouqiyin = '小';
 				},
@@ -2686,21 +2685,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					return false;
 				},
-				prompt:function(event,player){
-					return '你可使用一张牌，若未造成伤害，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+(player.storage.mozouqiyin||'小')+'）于此牌的牌';
-				},
-				check:function(event, player){
-					if(player.countCards('h', function(card){
-						return lib.filter.cardEnabled(card,player,'forceEnable')&&lib.filter.cardUsable(card,player);
-					})){
-						return true;
-					};
-					return false;
-				},
+				// prompt:function(event,player){
+				// 	return '你可使用一张牌，若未造成伤害，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+(player.storage.mozouqiyin||'小')+'）于此牌的牌';
+				// },
+				// check:function(event, player){
+				// 	if(player.countCards('h', function(card){
+				// 		return lib.filter.cardEnabled(card,player,'forceEnable')&&lib.filter.cardUsable(card,player);
+				// 	})){
+				// 		return true;
+				// 	};
+				// 	return false;
+				// },
 				content:function(){
 					'step 0'
 					var p = trigger.player;
-					event.chooseToUseEvt = player.chooseToUse('使用一张牌').set('ai1', function(card){
+					event.chooseToUseEvt = player.chooseToUse('###'+get.prompt('mozouqiyin')+'###你可使用一张牌，若未造成伤害，然后本回合'+get.translation(event.player)+'跳过弃牌阶段且不能使用点数（'+(player.storage.mozouqiyin||'小')+'）于此牌的牌').set('ai1', function(card){
 						var att =  get.attitude(player, p);
 						if(att > 0){
 							if(player.storage.mozouqiyin == '小'){
@@ -2741,8 +2740,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return;
 					}
 					var card = result.cards[0]||result.used||result.card;
-					
-					
 					if(!card){
 						event.finish();
 						return;
@@ -2766,7 +2763,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					p.syncStorage('mozouqiyin_disableCard');
 					p.addTempSkill('mozouqiyin_disableCard', {player:'phaseEnd'});
-					player.logSkill('mozouqiyin');
+					player.logSkill('mozouqiyin',p);
 				},
 				subSkill:{
 					disableCard:{

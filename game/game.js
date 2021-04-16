@@ -12936,8 +12936,8 @@
 					event.skillai=event.ai||function(list){
 						return get.max(list,get.skillRank,'item');
 					};
-					var dialog=ui.create.dialog('forcebutton');
-					dialog.add(event.prompt||'选择获得一项技能');
+					event.dialog=ui.create.dialog('forcebutton');
+					event.dialog.add(event.prompt||'选择获得一项技能');
 					_status.event.choice=choice;
 					var clickItem=function(){
 						_status.event._result=this.link;
@@ -12952,20 +12952,22 @@
 							else{
 								translation=translation.slice(0,2);
 							}
-							var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+							var item=event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
 							translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
 							item.firstChild.addEventListener('click',clickItem);
 							item.firstChild.link=choice[i];
 						}
 					}
-					dialog.add(ui.create.div('.placeholder'));
-					event.dialog=dialog;
+					event.dialog.add(ui.create.div('.placeholder'));
 					event.switchToAuto=function(){
 						event._result=event.skillai(event.choice);
 						game.resume();
 					};
-					event.choosing=true;
-					_status.imchoosing=true;
+					if(event.isMine()||event.dialogdisplay){
+						event.dialog.style.display='';
+						event.dialog.open();
+					}
+					game.check();
 					if(event.isMine()){
 						game.pause();
 					}
@@ -12976,8 +12978,6 @@
 						event._result=event.skillai(choice);
 					}
 					'step 1'
-					event.choosing=false;
-					_status.imchoosing=false;
 					if(event.dialog){
 						event.dialog.close();
 					}
@@ -18935,7 +18935,7 @@
 					return next;
 				},
 				discoverSkill:function(list){
-					var next=game.createEvent('chooseSkill');
+					var next=game.createEvent('discoverSkill');
 					next.player=this;
 					next.setContent('discoverSkill');
 					next.list=list;
