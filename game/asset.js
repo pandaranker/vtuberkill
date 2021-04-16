@@ -1295,6 +1295,7 @@ window.noname_asset_list=[
 	'image/character/re_AkaiHaato.jpg',
 	'image/character/re_AkiRosenthal.jpg',
 	'image/character/re_AngeKatrina.jpg',
+	'image/character/re_DoumyoujiHaruto.jpg',
 	'image/character/re_HiguchiKaede.jpg',
 	'image/character/re_HisekiErio.jpg',
 	'image/character/re_HonmaHimawari.jpg',
