@@ -434,8 +434,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 				/**狗妈 */
 				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
-				/**美波 */
-				gz_MinamiNami: ['female','clubs',4,['gz_longdan'],['gzskin']],
 				/**狐叔 */
 				gz_Nekomasu: ['female', 'clubs', 3, ['milijianying', 're_dianyin']],
 				/**Noracat */
