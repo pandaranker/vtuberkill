@@ -1458,28 +1458,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					}
 			},
-			meiwu: {
+			meiwu:{
 				// popup: false,
-				direct: true,
-				trigger: {
+				direct:true,
+				trigger:{
 					target: 'useCardToTarget',
 				},
-				usable: 1,
-				filter: function(event, player) {
+				usable:1,
+				filter:function(event,player){
 					return get.color(event.card) == 'black' && event.targets.length == 1&&game.hasPlayer(function(cur){
 						return cur != player && cur != event.player;
 					});
 				},
-				content: function() {
+				content:function(){
 					'step 0'
-					player.chooseTarget('###『魅舞』###转移给一名其它角色', function(card, player, target) {
+					player.chooseTarget('###『魅舞』###转移给一名其它角色',function(card,player,target){
 						return player != target && target != _status.event.tplayer;
 					}).set('ai',function(target){
 						var player=_status.event.player;
-						return get.effect(target,_status.event.card,_status.event.tplayer,player)>0;
+						return get.effect(target,_status.event.card,_status.event.tplayer,player)-0.5;
 					}).set('tplayer',trigger.player).set('card',trigger.card);
 					'step 1'
-					if (result.bool) {
+					if(result.bool){
 						var target=result.targets[0];
 						player.logSkill(event.name, target);
 						var evt = trigger.getParent();
@@ -1492,8 +1492,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						};
 					}
 				},
-				group: ['meiwu_trace'],
-				subSkill: {
+				group:['meiwu_trace'],
+				subSkill:{
 					trace: {
 						direct: true,
 						trigger: {
@@ -1517,27 +1517,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
-			huichu: {
-				trigger: {
-					global: 'phaseBegin',
+			huichu:{
+				trigger:{
+					global:'phaseBegin',
 				},
-				filter: function(event, player) {
+				filter:function(event,player){
 					return player.countCards('h')
 						&& !game.hasPlayer(function(cur) {
 							return cur.hp < event.player.hp;
 						});
 				},
-				content: function() {
+				check:function(event,player){
+					if(player.countCards('h') == player.countCards('h', {suit: 'heart'}))	return get.recoverEffect(event.player,player,player);
+					return 1;
+				},
+				content:function(){
 					'step 0'
 					player.showHandcards();
 					event.chk = player.countCards('h') == player.countCards('h', {suit: 'heart'});
 					'step 1'
-					if (event.chk) {
+					if(event.chk){
 						trigger.player.recover();
 					}
 					'step 2'
 					if (!event.chk) {
-						player.chooseCard("###『慧厨』###重铸任意张手牌", 'h', [1, Infinity]);
+						player.chooseCard("###『慧厨』###重铸任意张手牌", 'h', [1, Infinity]).set('ai',function(card2){
+							return 6.5-get.value(card);
+						});
 					}
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
@@ -1549,7 +1555,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
-			haodu: {
+			haodu:{
 				enable: 'phaseUse',
 				filterCard: true,
 				selectCard: [1, Infinity],
@@ -3496,6 +3502,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
 			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
 			ŌokamiMio:['re_ŌokamiMio','ŌokamiMio'],
+			SpadeEcho:['re_SpadeEcho','SpadeEcho'],
 
 			Ciyana:['Ciyana','Civia'],
 			MinatoAqua:['MinatoAqua','sea_MinatoAqua'],

@@ -1452,7 +1452,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
-				group:{
+				subSkill:{
 					used:{},
 				}
 			},

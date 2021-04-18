@@ -3740,6 +3740,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(result.bool&&result.links){
+						player.logSkill('cejing',event.target)
 						var phase = result.links[0][2];
 						event.target[phase]();
 					}
