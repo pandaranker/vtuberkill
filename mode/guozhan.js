@@ -1255,7 +1255,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					else{
-						player.chooseCard('###『生笹』###重铸一张牌',true,'he').set('ai',function(card2){
+						player.chooseCard('###『生笹』###重铸一张牌',true,'he').set('ai',function(card){
 							return 7-get.value(card);
 						});
 					}
