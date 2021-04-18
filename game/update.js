@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.56',
+	version:'1.9.101.57',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.56小更新：新增角色Bafuko（测试包）和道明寺晴翔（初心包），增加NoiR的配音，优化部分ai，修复部分bug，修改转换技强调颜色，修改部分初心包技能名（使之不与标准包重复）',
+		'101.57小更新：新增角色七濑胡桃（测试包）和新echo与新Noracat（初心包），加强新美波七海，优化部分ai，修复部分bug（比如道明寺晴翔的bug），部分角色增加皮肤，完善了国战内容（现在可以进入该模式测试了）',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），珈乐（测试），斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -27,10 +27,6 @@ window.noname_update={
 		'card/standard.js',
 		'card/guozhan.js',
 		'card/remark.js',
-		'image/card/huiliu.png',
-		'image/card/huxinjing.png',
-		'image/character/Azusa.jpg',
-		'image/character/jike.jpg',
 		//'card/swd.js',
 		//'card/mtg.js',
 		//'card/gujian.js',

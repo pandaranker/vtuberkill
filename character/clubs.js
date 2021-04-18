@@ -51,7 +51,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**张京华 */
 			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
 			/**NoiR */
-			NoiR: ['female', 'qun', 3 ,['mozouqiyin', 'budingpaidui']]
+			NoiR: ['female', 'qun', 3 ,['mozouqiyin', 'budingpaidui']],
+			/**晴步子 */
+			Bafuko: ['female','qun',4,['shangsheng','jinghua']],
 		},
 		characterSort:{
 			clubs:{
@@ -64,7 +66,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			OtomeOto: 'oto者，名歌姬也，曾学于教坊司，能歌善舞，以《初音未来的消失》之传说名曲惊煞一众善才，后烽烟四起，oto批皮入V界，人情炎凉，难以经营，如此经年，后杏溃败，oto喃喃自言曰：好风凭借力，送我上青云。有友曰绯赤艾利欧，两人相持生活数十年，V始二十年，杏礼崩乐坏，团长尽收杏社之地，亲迎oto，oto亦欣然前往，paryi系重归荣光，此二人先导也。',
 			TakatsukiRitsu: '阿律者，帕里之衙内也，清楚三铳士之一，以超美丽3d与烂活闻名，常联动yyut，一日律问直播间观众爱者，众人皆曰yyut，律遂破防光速下播，杏溃败后，众v皆如终获青天，有欣欣向荣之势，独律未增半分，郁郁寡欢，此后毕业之，是矣，烂活可供一时，可供一世乎？',
 
-			Yomemi: ' ',
 			KaguraMea: '神乐咩者，东瀛之歌女也，迫于生计西来中原，有《money》、《你好我很可爱》之名曲流传世间，咩性格直爽，以此获众拥簇，却亦因此惹祸上身，V始二十二年，西都陷落，咩于京畿聚众建国，国号曰咩，定元咩啊元年，与杏虹分庭抗礼。',
 			MiraiAkari: "未来明（V始二年），生于荆楚郡望，少时猎虎不慎坠马，遂记忆尽失，同族有长者初音未来，携明识山见水，阿满童年如此。V始十九年，绊爱既首义，天下豪杰并起，明亦王于西南，定国号为ENTUM，后为小人夺之，满知无经纬之才，遁入山中，不闻世事。",
 			kaguraNaNa: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
@@ -87,7 +88,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:220,
 				trigger:{player:'recoverBegin'},
 				filter:function(event,player){
-						return true;
+					return true;
 				},
 				content:function(){
 					trigger.num = player.countCards('e')||1;
@@ -102,12 +103,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('he')>0
 				},
 				filterCard:function(card){
+					for(var i=0;i<ui.selected.cards.length;i++){
+						if(get.type2(card)==get.type2(ui.selected.cards[0]))	return false;
+					}
 					return true;
 				},
 				check:function(card){
-					if(ui.selected.cards.length&&(get.type(card)==get.type(ui.selected.cards[0],'trick')||
-					ui.selected.cards[1]&&get.type(card)==get.type(ui.selected.cards[0],'trick')||
-					ui.selected.cards[2])) return 0;
 					return 5-get.value(card);
 				},
 				complexCard:true,
@@ -123,14 +124,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return [min,max];
 				},
 				discard:true,
-				multitarget:false,
-				targetprompt:[],
+				multitarget:true,
+				//targetprompt:[],
 				content:function(){
 					'step 0'
-					_status.event.target = target;
+					event.targs = targets.slice(0);
 					var type = [];
 					for(var i=0;i<cards.length;i++){
-						type.add(get.type(cards[i],'trick',cards[i].original=='h'?player:false));
+						type.add(get.type2(cards[i],cards[i].original=='h'?player:false));
 					}
 					var num = type.length;
 					var cards = get.cards(num);
@@ -139,30 +140,27 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<cards.length;i++){
 						suits.push(get.suit(cards[i]));
 					}
-					_status.event.suits = suits;
-					_status.event.time = 0;
+					event.suits = suits;
+					game.cardsDiscard(cards);
 					'step 1'
-			//		var time = _status.event.time;
-					game.broadcastAll(function(target, suits){
-						console.log(suits);
-						var next=target.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", target, 'he');
-						next.set('selectButton',suits.length);
-						next.set('filterButton',function(card){
-							if(ui.selected.buttons.length){
-								console.log(ui.selected.buttons);
-								return get.suit(card) == suits[ui.selected.buttons.length];
-							}
-							else{
-								return get.suit(card) == suits[0];
-							}
-						});
-						next.set('forced',false);
-					}, _status.event.target, _status.event.suits);
-			//		_status.event.time++;
+					event.targ = event.targs.shift();
+					var suits = event.suits
+					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", target, 'he');
+					next.set('selectButton',suits.length);
+					next.set('filterButton',function(card){
+						if(ui.selected.buttons.length){
+							console.log(ui.selected.buttons);
+							return get.suit(card) == suits[ui.selected.buttons.length];
+						}
+						else{
+							return get.suit(card) == suits[0];
+						}
+					});
 					'step 2'
 					if(!result.cards||result.cards.length<_status.event.suits.length){
-						event.target.damage('player',1);
+						event.targ.damage('player',1);
 					}
+					if(event.targs.length)	event.goto(1);
 				},
 				ai:{order:5,result:{target:-1}},
 			},
@@ -2993,9 +2991,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Yomemi:'ヨメミ',
 			mokuai:'模块搭载',
-			mokuai_info:'<font color=#f66>锁定技</font> 你的【杀】和“致命药剂”可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
+			mokuai_info:'<font color=#f66>锁定技</font> 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
-			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张牌，然后亮出牌堆顶等于其类型数的牌。目标角色需依次选择：弃置与这些亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
+			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张类型不同牌，然后翻开牌堆顶等量牌。目标角色需依次选择：弃置与翻开牌等量且花色相同的牌；或受到你造成的1点伤害。',
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
@@ -3070,7 +3068,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duixian: '稽杀',
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
 			gutai: '守峡',
-			gutai_info: '当你使用牌造成伤害后，你可以取消此牌的剩余目标；当你于回合外成为牌的目标后，若此牌造成伤害，你可以取消此牌的剩余目标。',
+			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',
 
 			Kaf: '花谱',
 			liuhua: '化羽',
@@ -3106,8 +3104,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozouqiyin: '默奏起音',
 			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
 			budingpaidui: '布丁派对',
-			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。'
+			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。',
 
+			MinamiNami: '美波七海',
+			Noracat: '野良猫',
 		},
 	};
 });

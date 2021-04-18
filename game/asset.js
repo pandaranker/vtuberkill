@@ -1222,6 +1222,7 @@ window.noname_asset_list=[
 	'image/character/KizunaAI.jpg',
 	'image/character/LizeHelesta.jpg',
 	'image/character/MashiroKanon.jpg',
+	'image/character/Menherachan.jpg',
 	'image/character/Mikawa.jpg',
 	'image/character/MinatoAqua.jpg',
 	'image/character/MiraiAkari.jpg',
@@ -1316,6 +1317,7 @@ window.noname_asset_list=[
 	'image/character/re_Nekomasu.jpg',
 	'image/character/re_NekomiyaHinata.jpg',
 	'image/character/re_NijikawaRaki.jpg',
+	'image/character/re_Noracat.jpg',
 	'image/character/re_ŌokamiMio.jpg',
 	'image/character/re_ŌzoraSubaru.jpg',
 	'image/character/re_Omesis.jpg',
@@ -1326,6 +1328,7 @@ window.noname_asset_list=[
 	'image/character/re_ShizukaRin.jpg',
 	'image/character/re_Siro.jpg',
 	'image/character/re_SisterClearie.jpg',
+	'image/character/re_SpadeEcho.jpg',
 	'image/character/re_SuzuharaLulu.jpg',
 	'image/character/re_SuzukaUtako.jpg',
 	'image/character/re_TokinoSora.jpg',
@@ -1351,6 +1354,13 @@ window.noname_asset_list=[
 	'image/character/gz_ŌzoraSubaru.jpg',
 	/**niji */
 	'image/character/gz_HonmaHimawari.jpg',
+	/**企 */
+	'image/character/gz_YuNi.jpg',
+	'image/character/gz_DoumyoujiHaruto.jpg',
+	/**社 */
+	'image/character/gz_MinamiNami.jpg',
+	'image/character/gz_Noracat.jpg',
+
 	//化鲸篇
 	'image/character/NagaoKei.jpg',
 	'image/character/ShirakamiHaruka.jpg',
@@ -1369,6 +1379,7 @@ window.noname_asset_list=[
 	'image/skin/AyanaNana/1.jpg',
 	'image/skin/Azusa/1.jpg',
 	'image/skin/Civia/1.jpg',
+	'image/skin/Civia/2.jpg',
 	'image/skin/Ciyana/1.jpg',
 	'image/skin/Doris/1.jpg',
 	'image/skin/HisekiErio/1.jpg',
@@ -1385,6 +1396,7 @@ window.noname_asset_list=[
 	'image/skin/KenmochiDouya/2.jpg',
 	'image/skin/KenmochiDouya/3.jpg',
 	'image/skin/KenmochiDouya/4.jpg',
+	'image/skin/KizunaAI/1.jpg',
 	'image/skin/LizeHelesta/1.jpg',
 	'image/skin/MashiroKanon/1.jpg',
 	'image/skin/MinatoAqua/1.jpg',
@@ -1415,6 +1427,7 @@ window.noname_asset_list=[
 	'image/skin/SuzuharaLulu/2.jpg',
 	'image/skin/SuzukaUtako/1.jpg',
 	'image/skin/TakatsukiRitsu/1.jpg',
+	'image/skin/TakatsukiRitsu/2.jpg',
 	'image/skin/UmoriHinako/1.jpg',
 	'image/skin/UsadaPekora/1.jpg',
 	'image/skin/UsadaPekora/2.jpg',

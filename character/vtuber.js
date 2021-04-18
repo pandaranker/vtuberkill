@@ -809,12 +809,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌').set('ai',function(card){
+							var source = _status.event.source;
 							var att = _status.event.att;
 							var num = _status.event.num;
 							var player = _status.event.player;
 							var effect = _status.event.effect;
 							if(get.number(card)+num==12){
-								if(att>0||get.recoverEffect(player,player,player)) return	8-get.useful(card);
+								if(att>0||get.recoverEffect(player,source,player)) return	8-get.useful(card);
 								else	return 0;
 							}
 							else if(get.number(card)+num<12){
@@ -823,7 +824,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else{
 								return 4-get.useful(card);
 							}
-						}).set('att',att).set('num',num).set('effect',effect)
+						}).set('att',att).set('num',num).set('effect',effect).set('source',player);
 					}
 					else {
 						event.finish();
@@ -965,10 +966,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						popup:false,
 						filter:function(event,player){
-							return player.storage.baidao_times!=0;
+							return player.storage.xiugong_times!=0;
 						},
 						content:function(){
-							player.storage.baidao_times=0;
+							player.storage.xiugong_times=0;
 						},
 					}
 				}
@@ -985,8 +986,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				check:function(event,player){
 					return get.attitude(player,event.player)>1;
 				},
+				logTarget:'player',
 				content:function(){
-					player.logSkill('zuodun',trigger.player);
 					trigger.player = player;
 					game.asyncDraw([player,trigger.source]);
 					if(!player.hasSkill('zhongxinghezou')){
@@ -1030,7 +1031,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player:function(player,target){
 							if(player.countCards('h',function(card){
 								return get.number(card)>11;
-							})&&player.hp<player.maxHp)	return 2;
+							}))	return get.recoverEffect(player,player,player);
 							else return -0.2;
 						},
 					},
@@ -1045,7 +1046,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						firstDo:true,
 						forced:true,
 						filter:function(event,player){
-							console.log(player.storage.baidao_times)
 							return player.storage.baidao_times>0&&player.hasSkill('zhongxinghezou_used');
 						},
 						content:function(){
@@ -2019,6 +2019,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jueshou_info: '出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。',
 
 			DoumyoujiHaruto: '道明寺晴翔',
+			YuNi: 'YuNi',
 		},
 	};
 });

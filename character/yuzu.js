@@ -15,8 +15,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**机萪 */
 			jike: ['female','qun',3,['qianjiwanbian']],
-			/**晴步子 */
-			Bafuko: ['female','qun',4,['shangsheng','jinghua']],
+			/**胡桃 */
+			Menherachan: ['female','qun',4,['shangbei','qianqing']],
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu']],
 			/**测试用角色 */
@@ -6030,6 +6030,137 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.removeSkill('jinghua2');
 				},
 			},
+			//七濑胡桃
+			shang:{
+				marktext:'裳',
+				intro:{
+					name:'裳',
+					content:'cards',
+					onunmark:'throw',
+				},
+				locked:true,
+				init:function(player,skill){
+					if(!player.storage[skill])	player.storage[skill] = [];
+				},
+			},
+			shangbei:{
+				group:['shang','shangbei_give'],
+				trigger:{player:'damageAfter'},
+				frequent:true,
+				content:function(){
+					'step 0'
+					var cards=[_status.pileTop];
+					event.cards=cards;
+					player.showCards(event.cards,'『裳备』展示牌')
+					'step 1'
+					if(!player.getStorage('shang').contains(get.suit(event.cards[0],false))){
+						if(!player.storage.shang)	return player.storage.shang = [];
+						player.$draw(event.cards);
+						player.markAuto('shang',game.cardsGotoSpecial(event.cards).cards);
+						player.draw();
+					}
+				},
+				subSkill:{
+					give:{
+						trigger:{player:'phaseUseBegin'},
+						direct:true,
+						filter:function(event,player){
+							return player.getStorage('shang').length>0;
+						},
+						content:function(){
+							'step 0'
+							event.cards = player.getStorage('shang');
+							'step 1'
+							event.videoId=lib.status.videoId++;
+							var dialogx=['###『裳备』：你的“裳”###选择某一类型的“裳”，然后令一名角色获得之'];
+							dialogx.push(event.cards);
+							if(player.isOnline2()){
+								player.send(function(dialogx,id){
+									ui.create.dialog.apply(null,dialogx).videoId=id;
+								},dialogx,event.videoId);
+							}
+							event.dialog=ui.create.dialog.apply(null,dialogx);
+							event.dialog.videoId=event.videoId;
+							if(player!=game.me||_status.auto){
+								event.dialog.style.display='none';
+							}
+							'step 2'
+							var next = player.chooseButton();
+							next.set('selectButton',1);
+							next.set('dialog',event.videoId);
+							next.set('ai',function(button){
+								return get.value(button.link);
+							});
+							'step 3'
+							if(result.bool&&result.links){
+								event.links=result.links;
+								var func=function(cards,id){
+									var dialog=get.idDialog(id);
+									if(dialog){
+										for(var j=0;j<cards.length;j++){
+											for(var i=0;i<dialog.buttons.length;i++){
+												if(get.type2(dialog.buttons[i].link)==get.type2(cards[j])){
+													dialog.buttons[i].classList.add('glow');
+												}
+												else{
+													dialog.buttons[i].classList.add('unselectable');
+												}
+											}
+										}
+									}
+								}
+								if(player.isOnline2()){
+									player.send(func,event.links,event.videoId);
+								}
+								else if(player==game.me&&!_status.auto){
+									func(event.links,event.videoId);
+								}
+								player.chooseTarget('『裳备』：令一名角色获得之').set('ai',function(target){
+									var player = _status.event.player;
+									var effect = get.attitude(player,target)*1.5;
+									if(target!=player)	effect+=get.recoverEffect(player,player,player);
+									return effect;
+								});
+							}else{
+								if(player.isOnline2()){
+									player.send('closeDialog',event.videoId);
+								}
+								event.dialog.close();
+								event.finish();
+							}
+							'step 4'
+							if(result.bool&&result.targets){
+								event.target = result.targets[0];
+								var type = get.type2(event.links[0]);
+								event.cards = event.cards.filter(function(card){
+									return get.type2(card)==type;
+								});
+								player.unmarkAuto('shang',event.cards);
+								player.$give(event.cards,event.target);
+								event.target.gain(event.cards,'gainAuto');
+								if(event.target!=player)	player.recover();
+							}else{
+								event.goto(2);
+							}
+							'step 5'
+							if(player.isOnline2()){
+								player.send('closeDialog',event.videoId);
+							}
+							event.dialog.close();
+						},
+					}
+				}
+			},
+			qianqing:{
+				trigger:{player:'phaseBegin'},
+				forced:true,
+				filter:function(event,player){
+					return player.getStorage('shang').length==0;
+				},
+				content:function(){
+					player.damage('nosource');
+				}
+			},
 		},
 		card:{
 			niwei_sha:{
@@ -6117,6 +6248,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			Menherachan: '七濑胡桃',
+			shangbei: '裳备',
+			shangbei_info: '你受到伤害后，可以展示牌堆顶牌，若你没有与之花色相同的“裳”，你将之置于武将牌上，称为“裳”，然后摸一张牌。出牌阶段开始时，你可以令一名角色获得某一类型的全部“裳”，若不为你，你回复一点体力。',
+			qianqing: '迁情',
+			qianqing_info: '<font color=#f66>锁定技</font> 回合开始时，若你没有“裳”，你受到一点无来源的伤害。',
 
 			Bafuko: '晴步子',
 			shangsheng: '能力上升',

@@ -10342,6 +10342,7 @@
 			nanashi2:'774inc',
 			psp2:'P-SP',
 			asoul2:'一个魂',
+			double2:'双势力',
 			male:'男',
 			female:'女',
 			mad:'混乱',
@@ -10812,7 +10813,7 @@
 					var e2=target.getCards('e');
 					var todis2=[];
 					for(var i=0;i<e2.length;i++){
-						if(player.isDisabled(get.subtype(e2[i]))) todis1.push(e2[i]);
+						if(player.isDisabled(get.subtype(e2[i]))) todis2.push(e2[i]);
 					}
 					target.discard(todis2);
 					"step 1"
@@ -12936,40 +12937,40 @@
 					event.skillai=event.ai||function(list){
 						return get.max(list,get.skillRank,'item');
 					};
-					event.dialog=ui.create.dialog('forcebutton');
-					event.dialog.add(event.prompt||'选择获得一项技能');
-					_status.event.choice=choice;
-					var clickItem=function(){
-						_status.event._result=this.link;
-						game.resume();
-					};
-					for(i=0;i<choice.length;i++){
-						if(lib.translate[choice[i]+'_info']){
-							var translation=get.translation(choice[i]);
-							if(translation[0]=='新'&&translation.length==3){
-								translation=translation.slice(1,3);
-							}
-							else{
-								translation=translation.slice(0,2);
-							}
-							var item=event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
-							translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
-							item.firstChild.addEventListener(lib.config.touchscreen?'touchend':'click',clickItem);
-							item.firstChild.link=choice[i];
-						}
-					}
-					event.dialog.add(ui.create.div('.placeholder'));
-					event.switchToAuto=function(){
-						event._result=event.skillai(event.choice);
-						game.resume();
-					};
-					if(event.isMine()||event.dialogdisplay){
-						event.dialog.style.display='';
-						event.dialog.open();
-					}
 					game.check();
 					if(event.isMine()){
 						game.pause();
+						event.dialog=ui.create.dialog('forcebutton');
+						event.dialog.add(event.prompt||'选择获得一项技能');
+						_status.event.choice=choice;
+						var clickItem=function(){
+							_status.event._result=this.link;
+							game.resume();
+						};
+						for(i=0;i<choice.length;i++){
+							if(lib.translate[choice[i]+'_info']){
+								var translation=get.translation(choice[i]);
+								if(translation[0]=='新'&&translation.length==3){
+									translation=translation.slice(1,3);
+								}
+								else{
+									translation=translation.slice(0,2);
+								}
+								var item=event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
+								translation+'</div><div>'+lib.translate[choice[i]+'_info']+'</div></div>');
+								item.firstChild.addEventListener(lib.config.touchscreen?'touchend':'click',clickItem);
+								item.firstChild.link=choice[i];
+							}
+						}
+						event.dialog.add(ui.create.div('.placeholder'));
+						event.switchToAuto=function(){
+							event._result=event.skillai(event.choice);
+							game.resume();
+						};
+						if(event.isMine()||event.dialogdisplay){
+							event.dialog.style.display='';
+							event.dialog.open();
+						}
 						game.countChoose();
 						event.choosing=true;
 					}
@@ -20186,6 +20187,7 @@
 						if(this.num<=0){
 							delete this.filterStop;
 							this.trigger('damageZero');
+							this.finish();
 							this._triggered=null;
 							return true;
 						}
@@ -27181,22 +27183,22 @@
 				}
 			},
 			baiban:{
-				init:function (player,skill){
+				init:function(player,skill){
 					var skills=player.getSkills(true,false);
 					for(var i=0;i<skills.length;i++){
-						if(get.skills[i]||lib.skill[skills[i]].charlotte){
+						if(lib.skill[skills[i]].charlotte){
 							skills.splice(i--,1);
 						}
 					}
 					player.disableSkill(skill,skills);
 				},
-				onremove:function (player,skill){
+				onremove:function(player,skill){
 					player.enableSkill(skill);
 				},
 				mark:true,
 				locked:true,
 				intro:{
-					content:function (storage,player,skill){
+					content:function(storage,player,skill){
 						var list=[];
 						for(var i in player.disabledSkills){
 							if(player.disabledSkills[i].contains(skill)){
@@ -43928,8 +43930,8 @@
 								}
 								else{
 									if(dialog.buttons[i]._changeGroup||dialog.buttons[i].group!=dialog.currentgroup){
-									dialog.buttons[i].classList.add('nodisplay');
-								}
+										dialog.buttons[i].classList.add('nodisplay');
+									}
 									else{
 										dialog.buttons[i].classList.remove('nodisplay');
 									}
