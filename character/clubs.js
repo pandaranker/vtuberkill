@@ -3107,7 +3107,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。',
 
 			MinamiNami: '美波七海',
-			Noracat: '野良猫',
+			Noracat: '野良喵',
 		},
 	};
 });

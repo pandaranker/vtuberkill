@@ -4589,7 +4589,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_dianyin: '承志',
 			re_dianyin_info: '当你受到 1 点伤害后，你可以令一名角色摸两张牌，若其手牌数少于你或为全场最少，改为摸三张牌。',
 
-			re_Noracat: '新·野良猫',
+			re_Noracat: '新·野良喵',
 			kouhu: '口胡',
 			kouhu_info: '每轮每项限一次。你可以令当前回合角色摸一张牌，视为打出了一张【杀】或使用了一张【闪】。',
 			zhiqiu: '直球',
