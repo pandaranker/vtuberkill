@@ -7,9 +7,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**绊爱 */
 			KizunaAI:['female','upd8',4,['ailian','qixu'],['zhu']],
 			/**犬山 */
-			InuyamaTamaki:['male','key',3,['rongyaochengyuan','hundunliandong']],
+			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
 			/**Mishiro */
-			ShirayukiMishiro:['female','key',3,['tianyi','nveyu']],
+			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
 			/**小白 */
 			Siro:['female', 'dotlive', 4, ['zhongxinghezou','xiugong'],['zhu']],
 			/**巴恰鲁 */

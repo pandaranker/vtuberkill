@@ -48,6 +48,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_asoul:{
 				fullskin:true,
 			},
+			group_nori:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1728,7 +1731,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2183,7 +2186,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2266,7 +2269,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.result2=result;
 					if(shen.length){
 						var buttonList=[];
-						var list=['qun','key','holo','nijisanji','VirtuaReal','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2354,7 +2357,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_wu:"吴势力",
 			group_jin:"晋势力",
 			group_qun:"群",
-			group_key:"苔",
+			group_key:"键",
 			group_holo:"杏",
 			group_nijisanji:"虹",
 			group_VirtuaReal:"维",
@@ -2364,12 +2367,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nanashi:"な",
 			group_psp:"P",
 			group_asoul:"魂",
+			group_nori:"魂",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
 			group_qun_bg:"群",
 			group_jin_bg:"晋",
-			group_key_bg:"苔",
+			group_key_bg:"键",
 			group_holo_bg:"杏",
 			group_nijisanji_bg:"虹",
 			group_VirtuaReal_bg:"维",
@@ -2379,6 +2383,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nanashi_bg:"な",
 			group_psp_bg:"な",
 			group_asoul_bg:"魂",
+			group_nori_bg:"苔",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

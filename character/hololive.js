@@ -1615,17 +1615,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					var next = player.chooseButton(3 ,true);
 					next.set('dialog',event.videoId);
-					next.set('filterButton',function(button) {
+					next.set('filterButton',function(button){
 						for(var i = 0;i < ui.selected.buttons.length; i++){
 							var now = button.link, pre = ui.selected.buttons[i].link;
 							if (now[now.length - 1] == pre[pre.length - 1]) return false;
 						}
 						return true;
 					});
-					next.set('filterButton',function(button) {
+					next.set('ai',function(button){
 						var card = _status.event.card;
 						var now = button.link;
-						if([get.type(card,'trick'),get.suit(card),get.number(card)].contains(now[3]))	return true;
+						if([get.type2(card),get.suit(card),get.number(card)].contains(now[3]))	return true;
 						return 0;
 					});
 					next.set('card',cards[0]);

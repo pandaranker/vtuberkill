@@ -80,7 +80,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**小希小桃 */
 			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
 			/**犬山 */
-			re_InuyamaTamaki:['male','key',3,['rongyaochengyuan','re_hundunliandong']],
+			re_InuyamaTamaki:['male','nori',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
 			/**OTO */
@@ -680,12 +680,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					shan:{
 						enable:['chooseToUse'],
 						viewAs:{name:'shan'},
-						usable:1,
+						round:1,
 						viewAsFilter:function(player){
 							if(!_status.currentPhase) return false;
 						},
 						filterCard:function(){return false},
 						selectCard:-1,
+						filter:function(event,player){
+							return true;
+						},
 						precontent:function(){
 							_status.currentPhase.draw();
 						}
@@ -693,12 +696,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					sha:{
 						enable:['chooseToRespond'],
 						viewAs:{name:'sha'},
-						usable:1,
+						round:1,
 						viewAsFilter:function(player){
 							if(!_status.currentPhase) return false;
 						},
 						filterCard:function(){return false},
 						selectCard:-1,
+						filter:function(event,player){
+							return true;
+						},
 						precontent:function(){
 							_status.currentPhase.draw();
 						}
@@ -3106,9 +3112,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					return true;
 				},
-				selectTarget:function(){
-					return [1,ui.selected.targets.length+1];
-				},
+				selectTarget:[1,Infinity],
 				complexTarget:true,
 				multitarget:false,
 				content:function(){
@@ -4592,6 +4596,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_Noracat: '新·野良喵',
 			kouhu: '口胡',
+			kouhu_shan: '口胡-闪',
+			kouhu_sha: '口胡-杀',
 			kouhu_info: '每轮每项限一次。你可以令当前回合角色摸一张牌，视为打出了一张【杀】或使用了一张【闪】。',
 			zhiqiu: '直球',
 			zhiqiu_info: '当你发动『口胡』时，你可以与一名角色拼点，若你赢，你指定一名角色受到一点伤害；否则其对你造成一点伤害。',

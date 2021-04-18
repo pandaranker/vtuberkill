@@ -1363,7 +1363,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					combo:'tangyan',
 					order:function(skill,player){
-						if(player.hp=player.maxHp&&player.needsToDiscard()){
+						if(player.isDamaged())	return 0;
+						if(player.isHealthy()&&player.needsToDiscard()){
 							if(player.storage.tangyan_on)	return 5;
 							return 10;
 						}
@@ -1372,7 +1373,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:function(player,target){
 							if(player.storage.tangyan_on)	return 0;
-							if(player.hp==1)	return -2;
+							if(player.isDamaged())	return -2;
 							return -0.5
 						},
 						target:function(player,target){
@@ -1392,7 +1393,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					effect:{
 						target:function(card,player,target){
-							if(player==target&&get.type(card)=='equip'){
+							if(player==target&&get.type(card)=='equip'&&player.isHealthy()){
 								if(player.countCards('e',{subtype:get.subtype(card)})){
 									var players=game.filterPlayer();
 									for(var i=0;i<players.length;i++){

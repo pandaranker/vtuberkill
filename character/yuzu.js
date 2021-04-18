@@ -257,7 +257,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				priority:81,
 				filter:function(event, player){
-					if((!(player.storage.haoren===true))&&event.player==player)	return false;
+					if(player.storage.haoren!==true&&event.player==player)	return false;
 					if(player.countCards('he')<(event.player.storage.paryi||1))	return false;
 					return true;
 				},
@@ -378,7 +378,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			tiantangzhifei:{
-				group:['tiantangzhifei_yisheng','tiantangzhifei_xianzhi'],
 				subSkill:{
 					yisheng:{
 						marktext:"流",
@@ -389,6 +388,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return '暂时获得技能【引流】';
 							},
 						},
+						onremove:true,
 					},
 					xianzhi:{
 						marktext:"断",
@@ -399,6 +399,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return '只能使用花色为'+get.translation(storage)+'的牌';
 							},
 						},
+						onremove:true,
 						mark:true,
 						mod:{
 							cardEnabled:function(card,player,now){
@@ -5791,6 +5792,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(get.tag(card,'damage')) return [1,0.5];
 						},
 					},
+					threaten:3,
 				},
 				subSkill:{
 					change:{

@@ -696,6 +696,7 @@ window.noname_asset_list=[
 	'image/card/group_nanashi.png',
 	'image/card/group_psp.png',
 	'image/card/group_asoul.png',
+	'image/card/group_nori.png',
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',
 	'image/card/kamome_suitcase.png',

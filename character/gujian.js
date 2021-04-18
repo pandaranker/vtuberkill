@@ -916,7 +916,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							goon=true;
 						}
 					}
-					player.chooseTarget(get.prompt('cihong'),function(card,playe,target){
+					player.chooseTarget(get.prompt('cihong'),function(card,player,target){
 						return player.canUse('sha',target,false);
 					}).set('ai',function(target){
 						if(!_status.event.goon) return false;
