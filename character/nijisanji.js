@@ -3162,6 +3162,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yinlaiyaotang: '引徕药汤',
 			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
 
+
+			AibaUiha: '相羽初叶',
 		}
 	}
 }

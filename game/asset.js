@@ -1354,6 +1354,7 @@ window.noname_asset_list=[
 	'image/character/gz_ŌzoraSubaru.jpg',
 	/**niji */
 	'image/character/gz_HonmaHimawari.jpg',
+	'image/character/gz_AibaUiha.jpg',
 	/**企 */
 	'image/character/gz_YuNi.jpg',
 	'image/character/gz_DoumyoujiHaruto.jpg',

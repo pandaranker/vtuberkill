@@ -613,7 +613,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			momizhiyan:{
 					usable:1,
 					trigger: {
-					player: 'useCardToBegin',
+						player: 'useCardToBegin',
 					},
 					filter: function(event, player) {
 					return (player.countCards('he')>0)&&event.targets&&event.targets.length>0;
@@ -822,8 +822,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			lianmeng:{
 					trigger:{
-					player:'useCardAfter',
-					source:'damageSource',
+						player:'useCardAfter',
+						source:'damageSource',
 					},
 					forced:true,
 					filter:function(event,player){

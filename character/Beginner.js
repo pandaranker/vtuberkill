@@ -19,7 +19,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**狐叔 */
 			re_Nekomasu: ['female', 'qun', 3, ['milijianying', 're_dianyin']],
 			/**Noracat */
-			re_Noracat: ['female', 'qun', 5, ['kouhu', 'zhiqiu']],
+			re_Noracat: ['female', 'upd8', 5, ['kouhu', 'zhiqiu']],
 			/**下地 */
 			re_XiaDi: ['male', 'qun', 4, ['re_yinliu', 'dunzou']],
 
@@ -1467,25 +1467,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return _status.event.targets.contains(target);
 					}).set('targets',trigger.targets);
 					'step 1'
-					event.A = result.targets[0];
-					event.B = event.A.next;
-					if (!event.A.countCards('hej')) event.finish();
-					player.choosePlayerCard('hej', event.A).set('ai',function(button){
-						var player = _status.event.player;
-						var source = _status.event.target;
-						var target = source.next;
-						var link = button.link;
-						if(get.position(link)=='j'){
-							if(target.canAddJudge(link))	return get.effect(target,link,player,player);
-							else	return get.damageEffect(target,player,player);
-						}else if(get.position(link)=='e'){
-							var subtype = get.subtype(link);
-							if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
-							else	return get.damageEffect(target,player,player);
-						}
-					});
+					if(result.bool){
+						event.A = result.targets[0];
+						event.B = event.A.next;
+						if (!event.A.countCards('hej')) event.finish();
+						player.choosePlayerCard('hej', event.A).set('ai',function(button){
+							var player = _status.event.player;
+							var source = _status.event.target;
+							var target = source.next;
+							var link = button.link;
+							if(get.position(link)=='j'){
+								if(target.canAddJudge(link))	return get.effect(target,link,player,player);
+								else	return get.damageEffect(target,player,player);
+							}else if(get.position(link)=='e'){
+								var subtype = get.subtype(link);
+								if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
+								else	return get.damageEffect(target,player,player);
+							}
+						});
+					}else{
+						event.finish()
+					}
 					'step 2'
-					if (result.bool) {
+					if(result.bool){
 						var card = result.links[0];
 						var dam = false;
 						if(get.position(card)=='e'){
@@ -1496,7 +1500,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							re = event.B.equip(card);
 						}
-						else {
+						else{
 							var cname = card.viewAs ? card.viewAs : get.name(card);
 							event.B.getCards('j').forEach(function(c) {
 								if (get.name(c) == cname) {
@@ -2192,7 +2196,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					player.recover(trigger.num);
-					trigger.cancel();
+					trigger.cancel(true);
 				},
 				group:'re_chongdian_leisha',
 				subSkill:{
@@ -2213,6 +2217,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							respondSha:true,
 							order:4,
 							useful:-1,
+						},
+						mod:{
+							targetInRange:function(card,player,target){
+								if(_status.event.skill=='re_chongdian_leisha' && get.type(card)=='equip') return true;
+							},
 						},
 					},
 				},
@@ -4196,7 +4205,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re小霸王
 			kangding:{
-				trigger:{source:'damageBegin2',player:'damageBegin4'},
+				trigger:{source:'damageBegin3',player:'damageBegin3'},
 				filter:function(event,player){
 					if(event.num<=0)	return false;
 					return player.countCards('he',{subtype:'equip1'})&&player==event.source||player.countCards('he',{subtype:'equip2'})&&player==event.player;
@@ -4237,7 +4246,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var cards=[_status.pileTop];
+					var cards=[ui.cardPile.firstChild];
 					event.cards=cards;
 					player.showCards(event.cards,'『龙蛇笔走』展示牌')
 					'step 1'
@@ -4311,7 +4320,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					//用于拼点
 					onCompare:{
 						trigger:{
-							player:'compare'
+							player:'compare',
+							target:'compare'
 						},
 						filter:function(event, player){
 							return get.color(event.card1) == 'black' || get.color(event.card2) == 'black';
@@ -4343,9 +4353,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return 0;
 							}).set('compareData', {
 								player: player,
-								target: trigger.target,
-								card1: trigger.card1,
-								card2: trigger.card2
+								target: player == trigger.target?trigger.player:trigger.target,
+								card1: player == trigger.target?trigger.card2:trigger.card1,
+								card2: player == trigger.target?trigger.card1:trigger.card2
 							});
 							'step 1'
 							if(result.bool&&result.targets[0]){
@@ -4459,13 +4469,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					if(event.name == 'useSkill'&&Object.getOwnPropertyNames(event.getParent('_wuxie')).length){
 						var evt = event;
-						if(evt.respondTo){
-							if(evt.respondTo[0]&&evt.respondTo[0].countCards('h')<player.countCards('h')) return false;
-							return evt.respondTo[0]!=player&&evt.respondTo[1]&&evt.respondTo[1].cards&&evt.respondTo[1].cards[0];
-						}else{
-							evt = event.getParent('_wuxie');
-							if(evt.player.countCards('h')<player.countCards('h')) return false;
-							return evt.player != player&&evt.card;
+						if(evt.result&&evt.result.wuxied){
+							if(evt.respondTo){
+								if(evt.respondTo[0]&&evt.respondTo[0].countCards('h')<player.countCards('h')) return false;
+								return evt.respondTo[0]!=player&&evt.respondTo[1]&&evt.respondTo[1].cards&&evt.respondTo[1].cards[0];
+							}else{
+								evt = event.getParent('_wuxie');
+								if(evt.player.countCards('h')<player.countCards('h')) return false;
+								return evt.player != player&&evt.card;
+							}
 						}
 					}
 					return false;
@@ -4499,7 +4511,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(card&&card.clone) card.clone.delete();
 						}, card);
 					}
-
 				}
 			}
 		},
@@ -4665,7 +4676,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_zhanxie:'战械',
 			re_zhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用三张【杀】。当你使用第三张【杀】时，摸两张牌。',
 			re_chongdian:'机电',
-			re_chongdian_info:'你受到雷电伤害时可改为回复等量体力；你的装备牌均可当【雷杀】使用。',
+			re_chongdian_info:'你受到雷电伤害时可改为回复等量体力。你的装备牌可当无距离限制的雷【杀】使用。',
 			
 			re_ShirakamiFubuki: '新·白上吹雪',
 			re_yuanlv:'狐虑',

@@ -2942,7 +2942,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							'step 2'
 							var controls=['摸两张牌','回复一点体力','取消选择'];
-							player.chooseControl(controls).set('ai',function(event,player){
+							player.chooseControl(controls).set('ai',function(){
 								return _status.event.index;
 							}).set('index',0);
 							'step 3'
@@ -2998,7 +2998,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						result.targets[0].draw(2);
 						event.goto(3);
 					}else{
-						trigger.cancel();
+						trigger.cancel(true);
 					}
 					'step 2'
 					trigger.player.recover(player);
@@ -6049,9 +6049,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				frequent:true,
 				content:function(){
 					'step 0'
-					var cards=[_status.pileTop];
+					var cards=[ui.cardPile.firstChild];
 					event.cards=cards;
-					player.showCards(event.cards,'『裳备』展示牌')
+					player.showCards(event.cards,'『裳备』展示牌');
 					'step 1'
 					if(!player.getStorage('shang').contains(get.suit(event.cards[0],false))){
 						if(!player.storage.shang)	return player.storage.shang = [];
@@ -6140,6 +6140,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								event.target.gain(event.cards,'gainAuto');
 								if(event.target!=player)	player.recover();
 							}else{
+								for(var i=0;i<dialog.buttons.length;i++){
+									dialog.buttons[i].classList.remove('glow');
+								}
 								event.goto(2);
 							}
 							'step 5'

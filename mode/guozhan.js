@@ -374,7 +374,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**樱巫女 */
 				gz_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao'],['gzskin']],
 				 /**夏色祭 */
-				gz_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
+				gz_NatsuiroMatsuri:['female','holo',3,['gz_huxi'],['doublegroup:holo:nijisanji']],
 				/**兔田佩克拉 */
 				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan'],['gzskin']],
 				/**润羽露西娅 */
@@ -410,6 +410,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				//gz_SuzukaUtako: ['female', 'nijisanji', 3, ['re_meici', 're_danlian']],
 				/**本间向日葵 */
 				gz_HonmaHimawari:['female','nijisanji',4,['mark_tianqing','kuiquan'],['gzskin']],
+				/**相羽初叶 */
+				gz_AibaUiha:['female','nijisanji',4,['kangding','longshe'],['gzskin']],
 
 				/**绊爱 */
 				gz_KizunaAI:['female','vtuber',4,['re_ailian']],
@@ -633,6 +635,202 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ai:{
 					threaten:0.6,
 				}
+			},
+			//gz夏色祭
+			gz_huxi:{
+				audio:'huxi1',
+				trigger:{player:'phaseUseBegin',source:'damageSource'},
+				filter:function(event,player){
+					return game.hasPlayer(function(cur){
+						if(player.storage.gz_huxiGroup==null) return true;
+						return !player.storage.gz_huxiGroup.contains(cur)&&cur!=player;
+					});
+				},
+				content:function(){
+					'step 0'
+					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
+					next.set('filterTarget',function(card,player,target){
+							if(player.storage.gz_huxiGroup&&player.storage.gz_huxiGroup.contains(target))	return false;
+							return target!=player&&player.countCards('h')&&target.countCards('h');
+					});
+					'step 1'
+					if(result.bool){
+						event.target=result.targets[0];
+						game.log(player,'想要呼吸',event.target);
+						event.card1=result.cards[0];
+						event.target.chooseCard('请选择交换的牌',true).set('type','compare');
+					}else{
+						event.finish();
+					}
+					'step 2'
+					event.card2=result.cards[0];
+					if(!event.resultOL&&event.ol){
+						game.pause();
+					}
+					'step 3'
+					player.lose(event.card1,ui.ordering);
+					event.target.lose(event.card2,ui.ordering);
+					'step 4'
+					game.broadcast(function(){
+						ui.arena.classList.add('thrownhighlight');
+					});
+					ui.arena.classList.add('thrownhighlight');
+					game.addVideo('thrownhighlight1');
+					player.$compare(event.card1,event.target,event.card2);
+					game.log(player,'的交换牌为',event.card1);
+					game.log(event.target,'的交换牌为',event.card2);
+					event.num1=event.card1.number;
+					event.num2=event.card2.number;
+					event.trigger('compare');
+					game.delay(0,1500);
+					'step 5'
+					event.result={
+						getC:event.card2,
+					}
+					var str;
+					str=get.translation(player.name)+'想要呼吸'+get.translation(event.target.name);
+					game.broadcastAll(function(str){
+						var dialog=ui.create.dialog(str);
+						dialog.classList.add('center');
+						setTimeout(function(){
+							dialog.close();
+						},1000);
+					},str);
+					game.delay(2);
+					'step 6'
+					if(typeof event.target.ai.shown=='number'&&event.target.ai.shown<=0.85&&event.addToAI){
+						event.target.ai.shown+=0.1;
+					}
+					player.gain(event.card2,'visible');
+					player.$gain2(event.card2);
+					game.delay(1);
+					target.gain(event.card1,'visible');
+					target.$gain2(event.card1);
+					game.broadcastAll(function(){
+						ui.arena.classList.remove('thrownhighlight');
+					});
+					game.addVideo('thrownhighlight2');
+					if(event.clear!==false){
+						game.broadcastAll(ui.clear);
+					}
+					if(typeof event.preserve=='function'){
+						event.preserve=event.preserve(event.result);
+					}
+					'step 7'
+					event.card = event.result.getC;
+					if(get.color(event.card)=='red'){
+						player.draw(1);
+						if(!player.hasSkill('gz_huxi2')){
+							player.addTempSkill('gz_huxi2');
+						}
+					}
+					if(player.storage.gz_huxiGroup==null) player.storage.gz_huxiGroup=[];
+					player.storage.gz_huxiGroup.add(target);
+					switch(player.group){
+						case 'holo':{
+							if(get.name(event.card)=='sha')		player.storage.gz_huxi_clear.add(event.card);
+							break;
+						}
+						case 'nijisanji':{
+							if(get.type(event.card)=='equip'&&get.suit(event.card)!='heart')	event.goto(9);
+							break;
+						}
+					}
+					'step 8'
+					event.finish();
+					'step 9'
+					event.effect = ['equip'];
+					if(get.color(event.card)=='red'){
+						event.effect.add('lebu');
+					}
+					if(get.color(event.card)=='black'){
+						event.effect.add('bingliang');
+					}
+					player.chooseTarget('###'+get.prompt('gz_huxi')+'###将'+get.translation(event.card)+'置于一名角色的区域内').set('ai',function(target){
+						var player = _status.event.player;
+						var effect = _status.event.effect;
+						var card = _status.event.card;
+						var gain = 0
+						if(effect.contains('lebu')&&target.canAddJudge('lebu'))			gain+=get.effect(target,{name:'lebu'},player,player);
+						if(effect.contains('bingliang')&&target.canAddJudge('bingliang'))	gain+=get.effect(target,{name:'bingliang'},player,player);
+						return gain*(-get.attitude(player,target)-2)+get.value(card)*(get.attitude(player,target)+2)/4;
+					}).set('effect',event.effect).set('card',event.card)
+					'step 10'
+					if(result.bool){
+						event.target = result.targets[0]
+						event.target.classList.add('glow');
+					}else{
+						event.finish();
+					}
+					'step 11'
+					var controls=['判定区','装备区','取消选择'];
+					if(event.effect.contains('lebu')&&!event.target.canAddJudge('lebu')||event.effect.contains('bingliang')&&!event.target.canAddJudge('bingliang'))	controls.shift();
+					player.chooseControl(controls).set('ai',function(){
+						return _status.event.index;
+					}).set('att',get.attitude(player,event.target));
+					'step 12'
+					event.target.classList.remove('glow');
+					switch(result.index){
+						case 0:{
+							player.$give(event.card,event.target,false);
+							if(event.effect.contains('lebu')&&event.target.canAddJudge('lebu'))		event.target.addJudge({name:'lebu'},[event.card]);
+							else if(event.effect.contains('bingliang')&&event.target.canAddJudge('bingliang'))	event.target.addJudge({name:'bingliang'},[event.card]);
+							break;
+						}
+						case 1:{
+							player.$give(event.card,event.target,false);
+							event.target.equip(event.card);
+							break;
+						}
+						case 2:{
+							event.goto(9);
+							break;
+						}
+					}
+				},
+				mod:{
+					targetInRange:function(card,player,target){
+						if(player.storage.gz_huxi_clear&&player.storage.gz_huxi_clear.contains(card)) return true;
+					},
+				},
+				group:'gz_huxi_clear',
+				subSkill:{
+					clear:{
+						init:function(player,skill){
+							if(!player.storage[skill])	player.storage[skill] = [];
+						},
+						firstDo:true,
+						silent:true,
+						direct:true,
+						trigger:{
+							player:['phaseAfter']
+						},
+						content:function(){
+							player.storage.gz_huxi_clear = [];
+							delete player.storage.gz_huxiGroup;
+						}
+					}
+				}
+			},
+			gz_huxi2:{
+				trigger:{
+					player:'useCard'
+				},
+				firstDo:true,
+				direct:true,
+				filter:function(event,player){
+					return get.name(event.card)=='sha';
+				},
+				content:function(){
+					if(trigger.addCount!==false){
+						trigger.addCount=false;
+						var stat=player.getStat();
+						if(stat&&stat.card&&stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
+						if(player.hasSkill('gz_huxi2')){
+							player.removeSkill('gz_huxi2');
+						}
+					}
+				},
 			},
 			//gz狗狗
 			gz_guiren:{
@@ -1124,7 +1322,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var another =0;
 						game.hasPlayer(function(cur){
 							cur.getHistory('useCard',function(evt){
-								if(get.color(evt.card,cur)==get.color(event.card,player)){
+								if(get.color(evt.card,cur)==get.color(card,player)){
 									repeat ++;
 								}else{
 									another ++;
@@ -8514,6 +8712,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			dengyan: '瞪眼',
 			dengyan_info: '<font color=#f66>锁定技</font> 你的回合内其他角色不能明置武将牌；其他角色每回合第一次明置武将牌时，你摸一张牌。',
 
+			gz_huxi:'呼吸',
+			gz_huxi_info:'出牌阶段开始时或你造成伤害后，你可以与一名本回合未以此法指定过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。当你为杏时，本回合使用交换获得的【杀】无距离限制；当你为虹时，你交换获得的非♥️装备牌可立即置于场上。（若置于判定区，红色视为【乐不思蜀】，黑色视为【兵粮寸断】）',
+
 			gz_guiren: '鬼刃',
 			gz_guiren_info: '你可以将两张红色/黑色牌当做一张【杀】使用，然后根据你转化牌包含的类型获得对应效果：基本~使之具有火焰/雷电属性；锦囊~若造成伤害，令目标交给你一张牌；装备~不可被抵消。若被抵消，你可以收回之并结束此阶段。',
 
@@ -8533,7 +8734,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			qingyi_info: '其他角色使用的【桃】进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
 
 			gz_shengcai: '声彩',
-			gz_shengcai_info: '当你使用一张牌后，若与本回合之前使用的过的牌颜色均不同，你可以摸X张牌。（X为本回合之前使用过的牌数）',
+			gz_shengcai_info: '当你使用一张牌或受到伤害后，你可以弃置一张牌，若与本回合之前使用的过的牌颜色均不同，你摸X张牌。（X为本回合之前被使用过的牌数）',
 
 			liexing: '列星',
 			liexing_info: '出牌阶段限一次，当你使用牌指定目标后，可以令目标外的一名其他角色弃置一张牌，若与你使用牌点数之和不小于12，你获得之，且本回合使用此牌不受距离与次数限制。若等于12，你与其各回复1点体力。',
@@ -8556,7 +8757,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_luecai_info: '你使用牌指定唯一目标时，若其手牌数大于你，你可以令其交给你一张牌。然后若你的手牌数大于其，你失去此技能。',
 
 			gz_xiemen: '斜门',
-			gz_xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
+			gz_xiemen_info: '你使用目标不仅为你的牌时，可令其他角色随机移除一张手牌直到回合结束。',
 
 
 
