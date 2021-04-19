@@ -1205,10 +1205,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						//player.$throw(cards,1000);
 						//player.lose(event.cards,ui.special,'visible');
 						player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
-							var value=get.value(button.link);
-							if(_status.event.reverse) return value;
-							return -value;
-						}).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+							var player = _status.event.player;
+							var now = _status.currentPhase;
+							var next = now.getNext();
+							var att = get.attitude(player,next);
+							var card = button.link;
+							var judge = next.getCards('j')[ui.selected.buttons.length];
+							if(judge){
+								return get.judge(judge)(card)*att;
+							}
+							return next.getUseValue(card)*att;
+						});
+						// .set('ai',function(button){
+						// 	var value=get.value(button.link);
+						// 	if(_status.event.reverse) return value;
+						// 	return -value;
+						// }).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
 					}
 					"step 3"
 					if(result.bool&&result.links&&result.links.length)	event.linkcards=result.links.slice(0);

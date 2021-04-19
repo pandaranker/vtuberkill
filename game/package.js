@@ -14,6 +14,7 @@ window.noname_package={
 		// moyu: '摸鱼',
 		yuzu: '测试中可选',
 		emperor:'Emperor',
+		sololive:'',
 		// sp:'SP',
 		// extra:'神将',		
 		// mobile:'移动版',

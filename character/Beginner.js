@@ -2258,10 +2258,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					if(event.cards.length>0){
 						player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
-							var value=get.value(button.link);
-							if(_status.event.reverse) return value;
-							return -value;
-						}).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+							var player = _status.event.player;
+							var now = _status.currentPhase;
+							var next = now.getNext();
+							var att = get.attitude(player,next);
+							var card = button.link;
+							var judge = next.getCards('j')[ui.selected.buttons.length];
+							if(judge){
+								return get.judge(judge)(card)*att;
+							}
+							return next.getUseValue(card)*att;
+						});
 					}
 					"step 2"
 					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
@@ -2976,50 +2983,44 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('h')>0;
 				},
 				content:function(){
-					"step 0"
-					player.chooseToCompare(target);
-					"step 1"
-					event.resultBool=result.bool;
-					event.loop=true;//循环一次（询问是否发动效果后）
-					"step 2"
-					if(event.resultBool){
-						player.draw();
+					'step 0'
+					player.chooseToCompare(target).set('small',get.recoverEffect(player,target,target)>0);
+					'step 1'
+					event.resultWinner=result.winner;
+					'step 2'
+					if(event.resultWinner==player){
+						player.draw(2);
 					}
-					else{
-						event.target.draw();
+					else if(event.resultWinner==target){
+						target.draw(2);
 					}
-					"step 3"
-					if(event.loop){
-						event.loop=false;
-						event.resultBool=!event.resultBool;
-						if(event.resultBool){
-							player.chooseBool('是否使对方回复一点体力').set('ai',function(){
-								return _status.event.check>0;
-							}).set('check',get.attitude(player,event.target));
-						}
-						else{
-							event.target.chooseBool('是否使对方回复一点体力').set('ai',function(){
-								return _status.event.check>0;
-							}).set('check',get.attitude(event.target,player));
-						}
+					'step 3'
+					if(event.resultWinner!=player){
+						player.chooseBool('是否使对方回复一点体力').set('ai',function(){
+							return _status.event.check;
+						}).set('check',get.recoverEffect(target,player,player)>0);
 					}
-					else{
-						event.finish();
-					}
-					"step 4"
+					else event.finish();
+					'step 4'
 					if(result.bool){
-						if(event.resultBool){
-							event.target.recover();
-						}
-						else{
-							player.recover();
-						}
+						target.recover(player);
+					}
+					'step 5'
+					if(event.resultWinner!=target){
+						target.chooseBool('是否使对方回复一点体力').set('ai',function(){
+							return _status.event.check;
+						}).set('check',get.recoverEffect(player,target,target)>0);
+					}
+					'step 6'
+					if(result.bool){
+						player.recover(target);
 					}
 				},
 				ai:{
 					order:8,
 					result:{
-						target:1,
+						player:0.6,
+						target:0.6,
 					},
 				},
 			},
@@ -3070,7 +3071,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.draw(1);
 								player.removeSkill('re_xuyan_damaged');
 							}else{
-								player.chooseTarget(true,'令一名角色与你各失去1点体力');
+								player.chooseTarget(true,'令一名角色与你各失去1点体力').set('ai',function(target){
+									var player = _status.event.player;
+									return 2-get.attitude(player,target);
+								});
 							}
 							'step 2'
 							if(result.bool){
@@ -4753,7 +4757,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_XiaoxiXiaotao: '新·小希小桃',
 			re_doupeng: '逗捧',
-			re_doupeng_info: '出牌阶段限一次，你可以与一名其他角色拼点，赢的角色摸一张牌，没赢的角色可以令赢的角色回复1点体力。',
+			re_doupeng_info: '出牌阶段限一次，你可以与一名其他角色拼点，赢的角色摸两张牌，没赢的角色可以令赢的角色回复1点体力。',
 			re_xuyan: '虚研',
 			re_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间造成过伤害，你摸一张牌。否则你与一名角色各失去1点体力。',
 			

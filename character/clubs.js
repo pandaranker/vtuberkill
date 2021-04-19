@@ -315,7 +315,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:15,
 				filter:function(event,player){
 					if(!event.player||event.player==player) return false;
-				//使用牌者在攻击距离外	if(player.inRange(event.player)) return false;
+				//使用牌者在攻击范围外	if(player.inRange(event.player)) return false;
 					if(get.distance(event.player,player,'pure')==1)	return false;
 					return (get.type(event.card)=='trick');		//牌为锦囊牌
 				},
@@ -1439,7 +1439,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var list = ['不观看牌'];
 					var att = 5;
 					var prompt2 = player.storage.shushi?'你本回合已看'+get.cnNumber(player.storage.shushi)+'张牌':'你本回合未看牌';
-					if(player.countCards('h',{type:'trick'})<3)	att = 0;
+					if(player.countCards('h',{type:'trick'})<2||['phaseDraw','phaseUse'].contains(trigger.name))	att = 0;
 					for(var i=1;i<=(Math.max(game.countPlayer(),5)-player.storage.shushi);i++){
 						list.push('观看'+get.cnNumber(i)+'张牌');
 					}
@@ -1452,11 +1452,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}else if(result.index){
 						player.storage.shushi += result.index;
-						game.broadcastAll(function(player){
-							player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
-								return get.value(button.link);
-							});
-						}, player);
+						player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+							var player = _status.event.player;
+							var next = phase=='phaseJudge'?player:player.getNext();
+							var att = get.attitude(player,next);
+							var card = button.link;
+							var judge = next.getCards('j')[ui.selected.buttons.length];
+							if(judge){
+								return get.judge(judge)(card)*att;
+							}
+							return next.getUseValue(card)*att;
+						}).set('phase',trigger.name)
 					}
 					'step 2'
 					if(result.bool){

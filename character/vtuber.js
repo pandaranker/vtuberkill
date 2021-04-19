@@ -580,7 +580,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseBool('是否发动技能,给目标添加homolive标记,并抵挡此次伤害');
 					'step 1'
 					if(result.bool){
-						player.logSkill(trigger.source);
+						player.logSkill('rongyaochengyuan',trigger.source);
 						trigger.source.addSkill('rongyaochengyuan_homolive');
 					}
 					else{

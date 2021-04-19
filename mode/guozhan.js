@@ -352,6 +352,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			ShirakamiFubuki:['NatsuiroMatsuri'],
 			MitoTsukino:['HiguchiKaede','ShizukaRin'],
 			MononobeAlice:['UshimiIchigo'],
+			LizeHelesta:['SuzuharaLulu'],
 			KizunaAI:['KaguyaLuna'],
 			Siro:['Bacharu'],
 			Nekomasu:['Noracat'],
@@ -406,6 +407,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_UshimiIchigo: ['female', 'nijisanji', 3, ['gz_kuangbaoshuangren', 'guangsuxiabo']],
 				/**修女克蕾雅 */
 				gz_SisterClearie:['female','nijisanji',3,['gz_zhenxin','sczhuwei']],
+				/**Re莉泽 */
+				gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan']],
+				/**Re安洁 */
+				//gz_AngeKatrina:['female','nijisanji',4,['gz_lianjin']],
 				/**铃原露露 */
 				gz_SuzuharaLulu:['female','nijisanji',5,['tunshi']],
 				/**铃鹿诗子 */
@@ -435,6 +440,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Yousa:['female','vtuber',3,['gz_niaoji','ysxiangxing'],['doublegroup:vtuber:nijisanji']],
 				/**道明寺晴翔 */
 				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi'],['gzskin']],
+				/**小希小桃 */
+				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
 
 				/**狗妈 */
 				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
@@ -1239,6 +1246,69 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					trigger.num--;
 				},
 			},
+			//gz安洁
+			gz_lianjin:{
+				trigger:{player:'useCardAfter'},
+				filter:function(event,player){
+					if(!player.storage.gz_lianjin_mark)	player.storage.gz_lianjin_mark=[];
+					if(!player.storage.gz_lianjin_used)	player.storage.gz_lianjin_used=[];
+					return event.card&&player.countCards('h');
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					player.chooseCard(get.prompt2('gz_lianjin_mark'),function(card,player,target){
+						return true;
+					}).ai=function(card){
+						if(get.type(card)=='equip')	return 7-get.value(card);
+						return 5-get.value(card);
+					};
+					'step 1'
+					if(result.bool){
+						player.logSkill('gz_lianjin');
+						player.$give(result.links[0],player);
+						player.lose(result.links[0],ui.special,'toStorage');
+						player.markAuto('gz_lianjin_mark');
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					var list = {};
+					player.storage.gz_lianjin_mark.filter(function(card){
+						if(!list[get.type2(card)])	list[get.type2(card)] = 0;
+						list[get.type2(card)]++;
+					});
+					event.list!=list;
+					if(Object.keys(event.list)){
+						player.chooseCardButton(player.storage.gz_lianjin_mark).set();
+						player.useCard({name:'sha'},event.target,false).animate=false;
+					}
+					'step 3'
+					// if(){
+						
+					// }
+				},
+				group:['gz_lianjin_mark'],
+				subSkill:{
+					used:{},
+					mark:{
+						intro:{
+							content:'cards',
+							onunmark:'throw',
+						},
+						marktext:'洁',
+						trigger:{global:'phaseAfter'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							player.storage.gz_lianjin_mark=[];
+							player.storage.gz_lianjin_used=[];
+						}
+					},
+				}
+			},
 			//gz熊猫
 			gz_jiaku:{
 				trigger:{player:['chooseToCompareAfter','compareMultipleAfter'],target:['chooseToCompareAfter','compareMultipleAfter']},
@@ -1395,7 +1465,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 							for(var i=0;i<evt.cards.length;i++){
 								var card=evt.cards[i];
-								if(list.contains(get.color(card)))	another++;
 								list.remove(get.color(card));
 							}
 						});
@@ -1459,6 +1528,116 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
+			},
+			//gz希桃
+			gz_xuyan:{
+				trigger:{player:'phaseJieshuBegin'},
+				content:function(){
+					'step 0'
+					player.chooseTarget(1,'选择观察目标',function(card,player,target){
+						return player!=target;
+					});
+					'step 1'
+					if(result.bool){
+						result.targets[0].addSkill('gz_xuyan_mark');
+					}
+				},
+				group:['gz_xuyan_phaseStart','gz_xuyan_damage','gz_xuyan_die'],
+				subSkill:{
+					mark:{
+						mark:true,
+						intro:{
+							content:'造成伤害，杀死玩家与死亡都被列入了观察项目'
+						},
+					},
+					phaseStart:{
+						trigger:{player:'phaseBegin'},
+						forced:true,
+						filter:function(event,player){
+							return player.hasSkill('gz_xuyan_damaged')||player.hasSkill('gz_xuyan_dead')||game.filterPlayer(function(current){
+								if(current.hasSkill('gz_xuyan_mark')){
+									return true;
+								}
+								else
+									return false;
+							}).length>0
+						},
+						content:function(){
+							'step 0'
+							game.filterPlayer(function(current){
+								if(current.hasSkill('gz_xuyan_mark')){
+									current.removeSkill('gz_xuyan_mark');
+									return true;
+								}
+								else
+									return false;
+							});
+							if(!player.hasSkill('gz_xuyan_damaged')&&!player.hasSkill('gz_xuyan_dead')){
+								player.loseHp();
+								game.filterPlayer(function(cur){
+									if(cur.hasSkill('gz_xuyan_mark')){
+										cur.loseHp();
+									}
+								})
+								event.finish();
+							}
+							'step 1'
+							if(player.hasSkill('gz_xuyan_damaged')){
+								player.removeSkill('gz_xuyan_damaged');
+								player.draw();
+							}
+							'step 2'
+							if(player.hasSkill('gz_xuyan_dead')){
+								player.removeSkill('gz_xuyan_dead');
+								player.recover();
+							}
+							else{
+								event.finish();
+							}
+						}
+					},
+					damage:{
+						trigger:{global:'damageAfter'},
+						forced:true,
+						filter:function(event,player){
+							if(event.source){
+								return event.source.hasSkill('gz_xuyan_mark');
+							}
+							else	return event.player.hasSkill('gz_xuyan_mark');
+						},
+						content:function(){
+							player.addSkill('gz_xuyan_damaged');
+						}
+					},
+					die:{
+						trigger:{global:'dieBefore'},
+						forced:true,
+						filter:function(event,player){
+							if(event.source){
+								return event.source.hasSkill('gz_xuyan_mark')||event.player.hasSkill('gz_xuyan_mark');
+							}
+							else
+								return event.player.hasSkill('gz_xuyan_mark');
+						},
+						content:function(){
+							player.addSkill('gz_xuyan_dead');
+						}
+					},
+					damaged:{
+						mark:true,
+						marktext:'伤',
+						intro:{
+							content:'观察目标造成或受到了伤害'
+						},
+					},
+					dead:{
+						mark:true,
+						marktext:'亡',
+						intro:{
+							content:'观察目标死亡或杀死过角色'
+						},
+					}
+				}
 			},
 			//gz小白
 			liexing:{
@@ -8920,6 +9099,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_zhenxin:'真信',
 			gz_zhenxin_info:'<font color=#f66>锁定技</font> 你受到伤害时，若来源有暗置的武将牌，此伤害-1。',
 
+			gz_lianjin:'炼金',
+			gz_lianjin_info:'当你使用一张牌后，可以将一张手牌置于此将牌上。然后若此将牌上有三种不同/相同花色的牌，你将其中的装备牌置入场上，弃置其余的牌，视为使用了两张：火【杀】/【无中生有】，然后本回合不再触发此项。',
+
 			gz_duanli: '断离',
 			gz_duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
 			qingyi: '情遗',
@@ -8941,6 +9123,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			gz_niaoji: '鸟肌',
 			gz_niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
+			
+			gz_xuyan: '虚研',
+			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间造成过伤害，你摸一张牌。否则你与一名角色各失去1点体力。',
 			
 			zhanni: '斩逆',
 			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',

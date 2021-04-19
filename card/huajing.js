@@ -1358,7 +1358,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			qianshuifu: '潜水服',
 			qianshuifu_skill: '潜水服',
 			qianshuifu_bg: '服',
-			qianshuifu_info: ' <font color=#f66>锁定技</font> 你在一名角色攻击距离外时，受到来源为其的伤害-1；当你失去装备区里的【潜水服】时，你摸一张牌。',
+			qianshuifu_info: ' <font color=#f66>锁定技</font> 你在一名角色攻击范围外时，受到来源为其的伤害-1；当你失去装备区里的【潜水服】时，你摸一张牌。',
 			fanchuan: '帆船',
 			fanchuan_bg: '帆',
 			fanchuan_info: '<font color=#f66>锁定技</font> 其他角色计算与你的距离+1。',

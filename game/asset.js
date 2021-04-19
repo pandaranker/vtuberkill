@@ -1356,6 +1356,7 @@ window.noname_asset_list=[
 	/**niji */
 	'image/character/gz_HonmaHimawari.jpg',
 	'image/character/gz_AibaUiha.jpg',
+	'image/character/gz_LizeHelesta.jpg',
 	/**企 */
 	'image/character/gz_YuNi.jpg',
 	'image/character/gz_DoumyoujiHaruto.jpg',
@@ -1416,6 +1417,7 @@ window.noname_asset_list=[
 	'image/skin/ŌokamiMio/1.jpg',
 	'image/skin/OtomeOto/1.jpg',
 	'image/skin/Pudding/1.jpg',
+	'image/skin/SakuraMiko/1.jpg',
 	'image/skin/SakuraRitsuki/1.jpg',
 	'image/skin/SakuraRitsuki/2.jpg',
 	'image/skin/SasakiSaku/1.jpg',

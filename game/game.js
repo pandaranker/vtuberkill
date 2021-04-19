@@ -14323,13 +14323,17 @@
 				},
 				moveCard:function(){
 					'step 0'
-					if(!player.canMoveCard(null,event.nojudge)){
+					if(!player.canMoveCard(null,event.nojudge,event.moveHandcard)){
 						event.finish();
 						return;
 					}
 					var next=player.chooseTarget(2,function(card,player,target){
+						if(_status.event.sourceFilterTarget&&typeof _status.event.sourceFilterTarget=='function'){
+							if(!_status.event.sourceFilterTarget(card,player,target))	return false;
+						}
 						if(ui.selected.targets.length){
 							var from=ui.selected.targets[0];
+							if(_status.event.moveHandcard&&from.countCards('h')>0)	return true;
 							var js=from.getCards('j');
 							for(var i=0;i<js.length;i++){
 								if(_status.event.nojudge) break;
@@ -14344,11 +14348,14 @@
 						}
 						else{
 							var range='ej';
-							if(_status.event.nojudge) range='e';
+							if(_status.event.nojudge)		range='e';
+							if(_status.event.moveHandcard)	range='h'+range;
 							return target.countCards(range)>0;
 						}
 					});
 					next.set('nojudge',event.nojudge||false);
+					next.set('moveHandcard',event.moveHandcard||false);
+					next.set('sourceFilterTarget',event.sourceFilterTarget||false);
 					next.set('ai',function(target){
 						var player=_status.event.player;
 						var att=get.attitude(player,target);
@@ -14416,7 +14423,7 @@
 					game.delay();
 					'step 3'
 					if(targets.length==2){
-						player.choosePlayerCard('ej',true,function(button){
+						player.choosePlayerCard('hej',true,function(button){
 							var player=_status.event.player;
 							var targets0=_status.event.targets0;
 							var targets1=_status.event.targets1;
@@ -14431,6 +14438,10 @@
 							}
 						},targets[0]).set('nojudge',event.nojudge||false).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
 							var targets1=_status.event.targets1;
+							if(get.position(button.link)=='h'){
+								if(!_status.event.moveHandcard) return false;
+								return true;
+							}
 							if(get.position(button.link)=='j'){
 								if(_status.event.nojudge) return false;
 								return targets1.canAddJudge(button.link);
@@ -14438,7 +14449,7 @@
 							else{
 								return targets1.isEmpty(get.subtype(button.link));
 							}
-						});
+						}).set('moveHandcard',event.moveHandcard||false);
 					}
 					else{
 						event.finish();
@@ -14449,14 +14460,19 @@
 						if(get.position(link)=='e'){
 							event.targets[1].equip(link);
 						}
+						else if(get.position(link)=='h'){
+							event.targets[0].give(link,event.targets[1],'giveAuto');
+						}
 						else if(link.viewAs){
 							event.targets[1].addJudge({name:link.viewAs},[link]);
 						}
 						else{
 							event.targets[1].addJudge(link);
 						}
-						event.targets[0].$give(link,event.targets[1],false);
-						game.log(event.targets[0],'的',link,'被移动给了',event.targets[1]);
+						if(get.position(link)!='h'){
+							event.targets[0].$give(link,event.targets[1],false);
+							game.log(event.targets[0],'的',link,'被移动给了',event.targets[1]);
+						}
 						event.result.card=link;
 						event.result.position=get.position(link);
 						game.delay();
@@ -19564,7 +19580,7 @@
 						return false;
 					}
 				},
-				canMoveCard:function(withatt,nojudge){
+				canMoveCard:function(withatt,nojudge,moveHandcard){
 					var player=this;
 					return game.hasPlayer(function(current){
 						var att=get.sgn(get.attitude(player,current));
@@ -19597,6 +19613,9 @@
 								}
 							}
 						}
+						if(moveHandcard==true){
+							if(current.countCards('h')>0)	return true;
+						}
 					});
 				},
 				moveCard:function(){
@@ -19608,6 +19627,10 @@
 						}
 						else if(typeof arguments[i]=='string'){
 							get.evtprompt(next,arguments[i]);
+						}
+						else if(typeof arguments[i]=='function'){
+							if(next.sourceFilterTarget) next.ai=arguments[i];
+							else next.sourceFilterTarget=arguments[i];
 						}
 						else if(Array.isArray(arguments[i])){
 							for(var j=0;j<arguments[i].length;j++){
@@ -22093,11 +22116,11 @@
 					}
 					return num;
 				},
-				getAttackRange:function(raw){
+				getAttackRange:function(raw,loop){
 					var player=this;
 					var range=0;
-					if(raw) range=game.checkMod(player,player,range,'globalFrom',player);
-					range=game.checkMod(player,player,range,'attackFrom',player);
+					if(raw)		range=game.checkMod(player,player,range,'globalFrom',player);
+					if(!loop)	range=game.checkMod(player,player,range,'attackFrom',player);
 					var equips=player.getCards('e',function(card){
 						return !ui.selected.cards||!ui.selected.cards.contains(card);
 					});

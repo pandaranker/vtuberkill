@@ -746,8 +746,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							event.cards = trigger.cards;
-							player.chooseCardButton([0,3],true,cards,'『玉匣』：可以按顺将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
-								return get.value(button.link)+Math.random();;
+							player.chooseCardButton([0,3],true,cards,'『玉匣』：可以按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+								var player = _status.event.player;
+								var now = _status.currentPhase;
+								var next = now.getNext();
+								var att = get.attitude(player,next);
+								var card = button.link;
+								var judge = next.getCards('j')[ui.selected.buttons.length];
+								if(judge){
+									return get.judge(judge)(card)*att;
+								}
+								return next.getUseValue(card)*att;
 							});
 							'step 1'
 							if(result.bool&&result.links){
