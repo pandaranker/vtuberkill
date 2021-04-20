@@ -420,7 +420,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**相羽初叶 */
 				gz_AibaUiha:['female','nijisanji',4,['kangding','longshe'],['gzskin']],
 				/**熊猫人 */
-				gz_SasakiSaku:['female','nijisanji',3,['tiaolian','gz_jiaku']],
+				gz_SasakiSaku:['female','nijisanji',4,['tiaolian','gz_jiaku']],
 
 				/**绊爱 */
 				gz_KizunaAI:['female','vtuber',4,['re_ailian']],
@@ -869,7 +869,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.types = types;
 					event.cards = cards;
 					event.targets = event.result.targets.slice(0);
-					event.getParent().addCount=false;
+					// event.getParent().addCount=false;
 					'step 1'
 					if(event.types.contains('basic')){
 						var cards = event.cards;
@@ -896,51 +896,53 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				group:['gz_guiren_directHit','gz_guiren_gainBy','gz_guiren_redraw'],//
 				subSkill:{
-					drawBy:{
-						trigger:{source:'damageSource'},
-						forced:	true,
-						filter:function(event,player){
-							var evt = event.getParent('useCard');
-							return evt&&evt.skill=='guiren'&&['sha'].contains(evt.card.name)&&evt.cards&&evt.cards.filter(function(card){
-								return get.type(card)=='trick';
-							}).length;
-						},
-						logTarget:'player',
-						content:function(){
-							player.gainPlayerCard(trigger.player,'he');
-						},
-					},
+					// drawBy:{
+					// 	trigger:{source:'damageSource'},
+					// 	forced:	true,
+					// 	filter:function(event,player){
+					// 		var evt = event.getParent('useCard');
+					// 		return evt&&evt.skill=='guiren'&&['sha'].contains(evt.card.name)&&evt.cards&&evt.cards.filter(function(card){
+					// 			return get.type(card)=='trick';
+					// 		}).length;
+					// 	},
+					// 	logTarget:'player',
+					// 	content:function(){
+					// 		player.gainPlayerCard(trigger.player,'he');
+					// 	},
+					// },
 					directHit:{
-						trigger:{player:'useCard'},
+						trigger:{player:'shaBegin'},
 						forced:true,
 						popup:false,
-						filter:function(event){
+						filter:function(event,player){
 							return event.skill=='guiren'&&['sha'].contains(event.card.name)&&event.cards&&event.cards.filter(function(card){
 								return get.type(card)=='equip';
 							}).length;
 						},
 						content:function(){
-							trigger.directHit.addArray(trigger.targets);
+							trigger.directHit = true;
 						}
 					},
 					gainBy:{
 						trigger:{source:'damageSource'},
 						forced:true,
-						filter:function(event){
+						filter:function(event,player){
 							if(!event.card||!event.getParent()||!event.getParent('sha'))		return false;
-							evt = event.getParent('sha')
+							var evt = event.getParent('sha')
 							return evt.skill=='gz_guiren'&&evt.cards&&evt.cards.filter(function(card){
 								return get.type(card,'trick')=='trick';
-							}).length&&event.player.countCards(player,'he')>0;
+							}).length&&event.player.countCards('he')>0;
 						},
 						content:function(){
 							'step 0'
-							trigger.player.chooseCard('『鬼刃』：需要交给'+get.translation(player)+'一张牌',true).set('ai',function(card){
+							trigger.player.chooseCard('『鬼刃』：需要交给'+get.translation(player)+'一张牌',true,'he').set('ai',function(card){
 								var player = _status.event.player;
 								return 7-get.value(card,player);
 							});
 							'step 1'
-							target.give(result.cards,player,'giveAuto');
+							if(result.bool){
+								trigger.player.give(result.cards,player,'giveAuto');
+							}
 						}
 					},
 					redraw:{
@@ -948,7 +950,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						prompt:function(event,player){
 							return '你可以收回'+get.translation(event.cards)+'并结束此阶段';
 						},
-						filter:function(event){
+						filter:function(event,player){
 							return event.skill=='gz_guiren'&&['sha'].contains(event.card.name)&&event.cards&&event.cards.length;
 						},
 						content:function(){
@@ -1268,7 +1270,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player.logSkill('gz_lianjin');
 						player.$give(result.links[0],player);
 						player.lose(result.links[0],ui.special,'toStorage');
-						player.markAuto('gz_lianjin_mark');
+						player.markAuto('gz_lianjin_mark',result.links);
 					}
 					else{
 						event.finish();
@@ -1426,6 +1428,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			//reYuNi
 			gz_shengcai:{
+				audio:'re_shengcai',
 				trigger:{player:['useCardAfter','damageAfter']},
 				priority:123,
 				filter:function(event,player){
@@ -9125,7 +9128,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
 			
 			gz_xuyan: '虚研',
-			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间造成过伤害，你摸一张牌。否则你与一名角色各失去1点体力。',
+			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间：造成或受到过伤害~你摸一张牌；死亡或杀死角色~你回复1点体力；均不满足~你与其各失去1点体力。',
 			
 			zhanni: '斩逆',
 			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
@@ -9134,7 +9137,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_longdan_info: '<font color=#88e>转换技</font> 阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。',
 
 			gz_tiantang: '天扉',
-			gz_tiantang_info: '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）',
+			gz_tiantang_info: '一名角色的回合开始时，你可以弃置X张牌并声明一种花色，然后：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，然后只能使用声明花色的牌直到回合结束。（X为本轮你发动此技能的次数且至少为1）',
 			
 			gz_luecai: '掠财',
 			gz_luecai_info: '你使用牌指定唯一目标时，若其手牌数大于你，你可以令其交给你一张牌。然后若你的手牌数大于其，你失去此技能。',

@@ -16659,6 +16659,13 @@
 			},
 			player:{
 				//新新函数
+				isGuoV:function(){
+					var info=lib.character[this.name||this.name1];
+					if(info&&info[4]){
+						if(info[4].contains('guoV')) return true;
+					}
+				},
+				//新新函数
 				addGaintag:function(cards,tag){
 					game.addVideo('addGaintag',this,[get.cardsInfo(cards),tag]);
 					game.broadcastAll(function(player,cards,tag){
@@ -38752,6 +38759,7 @@
 					}
 					var characterlist=connectMenu?lib.connectCharacterPack:lib.config.all.characters;
 					for(var i=0;i<characterlist.length;i++){
+						if(['sololive'].contains(characterlist[i])) continue;
 						createModeConfig(characterlist[i],start.firstChild);
 					}
 					if(!connectMenu){

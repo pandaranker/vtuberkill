@@ -9,8 +9,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sp_UsadaPekora: ['female','shen','3/4',['tuqi', 'shizu']],
 			sp_MononobeAlice: ['female','shen',3,['xianjing','chahui', 'duandai']],
 
-			sp_Ava: ['female','shen',Infinity,['shuimu','liuxuan']],
-			sp_Diana: ['female','shen',2,['tangyan','tianyin']],
+			sp_Ava: ['female','shen',Infinity,['shuimu','liuxuan'],['guoV']],
+			sp_Diana: ['female','shen',2,['tangyan','tianyin'],['guoV']],
 			
 			sp_KizunaAI:['female', 'shen', 4, ['ai', 'ban']],
 		},

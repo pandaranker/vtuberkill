@@ -32,12 +32,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
 			
 			/**OG诸人 */
-			Civia:['female','holo',3,['kuangxin','danyan','qingjie']],
-			SpadeEcho:['female','holo',3,['hangao','yinglve']],
-			Artia:['female','holo',3,['shuangzhi','shenghua']],
-			Doris:['female','holo',3,['shenhai','paomo']],
-			Yogiri:['female','holo',3,['shisang','wanjie']],
-			Rosalyn:['female','holo',3,['maoge','bianlan','futian']],
+			Civia:['female','holo',3,['kuangxin','danyan','qingjie'],['guoV']],
+			SpadeEcho:['female','holo',3,['hangao','yinglve'],['guoV']],
+			Artia:['female','holo',3,['shuangzhi','shenghua'],['guoV']],
+			Doris:['female','holo',3,['shenhai','paomo'],['guoV']],
+			Yogiri:['female','holo',3,['shisang','wanjie'],['guoV']],
+			Rosalyn:['female','holo',3,['maoge','bianlan','futian'],['guoV']],
 		},
 		characterSort:{
 			hololive:{
@@ -3159,7 +3159,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				hiddenCard:function(player,name){
 					if(!player.storage.maoge||player.storage.maoge.length<=player.countCards('h')) return false;
 					for(var i=0;i<player.storage.maoge.length;i++){
-						if(player.storage.maoge[i].name==name) return true;
+						if(get.name(player.storage.maoge[i])==name) return true;
 					}
 					return false;
 				},
@@ -3220,8 +3220,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					nouse:{
 						mod:{
 							cardEnabled2:function(card,player){
-								if(player.storage.maoge.length>player.countCards('h')){
-									return get.position(card)!='h';
+								if(player.getStorage('maoge').length>player.countCards('h')&&get.position(card)=='h'){
+									return false;
 								}
 							}
 						}

@@ -5,9 +5,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			/**阿梓 */
-			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu']],
+			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
 			/**勺宝 */
-			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan']],
+			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan'],['guoV']],
 
 			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
@@ -23,7 +23,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			/**花谱 */
-			Kaf:['female','qun',3,['liuhua','yinshi']],
+			Kaf:['female','qun',3,['liuhua','yishi']],
 			/**P家诸人 */
 			Paryi:['male','paryi',4,['tiantang','haoren'],['forbidai']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -35,19 +35,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
 			/**步玎 */
-			Pudding: ['female','psp',4,['tianlve','luxian']],
+			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV']],
 			/**粉兔 */
-			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu']],
+			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
 			/**阿秋 */
-			AkiRinco: ['female','psp',4,['jiren','canxin']],
+			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
 
-			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi']],
+			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'],['guoV']],
 			/**茜科塞尔 */
-			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai']],
+			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai'],['guoV']],
 			/*黑川*/
-			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai']],//, 'mingyunniezao'
+			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai','guoV']],//, 'mingyunniezao'
 			/**进击的冰糖 */
-			bingtang: ['female', 'qun', 4, ['xiou']],
+			bingtang: ['female', 'qun', 4, ['xiou'],['guoV']],
 			/**张京华 */
 			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
 			/**NoiR */
@@ -517,7 +517,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'liuhua_regain',
 				subSkill:{
 					regain:{
-						trigger:{player:['phaseBegin','turnOverEnd']},
+						trigger:{player:['phaseBefore','turnOverBefore']},
 						firstDo:true,
 						direct:true,
 						filter:function(event,player){
@@ -552,13 +552,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.logSkill('liuhua');
 								player.unmarkAuto('liuhua',result.links);
 								player.gain(result.links,player,'gain2')
-								player.turnOver();
-							}
+								if(trigger.name=='turnOver')	trigger.cancel(true);
+							}else	event.finish();
+							'step 2'
+							player.turnOver();
 						},
 					},
 				}
 			},
-			yinshi:{
+			yishi:{
 				trigger:{player:'phaseBefore'},
 				firstDo:true,
 				forced:true,
@@ -567,12 +569,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.storage.yinshi_use = _status.currentPhase;
+					player.storage.yishi_use = _status.currentPhase;
 					'step 1'
-					player.addTempSkill('yinshi_use');
+					player.addTempSkill('yishi_use');
 				},
 				subSkill:{
 					use:{
+						group:'undist',
 						mark:'character',
 						intro:{
 							content:function(storage,player){
@@ -583,7 +586,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						onremove:true,
 						mod:{
 							playerEnabled:function(card,player,target){
-								if(player!=target&&player.storage.yinshi_use!=target) return false;
+								if(player!=target&&player.storage.yishi_use!=target) return false;
 							}
 						}
 					}
@@ -3079,8 +3082,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Kaf: '花谱',
 			liuhua: '化羽',
 			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
-			yinshi: '遗世',
-			yinshi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标。',
+			yishi: '遗世',
+			yishi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',

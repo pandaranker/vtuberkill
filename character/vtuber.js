@@ -17,7 +17,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**小明 */
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			/**小希小桃 */
-			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha']],
+			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha'],['guoV']],
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**兔妈妈 */
@@ -29,15 +29,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**天开司 */
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**泠鸢 */
-			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing']],
+			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing'],['guoV']],
 			/**贝拉 */
-			Bella: ['female','asoul','3/4',['aswusheng', 'gunxun']],
+			Bella: ['female','asoul','3/4',['aswusheng', 'gunxun'],['guoV']],
 			/**嘉然 */
-			Diana: ['female','asoul',4,['quanyu', 'wulian']],
+			Diana: ['female','asoul',4,['quanyu', 'wulian'],['guoV']],
 			/**珈乐 */
-			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi']],
+			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi'],['guoV']],
 			/**乃琳 */
-			EQueen: ['female','asoul',4,['yehua', 'fengqing']],
+			EQueen: ['female','asoul',4,['yehua', 'fengqing'],['guoV']],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',

@@ -21,7 +21,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Noracat */
 			re_Noracat: ['female', 'upd8', 5, ['kouhu', 'zhiqiu']],
 			/**下地 */
-			re_XiaDi: ['male', 'qun', 4, ['re_yinliu', 'dunzou']],
+			re_XiaDi: ['male', 'qun', 4, ['re_yinliu', 'dunzou'],['guoV']],
 
 			/**物述有栖 */
 			re_MononobeAlice:['female','nijisanji',3,['tinenghuifu1','re_dianmingguzhen']],
@@ -73,12 +73,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**雪花菈米 */
 			re_YukihanaLamy:['female','holo',4,['hanling']],
 			/**桃子 */
-			re_SpadeEcho:['female','holo',3,['qinglve','yingshi']],
+			re_SpadeEcho:['female','holo',3,['qinglve','yingshi'],['guoV']],
 			/**角卷绵芽 */
 			//re_TsunomakiWatame:['female','holo',4,['disui','dengyan']],
 			
 			/**小希小桃 */
-			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan']],
+			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan'],['guoV']],
 			/**犬山 */
 			re_InuyamaTamaki:['male','nori',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
@@ -124,15 +124,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//re老爱
 			re_ailian:{
 				audio:'ailian',
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
 				enable:'phaseUse',
 				selectCard:[1,Infinity],
 				position:'h',
+				usable:1,
 				filterCard:true,
 				filterTarget:function(event,player,target){
-					return target!=player&&!player.storage.re_ailian.contains(target);
+					return target!=player;
 				},
 				check:function(card){
 					if(ui.selected.cards.length>1) return 0;
@@ -164,11 +162,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function(){
 					'step 0'
-					event.num = player.storage.re_ailian_clear;
+					event.num = player.getStorage('re_ailian_clear');
 					targets[0].gain(cards,player,'giveAuto');
 					'step 1'
-					player.storage.re_ailian.add(targets[0]);
 					player.storage.re_ailian_clear+=cards.length;
+					console.log(player.storage.re_ailian_clear,event.num)
 					'step 2'
 					if(player.storage.re_ailian_clear>=2&&event.num<2){
 						var list=[];
@@ -268,19 +266,53 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					threaten:0.8,
 				},
-				group:['re_ailian_clear'],
+				group:['re_ailian_clear','re_ailian_damage'],
 				subSkill:{
 					clear:{
 						init:function(player,skill){
-							if(!player.storage[skill]) player.storage[skill]=0;
+							if(!player.storage[skill]) player.storage[skill] = 0;
 						},
-						trigger:{player:'phaseAfter'},
+						trigger:{global:['phaseZhunbeiAfter','phaseDrawAfter','phaseUseAfter','phaseDiscardAfter','phaseJieshuAfter']},
 						forced:true,
 						silent:true,
 						firstDo:true,
 						content:function(){
-							player.storage.re_ailian.length=0;
 							player.storage.re_ailian_clear=0;
+						}
+					},
+					damage:{
+						trigger:{player:'damageEnd'},
+						filter:function(event,player){
+							return player.countCards('h')>0;
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							player.chooseCardTarget({
+								prompt:get.prompt2('re_ailian'),
+								selectCard:[1,Infinity],
+								position:'h',
+								usable:1,
+								filterCard:true,
+								filterTarget:function(event,player,target){
+									return target!=player;
+								},
+								ai2:function(target){
+									var att=get.attitude(_status.event.player,target);
+									if(target.hasSkillTag('nogain')) att/=10;
+									if(target.hasJudge('lebu')) att/=5;
+									return att;
+								},
+								ai1:function(card){
+									var player = _status.event.player;
+									if(player.getStorage('re_ailian_clear')>2)	return 0;
+									return 8-get.value(card);
+								},
+							}).set('logSkill','re_ailian');
+							'step 1'
+							if(result.bool&&result.targets){
+								player.useSkill('re_ailian',player,false).set('targets',result.targets).set('cards',result.cards);
+							}
 						}
 					}
 				},
@@ -1253,7 +1285,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					clear:{
 						trigger:{player:['useCardAfter']},
-						direct:true,
+						forced:true,
+						silent:true,
+						firstDo:true,
 						content:function(){
 							if(player.storage.onlink!=null){
 							    var deleteIndex=player.storage.onlink.indexOf(trigger.card.cardid);
@@ -3675,8 +3709,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseEnd'},
 						filter:function(event,player){
 							var num=0;
-							player.getHistory('sourceDamage',function(evt){
-								if(evt.getParent('phase')==event) num+=evt.num;
+							player.getHistory('useCard',function(evt){
+								return evt.targets&&(evt.targets.length>1||evt.targets[0]!=player);
 							});
 							return !num&&game.hasPlayer(function(cur){
 								return cur.countCards('h')<player.countCards('h');
@@ -4545,7 +4579,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_KizunaAI: '新·绊爱',
 			re_ailian: '爱冀',
-			re_ailian_info: '出牌阶段每名角色限一次，你可以将任意张手牌交给一名其他角色，然后当你于此阶段以此法给出第二张牌时，你可以视为使用一张基本牌。',
+			re_ailian_info: '当你受到伤害后或出牌阶段限一次，你可以将任意张手牌交给一名其他角色。当你于一个阶段内以此法给出第二张牌时，你可以视为使用一张基本牌。',
 
 			re_YuNi: '新·YuNi',
 			re_shengcai: '声彩',
@@ -4741,7 +4775,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_YukihanaLamy: '新·雪花菈米',
 			hanling: '寒灵',
-			hanling_info: '当你受到伤害时，若来源手牌数小于你，你可以将手牌弃至与其相等防止此伤害。你的回合结束时，若本回合你未使用过牌，你可以令一名角色摸牌至与你手牌相同。',
+			hanling_info: '当你受到伤害时，若来源手牌数小于你，你可以将手牌弃至与其相等防止此伤害。你的回合结束时，若本回合你未对其他角色使用过牌，你可以令一名角色摸牌至与你手牌相同。',
 			
 			re_SpadeEcho: '新·黑桃影',
 			qinglve: '轻掠',

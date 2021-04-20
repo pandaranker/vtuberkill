@@ -7,7 +7,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**长尾景 */
 			NagaoKei:['male','nijisanji',3,['fumo','chidu']],
 			/**白神遥 */
-			ShirakamiHaruka:['female','psp',3,['baoxiao','quru']],
+			ShirakamiHaruka:['female','psp',3,['baoxiao','quru'],['guoV']],
 			/**海狗 */
 			KisaragiKoyori:['female','kagura',3,['shinve','juzu']],
 			/**鲨皇 */
@@ -15,7 +15,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Ina */
 			NinomaeInanis:['female','holo',3,['mochu','fuyue']],
 			/**娜娜米 */
-			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai']],
+			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai'],['guoV']],
 			/**海熊猫 */
 			sea_SasakiSaku:['female','nijisanji',4,['haishou','lishi']],
 			/**潜水夸 */
@@ -461,6 +461,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(result.targets&&result.targets.length){
 						event.targets = result.targets;
+						player.logSkill('fuyue',event.targets);
 						trigger.targets.addArray(event.targets);
 					}
 				},
