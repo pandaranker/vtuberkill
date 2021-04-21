@@ -56,9 +56,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_YozoraMel:['female','holo',3,['fuyi','xihun']],
 			/**樱巫女 */
 			re_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao']],
-			 /**夏色祭 */
+			/**夏色祭 */
 			re_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
-			 /**赤井心 */
+			/**紫咲诗音 */
+			re_MurasakiShion:['female','holo',3,['anshu','xingchi']],
+			/**赤井心 */
 			re_AkaiHaato:['female','holo',3,['xinchixin']],
 			/**兔田佩克拉 */
 			re_UsadaPekora:['female','holo',4,['qiangyun','tuquan']],
@@ -1186,18 +1188,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.draw();
 						event.finish();
 					}else{
-						game.broadcastAll(function(player,target){
-							player.chooseToUse({
-								preTarget:target,
-								filterCard:{name:'sha'},
-								filterTarget:function(card,player,target){
-									return target==_status.event.preTarget;
-								},
-								addCount:false,
-								nodistance:true,
-								prompt:'D斩！(若不出【杀】则摸一张牌）',
-							});
-						}, player, trigger.player);
+						player.chooseToUse({
+							preTarget:trigger.player,
+							filterCard:{name:'sha'},
+							filterTarget:function(card,player,target){
+								return target==_status.event.preTarget;
+							},
+							addCount:false,
+							nodistance:true,
+							prompt:'DD斩首！(若不出【杀】则摸一张牌）',
+						});
 					}
 					'step 1'
 					if(result.bool){
@@ -3683,6 +3683,46 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//re阿紫
+			anshu:{
+				trigger:{global:'phaseJieshuBegin'},
+				direct:true,
+				filter:function(event,player){
+					return event.player!=player&&player.countCards('h',function(card){
+						return player.canUse(card,event.player);
+					});
+				},
+				content:function(){
+					player.chooseToUse({
+						preTarget:trigger.player,
+						filterCard:true,
+						filterTarget:function(card,player,target){
+							return target==_status.event.preTarget;
+						},
+						addCount:false,
+						nodistance:true,
+						prompt:get.prompt2('anshu'),
+					}).set('logSkill','anshu')
+				},
+				group:'anshu_directHit',
+				subSkill:{
+					directHit:{
+						direct: true,
+						trigger:{
+							player:"useCard",
+						},
+						filter:function(event,player){
+							return event.logSkill=='anshu'&&get.suit(event.card)=='spade';
+						},
+						content:function(){
+							trigger.directHit.addArray(game.players);
+						},
+					}
+				}
+			},
+			xingchi:{
+				
+			},
 			//re雪花菈米
 			hanling:{
 				trigger:{player:'damageBegin3'},
@@ -4760,6 +4800,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_NakiriAyame: '新·百鬼绫目',
 			guiren: '鬼刃',
 			guiren_info: '你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。',
+			
+			re_MurasakiShion: '新·紫咲诗音',
+			anshu: '暗术',
+			anshu_info: '其他角色的回合结束时，若其手牌数不小于你，你可对其使用一张牌。且若此牌为♠，此牌不可被响应。',
+			xingchi: '醒迟',
+			xingchi_info: '其他角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数不大于手牌上限或另一张武将牌的体力上限，你可以将下一个阶段改为你的摸牌阶段。',
 
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',

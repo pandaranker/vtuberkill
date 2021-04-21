@@ -10,8 +10,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			
-			/**向晚 */
-			Ava: ['female','asoul',4,['yiqu','wanxian'],['guoV']],
+
+			/**紫海由爱 */
+			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
+			/**黑桐亚里亚 */
+			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 
 			/**早稻叽 */
 			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
@@ -431,7 +434,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					name:'挖井人',
 					content:function (storage,player,skill){
-						return '已发动了'+storage+'次【天堂之扉】';
+						return '已发动了'+storage+'次『天扉』';
 					},
 				},
 				trigger:{player:'tiantangAfter'},
@@ -5872,6 +5875,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				enable:'chooseToUse',
 				skillAnimation:'epic',
+				locked:true,
 				filter:function(event,player){
 					if(event.type!='dying') return false;
 					if(player!=event.dying) return false;
@@ -6170,13 +6174,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiying:{
 				trigger:{player:'damageAfter'},
 				filter:function(event,player){
+					if(player==_status.currentPhase)	return false;
 					return lib.filter.cardEnabled({name:'nanman'},player);
 				},
 				check:function(event,player){
-					var effect=0;
+					var effect = 0;
+					var players = game.players.slice(0);
 					if(player.isTurnedOver()||player.isPhaseUsing())	effect+=3;
 					for(var i=0;i<players.length;i++){
-						if(players[i]!=player&&player.canUse('nanman',players[i]))	effect+=get.effect(target,{name:'nanman'},players[i],player);
+						if(players[i]!=player&&player.canUse('nanman',players[i]))	effect+=get.effect(players[i],{name:'nanman'},player,player);
 					}
 					return effect>0;
 				},
@@ -6202,7 +6208,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'hengxuan_discardBy',
 				subSkill:{
 					discardBy:{
-						audio:2,
+						mod:{
+							aiValue:function(player,card,num){
+								if(card.hasGaintag&&card.hasGaintag('hengxuan')) return num/10;
+							},
+						},
 						trigger:{target:"useCardToTarget"},
 						filter:function(event,player){
 							return event.player!=player&&event.targets.length==1&&player.countCards('h',function(card){
@@ -6215,9 +6225,173 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return card.hasGaintag('hengxuan');
 							});
 							if(hs.length) player.discard(hs);
-
 						}
 					}
+				}
+			},
+			//紫海由爱
+			lianyin:{
+				trigger:{global:['useCard','respond']},
+				priority:996,
+				filter:function(event,player){
+					if(event.name=='respond'&&!player.awakenedSkills.contains('guixiang'))	return false;
+					if(!player.storage.lianyin)		player.storage.lianyin = 0;
+					if(!player.storage.guixiang)	player.storage.guixiang = 0;
+					return event.player!=player&&player==_status.currentPhase&&player.storage.lianyin<player.maxHp;
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>-1;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					game.asyncDraw([player,trigger.player]);
+					'step 1'
+					player.storage.lianyin++;
+					player.storage.guixiang++;
+					player.markSkill('guixiang');
+				},
+				group:'lianyin_clear',
+				subSkill:{
+					clear:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return player.storage.lianyin;
+						},
+						content:function(){
+							player.storage.lianyin = 0;
+						}
+					},
+				},
+			},
+			guixiang:{
+				skillAnimation:true,
+				unique:true,
+				juexingji:true,
+				forced:true,
+				init:function(player){
+					player.storage.guixiang=0;
+				},
+				locked:true,
+				intro:{
+					content:'已发动了&次『联音』',
+				},
+				trigger:{player:'phaseZhunbeiBegin'},
+				filter:function(event,player){
+					return player.storage.guixiang>=game.countPlayer();
+				},
+				content:function(){
+					'step 0'
+					player.gainMaxHp();
+					'step 1'
+					player.recover();
+					'step 2'
+					player.storage.guixiang=true;
+					player.awakenSkill('guixiang');
+					player.unmarkSkill('guixiang');
+				},
+				ai:{
+					combo:'lianyin',
+				},
+			},
+			//亚里亚
+			xuanying:{
+				trigger:{global:['useCard','respond']},
+				priority:996,
+				filter:function(event,player){
+					if(event.name=='respond'&&!player.awakenedSkills.contains('houfan'))	return false;
+					if(!player.storage.xuanying)		player.storage.xuanying = 0;
+					return event.player!=player&&player==_status.currentPhase&&player.storage.xuanying<(player.countCards('e')||1);
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					player.chooseCard('###'+get.prompt('xuanying')+'###将一张牌交给'+get.translation(event.target),'he').set('target',event.target).ai=function(card){
+						var player = _status.event.player;
+						var target = _status.event.target;
+						if(get.position(card)=='e')	return ((player.countCards('e')-1)*2||1)+get.value(card,target,'raw')*get.attitude(player,target);
+						return 1+get.value(card,target,'raw')*get.attitude(player,target);
+					};
+					'step 1'
+					if(result.bool&&result.cards){
+						if(get.position(result.cards[0])=='e')	event.drawNum = 'equip';
+						player.give(result.cards,event.target,'giveAuto');
+					}else	event.finish();
+					'step 2'
+					player.chooseTarget('『玄荫』：令你或其摸一张牌',function(card,player,target){
+						return player==target||target==_status.event.target;
+					}).set('target',event.target).ai=function(target){
+						if(target!=player&&target.hasSkillTag('nogain')) return 0;
+						return get.attitude(player,target);
+					};
+					'step 3'
+					if(result.bool&&result.targets){
+						if(event.drawNum)	result.targets[0].draw(player.countCards('e')||1);
+						else	result.targets[0].draw();
+					}
+				},
+				group:'xuanying_clear',
+				subSkill:{
+					clear:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						filter:function(event,player){
+							return player.storage.xuanying;
+						},
+						content:function(){
+							player.storage.xuanying = 0;
+						}
+					},
+				},
+			},
+			houfan:{
+				enable:'phaseUse',
+				unique:true,
+				limited:true,
+				filter:function(event,player){
+					return player.countCards('h')==0;
+				},
+				content:function(){
+					'step 0'
+					player.loseMaxHp();
+					event.num = 0;
+					'step 1'
+					var card=get.discardPile(function(card){
+						return get.type(card)=='equip';
+					});
+					if(card){
+						player.gain(card,'gain2');
+						event.num++;
+					}else	event.goto(3);
+					'step 2'
+					if(event.num<3)	event.goto(1);
+					'step 3'
+					player.storage.houfan=true;
+					player.awakenSkill('houfan');
+				},
+				ai:{
+					combo:'xuanying',
+					order:function(item,player){
+						var equips=[];
+						for(var i=0;i<ui.discardPile.childElementCount;i++){
+							var subtype=get.subtype(ui.discardPile.childNodes[i]);
+							if(subtype&&player.countCards('h',{subtype:subtype})==0){
+								equips.add(ui.discardPile.childNodes[i]);
+							}
+						}
+						if(equips>=3) return 10;
+						return 0;
+					},
+					result:{player:3},
 				}
 			},
 			//Buff
@@ -6300,7 +6474,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mark:true,
 						marktext:'B',
-						intro:{name:'Buff',content:'本回合内与出牌阶段可以多使用【杀】'},
+						intro:{name:'Buff',content:'本回合内于出牌阶段可以多使用【杀】'},
 					},
 					Buff2:{
 						trigger:{player:'phaseDiscardBegin'},
@@ -6628,10 +6802,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			shangsheng:function(player){
-				var str = '回合开始时，你于本回合获得一项效果：A.于摸牌阶段多摸1张牌；B.于出牌阶段多出1张【杀】；C.于弃牌阶段手牌上限增加1。然后若本次选择与前两次均不同，此技能所有数字+1；否则-1（至少为1）。';
+				var str = '回合开始时，你于本回合获得一项效果：A.于摸牌阶段多摸1张牌；B.于出牌阶段多出1张【杀】；C.于弃牌阶段手牌上限增加1。然后若本次选择与前两次均不同，此技能所有数字增加；否则减少（至少为初始值）。';
 				var num = player.storage.shangsheng_Buff||1;
 				if(num){
-					return str.replace(/(?<![\+-为])1/g,'<span class="changetext">'+num+'</span>');
+					return str.replace(/1/g,'<span class="changetext">'+num+'</span>');
+				}
+				return str;
+			},
+			lianyin:function(player){
+				var str = '每回合限X次，其他角色在你的回合内使用牌时，你可以与其各摸一张牌。（X为你的体力上限）';
+				if(player.awakenedSkills.contains('guixiang')){
+					return str.replace(/使用/g,'<span class="changetext">使用或打出</span>');
 				}
 				return str;
 			},
@@ -6644,18 +6825,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
+			ShikaiYue: '紫海由爱',
+			lianyin: '联音',
+			lianyin_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以与其各摸一张牌。（X为你的体力上限）',
+			guixiang: '归乡',
+			guixiang_info: '<font color=#faf>觉醒技</font> 准备阶段，若你发动『联音』的次数不少于存活角色数，你增加一点体力上限并回复一点体力，将『联音』的“使用”改为“使用或打出”。',
+
+			KurokiriAria: '黑桐亚里亚',
+			xuanying: '玄荫',
+			xuanying_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备区的牌，则改为摸X张。（X为你装备区的牌数且至少为1）',
+			houfan: '候返',
+			houfan_info: '<font color=#b56>限定技</font> 出牌阶段，若你没有手牌，你可以减1点体力上限，从弃牌堆获得至多三张装备牌，并将『玄荫』的“使用”改为“使用或打出”。',
+
 			Niuniuzi: '牛牛子',
 			qiying: '奇嘤',
 			qiying_info: '你于其他角色的回合受到伤害后，你可以翻面并视为使用一张【南蛮入侵】。',
 			hengxuan: '恒宣',
 			hengxuan_info: '结束阶段，你可以摸两张牌；当你被其他角色指定为牌的唯一目标时，立即弃置以此法摸到的牌。',
-			
+
 			Zaodaoji: '早稻叽',
 			guangan: '珖黯',
 			guangan_info: '你的上家对你使用牌，或你对你的下家使用牌时，你可以摸一张牌。每轮限X次（X为场上存活角色数）。',
 			lanxuan: '澜绚',
 			lanxuan_info: '你造成或受到伤害后，可以立即无视距离与次数限制使用一张牌。',
-			zonghe: '澜绚',
+			zonghe: '纵合',
 			zonghe_info: '<font color=#fbd>主公技</font> 游戏开始时，你可以指定一名角色，你对其发动『珖黯』时无视座次限制。',
 
 			Menherachan: '七濑胡桃',
@@ -6676,9 +6869,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			xinkeniang: '新科娘',
 			daimao: '呆毛科技',
-			daimao_info: '<font color=#f66>锁定技</font> 游戏开始时你将牌堆顶一张牌置于你的武将牌上，称为“萪”；你使用与“萪”同花色的牌不受距离和次数限制；你进入濒死状态时，将一张与“萪”不同花色的牌置于“萪”中，若如此做，则你体力上限-1，回复满体力，摸三张牌。',
+			daimao_info: '<font color=#f66>锁定技</font> 游戏开始时，你将牌堆顶牌置于武将牌上，称为“萪”；你使用与“萪”同花色的牌不受距离和次数限制；你进入濒死状态时，将一张与“萪”不同花色的牌置于“萪”中，若如此做，则你体力上限-1，回复满体力，摸三张牌。',
 			hongtou: '红头文件',
-			hongtou_info: '<font color=#daa>主公技</font> 当你需要使用或打出基本牌时，场上的国V可代替你使用或打出。',
+			hongtou_info: '<font color=#f44>主公技</font> 当你需要使用或打出基本牌时，场上的国V可代替你使用或打出。',
 			
 			Azusa: '阿梓',
 			zhiyue: '指月',

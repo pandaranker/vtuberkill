@@ -3608,6 +3608,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			UruhaRushia: '润羽露西娅',
 			NakiriAyame: '百鬼绫目',
+			MurasakiShion: '紫咲诗音',
 			TsunomakiWatame: '角卷绵芽',
 			YukihanaLamy: '雪花菈米',
 			ŌzoraSubaru: '新·大空昴',

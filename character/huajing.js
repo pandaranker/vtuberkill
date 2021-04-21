@@ -293,7 +293,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.gainMaxHp();
 					if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
-					player.storage.haoren = true;
+					player.storage.juzu = true;
 					player.awakenSkill('juzu');
 					player.addSkill('haigou');
 				},

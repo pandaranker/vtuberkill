@@ -430,43 +430,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.player!=player&&event.getParent().player!=player)	return false;
 					return event.card&&get.type(event.card)=='trick'&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
 				},
+				check:function(event,player){
+					var shouxia = event.getParent().targets.splice(event.getParent().targets.indexOf(trigger.player));
+					var effect = 0;
+					for(var i=0;i<shouxia.length;i++){
+						effect+=get.effect(shouxia[i],event.card,event.getParent().player,player);
+					}
+					return effect<0;
+				},
 				content:function(){
 			//		if(!trigger.getParent(2).addedSkill)	trigger.getParent(2).addedSkill = [];
 			//		trigger.getParent(2).addedSkill.add('gutai');
 					var shouxia = trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
 					player.logSkill('gutai',shouxia)
 				},
-			//	group:['gutai_cancelDam','gutai_gainBy'],
-			/*	subSkill:{
-					cancelDam:{
-						trigger:{global:'damageBegin3'},
-						forced:	true,
-						silent: true,
-						popup: false,
-						filter:function(event,player){
-							return event.card&&event.getParent(2).name=='useCard'&&event.getParent(2).addedSkill&&event.getParent(2).addedSkill.contains('gutai');
-						},
-						content:function(){
-							player.logSkill('gutai',trigger.player);
-							trigger.changeToZero();
-						},
-					},
-					gainBy:{
-						trigger:{global:'useCardAfter'},
-						forced:	true,
-						filter:function(event,player){
-							if(event.player==player)	return false;
-							return event.targets.contains(player)&&get.type(event.card)=='trick'&&!game.hasPlayer(function(cur){
-								return player.getHistory('damage',function(evt){
-									return evt.card==event.card;
-								}).length>0
-							});
-						},
-						content:function(){
-							player.gain(trigger.cards,'giveAuto');
-						},
-					},
-				},*/
 			},
 			//Kaf
 			liuhua:{

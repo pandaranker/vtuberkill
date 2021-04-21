@@ -350,11 +350,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			SakuraMiko:['UsadaPekora'],
 			YozoraMel:['AkiRosenthal'],
 			ShirakamiFubuki:['NatsuiroMatsuri'],
+			MinatoAqua:['NakiriAyame'],
 			MitoTsukino:['HiguchiKaede','ShizukaRin'],
 			MononobeAlice:['UshimiIchigo'],
 			LizeHelesta:['SuzuharaLulu'],
 			KizunaAI:['KaguyaLuna'],
 			Siro:['Bacharu'],
+			Diana:['Ava'],
 			Nekomasu:['Noracat'],
 			zhangjinghua:['bingtang','Paryi'],
 			Paryi:['bingtang'],
@@ -378,6 +380,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_SakuraMiko: ['female', 'holo', 3, ['huangyou','qidao'],['gzskin']],
 				 /**夏色祭 */
 				gz_NatsuiroMatsuri:['female','holo',3,['gz_huxi'],['doublegroup:holo:nijisanji']],
+				/**湊阿库娅 */
+				gz_MinatoAqua:['female','holo',3,['gz_kuali','youyi']],
 				/**兔田佩克拉 */
 				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan'],['gzskin']],
 				/**润羽露西娅 */
@@ -436,6 +440,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Bacharu:['male', 'vtuber', 4, ['gz_zuodun','gz_baidao']],
 				/**嘉然 */
 				gz_Diana: ['female','vtuber',4,['quanyu']],
+				/**向晚 */
+				gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu']],
 				/**泠鸢 */
 				gz_Yousa:['female','vtuber',3,['gz_niaoji','ysxiangxing'],['doublegroup:vtuber:nijisanji']],
 				/**道明寺晴翔 */
@@ -841,6 +847,34 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.removeSkill('gz_huxi2');
 						}
 					}
+				},
+			},
+			//夸
+			gz_kuali:{
+				trigger:{player:'phaseDrawBegin1'},
+				check:function(event,player){
+					return game.countPlayer(function(cur){
+						return cur.hp%player.hp==0&&cur!=player;
+					})>2;
+				},
+				filter:function(event,player){
+					return !event.numFixed&&game.countPlayer(function(cur){
+						return cur.hp%player.hp==0&&cur!=player;
+					});
+				},
+				content:function(){
+					var num = game.countPlayer(function(cur){
+						return cur.hp%player.hp==0&&cur!=player;
+					});
+					player.draw(num);
+					trigger.changeToZero();
+				},
+				mod:{
+					maxHandcard:function(player,num){
+						return num+=game.countPlayer(function(cur){
+							return cur.hp%player.hp==0&&cur!=player;
+						});
+					},
 				},
 			},
 			//gz狗狗
@@ -1468,7 +1502,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 							for(var i=0;i<evt.cards.length;i++){
 								var card=evt.cards[i];
-								list.remove(get.color(card));
+								if(event.card!=card) list.remove(get.color(card));
 							}
 						});
 						game.hasPlayer(function(cur){
@@ -1529,6 +1563,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if([player.name,player.name1].contains('Yousa')) game.playAudio('skill','niaoji_heart'+Math.ceil(3*Math.random()));
 							player.draw(event.num);
 						}
+					}
+				},
+			},
+			//向晚
+			gz_yiqu:{
+				trigger:{player:'damageAfter'},
+				usable:1,
+				filter:function(event,player){
+					return event.source&&player.countCards('he');
+				},
+				prompt2:function(event,player){
+					return '你可以交给'+get.translation(event.player)+'一张牌，然后摸两张牌';
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard(true,'he').set('ai',function(card){
+						var att = _status.event.att;
+						return 3+att>get.value(card);
+					}).set('att',get.attitude(player,trigger.source))
+					'step 1'
+					if(result.bool&&result.cards){
+						player.give(result.cards,trigger.source,'giveAuto');
+						player.draw(2);
 					}
 				},
 			},
@@ -9089,6 +9146,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_huxi:'呼吸',
 			gz_huxi_info:'出牌阶段开始时或你造成伤害后，你可以与一名本回合未以此法指定过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。当你为杏时，本回合使用交换获得的【杀】无距离限制；当你为虹时，你交换获得的非♥️装备牌可立即置于场上。（若置于判定区，红色视为【乐不思蜀】，黑色视为【兵粮寸断】）',
 
+			gz_kuali: '夸力满满',
+			gz_kuali_info: '摸牌阶段，你可以改为摸X张牌。你的手牌上限始终+X。（X为体力值为你整数倍的其他角色数）',
+			
 			gz_guiren: '鬼刃',
 			gz_guiren_info: '你可以将两张红色/黑色牌当做一张【杀】使用，然后根据你转化牌包含的类型获得对应效果：基本~使之具有火焰/雷电属性；锦囊~若造成伤害，令目标交给你一张牌；装备~不可被抵消。若被抵消，你可以收回之并结束此阶段。',
 
@@ -9126,6 +9186,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			gz_niaoji: '鸟肌',
 			gz_niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
+
+			gz_yiqu: '亦趋',
+			gz_yiqu_info: '若你在其他角色执行技能的过程中被指定为目标，你可以获得该技能直到下次进入濒死状态。',
 			
 			gz_xuyan: '虚研',
 			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间：造成或受到过伤害~你摸一张牌；死亡或杀死角色~你回复1点体力；均不满足~你与其各失去1点体力。',

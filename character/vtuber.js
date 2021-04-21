@@ -30,6 +30,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**泠鸢 */
 			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing'],['guoV']],
+			/**向晚 */
+			Ava: ['female','asoul',4,['yiqu','wanxian'],['guoV']],
 			/**贝拉 */
 			Bella: ['female','asoul','3/4',['aswusheng', 'gunxun'],['guoV']],
 			/**嘉然 */
