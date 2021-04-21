@@ -1877,7 +1877,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return event.targets.length;
 				},
-				check: function(event, player) {
+				check:function(event, player){
 					return true;
 				},
 				inherit:'DDzhanshou',

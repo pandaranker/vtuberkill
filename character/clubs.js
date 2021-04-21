@@ -891,7 +891,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if (player.hasZhuSkill('xinluezhili') && player != event.tar) {
 							event.tar.addSkill('xinluezhili_draw');
 						}
-						player.logSkill('DDzhanshou', event.tar);
 						var count = (event.tar.countCards('h') >= player.countCards('h')) 
 									+ (event.tar.hp >= player.hp) 
 									+ (event.tar.countCards('e') >= player.countCards('e'));
