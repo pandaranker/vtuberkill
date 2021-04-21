@@ -59,7 +59,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**夏色祭 */
 			re_NatsuiroMatsuri:['female','holo',3,['re_huxi1']],
 			/**紫咲诗音 */
-			re_MurasakiShion:['female','holo',3,['anshu','xingchi']],
+			//re_MurasakiShion:['female','holo',3,['anshu','xingchi']],
 			/**赤井心 */
 			re_AkaiHaato:['female','holo',3,['xinchixin']],
 			/**兔田佩克拉 */
