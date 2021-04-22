@@ -66,7 +66,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseDrawBegin2'},
 						forced:true,
 						filter:function(event,player){
-							return !event.numFixed;
+							return !event.numFixed&&player.storage.baitai_B;
 						},
 						content:function(){
 							var Buff = player.storage.baitai_B;
@@ -76,9 +76,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						intro:{name:'百态',content:'摸牌阶段摸牌数+#'},
 					},
 					C:{
-						trigger:{player:'phaseDiscardBegin'},
-						forced:true,
-						content:function(){},
 						mod:{
 							maxHandcard:function(player,num){
 								var Buff = player.storage.baitai_C;

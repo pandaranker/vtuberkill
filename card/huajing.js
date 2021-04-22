@@ -678,10 +678,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					result:{
 						player:function(player,target){
-							if(player.isDamaged)	return 2;
-							else return 1;
+							return -0.7;
 						},
-						target:-1,
+						target:function(player,target){
+							return -target.hujia;
+						},
 					},
 					tag:{
 						huajing:1,

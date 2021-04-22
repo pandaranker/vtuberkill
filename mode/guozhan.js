@@ -361,6 +361,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			zhangjinghua:['bingtang','Paryi'],
 			Paryi:['bingtang'],
 			kaguraNaNa:['SpadeEcho'],
+			KaguraMea:['InuyamaTamaki'],
 		},
 		characterPack:{
 			mode_guozhan:{
@@ -448,6 +449,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi'],['gzskin']],
 				/**小希小桃 */
 				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
+				/**猫宫 */
+				gz_NekomiyaHinata: ['female', 'vtuber', 4, ['gz_yingdan','tianzhuo'],['doublegroup:vtuber:clubs']],
 
 				/**狗妈 */
 				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
@@ -457,7 +460,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Noracat: ['female', 'clubs', 5, ['kouhu'],['gzskin']],
 				// /**Yomemi */
 				// gz_Yomemi:['female','clubs',3,['mokuai','yaoji']],
-				//神乐组
+				//神乐
 				gz_KaguraMea: ['female', 'clubs', 4, ['gz_luecai', 're_xiaoyan']],
 				/**团长 */
 				gz_HisekiErio:['female','clubs',4,['re_huange']],
@@ -1574,7 +1577,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return event.source&&player.countCards('he');
 				},
 				prompt2:function(event,player){
-					return '你可以交给'+get.translation(event.player)+'一张牌，然后摸两张牌';
+					return '你可以交给'+get.translation(event.source)+'一张牌，然后摸两张牌';
 				},
 				content:function(){
 					'step 0'
@@ -1698,6 +1701,89 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 					}
 				}
+			},
+			//gz猫宫
+			gz_yingdan:{
+				hiddenCard:function(player,name){
+					if(['wuxie','shan'].contains(name)&&player.countCards('h',{name:'sha'})) return true;
+				},
+				mod:{
+					aiValue:function(player,card,num){
+						if(player.countCards('h',{name:'sha'})){
+							if(card.name=='shan'||card.name=='tao') return num/10;
+							if(card.name=='sha') return num*3;
+						}
+					},
+				},
+				group:['gz_yingdan_shan','gz_yingdan_wuxie'],//,'gz_yingdan_directHit'
+				subSkill:{
+					sha:{},
+					shan:{
+						audio:'songzang',
+						//技能发动时机
+						enable:['chooseToUse'],
+						prompt:'使用一张【杀】，视为使用了一张【闪】',
+						//动态的viewAs
+						viewAs:{name:'shan'},
+						//AI选牌思路
+						check:function(card){
+							return get.order(card);
+						},
+						filterCard:function(card,player,event){
+							return get.name(card,player)=='sha';
+						},
+						viewAsFilter:function(player){
+							if(!player.hasUseTarget({name:'sha',isCard:true})||!player.countCards('h',{name:'sha'})) return false;
+						},
+						precontent:function(){
+							'step 0'
+							event.card = event.result.cards[0];
+							player.$throw(event.cards);
+							event.result.card.cards=[];
+							event.result.cards=[];
+							'step 1'
+							player.chooseUseTarget(event.card,true,false,event.cards);
+							'step 2'
+							if(!player.getHistory('sourceDamage',function(evt){
+								return event.card==evt.card;
+							}).length) player.draw();
+						},
+						ai:{
+							respondShan:true,
+						}
+					},
+					wuxie:{
+						audio:'songzang',
+						//技能发动时机
+						enable:['chooseToUse'],
+						prompt:'使用一张【杀】，视为使用了一张【无懈可击】',
+						//动态的viewAs
+						viewAs:{name:'wuxie'},
+						//AI选牌思路
+						check:function(card){
+							return get.order(card);
+						},
+						filterCard:function(card,player,event){
+							return get.name(card,player)=='sha';
+						},
+						viewAsFilter:function(player){
+							if(!player.hasUseTarget({name:'sha',isCard:true})||!player.countCards('h',{name:'sha'})) return false;
+						},
+						precontent:function(){
+							'step 0'
+							event.card = event.result.cards[0];
+							player.$throw(event.cards);
+							event.result.card.cards=[];
+							event.result.cards=[];
+							'step 1'
+							player.chooseUseTarget(event.card,true,false,event.cards);
+							'step 2'
+							if(!player.getHistory('sourceDamage',function(evt){
+								return event.card==evt.card;
+							}).length) player.draw();
+						}
+					}
+				},
 			},
 			//gz小白
 			liexing:{
@@ -1870,7 +1956,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			//gz狗妈
 			zhanni:{
-				audio:'DDzhanshou',
+				audio:false,
+				direct:false,
 				trigger: {
 					player:'useCard2'
 				},
@@ -9192,7 +9279,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			
 			gz_xuyan: '虚研',
 			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间：造成或受到过伤害~你摸一张牌；死亡或杀死角色~你回复1点体力；均不满足~你与其各失去1点体力。',
-			
+
+			gz_yingdan: '盈弹',
+			gz_yingdan_info: '当你需要抵消一张牌时，若来源在你的攻击范围内，你可以使用一张【杀】抵消之。若此【杀】未造成伤害，你摸一张牌。',
+						
 			zhanni: '斩逆',
 			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
 

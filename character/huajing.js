@@ -731,10 +731,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget('###『潜涌』###使用一张无视防具的海杀，否则摸两张牌',function(card,player,target){
 						if(player==target) return false;
 						return player.inRange(target)&&player.canUse({name:'sha',nature:'ocean'},target,false);
-					}).ai = function(target){
+					}).set('ai',function(target){
 						var player=_status.event.player;
 						return get.effect(target,{name:'sha',nature:'ocean'},player,player);
-					}
+					});
 					'step 1'
 					if(result.targets&&result.targets.length){
 						player.logSkill('qianyong',result.targets);
@@ -753,7 +753,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					targetEnabled:function(card,player,target,now){
-						if(target.isTurnedOver()&&(card.name=='sha'||get.type(card)=='trick')){
+						if(target.isTurnedOver()&&(card.name=='sha'||(get.type2(card,false)=='trick'&&get.tag(card,'damage')))){
 							if(player!=target)	return false;
 						}
 					},
@@ -1151,7 +1151,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jinchen: '浸沉',
 			jinchen_info: '出牌阶段结束时，你可以回复一点体力并翻面，视为使用一张【沉没】。',
 			qianyong: '潜涌',
-			qianyong_info: '<font color=#f66>锁定技</font> 当你背面朝上时，你不能成为其他角色的【杀】或通常锦囊牌的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
+			qianyong_info: '<font color=#f66>锁定技</font> 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
 			qianyong_draw: '潜涌',
 
 			NagaoKei: '长尾景',

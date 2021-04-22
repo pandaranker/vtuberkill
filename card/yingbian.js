@@ -231,7 +231,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				loseDelay:false,
 				onEquip:function(){
 					player.logSkill('tianjitu');
-					if(player.countCards('he',function(cardx){
+					if(player.countDiscardableCards(player,'he',function(cardx){
 						return cardx!=card;
 					})) player.chooseToDiscard(true,function(card){
 						return card!=_status.event.card;

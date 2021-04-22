@@ -6,10 +6,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		character:{
 			/**绊爱 */
 			KizunaAI:['female','upd8',4,['ailian','qixu'],['zhu']],
-			/**犬山 */
-			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
-			/**Mishiro */
-			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
 			/**小白 */
 			Siro:['female', 'dotlive', 4, ['zhongxinghezou','xiugong'],['zhu']],
 			/**巴恰鲁 */
@@ -40,6 +36,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi'],['guoV']],
 			/**乃琳 */
 			EQueen: ['female','asoul',4,['yehua', 'fengqing'],['guoV']],
+
+			/**步玎 */
+			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV']],
+			/**粉兔 */
+			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
+			/**阿秋 */
+			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
+
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',

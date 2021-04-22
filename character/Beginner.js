@@ -306,6 +306,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return att;
 								},
 								ai1:function(card){
+									if(ui.selected.cards&&ui.selected.cards.length>2)	return 0
 									var player = _status.event.player;
 									if(player.getStorage('re_ailian_clear')>2)	return 0;
 									return 8-get.value(card);
@@ -432,7 +433,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re猫宫
 			yingdan:{
-				audio:2,
 				hiddenCard:function(player,name){
 					if(['wuxie','shan'].contains(name)&&player.countCards('h',{name:'sha'})) return true;
 				},
@@ -485,6 +485,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					// },
 					sha:{},
 					shan:{
+						audio:'songzang',
 						//技能发动时机
 						enable:['chooseToUse'],
 						prompt:'使用一张【杀】，视为使用了一张【闪】',
@@ -532,6 +533,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					wuxie:{
+						audio:'songzang',
 						//技能发动时机
 						enable:['chooseToUse'],
 						prompt:'使用一张【杀】，视为使用了一张【无懈可击】',
@@ -560,8 +562,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.result.card.cards=[];
 							event.result.cards=[];
 							'step 1'
+							event.addedSkill = [];
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
 							next.skill = 'yingdan_sha';
+							next.addedSkill = [];
+							if(event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
+								event.addedSkill.add('inRange');
+								next.addedSkill.add('inRange');
+							}
+							if(get.number(event.card)&&get.number(event.card)<=player.getAttackRange()){
+								event.addedSkill.add('number');
+								next.addedSkill.add('number');
+							}
+							console.log(event);
 						}
 					}
 				},
@@ -1189,15 +1202,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}else{
 						player.chooseToUse({
-							preTarget:trigger.player,
-							filterCard:{name:'sha'},
+							preTarget:target,
+							filterCard:function(card,player){
+								return get.name(card)=='sha'&&lib.filter.filterCard.apply(this,arguments);
+							},
 							filterTarget:function(card,player,target){
-								return target==_status.event.preTarget;
+								return target==_status.event.preTarget&&lib.filter.filterTarget.apply(this,arguments);
 							},
 							addCount:false,
 							nodistance:true,
 							prompt:'DD斩首！(若不出【杀】则摸一张牌）',
-						});
+						}).set('logSkill',['re_DDzhanshou',trigger.player]);
 					}
 					'step 1'
 					if(result.bool){
@@ -3695,14 +3710,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.chooseToUse({
 						preTarget:trigger.player,
-						filterCard:true,
+						filterCard:function(card,player){
+							return lib.filter.filterCard.apply(this,arguments);
+						},
 						filterTarget:function(card,player,target){
-							return target==_status.event.preTarget;
+							return target==_status.event.preTarget&&lib.filter.filterTarget.apply(this,arguments);
 						},
 						addCount:false,
 						nodistance:true,
 						prompt:get.prompt2('anshu'),
-					}).set('logSkill','anshu')
+					}).set('logSkill',['anshu',trigger.player]);
 				},
 				group:'anshu_directHit',
 				subSkill:{
@@ -4250,6 +4267,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
 				},
 				viewAs:{name:'huogong',nature:'fire'},
+				position:'he',
 				viewAsFilter:function(player){
 					if(!player.countCards('h',function(card){
 						return !player.storage.kuiquan_record.contains(get.type(card,'trick'));

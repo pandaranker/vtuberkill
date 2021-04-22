@@ -8,6 +8,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
 			/**勺宝 */
 			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan'],['guoV']],
+			/**胡桃 */
+			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
 
 			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
@@ -34,13 +36,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
-			/**步玎 */
-			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV']],
-			/**粉兔 */
-			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
-			/**阿秋 */
-			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
-
+			/**犬山 */
+			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
+			/**Mishiro */
+			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
+			
+			/**三三 */
+			Mikawa: ['male','qun',4,['zhezhuan','setu'],['guoV']],
+			/**妮娅 */
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'],['guoV']],
 			/**茜科塞尔 */
 			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai'],['guoV']],
@@ -867,6 +870,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player:'useCard2'
 				},
 				direct:true,
+				log:false,
 				filter:function(event,player){
 					return event.targets&&event.targets.length;
 				},
