@@ -12941,12 +12941,17 @@
 					event.skillai=event.ai||function(list){
 						return get.max(list,get.skillRank,'item');
 					};
-					game.check();
-					if(event.isMine()){
+					if(_status.connectMode){
+						if(choice.length==1) event._result={control:list[0]};
+						else player.chooseControl(choice).set('prompt','选择获得一个技能').set('forceDie',true).set('ai',function(){
+							return list.randomGet();
+						});
+					}
+					else if(event.isMine()){
+						game.check();
 						game.pause();
 						event.dialog=ui.create.dialog('forcebutton');
 						event.dialog.add(event.prompt||'选择获得一项技能');
-						_status.event.choice=choice;
 						var clickItem=function(){
 							_status.event._result=this.link;
 							game.resume();
@@ -12985,11 +12990,15 @@
 						event._result=event.skillai(choice);
 					}
 					'step 1'
-					if(event.dialog){
-						event.dialog.close();
+					if(_status.connectMode){
+						event.result={bool:true,skill:result.control};
+					}else{
+						if(event.dialog){
+							event.dialog.close();
+						}
+						event.choosing=false;
+						event.result={bool:true,skill:result};
 					}
-					event.choosing=false;
-					event.result={bool:true,skill:result};
 				},
 				chooseSkill:function(){
 					'step 0'
@@ -52728,7 +52737,7 @@
 				for(i=0;i<skills.length;i++){
 					if(lib.skill[skills[i]]&&(lib.skill[skills[i]].nopop||lib.skill[skills[i]].equipSkill)) continue;
 					if(lib.translate[skills[i]+'_info']){
-						translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,4);
+						translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,5);
 						if(node.forbiddenSkills[skills[i]]){
 							var forbidstr='<div style="opacity:0.5"><div class="skill">'+translation+'</div><div'+((translation.length>3)?' class="skilltext"':'')+'>';
 							if(node.forbiddenSkills[skills[i]].length){
@@ -53495,7 +53504,7 @@
 					var skills=infoitem[3];
 					for(i=0;i<skills.length;i++){
 						if(lib.translate[skills[i]+'_info']){
-							translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,4);
+							translation=lib.translate[skills[i]+'_ab']||get.translation(skills[i]).slice(0,5);
 							if(lib.skill[skills[i]]&&lib.skill[skills[i]].nobracket){
 								uiintro.add('<div><div class="skilln">'+get.translation(skills[i])+'</div><div'+((get.translation(skills[i]).length>3)?' class="skilltext"':'')+'>'+get.skillInfoTranslation(skills[i])+'</div></div>');
 							}

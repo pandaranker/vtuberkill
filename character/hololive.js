@@ -3611,7 +3611,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MurasakiShion: '紫咲诗音',
 			TsunomakiWatame: '角卷绵芽',
 			YukihanaLamy: '雪花菈米',
-			ŌzoraSubaru: '新·大空昴',
+			ŌzoraSubaru: '大空昴',
+			AZKi: 'AZKi',
 
 			Civia: '希薇娅',
 			kuangxin: '旷心',

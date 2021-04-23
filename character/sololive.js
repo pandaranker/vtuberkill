@@ -14,6 +14,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.storage.baitai_B!==0)	player.storage.baitai_B=0;
 					if(player.storage.baitai_C!==0)	player.storage.baitai_C=0;
 					if(player.storage.baitai_D!==0)	player.storage.baitai_D=0;
+					if(player.storage.baitai_E!==0)	player.storage.baitai_E=0;
 					return player.countCards('h');
 				},
 				content:function(){
@@ -31,8 +32,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 4'
 					player.storage.baitai_D+=player.countCards('h',{suit:'spade'});
 					player.markSkill('baitai_D');
+					'step 5'
+					player.storage.baitai_E+=Math.min(player.storage.baitai_A,player.storage.baitai_B,player.storage.baitai_C,player.storage.baitai_D);
+					if(player.storage.baitai_E>0) player.markSkill('baitai_E');
 				},
-				group:['baitai_clear','baitai_A','baitai_B','baitai_C','baitai_D'],
+				group:['baitai_clear','baitai_A','baitai_B','baitai_C','baitai_D','baitai_E'],
 				subSkill:{
 					clear:{
 						trigger:{global:'phaseAfter'},
@@ -40,17 +44,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						firstDo:true,
 						filter:function(event,player){
-							return player.storage.baitai_A||player.storage.baitai_B||player.storage.baitai_C||player.storage.baitai_D;
+							return player.storage.baitai_A||player.storage.baitai_B||player.storage.baitai_C||player.storage.baitai_D||player.storage.baitai_E;
 						},
 						content:function(){
 							if(player.storage.baitai_A!==0)	player.storage.baitai_A=0;
 							if(player.storage.baitai_B!==0)	player.storage.baitai_B=0;
 							if(player.storage.baitai_C!==0)	player.storage.baitai_C=0;
 							if(player.storage.baitai_D!==0)	player.storage.baitai_D=0;
+							if(player.storage.baitai_E!==0)	player.storage.baitai_E=0;
 							player.unmarkSkill('baitai_A');
 							player.unmarkSkill('baitai_B');
 							player.unmarkSkill('baitai_C');
 							player.unmarkSkill('baitai_D');
+							player.unmarkSkill('baitai_E');
 						}
 					},
 					A:{
@@ -94,6 +100,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						marktext:'水',
 						intro:{name:'百态',content:'出牌阶段可使用【杀】的次数+#'},
+					},
+					E:{
+						mod:{
+							selectTarget:function(card,player,range){
+								if(range[1]==-1) return;
+								if(player.storage.baitai_E>0) range[1]+=player.storage.baitai_E;
+							},
+						},
+						marktext:'🐚',
+						intro:{name:'百态',content:'使用牌可指定的目标+#'},
 					},
 				}
 			},

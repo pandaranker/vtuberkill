@@ -347,6 +347,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		perfectPair:{
+			TokinoSora:['AZKi'],
 			SakuraMiko:['UsadaPekora'],
 			YozoraMel:['AkiRosenthal'],
 			ShirakamiFubuki:['NatsuiroMatsuri'],
@@ -449,6 +450,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi'],['gzskin']],
 				/**小希小桃 */
 				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
+				/**AZKi */
+				gz_AZKi:['female','vtuber',3,['WHiTE','BLacK'],['gzskin','doublegroup:vtuber:holo']],
 				/**猫宫 */
 				gz_NekomiyaHinata: ['female', 'vtuber', 4, ['gz_yingdan','tianzhuo'],['doublegroup:vtuber:clubs']],
 
@@ -9275,7 +9278,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
 
 			gz_yiqu: '亦趋',
-			gz_yiqu_info: '若你在其他角色执行技能的过程中被指定为目标，你可以获得该技能直到下次进入濒死状态。',
+			gz_yiqu_info: '每回合限一次。当你受到伤害后，你可以交给来源一张牌。若与对你造成伤害的牌花色相同，你摸两张牌。',
 			
 			gz_xuyan: '虚研',
 			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间：造成或受到过伤害~你摸一张牌；死亡或杀死角色~你回复1点体力；均不满足~你与其各失去1点体力。',

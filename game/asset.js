@@ -1310,6 +1310,7 @@ window.noname_asset_list=[
 	'image/character/re_AkaiHaato.jpg',
 	'image/character/re_AkiRosenthal.jpg',
 	'image/character/re_AngeKatrina.jpg',
+	'image/character/re_AZKi.jpg',
 	'image/character/re_DoumyoujiHaruto.jpg',
 	'image/character/re_HiguchiKaede.jpg',
 	'image/character/re_HisekiErio.jpg',
@@ -1372,6 +1373,7 @@ window.noname_asset_list=[
 	/**企 */
 	'image/character/gz_YuNi.jpg',
 	'image/character/gz_DoumyoujiHaruto.jpg',
+	'image/character/gz_AZKi.jpg',
 	/**社 */
 	'image/character/gz_MinamiNami.jpg',
 	'image/character/gz_Noracat.jpg',

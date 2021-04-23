@@ -44,6 +44,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**时乃空 */
 			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
+			/**AZKi */
+			re_AZKi:['female','holo',3,['WHiTE','BLacK']],
 			/**萝卜子 */
 			re_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
 			/**白上吹雪 */
@@ -1635,7 +1637,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var unB = event.cards.filter(function(card){
 						return get.type(card)!='basic';
 					})
-					return player!=_status.currentPhase&&event.name=='lose'&&unB.length;
+					return player!=_status.currentPhase&&event.visible&&event.name=='lose'&&unB.length;
 				},
 				priority:98,
 				content: function() {
@@ -4613,6 +4615,115 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}, card);
 					}
 				}
+			},
+			//Azki
+			WHiTE:{
+				trigger:{
+					player:'damageEnd',
+				},
+				frequent:true,
+				filter:function (event,player){
+					return event.source!=undefined;
+				},
+				logTarget:'source',
+				content:function (){
+					'step 0'
+					player.viewHandcards(trigger.source);
+					'step 1'
+					player.chooseControl(lib.suit).set('prompt','『WHiTE』：请选择一个花色').ai=function(){return lib.suit.randomGet()};
+					'step 2'
+					event.suit=result.control;
+					player.popup(event.suit+2);
+					game.log(player,'声明了',event.suit+2);
+					'step 3'
+					if(!trigger.source.storage.WHiTE_suit)	trigger.source.storage.WHiTE_suit = [];
+					trigger.source.storage.WHiTE_suit.add(event.suit);
+					if(trigger.source.hasSkill('WHiTE_suit'))	trigger.source.markSkill('WHiTE_suit')
+					else	trigger.source.addTempSkill('WHiTE_suit')
+				},
+				subSkill:{
+					suit:{
+						mark:true,
+						intro:{
+							content:'不能使用、打出或弃置$牌',
+						},
+						mod:{
+							cardDiscardable:function(card,player){
+								if(player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
+							},
+							cardEnabled2:function(card,player){
+								if(player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
+							},
+						},
+					}
+				}
+			},
+			BLacK:{
+				enable:'phaseUse',
+				usable:1,
+				filter:function(event,player){
+					return game.hasPlayer(function(current){
+						return current!=player;
+					});
+				},
+				filterTarget:function(card,player,target){
+					if(player==target||target.hp==Infinity) return false;
+					return true;
+				},
+				content:function(){
+					'step 0'
+					var cards=get.cards(target.hp);
+					event.cards=cards;
+					player.chooseCardButton('『BLacK』：选择一张牌',cards,true);
+					'step 1'
+					if(result.bool&&player.canCompare(target)){
+						player.storage.BLacK = result.links[0];
+						player.chooseToCompare(target);
+					}
+					else{
+						for(var i=event.cards.length-1;i>=0;i--){
+							event.cards[i].fix();
+							ui.cardPile.insertBefore(event.cards[i],ui.cardPile.firstChild);
+						}
+						game.delay();
+						event.finish();
+					}
+					'step 2'
+					console.log(result)
+					if(result.winner){
+						if(event.cards.length){
+							if(result.winner==player){
+								event.card = player.storage.BLacK;
+								if(event.card&&player.canUse(event.card,target))	player.useCard(event.card,target);
+							}
+							else if(result.winner==target){
+								event.card = [result.player,result.target].filterInD('d')[0];
+								if(event.card&&target.canUse(event.card,player))	target.useCard(event.card,player);
+							}
+						}
+					}
+					delete player.storage.BLacK;
+				},
+				group:'BLacK_compare',
+				subSkill:{
+					compare:{
+						trigger:{player:'chooseCardBefore'},
+						// check:function(){
+						// 	return 20;
+						// },
+						direct:true,
+						filter:function(event,player){
+							if(event.getParent(2).name=='BLacK'&&player.storage.BLacK){
+								console.log(player.storage.BLacK)
+								return event.type=='compare'&&!event.directresult;
+							}
+							return false
+						},
+						content:function(){
+							trigger.directresult = [player.storage.BLacK];
+						}
+					}
+				},
 			}
 		},
 		characterReplace:{
@@ -4721,7 +4832,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_shuangren: '双刃',
 			re_shuangren_info: '你的黑色【杀】可以额外指定一名角色为目标；你的红色【杀】无距离与次数限制。',
 			re_jitui: '急退',
-			re_jitui_info: '当你受到伤害后或在回合外失去非基本牌后，你可以摸一张牌。',
+			re_jitui_info: '当你受到伤害后或在回合外正面朝上失去非基本牌后，你可以摸一张牌。',
 			
 			re_MononobeAlice:'新·物述有栖',
 			re_dianmingguzhen:'电鸣鼓震',
@@ -4891,6 +5002,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wanbi: '完璧',
 			wanbi_info: '当你抵消其他角色的牌后，若其手牌数不小于你，你可以获得被抵消的牌。',
 
+			re_AZKi: 'AZKi',
+			WHiTE: 'WHiTE',
+			WHiTE_info: '当你受到伤害后，你可以观看来源的手牌并声明一种花色，其无法使用、打出或弃置该花色的牌直到回合结束。',
+			BLacK: 'BLacK',
+			BLacK_info: '出牌阶段限一次，你可以指定一名其他角色，然后观看牌堆顶X张牌，用其中一张与其拼点，赢的角色对没赢的角色使用拼点牌。（X为目标体力值）',
 		}
 	}
 })

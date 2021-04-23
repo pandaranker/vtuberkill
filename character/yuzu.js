@@ -73,9 +73,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					trigger.player.chooseToUse(function(card){
-						return player.hasUseTarget(card);
-					},get.prompt2('hunzhan'));
+					trigger.player.chooseToUse({
+						filterCard:function(card,player){
+							return lib.filter.filterCard.apply(this,arguments);
+						},
+						prompt:get.prompt2('hunzhan')
+					});
 					'step 1'
 					if(result.cards&&result.cards.length){
 						player.draw();
@@ -5736,6 +5739,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 2'
+					if(_status.connectMode){
+
+					}else{
+
+					}
 					var list=get.gainableSkills(function(info,skill){
 						var name = get.translation(skill);
 						for(var i=0;i<name.length;i++){
@@ -5750,63 +5758,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					// event.skillai=function(){
 					// 	return get.max(list,get.skillRank,'item');
 					// };
-					// var fun=function(list){
-					// 	var dialog=ui.create.dialog('forcebutton');
-					// 	dialog.add('选择获得一项技能');
-					// 	var clickItem=function(){
-					// 		_status.event._result=this.link;
-					// 		dialog.close();
-					// 		game.resume();
-					// 	};
-					// 	for(var i=0;i<list.length;i++){
-					// 		if(lib.translate[list[i]+'_info']){
-					// 			var translation=get.translation(list[i]);
-					// 			if(translation[0]=='新'&&translation.length==3){
-					// 				translation=translation.slice(1,3);
-					// 			}
-					// 			else{
-					// 				translation=translation.slice(0,2);
-					// 			}
-					// 			var item=dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+
-					// 			translation+'</div><div>'+lib.translate[list[i]+'_info']+'</div></div>');
-					// 			item.firstChild.addEventListener('click',clickItem);
-					// 			item.firstChild.link=list[i];
-					// 		}
-					// 	}
-					// 	dialog.add(ui.create.div('.placeholder'));
-					// 	event.switchToAuto=function(){
-					// 		event._result=event.skillai();
-					// 		dialog.close();
-					// 		game.resume();
-					// 	};
-					// 	_status.imchoosing=true;
-					// 	game.pause();
-					// };
-					// if(player.isOnline2()){
-					// 	player.send(fun,list);
-					// }
-					// else if(event.isMine()){
-					// 	fun(list);
-					// }
-					// else{
-					// 	event._result=event.skillai();
-					// }
 					'step 3'
 					var link=result.skill;
 					console.log(link)
-					if(trigger.getParent().name!="trigger"&&!trigger.getParent(2).qianjiwanbian)	trigger.getParent(2).qianjiwanbian = true;
-					if(link!='qianjiwanbian'){
-						player.addAdditionalSkill('qianjiwanbian',link,true);
-						player.addSkillLog(link);
-					}
-					if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
-						event.reapeat = true;
-						event.goto(2);
-					}
-					if(link=='qianjiwanbian'&&player.storage.qianjiwanbian_clear!=true){
-						game.playAudio('skill','qianjiwanbian_mua');
-						player.storage.qianjiwanbian_clear = true;
-						game.log(player,'改写了','#y『千机万变』');
+					if(link){
+						if(trigger.getParent().name!="trigger"&&!trigger.getParent(2).qianjiwanbian)	trigger.getParent(2).qianjiwanbian = true;
+						if(link!='qianjiwanbian'){
+							player.addAdditionalSkill('qianjiwanbian',link,true);
+							player.addSkillLog(link);
+						}
+						if(player.storage.qianjiwanbian_clear===true&&event.reapeat!=true){
+							event.reapeat = true;
+							event.goto(2);
+						}
+						if(link=='qianjiwanbian'&&player.storage.qianjiwanbian_clear!=true){
+							game.playAudio('skill','qianjiwanbian_mua');
+							player.storage.qianjiwanbian_clear = true;
+							game.log(player,'改写了','#y『千机万变』');
+						}
 					}
 				},
 				ai:{
@@ -5855,13 +5824,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//新科娘
 			daimao:{
-				init:function(player,skill){
-					if(!player.storage.daimao_mark) player.storage.daimao_mark = [];
-					var cards = get.cards();
-					game.cardsGotoSpecial(cards);
-					player.$gain2(cards);
-					player.markAuto('daimao_mark',cards);
-				},
 				group:'daimao_mark',
 				mod:{
 					cardUsable:function(card,player,num){
@@ -5917,12 +5879,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.getStorage('daimao_mark')<=2) return 0.8;
 					}
 				},
+				group:['daimao_mark','daimao_start'],
 				subSkill:{
 					mark:{
 						intro:{
 							name:'呆毛',
 							content:'cards',
 							onunmark:'throw',
+						},
+					},
+					start:{
+						forced:true,
+						priority:10,
+						trigger:{
+							global:'gameStart',
+							player:'enterGame',
+						},
+						content:function(){
+							if(!player.storage.daimao_mark) player.storage.daimao_mark = [];
+							var cards = get.cards();
+							game.cardsGotoSpecial(cards);
+							player.$gain2(cards);
+							player.markAuto('daimao_mark',cards);
 						},
 					}
 				}
@@ -6565,6 +6543,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jushi:{
 				unique:true,
 				zhuSkill:true,
+				mod:{
+					maxHandcard:function(player,num){
+						if(player.hasZhuSkill('jushi')&&game.countPlayer(function(cur){
+							return cur.group&&cur.group=='qun';
+						}))	return num+game.countPlayer(function(cur){
+							return cur.group&&cur.group=='qun';
+						});
+					},
+				},
 			},
 			//Buff
 			shangsheng:{
