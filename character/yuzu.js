@@ -6317,8 +6317,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseCard('###'+get.prompt('xuanying')+'###将一张牌交给'+get.translation(event.target),'he').set('target',event.target).ai=function(card){
 						var player = _status.event.player;
 						var target = _status.event.target;
-						if(get.position(card)=='e')		return ((player.countCards('e')-1)*2||1)+get.value(card,target,'raw')*get.attitude(player,target);
-						else if(get.type(card)=='equip')	return ((player.countCards('e'))*2||1)+get.value(card,target,'raw')*get.attitude(player,target);
+						if(get.position(card)=='e')		return ((player.countCards('e')+1)||1)+get.value(card,target,'raw')*get.attitude(player,target);
+						else if(get.type(card)=='equip')	return ((player.countCards('e'))||1)+get.value(card,target,'raw')*get.attitude(player,target);
 						return 1+get.value(card,target,'raw')*get.attitude(player,target);
 					};
 					'step 1'
@@ -6335,7 +6335,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					'step 3'
 					if(result.bool&&result.targets){
-						if(event.drawNum=='equip')	result.targets[0].draw(player.countCards('e')||1);
+						if(event.drawNum=='equip')	result.targets[0].draw(player.countCards('e')+1||1);
 						else	result.targets[0].draw();
 					}
 				},
@@ -6999,7 +6999,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			KurokiriAria: '黑桐亚里亚',
 			xuanying: '玄荫',
-			xuanying_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则改为摸X张。（X为你装备区的牌数且至少为1）',
+			xuanying_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数且至少为1）',
 			houfan: '候返',
 			houfan_info: '<font color=#b56>限定技</font> 出牌阶段，若你没有手牌，你可以减1点体力上限，从弃牌堆随机获得至多三张装备牌，并将『玄荫』的“使用”改为“使用或打出”。',
 
