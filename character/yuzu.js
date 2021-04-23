@@ -6327,7 +6327,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.give(result.cards,event.target,'giveAuto');
 					}else	event.finish();
 					'step 2'
-					player.chooseTarget('『玄荫』：令你或其摸一张牌',function(card,player,target){
+					player.chooseTarget('『玄荫』：令你或其摸'+get.cnNumber(event.drawNum=='equip'?player.countCards('e')+1:1)+'张牌',function(card,player,target){
 						return player==target||target==_status.event.target;
 					}).set('target',event.target).ai=function(target){
 						if(target!=player&&target.hasSkillTag('nogain')) return 0;
