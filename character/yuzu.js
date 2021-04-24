@@ -6920,6 +6920,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhanchong:{
 				trigger:{player:'loseEnd'},
 				filter:function(event,player){
+					if(event.getParent().name&&['useCard','addJudge'].contains(event.getParent().name)) return false;
 					if(!event.visible) return false;
 					for(var i=0;i<event.hs.length;i++){
 						console.log(event)
