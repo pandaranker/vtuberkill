@@ -3097,6 +3097,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			MinamiNami: '美波七海',
 			Noracat: '野良喵',
+			Kano: '鹿乃',
+			HanamaruHareru: '花丸晴琉',
 		},
 	};
 });

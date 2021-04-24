@@ -45,7 +45,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**时乃空 */
 			re_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['zhu']],
 			/**AZKi */
-			re_AZKi:['female','holo',3,['WHiTE','BLacK']],
+			re_AZKi:['female','holo',4,['WHiTE','BLacK']],
 			/**萝卜子 */
 			re_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian']],
 			/**白上吹雪 */
@@ -94,6 +94,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**美波 */
 			re_MinamiNami: ['female','qun',4,['re_longdan']],
+			/**鹿乃 */
+			re_Kano: ['female','qun',4,['shiguang']],
+			/**花丸 */
+			re_HanamaruHareru: ['female','qun',3,['rangran','jiazhao']],
 			/**Re修女克蕾雅 */
 			re_SisterClearie:['female','nijisanji',4,['shenyou','shenfa']],
 			/**Re莉泽 */
@@ -2407,10 +2411,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter: function(event, player) {
 					return player.countCards('h');
 				},
+				check: function(event, player) {
+					if(player.countCards('h')==player.countCards('h',{color: 'red'}))	return get.recoverEffect(event.player,player,player)>0;
+					return true;
+				},
 				content: function() {
 					'step 0'
 					player.showHandcards();
-					event.chk = player.countCards('h') == player.countCards('h', {color: 'red'});
+					event.chk = player.countCards('h') == player.countCards('h',{color: 'red'});
 					'step 1'
 					if (event.chk) {
 						trigger.player.recover();
@@ -4677,6 +4685,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseCardButton('『BLacK』：选择一张牌',cards,true);
 					'step 1'
 					if(result.bool&&player.canCompare(target)){
+						for(var i=event.cards.length-1;i>=0;i--){
+							if(event.cards[i]==result.links[0])		continue;
+							event.cards[i].fix();
+							ui.cardPile.insertBefore(event.cards[i],ui.cardPile.firstChild);
+						}
 						player.storage.BLacK = result.links[0];
 						player.chooseToCompare(target);
 					}
@@ -4724,6 +4737,184 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
+			},
+			//kano
+			shiguang:{
+				trigger:{player:'damageEnd',source:'damageSource'},
+				priority:222,
+				filter:function(event,player){
+					return event.num>0;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					event.source = player==trigger.source;
+					event.num = trigger.num;
+					var next=player.chooseTarget(get.prompt2('shiguang'),function(card,player,target){
+						return target!=_status.event.another;
+					});
+					next.set('source',event.source);
+					next.set('num',event.num);
+					next.set('another',event.source?trigger.player:trigger.source);
+					next.set('logSkill','shiguang');
+					next.set('ai',function(target){
+						var player = _status.event.player;
+						var num = _status.event.num;
+						var att = get.attitude(player,target);
+						if(_status.event.source){
+							if(get.recoverEffect(target,player,player)<=0||target.maxHp-target.hp<num){
+								return -att*num;
+							}else{
+								return att*num;
+							}
+						}else{
+							if(target.hp<=num){
+								return -att*(num+1-target.hp)*2;
+							}else{
+								return -att;
+							}
+						}
+					});
+					'step 1'
+					if(result.bool&&result.targets[0]){
+						if(event.source){
+							result.targets[0].recover(event.num);
+							if(!result.targets[0].storage.shiguang_gain)	result.targets[0].storage.shiguang_gain = 0;
+							result.targets[0].storage.shiguang_gain+=event.num;
+							result.targets[0].addTempSkill('shiguang_gain','phaseBegin');
+						}else{
+							result.targets[0].loseHp(event.num);
+							if(!result.targets[0].storage.shiguang_lose)	result.targets[0].storage.shiguang_lose = 0;
+							result.targets[0].storage.shiguang_lose+=event.num;
+							result.targets[0].addTempSkill('shiguang_lose','phaseBegin');
+						}
+					}
+				},
+				subSkill:{
+					gain:{
+						onremove:true,
+						marktext:"失",
+						locked:true,
+						intro:{
+							content:'在下个回合开始时失去&点体力',
+						},
+						mark:true,
+						onremove:function(player){
+							game.log('『失光』后续效果');
+							game.delayx(0.5);
+							player.loseHp(player.storage.shiguang_gain);
+							delete player.storage.shiguang_gain;
+						},
+					},
+					lose:{
+						onremove:true,
+						marktext:"失",
+						locked:true,
+						intro:{
+							content:'在下个回合开始时回复&点体力',
+						},
+						mark:true,
+						onremove:function(player){
+							if(player.maxHp-player.hp){
+								game.log('『失光』后续效果');
+							}
+							game.delayx(0.5);
+							player.recover(player.storage.shiguang_lose);
+							delete player.storage.shiguang_lose;
+						},
+					},
+				}
+			},
+			//花丸
+			rangran:{
+				trigger:{player:'useCard2'},
+				priority:222,
+				filter:function(event,player){
+					if(!player.storage.rangran)		player.storage.rangran = [];
+					return game.countPlayer(function(cur){
+						return cur.isMaxHp()&&!player.storage.rangran.contains(cur)&&!event.targets.contains(cur)&&lib.filter.targetEnabled2(event.card, player, cur);
+					});
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					console.log(player.storage.rangran)
+					var next=player.chooseTarget(get.prompt2('rangran'),[1,Infinity],function(card,player,target){
+						return target.isMaxHp()&&!player.storage.rangran.contains(target)&&!_status.event.targets.contains(target)&&lib.filter.targetEnabled2(_status.event.card, player, target)
+					}).set('ai',function(target){
+						var evt=_status.event;
+						return get.effect(target,evt.candy,evt.source,evt.player);
+					}).set('card',trigger.card).set('targets',trigger.targets).set('logSkill','rangran');
+					'step 1'
+					if(result.bool&&result.targets[0]){
+						var targets=result.targets.slice(0);
+						trigger.targets.addArray(targets);
+						player.storage.rangran.addArray(targets);
+						player.line(targets,{color:[255, 224,172]});
+					}
+				},
+				group:['rangran_drawBy','rangran_clear'],
+				subSkill:{
+					drawBy:{
+						trigger:{global:'damageHit'},
+						priority:222,
+						filter:function(event,player){
+							return event.nature&&event.player.isMaxHp();
+						},
+						forced:true,
+						content:function(){
+							player.draw();
+						}
+					},
+					clear:{
+						trigger:{global:'phaseEnd'},
+						priority:222,
+						filter:function(event,player){
+							return player.storage.rangran;
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							delete player.storage.rangran;
+						}
+					},
+				}
+			},
+			jiazhao:{
+				trigger:{global:'damageEnd'},
+				filter:function(event,player){
+					return event.player.isIn();
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0;
+				},
+				content:function(){
+					trigger.player.draw(trigger.player.isMinHp()?3:1).gaintag=['jiazhao'];
+				},
+				global:'jiazhao_discardBy',
+				subSkill:{
+					discardBy:{
+						mod:{
+							aiValue:function(player,card,num){
+								if(card.hasGaintag&&card.hasGaintag('jiazhao')) return num/10;
+							},
+						},
+						trigger:{player:'phaseBegin'},
+						filter:function(event,player){
+							return event.player==player&&player.countCards('h',function(card){
+								return card.hasGaintag('jiazhao');
+							});
+						},
+						forced:true,
+						content:function(){
+							var hs=player.getCards('h',function(card){
+								return card.hasGaintag('jiazhao');
+							});
+							if(hs.length) player.discard(hs);
+						}
+					}
+				}
 			}
 		},
 		characterReplace:{
@@ -4732,7 +4923,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
 			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
 			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
-			
+			SuzuharaLulu:['re_SuzuharaLulu','SuzuharaLulu'],
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
@@ -4854,7 +5045,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_danlian: '耽恋',
 			re_danlian_info: '当你于摸牌阶段外获得♦/♥/♠牌时，你可以将之合理的置于一名角色的判定区/手牌区/装备区。',
 
-			re_SuzuharaLulu: '铃原露露',
+			re_SuzuharaLulu: '新·铃原露露',
 			tunshi:'吞食',
 			tunshi_info:'其他角色于其回合外失去某区域最后一张牌时，你可以令当前回合角色获得之。你的回合内其他角色进入濒死状态时，你可以回复1点体力。',
 
@@ -5002,11 +5193,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wanbi: '完璧',
 			wanbi_info: '当你抵消其他角色的牌后，若其手牌数不小于你，你可以获得被抵消的牌。',
 
-			re_AZKi: 'AZKi',
+			re_AZKi: '新·AZKi',
 			WHiTE: 'WHiTE',
 			WHiTE_info: '当你受到伤害后，你可以观看来源的手牌并声明一种花色，其无法使用、打出或弃置该花色的牌直到回合结束。',
 			BLacK: 'BLacK',
 			BLacK_info: '出牌阶段限一次，你可以指定一名其他角色，然后观看牌堆顶X张牌，用其中一张与其拼点，赢的角色对没赢的角色使用拼点牌。（X为目标体力值）',
+
+			re_Kano: '新·鹿乃',
+			shiguang: '失光',
+			shiguang_info: '当你造成/受到伤害后，你可以令另一名角色回复等量体力/受到等量伤害。然后下个回合开始时，其失去等量体力/回复等量体力。',
+			
+			re_HanamaruHareru: '新·花丸晴琉',
+			rangran: '昂然',
+			rangran_info: '你使用牌可指定本回合未以此法指定过的场上体力最多角色为额外目标。场上体力最多的角色受到属性伤害后，你摸一张牌。',
+			jiazhao: '佳朝',
+			jiazhao_info: '当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸两张。然后其回合开始时弃置因此获得的牌。',
 		}
 	}
 })

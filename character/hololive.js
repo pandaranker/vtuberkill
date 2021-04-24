@@ -34,7 +34,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**OG诸人 */
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie'],['guoV']],
 			SpadeEcho:['female','holo',3,['hangao','yinglve'],['guoV']],
-			Artia:['female','holo',3,['shuangzhi','shenghua'],['guoV']],
+			Artia:['female','holo',3,['shuangzhi','xiwo'],['guoV']],
 			Doris:['female','holo',3,['shenhai','paomo'],['guoV']],
 			Yogiri:['female','holo',3,['shisang','wanjie'],['guoV']],
 			Rosalyn:['female','holo',3,['maoge','bianlan','futian'],['guoV']],
@@ -1540,7 +1540,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						});
 				},
 				check:function(event,player){
-					if(player.countCards('h') == player.countCards('h', {suit: 'heart'}))	return get.recoverEffect(event.player,player,player);
+					if(player.countCards('h') == player.countCards('h', {suit: 'heart'}))	return get.recoverEffect(event.player,player,player)>0;
 					return 1;
 				},
 				content:function(){
@@ -2671,7 +2671,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					delete player.storage.shuangzhi2;
 				},
 			},
-			shenghua:{
+			xiwo:{
 				trigger:{global:'roundStart'},
 				priority:222,
 				round:1,
@@ -2685,7 +2685,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					next.set('targetprompt',['失去体力','回复体力']);
 					next.set('prompt','指定两名角色，分别失去一点体力和回复一点体力');
-					next.set('forced',false);
 					next.set('ai',function(target){
 						var player=_status.event.player;
 						var att=get.attitude(player,target);
@@ -2711,20 +2710,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					});
 					'step 1'
-					if(result.bool){
+					if(result.bool&&result.targets){
+						player.logSkill('xiwo',result.targets);
 						result.targets[0].loseHp();
-						result.targets[0].addTempSkill('shenghua_lose','roundStart');
+						result.targets[0].addTempSkill('xiwo_lose','roundStart');
 						result.targets[1].recover();
-						result.targets[1].addTempSkill('shenghua_gain','roundStart');
+						result.targets[1].addTempSkill('xiwo_gain','roundStart');
 					}
 				},
 			},
-			shenghua_lose:{
+			xiwo_lose:{
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				onremove:true,
-				marktext:"生",
+				marktext:"握",
 				locked:true,
 				intro:{
 					name:'生化之握-',
@@ -2737,7 +2737,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:420,
 				onremove:function(player){
 					if(player.maxHp-player.hp){
-						game.log('希握后续效果');
+						game.log('『希握』后续效果');
 					}
 					game.delay(0.5);
 					player.recover();
@@ -2745,12 +2745,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 				}
 			},
-			shenghua_gain:{
+			xiwo_gain:{
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				onremove:true,
-				marktext:"生",
+				marktext:"握",
 				locked:true,
 				intro:{
 					name:'生化之握+',
@@ -2762,7 +2762,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				priority:420,
 				onremove:function(player){
-					game.log('希握后续效果');
+					game.log('『希握』后续效果');
 					game.delay(0.5);
 					player.loseHp();
 				},
@@ -3637,8 +3637,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Artia: '阿媂娅',
 			shuangzhi: '殇冻',
 			shuangzhi_info: '其他角色一回合内弃置第二张牌后，你可以令其选择一项：受到1点无来源伤害；或受到的伤害+1直到其回合开始。',
-			shenghua: '希握',
-			shenghua_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
+			xiwo: '希握',
+			xiwo_info: '一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。',
 			
 			Doris: '朵莉丝',
 			shenhai: '曜海',

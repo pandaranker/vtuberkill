@@ -11,6 +11,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			
 
+			/**理芽 */
+			Rim: ['female','qun',4,['shenghua','zhanchong'],],
 			/**紫海由爱 */
 			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 			/**黑桐亚里亚 */
@@ -657,9 +659,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target = result.targets[0];
 						player.showCards(result.cards,'『直抒』展示手牌');
 						game.delayx();
-						event.target.chooseCard('he','是否交给'+get.translation(player)+'一张花色为'+get.translation(result.cards[0])+'的牌？',function(card,player){
+						event.target.chooseCard('he','是否交给'+get.translation(player)+'一张花色为'+get.translation(get.suit(result.cards[0]))+'的牌？',function(card,player){
 							return get.suit(card)==_status.event.suit;
-						}).set('suit',result.cards[0])
+						}).set('suit',get.suit(result.cards[0]))
 					}else{
 						event.finish();
 					}
@@ -5526,10 +5528,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						marktext:"祭",
 						locked:true,
 						intro:{
-							name:'祭刃',
+							name:'戮秋',
 							content:function (storage,player,skill){
 								if(storage.length){
-									return '本回合已产生的『祭刃』判定结果：'+ get.translation(storage);
+									return '本回合已产生的『戮秋』判定结果：'+ get.translation(storage);
 								}
 							},
 						},
@@ -5607,7 +5609,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.loseHp();
 					'step 1'
-					game.log(player,'重置了『祭刃』');
+					game.log(player,'重置了『戮秋』');
 					player.getStat('skill').jiren--;
 				},
 				ai:{
@@ -6218,7 +6220,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							return event.player!=player&&event.targets.length==1&&player.countCards('h',function(card){
 								return card.hasGaintag('hengxuan');
-							});;
+							});
 						},
 						forced:true,
 						content:function(){
@@ -6889,6 +6891,76 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.damage('nosource');
 				}
 			},
+			//Rim
+			shenghua:{
+				enable:'phaseUse',
+				position:'h',
+				filterCard:true,
+				selectCard:-1,
+				check:function(card){
+					if(get.type(card)=='equip')	return 10-get.value(card);
+					return 6-get.value(card);
+				},
+				content:function(){
+					player.draw(cards.length-player.getStat('skill').shenghua);
+				},
+				ai:{
+					order:function(item,player){
+						if(player.countCards('h',{suit:'heart'}))	return 4;
+						else return 1;
+					},
+					result:{
+						player:function(player){
+							if(player.isTurnedOver()&&player.countCards('h',1))
+							return 0;
+						}
+					}
+				}
+			},
+			zhanchong:{
+				trigger:{player:'loseEnd'},
+				filter:function(event,player){
+					if(!event.visible) return false;
+					for(var i=0;i<event.hs.length;i++){
+						console.log(event)
+						if(get.type(event.hs[i])=='equip') return true;
+					}
+					return false;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					event.num = trigger.hs.filter(function(chong){
+						return get.type(chong)=='equip'
+					}).length;
+					'step 1'
+					console.log(event.num)
+					if(event.num>0){
+						player.chooseTarget(get.prompt2('zhanchong')).set('ai',function(target){
+							var player = _status.event.player;
+							if(player.isTurnedOver())	return 4-get.attitude(player,target);
+							return -0.5-get.attitude(player,target);
+						});
+					}else	event.finish();
+					'step 2'
+					if(result.bool&&result.targets[0]){
+						event.target = result.targets[0];
+						player.discardPlayerCard(result.targets[0],'he',true).set('ai',function(button){
+							if(get.type(button.link)=='equip') return 2-get.value(button.link);
+							return 1-get.value(button.link)+get.damageEffect(_status.event.target,_status.event.player,_status.event.player);
+						})
+					}else	event.finish();
+					'step 3'
+					if(result.bool){
+						player.turnOver();
+						event.num--;
+						if(get.type(result.cards[0])!='equip'){
+							event.target.damage(player);
+						}
+						event.goto(1);
+					}
+				},
+			}
 		},
 		card:{
 			niwei_sha:{
@@ -6945,7 +7017,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			jiren:function(player){
-				var str = '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合某张『祭刃』判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。';
+				var str = '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合某张『戮秋』判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。';
 				switch(player.storage.jiren){
 					case 1: return str.replace(/①视为使用一张【杀】/g,'<span class="changetext">①视为使用一张【杀】</span>');
 					case 2: return str.replace(/②摸一张牌/g,'<span class="changetext">②摸一张牌</span>');
@@ -6990,6 +7062,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			Rim: '理芽',
+			shenghua: '生花',
+			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',
+			zhanchong: '绽虫',
+			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
 
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
@@ -7285,9 +7363,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yinzun_info: '<font color=#dac>主公技</font> 你的『崇皇』可以在同势力角色体力变为1时发动。',
 			
 			AkiRinco: '秋凛子',
-			jiren: '祭刃',
-			jiren_going: '祭刃',
-			jiren2: '祭刃-重置',
+			jiren: '戮秋',
+			jiren_going: '戮秋',
+			jiren2: '戮秋-重置',
 			jiren_info: '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有一张牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
 			canxin: '残心',
 			canxin_info: '<font color=#fda>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。',

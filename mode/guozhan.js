@@ -361,13 +361,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			Nekomasu:['Noracat'],
 			zhangjinghua:['bingtang','Paryi'],
 			Paryi:['bingtang'],
+			Kano:['HanamaruHareru'],
 			kaguraNaNa:['SpadeEcho'],
 			KaguraMea:['InuyamaTamaki'],
 		},
 		characterPack:{
 			mode_guozhan:{
 				/**时乃空 */
-				gz_TokinoSora:['female','holo',4,['re_taiyangzhiyin']],
+				gz_TokinoSora:['female','holo',4,['re_taiyangzhiyin'],['gzskin']],
 				/**萝卜子 */
 				gz_RobokoSan:['female','holo',3,['re_zhanxie','re_chongdian'],['gzskin']],
 				/**白上吹雪 */
@@ -402,11 +403,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_SpadeEcho:['female','holo',3,['qinglve','yingshi'],['doublegroup:holo:clubs']],
 
 				/**月之美兔 */
-				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei']],
+				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei'],['gzskin']],
 				/**樋口枫 */
-				gz_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
+				gz_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin'],['gzskin']],
 				/**静凛 */
-				gz_ShizukaRin:['female','nijisanji',4,['re_mozhaotuji']],
+				gz_ShizukaRin:['female','nijisanji',4,['re_mozhaotuji'],['gzskin']],
 				/**物述有栖 */
 				gz_MononobeAlice:['female','nijisanji',3,['tinenghuifu1','re_dianmingguzhen']],
 				/**宇志海莓 */
@@ -451,7 +452,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**小希小桃 */
 				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
 				/**AZKi */
-				gz_AZKi:['female','vtuber',3,['WHiTE','BLacK'],['gzskin','doublegroup:vtuber:holo']],
+				gz_AZKi:['female','vtuber',4,['WHiTE','BLacK'],['gzskin','doublegroup:vtuber:holo']],
 				/**猫宫 */
 				gz_NekomiyaHinata: ['female', 'vtuber', 4, ['gz_yingdan','tianzhuo'],['doublegroup:vtuber:clubs']],
 
@@ -480,7 +481,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**进击的冰糖 */
 				gz_bingtang: ['female', 'clubs', 4, ['xiou']],
 				/**OTO */
-				re_OtomeOto: ['female', 'clubs', 3, ['re_yuxia', 'qiepian']],
+				gz_OtomeOto: ['female', 'clubs', 3, ['re_yuxia', 'qiepian']],
+				/**鹿乃 */
+				gz_Kano: ['female','clubs',4,['shiguang'],['gzskin']],
+				/**花丸 */
+				gz_HanamaruHareru: ['female','clubs',3,['rangran','jiazhao'],['gzskin']],
 				/**犬山 */
 				gz_InuyamaTamaki:['male','clubs',3,['rongyaochengyuan','re_hundunliandong'],['doublegroup:clubs:vtuber:nijisanji:holo']],
 
@@ -2085,7 +2090,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var num = player.storage.gz_tiantang||1;
-					player.chooseToDiscard(num,'he');
+					player.chooseToDiscard(num,'he').set('ai',function(card){
+						return 6-get.value(card);
+					})
 					'step 1'
 					if(result.bool){
 						if(!player.storage.gz_tiantang)	player.storage.gz_tiantang = 1;
@@ -2127,7 +2134,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else	event.finish();
 					'step 4'
-					player.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('gz_tiantang'));
+					player.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('gz_tiantang')).set('ai',function(button){
+						return button.link[2]=='摸两张牌';
+					})
 					'step 5'
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){

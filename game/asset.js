@@ -1250,6 +1250,7 @@ window.noname_asset_list=[
 	'image/character/EQueen.jpg',
 	'image/character/Paryi.jpg',
 	'image/character/Pudding.jpg',
+	'image/character/Rim.jpg',
 	'image/character/RobokoSan.jpg',
 	'image/character/Rosalyn.jpg',
 	'image/character/Ruki.jpg',
@@ -1312,6 +1313,7 @@ window.noname_asset_list=[
 	'image/character/re_AngeKatrina.jpg',
 	'image/character/re_AZKi.jpg',
 	'image/character/re_DoumyoujiHaruto.jpg',
+	'image/character/re_HanamaruHareru.jpg',
 	'image/character/re_HiguchiKaede.jpg',
 	'image/character/re_HisekiErio.jpg',
 	'image/character/re_HonmaHimawari.jpg',
@@ -1320,6 +1322,7 @@ window.noname_asset_list=[
 	'image/character/re_KaguraMea.jpg',
 	'image/character/re_kaguraNaNa.jpg',
 	'image/character/re_KaguyaLuna.jpg',
+	'image/character/re_Kano.jpg',
 	'image/character/re_KizunaAI.jpg',
 	'image/character/re_LizeHelesta.jpg',
 	'image/character/re_MinamiNami.jpg',
@@ -1366,10 +1369,14 @@ window.noname_asset_list=[
 	'image/character/gz_RobokoSan.jpg',
 	'image/character/gz_YukihanaLamy.jpg',
 	'image/character/gz_ŌzoraSubaru.jpg',
+	'image/character/gz_TokinoSora.jpg',
 	/**niji */
 	'image/character/gz_HonmaHimawari.jpg',
 	'image/character/gz_AibaUiha.jpg',
 	'image/character/gz_LizeHelesta.jpg',
+	'image/character/gz_MitoTsukino.jpg',
+	'image/character/gz_HiguchiKaede.jpg',
+	'image/character/gz_ShizukaRin.jpg',
 	/**企 */
 	'image/character/gz_YuNi.jpg',
 	'image/character/gz_DoumyoujiHaruto.jpg',
@@ -1377,6 +1384,8 @@ window.noname_asset_list=[
 	/**社 */
 	'image/character/gz_MinamiNami.jpg',
 	'image/character/gz_Noracat.jpg',
+	'image/character/gz_Kano.jpg',
+	'image/character/gz_HanamaruHareru.jpg',
 
 	//化鲸篇
 	'image/character/NagaoKei.jpg',
