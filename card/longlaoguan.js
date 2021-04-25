@@ -302,7 +302,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						game.log(target,'失去了所有技能');
-						target.addTempSkill('bigong_clear',{global:'roundStart'});
+						target.addTempSkill('bigong_clear','roundStart');
 					}
 				},
 				contentAfter:function(){

@@ -1222,7 +1222,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						// 	return -value;
 						// }).set('reverse',((_status.currentPhase&&_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
 					}
-					"step 3"
+					'step 3'
 					if(result.bool&&result.links&&result.links.length)	event.linkcards=result.links.slice(0);
 					else	event.finish();
 					game.delay();
@@ -1398,7 +1398,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					//	return target.group=='holo'
 					// });
 					// console.log(time);
-					return true;
+					return game.hasPlayer(function(cur){
+						return cur!=player&&cur.group==player.group;
+					});
 					},
 					content:function(){
 					"step 0"
@@ -1406,8 +1408,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish()
 					}
 					else
-					player.chooseTarget('###『中坚』###命令一名其他杏势力角色本回合一张手牌视为无懈可击',{},function(card,player,target){
-						return player!=target&&target.group=='holo'&&target.countCards('h')>0
+					player.chooseTarget('###『中坚』###命令一名其他'+get.translation(player.group+'2')+'角色本回合一张手牌视为无懈可击',{},function(card,player,target){
+						return player!=target&&target.group==player.group&&target.countCards('h')>0
 					});
 					"step 1"
 					if(result.bool){
@@ -1553,7 +1555,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if (!event.chk) {
-						player.chooseCard("###『慧厨』###重铸任意张手牌", 'h', [1, Infinity]).set('ai',function(card2){
+						player.chooseCard("###『慧厨』###重铸任意张手牌", 'h', [1, Infinity]).set('ai',function(card){
 							return 6.5-get.value(card);
 						});
 					}
@@ -2049,15 +2051,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				priority:80,
 				direct: true,
-				filter:function(event, player){	
+				filter:function(event, player){
 					return event.player!=player&&player.countCards('he');
+				},
+				check:function(event, player){
+					if(event.player.hasJudge('lebu')||get.attitude(player,event.player)<0)	return false;
+					return true;
 				},
 				content:function(){
 					'step 0'
 					var next=player.chooseCard(get.prompt2('youyi'),'he');
 					next.set('ai',function(card){
-						if(get.name(card)=='shan') return 90;
-						return 80-get.value(card);
+						if(get.name(card)=='shan') return 9;
+						return 8-get.value(card);
 					});
 					'step 1'
 					if(result.bool){
@@ -2080,7 +2086,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageBegin'},
 						priority:80,
 						check:function(event,player){
-							return 1-get.damageEffect(event.player,event.source,player);
+							return 3-get.damageEffect(event.player,event.source,player)-get.attitude(player,event.source);
 						},	
 						filter:function(event,player){
 							if(!event.source||!event.source.hasSkill('youyishiyue'))	return false;

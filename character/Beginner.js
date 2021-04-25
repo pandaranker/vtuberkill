@@ -2306,8 +2306,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.draw(3);
-					player.chooseCard(2,'he','选择放置到牌堆顶部的牌',true);
 					'step 1'
+					player.chooseCard(2,'he','选择放置到牌堆顶部的牌',true);
+					'step 2'
 					if(result.bool==true&&result.cards!=null){
 						event.cards=result.cards
 					}
@@ -2325,15 +2326,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return next.getUseValue(card)*att;
 						});
 					}
-					"step 2"
+					'step 3'
 					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
 					else	event.finish();
 					game.delay();
-					'step 3'
+					'step 4'
 					var cards=event.linkcards;
 					player.lose(cards,ui.special);
 					game.delay();
-					'step 4'
+					'step 5'
 					var cards=event.linkcards;
 					while(cards.length>0){
 						var card=cards.pop();
@@ -2425,7 +2426,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if (!event.chk) {
-						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]);
+						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]).set('ai',function(card){
+							return 6.5-get.value(card);
+						});
 					}
 					'step 3'
 					if (!event.chk && result.bool && result.cards.length) {
@@ -4740,7 +4743,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//kano
 			shiguang:{
-				trigger:{player:'damageEnd',source:'damageSource'},
+				trigger:{player:'damageEnd'},
 				priority:222,
 				filter:function(event,player){
 					return event.num>0;
@@ -4748,49 +4751,68 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					'step 0'
-					event.source = player==trigger.source;
 					event.num = trigger.num;
-					var next=player.chooseTarget(get.prompt2('shiguang'),function(card,player,target){
+					var next=player.chooseTarget('###'+get.prompt('shiguang')+'###令一名角色失去'+get.cnNumber(event.num)+'点体力',function(card,player,target){
 						return target!=_status.event.another;
 					});
-					next.set('source',event.source);
 					next.set('num',event.num);
-					next.set('another',event.source?trigger.player:trigger.source);
+					next.set('another',trigger.source);
 					next.set('logSkill','shiguang');
 					next.set('ai',function(target){
 						var player = _status.event.player;
 						var num = _status.event.num;
 						var att = get.attitude(player,target);
-						if(_status.event.source){
-							if(get.recoverEffect(target,player,player)<=0||target.maxHp-target.hp<num){
-								return -att*num;
-							}else{
-								return att*num;
-							}
+						if(target.hp<=num){
+							return -att*(num+1-target.hp)*2;
 						}else{
-							if(target.hp<=num){
-								return -att*(num+1-target.hp)*2;
-							}else{
-								return -att;
-							}
+							return -att;
 						}
 					});
 					'step 1'
 					if(result.bool&&result.targets[0]){
-						if(event.source){
-							result.targets[0].recover(event.num);
-							if(!result.targets[0].storage.shiguang_gain)	result.targets[0].storage.shiguang_gain = 0;
-							result.targets[0].storage.shiguang_gain+=event.num;
-							result.targets[0].addTempSkill('shiguang_gain','phaseBegin');
-						}else{
-							result.targets[0].loseHp(event.num);
-							if(!result.targets[0].storage.shiguang_lose)	result.targets[0].storage.shiguang_lose = 0;
-							result.targets[0].storage.shiguang_lose+=event.num;
-							result.targets[0].addTempSkill('shiguang_lose','phaseBegin');
-						}
+						result.targets[0].loseHp(event.num);
+						if(!result.targets[0].storage.shiguang_lose)	result.targets[0].storage.shiguang_lose = 0;
+						result.targets[0].storage.shiguang_lose+=event.num;
+						result.targets[0].addTempSkill('shiguang_lose','phaseBegin');
 					}
 				},
+				group:'shiguang_source',
 				subSkill:{
+					source:{
+						trigger:{source:'damageSource'},
+						priority:222,
+						filter:function(event,player){
+							return event.num>0;
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							event.num = trigger.num;
+							var next=player.chooseTarget('###'+get.prompt('shiguang')+'###令一名角色回复'+get.cnNumber(event.num)+'点体力',function(card,player,target){
+								return target!=_status.event.another;
+							});
+							next.set('num',event.num);
+							next.set('another',trigger.player);
+							next.set('ai',function(target){
+								var player = _status.event.player;
+								var num = _status.event.num;
+								var att = get.attitude(player,target);
+								if(get.recoverEffect(target,player,player)<=0||target.maxHp-target.hp<num){
+									return -att*num;
+								}else{
+									return att*num;
+								}
+							});
+							'step 1'
+							if(result.bool&&result.targets[0]){
+								player.logSkill('shiguang',result.targets);
+								result.targets[0].recover(event.num);
+								if(!result.targets[0].storage.shiguang_gain)	result.targets[0].storage.shiguang_gain = 0;
+								result.targets[0].storage.shiguang_gain+=event.num;
+								result.targets[0].addTempSkill('shiguang_gain','phaseBegin');
+							}
+						},
+					},
 					gain:{
 						onremove:true,
 						marktext:"失",
@@ -4830,6 +4852,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCard2'},
 				priority:222,
 				filter:function(event,player){
+					if(get.type(event.card)=='equip')	return false;
 					if(!player.storage.rangran)		player.storage.rangran = [];
 					return game.countPlayer(function(cur){
 						return cur.isMaxHp()&&!player.storage.rangran.contains(cur)&&!event.targets.contains(cur)&&lib.filter.targetEnabled2(event.card, player, cur);
@@ -4843,10 +4866,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return target.isMaxHp()&&!player.storage.rangran.contains(target)&&!_status.event.targets.contains(target)&&lib.filter.targetEnabled2(_status.event.card, player, target)
 					}).set('ai',function(target){
 						var evt=_status.event;
-						return get.effect(target,evt.candy,evt.source,evt.player);
-					}).set('card',trigger.card).set('targets',trigger.targets).set('logSkill','rangran');
+						return get.effect(target,evt.card,evt.source,evt.player);
+					}).set('card',trigger.card).set('targets',trigger.targets);
 					'step 1'
 					if(result.bool&&result.targets[0]){
+						player.logSkill('rangran');
 						var targets=result.targets.slice(0);
 						trigger.targets.addArray(targets);
 						player.storage.rangran.addArray(targets);
@@ -4889,6 +4913,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				check:function(event,player){
 					return get.attitude(player,event.player)>0;
 				},
+				logTarget:'player',
 				content:function(){
 					trigger.player.draw(trigger.player.isMinHp()?3:1).gaintag=['jiazhao'];
 				},

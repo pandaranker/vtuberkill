@@ -184,6 +184,8 @@ window.config={
 	customforbid:[],
 	forbid:[
 		['yubing','maoge'],
+		['yuanlv','maoge'],
+		['re_yuanlv','maoge'],
 
 		['huashen'],
 		['rehuashen'],

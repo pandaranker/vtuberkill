@@ -27,6 +27,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
+			/**红晓音 */
+			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
+			/**东爱璃 */
+			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
+
 			/**机萪 */
 			jike: ['female','qun',3,['qianjiwanbian'],['guoV']],
 			/**新科娘 */
@@ -4333,7 +4338,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.num = Math.floor(player.storage.shixi_mark.length/2)
 							player.draw(event.num);
 							'step 1'
-							player.unmarkSkill('shixi_mark');
+							if(event.num>0) player.unmarkSkill('shixi_mark');
 						},
 					},
 				}
@@ -5677,6 +5682,254 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//红晓音
+			quankai:{
+				audio:7,
+				trigger:{source:'damageEnd'},
+				direct:true,
+				filter:function(event,player){
+					return event.player.isIn()&&event.player.countDiscardableCards(player,'hej')&&!player.hasSkill('quankai_round');
+				},
+				content:function(){
+					'step 0'
+					player.discardPlayerCard(trigger.player,'hej',get.prompt2('quankai'));
+					'step 1'
+					if(result.links&&result.links.length){
+						player.logSkill('quankai',trigger.player);
+						player.storage.quankai = result.links.slice(0);
+						player.addTempSkill('quankai_round','roundStart');
+					}
+				},
+				group:'quankai_gainBy',
+				subSkill:{
+					round:{},
+					gainBy:{
+						trigger:{player:'useCardAfter'},
+						direct:true,
+						filter:function(event,player){
+							var type=get.type2(event.card);
+							return type=='trick'&&player.storage.quankai;
+						},
+						content:function(){
+							'step 0'
+							player.chooseCardButton('从弃牌堆获得上次『拳开』的弃牌，否则重置『拳开』',1,player.storage.quankai).set('filterButton',function(button){
+								return get.position(button.link,true)=='d';
+							}).set('ai',function(button){
+								return get.value(button.link)>0;
+							});
+							'step 1'
+							player.logSkill('quankai');
+							if(result.bool&&result.links){
+								player.gain(result.links,'gain2');
+							}else{
+								if(player.hasSkill('quankai_round'))	player.removeSkill('quankai_round');
+							}
+						},
+					}
+				}
+			},
+			heyuan:{
+				audio:2,
+				group:'P_SP',
+				trigger:{player:'phaseDrawBegin1'},
+				unique:true,
+				limited:true,
+				skillAnimation:true,
+				animationColor:'fire',
+				forceunique:true,
+				filter:function(event,player){
+					return !event.numFixed&&player.isDamaged();
+				},
+				check:function(event,player){
+					return false&&player.countCards('he',function(card){
+						return get.tag(card,'damage')
+					})>0&&player.isDamaged();
+				},
+				content:function(){
+					'step 0'
+					trigger.changeToZero();
+					event.num = 0;
+					'step 1'
+					if(event.num>1)		event.finish()
+					else{
+						var list;
+						if(_status.characterlist){
+							list=[];
+							for(var i=0;i<_status.characterlist.length;i++){
+								var name=_status.characterlist[i];
+								if(lib.character[name][1]=='psp') list.push(name);
+							}
+						}
+						else if(_status.connectMode){
+							list=get.charactersOL(function(i){
+								return lib.character[i][1]!='psp';
+							});
+						}
+						else{
+							list=get.gainableCharacters(function(info){
+								return info[1]=='psp';
+							});
+						}
+						var players=game.players.concat(game.dead);
+						for(var i=0;i<players.length;i++){
+							if(players[i]!=player&&players[i].group&&players[i].group=='psp'){
+								list.add(players[i].name);
+								list.add(players[i].name1);
+								list.add(players[i].name2);
+							}
+						}
+						list.remove(player.name);
+						list.remove(player.name1);
+						list.remove(player.name2);
+						list.remove('KurenaiAkane');
+						if(list.length){
+							player.chooseButton(true).set('ai',function(button){
+								return 5||get.rank(button.link,true)-lib.character[button.link][2];
+							}).set('createDialog',['『合缘』：获得其中一名角色的所有'+(event.num>0?'':'非')+'限定技',[list.randomGets(3),'character']]);
+						}else event.finish();
+					}
+					'step 2'
+					if(result.links&&result.links.length){
+						player.awakenSkill('heyuan');
+						for(var i=0;i<result.links.length;i++){
+							if(_status.characterlist){
+								_status.characterlist.remove(result.links[i]);
+							}
+							var skills=lib.character[result.links[i]][3];
+							for(var j=0;j<skills.length;j++){
+								if(lib.skill[skills[j]]&&
+								(event.num?(lib.skill[skills[j]].unique):(!lib.skill[skills[j]].unique))){
+									player.addTempSkill(skills[j],'roundStart');
+								}
+							}
+						}
+						if(!player.storage.heyuan_qiyuan)	player.storage.heyuan_qiyuan = [];
+						player.storage.heyuan_qiyuan.add(result.links[0]);
+						player.storage.P_SP.addArray(result.links);
+						player.flashAvatar('heyuan',result.links[0]);
+						player.addTempSkill('heyuan_qiyuan',{player:'phaseBegin'});
+						player.markSkill('P_SP');
+					}
+					'step 3'
+					event.num++;
+					event.goto(1);
+				},
+				subSkill:{
+					qiyuan:{
+						onremove:function(player,skill){
+							console.log(player.storage.P_SP)
+							if(player.hasSkill('P_SP')&&player.storage[skill]&&player.storage[skill].length){
+								for(var i=0;i<player.storage[skill].length;i++){
+									if(player.storage.P_SP.contains(player.storage[skill][i])){
+										player.storage.P_SP.remove(player.storage[skill][i]);
+									}
+								}
+								if(player.storage.P_SP.length==0){
+									player.unmarkSkill('P_SP');
+								}else{
+									player.markSkill('P_SP');
+								}
+								delete player.storage[skill]
+							}
+						}
+					}
+				}
+			},
+			//拉布里
+			yangyao:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = [];
+				},
+				audio:false,
+				enable:'phaseUse',
+				filter:function(event,player){
+					var list=[];
+					for(var i=0;i<ui.discardPile.childElementCount;i++){
+						var card=ui.discardPile.childNodes[i];
+						if(player.storage.yangyao.contains(get.name(card))) continue;
+						if(get.type2(card)=='trick'){
+							list.push(card);
+						}
+					}
+					return list.length;
+				},
+				filterCard:function(card,player){
+					if(ui.selected.cards.length) return get.color(card)==get.color(ui.selected.cards[0]);
+					return player.countCards('he',{color:get.color(card)})>1;
+				},
+				check:function(card){
+					var player = _status.event.player;
+					if(player.isHealthy()||player.hp>3)	return 0;
+					if(ui.selected.cards.length)	return 10-get.value(card);
+					return 4-get.value(card);
+				},
+				complexCard:true,
+				selectCard:function(){
+					if(ui.selected.cards.length) return 2;
+					return [0,2];
+				},
+				position:'he',
+				content:function(){
+					'step 0'
+					if(!cards.length) player.loseHp();
+					'step 1'
+					var list=[];
+					for(var i=0;i<ui.discardPile.childElementCount;i++){
+						var card=ui.discardPile.childNodes[i];
+						if(player.storage.yangyao.contains(get.name(card))) continue;
+						if(get.type2(card)=='trick'){
+							list.push(card);
+						}
+					}
+					player.chooseCardButton('选择一张锦囊牌',list,true).ai=function(button){
+						return get.value(button.link);
+					};
+					'step 2'
+					if(result.bool&&result.links){
+						player.storage.yangyao.push(get.name(result.links[0]))
+						player.gain(result.links,'gain2','log');
+					}
+				},
+				subSkill:{
+					clear:{
+						trigger:{global:'phaseAfter'},
+						priority:23,
+						filter:function(event,player){
+							return player.storage.yangyao.length;
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							if(player.storage.yangyao&&player.storage.yangyao.length){
+								player.storage.yangyao.length = 0;
+							}
+						}
+					}
+				},
+				ai:{
+					order:function(item,player){
+						if(player.isHealthy()||player.hp>3)	return 9;
+						return 5;
+					},
+					result:{
+						player:function(player,target){
+							var result = 0;
+							for(var i=0;i<ui.discardPile.childElementCount;i++){
+								var card=ui.discardPile.childNodes[i];
+								if(player.storage.yangyao.contains(get.name(card))) continue;
+								if(get.type2(card)=='trick'){
+									result = Math.max(result,get.value(card,player,'raw'));
+								}
+							}
+							return result-5+player.hp;
+						},
+					},
+				},
+			},
+			shili:{
+
+			},
 			P_SP:{
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
@@ -6895,6 +7148,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenghua:{
 				enable:'phaseUse',
 				position:'h',
+				filter:function(event,player){
+					return player.countCards('h');
+				},
 				filterCard:true,
 				selectCard:-1,
 				check:function(card){
@@ -6906,12 +7162,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:function(item,player){
-						if(player.countCards('h',{suit:'heart'}))	return 4;
+						if(player.countCards('h',{type:'equip'}))	return 4;
 						else return 1;
 					},
 					result:{
 						player:function(player){
-							if(player.isTurnedOver()&&player.countCards('h',1))
+							if(player.isTurnedOver()&&player.countCards('h',{type:'equip'}))	return 1;
 							return 0;
 						}
 					}
@@ -6935,7 +7191,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return get.type(chong)=='equip'
 					}).length;
 					'step 1'
-					console.log(event.num)
 					if(event.num>0){
 						player.chooseTarget(get.prompt2('zhanchong')).set('ai',function(target){
 							var player = _status.event.player;
@@ -7370,6 +7625,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiren_info: '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有一张牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
 			canxin: '残心',
 			canxin_info: '<font color=#fda>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。',
+			
+			KurenaiAkane: '红晓音',
+			quankai: '拳开',
+			quankai_info: '<font color=#fc2>轮次技</font> 你造成伤害后，可以弃置目标区域内的一张牌；当你使用锦囊牌后，可以从弃牌堆中获得上一次『拳开』的弃牌，或重置此技能。',
+			heyuan: '合缘',
+			heyuan_info: '<font color=#fbb>限定技</font> 摸牌阶段，若你已受伤，你可以放弃摸牌，改为发现两次P-SP势力角色，然后视为拥有前者的非限定技和后者的限定技直到你的下个回合开始。',
+			
+			Lovely: '东爱璃',
+			yangyao: '秧耀',
+			yangyao_info: '出牌阶段，你可以失去一点体力或弃置两张同色的牌，从弃牌堆获得一张锦囊牌；每种锦囊牌每回合限一次。',
+			// shili: '拾璃',
+			// shili_info: '<font color=#987>限定技</font> 一个回合结束时，若你已受伤，你可以从弃牌堆中获得自己本回合使用过的所有锦囊牌，并立即执行一个额外的出牌阶段。',
 
 			P_SP: 'P-SP',
 
