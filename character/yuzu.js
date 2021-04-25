@@ -6079,7 +6079,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//新科娘
 			daimao:{
-				group:'daimao_mark',
 				mod:{
 					cardUsable:function(card,player,num){
 						if(player.getStorage('daimao_mark').filter(function(daimao){
