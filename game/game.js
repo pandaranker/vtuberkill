@@ -24619,7 +24619,8 @@
 						if(this.node.background.innerHTML.length>1) this.node.background.classList.add('tight');
 						else this.node.background.classList.remove('tight');
 					}
-					if(!lib.card[bg].fullborder&&this.node.avatar&&this.node.framebg){
+					if(!lib.card[bg])	console.log(bg)
+					if(bg!='wuxingpan'&&!lib.card[bg].fullborder&&this.node.avatar&&this.node.framebg){
 						this.node.avatar.remove();
 						this.node.framebg.remove();
 						delete this.node.avatar;
