@@ -366,6 +366,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+
+			rm_wuxingpan:{
+				type:'equip',
+				subtype:'equip5',
+				skills:['rm_wuxingpan_skill'],
+				fullskin:true
+			}
 		},
 		skill:{
 			rm_qinglong_guozhan:{
@@ -1353,6 +1360,28 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					delete player.storage.rm_zhuque_skill.nature;
 				}
 			},
+			
+			rm_wuxingpan_skill:{
+				enable:'phaseUse',
+				usable:1,
+				filterCard:true,
+				lose:false,
+				prompt:'选择一张手牌永久改变其五行属性',
+				content:function(){
+					"step 0"
+					player.chooseControl('metal','wood','water','fire','soil');
+					"step 1"
+					var card=cards[0];
+					if(!card.node.wuxing){
+						card.node.wuxing=ui.create.div('.wunature',card);
+					}
+
+
+					card.wunature=result.control;
+					card.node.wuxing.dataset.nature=result.control;
+					card.node.wuxing.innerHTML=get.translation(result.control);
+				}
+			}
 		},
 		translate:{
 			rm_bagua:'八卦阵',
@@ -1460,6 +1489,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			rm_muniu_skill4_backup:'流马',
 			rm_muniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
 			rm_muniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
+
+			
+			rm_wuxingpan:'五行盘',
+			rm_wuxingpan_skill:'五行',
+			rm_wuxingpan_skill_info:'出牌阶段限一次，你可以永久改变一张手牌的五行属性',
+			rm_wuxingpan_info:'出牌阶段限一次，你可以永久改变一张手牌的五行属性',
 		},
 		list:[
 		],

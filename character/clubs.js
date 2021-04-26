@@ -57,6 +57,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NoiR: ['female', 'qun', 3 ,['mozouqiyin', 'budingpaidui']],
 			/**晴步子 */
 			Bafuko: ['female','qun',4,['shangsheng','jinghua']],
+			/**紫海由爱 */
+			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 		},
 		characterSort:{
 			clubs:{
@@ -1437,7 +1439,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.shushi += result.index;
 						player.chooseCardButton(result.index,get.cards(result.index),true,'『书史』：按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
 							var player = _status.event.player;
-							var next = phase=='phaseJudge'?player:player.getNext();
+							var next = _status.event.phase=='phaseJudge'?player:player.getNext();
 							var att = get.attitude(player,next);
 							var card = button.link;
 							var judge = next.getCards('j')[ui.selected.buttons.length];

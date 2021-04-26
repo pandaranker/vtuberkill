@@ -13,8 +13,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**理芽 */
 			Rim: ['female','qun',4,['shenghua','zhanchong'],],
-			/**紫海由爱 */
-			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**纸木铗 */
@@ -5798,7 +5796,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var skills=lib.character[result.links[i]][3];
 							for(var j=0;j<skills.length;j++){
 								if(lib.skill[skills[j]]&&
-								(event.num?(lib.skill[skills[j]].unique):(!lib.skill[skills[j]].unique))){
+								(event.num?(lib.skill[skills[j]].limited):(!lib.skill[skills[j]].limited))){
 									player.addTempSkill(skills[j],'roundStart');
 								}
 							}
@@ -5843,31 +5841,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:false,
 				enable:'phaseUse',
 				filter:function(event,player){
-					var list=[];
+					if(player.countCards('he',{color:'red'})<2&&player.countCards('he',{color:'black'})<2)	return false;
 					for(var i=0;i<ui.discardPile.childElementCount;i++){
 						var card=ui.discardPile.childNodes[i];
-						if(player.storage.yangyao.contains(get.name(card))) continue;
+						if(player.storage.yangyao&&player.storage.yangyao.contains(get.name(card))) continue;
 						if(get.type2(card)=='trick'){
-							list.push(card);
+							return true
 						}
 					}
-					return list.length;
 				},
 				filterCard:function(card,player){
 					if(ui.selected.cards.length) return get.color(card)==get.color(ui.selected.cards[0]);
-					return player.countCards('he',{color:get.color(card)})>1;
+					return player.countCards('he',{color:get.color(card)})>=2;
 				},
 				check:function(card){
 					var player = _status.event.player;
-					if(player.isHealthy()||player.hp>3)	return 0;
 					if(ui.selected.cards.length)	return 10-get.value(card);
-					return 4-get.value(card);
+					return 7-player.hp-get.value(card);
 				},
 				complexCard:true,
 				selectCard:function(){
 					if(ui.selected.cards.length) return 2;
 					return [0,2];
 				},
+				filterTarget:true,
 				position:'he',
 				content:function(){
 					'step 0'
@@ -5876,18 +5873,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					for(var i=0;i<ui.discardPile.childElementCount;i++){
 						var card=ui.discardPile.childNodes[i];
-						if(player.storage.yangyao.contains(get.name(card))) continue;
+						if(player.storage.yangyao&&player.storage.yangyao.contains(get.name(card))) continue;
 						if(get.type2(card)=='trick'){
 							list.push(card);
 						}
 					}
-					player.chooseCardButton('选择一张锦囊牌',list,true).ai=function(button){
+					target.chooseCardButton('『秧耀』：选择获得一张锦囊牌',list,true).ai=function(button){
 						return get.value(button.link);
 					};
 					'step 2'
 					if(result.bool&&result.links){
+						if(!player.storage.yangyao)		player.storage.yangyao = [];
 						player.storage.yangyao.push(get.name(result.links[0]))
-						player.gain(result.links,'gain2','log');
+						target.gain(result.links,'gain2','log');
 					}
 				},
 				subSkill:{
@@ -5914,21 +5912,73 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					result:{
 						player:function(player,target){
+							if(player.countCards('he',{color:'red'})<2&&player.countCards('he',{color:'black'})<2){
+								if(player.hp==1)	return -6;
+								return player.hp-3.8;
+							}
+							if(player.needsToDiscard())	return -1.2;
+							return -1.8;
+						},
+						target:function(player,target){
 							var result = 0;
 							for(var i=0;i<ui.discardPile.childElementCount;i++){
 								var card=ui.discardPile.childNodes[i];
 								if(player.storage.yangyao.contains(get.name(card))) continue;
 								if(get.type2(card)=='trick'){
-									result = Math.max(result,get.value(card,player,'raw'));
+									result = Math.max(result,get.value(card,target,'raw'));
 								}
 							}
-							return result-5+player.hp;
-						},
+							return result;
+						}
 					},
 				},
 			},
 			shili:{
-
+				audio:true,
+				trigger:{global:'phaseEnd'},
+				unique:true,
+				limited:true,
+				skillAnimation:true,
+				animationColor:'wood',
+				forceunique:true,
+				filter:function(event,player){
+					if(!player.isDamaged())		return false;
+					var history = player.getHistory('useCard');
+					for(var i=0;i<history.length;i++){
+						if(get.type2(history[i].card)!='basic') return true;
+					}
+				},
+				check:function(event,player){
+					var num = 0;
+					for(var i=0;i<history.length;i++){
+						if(get.type2(history[i].card)!='basic') num++;
+					}
+					if(player.hasUnknown(1)) return false;
+					return num>=3;
+				},
+				content:function(){
+					'step 0'
+					var history = player.getHistory('useCard');
+					var num = 0;
+					for(var i=0;i<history.length;i++){
+						if(get.type2(history[i].card)!='basic') num++;
+					}
+					event.num = num;
+					player.awakenSkill('shili');
+					player.chooseTarget('『拾璃』：令一名角色摸'+get.cnNumber(event.num)+'张牌并执行一个额外的出牌阶段',true,function(card,player,target){
+						return target.isIn();
+					}).set('num',event.num).ai=function(target){
+						var att=get.attitude(_status.event.player,target);
+						return att*_status.event.num;
+					};
+					'step 1'
+					if(result.bool&&result.targets){
+						event.target = result.targets[0];
+						event.target.draw(event.num);
+					}else	event.finish();
+					'step 2'
+					event.target.phaseUse();
+				},
 			},
 			P_SP:{
 				init:function(player,skill){
@@ -6703,7 +6753,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'useCardAfter'},
 				filter:function(event,player){
 					if(player.hasSkill('qijian_lost'))	return false;
-					return event.player==_status.currentPhase&&event.player!=player&&get.color(event.card)=='red';
+					return event.player==_status.currentPhase&&event.player!=player&&get.color(event.card)=='red'&&event.targets&&event.targets.length;
 				},
 				prompt2:function(event,player){
 					return '你可以跟随'+get.translation(event.cards)+'使用一张牌';
@@ -7344,7 +7394,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			HinataCocomi: '阳向心美',
 			qijian: '起鉴',
-			qijian_info: '其他角色于自己的回合使用一张红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌并失去此技能直到本回合结束。',
+			qijian_info: '其他角色于自己的回合使用一张指定目标的红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌并失去此技能直到本回合结束。',
 			yizhan: '翼展',
 			yizhan_info: '每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为“群”。',
 			jushi: '聚识',
@@ -7629,13 +7679,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quankai: '拳开',
 			quankai_info: '<font color=#fc2>轮次技</font> 你造成伤害后，可以弃置目标区域内的一张牌；当你使用锦囊牌后，可以从弃牌堆中获得上一次『拳开』的弃牌，或重置此技能。',
 			heyuan: '合缘',
-			heyuan_info: '<font color=#fbb>限定技</font> 摸牌阶段，若你已受伤，你可以放弃摸牌，改为发现两次P-SP势力角色，然后视为拥有前者的非限定技和后者的限定技直到你的下个回合开始。',
+			heyuan_info: '<font color=#f57>限定技</font> 摸牌阶段，若你已受伤，你可以放弃摸牌，改为发现两次P-SP势力角色，然后视为拥有前者的非限定技和后者的限定技直到你的下个回合开始。',
 			
 			Lovely: '东爱璃',
 			yangyao: '秧耀',
-			yangyao_info: '出牌阶段，你可以失去一点体力或弃置两张同色的牌，从弃牌堆获得一张锦囊牌；每种锦囊牌每回合限一次。',
-			// shili: '拾璃',
-			// shili_info: '<font color=#987>限定技</font> 一个回合结束时，若你已受伤，你可以从弃牌堆中获得自己本回合使用过的所有锦囊牌，并立即执行一个额外的出牌阶段。',
+			yangyao_info: '出牌阶段，你可以失去一点体力或弃置两张同色的牌，令一名角色从弃牌堆获得一张锦囊牌；每种锦囊牌每回合限一次。',
+			shili: '拾璃',
+			shili_info: '<font color=#987>限定技</font> 一个回合结束时，若你已受伤，你可以令一名角色摸X张牌并执行一个额外的出牌阶段（X为你本回合使用过的非基本牌数量）。',
 
 			P_SP: 'P-SP',
 

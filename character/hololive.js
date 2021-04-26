@@ -281,32 +281,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 			},
 			juhun:{
-					trigger:{global:'damageEnd'},
+					trigger:{global:'damageAfter'},
 					forced:true,
 					usable:1,
-					filter:function(event,player){return true},
 					content:function(){
-						"step 0"
 						event.card=get.cards()[0];
-						if(player.storage.juhun==undefined) player.storage.juhun=[];
-						player.storage.juhun.push(event.card);
-						player.syncStorage('juhun');
-						//event.trigger("addCardToStorage");
+						if(!player.storage.juhun) player.storage.juhun=[];
 						game.cardsGotoSpecial(event.card);
-						player.showCards(player.storage.juhun,'聚魂')
-						player.markSkill('juhun');
+						player.$gain2(event.card);
+						player.markAuto('juhun',[event.card]);
+						// player.showCards(player.storage.juhun,'聚魂');
+						// player.markSkill('juhun');
 					},
 					intro:{
 						content:'cards',
-						onunmark:function(storage,player){
-							if(storage&&storage.length){
-								player.$throw(storage,1000);
-								game.cardsDiscard(storage);
-								delete player.storage.juhun;
-							}
-						}
+						onunmark:'throw',
 					},
-					group:['juhun_get','juhun_draw'],
+					group:['juhun_get'],
 					subSkill:{
 					get:{
 						trigger:{
@@ -317,27 +308,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.storage.juhun!=undefined&&player.storage.juhun.length!=0;
 						},
 						content:function(){
-							player.storage.juhun.forEach(function(c) {
-								player.gain(c);
-							});
-							delete player.storage.juhun
-							player.syncStorage('juhun');
-							player.markSkill('juhun');
+							// player.storage.juhun.forEach(function(c) {
+							// 	player.gain(c);
+							// });
+							'step 0'
+							player.gain(player.storage.juhun);
+							player.$give(player.storage.juhun,player,false);
+							delete player.storage.juhun;
+							'step 1'
+							player.unmarkSkill('juhun');
 						}
 					},
-					draw:{
-						trigger:{
-							player:'phaseDrawBegin'
-						},
-						direct:true,
-						filter:function(event,player){
-							return !event.numFixed&&player.isMaxHandcard(false);
-						},
-						content:function(){
-							trigger.num--;
-						},
-					}
-					}
+					// draw:{
+					// 	trigger:{
+					// 		player:'phaseDrawBegin'
+					// 	},
+					// 	direct:true,
+					// 	filter:function(event,player){
+					// 		return !event.numFixed&&player.isMaxHandcard(false);
+					// 	},
+					// 	content:function(){
+					// 		trigger.num--;
+					// 	},
+					// }
+				}
 			},
 			meilu:{
 					trigger:{
@@ -2746,7 +2740,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						game.log('『希握』后续效果');
 					}
 					game.delay(0.5);
-					player.recover();
+					player.recover('nosource');
 				},
 				content:function(){
 				}
@@ -3144,11 +3138,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order:function(item,player){
-						var cardTo = player.getCards('h',{color:'black'});
-						if(cardTo.length==1)	return 10;
-						return 1;
+						return 5;
 					},
-					result:{player:1}
+					result:{
+						player:function(player,target){
+							var cardTo = player.countCards('h',{color:'black'});
+							if(cardTo==1)	return 1;
+							if(cardTo==0)	return -player.countCards('h',{color:'red'});
+							return 0;
+						},
+					}
 				},
 				subSkill:{
 					used:{},
@@ -3540,7 +3539,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			YozoraMel:'夜空梅露',
 			juhun:'聚魂',
-			juhun_info:'<font color=#f66>锁定技</font> 一回合一次，当一名角色受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。当你的手牌数为全场最多时，摸牌阶段你少摸一张牌。',
+			juhun_info:'<font color=#f66>锁定技</font> 每回合有角色首次受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。',
 			meilu:'没露',
 			meilu_info:'<font color=#f66>锁定技</font> 准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
 

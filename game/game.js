@@ -4063,7 +4063,7 @@
 						game.saveConfig('hiddenPlayPack',lib.config.hiddenPlayPack);
 					}
 				},
-			},
+			},*/
 			wuxing:{
 				enable:{
 					name:'开启',
@@ -4169,7 +4169,7 @@
 						game.saveConfig('hiddenPlayPack',lib.config.hiddenPlayPack);
 					}
 				},
-			},*/
+			},
 		},
 		mode:{
 			identity:{

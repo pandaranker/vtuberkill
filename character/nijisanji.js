@@ -2684,54 +2684,52 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event, player){
 							return !player.hasSkill('jiaoming_invalid');
 						},
+						prompt:'你可选择攻击范围内有你的一名其他角色',
+						filterTarget:function(card, player, target){
+							return player!=target&&target.canUse('sha', player);
+						},
 						content:function(){
 							'step 0'
-							player.chooseTarget('你可选择攻击范围内有你的一名其他角色',function(card,player,target){
-								return target != player &&target.canUse('sha',player);
-							}).set('choice',get.attitude(event.jmTarget, player)>=0?undefined:-1).set('ai',function(target){
-								return 1-get.attitude(_status.event.player,target);
-							});
+							event.jmTarget = targets[0];
+							var next = event.jmTarget.chooseToUse(
+								'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去“骄名”。',
+								function(card, player){
+									if(get.name(card)!='sha') return false;
+									return lib.filter.filterCard.apply(this,arguments);
+								}
+							);
+							next.set('filterTarget', function(card, player , target){
+								return _status.event.shaTarget == target;
+							}).set('shaTarget', player).set('targetRequired',true);
+							//ai
+							var aiChoice = event.jmTarget.hasSha('use')?player:-1;
+							next.set('choice',aiChoice).set('ai2',function(target){return _status.event.choice});
 							'step 1'
-							if(result.bool&&result.targets&&result.targets.length){
-								if(event.directHit||(!_status.connectMode&&lib.config.skip_shan&&!target.hasSha())){
-									event.directfalse=true;
-								}
-								else{
-									event.jmTarget = result.targets[0];
-									var next = result.targets[0].chooseToUse(
-										'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去“骄名”。',
-										function(card, player){
-											if(get.name(card)!='sha') return false;
-											return lib.filter.filterCard.apply(this,arguments);
-										}
-									);
-									next.set('filterTarget', function(card, player , target){
-										return _status.event.shaTarget == target;
-									}).set('shaTarget', player).set('targetRequired',true);
-									//ai
-									next.set('choice',get.attitude(event.jmTarget, player)>=0?undefined:0).set('ai',function(){return _status.event.choice});
-								}
-							}else{
-								event.finish();
-								return;
+							if(event.directfalse||result.bool==false){
+								player.addTempSkill('jiaoming_invalid');
+								event.jmTarget.loseHp();
 							}
-							'step 2'
-							if(event.jmTarget){
-								if(event.directfalse||result.bool==false){
-									player.addTempSkill('jiaoming_invalid');
-									event.jmTarget.loseHp();
-								}
-							}
-		
 						},
 						ai:{
 							pretao:true,
 							order:5,
 							result:{
 								player:function(player,target){
-									if(player.hp!=1)	return 1;
+									if(player.hp!=1) {
+										if(target.hp == 1&&!target.hasSha('use')){
+											return 2;
+										}
+										return 0;
+									}
 									else return -1;
 								},
+								target:function(player, target){
+									if(target.hasSha('use')){
+										return -1;
+									}else{
+										return -2;
+									}
+								}
 							}
 						}
 					}

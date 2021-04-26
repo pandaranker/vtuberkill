@@ -1561,11 +1561,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						numbers.add(get.number(player.storage.chanbing[i]));
 					}
 					var next=player.judge(function(card){
-						var numbers = _status.event.suits;
-						if(numbers.contains(get.number(card))) return -1;
+						var numbers = _status.event.numbers;
+						if(numbers&&numbers.contains(get.number(card))) return -1;
 						return 1;
 					});
-					next.set('suits',numbers);
+					next.set('numbers',numbers);
 					'step 1'
 					if(result.bool){
 						var cards = [result.card];

@@ -524,7 +524,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
 							next.skill = 'yingdan_sha';
 							next.addedSkill = [];
-							if(event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
+							if(event.getParent().respondTo&&event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
 								event.addedSkill.add('inRange');
 								next.addedSkill.add('inRange');
 							}
@@ -572,7 +572,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
 							next.skill = 'yingdan_sha';
 							next.addedSkill = [];
-							if(event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
+							if(event.getParent().respondTo&&event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
 								event.addedSkill.add('inRange');
 								next.addedSkill.add('inRange');
 							}
@@ -4752,7 +4752,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.num = trigger.num;
-					var next=player.chooseTarget('###'+get.prompt('shiguang')+'###令一名角色失去'+get.cnNumber(event.num)+'点体力',function(card,player,target){
+					var next=player.chooseTarget('###'+get.prompt('shiguang')+'###令一名角色受到'+get.cnNumber(event.num)+'点伤害',function(card,player,target){
 						return target!=_status.event.another;
 					});
 					next.set('num',event.num);
@@ -4770,7 +4770,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.bool&&result.targets[0]){
-						result.targets[0].loseHp(event.num);
+						result.targets[0].damage(event.num,event.source||'nosource');
 						if(!result.targets[0].storage.shiguang_lose)	result.targets[0].storage.shiguang_lose = 0;
 						result.targets[0].storage.shiguang_lose+=event.num;
 						result.targets[0].addTempSkill('shiguang_lose','phaseBegin');
@@ -4841,7 +4841,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								game.log('『失光』后续效果');
 							}
 							game.delayx(0.5);
-							player.recover(player.storage.shiguang_lose);
+							player.recover(player.storage.shiguang_lose,'nosource');
 							delete player.storage.shiguang_lose;
 						},
 					},
@@ -5226,7 +5226,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_Kano: '新·鹿乃',
 			shiguang: '失光',
-			shiguang_info: '当你造成/受到伤害后，你可以令另一名角色回复等量体力/受到等量伤害。然后下个回合开始时，其失去等量体力/回复等量体力。',
+			shiguang_info: '当你造成/受到伤害后，你可以令另一名角色回复等量体力/受到等量同来源伤害。然后下个回合开始时，其失去等量体力/回复等量体力。',
 			
 			re_HanamaruHareru: '新·花丸晴琉',
 			rangran: '昂然',

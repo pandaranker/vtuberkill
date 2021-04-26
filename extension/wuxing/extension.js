@@ -215,7 +215,7 @@ game.import('play',function(lib,game,ui,get,ai,_status){
 			waterColor2:'rgba(29,156,255,0.3)',
 			fireColor2:'rgba(255,51,0,0.3)',
 			soilColor2:'rgba(163,98,0,0.3)',
-			wuxingpan:'五行盘',
+			wuxingpan:'五行弹幕兽',
 			wuxingpan_skill:'五行',
 			wuxingpan_skill_info:'出牌阶段限一次，你可以永久改变一张手牌的五行属性',
 			wuxingpan_info:'出牌阶段限一次，你可以永久改变一张手牌的五行属性',
