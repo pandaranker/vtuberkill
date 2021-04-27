@@ -178,7 +178,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tongchen: '同尘',
 			tongchen_info: '出牌阶段限一次，若你攻击范围内有角色某一区域内的牌数与你在该区域的牌数不等，你可在你与其的该区域间移动一张牌。然后若你与其在该区域内的牌数相等，你摸一张牌。',
 			wangxuan: '王选',
-			wangxuan_info: '<font color=#f66>锁定技</font> 当你的体力或装备区装备为全场最多时，你的手牌上限和攻击范围翻倍。',
+			wangxuan_info: '锁定技 当你的体力或装备区装备为全场最多时，你的手牌上限和攻击范围翻倍。',
 		}
 	};
 });

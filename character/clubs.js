@@ -2982,13 +2982,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Yomemi:'ヨメミ',
 			mokuai:'模块搭载',
-			mokuai_info:'<font color=#f66>锁定技</font> 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
+			mokuai_info:'锁定技 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
-			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张类型不同牌，然后翻开牌堆顶等量牌。目标角色需依次选择：弃置与翻开牌等量且花色相同的牌；或受到你造成的1点伤害。',
+			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张类型不同牌，然后亮出牌堆顶等量牌。目标角色需依次选择：弃置与亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '<font color=#f66>锁定技</font> 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不记次数的【杀】。',
+			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不记次数的【杀】。',
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
@@ -2998,7 +2998,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			luecai: '掠财',
 			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为“财布”。准备阶段，若你的武将牌上有“财布”，你可以移去任意数量的”财布“摸等量的牌。',
 			xiaoyan: '嚣言',
-			xiaoyan_info: '<font color=#f66>锁定技</font> 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
+			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
 			caibu: '财布',
 
 
@@ -3013,7 +3013,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。', 
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
-			xinluezhili_info: '<font color=#ff4>主公技</font> 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
+			xinluezhili_info: '主公技 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
 
 			HanazonoSerena: '花園セレナ',
 			maoliang: '猫粮',
@@ -3022,7 +3022,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			enfan: '恩返',
 			enfan_info: '发动过“啾猫”的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力',
 			shiqi: '势起',
-			shiqi_info: '<font color=#f66>锁定技</font> 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
+			shiqi_info: '锁定技 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
 
 			MashiroKanon: '真白花音',
 			chenzhu: '辰铸',
@@ -3050,7 +3050,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
-			milijianying_info: '<font color=#f66>锁定技</font> 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
+			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
 
@@ -3065,7 +3065,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuhua: '化羽',
 			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
 			yishi: '遗世',
-			yishi_info: '<font color=#f66>锁定技</font> 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
+			yishi_info: '锁定技 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',
@@ -3087,7 +3087,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhengtibuming: '正体不明',
 			zhengtibuming_info: '游戏开始时，你随机获得三张武将牌作为“替身”，然后亮出其中一张。获得亮出“替身”的通常技，且性别和势力视为与“替身”相同。回合开始或结束时，你可以选择一项：更改亮出的“替身”；或随机更换一张“替身”。当你受到1点伤害后，你可以获得一张新的“替身”。',
 			lunhuizuzhou: '轮回诅咒',
-			lunhuizuzhou_info: '<font color=#f66>锁定技</font> 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
+			lunhuizuzhou_info: '锁定技 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
 			mingyunniezao: '命运捏造',
 			mingyunniezao_info: '主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。',
 

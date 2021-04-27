@@ -922,8 +922,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							player.chooseControl('dialogcontrol',list,true).set('ai',function(){
 								var num = _status.event.num;
-								console.log(event.getRand());
-								console.log(_status.event.rand);
 								if(_status.event.rand>event.getRand()){
 									console.log(_status.event.reality)
 									return _status.event.reality+'张';
@@ -1967,7 +1965,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qixu3:'杀启虚',
 			qixu4:'启虚',
 			qixu5:'闪启虚',
-			qixu_info:'<font color=#ff4>主公技</font> 当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
+			qixu_info:'主公技 当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
 			
 			InuyamaTamaki:'犬山玉姬',
 			InuyamaTamaki_info:'犬山玉姬',
@@ -2006,17 +2004,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiance: '监策',
 			jiance_info: '你体力减少后，可以令一名角色展示所有手牌，若不包含所有类型的牌，你可以令另一名角色摸X张牌（X为其中不包含的类型数）。',
 			chanbing: '缠病',
-			chanbing_info: '<font color=#f66>锁定技</font> 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
+			chanbing_info: '锁定技 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
 			buyu: '不渝',
 			buyu_info: '一名角色死亡时，你可以将其所有牌置于武将牌上并获得其的一个技能直到你下次以此法获得技能。',
 			
 			huangtu: '颂恩',
-			huangtu_info: '<font color=#f66>锁定技</font> 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
+			huangtu_info: '锁定技 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
 			wudao: '五道',
 			wudao_info: '出牌阶段，你可以重铸一张基本牌，你以此法重铸的牌须与本回合之前重铸的牌名不同。出牌阶段结束时，若本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			wudao_useEnd_info: '本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			yinyuan: '缘斩',
-			yinyuan_info: '<font color=#ff4>主公技</font> 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
+			yinyuan_info: '主公技 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
 
 			UmoriHinako: '宇森ひなこ',
 			hongyi: '红移',

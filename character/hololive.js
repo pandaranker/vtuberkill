@@ -2924,10 +2924,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.storage.shenhai_jiesuan[0]==event.card;
 						},
 						content:function(){
-							if(trigger.targets)
-							trigger.targets.forEach(function(target){
-								player.useCard(trigger.card,target);
-							});
+							var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
+							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards);
 						}
 					},
 					init:{
@@ -3534,14 +3532,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			taiyangzhiyin:'太阳之音',
 			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
 			renjiazhizhu:'仁家之主',
-			renjiazhizhu_info:'<font color=#ff4>主公技</font> 你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
+			renjiazhizhu_info:'主公技 你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
 			renjiazhizhu_tag:'仁家之主',
 
 			YozoraMel:'夜空梅露',
 			juhun:'聚魂',
-			juhun_info:'<font color=#f66>锁定技</font> 每回合有角色首次受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。',
+			juhun_info:'锁定技 每回合有角色首次受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。',
 			meilu:'没露',
-			meilu_info:'<font color=#f66>锁定技</font> 准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
+			meilu_info:'锁定技 准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
 
 			AkaiHaato:'赤井心',
 			liaolishiyan:'料理实验',
@@ -3555,13 +3553,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huxi1:'呼吸',
 			huxi1_info:'出牌阶段限一次，你可以令攻击范围内的一名其他角色与你同时展示一张手牌并交换，若你获得了红色牌，你可以摸一张牌并令你本回合使用的下一张牌不受距离与次数限制；若没有人获得红色牌，你失去 1 点体力。',
 			lianmeng:'连梦',
-			lianmeng_info:'<font color=#f66>锁定技</font> 当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
+			lianmeng_info:'锁定技 当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
 
 			RobokoSan:'萝卜子',
 			gaonengzhanxie:'高能战械',
-			gaonengzhanxie_info:'<font color=#f66>锁定技</font> 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
+			gaonengzhanxie_info:'锁定技 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
 			ranyouxielou:'燃油泄漏',
-			ranyouxielou_info:'<font color=#f66>锁定技</font> 你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
+			ranyouxielou_info:'锁定技 你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
 
 			ShirakamiFubuki:'白上吹雪',
 			baihuqingguo:'白狐倾国',
@@ -3574,7 +3572,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
 			zhongjian:'中坚',
 			zhongjian1:'中坚',
-			zhongjian_info:'<font color=#ff4>主公技</font> 每轮限一次,当一张普通锦囊牌指定目标后,你可以选择同势力一名其他角色的一张手牌,此牌本回合视为【无懈可击】。',
+			zhongjian_info:'主公技 每轮限一次,当一张普通锦囊牌指定目标后,你可以选择同势力一名其他角色的一张手牌,此牌本回合视为【无懈可击】。',
 
 			AkiRosenthal: '亚琦罗森塔尔',
 			meiwu: '魅舞',
@@ -3626,7 +3624,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			danyan: '弹言',
 			danyan_info: '你的手牌因弃置而进入弃牌堆时,若本回合你没有造成过伤害,你可以使用其中的一张牌。',
 			qingjie: '轻捷',
-			qingjie_info: '<font color=#f66>锁定技</font> 你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
+			qingjie_info: '锁定技 你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。',
 
 			SpadeEcho: '黑桃影',
 			hangao: '函告',
@@ -3659,7 +3657,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			Rosalyn: '罗莎琳',
 			maoge: '帽阁',
-			maoge_info: '<font color=#f66>锁定技</font> 你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
+			maoge_info: '锁定技 你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
 			bianlan: '遍览',
 			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名本回合未因此摸牌的目标摸一张牌。',
 			futian: '覆天',

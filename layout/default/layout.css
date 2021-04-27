@@ -5364,3 +5364,23 @@ div[data-decoration="bronze"]::after{
 ::-webkit-scrollbar {
 	display: none;
 }
+
+/* 未被访问的链接 */
+a:link {
+	color: AliceBlue;
+}
+
+/* 已被访问的链接 */
+a:visited {
+	color: LemonChiffon;
+}
+
+/* 将鼠标悬停在链接上 */
+a:hover {
+	color: LemonChiffon;
+}
+
+/* 被选择的链接 */
+a:active {
+	color: AliceBlue;
+}

@@ -1145,13 +1145,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			haishou: '煽动海兽',
 			haishou_info: '每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。',
 			lishi: '幕下力士',
-			lishi_info: '<font color=#f66>锁定技</font> 你失去最后一点护甲时，摸一张牌。',
+			lishi_info: '锁定技 你失去最后一点护甲时，摸一张牌。',
 			
 			sea_MinatoAqua: '海·湊阿夸',
 			jinchen: '浸沉',
 			jinchen_info: '出牌阶段结束时，你可以回复一点体力并翻面，视为使用一张【沉没】。',
 			qianyong: '潜涌',
-			qianyong_info: '<font color=#f66>锁定技</font> 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
+			qianyong_info: '锁定技 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
 			qianyong_draw: '潜涌',
 
 			NagaoKei: '长尾景',
@@ -1162,21 +1162,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			ShirakamiHaruka: '白神遥',
 			baoxiao: '豹笑',
-			baoxiao_info: '<font color=#f66>锁定技</font> 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。',
+			baoxiao_info: '锁定技 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。',
 			quru: '取乳',
 			quru_info: '出牌阶段，你可以将两张非基本牌当作海【杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。',
 
 			KisaragiKoyori: '如月こより',
 			shinve: '尸虐',
-			shinve_info: '<font color=#f66>锁定技</font> 你体力减少时，获得等量护甲。准备阶段，你失去所有护甲，摸等量的牌。',
+			shinve_info: '锁定技 你体力减少时，获得等量护甲。准备阶段，你失去所有护甲，摸等量的牌。',
 			juzu: '举组',
 			juzu_info: '<font color=#ed5>觉醒技</font> 手牌数多于你的角色对你造成伤害后，你增加1点体力上限并摸牌至手牌上限，获得技能『海狗』。',
 			haigou: '海狗',
-			haigou_info: '<font color=#f66>锁定技</font> 你造成的海洋伤害+1。手牌数多于你的角色无法响应你使用的能造成伤害的牌。',
+			haigou_info: '锁定技 你造成的海洋伤害+1。手牌数多于你的角色无法响应你使用的能造成伤害的牌。',
 
 			GawrGura: '噶呜·古拉',
 			lingqun: '领群',
-			lingqun_info: '<font color=#f66>锁定技</font> 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。',
+			lingqun_info: '锁定技 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。',
 			yangliu: '洋流',
 			yangliu_info: '当你使用能造成伤害的牌时，可以扣减1点护甲将此伤害改为海洋属性。然后你摸一张牌；或令之不可被响应。',
 
@@ -1194,9 +1194,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_HisekiErio: '皇•绯赤艾利欧',
 			qiming: '启明星辰',
-			qiming_info: '<font color=#f66>锁定技</font> 你在场时所有角色明置手牌。一轮开始时，你可以声明一种非基本牌，本轮内使用此牌同名牌的角色摸一张牌并令你回复1点体力。',
+			qiming_info: '锁定技 你在场时所有角色明置手牌。一轮开始时，你可以声明一种非基本牌，本轮内使用此牌同名牌的角色摸一张牌并令你回复1点体力。',
 			shengbian: '升变征途',
-			shengbian_info: '<font color=#f66>锁定技</font> 当你的体力或护甲变化后，若你体力与护甲之和大于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
+			shengbian_info: '锁定技 当你的体力或护甲变化后，若你体力与护甲之和大于体力上限，你将体力和护甲重置至开始状态，然后摸X张牌。（X为你因此失去的体力与护甲之乘积）',
 			tulong: '屠龙伐彼',
 			tulong_info: '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。',
 

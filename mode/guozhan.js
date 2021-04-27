@@ -351,10 +351,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			SakuraMiko:['UsadaPekora'],
 			YozoraMel:['AkiRosenthal'],
 			ShirakamiFubuki:['NatsuiroMatsuri'],
-			MinatoAqua:['NakiriAyame'],
+			MinatoAqua:['NakiriAyame','MurasakiShion'],
 			MitoTsukino:['HiguchiKaede','ShizukaRin'],
 			MononobeAlice:['UshimiIchigo'],
 			LizeHelesta:['SuzuharaLulu'],
+			SukoyaKana:['ShirayukiTomoe'],
 			KizunaAI:['KaguyaLuna'],
 			Siro:['Bacharu'],
 			Diana:['Ava'],
@@ -384,7 +385,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				 /**夏色祭 */
 				gz_NatsuiroMatsuri:['female','holo',3,['gz_huxi'],['doublegroup:holo:nijisanji']],
 				/**湊阿库娅 */
-				gz_MinatoAqua:['female','holo',3,['gz_kuali','youyi']],
+				gz_MinatoAqua:['female','holo',3,['gz_kuali','youyi'],['gzskin']],
 				/**兔田佩克拉 */
 				gz_UsadaPekora:['female','holo',4,['qiangyun','tuquan'],['gzskin']],
 				/**润羽露西娅 */
@@ -399,6 +400,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_YukihanaLamy:['female','holo',4,['hanling'],['gzskin']],
 				/**大空昴 */
 				gz_ŌzoraSubaru:['female','holo',4,['cejing'],['gzskin']],
+				/**紫咲诗音 */
+				gz_MurasakiShion:['female','holo',3,['anshu','xingchi'],['gzskin']],
 				/**桃子 */
 				gz_SpadeEcho:['female','holo',3,['qinglve','yingshi'],['doublegroup:holo:clubs']],
 
@@ -428,6 +431,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_AibaUiha:['female','nijisanji',4,['kangding','longshe'],['gzskin']],
 				/**熊猫人 */
 				gz_SasakiSaku:['female','nijisanji',4,['tiaolian','gz_jiaku']],
+				/**健屋花那 */
+				gz_SukoyaKana:['female','nijisanji',3,['re_huawen','re_liaohu']],
+				/**白雪巴 */
+				gz_ShirayukiTomoe:['female','nijisanji',4,['re_gonggan','yejing']],
 
 				/**绊爱 */
 				gz_KizunaAI:['female','vtuber',4,['re_ailian']],
@@ -1326,12 +1333,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(!list[get.type2(card)])	list[get.type2(card)] = 0;
 						list[get.type2(card)]++;
 					});
-					event.list!=list;
+					event.list = list;
 					if(Object.keys(event.list)){
-						player.chooseCardButton(player.storage.gz_lianjin_mark).set();
-						player.useCard({name:'sha'},event.target,false).animate=false;
+						event.chooseEquip = true;
+						event.useSha = true;
 					}
 					'step 3'
+					if(event.chooseEquip){
+						player.chooseCardButton(player.storage.gz_lianjin_mark).set();
+					}
+					'step 4'
+					if(event.useSha){
+						player.useCard({name:'sha',nature:'fire'},event.target,false).animate=false;
+					}
 					// if(){
 						
 					// }
@@ -9240,7 +9254,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			disui_disableEquip: '抵碎-废弃',
 			disui_hideC: '抵碎-暗置',
 			dengyan: '瞪眼',
-			dengyan_info: '<font color=#f66>锁定技</font> 你的回合内其他角色不能明置武将牌；其他角色每回合第一次明置武将牌时，你摸一张牌。',
+			dengyan_info: '锁定技 你的回合内其他角色不能明置武将牌；其他角色每回合第一次明置武将牌时，你摸一张牌。',
 
 			gz_huxi:'呼吸',
 			gz_huxi_info:'出牌阶段开始时或你造成伤害后，你可以与一名本回合未以此法指定过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。当你为杏时，本回合使用交换获得的【杀】无距离限制；当你为虹时，你交换获得的非♥️装备牌可立即置于场上。（若置于判定区，红色视为【乐不思蜀】，黑色视为【兵粮寸断】）',
@@ -9256,10 +9270,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_bingdielei_info:'每轮限一次。你造成或受到过伤害的回合结束时，可以获得一个额外回合。',
 
 			gz_kuangbaoshuangren:'狂暴双刃',
-			gz_kuangbaoshuangren_info:'<font color=#f66>锁定技</font> 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标；你的红色【杀】无距离与次数限制。',
+			gz_kuangbaoshuangren_info:'锁定技 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标；你的红色【杀】无距离与次数限制。',
 
 			gz_zhenxin:'真信',
-			gz_zhenxin_info:'<font color=#f66>锁定技</font> 你受到伤害时，若来源有暗置的武将牌，此伤害-1。',
+			gz_zhenxin_info:'锁定技 你受到伤害时，若来源有暗置的武将牌，此伤害-1。',
 
 			gz_lianjin:'炼金',
 			gz_lianjin_info:'当你使用一张牌后，可以将一张手牌置于此将牌上。然后若此将牌上有三种不同/相同花色的牌，你将其中的装备牌置入场上，弃置其余的牌，视为使用了两张：火【杀】/【无中生有】，然后本回合不再触发此项。',
@@ -9270,7 +9284,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			qingyi_info: '其他角色使用的【桃】进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
 
 			gz_jiaku: '生笹',
-			gz_jiaku_info: '<font color=#f66>锁定技</font> 你赢得拼点时，摸一张牌；你没赢得拼点时，重铸一张牌。',
+			gz_jiaku_info: '锁定技 你赢得拼点时，摸一张牌；你没赢得拼点时，重铸一张牌。',
 
 			gz_shengcai: '声彩',
 			gz_shengcai_info: '当你使用一张牌或受到伤害后，你可以弃置一张牌，若与本回合之前进入弃牌堆的牌颜色均不同，你摸X张牌。（X为本回合之前被使用过的牌数）',
@@ -9299,7 +9313,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			zhanni_info: '当你使用牌指定目标后，你可选择其中一名目标角色，其每满足下列一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
 
 			gz_longdan: '龙胆雄心',
-			gz_longdan_info: '<font color=#88e>转换技</font> 阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。',
+			gz_longdan_info: '转换技 阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。',
 
 			gz_tiantang: '天扉',
 			gz_tiantang_info: '一名角色的回合开始时，你可以弃置X张牌并声明一种花色，然后：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，然后只能使用声明花色的牌直到回合结束。（X为本轮你发动此技能的次数且至少为1）',
@@ -9611,8 +9625,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			gz_longdan:function(player){
-				if(player.storage.gz_longdan) return '<font color=#88e>转换技</font> <span class="changetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。';
-				return '<font color=#88e>转换技</font> 阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="changetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>你以此法转化点数大于7的牌无次数与距离限制。';
+				if(player.storage.gz_longdan) return '转换技 <span class="changetext">阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。';
+				return '转换技 阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="changetext">阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>你以此法转化点数大于7的牌无次数与距离限制。';
 			},
 		},
 		junList:['liubei','zhangjiao','sunquan','caocao'],

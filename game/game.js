@@ -3199,7 +3199,7 @@
 					},
 					show_rarity:{
 						name:'显示武将稀有度',
-						init:false,
+						init:true,
 						intro:'仅供娱乐，重启后生效',
 						unfrequent:true,
 						onclick:function(bool){
@@ -4548,7 +4548,7 @@
 					},
 					free_choose:{
 						name:'自由选将',
-						init:true,
+						init:false,
 						onclick:function(bool){
 							game.saveConfig('free_choose',bool,this._link.config.mode);
 							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
@@ -4561,7 +4561,7 @@
 					},
 					change_identity:{
 						name:'自由选择身份和座位',
-						init:true,
+						init:false,
 						onclick:function(bool){
 							game.saveConfig('change_identity',bool,this._link.config.mode);
 							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
@@ -10252,10 +10252,14 @@
 			yuxisx:'玉玺',
 			shoukao:'枷锁',
 			junk:'平凡',
+
 			common:'普通',
 			rare:'精品',
 			epic:'史诗',
 			legend:'传说',
+
+			beginner:'简单',
+
 			default:"默认",
 			special:'特殊',
 			zhenfa:'阵法',
@@ -24619,7 +24623,6 @@
 						if(this.node.background.innerHTML.length>1) this.node.background.classList.add('tight');
 						else this.node.background.classList.remove('tight');
 					}
-					if(!lib.card[bg])	console.log(bg)
 					if((bg=='wuxingpan'||!lib.card[bg].fullborder)&&this.node.avatar&&this.node.framebg){
 						this.node.avatar.remove();
 						this.node.framebg.remove();
@@ -28799,6 +28802,7 @@
 		},
 		getRarity:function(name){
 			var rank=lib.rank.rarity;
+			if(rank.beginner.contains(name)) return 'beginner';
 			if(rank.legend.contains(name)) return 'legend';
 			if(rank.epic.contains(name)) return 'epic';
 			if(rank.rare.contains(name)) return 'rare';
@@ -36225,6 +36229,7 @@
 					intro.style.bottom='6px';
 					intro.style.left='6px';
 					switch(rarity){
+						case 'beginner':intro.dataset.nature='oceanm';break;
 						case 'rare':intro.dataset.nature='thunderm';break;
 						case 'epic':intro.dataset.nature='metalm';break;
 						case 'legend':intro.dataset.nature='orangem';break;
@@ -51998,14 +52003,16 @@
 			if(player&&lib.dynamicTranslate[name]) return lib.dynamicTranslate[name](player,name);
 			var str=lib.translate[name+'_info'];
 			if(!str) return '';
+			str = str.replace(/锁定技 /g,'<font color=#f66>锁定技 </font>')
+			.replace(/阵法技 /g,'<font color=#fe2>阵法技 </font>')
+			.replace(/轮次技 /g,'<font color=#fc2>轮次技 </font>')
+			.replace(/转换技 /g,'<font color=#88e>转换技 </font>')
+			.replace(/主公技 /g,'<font color=#ff4>主公技 </font>');
 			return str;
-			// return str.replace(/锁定技/g,'<span class="yellowtext">锁定技</span>').
 			// 	replace(/限定技/g,'<span class="yellowtext">限定技</span>').
 			// 	replace(/觉醒技/g,'<span class="greentext">觉醒技</span>').
 			// 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
 			// 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
-			// 	replace(/阵法技/g,'<span class="bluetext">阵法技</span>').
-			// 	replace(/主公技/g,'<span class="firetext">主公技</span>');
 		},
 		translation:function(str,arg){
 			if(str&&typeof str=='object'&&(str.name||str._tempTranslate)){

@@ -20,10 +20,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
 			/**修女克蕾雅 */
 			SisterClearie:['female','nijisanji',3,['zhenxin','sczhuwei']],
-			/**健屋花那 */
-			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			/**熊猫人 */
 			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
+			/**健屋花那 */
+			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
 			/**白雪巴 */
 			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
 			/**Elu */
@@ -3065,13 +3065,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fuheijs:'腹黑JS',
 			fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
 			leiyan:'雷言',
-			leiyan_info:'<font color=#f66>锁定技</font> 你的［雷杀］可以指定1-3个目标，并无视角色防具',
+			leiyan_info:'锁定技 你的［雷杀］可以指定1-3个目标，并无视角色防具',
 			xiaozhangduandai:'嚣张缎带',
 			xiaozhangduandai_info:'觉醒技。当你处于濒死状态时，立即恢复3点体力，摸3张牌并获得技能（咏春）',
 			yongchun:'咏春',
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
-			tinenghuifu1_info:'<font color=#f66>锁定技</font> 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
+			tinenghuifu1_info:'锁定技 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
 			dianmingguzhen:'电鸣鼓震',
 			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
 
@@ -3103,7 +3103,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bingdielei:'并蒂恶蕾',
 			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
 			qiujinzhiling:'囚禁指令',
-			qiujinzhiling_info:'<font color=#ff4>主公技</font> <font color=#f66>锁定技</font> 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
+			qiujinzhiling_info:'主公技 锁定技 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
 
 			mark_bingdielei: '并蒂恶蕾',
 			mark_bingdielei_anotherPhase: '并蒂恶蕾',
@@ -3129,13 +3129,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			UshimiIchigo: '宇志海莓',
 			kuangbaoshuangren: '狂暴双刃',
-			kuangbaoshuangren_info: '<font color=#f66>锁定技</font> 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
+			kuangbaoshuangren_info: '锁定技 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
 			guangsuxiabo: '光速下播',
 			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
 			
 			SisterClearie:'修女·克蕾雅',
 			zhenxin: '真信之诚',
-			zhenxin_info: '<font color=#f66>锁定技</font> 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
+			zhenxin_info: '锁定技 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
 			sczhuwei: '助危之心',
 			sczhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
 			sczhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
@@ -3144,7 +3144,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			YagamiKaruta: '山神歌流多',
 			suisi: '髓思',
-			suisi_info: '<font color=#f66>锁定技</font> 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
+			suisi_info: '锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
 			liefeng: '猎风',
 			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。',
 			
@@ -3156,7 +3156,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			OnomachiHaruka: '小野町春香',
 			nvjiangrouhao: '女将柔豪',
-			nvjiangrouhao_info: '<font color=#f66>锁定技</font> 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
+			nvjiangrouhao_info: '锁定技 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
 			yinlaiyaotang: '引徕药汤',
 			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
 

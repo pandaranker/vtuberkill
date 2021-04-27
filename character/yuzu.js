@@ -10,9 +10,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			
+			/**西西 */
+			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
 			/**理芽 */
 			Rim: ['female','qun',4,['shenghua','zhanchong'],],
+			/**异世界情绪 */
+			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
+
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**纸木铗 */
@@ -109,10 +114,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}).ai = function(card){
 							var player = _status.event.player;
 							var target = _status.event.getTrigger().player;
-							if(player.hasUseTarget(card)) return 6+player.getUseValue(card);
-							else if(get.attitude(player,target)<1) return 6-get.useful(card);
+							var use = 0;
+							if(player.hasUseTarget(card))	use+=player.getUseValue(card)*2;
+							if(get.attitude(player,target)<1&&target.countGainableCards(player,'h')) return 6-get.useful(card)+use;
 							return 0;
-						}
+						};
 					}, player)
 					'step 1'
 					if(result.cards&&result.cards.length){
@@ -612,7 +618,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					var num = event.player.countUsed(null,true);
-					console.log(num)
 					return event.player!=player&&event.player.countCards('h')&&num<(event.player.hasSkill('zhai')?event.player.countMark('zhai')+2:2);
 				},
 				content:function(){
@@ -2978,10 +2983,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.target.classList.remove('glow');
 							switch(result.index){
 								case 0:{
+									player.logSkill('zhongjizhimeng',event.target);
 									event.target.draw(2);
 									break;
 								}
 								case 1:{
+									player.logSkill('zhongjizhimeng',event.target);
 									event.target.recover(player);
 									break;
 								}
@@ -5286,6 +5293,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						check:function(card){
 							return 7-get.value(card);
 						},
+						filter:function(event,player) {
+							return player.countCards('h');
+						},
 						filterCard:function(card,player,event){
 							event=event||_status.event;
 							var filter=event._backup.filterCard;
@@ -6428,7 +6438,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return lib.filter.filterCard.apply(this,arguments);
 						},
 						prompt:get.prompt2('lanxuan')
-					}).set('logSkill',['lanxuan']);
+					}).set('logSkill',['lanxuan']).set('targetRequired',true);
 				}
 			},
 			zonghe:{
@@ -6775,7 +6785,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var useBy = _status.event.useBy;
 						if(get.tag(card,'damage')&&useBy.group=='qun'&&player.hasZhuSkill('jushi'))	return get.order(card)+10;
 						return get.order(card);
-					}).set('useBy',trigger.player).set('logSkill','qijian');
+					}).set('useBy',trigger.player).set('logSkill','qijian').set('targetRequired',true);
 					'step 1'
 					if(result.bool){
 						if(player.getHistory('sourceDamage',function(evt){
@@ -7265,6 +7275,139 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.goto(1);
 					}
 				},
+			},
+			//情绪
+			baiqing:{
+				init:function(player,skill){
+					if(!player.storage[skill])	player.storage[skill] = 0;
+				},
+				trigger:{global:'useCard2'},
+				filter:function(event,player){
+					if(event.card.name!='sha')	return false;
+					return true;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					if(!player.storage.baiqing)	player.storage.baiqing = 0;
+					player.storage.baiqing++;
+					player.markSkill('baiqing');
+					console.log(player.storage.baiqing);
+					'step 1'
+					if(player.maxHp-player.hp+1==player.storage.baiqing){
+						player.chooseBool(get.prompt2('baiqing')).ai=function(){
+							return 1;
+						};
+					}
+					'step 2'
+					if(result.bool){
+						event.cards = get.cards(player.storage.baiqing);
+						player.showCards('『白情』亮出牌堆顶'+get.cnNumber(player.storage.baiqing)+'张牌',event.cards);
+					}else	event.finish();
+					'step 3'
+					var discards = [];
+					if(trigger.cards){
+						event.cards = event.cards.filter(function(card){
+							for(var i=0;i<trigger.cards.length;i++){
+								if(get.color(trigger.cards[i])==get.color(card)){
+									discards.add(card);
+									return false;
+								}
+							}
+							return true;
+						})
+					}
+					if(discards.length){
+						game.cardsDiscard(discards);
+					}
+					player.gain(event.cards,'log','gain2');
+				},
+				marktext:'ヰ',
+				mark:true,
+				intro:{
+					content:'全场已使用#张杀',
+				},
+				group:'baiqing_clear',
+				subSkill:{
+					clear:{
+						trigger:{global:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						priority:42,
+						content:function(){
+							player.unmarkSkill('yubing');
+							player.storage.yubing = 0;
+						}
+					},
+				},
+			},
+			shuangxing:{
+				trigger:{player:'useCard2'},
+				filter:function(event,player){
+					if(get.type2(event.card)!='trick')	return false;
+					return event.targets&&event.targets.length&&!event.targets.contains(player);
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					var controls = ['令你本回合使用牌无次数限制','令其中一名目标对你使用一张【杀】，否则你获得其一张牌'];
+					player.chooseControl('dialogcontrol',controls);
+					'step 1'
+					switch(result.control){
+						case '令你本回合使用牌无次数限制':{
+							player.addTempSkill('shuangxing_chenhui');
+							event.finish();
+							break;
+						}
+						case '令其中一名目标对你使用一张【杀】，否则你获得其一张牌':{
+							player.chooseTarget(get.prompt2('shuangxing'),function(card,player,target){
+								return _status.event.targets.contains(target)&&target.countCards('h');
+							}).set('ai',function(target){
+								if(get.attitude(player,target)<0)	return 4-target.countCards('h');
+								return 0;
+							}).set('targets',trigger.targets);
+							break;
+						}
+						default:event.finish();
+					}
+					'step 2'
+					if(result.bool&&result.targets[0]){
+						var target = result.targets[0];
+						event.target = target;
+						player.logSkill('shuangxing',target);
+						target.chooseToUse(function(card,player,event){
+							if(get.name(card)!='sha') return false;
+							return lib.filter.filterCard.apply(this,arguments);
+						},'『双星』：对'+get.translation(player)+'使用一张杀，或令其获得你的一张牌').set('targetRequired',true).set('complexSelect',true).set('filterTarget',function(card,player,target){
+							if(target!=_status.event.sourcex&&!ui.selected.targets.contains(_status.event.sourcex)) return false;
+							return lib.filter.targetEnabled2.apply(this,arguments);
+						}).set('sourcex',player);
+					}
+					else{
+						event.finish();
+					}
+					'step 3'
+					if(result.bool==false&&event.target.countGainableCards(player,'he')>0){
+						player.gainPlayerCard(event.target,'he',true);
+					}
+					else{
+						event.finish();
+					}
+				},
+				subSkill:{
+					chenhui:{
+						mark:true,
+						intro:{
+							content:'本回合使用牌无次数限制',
+						},
+						mod:{
+							cardUsable:function(card,player,num){
+								return Infinity;
+							},
+						},
+					}
+				}
 			}
 		},
 		card:{
@@ -7289,7 +7432,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			niwei_jiu:{
 				content:function(){
-					event.target.chooseToUse();
+					event.target.chooseToUse().set('targetRequired',true);
 					game.delay(0.5);
 				},
 			},
@@ -7300,11 +7443,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
 			gunxun:function(player){
-				if(player.storage.gunxun===true) return '<font color=#88e>转换技</font> 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【杀】</span>②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
-				return '<font color=#88e>转换技</font> 出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【杀】<span class="browntext">②【闪】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="changetext"></span>';
+				if(player.storage.gunxun===true) return '转换技 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【杀】</span>②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
+				return '转换技 出牌阶段，你可以亮出至少一张①红色<span class="browntext">②黑色</span>手牌使之视为①【杀】<span class="browntext">②【闪】</span>，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。<span class="changetext"></span>';
 			},
 			fengqing:function(player){
-				var str = '<font color=#88e>转换技</font> 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。';
+				var str = '转换技 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。';
 				switch(player.storage.fengqing){
 					case 1: return str.replace(/①视为使用了【酒】/g,'<span class="changetext">①视为使用了【酒】</span>');
 					case 2: return str.replace(/②视为使用了【桃】/g,'<span class="changetext">②视为使用了【桃】</span>');
@@ -7313,7 +7456,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			erni:function(player){
-				var str = '<font color=#88e>转换技</font> 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。';
+				var str = '转换技 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。';
 				switch(player.storage.erni){
 					case 1: return str.replace(/①【杀】/g,'<span class="changetext">①【杀】</span>');
 					case 2: return str.replace(/②【闪】/g,'<span class="changetext">②【闪】</span>');
@@ -7322,7 +7465,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			jiren:function(player){
-				var str = '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合某张『戮秋』判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。';
+				var str = '转换技 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有牌进入弃牌堆时，若其花色与你本回合某张『戮秋』判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。';
 				switch(player.storage.jiren){
 					case 1: return str.replace(/①视为使用一张【杀】/g,'<span class="changetext">①视为使用一张【杀】</span>');
 					case 2: return str.replace(/②摸一张牌/g,'<span class="changetext">②摸一张牌</span>');
@@ -7366,13 +7509,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie: '备械',
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
-			hunzhan_info: '<font color=#f66>锁定技</font> 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+			hunzhan_info: '锁定技 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
 			Rim: '理芽',
 			shenghua: '生花',
 			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',
 			zhanchong: '绽虫',
 			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
+
+			IsekaiJoucho: 'ヰ世界情绪',
+			baiqing: '白情',
+			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
+			shuangxing: '双星',
+			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
 
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
@@ -7398,7 +7547,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yizhan: '翼展',
 			yizhan_info: '每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为“群”。',
 			jushi: '聚识',
-			jushi_info: '<font color=#fae>主公技</font> <font color=#f66>锁定技</font> 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。',
+			jushi_info: '<font color=#fae>主公技</font> 锁定技 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。',
 
 			Niuniuzi: '牛牛子',
 			qiying: '奇嘤',
@@ -7418,7 +7567,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shangbei: '裳备',
 			shangbei_info: '你受到伤害后，可以展示牌堆顶牌，若你没有与之花色相同的“裳”，你将之置于武将牌上，称为“裳”，然后摸一张牌。出牌阶段开始时，你可以令一名角色获得某一类型的全部“裳”，若不为你，你回复一点体力。',
 			qianqing: '迁情',
-			qianqing_info: '<font color=#f66>锁定技</font> 回合开始时，若你没有“裳”，你受到一点无来源的伤害。',
+			qianqing_info: '锁定技 回合开始时，若你没有“裳”，你受到一点无来源的伤害。',
 
 			Bafuko: '晴步子',
 			shangsheng: '能力上升',
@@ -7432,7 +7581,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			xinkeniang: '新科娘',
 			daimao: '呆毛科技',
-			daimao_info: '<font color=#f66>锁定技</font> 游戏开始时，你将牌堆顶牌置于武将牌上，称为“萪”；你使用与“萪”同花色的牌不受距离和次数限制；你进入濒死状态时，将一张与“萪”不同花色的牌置于“萪”中，若如此做，则你体力上限-1，回复满体力，摸三张牌。',
+			daimao_info: '锁定技 游戏开始时，你将牌堆顶牌置于武将牌上，称为“萪”；你使用与“萪”同花色的牌不受距离和次数限制；你进入濒死状态时，将一张与“萪”不同花色的牌置于“萪”中，若如此做，则你体力上限-1，回复满体力，摸三张牌。',
 			hongtou: '红头文件',
 			hongtou_info: '<font color=#f44>主公技</font> 当你需要使用或打出基本牌时，场上的国V可代替你使用或打出。',
 			
@@ -7447,14 +7596,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yehua: '夜话',
 			yehua_info: '回合开始时，你可以将手牌调整至场上唯一最多并翻面，然后本回合你使用卡牌能且只能指定多个目标。',
 			fengqing: '风情',
-			fengqing_info: '<font color=#88e>转换技</font> 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。',
+			fengqing_info: '转换技 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。',
 			fengqing_jiu: '风情-酒',
 			fengqing_tao: '风情-桃',
 
 			Carol: '珈乐',
 			huangjia: '王力口乐',
 			shixi: '时隙',
-			shixi_info: '<font color=#f66>锁定技</font> 游戏开始时，记录你的初始手牌。当（你）的牌进入弃牌堆时，若有未选定的记录牌花色与之相同，你可以选定该记录牌。一个阶段结束时，每有两个选定你便摸一张牌，然后重置选定。',
+			shixi_info: '锁定技 游戏开始时，记录你的初始手牌。当（你）的牌进入弃牌堆时，若有未选定的记录牌花色与之相同，你可以选定该记录牌。一个阶段结束时，每有两个选定你便摸一张牌，然后重置选定。',
 			xueta: '靴踏',
 			xueta_info: '当你抵消其他角色使用的牌后，若其不是皇珈骑士，你可令其摸一张牌并成为皇珈骑士。',
 			yuezhi: '乐治',
@@ -7464,7 +7613,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yiqu: '亦趋',
 			yiqu_info: '若你在其他角色执行技能的过程中被指定为目标，你可以获得该技能直到下次进入濒死状态。',
 			wanxian: '挽弦',
-			wanxian_info: '<font color=#f66>锁定技</font> 你令其他角色进入濒死状态时，你失去来自『亦趋』额外技能并摸等量的牌。',
+			wanxian_info: '锁定技 你令其他角色进入濒死状态时，你失去来自『亦趋』额外技能并摸等量的牌。',
 
 			Diana: '嘉然',
 			quanyu: '全域',
@@ -7478,7 +7627,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			aswusheng: '舞圣',
 			aswusheng_info: '你连续使用或打出第（）张基本牌时，可以触发对应项：（0）使之不计入次数；（1）摸一张牌；（2）获得对方的一张牌；（3）回复1点体力。',
 			gunxun: '棍训',
-			gunxun_info: '<font color=#88e>转换技</font> 出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【杀】②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。',
+			gunxun_info: '转换技 出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【杀】②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。',
 			ming_gunxunshan: '棍训:闪',
 			ming_gunxunsha: '棍训:杀',
 
@@ -7520,7 +7669,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			TakatsukiRitsu: '高槻律',
 			shengya: '生涯',
-			shengya_info: '<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你翻开牌堆顶第一张牌并获得之。若你翻开了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
+			shengya_info: '<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你亮出牌堆顶一张牌并获得之。若你亮出了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。',
 			liangshan: '汉歌',
 			liangshan_info: '其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
 			chongshi: '铳士',
@@ -7538,7 +7687,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qiepian: '连崛',
 			qiepian_info: '回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',
 			changxiang: '长箱',
-			changxiang_info: '<font color=#ff4>主公技</font> 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
+			changxiang_info: '主公技 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
 
 			huanshi: '士',
 			HisekiErio: '绯赤艾莉欧',
@@ -7549,7 +7698,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiban: '系绊',
 			xiban_info: '其他角色造成伤害的回合结束时，你可以弃置X张“士”令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）',
 			yongtuan: '拥团',
-			yongtuan_info: '<font color=#ff4>主公技</font> <font color=#fa8>限定技</font> 你弃置“士”时，可以令一名同势力角色获得之。',
+			yongtuan_info: '主公技 <font color=#fa8>限定技</font> 你弃置“士”时，可以令一名同势力角色获得之。',
 
 			Yousa: '泠鸢',
 			niaoji: '鸟肌',
@@ -7569,7 +7718,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tianyi: '梦幻天衣',
 			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张装备牌。',
 			nveyu: '甜言虐语',
-			nveyu_info: '<font color=#f66>锁定技</font> 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
+			nveyu_info: '锁定技 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
 
 			SukoyaKana: '健屋花那',
 			huawen: '花吻交染',
@@ -7587,9 +7736,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huangran: '煌燃',
 			huangran_info: '你受到火焰伤害时，可以选择一名距离为1的角色与你平均承担，不能平均的额外1点由你分配。然后每有一名角色因此受伤，你摸一张牌。',
 			yinzhen: '隐真',
-			yinzhen_info: '<font color=#f66>锁定技</font> 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
+			yinzhen_info: '锁定技 每回合造成的第一次伤害均改为火焰伤害。其他角色与你距离减小的回合结束时，你观看其手牌并获得其中一张。',
 			senhu: '森护',
-			senhu_info: '<font color=#f66>锁定技</font> 若你的装备区里没有防具牌，你受到的火焰伤害+1。',
+			senhu_info: '锁定技 若你的装备区里没有防具牌，你受到的火焰伤害+1。',
 
 			KenmochiDouya: '剑持刀也',
 			shenglang: '声浪燃烈',
@@ -7601,7 +7750,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tiaolian: '咆咲',
 			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
 			jiaku: '生笹',
-			jiaku_info: '<font color=#f66>锁定技</font> 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
+			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 
 			LizeHelesta: '莉泽·赫露艾斯塔',
 			shencha: '权力审查',
@@ -7615,23 +7764,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			SuzuharaLulu: '铃原露露',
 			zhongli: '重力牵引',
-			zhongli_info: '<font color=#f66>锁定技</font> 出牌阶段结束时，你进行判定：若为装备牌，你获得判定牌并继续判定；若你本回合第一次因此获得了某张装备牌，你减1点体力上限（至少为1）且执行一个额外的出牌阶段。',
+			zhongli_info: '锁定技 出牌阶段结束时，你进行判定：若为装备牌，你获得判定牌并继续判定；若你本回合第一次因此获得了某张装备牌，你减1点体力上限（至少为1）且执行一个额外的出牌阶段。',
 			xinhuo: '薪火相传',
 			xinhuo_chuanhuo: '传火',
 			xinhuo_info: '出牌阶段，你可以将两张牌以任意顺序置于牌堆顶，令你本回合下一张使用的牌无距离和次数限制且可多指定一名目标（可叠加）。',
 			weizhuang: '魔界伪装',
 			weizhuang_discard: '魔界伪装',
-			weizhuang_info: '<font color=#f66>锁定技</font> 你在一回合内多次使用基本牌/锦囊牌后，摸/弃X张牌。（X为此牌指定的目标数）',
+			weizhuang_info: '锁定技 你在一回合内多次使用基本牌/锦囊牌后，摸/弃X张牌。（X为此牌指定的目标数）',
 
 			KagamiHayato: '加賀美隼人',
 			liebo: '裂帛核哮',
-			liebo_info: '<font color=#f66>锁定技</font> 你的黑色牌无法被响应。你的一张黑色牌首次造成伤害时，摸一张牌，然后目标可以令你弃置你装备区内的一张牌',
+			liebo_info: '锁定技 你的黑色牌无法被响应。你的一张黑色牌首次造成伤害时，摸一张牌，然后目标可以令你弃置你装备区内的一张牌',
 			zhongjizhimeng: '重机织梦',
 			zhongjizhimeng_info: '出牌阶段限一次，你可弃置一张牌并展示一张手牌，此牌的颜色视为原来的异色直到回合结束。本回合内你失去此牌时，可以令一名角色回复1点体力或摸两张牌',
 
 			AmamiyaKokoro: '天宫心',
 			miaomiao: '流泪喵喵',
-			miaomiao_info: '<font color=#f66>锁定技</font> 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能突击』，摸一张牌。',
+			miaomiao_info: '锁定技 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能突击』，摸一张牌。',
 			chengneng: '逞能龙息',
 			chengneng_info: '每回合限一次。其他角色受到伤害，你可以弃一张牌令其来源视为你，且你为其原来源时，本次伤害改为等量体力流失。',
 
@@ -7659,7 +7808,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			AyanaNana: '绫奈奈奈',
 			erni: '耳匿',
-			erni_info: '<font color=#88e>转换技</font> 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。',
+			erni_info: '转换技 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。',
 			shouru: '受乳',
 			shouru_info: '每回合限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。',
 			chonghuang: '崇皇',
@@ -7671,13 +7820,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiren: '戮秋',
 			jiren_going: '戮秋',
 			jiren2: '戮秋-重置',
-			jiren_info: '<font color=#88e>转换技</font> 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有一张牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
+			jiren_info: '转换技 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有一张牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
 			canxin: '残心',
 			canxin_info: '<font color=#fda>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。',
 			
 			KurenaiAkane: '红晓音',
 			quankai: '拳开',
-			quankai_info: '<font color=#fc2>轮次技</font> 你造成伤害后，可以弃置目标区域内的一张牌；当你使用锦囊牌后，可以从弃牌堆中获得上一次『拳开』的弃牌，或重置此技能。',
+			quankai_info: '轮次技 你造成伤害后，可以弃置目标区域内的一张牌；当你使用锦囊牌后，可以从弃牌堆中获得上一次『拳开』的弃牌，或重置此技能。',
 			heyuan: '合缘',
 			heyuan_info: '<font color=#f57>限定技</font> 摸牌阶段，若你已受伤，你可以放弃摸牌，改为发现两次P-SP势力角色，然后视为拥有前者的非限定技和后者的限定技直到你的下个回合开始。',
 			

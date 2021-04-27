@@ -143,6 +143,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ui.auto.show();
 					ui.arena.classList.remove('only_dialog');
 				};
+				var clear3=function(){
+					ui.dialog.close();
+				};
 				var step1=function(){
 					ui.create.dialog('欢迎来到V杀（VtuberKill），是否进入新手向导？');
 					game.saveConfig('new_tutorial',true);
@@ -199,21 +202,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ui.control.style.top='calc(100% - 105px)';
 					ui.create.control('在菜单中，可以进行各项设置',function(){
 						ui.click.menuTab('选项');
-						ui.controls[0].replace('如果你感到游戏较卡，可以开启流畅模式<br>同样是在[选项]中，如果觉得背景太花，[选项]-[外观]中可以更换背景或改为模糊状态',function(){
+						ui.create.dialog('同样是在[选项]中，如果觉得背景太花，[选项]-[外观]中可以更换背景或改为模糊状态');
+						ui.controls[0].replace('如果你感到游戏较卡，可以开启流畅模式',function(){
+							clear3();
 							ui.controls[0].replace('在[选项]-[技能]一栏中，可以设置自动发动或双将禁配的技能',function(){
 								ui.click.menuTab('武将');
+								ui.create.dialog('新手推荐: 武将包只开初心；卡牌包标准+军争');
 								ui.controls[0].replace('进入游戏之后左上角[武将]和[卡牌]可以调节武将包与卡牌包到适宜的状态',function(){
 									ui.click.menuTab('卡牌');
-									ui.controls[0].replace('新手推荐: 武将包只开初心；卡牌包标准+军争<br>应变篇中包含一个完整的标准包，所以如果要玩应变不用开标准<br>化鲸篇是V杀原创拓展，日前更新第二次拓展版本)',function(){
-										ui.click.menuTab('开始');
-										ui.controls[0].replace('联机时可以在[开始]-[联机]设置头像和昵称方便辨认',function(){
-											ui.click.menuTab('其它');
-											ui.controls[0].replace('在[其他]中，可以检查更新和下载素材',function(){
-												ui.click.configMenu();
-												ui.window.classList.remove('noclick_important');
-												ui.control.classList.remove('noclick_click_important');
-												ui.control.style.top='';
-												step5();
+									ui.controls[0].replace('应变篇中包含一个完整的标准包，所以如果要玩应变不用开标准',function(){
+										clear3();
+										ui.controls[0].replace('化鲸篇是V杀原创拓展，日前更新第二次拓展版本',function(){
+											ui.click.menuTab('开始');
+											ui.controls[0].replace('联机时可以在[开始]-[联机]设置头像和昵称方便辨认',function(){
+												ui.click.menuTab('其它');
+												ui.controls[0].replace('在[其他]中，可以检查更新和下载素材',function(){
+													ui.click.configMenu();
+													ui.window.classList.remove('noclick_important');
+													ui.control.classList.remove('noclick_click_important');
+													ui.control.style.top='';
+													step5();
+												});
 											});
 										});
 									});
@@ -224,7 +233,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				};
 				var step5=function(){
 					clear();
-					ui.create.dialog('如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流');
+					ui.create.dialog('<a href="https://jq.qq.com/?_wv=1027&k=J3vKPvXP" target="_blank">如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流</a>');
 					ui.create.control('完成',function(){
 						clear();
 						clear2();
@@ -240,6 +249,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			}
 			"step 3"
+			if(_status.new_tutorial){
+				_status.new_beginner = true;
+			}
 			if(typeof _status.new_tutorial=='function'){
 				_status.new_tutorial();
 			}
@@ -1164,6 +1176,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list2=[];
 					var list3=[];
 					var list4=[];
+					var list5=[];
 					var identityList;
 					var chosen=lib.config.continue_name||[];
 					game.saveConfig('continue_name');
@@ -1481,6 +1494,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					for(i in lib.character){
+						if(_status.new_beginner){
+							var rank=lib.rank.rarity;
+							if(rank.beginner.contains(i))	list5.push(i);
+						}
 						if(list4.contains(i)) continue;
 						if(chosen.contains(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
@@ -1546,6 +1563,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
+					var str0='选择角色';
+					if(_status.new_beginner){
+						str0 += '（新手特供）';
+						if(list5.length)	list=list5.slice(0,8);
+					}
 					delete event.swapnochoose;
 					var dialog;
 					if(event.swapnodialog){
@@ -1570,7 +1592,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.firstChild.innerHTML=get.translation(game.me.special_identity+'_bg');
 					}
 					else{
-						dialog.setCaption('选择角色');
+						dialog.setCaption(str0);
 						game.me.setIdentity();
 					}
 					if(!event.chosen.length){

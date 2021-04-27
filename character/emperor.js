@@ -2300,7 +2300,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			liuxuan:function(player){
-				var str = '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。'
+				var str = '锁定技 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。'
 				switch(player.storage.liuxuan){
 					case 'liuxuan_lakua': return str.replace(/“拉胯”/g,'<span class="changetext">“拉胯”</span>');
 					case 'liuxuan_huoli': return str.replace('“活力”','<span class="changetext">“活力”</span>');
@@ -2320,7 +2320,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_MinatoAqua:'皇·湊阿库娅',
 			shenghuang: '圣皇之愈',
-			shenghuang_info: '<font color=#f66>锁定技</font> 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
+			shenghuang_info: '锁定技 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。',
 			renzhan: '瞬息刃斩',
 			renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。',
 			kuase: '夸色梦想',
@@ -2338,9 +2338,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_UsadaPekora: '皇·兔田佩克拉',
 			tuqi: '兔起乌沉',
-			tuqi_info: '<font color=#f66>锁定技</font> 牌名字数大于/不大于你体力的牌指定你为目标时，你令其对你无效/摸一张牌，若你为唯一目标，你可以为之指定额外目标。',
+			tuqi_info: '锁定技 牌名字数大于/不大于你体力的牌指定你为目标时，你令其对你无效/摸一张牌，若你为唯一目标，你可以为之指定额外目标。',
 			shizu: '簪缨世族',
-			shizu_info: '<font color=#f66>锁定技</font> 武将名字数大于/不大于你手牌数的角色受到你造成的伤害时，你与其交换手牌/装备区的牌。',
+			shizu_info: '锁定技 武将名字数大于/不大于你手牌数的角色受到你造成的伤害时，你与其交换手牌/装备区的牌。',
 			
 
 			sp_Diana: '皇·嘉然',
@@ -2352,9 +2352,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			sp_Ava: '皇·向晚',
 			shuimu: '降雨水母',
-			shuimu_info: '<font color=#f66>锁定技</font> 你首次受到伤害前没有体力牌。首次受到伤害后，你获得当前姿态对应的体力牌。',
+			shuimu_info: '锁定技 你首次受到伤害前没有体力牌。首次受到伤害后，你获得当前姿态对应的体力牌。',
 			liuxuan: '无限溜旋',
-			liuxuan_info: '<font color=#f66>锁定技</font> 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
+			liuxuan_info: '锁定技 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
 			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离-1。'
 			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。'
 			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你的手牌无法被其他角色获得或弃置。'
@@ -2402,7 +2402,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ai_zhong: '终',
 			ai_zhong_info: '皇·绊爱声明一个大于存活角色数的数字X，从现在开始每第X张牌之使用者+❸，你可以–❸以触发一项已死亡角色的通常技。',
 			ban:'绊',
-			ban_info:'一轮结束时，你可以令与你同阵营的角色亮出身份牌，若你们●的合计值大于其他阵营●的两倍，获得胜利。'
+			ban_info:'一轮结束时，你可以令与你同阵营的角色翻开身份牌，若你们●的合计值大于其他阵营●的两倍，获得胜利。'
 		},
 	};
 });
