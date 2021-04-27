@@ -38774,7 +38774,7 @@
 					}
 					var characterlist=connectMenu?lib.connectCharacterPack:lib.config.all.characters;
 					for(var i=0;i<characterlist.length;i++){
-						if(['sololive'].contains(characterlist[i])) continue;
+						//if(['sololive'].contains(characterlist[i])) continue;
 						createModeConfig(characterlist[i],start.firstChild);
 					}
 					if(!connectMenu){
