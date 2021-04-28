@@ -7880,6 +7880,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 
 			LizeHelesta: '莉泽·赫露艾斯塔',
+			LizeHelesta_ab: '莉泽',
 			shencha: '权力审查',
 			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张牌。',
 			helesta: '赫露圣剑',

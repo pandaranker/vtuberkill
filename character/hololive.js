@@ -3574,7 +3574,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhongjian1:'中坚',
 			zhongjian_info:'主公技 每轮限一次,当一张普通锦囊牌指定目标后,你可以选择同势力一名其他角色的一张手牌,此牌本回合视为【无懈可击】。',
 
-			AkiRosenthal: '亚琦罗森塔尔',
+			AkiRosenthal: '亚琦·罗森塔尔',
+			AkiRosenthal_ab: '亚琦',
 			meiwu: '魅舞',
 			meiwu_info: '当你于一回合内首次成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。',
 			huichu: '慧厨',
