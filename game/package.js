@@ -14,9 +14,9 @@ window.noname_package={
 		// moyu: '摸鱼',
 		yuzu: '测试中可选',
 		emperor:'Emperor',
-		sololive:'',
-		// sp:'SP',
-		// extra:'神将',		
+		sololive:'特殊角色',
+		sp:'技能库',
+		// extra:'神将',
 		// mobile:'移动版',
 		// old:'怀旧',
 		// diy:'DIY',
@@ -64,6 +64,7 @@ window.noname_package={
 		boss:'挑战',
 		longlaoguan:'龙牢关',
 		single:'单挑',
+		brawl:'乱斗',
 	},
 	submode:{
 		identity:{
@@ -79,7 +80,7 @@ window.noname_package={
 			four:'四人对抗',
 			three:'统率三军',
 			two:'欢乐成双',
-			jiange:'守卫剑阁',
+			jiange:'虹杏战场',
 			siguo:'四国争霸',
 			standard:'自由对决'
 		},

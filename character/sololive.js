@@ -5,7 +5,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:"sololive",
 		connect:true,
+		character:{
+			/**gz莉泽 */
+			gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan']],
+			/**向晚 */
+			gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu']],
+		},
 		skill:{
+			//向晚
 			baitai:{
 				trigger:{player:'phaseBegin'},
 				usable:1,
@@ -113,6 +120,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
+			gz_yiqu:{
+				trigger:{player:'damageAfter'},
+				usable:1,
+				filter:function(event,player){
+					return event.source&&player.countCards('he');
+				},
+				prompt2:function(event,player){
+					return '你可以交给'+get.translation(event.source)+'一张牌，然后摸两张牌';
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard(true,'he').set('ai',function(card){
+						var att = _status.event.att;
+						return 3+att>get.value(card);
+					}).set('att',get.attitude(player,trigger.source))
+					'step 1'
+					if(result.bool&&result.cards){
+						player.give(result.cards,trigger.source,'giveAuto');
+						player.draw(2);
+					}
+				},
+			},
 			tongchen:{
 				enable:'phaseUse',
 				usable:1,
@@ -172,9 +201,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		dynamicTranslate:{
 		},
 		translate:{
+			gz_Ava: '国战向晚',
+			gz_yiqu: '亦趋',
+			gz_yiqu_info: '每回合限一次。当你受到伤害后，你可以交给来源一张牌。若与对你造成伤害的牌花色相同，你摸两张牌。',
 			baitai: '百态',
 			baitai_info: '回合开始时，你可以展示所有手牌，根据各花色的牌数于本回合增加对应值：♦️~攻击范围，♣️~摸牌阶段摸牌数，♥️~手牌上限，♠️~出牌阶段可使用【杀】的次数；一组四种花色~使用牌指定的目标。',
 
+			gz_LizeHelesta: '国战莉泽',
 			tongchen: '同尘',
 			tongchen_info: '出牌阶段限一次，若你攻击范围内有角色某一区域内的牌数与你在该区域的牌数不等，你可在你与其的该区域间移动一张牌。然后若你与其在该区域内的牌数相等，你摸一张牌。',
 			wangxuan: '王选',

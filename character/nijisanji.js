@@ -3056,6 +3056,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
+			LizeHelesta:['re_LizeHelesta','LizeHelesta','gz_LizeHelesta'],
 		},
 		translate:{
 

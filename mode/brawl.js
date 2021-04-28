@@ -393,7 +393,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var dy=Math.round(ly*Math.sin(deg));
 						node.style.transform='translate('+dx+'px,'+dy+'px)';
 					}
-					var characterz=['guyong','litong','mazhong','fuwan','chengpu','liaohua','xinxianying','liuyu'];
+					var characterz=['xinkeniang','Bafuko','ShikaiYue','InabaHaneru','Yousa','re_UruhaRushia','re_YuNi','re_Siro'];
 					for(var i=0;i<8;i++){
 						var node=ui.create.player(null,true);
 						this.nodes.push(node);
@@ -429,6 +429,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.identityVideoName='幻化之战';
 					var skills=[];
 					var banned=[
+						'jike',
+
 						'xinfu_guhuo','reguhuo','jixi','duanchang','huashen','xinsheng','rehuashen','rexinsheng',
 						'jinqu','nzry_binglve','nzry_huaiju','nzry_yili','nzry_zhenglun','nzry_mingren','nzry_zhenliang','drlt_qingce',
 						'new_wuhun','qixing','kuangfeng','dawu','baonu','wumou','ol_wuqian','ol_shenfen','renjie','jilue','nzry_junlve','nzry_dinghuo','drlt_duorui',
@@ -999,7 +1001,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								var dialog=ui.create.dialog('hidden','forcebutton');
 								if(prompt) dialog.addText(prompt);
 								for(var i=0;i<skills.length;i++){
-									dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">【'+get.translation(skills[i])+'】</div><div>'+lib.translate[skills[i]+'_info']+'</div></div>');
+									dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">'+get.translation(skills[i])+'</div><div>'+lib.translate[skills[i]+'_info']+'</div></div>');
 								}
 								dialog.addText(' <br> ');
 								return dialog;
@@ -1061,31 +1063,31 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									},500);
 									_status.videoInited=true;
 									game.addVideo('arrangeLib',null,{
-   							skill:{
-   								_lingli_damage:{},
-   								_lingli:{
-   								 mark:true,
-   								 marktext:'灵',
-   								 popup:'聚灵',
-   								 intro:{
-   								 	name:'灵力',
-   								 	content:'当前灵力点数：# / 5',
-   								 },
-   								},
-   								_lingli_round:{},
-   								_lingli_draw:{},
-   								_lingli_save:{},
-   								hhzz_noCard:{},
-   								hhzz_huilei:{
-   									skillAnimation:true,
-   								},
-   								hhzz_youlian:{
-   									skillAnimation:true,
-   								},
-   								hhzz_zhencang:{},
-   								hhzz_huizhen:{},
-   								hhzz_jubao:{},
-   							},
+										skill:{
+											_lingli_damage:{},
+											_lingli:{
+											 mark:true,
+											 marktext:'灵',
+											 popup:'聚灵',
+											 intro:{
+												 name:'灵力',
+												 content:'当前灵力点数：# / 5',
+											 },
+											},
+											_lingli_round:{},
+											_lingli_draw:{},
+											_lingli_save:{},
+											hhzz_noCard:{},
+											hhzz_huilei:{
+												skillAnimation:true,
+											},
+											hhzz_youlian:{
+												skillAnimation:true,
+											},
+											hhzz_zhencang:{},
+											hhzz_huizhen:{},
+											hhzz_jubao:{},
+										},
 										card:{
 											hhzz_toulianghuanzhu:{
 												cardimage:"toulianghuanzhu",
@@ -1120,10 +1122,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 											hhzz_kanade:'立华奏',
 											hhzz_takaramono1:'坚实宝箱',
 											hhzz_takaramono2:'普通宝箱',
-   								hhzz_toulianghuanzhu:'偷梁换柱',
-   								hhzz_fudichouxin:'釜底抽薪',
-   								hhzz_toulianghuanzhu_info:'出牌阶段，对一名角色使用，随机更换其一个技能。可重铸。',
-   								hhzz_fudichouxin_info:'出牌阶段，对一名角色使用，随机弃置其一个技能。',
+											hhzz_toulianghuanzhu:'偷梁换柱',
+											hhzz_fudichouxin:'釜底抽薪',
+											hhzz_toulianghuanzhu_info:'出牌阶段，对一名角色使用，随机更换其一个技能。可重铸。',
+											hhzz_fudichouxin_info:'出牌阶段，对一名角色使用，随机弃置其一个技能。',
 										},
 									});
 								});
@@ -1194,25 +1196,26 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-			daozhiyueying:{
-				name:'导师月英',
+			daoshiyueying:{
+				name:'导师爱璃',
 				mode:'identity',
 				intro:'牌堆中所有普通锦囊牌数量翻倍；移除拥有集智技能的角色',
 				showcase:function(init){
 					var node=this;
 					var player1,player2;
 					if(init){
-						player1=ui.create.player(null,true).init('huangyueying');
+						player1=ui.create.player(null,true).init('AkiRinco');
 						player2=ui.create.player(null,true);
-						if(lib.character.jsp_huangyueying){
-							player2.init('jsp_huangyueying');
-						}
-						else if(lib.character.re_huangyueying){
-							player2.init('re_huangyueying');
-						}
-						else{
-							player2.init('huangyueying');
-						}
+						player2.init('NoiR');
+						// if(lib.character.jsp_huangyueying){
+						// 	player2.init('jsp_huangyueying');
+						// }
+						// else if(lib.character.re_huangyueying){
+						// 	player2.init('re_huangyueying');
+						// }
+						// else{
+						// 	player2.init('huangyueying');
+						// }
 						player1.style.left='20px';
 						player1.style.top='20px';
 						player1.style.transform='scale(0.9)';
@@ -1506,11 +1509,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				showcase:function(init){
 					var node=this;
 					var getList=function(){
-						var list=[['guanyu','guanping','guansuo','guanyinping'],
-						['caocao','caopi','caozhi','caorui'],['liubei','liushan','liuchen'],
-						['re_xiahouyuan','xiahouba','xiahoushi'],['sunjian','sunquan','sunce'],
-						['sp_zhangjiao','zhangliang','zhangbao'],['zhugeliang','zhugeguo','zhugejin','zhugeke'],
-						['mateng','machao','madai','mayunlu']];
+						var list=[['re_MurasakiShion','ShikaiYue'],
+						['Siro','XiaoxiXiaotao','XiaDi'],['ShizukuLulu','SuzuharaLulu'],
+						['Ciyana','Civia'],['ShirayukiTomoe','ShirayukiMishiro'],
+						['KaguraMea','kaguraNaNa']];
 						list.randomSort();
 						var list2=[];
 						for(var i=0;i<list.length;i++){
@@ -1563,13 +1565,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var map3=[];
 					var list1=['司','夏','诸','皇'];
 					var list2=['马','侯','葛','甫'];
-					var exclude=['界','新','大','旧','☆','神'];
+					var exclude=['界','新','大','旧','☆'];
 					for(var i in lib.character){
 						if(lib.filter.characterDisabled(i)) continue;
 						if(lib.character[i][1]=='key') continue;
 						var surname=lib.translate[i];
 						for(var j=0;j<surname.length;j++){
 							if((surname[j]+surname[j+1])=='手杀'){j++;continue}
+							if(['皇·','新·','海·','国战'].contains(surname[j]+surname[j+1])){j++;continue}
 							if(exclude.contains(surname[j])) continue;
 							if(!/[a-z]/i.test(surname[j])){
 								var index=list1.indexOf(surname[j]);
@@ -1587,8 +1590,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 						map[surname].push(i);
 					}
+					console.log(map)
 					for(var i in map){
-						if(map[i].length<4){
+						if(map[i].length<3){
 							delete map[i];
 						}
 						else{
@@ -1626,144 +1630,144 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			tongqueduopao:{
-				name:'铜雀夺袍',
-				mode:'identity',
-				intro:[
-					'主公必选曹操',
-					'其余玩家从曹休、文聘、曹洪、张郃、夏侯渊、徐晃、许褚这些武将中随机选中一个',
-					'游戏开始时将毛瑟步枪和卡丁车各置于每名角色的装备区内，轿车洗入牌堆，移除其他的武器牌和坐骑牌'
-				],
-				init:function(){
-					game.saveConfig('player_number','8','identity');
-					game.saveConfig('double_character',false,'identity');
-				},
-				showcase:function(init){
-					var node=this;
-					var list=['caoxiu','wenpin','caohong','zhanghe','re_xiahouyuan','re_xuhuang','re_xuzhu'];
-					list.randomSort();
-					list.push('re_caocao');
-					var func=function(){
-						var card=ui.create.player(null,true);
-						card.init(list.shift());
-						card.node.marks.remove();
-						card.node.count.remove();
-						card.node.hp.remove();
-						node.nodes.push(card);
-						card.style.position='absolute';
-						card.style.zIndex=2;
-						card.style.transition='all 2s';
-						var rand1=Math.round(Math.random()*100);
-						var rand2=Math.round(Math.random()*100);
-						var rand3=Math.round(Math.random()*40)-20;
-						card.style.left='calc('+rand1+'% - '+(rand1*1.5)+'px)';
-						card.style.top='calc('+rand2+'% - '+(rand2*1.8)+'px)';
-						card.style.transform='scale(0.8) rotate('+rand3+'deg)';
-						node.appendChild(card);
-						ui.refresh(card);
-					};
+			// tongqueduopao:{
+			// 	name:'铜雀夺袍',
+			// 	mode:'identity',
+			// 	intro:[
+			// 		'主公必选曹操',
+			// 		'其余玩家从曹休、文聘、曹洪、张郃、夏侯渊、徐晃、许褚这些武将中随机选中一个',
+			// 		'游戏开始时将毛瑟步枪和卡丁车各置于每名角色的装备区内，轿车洗入牌堆，移除其他的武器牌和坐骑牌'
+			// 	],
+			// 	init:function(){
+			// 		game.saveConfig('player_number','8','identity');
+			// 		game.saveConfig('double_character',false,'identity');
+			// 	},
+			// 	showcase:function(init){
+			// 		var node=this;
+			// 		var list=['caoxiu','wenpin','caohong','zhanghe','re_xiahouyuan','re_xuhuang','re_xuzhu'];
+			// 		list.randomSort();
+			// 		list.push('re_caocao');
+			// 		var func=function(){
+			// 			var card=ui.create.player(null,true);
+			// 			card.init(list.shift());
+			// 			card.node.marks.remove();
+			// 			card.node.count.remove();
+			// 			card.node.hp.remove();
+			// 			node.nodes.push(card);
+			// 			card.style.position='absolute';
+			// 			card.style.zIndex=2;
+			// 			card.style.transition='all 2s';
+			// 			var rand1=Math.round(Math.random()*100);
+			// 			var rand2=Math.round(Math.random()*100);
+			// 			var rand3=Math.round(Math.random()*40)-20;
+			// 			card.style.left='calc('+rand1+'% - '+(rand1*1.5)+'px)';
+			// 			card.style.top='calc('+rand2+'% - '+(rand2*1.8)+'px)';
+			// 			card.style.transform='scale(0.8) rotate('+rand3+'deg)';
+			// 			node.appendChild(card);
+			// 			ui.refresh(card);
+			// 		};
 
-					var list2=['qilin','dawan','zhuahuang'];
-					var func2=function(){
-						var card=game.createCard(list2.shift(),'noclick');
-						node.nodes.push(card);
-						card.style.position='absolute';
-						card.style.zIndex=2;
-						card.style.transition='all 2s';
-						var rand1=Math.round(Math.random()*100);
-						var rand2=Math.round(Math.random()*100);
-						var rand3=Math.round(Math.random()*40)-20;
-						card.style.left='calc('+rand1+'% - '+rand1+'px)';
-						card.style.top='calc('+rand2+'% - '+rand2+'px)';
-						card.style.transform='rotate('+rand3+'deg)';
-						node.appendChild(card);
-						ui.refresh(card);
-					};
+			// 		var list2=['qilin','dawan','zhuahuang'];
+			// 		var func2=function(){
+			// 			var card=game.createCard(list2.shift(),'noclick');
+			// 			node.nodes.push(card);
+			// 			card.style.position='absolute';
+			// 			card.style.zIndex=2;
+			// 			card.style.transition='all 2s';
+			// 			var rand1=Math.round(Math.random()*100);
+			// 			var rand2=Math.round(Math.random()*100);
+			// 			var rand3=Math.round(Math.random()*40)-20;
+			// 			card.style.left='calc('+rand1+'% - '+rand1+'px)';
+			// 			card.style.top='calc('+rand2+'% - '+rand2+'px)';
+			// 			card.style.transform='rotate('+rand3+'deg)';
+			// 			node.appendChild(card);
+			// 			ui.refresh(card);
+			// 		};
 
-					if(init){
-						node.nodes=[];
-					}
-					else{
-						while(node.nodes.length){
-							node.nodes.shift().remove();
-						}
-					}
-					for(var i=0;i<5;i++){
-						func();
-					}
-					for(var i=0;i<3;i++){
-						func2();
-						func();
-					}
-					var func3=function(){
-						for(var i=0;i<node.nodes.length;i++){
-							var card=node.nodes[i];
-							if(card.classList.contains('player')){
-								var rand1=Math.round(Math.random()*100);
-								var rand2=Math.round(Math.random()*100);
-								var rand3=Math.round(Math.random()*40)-20;
-								card.style.left='calc('+rand1+'% - '+(rand1*1.5)+'px)';
-								card.style.top='calc('+rand2+'% - '+(rand2*1.8)+'px)';
-								card.style.transform='scale(0.8) rotate('+rand3+'deg)';
-							}
-							else{
-								var rand1=Math.round(Math.random()*100);
-								var rand2=Math.round(Math.random()*100);
-								var rand3=Math.round(Math.random()*40)-20;
-								card.style.left='calc('+rand1+'% - '+rand1+'px)';
-								card.style.top='calc('+rand2+'% - '+rand2+'px)';
-								card.style.transform='rotate('+rand3+'deg)';
-							}
-						}
-					}
-					// func3();
-					// node.showcaseinterval=setInterval(func3,5000);
-				},
-				content:{
-					cardPile:function(list){
-						for(var i=0;i<list.length;i++){
-							var subtype=get.subtype(list[i][2]);
-							if(subtype=='equip1'||subtype=='equip3'||subtype=='equip4'){
-								list.splice(i--,1);
-							}
-						}
-						for(var i=0;i<8;i++){
-							list.push([['heart','diamond','club','spade'].randomGet(),Math.ceil(Math.random()*13),'dawan']);
-						}
-						return list;
-					},
-					gameStart:function(){
-						game.identityVideoName='铜雀夺袍';
-						for(var i=0;i<game.players.length;i++){
-							game.players[i].$equip(game.createCard('qilin'));
-							game.players[i].$equip(game.createCard('zhuahuang'));
-						}
-					},
-					submode:'normal',
-					list:['caoxiu','wenpin','caohong','zhanghe','re_xiahouyuan','re_xuhuang','re_xuzhu'],
-					chooseCharacterFixed:true,
-					chooseCharacterAi:function(player){
-						if(player==game.zhu){
-							player.init('re_caocao');
-						}
-						else{
-							_status.brawl.list.remove(game.me.name);
-							player.init(_status.brawl.list.randomRemove());
-						}
-					},
-					chooseCharacter:function(){
-						_status.noReplaceCharacter=true;
-						if(game.me==game.zhu){
-							return ['re_caocao'];
-						}
-						else{
-							_status.brawl.list.randomSort();
-							return _status.brawl.list;
-							// return _status.brawl.list.randomGets(1);
-						}
-					}
-				}
-			},
+			// 		if(init){
+			// 			node.nodes=[];
+			// 		}
+			// 		else{
+			// 			while(node.nodes.length){
+			// 				node.nodes.shift().remove();
+			// 			}
+			// 		}
+			// 		for(var i=0;i<5;i++){
+			// 			func();
+			// 		}
+			// 		for(var i=0;i<3;i++){
+			// 			func2();
+			// 			func();
+			// 		}
+			// 		var func3=function(){
+			// 			for(var i=0;i<node.nodes.length;i++){
+			// 				var card=node.nodes[i];
+			// 				if(card.classList.contains('player')){
+			// 					var rand1=Math.round(Math.random()*100);
+			// 					var rand2=Math.round(Math.random()*100);
+			// 					var rand3=Math.round(Math.random()*40)-20;
+			// 					card.style.left='calc('+rand1+'% - '+(rand1*1.5)+'px)';
+			// 					card.style.top='calc('+rand2+'% - '+(rand2*1.8)+'px)';
+			// 					card.style.transform='scale(0.8) rotate('+rand3+'deg)';
+			// 				}
+			// 				else{
+			// 					var rand1=Math.round(Math.random()*100);
+			// 					var rand2=Math.round(Math.random()*100);
+			// 					var rand3=Math.round(Math.random()*40)-20;
+			// 					card.style.left='calc('+rand1+'% - '+rand1+'px)';
+			// 					card.style.top='calc('+rand2+'% - '+rand2+'px)';
+			// 					card.style.transform='rotate('+rand3+'deg)';
+			// 				}
+			// 			}
+			// 		}
+			// 		// func3();
+			// 		// node.showcaseinterval=setInterval(func3,5000);
+			// 	},
+			// 	content:{
+			// 		cardPile:function(list){
+			// 			for(var i=0;i<list.length;i++){
+			// 				var subtype=get.subtype(list[i][2]);
+			// 				if(subtype=='equip1'||subtype=='equip3'||subtype=='equip4'){
+			// 					list.splice(i--,1);
+			// 				}
+			// 			}
+			// 			for(var i=0;i<8;i++){
+			// 				list.push([['heart','diamond','club','spade'].randomGet(),Math.ceil(Math.random()*13),'dawan']);
+			// 			}
+			// 			return list;
+			// 		},
+			// 		gameStart:function(){
+			// 			game.identityVideoName='铜雀夺袍';
+			// 			for(var i=0;i<game.players.length;i++){
+			// 				game.players[i].$equip(game.createCard('qilin'));
+			// 				game.players[i].$equip(game.createCard('zhuahuang'));
+			// 			}
+			// 		},
+			// 		submode:'normal',
+			// 		list:['caoxiu','wenpin','caohong','zhanghe','re_xiahouyuan','re_xuhuang','re_xuzhu'],
+			// 		chooseCharacterFixed:true,
+			// 		chooseCharacterAi:function(player){
+			// 			if(player==game.zhu){
+			// 				player.init('re_caocao');
+			// 			}
+			// 			else{
+			// 				_status.brawl.list.remove(game.me.name);
+			// 				player.init(_status.brawl.list.randomRemove());
+			// 			}
+			// 		},
+			// 		chooseCharacter:function(){
+			// 			_status.noReplaceCharacter=true;
+			// 			if(game.me==game.zhu){
+			// 				return ['re_caocao'];
+			// 			}
+			// 			else{
+			// 				_status.brawl.list.randomSort();
+			// 				return _status.brawl.list;
+			// 				// return _status.brawl.list.randomGets(1);
+			// 			}
+			// 		}
+			// 	}
+			// },
 			// shenrudihou:{
 			//	 name:'深入敌后',
 			//	 mode:'versus',
@@ -1795,7 +1799,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<8;i++){
 						var node=ui.create.player(null,true);
 						this.nodes.push(node);
-						node.init('zuoci');
+						node.init('jike');
 						node.classList.add('minskin');
 						node.node.marks.remove();
 						node.node.hp.remove();
@@ -1874,12 +1878,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var node=this;
 					var getList=function(){
 						var list=[
-						['liubei','guanyu','zhangfei'],
-						['caocao','guojia','xunyu'],
-						['sunquan','zhangzhang','zhouyu'],
-						['re_yuanshao','guotufengji','yj_jushou']
+						['MinatoAqua','re_NakiriAyame','re_MurasakiShion'],
+						['MitoTsukino','SuzukaUtako','HiguchiKaede'],
+						['Ava','Bella','Diana'],
+						['KaguraMea','InuyamaTamaki','InabaHaneru']
 						];
-						if(_status.keyVerified) list.push(['key_yuri','key_yuzuru','sp_key_kanade'])
+						//if(_status.keyVerified) list.push(['key_yuri','key_yuzuru','sp_key_kanade'])
 						list.randomSort();
 						var list2=[];
 						for(var i=0;i<list.length;i++){
@@ -1935,11 +1939,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					_status.noReplaceCharacter=true;
  					game.versusVideoName='家族之争';
  					var map={
- 						wei:[],
- 						shu:[],
- 						wu:[],
+ 						// wei:[],
+ 						// shu:[],
+ 						// wu:[],
+ 						// key:[],
  						qun:[],
- 						key:[],
+ 						holo:[],
+ 						psp:[],
+ 						paryi:[],
+ 						asoul:[],
  					};
  					var map3=[];
  					var banned=['zuoci','re_zuoci','tw_xiahouba'];
@@ -1949,7 +1957,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  						if(group&&map[group]) map[group].push(i);
  					}
  					for(var i in map){
-						if(map[i].length<8||(i=='key'&&!_status.keyVerified)){
+						if(map[i].length<5||(i=='key'&&!_status.keyVerified)){
  							delete map[i];
  						}
  						else{
@@ -2067,6 +2075,98 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  								},
  							},
  						},
+ 						_jiazu_holo:{
+							popup:'杏仁',
+							prompt2:'你使用【杀】上限+1；出牌阶段结束时，若你于此阶段使用【杀】次数不少于2，摸一张牌。',
+							mod:{
+								cardUsable:function(card,player,num){
+									if(card.name=='sha'&&player.group=='holo') return num+1;
+								},
+							},
+							trigger:{player:'phaseUseEnd'},
+							forced:true,
+							filter:function(event,player){
+								return player.group=='holo'&&player.getHistory('useCard',function(evt){
+									return evt.card&&evt.card.name=='holo'&&evt.getParent('phaseUse')==event;
+								}).length>1;
+							},
+							content:function(){player.draw()},
+ 						},
+ 						_jiazu_psp:{
+ 							trigger:{player:'phaseEnd'},
+ 							forced:true,
+ 							popup:'残烛',
+ 							prompt2:'回合结束时，若你的手牌数不等于你的体力值，则你摸一张牌。',
+ 							filter:function(event,player){
+ 								return player.group=='psp'&&player.countCards('h')!=player.hp;
+ 							},
+ 							content:function(){player.draw()},
+ 						},
+ 						_jiazu_paryi:{
+ 							trigger:{player:'phaseBegin'},
+ 							direct:true,
+ 							popup:'幻业',
+ 							prompt2:'回合开始时，你可以弃置一张牌并指定一名敌方角色，该角色须弃置一张牌，否则你摸一张牌。',
+ 							filter:function(event,player){
+ 								return player.group=='paryi'&&player.countCards('he')>0;
+ 							},
+ 							content:function(){
+ 								'step 0'
+ 								player.chooseCardTarget({
+ 									prompt:get.prompt2(event.name),
+ 									filterCard:lib.filter.cardDiscardable,
+ 									filterTarget:function(card,player,target){
+ 										return player.side!=target.side;
+ 									},
+ 									position:'he',
+ 									ai1:function(card){
+ 										return 6-get.value(card);
+ 									},
+ 									ai2:function(target){
+ 										return 1/(1+target.countCards('he'));
+ 									},
+ 								});
+ 								'step 1'
+ 								if(result.bool){
+ 									player.logSkill(event.name,result.targets);
+ 									player.discard(result.cards);
+ 									result.targets[0].chooseToDiscard('弃置一张牌，或令'+get.translation(player)+'摸一张牌','he').ai=lib.skill.zhiheng.check;
+ 								}
+ 								else event.finish();
+ 								'step 2'
+ 								if(!result.bool) player.draw();
+ 							},
+ 						},
+ 						_jiazu_asoul:{
+ 							enable:'phaseUse',
+ 							usable:1,
+ 							popup:'魂守',
+ 							filter:function(event,player){
+ 								return player.group=='asoul';
+ 							},
+ 							prompt2:'出牌阶段限一次，你可以摸一张牌并获得1点护甲。若如此做，你于当前回合结束时失去1点体力。',
+ 							content:function(){
+ 								"step 0"
+ 								player.draw();
+ 								"step 1"
+ 								player.changeHujia(1);
+ 								"step 2"
+ 								var evt=event.getParent('phase');
+ 								if(evt&&evt.after){
+ 									var next=player.loseHp();
+ 									event.next.remove(next);
+ 									evt.after.push(next);
+ 								}
+ 							},
+ 							ai:{
+ 								order:10,
+ 								result:{
+ 									player:function(player){
+ 										return player.hp-1;
+ 									},
+ 								},
+ 							},
+ 						},
  						qunxin_temp:{
  							noGlobal:true,
  							onremove:true,
@@ -2113,7 +2213,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  							content:function(){player.draw()},
  						},
  						_jiazu_awaken_qun:{
- 							popup:'邺城',
+ 							popup:'VRChat',
  							intro:{
  								content:'锁定技，当你使用锦囊牌指定其他角色为目标后，你摸一张牌。',
  							},
@@ -2154,6 +2254,56 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  								if(lib.skill[name]) player.markSkill(name);
  							},
  						},
+ 						_jiazu_awaken_holo:{
+ 							popup:'温暖大家庭',
+ 							intro:{
+ 								content:'锁定技，当你使用【杀】造成伤害后，你摸一张牌。',
+ 							},
+ 							trigger:{source:'damageEnd'},
+ 							forced:true,
+ 							filter:function(event,player){
+ 								return player._jiazuAwaken&&player.group=='holo'&&event.card&&event.card.name=='sha';
+ 							},
+ 							content:function(){player.draw()},
+ 						},
+ 						_jiazu_awaken_psp:{
+ 							popup:'高性能机体',
+ 							intro:{
+ 								content:'锁定技，当你使用装备牌时，你摸一张牌。',
+ 							},
+ 							trigger:{player:'useCard'},
+ 							forced:true,
+ 							filter:function(event,player){
+ 								return player._jiazuAwaken&&player.group=='psp'&&get.type(event.card)=='equip';
+ 							},
+ 							content:function(){player.draw()},
+ 						},
+ 						_jiazu_awaken_paryi:{
+ 							popup:'巧可拉拉',
+ 							intro:{
+ 								content:'锁定技，当你受到伤害后，你摸一张牌。',
+ 							},
+ 							trigger:{player:'damageEnd'},
+ 							forced:true,
+ 							filter:function(event,player){
+ 								return player._jiazuAwaken&&player.group=='psp';
+ 							},
+ 							content:function(){player.draw()},
+ 						},
+ 						_jiazu_awaken_asoul:{
+ 							popup:'工具人升级',
+ 							intro:{
+ 								content:'锁定技，当你回复/失去体力后，你摸一张牌。',
+ 							},
+ 							trigger:{player:['loseHpEnd','recoverEnd']},
+ 							forced:true,
+ 							filter:function(event,player){
+ 								return player._jiazuAwaken&&player.group=='asoul';
+ 							},
+ 							content:function(){
+ 								player.draw();
+ 							},
+ 						},
  					};
  					var translate={};
  					for(var i in skill){
@@ -2190,6 +2340,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
   							popup:'键魂',
   							prompt2:'出牌阶段限一次，你可以摸一张牌并获得1点护甲。若如此做，你于当前回合结束时失去1点体力。',
   						},
+  						_jiazu_holo:{
+  							popup:'杏仁',
+  							prompt2:'你使用【杀】上限+1；出牌阶段结束时，若你于此阶段使用【杀】次数不少于2，摸一张牌。',
+  						},
+  						_jiazu_psp:{
+  							popup:'残烛',
+  							prompt2:'回合结束时，若你的手牌数不等于你的体力值，则你摸一张牌。',
+  						},
+  						_jiazu_paryi:{
+  							popup:'幻业',
+  							prompt2:'回合开始时，你可以弃置一张牌并指定一名敌方角色，该角色须弃置一张牌，否则你摸一张牌。',
+  						},
+  						_jiazu_asoul:{
+  							popup:'魂守',
+  							prompt2:'出牌阶段限一次，你可以摸一张牌并获得1点护甲。若如此做，你于当前回合结束时失去1点体力。',
+  						},
   						_jiazu_awaken_wei:{
   							popup:'许昌',
   							intro:{
@@ -2209,7 +2375,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
   							},
   						},
   						_jiazu_awaken_qun:{
-  							popup:'邺城',
+  							popup:'VRChat',
   							intro:{
   								content:'锁定技，当你使用锦囊牌指定其他角色为目标后，你摸一张牌。',
   							},
@@ -2219,6 +2385,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
   							intro:{
   								content:'锁定技，当你回复/失去体力后，你摸一张牌。',
   							},
+  						},
+  						_jiazu_awaken_holo:{
+  							popup:'温暖大家庭',
+  							prompt2:'锁定技，当你使用【杀】造成伤害后，你摸一张牌。',
+  						},
+  						_jiazu_awaken_psp:{
+  							popup:'高性能机体',
+  							prompt2:'锁定技，当你使用装备牌时，你摸一张牌。',
+  						},
+  						_jiazu_awaken_paryi:{
+  							popup:'巧可拉拉',
+  							prompt2:'锁定技，当你受到伤害后，你摸一张牌。',
+  						},
+  						_jiazu_awaken_asoul:{
+  							popup:'工具人升级',
+  							prompt2:'锁定技，当你回复/失去体力后，你摸一张牌。',
   						},
   						_jiazu_awaken:{},
  						},
@@ -2248,209 +2430,209 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			baiyidujiang:{
-				name:'白衣渡江',
-				mode:'versus',
-				submode:'2v2',
-				showcase:function(init){
-					var node=this;
-					var player1,player2;
-					if(init){
-						player1=ui.create.player(null,true).init('lvmeng');
-						player2=ui.create.player(null,true).init('guanyu');
-						player1.node.marks.remove();
-						player1.node.hp.remove();
-						player2.node.marks.remove();
-						player2.node.hp.remove();
-						player1.style.left='20px';
-						player1.style.top='20px';
-						player1.style.transform='scale(0.9)';
-						player1.node.count.remove();
-						player2.style.left='auto';
-						player2.style.right='20px';
-						player2.style.top='20px';
-						player2.style.transform='scale(0.9)';
-						player2.node.count.remove();
-						this.appendChild(player1);
-						this.appendChild(player2);
-						this.player1=player1;
-						this.player2=player2;
-					}
-					else{
-						player1=this.player1;
-						player2=this.player2;
-					}
-					var rect1=player1.getBoundingClientRect();
-					var rect2=player2.getBoundingClientRect();
-					var left1=rect1.left+rect1.width/2-ui.arena.offsetLeft;
-					var left2=rect2.left+rect2.width/2-ui.arena.offsetLeft;
-					var top1=rect1.top+rect1.height/2-ui.arena.offsetTop;
-					var top2=rect2.top+rect2.height/2-ui.arena.offsetTop;
-					var func=function(){
-						//game.linexy([left1,top1,left2,top2]);
-						setTimeout(function(){
-							player1.reinit(player1.name,'re_lvmeng');
-							player2.reinit(player2.name,'re_guanyu');
-							//game.linexy([left2,top2,left1,top1],'green');
-						},1500);
-						setTimeout(function(){
-							player1.reinit(player1.name,'sp_lvmeng');
-							player2.reinit(player2.name,'jsp_guanyu');
-							//game.linexy([left1,top1,left2,top2],'thunder');
-						},3000);
-						setTimeout(function(){
-							player1.reinit(player1.name,'shen_lvmeng');
-							player2.reinit(player2.name,'shen_guanyu');
-							//game.linexy([left2,top2,left1,top1],'fire');
-						},4500);
-						setTimeout(function(){
-							player1.reinit(player1.name,'lvmeng');
-							player2.reinit(player2.name,'guanyu');
-						},6000);
-					};
-					node.showcaseinterval=setInterval(func,6000);
-					func();
-				},
-				intro:[
-					'玩家在选将时可从8张武将牌里选择两张武将牌，一张面向大家可见（加入游戏），另一张是隐藏面孔（暗置）',
-					'选择的两张武将牌需满足以下至少两个条件：1.性别相同；2.体力上限相同；3.技能数量相同',
-					'每名玩家在其回合开始或回合结束时，可以选择将自己的武将牌弃置，然后使用暗置的武将牌进行剩余的游戏'
-				],
-				content:{
-					submode:'two',
-					chooseCharacterBefore:function(){
-   			game.versusVideoName='白衣渡江';
-   			lib.skill._changeCharacter={
-   				trigger:{player:['phaseBefore','phaseAfter']},
-   				forced:true,
-   				silent:true,
-   				popup:false,
-   				filter:function(event,player){
-   					return player._backupCharacter!=undefined;
-   				},
-   				content:function(){
-   					"step 0"
-   					player.chooseControl('确定','取消').set('dialog',['是否替换自己的武将牌？',[[player._backupCharacter],'character']]).set('ai',function(){
-   						return Math.random()<0.15?'确定':'取消';
-   					});
-   					"step 1"
-   					if(result.control=='确定'){
-   						game.log(player,'将',player.name,'替换为了',player._backupCharacter);
-   						player.reinit(player.name,player._backupCharacter);
-   						player.changeGroup(lib.character[player._backupCharacter][1],false);
-   						delete player._backupCharacter;
-   					}
-   				},
-   			},
-   			game.addGlobalSkill('_changeCharacter');
-   			game.chooseCharacterTwo=function(){
-   				var next=game.createEvent('chooseCharacter',false);
-   				next.setContent(function(){
-   					'step 0'
-   					ui.arena.classList.add('choose-character');
-   					for(var i in lib.skill){
-   						if(lib.skill[i].changeSeat){
-   							lib.skill[i]={};
-   							if(lib.translate[i+'_info']){
-   								lib.translate[i+'_info']='此模式下不可用';
-   							}
-   						}
-   					}
-   					var bool=Math.random()<0.5;
-   					var bool2=Math.random()<0.5;
-   					var ref=game.players[0];
+			// baiyidujiang:{
+			// 	name:'白衣渡江',
+			// 	mode:'versus',
+			// 	submode:'2v2',
+			// 	showcase:function(init){
+			// 		var node=this;
+			// 		var player1,player2;
+			// 		if(init){
+			// 			player1=ui.create.player(null,true).init('lvmeng');
+			// 			player2=ui.create.player(null,true).init('guanyu');
+			// 			player1.node.marks.remove();
+			// 			player1.node.hp.remove();
+			// 			player2.node.marks.remove();
+			// 			player2.node.hp.remove();
+			// 			player1.style.left='20px';
+			// 			player1.style.top='20px';
+			// 			player1.style.transform='scale(0.9)';
+			// 			player1.node.count.remove();
+			// 			player2.style.left='auto';
+			// 			player2.style.right='20px';
+			// 			player2.style.top='20px';
+			// 			player2.style.transform='scale(0.9)';
+			// 			player2.node.count.remove();
+			// 			this.appendChild(player1);
+			// 			this.appendChild(player2);
+			// 			this.player1=player1;
+			// 			this.player2=player2;
+			// 		}
+			// 		else{
+			// 			player1=this.player1;
+			// 			player2=this.player2;
+			// 		}
+			// 		var rect1=player1.getBoundingClientRect();
+			// 		var rect2=player2.getBoundingClientRect();
+			// 		var left1=rect1.left+rect1.width/2-ui.arena.offsetLeft;
+			// 		var left2=rect2.left+rect2.width/2-ui.arena.offsetLeft;
+			// 		var top1=rect1.top+rect1.height/2-ui.arena.offsetTop;
+			// 		var top2=rect2.top+rect2.height/2-ui.arena.offsetTop;
+			// 		var func=function(){
+			// 			//game.linexy([left1,top1,left2,top2]);
+			// 			setTimeout(function(){
+			// 				player1.reinit(player1.name,'re_lvmeng');
+			// 				player2.reinit(player2.name,'re_guanyu');
+			// 				//game.linexy([left2,top2,left1,top1],'green');
+			// 			},1500);
+			// 			setTimeout(function(){
+			// 				player1.reinit(player1.name,'sp_lvmeng');
+			// 				player2.reinit(player2.name,'jsp_guanyu');
+			// 				//game.linexy([left1,top1,left2,top2],'thunder');
+			// 			},3000);
+			// 			setTimeout(function(){
+			// 				player1.reinit(player1.name,'shen_lvmeng');
+			// 				player2.reinit(player2.name,'shen_guanyu');
+			// 				//game.linexy([left2,top2,left1,top1],'fire');
+			// 			},4500);
+			// 			setTimeout(function(){
+			// 				player1.reinit(player1.name,'lvmeng');
+			// 				player2.reinit(player2.name,'guanyu');
+			// 			},6000);
+			// 		};
+			// 		node.showcaseinterval=setInterval(func,6000);
+			// 		func();
+			// 	},
+			// 	intro:[
+			// 		'玩家在选将时可从8张武将牌里选择两张武将牌，一张面向大家可见（加入游戏），另一张是隐藏面孔（暗置）',
+			// 		'选择的两张武将牌需满足以下至少两个条件：1.性别相同；2.体力上限相同；3.技能数量相同',
+			// 		'每名玩家在其回合开始或回合结束时，可以选择将自己的武将牌弃置，然后使用暗置的武将牌进行剩余的游戏'
+			// 	],
+			// 	content:{
+			// 		submode:'two',
+			// 		chooseCharacterBefore:function(){
+   			// game.versusVideoName='白衣渡江';
+   			// lib.skill._changeCharacter={
+   			// 	trigger:{player:['phaseBefore','phaseAfter']},
+   			// 	forced:true,
+   			// 	silent:true,
+   			// 	popup:false,
+   			// 	filter:function(event,player){
+   			// 		return player._backupCharacter!=undefined;
+   			// 	},
+   			// 	content:function(){
+   			// 		"step 0"
+   			// 		player.chooseControl('确定','取消').set('dialog',['是否替换自己的武将牌？',[[player._backupCharacter],'character']]).set('ai',function(){
+   			// 			return Math.random()<0.15?'确定':'取消';
+   			// 		});
+   			// 		"step 1"
+   			// 		if(result.control=='确定'){
+   			// 			game.log(player,'将',player.name,'替换为了',player._backupCharacter);
+   			// 			player.reinit(player.name,player._backupCharacter);
+   			// 			player.changeGroup(lib.character[player._backupCharacter][1],false);
+   			// 			delete player._backupCharacter;
+   			// 		}
+   			// 	},
+   			// },
+   			// game.addGlobalSkill('_changeCharacter');
+   			// game.chooseCharacterTwo=function(){
+   			// 	var next=game.createEvent('chooseCharacter',false);
+   			// 	next.setContent(function(){
+   			// 		'step 0'
+   			// 		ui.arena.classList.add('choose-character');
+   			// 		for(var i in lib.skill){
+   			// 			if(lib.skill[i].changeSeat){
+   			// 				lib.skill[i]={};
+   			// 				if(lib.translate[i+'_info']){
+   			// 					lib.translate[i+'_info']='此模式下不可用';
+   			// 				}
+   			// 			}
+   			// 		}
+   			// 		var bool=Math.random()<0.5;
+   			// 		var bool2=Math.random()<0.5;
+   			// 		var ref=game.players[0];
    
-   					ref.side=bool;
-   					ref.next.side=bool2;
-   					ref.next.next.side=!bool;
-   					ref.previous.side=!bool2;
+   			// 		ref.side=bool;
+   			// 		ref.next.side=bool2;
+   			// 		ref.next.next.side=!bool;
+   			// 		ref.previous.side=!bool2;
    
-   					var firstChoose=game.players.randomGet();
-   					if(firstChoose.next.side==firstChoose.side){
-   						firstChoose=firstChoose.next;
-   					}
-   					_status.firstAct=firstChoose;
-   					for(var i=0;i<4;i++){
-   						firstChoose.node.name.innerHTML=get.verticalStr(get.cnNumber(i+1,true)+'号位');
-   						firstChoose=firstChoose.next;
-   					}
+   			// 		var firstChoose=game.players.randomGet();
+   			// 		if(firstChoose.next.side==firstChoose.side){
+   			// 			firstChoose=firstChoose.next;
+   			// 		}
+   			// 		_status.firstAct=firstChoose;
+   			// 		for(var i=0;i<4;i++){
+   			// 			firstChoose.node.name.innerHTML=get.verticalStr(get.cnNumber(i+1,true)+'号位');
+   			// 			firstChoose=firstChoose.next;
+   			// 		}
    
-   					for(var i=0;i<game.players.length;i++){
-   						if(game.players[i].side==game.me.side){
-   							game.players[i].node.identity.firstChild.innerHTML='友';
-   						}
-   						else{
-   							game.players[i].node.identity.firstChild.innerHTML='敌';
-   						}
-   						game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
-   					}
-   					var list=[];
-   					for(i in lib.character){
-   						if(!lib.filter.characterDisabled(i)){
-   							list.push(i);
-   						}
-   					}
-   					var choose=[];
-   					_status.characterlist=list;
-   					event.filterChoice=function(name1,name2){
-   						var info1=lib.character[name1];
-   						var info2=lib.character[name2];
-   						if(!info1||!info2) return;
-   						var num=0;
-   						if(info1[0]==info2[0]) num++;
-   						if(get.infoMaxHp(info1[2])==get.infoMaxHp(info2[2])) num++;
-   						if(info1[3].length==info2[3].length) num++;
-   						return num>1;
-   					};
-   					var list2=list.randomGets(8);
-   					var next=game.me.chooseButton(2,true,['请选择您的武将牌',[list2,'character']]);
-   					next.set('onfree',true);
-   					next.set('filterButton',function(button){
-   						if(!ui.selected.buttons.length){
-   							for(var i=0;i<list2.length;i++){
-   								if(list2[i]!=button.link&&event.filterChoice(button.link,list2[i])) return true;
-   							}
-   							return false;
-   						}
-   						return event.filterChoice(button.link,ui.selected.buttons[0].link)
-   					});
-   					'step 1'
-   					game.me.init(result.links[0]);
-   					game.me._backupCharacter=result.links[1];
-   					_status.characterlist.removeArray(result.links);
-   					var list=_status.characterlist;
-   					for(var i=0;i<game.players.length;i++){
-   						if(game.players[i]!=game.me){
-   							list.randomSort();
-   							var bool=false;
-   							for(var k=0;k<list.length;k++){
-   								for(var j=i+1;j<list.length;j++){
-   									if(event.filterChoice(list[k],list[j])){
-   										bool=true;
-   										game.players[i].init(list[k]);
-   										game.players[i]._backupCharacter=list[j];
-   										break;
-   									}
-   								}
-   								if(bool) break;
-   							}
-   						}
-   					}
-   					setTimeout(function(){
-   						ui.arena.classList.remove('choose-character');
-   					},500);
-   					if(get.config('two_phaseswap')){
-   						game.addGlobalSkill('autoswap');
-   						if(lib.config.show_handcardbutton){
-   							ui.versushs=ui.create.system('手牌',null,true);
-   							lib.setPopped(ui.versushs,game.versusHoverHandcards,220);
-   						}
-   					}
-   				});
-   			};
-					}
-				}
-			},
+   			// 		for(var i=0;i<game.players.length;i++){
+   			// 			if(game.players[i].side==game.me.side){
+   			// 				game.players[i].node.identity.firstChild.innerHTML='友';
+   			// 			}
+   			// 			else{
+   			// 				game.players[i].node.identity.firstChild.innerHTML='敌';
+   			// 			}
+   			// 			game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
+   			// 		}
+   			// 		var list=[];
+   			// 		for(i in lib.character){
+   			// 			if(!lib.filter.characterDisabled(i)){
+   			// 				list.push(i);
+   			// 			}
+   			// 		}
+   			// 		var choose=[];
+   			// 		_status.characterlist=list;
+   			// 		event.filterChoice=function(name1,name2){
+   			// 			var info1=lib.character[name1];
+   			// 			var info2=lib.character[name2];
+   			// 			if(!info1||!info2) return;
+   			// 			var num=0;
+   			// 			if(info1[0]==info2[0]) num++;
+   			// 			if(get.infoMaxHp(info1[2])==get.infoMaxHp(info2[2])) num++;
+   			// 			if(info1[3].length==info2[3].length) num++;
+   			// 			return num>1;
+   			// 		};
+   			// 		var list2=list.randomGets(8);
+   			// 		var next=game.me.chooseButton(2,true,['请选择您的武将牌',[list2,'character']]);
+   			// 		next.set('onfree',true);
+   			// 		next.set('filterButton',function(button){
+   			// 			if(!ui.selected.buttons.length){
+   			// 				for(var i=0;i<list2.length;i++){
+   			// 					if(list2[i]!=button.link&&event.filterChoice(button.link,list2[i])) return true;
+   			// 				}
+   			// 				return false;
+   			// 			}
+   			// 			return event.filterChoice(button.link,ui.selected.buttons[0].link)
+   			// 		});
+   			// 		'step 1'
+   			// 		game.me.init(result.links[0]);
+   			// 		game.me._backupCharacter=result.links[1];
+   			// 		_status.characterlist.removeArray(result.links);
+   			// 		var list=_status.characterlist;
+   			// 		for(var i=0;i<game.players.length;i++){
+   			// 			if(game.players[i]!=game.me){
+   			// 				list.randomSort();
+   			// 				var bool=false;
+   			// 				for(var k=0;k<list.length;k++){
+   			// 					for(var j=i+1;j<list.length;j++){
+   			// 						if(event.filterChoice(list[k],list[j])){
+   			// 							bool=true;
+   			// 							game.players[i].init(list[k]);
+   			// 							game.players[i]._backupCharacter=list[j];
+   			// 							break;
+   			// 						}
+   			// 					}
+   			// 					if(bool) break;
+   			// 				}
+   			// 			}
+   			// 		}
+   			// 		setTimeout(function(){
+   			// 			ui.arena.classList.remove('choose-character');
+   			// 		},500);
+   			// 		if(get.config('two_phaseswap')){
+   			// 			game.addGlobalSkill('autoswap');
+   			// 			if(lib.config.show_handcardbutton){
+   			// 				ui.versushs=ui.create.system('手牌',null,true);
+   			// 				lib.setPopped(ui.versushs,game.versusHoverHandcards,220);
+   			// 			}
+   			// 		}
+   			// 	});
+   			// };
+			// 		}
+			// 	}
+			// },
 			qianlidanji:{
 				name:'千里单骑',
 				mode:'identity',
@@ -2458,7 +2640,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var node=this;
 					var player1;
 					if(init){
-						player1=ui.create.player(null,true).init('jsp_guanyu');
+						player1=ui.create.player(null,true).init('Bella');
 						player1.node.marks.remove();
 						player1.node.hp.remove();
 						player1.style.left='20px';
@@ -2653,6 +2835,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							}],
 							['在下一关中召唤胡班一同战斗',function(){
 								_status.qianlidanji.addFellow('huban');
+							}],
+							['将一张宝物牌置入装备区并摸一张牌',function(){
+								var card=get.cardPile(function(card){
+									return get.subtype(card)=='equip5'&&!get.cardtag(card,'gifts');
+								});
+								if(card) game.zhu.equip(card);
+								game.zhu.draw();
+							}],
+							['摸五张牌，然后将自己翻面',function(){
+								game.zhu.draw(5);
+								game.zhu.turnOver(true);
+							}],
+							['获得一张【酒】和一张【杀】',function(){
+								var list=[];
+								var card=get.cardPile(function(card){
+										return card.name=='sha';
+									});
+								if(card) list.push(card);
+								var card=get.cardPile(function(card){
+										return card.name=='jiu';
+									});
+								if(card) list.push(card);
+								if(list.length) game.zhu.gain(list,'gain2','log');
 							}],
 						],
 						replace_character:function(){
@@ -2941,7 +3146,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
    						character:{
    							pujing:['male','qun',1,[],[]],
    							huban:['male','qun',2,[],[]],
-   							caiyang:['male','qun',1,[],[]],
+   							caiyang:['male','qun',1,['zhuixi'],[]],
    						},
    						translate:{
    							pujing:'普净',
@@ -2995,358 +3200,358 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			liangjunduilei:{
-				name:'两军对垒',
-				mode:'versus',
-				submode:'2v2',
-				showcase:function(init){
-					var node=this;
-					var player1,player2;
-					var list=[
-						['re_sp_zhugeliang','yujin_yujin','re_zhangliao','re_lusu'],
-						['re_huangzhong','re_xiahouyuan','zhanghe','xin_fazheng'],
-						['re_caocao','xin_yuanshao','guotufengji','re_guojia'],
-						['chunyuqiong','sp_xuyou','re_xuhuang','gaolan'],
-						['re_sp_zhugeliang','re_zhangzhang','guyong','re_lusu'],
-						['yj_jushou','re_caocao','jsp_guanyu','re_yanwen'],
-						['re_lingtong','re_lidian','re_zhangliao','re_ganning'],
-						['re_guanyu','caoren','re_lvmeng','guanping'],
-					].randomGet();
-					if(_status.keyVerified){
-						list=[
-							['caozhen','key_hisako','key_iwasawa','sp_key_kanade'],
-						].randomGet();
-					}
-					if(init){
-						player1=ui.create.player(null,true).init(list[0]);
-						player2=ui.create.player(null,true).init(list[1]);
-						player1.node.marks.remove();
-						player1.node.hp.remove();
-						player2.node.marks.remove();
-						player2.node.hp.remove();
-						player1.style.left='20px';
-						player1.style.top='20px';
-						player1.style.transform='scale(0.9)';
-						player1.node.count.remove();
-						player2.style.left='auto';
-						player2.style.right='20px';
-						player2.style.top='20px';
-						player2.style.transform='scale(0.9)';
-						player2.node.count.remove();
-						this.appendChild(player1);
-						this.appendChild(player2);
-						this.player1=player1;
-						this.player2=player2;
-					}
-					else{
-						player1=this.player1;
-						player2=this.player2;
-					}
-					var player3,player4;
-					if(init){
-						player3=ui.create.player(null,true).init(list[3]);
-						player4=ui.create.player(null,true).init(list[2]);
-						player3.node.marks.remove();
-						player3.node.hp.remove();
-						player4.node.marks.remove();
-						player4.node.hp.remove();
-						player3.style.left='60px';
-						player3.style.top='120px';
-						player3.style.transform='scale(0.9)';
-						player3.node.count.remove();
-						player4.style.left='auto';
-						player4.style.right='60px';
-						player4.style.top='120px';
-						player4.style.transform='scale(0.9)';
-						player4.node.count.remove();
-						this.appendChild(player3);
-						this.appendChild(player4);
-						this.player3=player3;
-						this.player4=player4;
-					}
-					else{
-						player3=this.player3;
-						player4=this.player4;
-					}
-				},
-				intro:['双方使用特定的武将，搭配特定的技能，还原特定的经典场景'],
-				content:{
-					submode:'two',
-					chooseCharacterBefore:function(){
-   			var list=[
-   				{
-   					name:'草船借箭',
-   					place:[true,false,false,true],
-   					character:['re_sp_zhugeliang','yujin_yujin','re_zhangliao','re_lusu'],
-   					lib:{
-   						character:{
-   							re_sp_zhugeliang:['male','shu',3,['tiaoxin','bazhen','feiying'],[]],
-   							yujin_yujin:['male','wei',4,['jiangchi','danshou'],[]],
-   							re_zhangliao:['male','wei',4,['benxi','tuifeng','qingxi'],[]],
-   							re_lusu:['male','wu',3,['kaikang','shenxian'],[]],
-   						},
-   						translate:{
-   							re_sp_zhugeliang:'诸葛卧龙',
-   							yujin_yujin:'于文则',
-   							re_zhangliao:'张文远',
-   							re_lusu:'鲁子敬',
-   						},
-   					},
-   				},
-   				{
-   					name:'定军山之战',
-   					place:[true,false,false,true],
-   					character:['re_huangzhong','re_xiahouyuan','zhanghe','xin_fazheng'],
-   					lib:{
-   						character:{
-   							re_huangzhong:['male','shu',4,['yingjian','weikui','gzyinghun'],[]],
-   							re_xiahouyuan:['male','wei',4,['benxi','yaowu','dujin','juesi'],[]],
-   							zhanghe:['male','wei',4,['kaikang','xingshang','zhiheng'],[]],
-   							xin_fazheng:['male','shu',4,['xinfu_zhanji','nzry_chenglve','yiji'],[]],
-   						},
-   						translate:{
-   							re_huangzhong:'定军黄忠',
-   							re_xiahouyuan:'定军妙才',
-   							zhanghe:'定军张郃',
-   							xin_fazheng:'定军法正',
-   						},
-   					},
-   				},
-   				{
-   					name:'官渡追击战',
-   					place:[false,true,true,false],
-   					character:['re_caocao','xin_yuanshao','guotufengji','re_guojia'],
-   					lib:{
-   						character:{
-   							re_caocao:['male','wei',4,['fankui','zhuiji','duanbing'],[]],
-   							xin_yuanshao:['male','qun','3/6',['reluanji','kuanggu','benghuai','weizhong'],[]],
-   							guotufengji:['male','qun',2,['sijian','jigong','shifei','jianying'],[]],
-   							re_guojia:['male','wei',3,['yiji','sanyao','gongxin'],[]],
-   						},
-   						translate:{
-   							re_caocao:'官渡曹操',
-   							xin_yuanshao:'官渡袁绍',
-   							guotufengji:'袁军智囊',
-   							re_guojia:'官渡郭嘉',
-   						},
-   					},
-   				},
-   				{
-   					name:'奇袭乌巢',
-   					place:[true,false,false,true],
-   					character:['chunyuqiong','sp_xuyou','re_xuhuang','gaolan'],
-   					lib:{
-   						character:{
-   							chunyuqiong:['male','qun',8,['ranshang','duliang','jiuchi'],[]],
-   							sp_xuyou:['male','qun',3,['qice','lianying','nzry_jianxiang'],[]],
-   							re_xuhuang:['male','wei',4,['shenduan','xiaoguo','nzry_juzhan'],[]],
-   							gaolan:['male','qun',4,['yuanhu','shensu','benyu','suishi'],[]],
-   						},
-   						translate:{
-   							chunyuqiong:'乌巢淳于琼',
-   							sp_xuyou:'乌巢许攸',
-   							re_xuhuang:'乌巢徐晃',
-   							gaolan:'乌巢高览',
-   						},
-   					},
-   				},
-   				{
-   					name:'舌战群儒',
-   					place:[false,true,false,true],
-   					character:['re_zhangzhang','re_sp_zhugeliang','guyong','re_lusu'],
-   					lib:{
-   						character:{
-   							re_sp_zhugeliang:['male','shu',3,['tianbian','jyzongshi','xinfu_guolun'],[]],
-   							re_zhangzhang:['male','wu',3,['zhuandui','tiaoxin','guzheng'],[]],
-   							guyong:['male','wu',3,['qiaoshui','qicai','bingyi'],[]],
-   							re_lusu:['male','wu',3,['qingzhongx','shuimeng'],[]],
-   						},
-   						translate:{
-   							re_sp_zhugeliang:'诸葛卧龙',
-   							re_zhangzhang:'张子布',
-   							guyong:'顾元叹',
-   							re_lusu:'鲁子敬',
-   						},
-   					},
-   				},
-   				{
-   					name:'武圣战双雄',
-   					place:[true,false,false,true],
-   					character:['yj_jushou','re_caocao','jsp_guanyu','re_yanwen'],
-   					lib:{
-   						character:{
-   							yj_jushou:['male','qun',3,['mingce','jianyan','shibei'],[]],
-   							re_caocao:['male','wei',4,['miji','beige','feiying'],[]],
-   							jsp_guanyu:['male','wei',4,['nuzhan','jianchu','new_rewusheng'],[]],
-   							re_yanwen:['male','qun',4,['shuangxiong','zhanyi','zhichi'],[]],
-   						},
-   						translate:{
-   							yj_jushou:'白马沮授',
-   							re_caocao:'白马曹操',
-   							jsp_guanyu:'武圣关羽',
-   							re_yanwen:'颜文双雄',
-   						},
-   					},
-   				},
-   				{
-   					name:'合肥之战',
-   					place:[true,false,false,true],
-   					character:['re_lingtong','re_lidian','re_zhangliao','re_ganning'],
-   					lib:{
-   						character:{
-   							re_lingtong:['male','wu',4,['xuanfeng','zishou','tiaoxin'],[]],
-   							re_lidian:['male','wei',3,['weijing','wangxi','zhuandui'],[]],
-   							re_zhangliao:['male','wei',3,['retuxi','mashu','reyingzi','xinpojun'],[]],
-   							re_ganning:['male','wu',5,['lizhan','jiang','zhenwei'],[]],
-   						},
-   						translate:{
-   							re_lingtong:'合肥凌统',
-   							re_lidian:'合肥李典',
-   							re_zhangliao:'合肥张辽',
-   							re_ganning:'合肥甘宁',
-   						},
-   					},
-   				},
-   				{
-   					name:'荆州之战',
-   					place:[true,false,false,true],
-   					character:['re_guanyu','caoren','re_lvmeng','guanping'],
-   					lib:{
-   						character:{
-   							re_guanyu:['male','shu',5,['wusheng','zishou','zhongyong'],[]],
-   							caoren:['male','wei',1,['xinjiewei','qiuyuan','gzbuqu','xinjushou'],[]],
-   							re_lvmeng:['male','wu',4,['gongxin','duodao','dujin','huituo'],[]],
-   							guanping:['male','shu',5,['longyin','suishi'],[]],
-   						},
-   						translate:{
-   							re_guanyu:'荆州关羽',
-   							caoren:'樊城曹仁',
-   							re_lvmeng:'江东吕蒙',
-   							guanping:'荆州关平',
-   						},
-   					},
-   				},
-   			];
-   			if(_status.keyVerified) list=[
-   					{
-   					name:'My Song',
-   					place:[false,true,true,false],
-   					character:['caozhen','key_hisako','key_iwasawa','sp_key_kanade'],
-   					lib:{
-   						character:{
-   							caozhen:['male','wei',4,['xinsidi','tuxi']],
-   							key_hisako:['female','key','2/3',['hisako_yinbao','shenzhi','shiorimiyuki_banyin','hisako_zhuanyun'],[]],
-   							key_iwasawa:['female','key','-999/3',['iwasawa_yinhang','iwasawa_mysong','hisako_zhuanyun']],
-   							sp_key_kanade:['female','key',3,['xinwuyan','xinbenxi']],
-   						},
-   						translate:{
-   							caozhen:'突袭教师',
-   							key_hisako:'绝望恶魔',
-   							key_iwasawa:'引吭孤鸦',
-   							sp_key_kanade:'学生会长',
-   						},
-   					},
-   				},
-   				{
-   					name:'Day Game',
-   					place:[false,true,true,false],
-   					character:['key_yuzuru','sp_key_kanade','key_ayato','key_hinata'],
-   					lib:{
-   						character:{
-   							key_yuzuru:['male','key',4,['hinata_qiulve','kurou']],
-   							sp_key_kanade:['female','key',3,['hinata_qiulve','benxi'],[]],
-   							key_ayato:['male','key',3,['hinata_qiulve','retieji']],
-   							key_hinata:['female','key',4,['hinata_qiulve','hinata_ehou']],
-   						},
-   						translate:{
-   							key_yuzuru:'新秀球王',
-   							sp_key_kanade:'学生会长',
-   							key_ayato:'副会长',
-   							key_hinata:'球队领袖',
-   						},
-   					},
-   				},
-   			]
-   			game.liangjunduilei=list;
-   			game.chooseCharacterTwo=function(){
-   				var next=game.createEvent('chooseCharacter',false);
-   				next.setContent(function(){
-   					'step 0'
-   					for(var i in lib.skill){
-   						if(lib.skill[i].audio&&!lib.skill[i].equipSkill) lib.skill[i].audio=false;
-   						if(lib.skill[i].changeSeat){
-   							lib.skill[i]={};
-   							if(lib.translate[i+'_info']){
-   								lib.translate[i+'_info']='此模式下不可用';
-   							}
-   						}
-   					}
-   					ui.arena.classList.add('choose-character');
-   					var list=game.liangjunduilei;
-   					var id=lib.status.videoId++;
-  						var choiceList=ui.create.dialog('请选择要游玩的剧情','forcebutton');
-  						choiceList.videoId=id;
-  						for(var i=0;i<list.length;i++){
-  							var str='<div class="popup text center" style="width:calc(100% - 10px);display:inline-block">';
-  							str+=list[i].name;
-  							str+='</div>';
-  							var next=choiceList.add(str);
-  							next.firstChild.addEventListener(lib.config.touchscreen?'touchend':'click',ui.click.button);
-  							next.firstChild.link=i;
-  							for(var j in lib.element.button){
-  								next[j]=lib.element.button[i];
-  							}
-  							choiceList.buttons.add(next.firstChild);
-  						}
-  						game.me.chooseButton(true).set('dialog',id).set('onfree',true);
-   					'step 1'
-   					var pack=game.liangjunduilei[result.links[0]];
-   					game.versusVideoName=pack.name;
-   					if(get.is.phoneLayout()){
-    					ui.duileiInfo=ui.create.div('.touchinfo.left',ui.window);
-    				}
-    				else{
-    					ui.duileiInfo=ui.create.div(ui.gameinfo);
-    				}
-    				ui.duileiInfo.innerHTML='当前剧情：'+pack.name;
-   					for(var i in pack.lib){
-   						for(var j in pack.lib[i]){
-   							lib[i][j]=pack.lib[i][j];
-   						}
-   					}
-   					var player=game.players.randomGet();
-   					_status.firstAct=player;
-   					for(var i=0;i<4;i++){
-   						player.init(pack.character[i]);
-   						player.side=pack.place[i];
-   						player=player.next;
-   					}
+			// liangjunduilei:{
+			// 	name:'两军对垒',
+			// 	mode:'versus',
+			// 	submode:'2v2',
+			// 	showcase:function(init){
+			// 		var node=this;
+			// 		var player1,player2;
+			// 		var list=[
+			// 			['re_sp_zhugeliang','yujin_yujin','re_zhangliao','re_lusu'],
+			// 			['re_huangzhong','re_xiahouyuan','zhanghe','xin_fazheng'],
+			// 			['re_caocao','xin_yuanshao','guotufengji','re_guojia'],
+			// 			['chunyuqiong','sp_xuyou','re_xuhuang','gaolan'],
+			// 			['re_sp_zhugeliang','re_zhangzhang','guyong','re_lusu'],
+			// 			['yj_jushou','re_caocao','jsp_guanyu','re_yanwen'],
+			// 			['re_lingtong','re_lidian','re_zhangliao','re_ganning'],
+			// 			['re_guanyu','caoren','re_lvmeng','guanping'],
+			// 		].randomGet();
+			// 		if(_status.keyVerified){
+			// 			list=[
+			// 				['caozhen','key_hisako','key_iwasawa','sp_key_kanade'],
+			// 			].randomGet();
+			// 		}
+			// 		if(init){
+			// 			player1=ui.create.player(null,true).init(list[0]);
+			// 			player2=ui.create.player(null,true).init(list[1]);
+			// 			player1.node.marks.remove();
+			// 			player1.node.hp.remove();
+			// 			player2.node.marks.remove();
+			// 			player2.node.hp.remove();
+			// 			player1.style.left='20px';
+			// 			player1.style.top='20px';
+			// 			player1.style.transform='scale(0.9)';
+			// 			player1.node.count.remove();
+			// 			player2.style.left='auto';
+			// 			player2.style.right='20px';
+			// 			player2.style.top='20px';
+			// 			player2.style.transform='scale(0.9)';
+			// 			player2.node.count.remove();
+			// 			this.appendChild(player1);
+			// 			this.appendChild(player2);
+			// 			this.player1=player1;
+			// 			this.player2=player2;
+			// 		}
+			// 		else{
+			// 			player1=this.player1;
+			// 			player2=this.player2;
+			// 		}
+			// 		var player3,player4;
+			// 		if(init){
+			// 			player3=ui.create.player(null,true).init(list[3]);
+			// 			player4=ui.create.player(null,true).init(list[2]);
+			// 			player3.node.marks.remove();
+			// 			player3.node.hp.remove();
+			// 			player4.node.marks.remove();
+			// 			player4.node.hp.remove();
+			// 			player3.style.left='60px';
+			// 			player3.style.top='120px';
+			// 			player3.style.transform='scale(0.9)';
+			// 			player3.node.count.remove();
+			// 			player4.style.left='auto';
+			// 			player4.style.right='60px';
+			// 			player4.style.top='120px';
+			// 			player4.style.transform='scale(0.9)';
+			// 			player4.node.count.remove();
+			// 			this.appendChild(player3);
+			// 			this.appendChild(player4);
+			// 			this.player3=player3;
+			// 			this.player4=player4;
+			// 		}
+			// 		else{
+			// 			player3=this.player3;
+			// 			player4=this.player4;
+			// 		}
+			// 	},
+			// 	intro:['双方使用特定的武将，搭配特定的技能，还原特定的经典场景'],
+			// 	content:{
+			// 		submode:'two',
+			// 		chooseCharacterBefore:function(){
+   			// var list=[
+   			// 	{
+   			// 		name:'草船借箭',
+   			// 		place:[true,false,false,true],
+   			// 		character:['re_sp_zhugeliang','yujin_yujin','re_zhangliao','re_lusu'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_sp_zhugeliang:['male','shu',3,['tiaoxin','bazhen','feiying'],[]],
+   			// 				yujin_yujin:['male','wei',4,['jiangchi','danshou'],[]],
+   			// 				re_zhangliao:['male','wei',4,['benxi','tuifeng','qingxi'],[]],
+   			// 				re_lusu:['male','wu',3,['kaikang','shenxian'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_sp_zhugeliang:'诸葛卧龙',
+   			// 				yujin_yujin:'于文则',
+   			// 				re_zhangliao:'张文远',
+   			// 				re_lusu:'鲁子敬',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'定军山之战',
+   			// 		place:[true,false,false,true],
+   			// 		character:['re_huangzhong','re_xiahouyuan','zhanghe','xin_fazheng'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_huangzhong:['male','shu',4,['yingjian','weikui','gzyinghun'],[]],
+   			// 				re_xiahouyuan:['male','wei',4,['benxi','yaowu','dujin','juesi'],[]],
+   			// 				zhanghe:['male','wei',4,['kaikang','xingshang','zhiheng'],[]],
+   			// 				xin_fazheng:['male','shu',4,['xinfu_zhanji','nzry_chenglve','yiji'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_huangzhong:'定军黄忠',
+   			// 				re_xiahouyuan:'定军妙才',
+   			// 				zhanghe:'定军张郃',
+   			// 				xin_fazheng:'定军法正',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'官渡追击战',
+   			// 		place:[false,true,true,false],
+   			// 		character:['re_caocao','xin_yuanshao','guotufengji','re_guojia'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_caocao:['male','wei',4,['fankui','zhuiji','duanbing'],[]],
+   			// 				xin_yuanshao:['male','qun','3/6',['reluanji','kuanggu','benghuai','weizhong'],[]],
+   			// 				guotufengji:['male','qun',2,['sijian','jigong','shifei','jianying'],[]],
+   			// 				re_guojia:['male','wei',3,['yiji','sanyao','gongxin'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_caocao:'官渡曹操',
+   			// 				xin_yuanshao:'官渡袁绍',
+   			// 				guotufengji:'袁军智囊',
+   			// 				re_guojia:'官渡郭嘉',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'奇袭乌巢',
+   			// 		place:[true,false,false,true],
+   			// 		character:['chunyuqiong','sp_xuyou','re_xuhuang','gaolan'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				chunyuqiong:['male','qun',8,['ranshang','duliang','jiuchi'],[]],
+   			// 				sp_xuyou:['male','qun',3,['qice','lianying','nzry_jianxiang'],[]],
+   			// 				re_xuhuang:['male','wei',4,['shenduan','xiaoguo','nzry_juzhan'],[]],
+   			// 				gaolan:['male','qun',4,['yuanhu','shensu','benyu','suishi'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				chunyuqiong:'乌巢淳于琼',
+   			// 				sp_xuyou:'乌巢许攸',
+   			// 				re_xuhuang:'乌巢徐晃',
+   			// 				gaolan:'乌巢高览',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'舌战群儒',
+   			// 		place:[false,true,false,true],
+   			// 		character:['re_zhangzhang','re_sp_zhugeliang','guyong','re_lusu'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_sp_zhugeliang:['male','shu',3,['tianbian','jyzongshi','xinfu_guolun'],[]],
+   			// 				re_zhangzhang:['male','wu',3,['zhuandui','tiaoxin','guzheng'],[]],
+   			// 				guyong:['male','wu',3,['qiaoshui','qicai','bingyi'],[]],
+   			// 				re_lusu:['male','wu',3,['qingzhongx','shuimeng'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_sp_zhugeliang:'诸葛卧龙',
+   			// 				re_zhangzhang:'张子布',
+   			// 				guyong:'顾元叹',
+   			// 				re_lusu:'鲁子敬',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'武圣战双雄',
+   			// 		place:[true,false,false,true],
+   			// 		character:['yj_jushou','re_caocao','jsp_guanyu','re_yanwen'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				yj_jushou:['male','qun',3,['mingce','jianyan','shibei'],[]],
+   			// 				re_caocao:['male','wei',4,['miji','beige','feiying'],[]],
+   			// 				jsp_guanyu:['male','wei',4,['nuzhan','jianchu','new_rewusheng'],[]],
+   			// 				re_yanwen:['male','qun',4,['shuangxiong','zhanyi','zhichi'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				yj_jushou:'白马沮授',
+   			// 				re_caocao:'白马曹操',
+   			// 				jsp_guanyu:'武圣关羽',
+   			// 				re_yanwen:'颜文双雄',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'合肥之战',
+   			// 		place:[true,false,false,true],
+   			// 		character:['re_lingtong','re_lidian','re_zhangliao','re_ganning'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_lingtong:['male','wu',4,['xuanfeng','zishou','tiaoxin'],[]],
+   			// 				re_lidian:['male','wei',3,['weijing','wangxi','zhuandui'],[]],
+   			// 				re_zhangliao:['male','wei',3,['retuxi','mashu','reyingzi','xinpojun'],[]],
+   			// 				re_ganning:['male','wu',5,['lizhan','jiang','zhenwei'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_lingtong:'合肥凌统',
+   			// 				re_lidian:'合肥李典',
+   			// 				re_zhangliao:'合肥张辽',
+   			// 				re_ganning:'合肥甘宁',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'荆州之战',
+   			// 		place:[true,false,false,true],
+   			// 		character:['re_guanyu','caoren','re_lvmeng','guanping'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				re_guanyu:['male','shu',5,['wusheng','zishou','zhongyong'],[]],
+   			// 				caoren:['male','wei',1,['xinjiewei','qiuyuan','gzbuqu','xinjushou'],[]],
+   			// 				re_lvmeng:['male','wu',4,['gongxin','duodao','dujin','huituo'],[]],
+   			// 				guanping:['male','shu',5,['longyin','suishi'],[]],
+   			// 			},
+   			// 			translate:{
+   			// 				re_guanyu:'荆州关羽',
+   			// 				caoren:'樊城曹仁',
+   			// 				re_lvmeng:'江东吕蒙',
+   			// 				guanping:'荆州关平',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// ];
+   			// if(_status.keyVerified) list=[
+   			// 		{
+   			// 		name:'My Song',
+   			// 		place:[false,true,true,false],
+   			// 		character:['caozhen','key_hisako','key_iwasawa','sp_key_kanade'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				caozhen:['male','wei',4,['xinsidi','tuxi']],
+   			// 				key_hisako:['female','key','2/3',['hisako_yinbao','shenzhi','shiorimiyuki_banyin','hisako_zhuanyun'],[]],
+   			// 				key_iwasawa:['female','key','-999/3',['iwasawa_yinhang','iwasawa_mysong','hisako_zhuanyun']],
+   			// 				sp_key_kanade:['female','key',3,['xinwuyan','xinbenxi']],
+   			// 			},
+   			// 			translate:{
+   			// 				caozhen:'突袭教师',
+   			// 				key_hisako:'绝望恶魔',
+   			// 				key_iwasawa:'引吭孤鸦',
+   			// 				sp_key_kanade:'学生会长',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// 	{
+   			// 		name:'Day Game',
+   			// 		place:[false,true,true,false],
+   			// 		character:['key_yuzuru','sp_key_kanade','key_ayato','key_hinata'],
+   			// 		lib:{
+   			// 			character:{
+   			// 				key_yuzuru:['male','key',4,['hinata_qiulve','kurou']],
+   			// 				sp_key_kanade:['female','key',3,['hinata_qiulve','benxi'],[]],
+   			// 				key_ayato:['male','key',3,['hinata_qiulve','retieji']],
+   			// 				key_hinata:['female','key',4,['hinata_qiulve','hinata_ehou']],
+   			// 			},
+   			// 			translate:{
+   			// 				key_yuzuru:'新秀球王',
+   			// 				sp_key_kanade:'学生会长',
+   			// 				key_ayato:'副会长',
+   			// 				key_hinata:'球队领袖',
+   			// 			},
+   			// 		},
+   			// 	},
+   			// ]
+   			// game.liangjunduilei=list;
+   			// game.chooseCharacterTwo=function(){
+   			// 	var next=game.createEvent('chooseCharacter',false);
+   			// 	next.setContent(function(){
+   			// 		'step 0'
+   			// 		for(var i in lib.skill){
+   			// 			if(lib.skill[i].audio&&!lib.skill[i].equipSkill) lib.skill[i].audio=false;
+   			// 			if(lib.skill[i].changeSeat){
+   			// 				lib.skill[i]={};
+   			// 				if(lib.translate[i+'_info']){
+   			// 					lib.translate[i+'_info']='此模式下不可用';
+   			// 				}
+   			// 			}
+   			// 		}
+   			// 		ui.arena.classList.add('choose-character');
+   			// 		var list=game.liangjunduilei;
+   			// 		var id=lib.status.videoId++;
+  			// 			var choiceList=ui.create.dialog('请选择要游玩的剧情','forcebutton');
+  			// 			choiceList.videoId=id;
+  			// 			for(var i=0;i<list.length;i++){
+  			// 				var str='<div class="popup text center" style="width:calc(100% - 10px);display:inline-block">';
+  			// 				str+=list[i].name;
+  			// 				str+='</div>';
+  			// 				var next=choiceList.add(str);
+  			// 				next.firstChild.addEventListener(lib.config.touchscreen?'touchend':'click',ui.click.button);
+  			// 				next.firstChild.link=i;
+  			// 				for(var j in lib.element.button){
+  			// 					next[j]=lib.element.button[i];
+  			// 				}
+  			// 				choiceList.buttons.add(next.firstChild);
+  			// 			}
+  			// 			game.me.chooseButton(true).set('dialog',id).set('onfree',true);
+   			// 		'step 1'
+   			// 		var pack=game.liangjunduilei[result.links[0]];
+   			// 		game.versusVideoName=pack.name;
+   			// 		if(get.is.phoneLayout()){
+    		// 			ui.duileiInfo=ui.create.div('.touchinfo.left',ui.window);
+    		// 		}
+    		// 		else{
+    		// 			ui.duileiInfo=ui.create.div(ui.gameinfo);
+    		// 		}
+    		// 		ui.duileiInfo.innerHTML='当前剧情：'+pack.name;
+   			// 		for(var i in pack.lib){
+   			// 			for(var j in pack.lib[i]){
+   			// 				lib[i][j]=pack.lib[i][j];
+   			// 			}
+   			// 		}
+   			// 		var player=game.players.randomGet();
+   			// 		_status.firstAct=player;
+   			// 		for(var i=0;i<4;i++){
+   			// 			player.init(pack.character[i]);
+   			// 			player.side=pack.place[i];
+   			// 			player=player.next;
+   			// 		}
    
-   					for(var i=0;i<game.players.length;i++){
-   						if(game.players[i].side==game.me.side){
-   							game.players[i].node.identity.firstChild.innerHTML='友';
-   						}
-   						else{
-   							game.players[i].node.identity.firstChild.innerHTML='敌';
-   						}
-   						game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
-   					}
-   					game.addVideo('arrangeLib',null,pack.lib);
-   					setTimeout(function(){
-   						ui.arena.classList.remove('choose-character');
-   					},500);
-   					if(get.config('two_phaseswap')){
-   						game.addGlobalSkill('autoswap');
-   						if(lib.config.show_handcardbutton){
-   							ui.versushs=ui.create.system('手牌',null,true);
-   							lib.setPopped(ui.versushs,game.versusHoverHandcards,220);
-   						}
-   					}
-   				});
-   			};
-					}
-				}
-			},
+   			// 		for(var i=0;i<game.players.length;i++){
+   			// 			if(game.players[i].side==game.me.side){
+   			// 				game.players[i].node.identity.firstChild.innerHTML='友';
+   			// 			}
+   			// 			else{
+   			// 				game.players[i].node.identity.firstChild.innerHTML='敌';
+   			// 			}
+   			// 			game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
+   			// 		}
+   			// 		game.addVideo('arrangeLib',null,pack.lib);
+   			// 		setTimeout(function(){
+   			// 			ui.arena.classList.remove('choose-character');
+   			// 		},500);
+   			// 		if(get.config('two_phaseswap')){
+   			// 			game.addGlobalSkill('autoswap');
+   			// 			if(lib.config.show_handcardbutton){
+   			// 				ui.versushs=ui.create.system('手牌',null,true);
+   			// 				lib.setPopped(ui.versushs,game.versusHoverHandcards,220);
+   			// 			}
+   			// 		}
+   			// 	});
+   			// };
+			// 		}
+			// 	}
+			// },
 			scene:{
 				name:'创建场景',
 				content:{

@@ -708,6 +708,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.cards.length<event.num)	target.damage(event.baseDamage,'ocean');
 				},
+				chongzhu:true,
 				ai:{
 					basic:{
 						order:10.5,
@@ -1199,7 +1200,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					list.push('取消');
 					player.chooseControl('dialogcontrol',list,function(){
 						return _status.event.att;
-					}).set('att',att).set('prompt',get.prompt2('yatelandisi'))
+					}).set('att',att).set('prompt',get.prompt2('yatelandisi'));
 					'step 1'
 					if(result.control!='取消'){
 						player.logSkill('yatelandisi');

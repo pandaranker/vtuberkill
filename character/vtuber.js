@@ -30,10 +30,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Ava: ['female','asoul',4,['yiqu','wanxian'],['guoV']],
 			/**贝拉 */
 			Bella: ['female','asoul','3/4',['aswusheng', 'gunxun'],['guoV']],
-			/**嘉然 */
-			Diana: ['female','asoul',4,['quanyu', 'wulian'],['guoV']],
 			/**珈乐 */
 			Carol: ['female','asoul',4,['shixi', 'xueta','yuezhi'],['guoV']],
+			/**嘉然 */
+			Diana: ['female','asoul',4,['quanyu', 'wulian'],['guoV']],
 			/**乃琳 */
 			EQueen: ['female','asoul',4,['yehua', 'fengqing'],['guoV']],
 
@@ -43,6 +43,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
 			/**阿秋 */
 			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
+			/**红晓音 */
+			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 
 		},
 		characterTitle:{
@@ -1952,6 +1954,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
 			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
 			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
+
+			Ava:['Ava','gz_Ava'],
 		},
 		translate:{
 			vtuber_upd8:'UPD8',

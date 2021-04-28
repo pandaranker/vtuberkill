@@ -233,7 +233,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				};
 				var step5=function(){
 					clear();
-					ui.create.dialog('<a href="https://jq.qq.com/?_wv=1027&k=J3vKPvXP" target="_blank">如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流</a>');
+					ui.create.dialog('<a href="https://jq.qq.com/?_wv=1027&k=iVuy3lDN" target="_blank">如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流</a>');
 					ui.create.control('完成',function(){
 						clear();
 						clear2();
@@ -2452,10 +2452,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			sheshen:'舍身',
 			sheshen_info:'锁定技，主公处于濒死状态即将死亡时，令主公+1体力上限，回复体力至X点（X为你的体力值数），获得你的所有牌，然后你死亡',
 			yexinbilu:'野心毕露',
-
-			tianming:'天命',
-			tianming_info:'当你成为【杀】的目标时，你可以弃置两张牌（不足则全弃，无牌则不弃），然后摸两张牌；若此时全场体力值最多的角色仅有一名且不是你，该角色也可以如此做。',
-		
+	
 		},
 		element:{
 			player:{
@@ -3078,50 +3075,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		skill:{
-			tianming:{
-				audio:2,
-				trigger:{target:'useCardToTargeted'},
-				check:function(event,player){
-					var cards=player.getCards('h');
-					if(cards.length<=2){
-						for(var i=0;i<cards.length;i++){
-							if(cards[i].name=='shan'||cards[i].name=='tao') return false;
-						}
-					}
-					return true;
-				},
-				filter:function(event,player){
-					return event.card.name=='sha';
-				},
-				content:function(){
-					"step 0"
-					player.chooseToDiscard(2,true,'he');
-					player.draw(2);
-					var players=game.filterPlayer();
-					players.sort(function(a,b){
-						return b.hp-a.hp;
-					});
-					if(players[0].hp>players[1].hp&&players[0]!=player){
-						players[0].chooseBool(get.prompt2('tianming'));
-						event.player=players[0];
-					}
-					else{
-						event.finish();
-					}
-					"step 1"
-					if(result.bool){
-						player.chooseToDiscard(2,true,'he');
-						player.draw(2);
-					}
-				},
-				ai:{
-					effect:{
-						target:function(card,player,target,current){
-							if(card.name=='sha') return [1,0.5];
-						}
-					}
-				}
-			},
 			yexinbilu:{
 				enable:'phaseUse',
 				filter:function(event,player){

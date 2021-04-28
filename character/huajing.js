@@ -889,9 +889,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.card = {name:player.storage.qiming_saycards[0]};
-					var next = player.chooseCardTarget();
-					next.prompt = get.prompt2('tulong');
-					next.filterTarget = lib.card[event.card.name].filterTarget||true;
+					var next = player.chooseCardTarget({
+						prompt:get.prompt('tulong'),
+						prompt2:"将一张牌当作【"+player.storage.qiming_saycards[0]+"】使用",
+						filterCard:function(card,player){
+							return get.type(card)=='equip'&&lib.filter.cardDiscardable(card,player)
+						},
+						filterTarget:function(card,player,target){
+							return lib.filter.filterTarget(_status.event.card,player,target);
+						},
+					});
 					next.selectTarget = lib.card[event.card.name].selectTarget||[1,1];
 					next.ai2 = function(target){
 						var player = _status.event.player;

@@ -17,11 +17,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rim: ['female','qun',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
 			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
+			
+			/**喵喵人 */
+			Nyanners: ['female','qun',3,['shenghuo','dipo'],],
 
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
-			/**纸木铗 */
-			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
 			/**阳向心美 */
 			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
 
@@ -30,8 +31,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
-			/**红晓音 */
-			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 			/**东爱璃 */
 			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
 
@@ -923,7 +922,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			//团长
-			huanshi:{
+			xhhuanshi:{
 				mark:true,
 				intro:{
 					name:'幻士',
@@ -1002,7 +1001,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									event.cards = result.cards;
 									player.lose(result.cards,ui.special,'toStorage');
 									player.$give(event.cards,player,false);
-									player.markAuto('huanshi',event.cards);
+									player.markAuto('xhhuanshi',event.cards);
 								}else{
 									player.discard(result.cards);
 								}
@@ -1057,7 +1056,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					if(event.cards.length){
 						player.$gain2(event.cards,false)
-						player.markAuto('huanshi',event.cards);
+						player.markAuto('xhhuanshi',event.cards);
 					}
 					'step 4'
 					player.storage.qishi = true;
@@ -1121,18 +1120,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:99,
 				forced:true,
 				filter:function(event,player){
-					return _status.currentPhase!=player&&_status.currentPhase.getHistory('sourceDamage').length&&player.hp<=player.storage.huanshi.length;
+					return _status.currentPhase!=player&&_status.currentPhase.getHistory('sourceDamage').length&&player.hp<=player.storage.xhhuanshi.length;
 				},
 				check:function(event,player){
 					return player.isDamaged()||get.attitude(player,event.player);
 				},
 				content:function(){
 					'step 0'
-					player.chooseCardButton('###『系绊』###可以弃置'+get.cnNumber(player.hp)+'张“士” 发动技能',player.hp,player.storage.huanshi);
+					player.chooseCardButton('###『系绊』###可以弃置'+get.cnNumber(player.hp)+'张“士” 发动技能',player.hp,player.storage.xhhuanshi);
 					'step 1'
 					if(result.bool){
 						event.cards = result.links;
-						player.unmarkAuto('huanshi',event.cards);
+						player.unmarkAuto('xhhuanshi',event.cards);
 						player.$throw(event.cards,1000);
 						var next = player.chooseTarget(get.prompt2('xiban'),function(card,player,tar){
 							if(tar==_status.event.source||tar==_status.event.player)	return true;
@@ -7336,8 +7335,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						firstDo:true,
 						priority:42,
 						content:function(){
-							player.unmarkSkill('yubing');
-							player.storage.yubing = 0;
+							player.unmarkSkill('baiqing');
+							player.storage.baiqing = 0;
 						}
 					},
 				},
@@ -7351,8 +7350,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					'step 0'
-					var controls = ['令你本回合使用牌无次数限制','令其中一名目标对你使用一张【杀】，否则你获得其一张牌'];
-					player.chooseControl('dialogcontrol',controls);
+					var controls = ['令你本回合使用牌无次数限制','令其中一名目标对你使用一张【杀】，否则你获得其一张牌','取消'];
+					player.chooseControl('dialogcontrol',controls).set('ai',function(){
+						var player = _status.event.player;
+						if(player.countCards('h','sha')>2&&!player.hasSkill('shuangxing_chenhui')&&!player.hasUnknown(2))	return 0;
+						return 1;
+					}).set('prompt',get.prompt2('shuangxing'));
 					'step 1'
 					switch(result.control){
 						case '令你本回合使用牌无次数限制':{
@@ -7364,7 +7367,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseTarget(get.prompt2('shuangxing'),function(card,player,target){
 								return _status.event.targets.contains(target)&&target.countCards('h');
 							}).set('ai',function(target){
-								if(get.attitude(player,target)<0)	return 4-target.countCards('h');
+								if(get.attitude(player,target)<0){
+									if(player.maxHp-player.hp+1>player.storage.baiqing)	return 4;
+									else	return 4-target.countCards('h');
+								}
 								return 0;
 							}).set('targets',trigger.targets);
 							break;
@@ -7406,6 +7412,120 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return Infinity;
 							},
 						},
+					}
+				}
+			},
+			//喵喵人
+			shenghuo:{
+				init:function(player,skill){
+					player.markSkill('shenghuo');
+					if(!player.storage[skill])	player.storage[skill] = 0;
+				},
+				enable:'phaseUse',
+				position:'h',
+				filter:function(event,player){
+					return !player.getStat('skill').shenghuo||player.getStat('skill').shenghuo<player.storage.shenghuo+1;
+				},
+				content:function(){
+					'step 0'
+					event.topCards = get.cards(player.storage.shenghuo+1);
+					event.bottomCards = get.bottomCards(player.storage.shenghuo+1);
+					event.bottomCards.removeArray(event.topCards);
+					var cards = event.topCards.concat(event.bottomCards);
+					player.chooseButton([0,Infinity],true,['『圣火』：按顺序选择置于牌堆另一端的牌（先选择的在外侧）','牌堆顶',[event.topCards,'card'],'牌堆底',[event.bottomCards,'card']]).set('ai',function(button){
+						var player=_status.event.player;
+						var bottomCards=_status.event.bottomCards;
+						var next=player.getNext();
+						var att=get.attitude(player,next);
+						var card=button.link;
+						var judge=next.getCards('j')[ui.selected.buttons.filter(function(buttonx){
+							return bottomCards.contains(buttonx.link);
+						}).length];
+						if(judge){
+							if(bottomCards.contains(card))	return get.judge(judge)(card)*att;
+							else	return -get.judge(judge)(card)*att;
+						}
+						if(bottomCards.contains(card))	return next.getUseValue(card)*att;
+						return -next.getUseValue(card)*att;
+					}).set('bottomCards',event.bottomCards);
+					'step 1'
+					if(result.bool&&result.links){
+						var links = result.links.slice(0)
+						var top = event.topCards.slice(0).removeArray(links);
+						var bottom = event.bottomCards.slice(0).removeArray(links);
+						for(var i=0;i<links.length;i++){
+							if(event.topCards.contains(links[i]))	bottom.push(links[i]);
+							if(event.bottomCards.contains(links[i]))	top.unshift(links[i]);
+						}
+						for(var i=top.length-1;i>-1;i--){
+							ui.cardPile.insertBefore(top[i],ui.cardPile.firstChild);
+						}
+						for(var i=0;i<bottom.length;i++){
+							ui.cardPile.appendChild(bottom[i]);
+						}
+						player.popup(get.cnNumber(top.length)+'上'+get.cnNumber(bottom.length)+'下');
+						game.log(player,'将'+get.cnNumber(top.length)+'张牌置于牌堆顶');
+						game.updateRoundNumber();
+						game.delay(2);
+					}
+				},
+				marktext:'Nya',
+				mark:true,
+				intro:{
+					content:'上次受到的伤害值为#',
+				},
+				group:'shenghuo_change',
+				subSkill:{
+					change:{
+						trigger:{player:'damage'},
+						filter:function(event,player){
+							return event.num>0;
+						},
+						direct:true,
+						content:function(){
+							player.storage.shenghuo = trigger.num;
+							player.markSkill('shenghuo');
+						}
+					}
+				},
+				ai:{
+					order:function(item,player){
+						if(player.countCards('h',function(card){
+							return get.tag(card,'draw')
+						}))	return 10;
+						else return 1;
+					},
+					result:{
+						player:function(player){
+							return 1;
+						}
+					}
+				},
+			},
+			dipo:{
+				audio:2,
+				trigger:{
+					player:'drawBegin'
+				},
+				filter:function(event,player){
+					return player.isDamaged();
+				},
+				forced:true,
+				content:function(){
+					trigger.bottom = true;
+					trigger.num++;
+				},
+				ai:{
+					maixie:true,
+					maixie_hp:true,
+					threaten:function(player,target){
+						if(target.hp==target.maxHp) return 0.5;
+						return 1.2;
+					},
+					effect:{
+						target:function(card,player,target){
+							if(get.tag(card,'draw')&&target.isDamaged()) return [1,1];
+						}
 					}
 				}
 			}
@@ -7510,6 +7630,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '锁定技 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
+
+			Nyanners: 'Nyanners',
+			Nyanners_ab: '喵喵人',
+			shenghuo: '圣火',
+			shenghuo_info: '出牌阶段限X次，你可以观看牌堆顶与底各X张牌，然后将其中的任意张置于牌堆另一端。（X为你上一次受到伤害的伤害值+1）',
+			dipo: '底破',
+			dipo_info: '锁定技 若你已受伤，你摸牌时从牌堆底摸取且摸牌量+1。',
 
 			Rim: '理芽',
 			shenghua: '生花',
@@ -7689,7 +7816,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			changxiang: '长箱',
 			changxiang_info: '主公技 其他同势力角色进入濒死状态时，你可以弃置数量等于自己当前体力值的手牌，视为对其使用一张【桃】。',
 
-			huanshi: '士',
+			xhhuanshi: '士',
 			HisekiErio: '绯赤艾莉欧',
 			huange: '幻歌',
 			huange_info: '每轮限一次。一个回合开始时，你可以摸等同一名角色体力值的牌，然后于回合结束时，弃置等同其当前体力值的牌。若你发动过『奇誓』，你可以将弃牌改为置于你的武将牌上。',

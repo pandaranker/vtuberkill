@@ -344,6 +344,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				guozhan_jun:["gz_jun_caocao","gz_jun_sunquan","gz_jun_liubei","gz_jun_zhangjiao"],
 				guozhan_jin:['gz_jin_simayi','gz_jin_simazhao','gz_jin_simashi','gz_jin_zhangchunhua','gz_jin_wangyuanji','gz_jin_xiahouhui'],
 				guozhan_others:["gz_lingcao","gz_lifeng","gz_beimihu","gz_jianggan","gz_huaxin","gz_luyusheng"],
+
+				guozhan_guangjie:["gz_HoshimatiSuisei","gz_NatsuiroMatsuri","gz_SpadeEcho","gz_Yousa","gz_AZKi","gz_NekomiyaHinata","gz_InuyamaTamaki"],
 			}
 		},
 		perfectPair:{
@@ -417,9 +419,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_UshimiIchigo: ['female', 'nijisanji', 3, ['gz_kuangbaoshuangren', 'guangsuxiabo']],
 				/**修女克蕾雅 */
 				gz_SisterClearie:['female','nijisanji',3,['gz_zhenxin','sczhuwei']],
-				/**Re莉泽 */
-				gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan']],
-				/**Re安洁 */
+				/**gz莉泽 */
+				gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan'],['gzskin']],
+				/**gz安洁 */
 				//gz_AngeKatrina:['female','nijisanji',4,['gz_lianjin']],
 				/**铃原露露 */
 				gz_SuzuharaLulu:['female','nijisanji',5,['tunshi']],
@@ -449,9 +451,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**巴恰鲁 */
 				gz_Bacharu:['male', 'vtuber', 4, ['gz_zuodun','gz_baidao']],
 				/**嘉然 */
-				gz_Diana: ['female','vtuber',4,['quanyu']],
+				gz_Diana: ['female','vtuber',4,['quanyu'],['gzskin']],
 				/**向晚 */
-				gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu']],
+				gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu'],['gzskin']],
 				/**泠鸢 */
 				gz_Yousa:['female','vtuber',3,['gz_niaoji','ysxiangxing'],['doublegroup:vtuber:nijisanji']],
 				/**道明寺晴翔 */
@@ -1588,29 +1590,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if([player.name,player.name1].contains('Yousa')) game.playAudio('skill','niaoji_heart'+Math.ceil(3*Math.random()));
 							player.draw(event.num);
 						}
-					}
-				},
-			},
-			//向晚
-			gz_yiqu:{
-				trigger:{player:'damageAfter'},
-				usable:1,
-				filter:function(event,player){
-					return event.source&&player.countCards('he');
-				},
-				prompt2:function(event,player){
-					return '你可以交给'+get.translation(event.source)+'一张牌，然后摸两张牌';
-				},
-				content:function(){
-					'step 0'
-					player.chooseCard(true,'he').set('ai',function(card){
-						var att = _status.event.att;
-						return 3+att>get.value(card);
-					}).set('att',get.attitude(player,trigger.source))
-					'step 1'
-					if(result.bool&&result.cards){
-						player.give(result.cards,trigger.source,'giveAuto');
-						player.draw(2);
 					}
 				},
 			},
@@ -9299,10 +9278,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			gz_niaoji: '鸟肌',
 			gz_niaoji_info: '你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值且至少为1）',
-
-			gz_yiqu: '亦趋',
-			gz_yiqu_info: '每回合限一次。当你受到伤害后，你可以交给来源一张牌。若与对你造成伤害的牌花色相同，你摸两张牌。',
-			
+		
 			gz_xuyan: '虚研',
 			gz_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间：造成或受到过伤害~你摸一张牌；死亡或杀死角色~你回复1点体力；均不满足~你与其各失去1点体力。',
 
@@ -9622,6 +9598,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			guozhan_double:'不臣篇·上',
 			guozhan_zongheng:'纵横捭阖',
 			guozhan_others:"其他",
+
+			guozhan_guangjie:"广结良盟",
 		},
 		dynamicTranslate:{
 			gz_longdan:function(player){

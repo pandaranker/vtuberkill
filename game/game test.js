@@ -6026,7 +6026,7 @@
 						init:true,
 						frequent:true
 					},
-					daozhiyueying:{
+					daoshiyueying:{
 						name:'导师月英',
 						init:true,
 						frequent:true

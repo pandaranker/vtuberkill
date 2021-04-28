@@ -304,7 +304,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								prompt:get.prompt2('re_ailian'),
 								selectCard:[1,Infinity],
 								position:'h',
-								usable:1,
 								filterCard:true,
 								filterTarget:function(event,player,target){
 									return target!=player;
@@ -2043,6 +2042,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//安啾
 			akxiaoqiao:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
 				trigger:{player:'phaseDiscardBegin'},
 				filter:function(event,player){
 					return player.countCards('h');
@@ -2059,7 +2061,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return true;
 					});
 					'step 1'
-					if(result.bool){
+					if(result.bool&&result.links){
 						player.logSkill('akxiaoqiao');
 						var cards = result.links;
 						player.showCards(cards,'『小巧』展示手牌');
@@ -2081,7 +2083,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'akxiaoqiao_init',
 				subSkill:{
 					init:{
-						trigger:{global:'gameDrawAfter',player:['enterGame','phaseAfter']},
+						trigger:{player:'phaseAfter'},
 						forced:true,
 						silent:true,
 						popup:false,
@@ -4441,6 +4443,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				selectCard:2,
 				complexCard:true,
 				check:function(card){
+					var player=_status.event.player;
 					if(get.color(card)=='red')	return player.getUseValue(card)-4;
 					return 6-get.value(card);
 				},
@@ -4586,6 +4589,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				selectCard:2,
 				complexCard:true,
 				check:function(card){
+					var player=_status.event.player;
 					if(get.color(card)=='black'&&get.tag(card,'damage'))	return player.getUseValue(card)-4;
 					return 6-get.value(card);
 				},
@@ -5244,6 +5248,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					trigger.player.draw(trigger.player.isMinHp()?3:1).gaintag=['jiazhao'];
 				},
+				ai:{
+					expose:0.1,
+				},
 				global:'jiazhao_discardBy',
 				subSkill:{
 					discardBy:{
@@ -5278,7 +5285,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuzuharaLulu:['re_SuzuharaLulu','SuzuharaLulu'],
 			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
-			LizeHelesta:['re_LizeHelesta','LizeHelesta'],
+			ShirayukiTomoe:['re_ShirayukiTomoe','ShirayukiTomoe'],
+			SukoyaKana:['re_SukoyaKana','SukoyaKana'],
 		},
 		dynamicTranslate:{
 			re_longdan:function(player){
@@ -5489,7 +5497,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			anshu: '暗术',
 			anshu_info: '其他角色的回合结束时，若其手牌数不小于你，你可对其使用一张牌。且若此牌为♠，此牌不可被响应。',
 			xingchi: '醒迟',
-			xingchi_info: '其他角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌。',
+			xingchi_info: '一名角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌。',
 
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',

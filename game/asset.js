@@ -1259,6 +1259,7 @@ window.noname_asset_list=[
 	'image/character/NinomaeInanis.jpg',
 	'image/character/Niuniuzi.jpg',
 	'image/character/NoiR.jpg',
+	'image/character/Nyanners.jpg',
 	'image/character/OnomachiHaruka.jpg',
 	'image/character/ŌokamiMio.jpg',
 	'image/character/OtomeOto.jpg',
@@ -1377,6 +1378,15 @@ window.noname_asset_list=[
 	'image/character/re_YukihanaLamy.jpg',
 	'image/character/re_YuNi.jpg',
 
+	//乱斗
+	'image/character/hhzz_kanade.jpg',
+	'image/character/hhzz_shiona.jpg',
+	'image/character/hhzz_takaramono1.jpg',
+	'image/character/hhzz_takaramono2.jpg',
+	'image/character/caiyang.jpg',
+	'image/character/huban.jpg',
+	'image/character/pujing.jpg',
+
 	//国战
 	/**holo */
 	'image/character/gz_UruhaRushia.jpg',
@@ -1401,6 +1411,8 @@ window.noname_asset_list=[
 	'image/character/gz_YuNi.jpg',
 	'image/character/gz_DoumyoujiHaruto.jpg',
 	'image/character/gz_AZKi.jpg',
+	'image/character/gz_Ava.jpg',
+	'image/character/gz_Diana.jpg',
 	/**社 */
 	'image/character/gz_MinamiNami.jpg',
 	'image/character/gz_Noracat.jpg',

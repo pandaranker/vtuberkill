@@ -59,6 +59,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Bafuko: ['female','qun',4,['shangsheng','jinghua']],
 			/**紫海由爱 */
 			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
+			/**纸木铗 */
+			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
 		},
 		characterSort:{
 			clubs:{
@@ -2951,7 +2953,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
-			MiraiAkari:['re_NekomiyaHinata','NekomiyaHinata'],
+			NekomiyaHinata:['re_NekomiyaHinata','NekomiyaHinata'],
 			kaguraNaNa:['re_kaguraNaNa','kaguraNaNa'],
 			Siro:['re_Siro','Siro'],
 			Nekomasu:['re_Nekomasu','Nekomasu'],

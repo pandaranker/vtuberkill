@@ -6466,7 +6466,7 @@
 						init:true,
 						frequent:true
 					},
-					daozhiyueying:{
+					daoshiyueying:{
 						name:'导师月英',
 						init:true,
 						frequent:true
@@ -6481,31 +6481,31 @@
 						init:true,
 						frequent:true
 					},
-					tongqueduopao:{
-						name:'铜雀夺袍',
-						init:true,
-						frequent:true
-					},
+					// tongqueduopao:{
+					// 	name:'铜雀夺袍',
+					// 	init:true,
+					// 	frequent:true
+					// },
 					tongjiangmoshi:{
 						name:'同将模式',
 						init:true,
 						frequent:true
 					},
-					baiyidujiang:{
-						name:'白衣渡江',
-						init:true,
-						frequent:true
-					},
+					// baiyidujiang:{
+					// 	name:'白衣渡江',
+					// 	init:true,
+					// 	frequent:true
+					// },
 					qianlidanji:{
 						name:'千里单骑',
 						init:true,
 						frequent:true
 					},
-					liangjunduilei:{
-						name:'两军对垒',
-						init:true,
-						frequent:true
-					},
+					// liangjunduilei:{
+					// 	name:'两军对垒',
+					// 	init:true,
+					// 	frequent:true
+					// },
 					scene:{
 						name:'创建场景',
 						init:true,
@@ -7013,6 +7013,7 @@
 						if(type=='character'){
 							if(lib.characterPack['mode_'+mode]&&lib.characterPack['mode_'+mode][name]){
 								if(mode=='guozhan'){
+									nameinfo=lib.character[name];
 									if(name.indexOf('gz_shibing')==0){
 										name=name.slice(3,11);
 									}
@@ -10453,6 +10454,7 @@
 					event.trigger('showCharacterEnd');
 					'step 1'
 					event.trigger('showCharacterAfter');
+					if(get.mode()=='identity'&&player.isZhu) event.trigger('zhuUpdate');
 				},
 				removeCharacter:function(){
 					player.$removeCharacter(event.num);
@@ -20876,7 +20878,15 @@
 					if(lib.translate[name]){
 						this.trySkillAnimate(name,popname,checkShow);
 						if(typeof targets=='object'&&targets.length){
-							var str=(targets[0]==this?'#b自己':targets);
+							var str;
+							if(targets[0]==this){
+								str='#b自己';
+								if(targets.length>1){
+									str+='、';
+									str+=get.translation(targets.slice(1));
+								}
+							}
+							else str=targets;
 							game.log(this,'对',str,'发动了','#p『'+get.skillTranslation(name,this)+'』');
 						}
 						else{
@@ -27522,21 +27532,16 @@
 				visible:true,
 				prompt:'将要重铸的牌置入弃牌堆并摸一张牌',
 				filter:function(event,player){
-					if(player.hasSkill('nochongzhu')){
-						return false;
-					}
 					return player.hasCard(function(card){
-						var info=get.info(card);
-						if(typeof info.chongzhu=='function'){
-							return info.chongzhu(event,player);
-						}
-						return info.chongzhu;
+						return lib.skill._chongzhu.filterCard(card,player);
 					});
 				},
-				filterCard:function(card){
+				filterCard:function(card,player){
+					var mod=game.checkMod(card,player,'unchanged','cardChongzhuable',player);
+					if(mod!='unchanged') return mod;
 					var info=get.info(card);
 					if(typeof info.chongzhu=='function'){
-						return info.chongzhu(event,_status.event.player);
+						return info.chongzhu(event,player);
 					}
 					return info.chongzhu;
 				},
@@ -51496,7 +51501,7 @@
 			else if(str2.indexOf('旧')==0&&(lib.characterPack.old||lib.characterPack.mobile)&&(lib.characterPack.old[str]||lib.characterPack.mobile[str])){
 				str2=str2.slice(1);
 			}
-			else if(str2.indexOf('新·')==0){
+			else if(str2.indexOf('新·')==0&&str.indexOf('re_')==0){
 				str2=str2.slice(2);
 			}
 			else if(str2.indexOf('新')==0&&(str.indexOf('re_')==0||str.indexOf('new_')==0)){
@@ -51526,7 +51531,7 @@
 			else if(str2.indexOf('手杀')==0){
 				str2=str2.slice(2);
 			}
-			else if(str2.indexOf('新·')==0){
+			else if(str2.indexOf('新·')==0&&str.indexOf('re_')==0){
 				str2=str2.slice(2);
 			}
 			return str2;
@@ -51553,7 +51558,10 @@
 			else if(str2.indexOf('手杀')==0){
 				str2=str2.slice(2);
 			}
-			else if(str2.indexOf('新·')==0){
+			else if(str2.indexOf('新·')==0&&str.indexOf('re_')==0){
+				str2=str2.slice(2);
+			}
+			else if(str2.indexOf('国战')==0&&lib.config.mode=='guozhan'&&str.indexOf('gz_')==0){
 				str2=str2.slice(2);
 			}
 			return get.verticalStr(str2,true);
