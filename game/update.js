@@ -31,7 +31,7 @@ window.noname_update={
 		'image/splash/brawl.jpg',
 		'image/splash/chess.jpg',
 		'image/splash/connect.jpg',
-		'image/splash/doudizhu.jpg',
+		// 'image/splash/doudizhu.jpg',
 		'image/splash/guozhan.jpg',
 		'image/splash/identity.jpg',
 		'image/splash/single.jpg',
