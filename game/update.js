@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.69',
+	version:'1.9.101.70',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.69小更新：新增角色Nyanners（测试包），增加特殊角色包，重开乱斗模式，修复bug，改进新手引导，继续完善了国战内容（现在可以进入该模式测试了）',
+		'101.70小更新：新增角色Ironmouse、Froot、Nyanners、猫又小粥（测试包），增加特殊角色包，重开乱斗模式，修复bug，改进新手引导，继续完善了国战内容（现在可以进入该模式测试了）',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），AS全员补全，斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -75,10 +75,10 @@ window.noname_update={
 		//'mode/tafang.js',
 		//'mode/single.js',
 		//'mode/stone.js',
-		//'mode/brawl.js',
+		'mode/brawl.js',
 		'mode/longlaoguan.js',
 		'mode/versus.js',
-		'mode/boss.js',
+		//'mode/boss.js',
 		'game/game.js',
 		//'game/NoSleep.js',
 		'game/config.js',

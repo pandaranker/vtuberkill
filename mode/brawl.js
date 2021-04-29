@@ -1336,7 +1336,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:{
 					cardPile:function(list){
-						game.identityVideoName='导师月英';
+						game.identityVideoName='导师爱璃';
 						var list2=[];
 						for(var i=0;i<list.length;i++){
 							list2.push(list[i]);

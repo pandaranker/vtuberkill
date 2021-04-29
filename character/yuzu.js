@@ -20,17 +20,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			/**喵喵人 */
 			Nyanners: ['female','qun',3,['shenghuo','dipo'],],
+			/**铁耗子 */
+			Ironmouse: ['female','qun',3,['haosun','banmao'],],
+			/**Froot */
+			Froot: ['female','qun',4,['exiao','jinmei'],],
 
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**阳向心美 */
 			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
-
 			/**早稻叽 */
 			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
+			/**大脸猫 */
+			NekomataOkayu:['female','holo',3,['fantuan','shengang']],
+			
 			/**东爱璃 */
 			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
 
@@ -7359,6 +7365,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					switch(result.control){
 						case '令你本回合使用牌无次数限制':{
+							player.logSkill('shuangxing');
 							player.addTempSkill('shuangxing_chenhui');
 							event.finish();
 							break;
@@ -7411,6 +7418,70 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							cardUsable:function(card,player,num){
 								return Infinity;
 							},
+						},
+					}
+				}
+			},
+			//猫又小粥
+			fantuan:{
+				trigger:{player:'useCard2'},
+				direct:true,
+				filter:function(event){
+					return get.type(event.card)=='delay';
+				},
+				content:function(){
+					'step 0'
+					player.chooseTarget(get.prompt2('fantuan')).set('ai',function(target){
+						var player = _status.event.player;
+						return get.recoverEffect(target,player,player)+get.attitude(player,target);
+					});
+					'step 1'
+					if(result.bool&&result.targets[0]){
+						result.targets[0].recover();
+						result.targets[0].draw();
+					}
+				},
+			},
+			shengang:{
+				group:['shengang_judge','shengang_useCard'],
+				subSkill:{
+					judge:{
+						trigger:{global:['judgeAfter']},
+						filter:function(event,player){
+							if(!game.filterPlayer(function(cur){
+								return get.distance(player,cur,'pure')==1;
+							},[player]).contains(event.player))		return false;
+							return get.type(event.card)=='delay'&&get.position(event.card)=='d';
+						},
+						prompt2:function(event,player){
+							return '获得'+get.translation(event.cards);
+						},
+						check:function (event,player){
+							return get.value(event.card)>3;
+						},
+						round:2,
+						content:function(){
+							player.gain(trigger.card,'gain2','log');
+						},
+					},
+					useCard:{
+						trigger:{global:['useCardAfter']},
+						filter:function(event,player){
+							console.log(event);
+							if(!game.filterPlayer(function(cur){
+								return get.distance(player,cur,'pure')==1;
+							},[player]).contains(event.player))		return false;
+							return event.cards&&get.position(event.cards[0])=='d';
+						},
+						prompt2:function(event,player){
+							return '获得'+get.translation(event.cards);
+						},
+						check:function (event,player){
+							return get.value(event.cards)>3;
+						},
+						round:2,
+						content:function(){
+							player.gain(trigger.cards,'gain2','log');
 						},
 					}
 				}
@@ -7528,6 +7599,205 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
+			},
+			//铁耗子
+			haosun:{
+				init:function(player,skill){
+					if(!player.storage[skill])	player.storage[skill] = [];
+				},
+				trigger:{
+					player:'phaseBegin'
+				},
+				filter:function(event,player){
+					return true;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					var controls = ['回复1点体力以重置此技能并修改『伴猫』，然后你本回合每次摸牌少摸一张','声明一种你可以使用的基本牌并令你不能使用之，然后你本回合每次摸牌额外摸一张','取消'];
+					player.chooseControl('dialogcontrol',controls).set('ai',function(){
+						var player = _status.event.player;
+						if(player.isDamaged()||player.getStorage('haosun').length>1)	return 0;
+						return 1;
+					}).set('prompt',get.prompt2('haosun'));
+					'step 1'
+					switch(result.control){
+						case '回复1点体力以重置此技能并修改『伴猫』，然后你本回合每次摸牌少摸一张':{
+							player.logSkill('haosun');
+							player.recover();
+							player.storage.banmao = true;
+							player.storage.haosun = [];
+							player.addTempSkill('haosun_drop');
+							player.unmarkSkill('haosun');
+							event.finish();
+							break;
+						}
+						case '声明一种你可以使用的基本牌并令你不能使用之，然后你本回合每次摸牌额外摸一张':{
+							player.chooseControl(get.inpile('basic',function(card){
+								var player = _status.event.player;
+								console.log(card)
+								return lib.filter.cardEnabled({name:card},player,'forceEnable');
+							})).set('prompt','声明一种你可以使用的基本牌并令你不能使用之').set('choice',get.inpile('basic',function(card){
+								var player = _status.event.player;
+								if(player.hasCard(card))	return false;
+								return lib.filter.cardEnabled({name:card},player,'forceEnable');
+							})).set('ai',function(target){
+								var player = _status.event.player;
+								var controls = _status.event.controls.slice(0);
+								if(_status.event.choice&&_status.event.choice.length)	return _status.event.choice.randomGet();
+								if(controls.contains('qi'))		return 'qi';
+								if(controls.contains('tao')&&player.hp>=2)	return 'tao';
+								if(controls.contains('jiu'))	return 'jiu';
+								return controls.randomGet();
+							});
+							break;
+						}
+						default:event.finish();
+					}
+					'step 2'
+					if(result.control){
+						player.logSkill('haosun');
+						player.popup(result.control);
+						player.storage.haosun.add(result.control);
+						player.addTempSkill('haosun_plus');
+						player.markSkill('haosun');
+						game.delayx();
+					}
+				},
+				mod:{
+					cardEnabled:function(card,player){
+						if(player.getStorage('haosun').contains(get.name(card)))		return false;
+					},
+					cardSavable:function(card,player){
+						if(player.getStorage('haosun').contains(get.name(card)))		return false;
+					}
+				},
+				mark:true,
+				intro:{
+					content:'已禁用的基本牌：$',
+				},
+				subSkill:{
+					drop:{
+						trigger:{
+							player:'drawBegin'
+						},
+						forced:true,
+						content:function(){
+							trigger.num--;
+						},
+						ai:{
+							effect:{
+								target:function(card,player,target){
+									if(get.tag(card,'draw')) return 0;
+								}
+							}
+						}
+					},
+					plus:{
+						trigger:{
+							player:'drawBegin'
+						},
+						forced:true,
+						content:function(){
+							trigger.num++;
+						},
+						ai:{
+							effect:{
+								target:function(card,player,target){
+									if(get.tag(card,'draw')) return [1,1];
+								}
+							}
+						}
+					}
+				}
+			},
+			banmao:{
+				audio:2,
+				trigger:{
+					player:'damageEnd',source:'damageEnd'
+				},
+				filter:function(event,player){
+					return event.source&&event.card&&get.name(event.card)=='sha';
+				},
+				forced:true,
+				content:function(){
+					trigger.source.draw();
+				},
+				mod:{
+					cardEnabled:function(card,player){
+						if(['shan','jiu'].contains(get.name(card))&&player.isHealthy()&&player.storage.banmao!==true)		return false;
+					},
+					cardSavable:function(card,player){
+						if(['shan','jiu'].contains(get.name(card))&&player.isHealthy()&&player.storage.banmao!==true)		return false;
+					}
+				},
+				derivation:'banmao_rewrite',
+			},
+			//Froot
+			exiao:{
+				trigger:{player:'useCard'},
+				frequent:true,
+				filter:function(event){
+					return get.type(event.card)=='trick';
+				},
+				content:function(){
+					'step 0'
+					player.judge(function(card){
+						if(get.color(card)=='black') return 4;
+						return -1;
+					});
+					'step 1'
+					if(result.judge>0){
+						trigger.nowuxie=true;
+						game.delayx();
+						if(get.position(result.card)=='d') player.gain(result.card,'gain2','log');
+					}
+				},
+			},
+			jinmei:{
+				trigger:{global:'phaseBegin'},
+				round:1,
+				priority:996,
+				filter:function(event,player){
+					return event.player!=player&&player.countCards('he',{color:'black'});
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					var goon = get.attitude(player,trigger.player)<0&&!trigger.player.hasJudge('lebu')&&!trigger.player.hasJudge('bingliang');
+					var next = player.chooseCard(get.prompt2('jinmei'),'he',{color:'black'}).set('goon',goon).set('ai',function(card){
+						if(!goon)	return 0;
+						return 5-get.value(card);
+					});
+					'step 1'
+					if(result.bool){
+						player.logSkill('jinmei');
+						trigger.player.gain(result.cards,player,'giveAuto');
+						trigger.player.addTempSkill('jinmei_drop')
+					}
+				},
+				subSkill:{
+					drop:{
+						trigger:{
+							player:'drawBegin'
+						},
+						forced:true,
+						content:function(){
+							trigger.num--;
+						},
+						mark:true,
+						intro:{
+							content:'摸牌量减少一',
+						},
+						ai:{
+							effect:{
+								target:function(card,player,target){
+									if(get.tag(card,'draw')) return 0;
+								}
+							}
+						}
+					},
+				}
 			}
 		},
 		card:{
@@ -7622,6 +7892,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 				return str;
 			},
+			banmao:function(player){
+				if(player.storage.banmao) return '【已修改】锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。';
+				return '锁定技 若你未受伤，你不能使用【闪】或【酒】。你造成或受到来自【杀】的伤害时，来源摸一张牌。';
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -7638,6 +7912,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dipo: '底破',
 			dipo_info: '锁定技 若你已受伤，你摸牌时从牌堆底摸取且摸牌量+1。',
 
+			Ironmouse: 'Ironmouse',
+			Ironmouse_ab: '铁耗子',
+			haosun: '耗损',
+			haosun_info: '回合开始时，你可以选择一项：回复1点体力以重置此技能并修改『伴猫』，然后你本回合每次摸牌少摸一张；声明一种你可以使用的基本牌并令你不能使用之，然后你本回合每次摸牌额外摸一张。',
+			banmao: '伴猫',
+			banmao_info: '锁定技 若你未受伤，你不能使用【闪】或【酒】。你造成或受到来自【杀】的伤害时，来源摸一张牌。',
+			banmao_rewrite:'伴猫·改',
+			banmao_rewrite_info:'锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。',
+			
+
+			Froot: 'Froot',
+			Froot_ab: '巫妖',
+			exiao: '恶哮',
+			exiao_info: '你使用通常锦囊牌时，可以进行一次判定，若结果为黑色，其不能被【无懈可击】抵消且你获得判定牌。',
+			jinmei: '禁魅',
+			jinmei_info: '轮次技 其他角色的回合开始时，你可以交给其一张黑色牌，然后其本回合每次摸牌的摸牌量-1。',
+			
+			NekomataOkayu: '猫又小粥',
+			fantuan: '安心饭团',
+			fantuan_info: '你使用一张延时锦囊牌时，可以令一名角色回复一点体力并摸一张牌。',
+			shengang: '神冈家计',
+			shengang_info: '每两轮每项限一次，你可以在自己与相邻角色判定区卡牌/使用实体牌结算后获得之。',
+			
 			Rim: '理芽',
 			shenghua: '生花',
 			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',

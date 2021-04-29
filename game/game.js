@@ -6467,7 +6467,7 @@
 						frequent:true
 					},
 					daoshiyueying:{
-						name:'导师月英',
+						name:'导师爱璃',
 						init:true,
 						frequent:true
 					},
@@ -52008,8 +52008,8 @@
 			return get.translation(str);
 		},
 		skillInfoTranslation:function(name,player){
-			if(player&&lib.dynamicTranslate[name]) return lib.dynamicTranslate[name](player,name);
-			var str=lib.translate[name+'_info'];
+			var str = lib.translate[name+'_info'];
+			if(player&&lib.dynamicTranslate[name]) str = lib.dynamicTranslate[name](player,name);
 			if(!str) return '';
 			str = str.replace(/锁定技 /g,'<font color=#f66>锁定技 </font>')
 			.replace(/阵法技 /g,'<font color=#fe2>阵法技 </font>')

@@ -2222,10 +2222,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return num+2;
 						} 
 					},
-					cardEnabled:function(card,player){
-						if(card.name=='sha'&&(player.getStat().card.sha>2)) 
-							return false
-					}
+					// cardEnabled:function(card,player){
+					// 	if(card.name=='sha'&&(player.getStat().card.sha>2)) 
+					// 		return false
+					// }
 				},
 				group:['re_zhanxie_draw'],
 				subSkill:{
@@ -3518,7 +3518,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event, player){	
 					return _status.currentPhase&&player.countCards('h');
 				},
-				check:function(event, player){	
+				check:function(event, player){
 					return get.attitude(player,event.player)>0;
 				},
 				content:function(){
