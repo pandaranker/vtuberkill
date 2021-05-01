@@ -531,6 +531,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				
 				gz_shibing1holo:['male','holo',0,[],['unseen']],
 				gz_shibing2holo:['female','holo',0,[],['unseen']],
+				gz_shibing1nijisanji:['male','nijisanji',0,[],['unseen']],
+				gz_shibing2nijisanji:['female','nijisanji',0,[],['unseen']],
+				gz_shibing1vtuber:['male','vtuber',0,[],['unseen']],
+				gz_shibing2vtuber:['female','vtuber',0,[],['unseen']],
+				gz_shibing1clubs:['male','clubs',0,[],['unseen']],
+				gz_shibing2clubs:['female','clubs',0,[],['unseen']],
 
 				// gz_caocao:['male','wei',4,['jianxiong']],
 				// gz_simayi:['male','wei',3,['fankui','guicai']],
@@ -9577,6 +9583,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_shibing2qun:'群兵',
 			gz_shibing1jin:'晋兵',
 			gz_shibing2jin:'晋兵',
+
+			gz_shibing1holo:'杏兵',
+			gz_shibing2holo:'杏兵',
+			gz_shibing1nijisanji:'虹兵',
+			gz_shibing2nijisanji:'虹兵',
+			gz_shibing1vtuber:'企兵',
+			gz_shibing2vtuber:'企兵',
+			gz_shibing1clubs:'社兵',
+			gz_shibing2clubs:'社兵',
+
 			gzduanchang:'断肠',
 			gzduanchang_info:'锁定技，当你死亡时，你令杀死你的角色失去一张武将牌上的所有技能。',
 			gzweimu:'帷幕',
