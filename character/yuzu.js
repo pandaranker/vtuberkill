@@ -643,6 +643,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:'宅',
 				intro:{
 					name:'直往欲女',
+					name2:'观宅',
 					content:function (storage,player,skill){
 						return '下个回合中，【阿宅观察】（）内的数值+'+storage+'。';
 					},
@@ -3354,13 +3355,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='equip'){
 						return true;
 					}
-					var evt=event.getl(event.player);
-					return evt&&evt.es&&evt.es.length>0;
+					return event.es&&event.es.length>0;
+					// var evt=event.getl(event.player);
+					// console.log(evt)
+					// return evt&&evt.es&&evt.es.length>0;
 				},
 				content:function(){
 					player.draw();
-					player.storage.pojie++;
-					player.markSkill('pojie');
+					player.addMark('pojie',1,false);
 				},
 				group:'pojie_phaseDiscard',
 				subSkill:{
@@ -3397,23 +3399,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return get.subtype(card) == 'equip1';
 				},
 				discard:false,
+				lose:false,
 				position:'e',
 				filterTarget:function(card,player,target){
 					return target!=player;
 				},
 				content:function(){
 					'step 0'
-					if(target.getEquip(1)){
-						event.equip = target.getEquip(1);
-					}
-					'step 1'
-					if(event.equip){
-						target.$give(event.equip,player);
-						player.equip(event.equip);
-					}
-					player.$give(cards,target);
+					player.$give(cards,target,false);
 					target.equip(cards[0]);
-					'step 2'
+					'step 1'
 					event.num =Math.abs(player.getHandcardLimit()-player.countCards('h'));
 					target.chooseToDiscard('『大振』：需要弃置'+get.cnNumber(event.num)+'张牌',event.num,'he',true);
 				},
@@ -5964,6 +5959,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				check:function(event,player){
+					var history = player.getHistory('useCard');
 					var num = 0;
 					for(var i=0;i<history.length;i++){
 						if(get.type2(history[i].card)!='basic') num++;
@@ -6818,7 +6814,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(!event.card) return false;
 							if(!event.source||event.source!=player) return false;
 							if(!event.player.isDying()) return false;
-							if(event.player.getStorage('yizhan_mark')==player) return false;
+							if(event.player.storage.yizhan_mark!=undefined) return false;
 							return true;
 						},
 						content:function (){
@@ -6855,8 +6851,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.drawTo(player.getHandcardLimit());
 					'step 1'
 					trigger.player.changeGroup('qun');
-					trigger.player.storage.yizhan_count = player;
-					trigger.player.addSkill('yizhan_count');
+					trigger.player.storage.yizhan_mark = player;
+					trigger.player.addSkill('yizhan_mark');
 				},
 			},
 			jushi:{
@@ -7893,7 +7889,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				return str;
 			},
 			banmao:function(player){
-				if(player.storage.banmao) return '【已修改】锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。';
+				if(player.storage.banmao) return '【已修改】 锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。';
 				return '锁定技 若你未受伤，你不能使用【闪】或【酒】。你造成或受到来自【杀】的伤害时，来源摸一张牌。';
 			},
 		},

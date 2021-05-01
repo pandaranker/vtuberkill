@@ -676,6 +676,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					"step 1"
 					var content;
 					var str=get.translation(target)+'的';
+					event.control = result.control;
 					if(result.control){
 						if(result.control=='手牌'){
 							content=[str+'手牌',target.getCards('h')];
@@ -691,14 +692,17 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					else if(target.countCards('h')){
+						event.control = '手牌';
 						content=[str+'手牌',target.getCards('h')];
 						game.log(player,'观看了',target,'的手牌');
 					}
 					else if(target.isUnseen(0)){
+						event.control = '主将';
 						content=[str+'主将',[[target.name1],'character']];
 						game.log(player,'观看了',target,'的主将');
 					}
 					else{
+						event.control = '副将';
 						content=[str+'副将',[[target.name2],'character']];
 						game.log(player,'观看了',target,'的副将');
 					}

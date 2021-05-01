@@ -2373,66 +2373,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return canbeM(player,event.player)||canbeM(event.player,player);
 						},	
 						content:function(){
-							'step 0'
-							game.broadcastAll(function(player, object){
-								var canbeM=function(a,b){
-									var es=a.getCards('e');
-									var c=0;
-									for(var i=0;i<es.length;i++){
-										if(b.isEmpty(get.subtype(es[i]))) c++;
-									}
-									return c;
-								};
-								var next=player.chooseTarget(function(card,player,target){
-										if((canbeM(player,object)>0&&target== player)||(canbeM(object,player)>0&&target== object))
-										return true;
-								});
-								next.set('multitarget',true);
-								next.set('targetprompt',['被移走']);
-								next.set('prompt',event.prompt||'你或其场上的一张装备牌');
-								next.set('forced',false);
-							}, player, trigger.player)
-							'step 1'
-							if(result.bool){
-								if(result.targets[0]==trigger.player)	result.targets.push(player);
-								if(result.targets[0]==player)	result.targets.push(trigger.player);
-								player.line2(result.targets,'green');
-								event.targets=result.targets;
-							}
-							else{
-								_status.event.finish();
-							}
-							'step 2'
-							game.delay();
-							'step 3'
-							if(targets.length==2){
-								player.choosePlayerCard('e',true,function(button){
-									var player=_status.event.player;
-									var targets0=_status.event.targets0;
-									var targets1=_status.event.targets1;
-									if(get.attitude(player,targets0)>get.attitude(player,targets1)){
-										if(get.value(button.link,targets0)<0) return 10;
-										return 0;
-									}
-									else{
-										return get.equipValue(button.link);
-									}
-								},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
-									var targets1=_status.event.targets1;
-									return targets1.isEmpty(get.subtype(button.link));
-								});
-							}
-							else{
-								_status.event.finish();
-							}
-							'step 4'
-							if(result.bool&&result.links.length){
-								var link=result.links[0];
-								event.targets[1].equip(link);
-								event.targets[0].$give(link,event.targets[1]);
-								game.delay();
-								event.result={bool:true};
-							}
+							player.moveCard(function(card,player,target){
+								if(target==player||target==_status.currentPhase)	return true;
+								return false;
+							});
 						}
 					}
 				},			
@@ -3057,6 +3001,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterReplace:{
 			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta','gz_LizeHelesta'],
+			re_AngeKatrina:['re_AngeKatrina','gz_AngeKatrina'],
 		},
 		translate:{
 

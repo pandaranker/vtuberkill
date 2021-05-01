@@ -6461,6 +6461,11 @@
 						init:true,
 						frequent:true
 					},
+					qunxionggeju:{
+						name:'群雄割据',
+						init:true,
+						frequent:true
+					},
 					duzhansanguo:{
 						name:'毒战三国',
 						init:true,
@@ -11137,7 +11142,8 @@
 					if(lib.filter.judge(card,player,target)&&cards.length&&get.position(cards[0],true)=='o') target.addJudge(card,cards);
 				},
 				equipCard:function(){
-					if(cards.length&&get.position(cards[0],true)=='o') target.equip(cards[0]);
+					console.log(card,cards)
+					if(cards.length&&get.position(cards[0],true)=='o') target.equip(card,cards[0]);
 				},
 				gameDraw:function(){
 					"step 0"
@@ -16269,6 +16275,11 @@
 						game.addVideo('equip',player,get.cardInfo(cards[0].viewAs));
 						game.log(player,'装备了<span class="yellowtext">'+get.translation(cards[0].viewAs)+'</span>（',cards[0],'）');
 					}
+					else if(cards[0].originalName&&cards[0].originalName!=cards[0].name){
+						player.$equip(cards[0]);
+						game.addVideo('equip',player,get.cardInfo(cards[0]));
+						game.log(player,'装备了',cards[0],'（【'+get.translation(cards[0].originalName)+'】）');
+					}
 					else{
 						player.$equip(cards[0]);
 						game.addVideo('equip',player,get.cardInfo(card));
@@ -17015,10 +17026,11 @@
 					if(!notmeisok&&_status.currentPhase!=this) return false;
 					return _status.event.name=='phaseUse'||_status.event.getParent('phaseUse').name=='phaseUse';
 				},
-				swapEquip:function(target){
+				swapEquip:function(target,subtype){
 					var next=game.createEvent('swapEquip');
 					next.player=this;
 					next.target=target;
+					next.subtype=subtype;
 					next.setContent('swapEquip');
 					return next;
 				},
@@ -34221,6 +34233,7 @@
 					ui.playerids.style.display='';
 				}
 
+				if(mode[lib.config.mode].startBefore) mode[lib.config.mode].startBefore();
 				game.createEvent('game',false).setContent(mode[lib.config.mode].start);
 				if(lib.mode[lib.config.mode]&&lib.mode[lib.config.mode].fromextension){
 					var startstr=mode[lib.config.mode].start.toString();
@@ -36250,17 +36263,17 @@
 					else button.node.group.style.backgroundColor=get.translation('weiColor');
 				}
 				var group=get.is.double(button.link,true);
-				if(group&&group.length==2){
-					var str='';
-					for(var i of group){
-						str+=get.translation(i);
-					}
-					button.node.group.innerHTML=str;
-					if(button.classList.contains('newstyle')){
-						button.node.name.dataset.nature=get.groupnature(group[0]);
-						button.node.group.dataset.nature=get.groupnature(group[1]);
-					}
-				}
+				// if(group&&group.length==2){
+				// 	var str='';
+				// 	for(var i of group){
+				// 		str+=get.translation(i);
+				// 	}
+				// 	button.node.group.innerHTML=str;
+				// 	if(button.classList.contains('newstyle')){
+				// 		button.node.name.dataset.nature=get.groupnature(group[0]);
+				// 		button.node.group.dataset.nature=get.groupnature(group[1]);
+				// 	}
+				// }
 			},
 			div:function(){
 				var str,innerHTML,position,position2,style,divposition,listen;
@@ -45404,16 +45417,9 @@
 					}
 					node.link=item;
 					if(type=='character'||type=='characterx'){
-						if(type=='characterx'&&item.indexOf('gz_')==0&&lib.character[item]&&lib.character[item][4]){
-							for(var ix of lib.character[item][4]){
-								if(ix.indexOf('doublegroup:')==0){
-									node._replaceButton=true;
-									node._changeGroup=ix.split(':').slice(1);
-									break;
-								}
-							}
-						}
-						else if(type=='characterx'&&lib.characterReplace[node._link]&&lib.characterReplace[node._link].length>1) node._replaceButton=true;
+						var double=get.is.double(node._link,true);
+						if(double) node._changeGroup=true;
+						if(type=='characterx'&&lib.characterReplace[node._link]&&lib.characterReplace[node._link].length>1) node._replaceButton=true;
 						var func=function(node,item){
 							node.setBackground(item,'character');
 							if(node.node){
@@ -45445,6 +45451,10 @@
 								node.node.name.dataset.nature=get.groupnature(infoitem[1]);
 								node.node.group.dataset.nature=get.groupnature(infoitem[1],'raw');
 								node.classList.add('newstyle');
+								if(double&&double.length){
+									node.node.name.dataset.nature=get.groupnature(double[0]);
+									node.node.group.dataset.nature=get.groupnature(double[double.length==2?1:0]);
+								}
 								ui.create.div(node.node.hp);
 								var textnode=ui.create.div('.text',get.numStr(infoitem[2]),node.node.hp);
 								if(infoitem[2]==0){
@@ -51971,12 +51981,12 @@
 			if(str.indexOf('re_')==0){
 				str2=str.slice(3);
 				if(str2){
-					str3 = 'mark_'+str2;
 					if(lib.translate[str]==lib.translate[str2]){
 						if(player.hasSkill(str2)){
 							return '新·'+lib.translate[str];
 						}
 					}
+					str3 = 'mark_'+str2;
 					if(lib.translate[str3]&&lib.translate[str]==lib.translate[str3]){
 						if(player.hasSkill(str3)){
 							return '新·'+lib.translate[str];

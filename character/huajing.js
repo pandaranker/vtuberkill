@@ -5,7 +5,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		connect:true,
 		character:{
 			/**长尾景 */
-			NagaoKei:['male','nijisanji',3,['fumo','chidu']],
+			NagaoKei:['male','nijisanji',3,['nkfumo','chidu']],
 			/**白神遥 */
 			ShirakamiHaruka:['female','psp',3,['baoxiao','quru'],['guoV']],
 			/**海狗 */
@@ -35,7 +35,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterIntro:{
 		},
 		skill:{
-			fumo:{
+			nkfumo:{
 				trigger:{player:'useCard1'},
 				priority:42,
 				check:function(event,player){
@@ -58,16 +58,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						if(!trigger.addedSkill)	trigger.addedSkill = [];
-						trigger.addedSkill.add('fumo');
-						if(player.storage.fumo2)	delete player.storage.fumo2;
-						lib.skill.fumo2.trigger = {player:[get.name(trigger.card)+'Begin']};
+						trigger.addedSkill.add('nkfumo');
+						if(player.storage.nkfumo2)	delete player.storage.nkfumo2;
+						lib.skill.nkfumo2.trigger = {player:[get.name(trigger.card)+'Begin']};
 					}
 					'step 2'
-					player.storage.fumo2 = trigger.card;
+					player.storage.nkfumo2 = trigger.card;
 					game.log(player,'将',trigger.card,'的效果改为【浪涌】')
-					player.addTempSkill('fumo2',{player:'useCardAfter'});
+					player.addTempSkill('nkfumo2',{player:'useCardAfter'});
 				},
-				group:'fumo_reback',
+				group:'nkfumo_reback',
 				subSkill:{
 					reback:{
 						trigger:{player:'useCardAfter'},
@@ -84,13 +84,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
-			fumo2:{
+			nkfumo2:{
 				trigger:{global:'Xbegin'},
 				forced:true,
 				silent:true,
 				popup:false,
 				filter:function(event,player){
-					return event.card == player.storage.fumo2;
+					return event.card == player.storage.nkfumo2;
 				},
 				content:function(){
 					var fun = lib.card.langyong.content;
@@ -632,7 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.num = player.maxHp-player.hp;
 					event.targets = [];
 					'step 1'
-					player.chooseTarget([1,event.num],'###『佑海』###分配第'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
+					player.chooseTarget([1,event.num],'###『佑海』###分配'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
 						var player = _status.event.player;
 						if(target.hujia==0)	return get.attitude(player,target);
 						return get.attitude(player,target)/2;
@@ -1162,8 +1162,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qianyong_draw: '潜涌',
 
 			NagaoKei: '长尾景',
-			fumo: '伏魔',
-			fumo_info: '你使用牌指定其他角色为唯一目标时，你可以进行判定，若结果为黑色，将之效果改为【浪涌】。当你使用锦囊牌后，重置【忖度】。',
+			nkfumo: '伏魔',
+			nkfumo_info: '你使用牌指定其他角色为唯一目标时，你可以进行判定，若结果为黑色，将之效果改为【浪涌】。当你使用锦囊牌后，重置【忖度】。',
 			chidu: '忖度',
 			chidu_info: '当一名角色的判定牌生效前，你可以打出一张颜色与结果不同的手牌替换之。每回合限一次。',
 			

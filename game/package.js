@@ -98,6 +98,7 @@ window.noname_package={
 		zhulin_bg:'竹林',
 		shengshi_bg:'盛世',
 		taoyuan_bg:'桃园',
+		guozhan1_bg:'四大势力',
 		mea_bg:'Mea',
 		ch1_bg:'彩虹1',
 		ch2_bg:'彩虹2',
