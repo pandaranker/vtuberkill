@@ -79,7 +79,7 @@ window.config={
 	hp_style:'default',
 
 	image_character:'default',
-	image_background:'huajing_bg',
+	image_background:'guozhan1_bg',
 
 	asset_image:true,
 	asset_font:true,
