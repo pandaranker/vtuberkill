@@ -129,7 +129,7 @@ window.config={
 	sort:'type_sort',
 
 	cards:['standard','extra'],
-	characters:['Beginner','clubs','vtuber','nijisanji'],
+	characters:['Beginner','vtuber','nijisanji'],//,'clubs'
 	connect_characters:[],
 	connect_cards:[],
 	plays:[],

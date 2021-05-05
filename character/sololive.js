@@ -16,6 +16,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_InabaHaneru:['female','upd8',3,['gz_jiance','yingqi']],
 			/**雪花菈米 */
 			gz_YukihanaLamy:['female','holo',4,['hanling']],
+			/**语部纺 */
+			gz_KataribeTsumugu:['female','nijisanji',3,['lingli','chengfo']],
 		},
 		skill:{
 			//向晚
@@ -442,6 +444,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return false;
 				},
 				check:function(event,player){
+					if(_status.currentPhase.maxHp<_status.currentPhase.countCards('h'))	return get.attitude(player,_status.currentPhase)<0;
 					return get.attitude(player,_status.currentPhase)>0;
 				},
 				logTarget:function(event){
@@ -449,7 +452,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					event.target = _status.currentPhase;
-					event.target.drawTo(event.target.maxHp);
+					if(event.target.maxHp<event.target.countCards('h'))		event.target.chooseToDiscard(true,event.target.countCards('h')-event.target.maxHp);
+					else	event.target.gain(get.cards(event.target.maxHp-event.target.countCards('h')),'draw');
 				},
 				group:'yingqi_drawBy',
 				subSkill:{
@@ -473,12 +477,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						content:function(){
 							'step 0'
-							trigger.player.chooseBool('是否发动『迎喫』，令'+get.translation(player)+'摸'+get.cnNumber(player.maxHp-player.countCards('h'))+'张牌？').set('choice',get.attitude(trigger.player,player)>0);
+							var choice = (player.maxHp<player.countCards('h'))?(get.attitude(trigger.player,player)<0):(get.attitude(trigger.player,player)>0);
+							trigger.player.chooseBool('是否发动『迎喫』，令'+get.translation(player)+'摸'+get.cnNumber(player.maxHp-player.countCards('h'))+'张牌？').set('choice',choice);
 							'step 1'
 							if(result.bool){
 								player.logSkill('yingqi');
 								trigger.player.line(player,'green');
-								player.drawTo(player.maxHp);
+								if(player.maxHp<player.countCards('h'))		player.chooseToDiscard(true,player.countCards('h')-player.maxHp);
+								else	player.gain(get.cards(player.maxHp-player.countCards('h')),'draw');
 							}
 						}
 					}
@@ -526,7 +532,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var player = _status.event.player;
 								var num = player.countCards('h')-target.countCards('h');
 								return num*get.attitude(player,target);
-							})
+							});
 							'step 1'
 							if(result.bool&&result.targets){
 								event.num = player.countCards('h');
@@ -538,6 +544,148 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(event.target){
 								event.target.drawTo(event.num);
 							}
+						},
+					}
+				}
+			},
+			//语部纺
+			lingli:{
+				trigger:{global:'useCard'},
+				filter:function(event,player){
+					return event.targets&&event.targets.length==1&&event.cards&&event.cards.length;
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0&&get.effect(event.targets[0],event.card,event.player,player);
+				},
+				prompt:function(event,player){
+					return get.translation(event.player)+'使用'+get.translation(event.card)+'指定'+get.translation(event.targets)+'为目标，'+get.prompt('lingli');
+				},
+				round:1,
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					trigger.cancel();
+					'step 1'
+					trigger.player.gain(trigger.cards,'gain2').gaintag.add('lingli');
+					trigger.player.addTempSkill('lingli_ganshe');
+					// 'step 2'
+					// ui.clear();
+				},
+				ai:{
+					effect:{
+						player:function(card,player,target,current){
+							if(card.hasGaintag&&card.hasGaintag('hengxuan'))	return [2,0];
+						}
+					}
+				},
+				subSkill:{
+					ganshe:{
+						trigger:{player:'useCardAfter',global:'phaseAfter'},
+						direct:true,
+						filterx:function(event,player){
+							if(!player.isPhaseUsing()) return false;
+							return player.getHistory('lose',function(evt){
+								if(evt.getParent()!=event) return false;
+								for(var i in evt.gaintag_map){
+									if(evt.gaintag_map[i].contains('lingli')) return true;
+								}
+								return false;
+							}).length>0;
+						},
+						filter:function(event,player){
+							if(event.name=='phase')	return true;
+							if(!lib.skill.lingli_ganshe.filterx(event,player)) return false;
+							if(event.targets&&event.targets.length>0){
+								var info=get.info(event.card);
+								if(info.allowMultiple==false) return false;
+								if(event.targets&&!info.multitarget){
+									if(game.hasPlayer(function(current){
+										return event.targets.contains(current)&&lib.filter.targetEnabled2(event.card,player,current)&&lib.filter.targetInRange(event.card,player,current);
+									})){
+										return true;
+									}
+								}
+							}
+							return false;
+						},
+						content:function(){
+							if(trigger.name=='useCard'){
+								var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
+								player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'lingli_ganshe';
+							}
+							else{
+								player.removeGaintag('lingli');
+							}
+						}
+					}
+				}
+			},
+			chengfo:{
+				enable:['chooseToUse'],
+				viewAs:{name:'yiyi'},
+				check:function(card){
+					if(get.type(card)=='equip'&&get.position(card)=='h')	return 4-get.value(card);
+					return 6-get.value(card);
+				},
+				filterCard:function(card,player){
+					if(player.getStorage('chengfo_mark').contains(get.suit(card)))	return false;
+					return true;
+				},
+				onuse:function(result,player){
+					if(!player.storage.chengfo_mark)	player.storage.chengfo_mark = [];
+					player.storage.chengfo_mark.add(get.suit(result.card,player));
+				},
+				ai:{
+					order:10,
+					player:1,
+				},
+				group:['chengfo_drawBy'],
+				subSkill:{
+					mark:{
+						onremove:true,
+						intro:{
+							content:function (storage,player,skill){
+								if(storage.length){
+									return '本阶段『闭目成佛』使用过的花色：'+ get.translation(storage);
+								}
+							},
+						}
+					},
+					drawBy:{
+						trigger:{global:'yiyiEnd'},
+						filter:function(event,player){
+							return event.skill&&event.skill=='chengfo'&&event.discards&&(event.discards.filter(function(card){
+								return get.type(card)=='equip';
+							}).length||event.discards.length);
+						},
+						direct:true,
+						content:function(){
+							'step 0'
+							console.log(trigger.discards);
+							//window.prompt("sometext","defaultvalue");
+							player.chooseCardButton('『闭目成佛』：使用一张装备牌',trigger.discards).set('filterButton',function(button){
+								return get.type(button.link)=='equip';
+							});
+							'step 1'
+							if(result.bool&&result.links){
+								player.useCard(result.links[0],player);
+							}
+							'step 2'
+							var list = [];
+							for(var i of trigger.discards){
+								list.push(get.color(i));
+							}
+							if(!function(array){
+								if(array.length>0){
+									return !array.some(function(value,index){
+										return value!==array[0];
+									});
+								}else{
+									return false;
+								}
+							}(list))	event.finish();
+							'step 3'
+							player.draw();
 						},
 					}
 				}
@@ -567,9 +715,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yingqi: '迎喫',
 			yingqi_info: '其他角色的牌在你的回合进入弃牌堆后，其可以令你将手牌数调整至体力上限。你的牌在其他角色的回合进入弃牌堆后，你可以令其将手牌数调整至体力上限。',
 			
-			gz_YukihanaLamy: '国战雪花菈米',
+			gz_YukihanaLamy: '雪花菈米',
 			hanling: '寒灵',
 			hanling_info: '当你受到伤害时，若来源手牌数小于你，你可以将手牌弃至与其相等防止此伤害。你的回合结束时，若本回合你未对其他角色使用过牌，你可以令一名角色摸牌至与你手牌相同。',
+			
+			gz_KataribeTsumugu: '语部纺',
+			lingli: '灵力干涉',
+			lingli_info: '轮次技 当一张牌指定唯一角色为目标时，你可以令之无效并返回来源手牌。然后其本回合使用此牌时结束当前阶段并额外结算一次。',
+			chengfo: '闭目成佛',
+			chengfo_info: '你可以将一张本回合未使用过花色的牌当【以逸待劳】使用。你可以使用其他角色因此弃置的装备牌。且若因此弃置的牌均为同色，你摸一张牌。',
 
 			gz_AngeKatrina: '国战安洁',
 			gz_lianjin:'炼金',

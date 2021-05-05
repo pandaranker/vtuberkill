@@ -775,7 +775,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['useCardAfter','respondAfter']},
 				filter:function(event,player){
 					var name = get.name(event.card);
-					console.log(event.skill);
 					if(!['sha','shan'].contains(name)) return false;
 					return event.skill&&event.skill=='kouhu_'+name&&player.countCards('h')>0&&game.hasPlayer(function(cur){
 						return player.canCompare(cur);
@@ -3521,7 +3520,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							event.cards = trigger.cards;
+							event.cards = trigger.cards.filterInD();
 							game.broadcastAll(function(player,cards){
 								player.chooseCardButton([0,1],true,cards,'『龙箱』：可以将其中一张牌置于牌堆顶').set('ai',function(button){
 									return get.value(button.link)+Math.random();;
@@ -3959,11 +3958,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xingchi:{
 				mod:{
 					targetEnabled:function(card,player,target){
-						if(player.countUsed(null,true)==0) return false;
+						if(!player.countUsed(null,true))	return false;
 					},
 				},
 				trigger:{player:'gainAfter'},
 				filter:function(event,player){
+					if(player.countCards('h')>player.getHandcardLimit())	return player.getCardUsable('sha')>0;
 					return true;
 				},
 				check:function(event,player){
@@ -3975,7 +3975,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.chooseCardTarget({
 							position:'h',
 							filterCard:true,
-							prompt:'将一张手牌当作【杀】使用',
+							prompt:'将一张手牌当作不计入次数【杀】使用',
 							filterTarget:function(card,player,target){
 								return lib.filter.filterTarget({name:'sha'},player,target);
 							},
@@ -3993,7 +3993,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 1'
 					if(result.bool&&result.targets){
-						player.useCard({name:'sha'},result.targets,result.cards);
+						player.useCard({name:'sha'},result.targets,result.cards,false);
 					}
 				}
 			},
@@ -4616,7 +4616,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
-							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards);
+							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'re_huawen_change';
 						},
 					},
 					give:{
@@ -5160,7 +5160,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lose:false,
 				content:function(){
 					'step 0'
-					target.gain(cards);
+					target.gain(cards,player);
 					'step 1'
 					var list = target.getCards('e',function(card){
 						return get.equiptype(card)!=5&&!player.getEquip(get.subtype(card));
@@ -5193,15 +5193,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						filter:function(event,player){
 							return player.countCards('he')>0&&game.hasPlayer(function(cur){
-								return lib.skill.huixiang.filterTarget(true,player,cur);
+								return cur!=player&&lib.skill.huixiang.filterTarget(true,player,cur);
 							});
 						},
 						content:function(){
 							'step 0'
-							player.chooseCardTarget('he',function(card,player,cur){
+							player.chooseCardTarget('he',function(card,player){
 								return true;
-							},function(card,player,cur){
-								return lib.skill.huixiang.filterTarget.apply(this,arguments);
+							},function(card,player,target){
+								return target!=player&&lib.skill.huixiang.filterTarget.apply(this,arguments);
 							}).set('prompt',get.prompt2('huixiang'))
 							'step 1'
 							if(result.bool&&result.targets&&result.cards){
@@ -5641,10 +5641,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_KizunaAI: '新·绊爱',
 			re_ailian: '爱冀',
 			re_ailian_info: '当你受到伤害后或出牌阶段限一次，你可以将任意张手牌交给一名其他角色。当你于一个阶段内以此法给出第二张牌时，你可以视为使用一张基本牌。',
+			re_ailian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌</span>',
 
 			re_YuNi: '新·YuNi',
 			re_shengcai: '声彩',
 			re_shengcai_info: '当你使用一张牌后，若与本回合上一张被使用的牌颜色均不同，你可以摸X张牌。（X为本回合之前使用过的牌数）',
+			re_shengcai_append:'<span style="font-family: LuoLiTi2;color: #dbb">回合内爆发（注意不要被其他人使用的牌干扰）</span>',
 			
 			re_TomariMari: '新·兎鞠まり',
 			liansheng: '恋声',
@@ -5656,12 +5658,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yaozhan: '邀战',
 			yaozhan_info: '你可以跳过摸牌阶段/出牌阶段，视为使用一张【决斗】。',
 			chongxin: '崇新',
-			chongxin_info: '场上的判定牌生效前，你可以用相同花色的牌替换之。然后你可以将获得的牌置于武将牌上，其他角色不能使用与之花色相同的牌响应你使用的【决斗】。',
+			chongxin_info: '场上的判定牌生效前，你可以用相同花色的牌替换之，然后你可以将获得的牌置于武将牌上。其他角色不能使用与之花色相同的牌响应你使用的【决斗】。',
 
 			re_NijikawaRaki: '新·虹河ラキ',
 			yayun: '押运',
 			laohuji: '老虎机',
 			yayun_info: '轮次技 在合适的时机，你可以弃置所有手牌，连续判定三次，每有一张判定牌花色包含于弃牌中，你便摸一张牌；若三次判定结果均为同一花色，你额外摸三张牌。',
+			yayun_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：赌狗</span>',
 			jidao: '极道',
 			jidao_info: '你可以防止对其他角色造成的伤害，改为令其发动一次『押运』。',
 
@@ -5685,12 +5688,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MiraiAkari: '新·未来明',
 			duanli: '断离',
 			duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
+			duanli_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：制衡</span>',
 			qingmi: '情迷',
 			qingmi_info: '其他角色使用【桃】后，可以令你摸一张牌。',
 
 			re_NekomiyaHinata: '新·猫宫日向',
 			yingdan: '盈弹',
 			yingdan_info: '你可以使用一张【杀】，视为使用了一张【闪】或【无懈可击】。若此【杀】的点数不大于你的攻击范围，则这些牌均不触发技能时机。',
+			yingdan_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强化出杀</span>',
 			tianzhuo: '舔镯',
 			tianzhuo_info: '当其他角色死亡时，你可以获得其所有牌。',
 
@@ -5701,6 +5706,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_Siro: '新·小白',
 			lingsi: '灵思',
 			lingsi_info: '出牌阶段限一次，你可以摸两张牌然后弃两张牌。你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。',
+			lingsi_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：制衡</span>',
 
 			re_Nekomasu: '新·ねこます',
 			re_dianyin: '承志',
@@ -5874,6 +5880,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ŌzoraSubaru: '新·大空昴',
 			cejing: '策竞',
 			cejing_info: '一名角色的回合结束时，若其于此回合未造成伤害，你可以弃一张牌令其执行一个指定的额外阶段。此阶段结束时，你与其各摸等同本阶段造成伤害数的牌，若未因此摸牌，本轮此技能失效。',
+			cejing_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：辅助</span>',
 
 			re_TsunomakiWatame: '新·角卷绵芽',
 
@@ -5912,6 +5919,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_DoumyoujiHaruto: '新·道明寺晴翔',
 			shengfu: '胜负',
 			shengfu_info: '每轮每项限一次，当你需要使用【决斗】/【无懈可击】时，你可以与目标/来源拼点，赢则视为使用之，没赢则不能使用牌直到回合结束。你的拼点牌亮出后，你可以令一方收回黑色拼点牌，改用牌堆顶牌代替。',
+			shengfu_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：无损拼点</span>',
 			wanbi: '完璧',
 			wanbi_info: '当你抵消其他角色的牌后，若其手牌数不小于你，你可以获得被抵消的牌。',
 

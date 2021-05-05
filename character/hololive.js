@@ -2925,7 +2925,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
-							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards);
+							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'shenhai_jiesuan';
 						}
 					},
 					init:{
@@ -3558,8 +3558,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			RobokoSan:'萝卜子',
 			gaonengzhanxie:'高能战械',
 			gaonengzhanxie_info:'锁定技 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
+			gaonengzhanxie_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：多次出杀</span>',
 			ranyouxielou:'燃油泄漏',
 			ranyouxielou_info:'锁定技 你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
+			ranyouxielou_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：属性伤害减免</span>',
 
 			ShirakamiFubuki:'白上吹雪',
 			baihuqingguo:'白狐倾国',
@@ -3600,6 +3602,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuali_jieshu_info: '结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
 			youyi: '友谊誓约',
 			youyi_info: '每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
+			youyi_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌 限制敌方输出</span>',
 			youyishiyue: '誓约',
 			youyishiyue_info: '友谊誓约生效中',
 			youyishiyue_rec_info: '弃置“誓约”牌，令你或湊阿库娅回复一点体力。',
@@ -3630,6 +3633,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SpadeEcho: '黑桃影',
 			hangao: '函告',
 			hangao_info: '出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
+			hangao_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌 挑衅</span>',
 			yinglve: '影掠',
 			yinglve_info: '结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你的攻击范围+X且你使用【顺手牵羊】可选择的目标数为X。（X为你废除的装备栏数）',
 			feichu_equip1:'废除',
@@ -3647,6 +3651,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Doris: '朵莉丝',
 			shenhai: '曜海',
 			shenhai_info: '出牌阶段每类型限一次，当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除次数和标号限制。',
+			shenhai_append:'<span style="font-family: LuoLiTi2;color: #dbb">可以通过先打小牌后打大牌，让【桃】、【杀】反复生效一次</span>',
 			paomo: '儚恋',
 			paomo_info: '你的回合内，当其他角色于本回合第一次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。',
 
@@ -3659,10 +3664,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rosalyn: '罗莎琳',
 			maoge: '帽阁',
 			maoge_info: '锁定技 你摸的牌均改为置于武将牌上，称为“书”。你的手牌数不小于“书”数时，摸牌阶段额外摸一张牌；你的手牌数小于“书”数时，你能且只能使用或打出“书”。',
+			maoge_append:'<span style="font-family: LuoLiTi2;color: #dbb">可以无视手牌上限屯牌</span>',
 			bianlan: '遍览',
 			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名本回合未因此摸牌的目标摸一张牌。',
 			futian: '覆天',
 			futian_info: '<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
+			futian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：爆发</span>',
 
 		},
 	};

@@ -292,7 +292,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					player.gainMaxHp();
-					if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
+					// if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
+					player.drawTo(player.maxHp);
 					player.storage.juzu = true;
 					player.awakenSkill('juzu');
 					player.addSkill('haigou');
@@ -1177,7 +1178,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shinve: '尸虐',
 			shinve_info: '锁定技 你体力减少时，获得等量护甲。准备阶段，你失去所有护甲，摸等量的牌。',
 			juzu: '举组',
-			juzu_info: '<font color=#ed5>觉醒技</font> 手牌数多于你的角色对你造成伤害后，你增加1点体力上限并摸牌至手牌上限，获得技能『海狗』。',
+			juzu_info: '<font color=#ed5>觉醒技</font> 手牌数多于你的角色对你造成伤害后，你增加1点体力上限并摸牌至体力上限，获得技能『海狗』。',
 			haigou: '海狗',
 			haigou_info: '锁定技 你造成的海洋伤害+1。手牌数多于你的角色无法响应你使用的能造成伤害的牌。',
 

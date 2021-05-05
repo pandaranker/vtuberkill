@@ -367,6 +367,75 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
+			rm_numa:{
+				fullskin:true,
+				type:'equip',
+				subtype:'equip4',
+				filterTarget:lib.filter.notMe,
+				selectTarget:1,
+				toself:false,
+				loseThrow:true,
+				customSwap:function(){
+					return true;
+				},
+				ai:{
+					order:9,
+					value:function(card,player){
+						if(player.getEquip(4)==card) return 0;
+						return 4;
+					},
+					equipValue:function(card,player){
+						if(player.getCards('e').contains(card)) return 0;
+						return -get.value(player.getCards('e'));
+					},
+					basic:{
+						equipValue:5,
+					},
+					result:{
+						keepAI:true,
+						target:function(player,target){
+							var cards=target.getCards('e');
+							var val=get.value(cards,target);
+							if(val>0) return -val;
+							return 0;
+						},
+					},
+				},
+			},
+			rm_liulongcanjia:{
+				audio:true,
+				mode:['guozhan'],
+				fullskin:true,
+				type:'equip',
+				subtype:'equip6',
+				nomod:true,
+				nopower:true,
+				unique:true,
+				distance:{
+					globalFrom:-1,
+					globalTo:+1,
+				},
+				onEquip:function(){
+					var cards=player.getCards('e',{subtype:['equip3','equip4']});
+					if(cards.length) player.discard(cards);
+				},
+				skills:['rm_liulongcanjia'],
+				ai:{
+					equipValue:function(card,player){
+						if(player.countCards('e',{subtype:['equip3','equip4']})>1) return 1;
+						if(player.hasSkill('gzzongyu')) return 9;
+						if(game.hasPlayer(function(current){
+							return current.hasSkill('gzzongyu')&&get.attitude(player,current)<=0;
+						}))	return 1;
+						return 7.2;
+					},
+					basic:{
+						equipValue:7.2
+					}
+				},
+			},
+
+			
 			rm_wuxingpan:{
 				type:'equip',
 				subtype:'equip5',
@@ -1361,6 +1430,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			
+			
+			rm_liulongcanjia:{
+				equipSkill:true,
+				mod:{
+					targetEnabled:function(card,player,target){
+						if(['equip3','equip4'].contains(get.subtype(card))) return false;
+					},
+				},
+			},
+
 			rm_wuxingpan_skill:{
 				enable:'phaseUse',
 				usable:1,
@@ -1490,6 +1569,13 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			rm_muniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
 			rm_muniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
 
+
+			rm_numa:'驽马',
+			rm_numa_info:'锁定技，当此牌进入你的装备区时，你弃置装备区内的所有其他牌。',
+
+			rm_liulongcanjia:'六龙骖驾',
+			rm_liulongcanjia_info:'锁定技，你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技，当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
+						
 			
 			rm_wuxingpan:'五行盘',
 			rm_wuxingpan_skill:'五行',

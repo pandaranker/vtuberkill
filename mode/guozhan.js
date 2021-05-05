@@ -449,6 +449,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_SukoyaKana:['female','nijisanji',3,['re_huawen','re_liaohu']],
 				/**白雪巴 */
 				gz_ShirayukiTomoe:['female','nijisanji',4,['re_gonggan','yejing']],
+				/**语部纺 */
+				gz_KataribeTsumugu:['female','nijisanji',3,['lingli','chengfo'],['gzskin']],
 
 				/**绊爱 */
 				gz_KizunaAI:['female','vtuber',4,['re_ailian']],
@@ -504,7 +506,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**进击的冰糖 */
 				gz_bingtang: ['female', 'clubs', 4, ['xiou']],
 				/**OTO */
-				gz_OtomeOto: ['female', 'clubs', 3, ['re_yuxia', 'qiepian']],
+				gz_OtomeOto: ['female', 'clubs', 3, ['gz_yuxia', 'gz_lianjue']],
 				/**鹿乃 */
 				gz_Kano: ['female','clubs',4,['shiguang'],['gzskin']],
 				/**花丸 */
@@ -2238,8 +2240,189 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 
 			},
-
-
+			//gzOto
+			gz_yuxia:{
+				audio:'yuxia',
+				hiddenCard:function(player,name){
+					if(!lib.skill.gz_yuxia.filter(false,player)||player.getStat('skill').gz_yuxia)	return false;
+					var list = get.inpile('trick');
+					for(var i=0;i<list.length;i++){
+						if(list[i]==name) return true;
+					}
+					return false;
+				},
+				usable:1,
+				enable:'chooseToUse',
+				filter:function(event,player){
+					return player.countCards('he')>=3&&!player.getStat('skill').gz_yuxia;
+				},
+				chooseButton:{
+					dialog:function(event,player){
+						var list = get.inpile('trick');
+						for(var i=0;i<list.length;i++){
+							list[i]=['锦囊','',list[i]];
+						}
+						return ui.create.dialog('『玉箱』',[list,'vcard']);
+					},
+					filter:function(button,player){
+						return _status.event.getParent().filterCard({name:button.link[2],nature:button.link[3]},player,_status.event.getParent());
+					},
+					check:function(button){
+						var player=_status.event.player;
+						if(player.countCards('h',button.link[2])>0) return 0;
+						if(['wugu','jingluo'].contains(button.link[2])) return 0;
+						var effect=player.getUseValue(button.link[2]);
+						if(effect>0) return effect;
+						return 0;
+					},
+					backup:function(links,player){
+						return {
+							audio:'yuxia',
+							filterCard:function(card){
+								return true;
+							},
+							selectCard:function(){
+								var player = _status.event.player;
+								if(player.storage.gz_lianjue)	return [1,Infinity];
+								return 3;
+							},
+							forceAuto:function(){
+								return ui.selected.buttons.length==3;
+							},
+							popname:true,
+							check:function(card){
+								if(player.storage.gz_lianjue&&ui.selected.cards)	
+								return 5-get.value(card);
+							},
+							position:'he',
+							complexCard:true,
+							viewAs:{name:links[0][2],nature:links[0][3]},
+							precontent:function(){
+								'step 0'
+								event.cards = event.result.cards.slice(0);
+								player.$throw(event.cards,1000,'nobroadcast');
+								player.lose(event.cards,ui.ordering);
+								event.result.card.cards=[];
+								event.result.cards=[];
+								delete event.result.card.number;
+								'step 1'
+								player.chooseCardButton(event.cards.length,true,cards,'『玉匣』：可以按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
+									var player = _status.event.player;
+									var now = _status.currentPhase;
+									var next = now.getNext();
+									var att = get.attitude(player,next);
+									var card = button.link;
+									var judge = next.getCards('j')[ui.selected.buttons.length];
+									if(judge){
+										return get.judge(judge)(card)*att;
+									}
+									return next.getUseValue(card)*att;
+								});
+								'step 2'
+								event.cards = result.links.slice(0);
+								game.broadcast(function(){
+									ui.arena.classList.add('thrownhighlight');
+								});
+								ui.arena.classList.add('thrownhighlight');
+								game.addVideo('thrownhighlight1');
+								while(event.cards.length>0){
+									var card=event.cards.pop();
+									card.fix();
+									ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+									game.updateRoundNumber();
+								}
+								'step 2'
+								game.broadcastAll(function(){
+									ui.arena.classList.remove('thrownhighlight');
+								});
+								game.addVideo('thrownhighlight2');
+								if(event.clear!==false){
+									game.broadcastAll(ui.clear);
+								}
+								if(player.storage.gz_lianjue)		player.storage.gz_lianjue = false;
+							},
+						}
+					},
+					prompt:function(links,player){
+						if(player.storage.gz_lianjue)	return '###『龙箱』###将任意张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+						return '###『龙箱』###将三张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+					}
+				},
+				ai:{
+					order:6,
+					result:{player:1},
+				},
+			},
+			gz_lianjue:{
+				init:function(player,skill){
+					player.storage[skill] = false;
+				},
+				marktext: '崛',
+				intro: {
+					content: 'cards',
+					name:'以『连崛』使用过的锦囊牌',
+				},
+				trigger:{player:'phaseEnd'},
+				priority:66,
+				frequent:true,
+				prompt2: '你可以选择一项：令至多三名角色各摸一张牌；将下一次发动『玉箱』条件改为“任意张牌”。',
+				filter:function(event,player){
+					return (Math.abs(player.storage.gz_lianjue_start-player.countCards('h'))%3==0);
+				},
+				content:function(){
+					'step 0'
+					player.chooseControlList(['令至多三名角色各摸一张牌','将下一次发动『玉箱』条件改为“任意张牌”'],function(){
+						return 1;
+					});
+					'step 1'
+					switch(result.index){
+						case 0: {
+							player.chooseTarget([1,3],'令至多三名角色各摸一张牌').set('ai',function(target){
+								var att=get.attitude(_status.event.player,target);
+								if(att>1){
+									return att;
+								}
+								return 0;
+							});
+							event.goto(2);
+							break;
+						}
+						case 1: {
+							player.chat('将下一次发动『玉箱』条件改为“任意张牌”');
+							player.storage.gz_lianjue = true;
+							break;
+						}
+					}
+					'step 2'
+					if(result.targets&&result.targets.length){
+						game.asyncDraw(result.targets);
+					}
+				},
+				group:['gz_lianjue_start'],
+				subSkill:{
+					start:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = 0;
+						},
+						trigger:{player:'phaseBefore'},
+						firstDo:true,
+						forced:true,
+						silent:true,
+						popup:false,
+						priority:66,
+						content:function(){
+							player.storage.gz_lianjue_start = player.countCards('h');
+						},
+					},
+				},
+				mod:{
+					aiOrder:function(player,card,num){
+						if(typeof card=='object'&&player==_status.currentPhase&&!player.needsToDiscard()&&Math.abs(player.storage.gz_lianjue_start-player.countCards('h'))%3==0){
+							return num-10;
+						}
+					},
+				},
+			},
 
 			yigui:{
 				hiddenCard:function(player,name){
@@ -9274,7 +9457,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_lianjin_info:'当你使用一张牌后，可以将一张手牌置于此将牌上。然后若此将牌上有三种不同/相同花色的牌，你将其中的装备牌置入场上，弃置其余的牌，视为使用了两张：火【杀】/【无中生有】，然后本回合不再触发此项。',
 
 			gz_duanli: '断离',
-			gz_duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
+			gz_duanli_info: '当你受到伤害后或出牌阶段限一次，你可以弃置所有手牌，然后你于本回合结束时摸等量的牌。',
 			gz_qingyi: '情遗',
 			gz_qingyi_info: '其他角色使用的【桃】进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
 
@@ -9316,7 +9499,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_xiemen: '斜门',
 			gz_xiemen_info: '你使用目标不仅为你的牌时，可令其他角色随机移除一张手牌直到回合结束。',
 
-
+			gz_yuxia: '玉箱',
+			gz_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中的一张置于牌堆顶。',
+			gz_lianjue: '连崛',
+			gz_lianjue_info: '回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或将你下一次发动『玉箱』条件改为“任意张牌”。',
 
 			gz_cuimao:'崔琰毛玠',
 			gzzhengbi:'征辟',

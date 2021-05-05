@@ -12024,7 +12024,7 @@
 				},
 				phaseDiscard:function(){
 					"step 0"
-					event.num=player.needsToDiscard();
+					if(!event.num) event.num=player.needsToDiscard();
 					if(event.num<=0) event.finish();
 					else{
 						if(lib.config.show_phase_prompt){
@@ -16684,7 +16684,13 @@
 				},
 			},
 			player:{
-				//新新函数
+				//自创函数
+				isYingV:function(){
+					var info=lib.character[this.name||this.name1];
+					if(info&&info[4]){
+						if(info[4].contains('yingV')) return true;
+					}
+				},
 				isGuoV:function(){
 					var info=lib.character[this.name||this.name1];
 					if(info&&info[4]){
@@ -18633,6 +18639,7 @@
 							game.addVideo('storage',this,[skill,JSON.parse(JSON.stringify(this.storage[skill]))]);
 						}
 						catch(e){
+							console.log(skill);
 							console.log(this.storage[skill]);
 						}
 					}
@@ -46640,7 +46647,7 @@
 				}
 				else{
 					if(get.mode()=='guozhan'){
-						list={wei:'魏',shu:'蜀',wu:'吴',qun:'群',holo:'杏',nijisanji:'虹',vtuber:'企',clubs:'社'};
+						list={holo:'杏',nijisanji:'虹',vtuber:'企',clubs:'社'};
 					}
 					var list2=get.copy(list);
 					if(game.getIdentityList2){
@@ -46829,6 +46836,7 @@
 				uiintro.add('<div class="text center">轮数 <span style="font-family:xinwei">'+game.roundNumber+'</span>&nbsp;&nbsp;&nbsp;&nbsp;洗牌 <span style="font-family:xinwei">'+game.shuffleNumber+'</div>');
 				uiintro.add('<div class="text center">弃牌堆</div>');
 				if(ui.discardPile.childNodes.length){
+					console.log(ui.discardPile)
 					var list=[];
 					for(var i=0;i<ui.discardPile.childNodes.length;i++){
 						list.unshift(ui.discardPile.childNodes[i]);

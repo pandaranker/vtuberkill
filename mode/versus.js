@@ -4313,15 +4313,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_zuoyututan_info:'锁定技 转换技 一轮开始时，令所有敌方角色①随机废除一个装备栏②手牌上限-1③获得一张进入弃牌堆后即移出游戏的【毒】。',
 
 			boss_MinatoAqua:'天使阿夸',
-			boss_shenghuang: '圣皇之愈',
+			boss_shenghuang: '圣皇圣愈',
 			boss_shenghuang_info: '锁定技 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，友方角色将体力回复至回合开始时的状态。',
+			boss_renzhan: '影逝刃斩',
+			boss_renzhan_info: '每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌，并可以对一名角色使用任意张【杀】，直到其进入濒死状态。',
+			boss_kuase: '夸色梦想',
+			boss_kuase_info: '<font color=#f5c>限定技</font> 一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）',
 			
 			boss_HonmaHimawari:'自在武葵',
 			boss_kuiquan: '阳光烈焰',
 			boss_kuiquan_info: '你的【火攻】没有目标数量限制。出牌阶段，你可以将一张牌当的【火攻】使用。当你在【火攻】中弃置了【杀】后，获得目标的展示牌。',
 
 			boss_MitoTsukino:'衔月脱兔',
-			boss_bingdielei: '并蒂恶蕾',
+			boss_bingdielei: '狱囚恶蕾',
 			boss_bingdielei_info:'乙方角色受到伤害或令一名角色进入濒死状态的额定回合结束时，你可以获得一个额外回合。',
 			boss_zhenyin: '协和音震',
 			boss_zhenyin_info: '当你使用黑色牌指定目标后，可以将一名目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
@@ -4557,9 +4561,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'damageEnd'},
 				forced:false,
 				usable:1,
-				init:function(player){
-					player.storage.boss_renzhan = [];
-				},
 				check:function(event,player){
 					if(player.storage.boss_shenghuang_draw==0&&player.hp==1)		return false;
 					return player.getUseValue({name:'sha'})>0;
@@ -4572,92 +4573,68 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.loseHp();
 					var card=get.cards()[0];
-					var cards=[];
-					cards.push(card);
+					var cards=[card];
 					while(get.name(card)!='sha'){
 						card=get.cards()[0];
 						cards.push(card);
 					}
-					player.storage.boss_renzhan = cards;
-					player.showCards(player.storage.boss_renzhan,'瞬息刃斩亮出牌堆');
-					game.delay(2);
-					player.chooseControlList(
-						['获得这些牌',
-						'获得其中的【杀】并对一名角色使用任意张【杀】'],
-						true,function(event,player){
-							return _status.event.index;
-						}).set('ai',function(){
-							var player = _status.event.player;
-							if(player.countCards('h',{name:'sha'})>=1&&player.storage.boss_renzhan.length<=3)	return 1;
-							return 0;
-						});
+					event.cards = cards;
 					'step 1'
-					if(result.index==0)	
-					{
-						cards = player.storage.boss_renzhan;
-						game.log(player,'获得了', cards);
-						player.gain(cards);
-						_status.event.finish();
-					}
-					else if(result.index==1)
-					{
-						var cards = [];
-						player.storage.boss_renzhan.forEach(function(card){
-							if(get.name(card)!='sha')	return;
-							cards.push(card);
-						});
-						player.storage.boss_renzhan = cards;
-						player.showCards(player.storage.boss_renzhan,'获得其中的【杀】');
-						game.delay(2);
-						player.gain(cards);
-					}
+					game.cardsGotoOrdering(event.cards);
+					game.delayx();
 					'step 2'
-					game.broadcastAll(function(player){
-						var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
-							return player!=target;
-						});
-						next.set('targetprompt',['RUA']);
-						next.set('forced',false);
-						next.set('ai',function(target){
-							var att=get.attitude(player,target);
-							return 50-att;
-						});
-					}, player)
+					player.showCards(event.cards,'『瞬息刃斩』亮出牌堆');
 					'step 3'
+					cards = event.cards;
+					game.log(player,'获得了', cards);
+					player.gain(cards,'gain2');
+					'step 4'
+					var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
+						return player!=target;
+					});
+					next.set('targetprompt',['RUA']);
+					next.set('forced',false);
+					next.set('ai',function(target){
+						var player = _status.event.player;
+						var att=get.attitude(player,target);
+						return 10-att;
+					});
+					'step 5'
 					if(result.bool){
-						event.target = result.targets[0];
 						var target = result.targets[0];
-						console.log(target);
+						event.target = target;
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('boss_renzhan2','phaseEnd');
 						target.storage.boss_renzhan2 = true;
-						player.logSkill('boss_renzhan',target);
+						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
 					}
 					else{
 						event.finish();
 					}
-					'step 4'
+					'step 6'
 					if(result.bool){
 						var target = event.target;
 						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
-						player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
-					}}
+							player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
+						}}
 					else{
 						event.finish();
 					}
-					'step 5'
+					'step 7'
+					var target = event.target;
 					if(result.bool){
-						var target = event.target;
 						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
-							event.goto(4);
+							event.goto(6);
 						}
 					}
-					target.unmarkSkill('boss_renzhan2');
-					target.removeSkill('boss_renzhan2');
+					if(target){
+						target.unmarkSkill('boss_renzhan2');
+						target.removeSkill('boss_renzhan2');
+					}
 				},
 				ai:{
-					　　maixie:true,
+					maixie:true,
 				},
 			},
 			boss_renzhan2:{
@@ -4676,11 +4653,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.isAlive();
 				},
-				onremove:function(player){
-					delete player.storage.boss_renzhan2;
-				},
+				onremove:true,
 				content:function(){
-					player.unmarkSkill('boss_renzhan2');
+					player.storage.boss_renzhan2 = false;
 				},
 			},
 			boss_kuase:{

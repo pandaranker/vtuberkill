@@ -144,7 +144,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						target.showCards(result.cards);
-						if(get.suit(card)!=get.suit(result.cards[0])) target.damage();
+						if(get.suit(card)!=get.suit(result.cards[0])) target.damage(event.baseDamage||1);
 					}
 				},
 				ai:{
@@ -230,12 +230,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				subtype:'equip5',
 				loseDelay:false,
 				onEquip:function(){
-					player.logSkill('tianjitu');
-					if(player.countDiscardableCards(player,'he',function(cardx){
-						return cardx!=card;
-					})) player.chooseToDiscard(true,function(card){
-						return card!=_status.event.card;
-					},'he').set('card',card);
+					if(player.countCards('he',function(cardx){
+						return cardx!=card.cards[0];
+					})>0){
+						player.logSkill('tianjitu');
+						player.chooseToDiscard(true,function(cardx){
+							return cardx!=_status.event.card;
+						},'he').set('card',card.cards[0]);
+					}
 				},
 				onLose:function(){
 					var next=game.createEvent('tianjitu_lose');

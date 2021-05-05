@@ -88,7 +88,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						game.delay(0.5);
 						game.log(player,'声明了',result.links[0][2]);
-						player.popup(result.links[0][2],'thunder');
+						player.chat(get.translation(result.links[0][2]));
+						// player.popup(result.links[0][2],'thunder');
 						player.storage.tiangou.add(result.links[0][2]);
 					}else{
 						event.finish();
@@ -265,11 +266,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			renzhan:{
 				priority:777,
 				trigger:{global:'damageEnd'},
-				forced:false,
 				usable:1,
-				init:function(player){
-					player.storage.renzhan = [];
-				},
 				check:function(event,player){
 					if(player.storage.shenghuang_draw==0&&player.hp==1)		return false;
 					return player.getUseValue({name:'sha'})>0;
@@ -282,62 +279,57 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.loseHp();
 					var card=get.cards()[0];
-					var cards=[];
-					cards.push(card);
+					var cards=[card];
 					while(get.name(card)!='sha'){
 						card=get.cards()[0];
 						cards.push(card);
 					}
-					player.storage.renzhan = cards;
-					player.showCards(player.storage.renzhan,'瞬息刃斩亮出牌堆');
-					game.delay(2);
+					event.cards = cards;
+					'step 1'
+					game.cardsGotoOrdering(event.cards);
+					game.delayx();
+					'step 2'
+					player.showCards(event.cards,'『瞬息刃斩』亮出牌堆');
 					player.chooseControlList(
 						['获得这些牌',
 						'获得其中的【杀】并对一名角色使用任意张【杀】'],
-						true,function(event,player){
-							return _status.event.index;
-						}).set('ai',function(){
+						true).set('ai',function(){
 							var player = _status.event.player;
-							if(player.countCards('h',{name:'sha'})>=1&&player.storage.renzhan.length<=3)	return 1;
+							if(player.countCards('h',{name:'sha'})>=1&&event.cards.length<=3)	return 1;
 							return 0;
 						});
-					'step 1'
-					if(result.index==0)	
-					{
-						cards = player.storage.renzhan;
-						game.log(player,'获得了', cards);
-						player.gain(cards);
-						_status.event.finish();
-					}
-					else if(result.index==1)
-					{
-						var cards = [];
-						player.storage.renzhan.forEach(function(card){
-							if(get.name(card)!='sha')	return;
-							cards.push(card);
-						});
-						player.storage.renzhan = cards;
-						player.showCards(player.storage.renzhan,'获得其中的【杀】');
-						game.delay(2);
-						player.gain(cards);
-					}
-					'step 2'
-					game.broadcastAll(function(player){
-						var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
-							return player!=target;
-						});
-						next.set('targetprompt',['RUA']);
-						next.set('forced',false);
-						next.set('ai',function(target){
-							var att=get.attitude(player,target);
-							return 50-att;
-						});
-					}, player)
 					'step 3'
+					if(result.index==0){
+						cards = event.cards;
+						game.log(player,'获得了', cards);
+						player.gain(cards,'gain2');
+						event.finish();
+					}
+					else if(result.index==1){
+						var cards = [];
+						event.cards.forEach(function(card){
+							if(get.name(card)=='sha')	cards.push(card);
+						});
+						event.cards = cards;
+						player.showCards(event.cards,'获得其中的【杀】');
+						game.delayx();
+						player.gain(cards,'gain2');
+					}
+					'step 4'
+					var next=player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】',function(card,player,target){
+						return player!=target;
+					});
+					next.set('targetprompt',['RUA']);
+					next.set('forced',false);
+					next.set('ai',function(target){
+						var player = _status.event.player;
+						var att=get.attitude(player,target);
+						return 10-att;
+					});
+					'step 5'
 					if(result.bool){
-						event.target = result.targets[0];
 						var target = result.targets[0];
-						console.log(target);
+						event.target = target;
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('renzhan2','phaseEnd');
 						target.storage.renzhan2 = true;
@@ -347,7 +339,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else{
 						event.finish();
 					}
-					'step 4'
+					'step 6'
 					if(result.bool){
 						var target = event.target;
 						if(target.storage.renzhan2&&player.canUse({name:'sha'},target,false)){
@@ -356,18 +348,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else{
 						event.finish();
 					}
-					'step 5'
+					'step 7'
+					var target = event.target;
 					if(result.bool){
-						var target = event.target;
 						if(target.storage.renzhan2&&player.canUse({name:'sha'},target,false)){
-							event.goto(4);
+							event.goto(6);
 						}
 					}
-					target.unmarkSkill('renzhan2');
-					target.removeSkill('renzhan2');
+					if(target){
+						target.unmarkSkill('renzhan2');
+						target.removeSkill('renzhan2');
+					}
 				},
 				ai:{
-					　　maixie:true,
+					maixie:true,
 				},
 			},
 			renzhan2:{
@@ -386,11 +380,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.isAlive();
 				},
-				onremove:function(player){
-					delete player.storage.renzhan2;
-				},
+				onremove:true,
 				content:function(){
-					player.unmarkSkill('renzhan2');
+					player.storage.renzhan2 = false;
 				},
 			},
 			kuase:{
@@ -1351,6 +1343,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('h')
 				},
 				filterCard:true,
+				prepare:'give',
 				discard:false,
 				lose:false,
 				filterTarget:function(card,player,target){
@@ -1358,7 +1351,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					player.damage('nosource');
-					targets[0].gain(cards[0],player,'gainAuto').gaintag.add('xinjia');
+					targets[0].gain(cards[0],player).gaintag.add('xinjia');
 				},
 				ai:{
 					combo:'tangyan',
@@ -1397,7 +1390,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(player.countCards('e',{subtype:get.subtype(card)})){
 									var players=game.filterPlayer();
 									for(var i=0;i<players.length;i++){
-										if(players[i]!=player&&get.attitude(player,players[i])>q){
+										if(players[i]!=player&&get.attitude(player,players[i])>0){
 											return 0;
 										}
 									}

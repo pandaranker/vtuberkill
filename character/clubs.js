@@ -30,7 +30,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Paryi:['male','paryi',4,['tiantang','haoren'],['forbidai']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
-			OtomeOto:['female','paryi',3,['yuxia','qiepian','changxiang'],['zhu']],
+			OtomeOto:['female','paryi',3,['yuxia','lianjue','changxiang'],['zhu']],
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
 			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
 			/**真白花音 */
@@ -438,7 +438,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.card&&get.type(event.card)=='trick'&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
 				},
 				check:function(event,player){
-					var shouxia = event.getParent().targets.splice(event.getParent().targets.indexOf(trigger.player));
+					var shouxia = event.getParent().targets.splice(event.getParent().targets.indexOf(event.player));
 					var effect = 0;
 					for(var i=0;i<shouxia.length;i++){
 						effect+=get.effect(shouxia[i],event.card,event.getParent().player,player);
@@ -1402,8 +1402,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					if (event.tar) {
 						var max = Math.max(player.countCards('h'), event.tar.countCards('h'));
-						player.drawTo(max);
-						event.tar.drawTo(max);
+						if(max>player.countCards('h'))	player.gain(get.cards(max-player.countCards('h')),'draw','log');
+						if(max>event.tar.countCards('h'))	event.tar.gain(get.cards(max-event.tar.countCards('h')),'draw','log');
 						if (event.count) event.goto(1);
 					}
 				},
@@ -2987,6 +2987,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mokuai_info:'锁定技 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
 			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张类型不同牌，然后亮出牌堆顶等量牌。目标角色需依次选择：弃置与亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
+			yaoji_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：直接伤害</span>',
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
@@ -2999,8 +3000,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
 			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为“财布”。准备阶段，若你的武将牌上有“财布”，你可以移去任意数量的”财布“摸等量的牌。',
+			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：顺手牵咩</span>',
 			xiaoyan: '嚣言',
 			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
+			xiaoyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强命 破军</span>',
 			caibu: '财布',
 
 
@@ -3012,7 +3015,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			kaguraNaNa: '神乐七奈',
 			DDzhanshou: 'DD斩首',
-			DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。', 
+			DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
+			DDzhanshou_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：连营 破军</span>',
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
 			xinluezhili_info: '主公技 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
@@ -3046,6 +3050,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi: '下地',
 			yinliu: '引流',
 			yinliu_info: '出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
+			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：赌狗</span>',
 			dunzou: '遁走',
 			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以令你于本回合视为不存在。',
 			dunzou_enable: '遁走',
@@ -3055,11 +3060,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
+			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：卖血</span>',
 
 			
 			ShizukuLulu: '雫るる',
 			duixian: '稽杀',
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
+			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强化出杀 卖血</span>',
 			gutai: '守峡',
 			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',
 
@@ -3098,6 +3105,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
 			budingpaidui: '布丁派对',
 			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。',
+			budingpaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：大连营</span>',
 
 			MinamiNami: '美波七海',
 			Noracat: '野良喵',

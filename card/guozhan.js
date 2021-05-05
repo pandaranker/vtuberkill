@@ -745,8 +745,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return [1,3];
 				},
 				content:function(){
+					'step 0'
 					target.draw(2);
 					target.chooseToDiscard(2,'he',true).ai=get.disvalue;
+					'step 1'
+					event.discards = result.cards||[];
 				},
 				ai:{
 					wuxie:function(){
