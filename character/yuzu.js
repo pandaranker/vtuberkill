@@ -6598,16 +6598,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				forced:true,
+				intro:{content:'月谣：#'},
 				content:function(){
 					player.storage.yueyao = player.countCards('h');
+					player.markSkill('yueyao');
 				},
 				group:'yueyao_addDam',
 				global:'yueyao_useStop',
 				subSkill:{
 					addDam:{
-						trigger:{player:'damageBegin'},
+						trigger:{source:'damageBegin'},
 						forced:true,
-						filter:function(event, player){
+						filter:function(event,player){
 							return player.storage.yueyao==player.countCards('h');
 						},
 						content:function(){
