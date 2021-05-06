@@ -288,7 +288,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					global: 'phaseBegin'
 				},
 				filter:function(event,player){
-					if(player.storage.haoren!==true&&event.player==player)	return false;
 					if(player.countCards('he')<(event.player.storage.paryi||1))	return false;
 					return true;
 				},
