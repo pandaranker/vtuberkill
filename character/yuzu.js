@@ -8265,7 +8265,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		dynamicTranslate:{
 			tiantang:function(player){
 				if(player.storage.haoren===true) return '<font color=#fcd>一名角色的回合开始时，你可以重铸X张牌并声明一种花色：观看并重铸其一张声明花色的牌，令其执行一个额外的出牌阶段，且在此出牌阶段内，其获得“引流”；或令其摸两张牌，只能使用声明花色的牌直到回合结束。</font>（X为你对目标发动此技能的次数且至少为1）';
-				return '其他角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
+				return '一名角色的回合开始时，你可以弃置X张牌并声明一种花色：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）';
 			},
 			gunxun:function(player){
 				if(player.storage.gunxun===true) return '转换技 出牌阶段，你可以亮出至少一张<span class="firetext">①红色</span>②黑色手牌使之视为<span class="firetext">①【杀】</span>②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。';
