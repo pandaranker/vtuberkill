@@ -1965,7 +1965,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KizunaAI_info:'绊爱',
 			ailian:'爱链',
 			ailian_info:'出牌阶段限一次，你可以将任意手牌展示并交给其他角色，若给出的牌类型均不同，你可以令等量角色横置；若获得牌的角色互相相邻，你可以视为使用了一张指定目标数等于获得牌角色数的基本牌。',
-			ailian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌</span>',
+			ailian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌</span>',
 			qixu:'启虚',
 			qixu1:'启虚',
 			qixu2:'启虚',
@@ -1973,7 +1973,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qixu4:'启虚',
 			qixu5:'闪启虚',
 			qixu_info:'主公技 当你需要使用或打出【杀】或【闪】时，你可以声明之，若没有角色弃置一张声明牌，则视为你使用或打出了此牌。每轮每项限一次。',
-			qixu_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：白嫖[基本牌]</span>',
+			qixu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：白嫖[基本牌]</span>',
 			
 			InuyamaTamaki:'犬山玉姬',
 			InuyamaTamaki_info:'犬山玉姬',
@@ -1981,15 +1981,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rongyaochengyuan_info:'其他势力角色对你造成伤害时，若其没有“homolive”标记，你可令其获得一个，然后防止此伤害。',
 			hundunliandong:'混沌联动',
 			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有四种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有“homolive”标记的角色视为同一势力',
-			hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强制弃牌</span>',
-			
+			hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
+
+			ShirayukiMishiro: '白雪深白',
+			tianyi: '梦幻天衣',
+			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张装备牌。',
+			nveyu: '甜言虐语',
+			nveyu_info: '锁定技 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
+			nveyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+		
 			Siro: '电脑少女小白',
 			zhongxinghezou: '众星合奏',
 			zhongxinghezou_info: '每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12，你获得亮出牌令你使用的牌无效；不小于12，你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12，你摸一张牌并令亮出牌的角色回复1点体力。',
 			zhongxinghezou_append:'<span style="font-family: LuoLiTi2;color: #dbb">通过指定队友或自己，实现一回合出多次【杀】和摸牌</span>',
 			xiugong: '天道宿宫',
 			xiugong_info: '出牌阶段开始时，你可以猜测一名其他角色手牌中锦囊牌的数量并令其展示手牌，若猜测正确，你摸一张牌并令你本回合的『众星合奏』增加等量次数上限。',
-			xiugong_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：观看手牌 额外摸牌</span>',
+			xiugong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：观看手牌 额外摸牌 难上手</span>',
 
 			Bacharu: '巴恰鲁',
 			zuodun: '我身作盾',
@@ -2004,13 +2011,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yipengyidou_append:'<span style="font-family: LuoLiTi2;color: #dbb">通过与队友拼点，多次使用关键牌</span>',
 			renleiguancha:'人类观察',
 			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',
-			renleiguancha_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：额外摸牌</span>',
+			renleiguancha_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：额外摸牌</span>',
 			
 			KaguyaLuna:'辉夜月',
 			KaguyaLuna_info:'辉夜月',
 			jiajiupaidui:'假酒派对',
 			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
-			jiajiupaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：白嫖【酒】 强制弃牌</span>',
+			jiajiupaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：白嫖【酒】 强制弃牌</span>',
 			kuangzuiluanwu:'狂醉乱舞',
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以视为使用了一张目标数为X的【杀】，你每因此造成一次伤害，便扣减1点体力上限。（X为你本回合使用【酒】的次数）',
 
@@ -2021,6 +2028,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chanbing_info: '锁定技 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
 			buyu: '不渝',
 			buyu_info: '一名角色死亡时，你可以将其所有牌置于武将牌上并获得其的一个技能直到你下次以此法获得技能。',
+			buyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 			
 			huangtu: '颂恩',
 			huangtu_info: '锁定技 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',

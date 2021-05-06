@@ -3417,6 +3417,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.addTempSkill('re_luecai_used','phaseUseEnd')
 				},
 				ai:{
+					threaten:1.8,
 					order:4,
 					result:{
 						target:function(player,target){
@@ -5641,7 +5642,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_KizunaAI: '新·绊爱',
 			re_ailian: '爱冀',
 			re_ailian_info: '当你受到伤害后或出牌阶段限一次，你可以将任意张手牌交给一名其他角色。当你于一个阶段内以此法给出第二张牌时，你可以视为使用一张基本牌。',
-			re_ailian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌</span>',
+			re_ailian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌</span>',
 
 			re_YuNi: '新·YuNi',
 			re_shengcai: '声彩',
@@ -5664,7 +5665,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yayun: '押运',
 			laohuji: '老虎机',
 			yayun_info: '轮次技 在合适的时机，你可以弃置所有手牌，连续判定三次，每有一张判定牌花色包含于弃牌中，你便摸一张牌；若三次判定结果均为同一花色，你额外摸三张牌。',
-			yayun_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：赌狗</span>',
+			yayun_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：赌狗</span>',
 			jidao: '极道',
 			jidao_info: '你可以防止对其他角色造成的伤害，改为令其发动一次『押运』。',
 
@@ -5688,14 +5689,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MiraiAkari: '新·未来明',
 			duanli: '断离',
 			duanli_info: '出牌阶段限一次，你可以弃置所有手牌，然后你于回合结束时摸等量的牌。',
-			duanli_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：制衡</span>',
+			duanli_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡</span>',
 			qingmi: '情迷',
 			qingmi_info: '其他角色使用【桃】后，可以令你摸一张牌。',
 
 			re_NekomiyaHinata: '新·猫宫日向',
 			yingdan: '盈弹',
 			yingdan_info: '你可以使用一张【杀】，视为使用了一张【闪】或【无懈可击】。若此【杀】的点数不大于你的攻击范围，则这些牌均不触发技能时机。',
-			yingdan_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强化出杀</span>',
+			yingdan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀</span>',
 			tianzhuo: '舔镯',
 			tianzhuo_info: '当其他角色死亡时，你可以获得其所有牌。',
 
@@ -5706,7 +5707,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_Siro: '新·小白',
 			lingsi: '灵思',
 			lingsi_info: '出牌阶段限一次，你可以摸两张牌然后弃两张牌。你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。',
-			lingsi_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：制衡</span>',
+			lingsi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡</span>',
 
 			re_Nekomasu: '新·ねこます',
 			re_dianyin: '承志',
@@ -5772,6 +5773,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_LizeHelesta: '新·莉泽',
 			yubing: '语冰',
 			yubing_info: '你使用基本牌或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
+			yubing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
 			re_AngeKatrina: '新·安洁',
 			akxiaoqiao: '小巧',
@@ -5808,6 +5810,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_TokinoSora: '新·时乃空',
 			re_taiyangzhiyin:'阳语',
 			re_taiyangzhiyin_info:'你使用牌指定目标时，若此牌点数大于10，你可选择一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
+			re_taiyangzhiyin_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
 			re_RobokoSan:'新·萝卜子',
 			re_zhanxie:'战械',
@@ -5818,6 +5821,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ShirakamiFubuki: '新·白上吹雪',
 			re_yuanlv:'狐虑',
 			re_yuanlv_info:'每回合限一次。你使用锦囊后或受到伤害后，你可以摸三张牌，然后将两张牌置于牌堆顶。',
+			re_yuanlv_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 			re_jinyuan:'边援',
 			re_jinyuan_info:'出牌阶段，你可以弃一张牌令一名其他角色摸一张牌，然后其可以立即使用那张牌。',
 			
@@ -5838,6 +5842,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_SakuraMiko: '新·樱巫女',
 			huangyou: '黄油',
 			huangyou_info: '出牌阶段，你可以弃置两张红色牌摸三张牌或回复1点体力，然后判定一次，若不为♥，本回合不能再发动此技能。',
+			huangyou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：赌狗</span>',
 			qidao: '祈祷',
 			qidao_info: '当一张判定牌生效前，你可以弃一张牌重新判定。',
 
@@ -5848,10 +5853,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_AkaiHaato: '新·赤井心',
 			xinchixin: '赤心',
 			xinchixin_info: '当有本回合未以此技能获得的♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
+			xinchixin_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：回收关键牌</span>',
 
 			re_NakiriAyame: '新·百鬼绫目',
 			guiren: '鬼刃',
 			guiren_info: '你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。',
+			guiren_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 			
 			re_MurasakiShion: '新·紫咲诗音',
 			anshu: '暗术',
@@ -5870,6 +5877,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			juebi_info: '在你未受到伤害的回合，你可以将非基本牌当【闪】使用或打出；你受到伤害后，可以令本回合下一次造成的伤害+1。',
 			zhanhou: '战吼',
 			zhanhou_info: '出牌阶段开始时/其他角色阵亡时，你可以受到1点伤害/回复1点体力，视为使用一张【顺手牵羊】。',
+			zhanhou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 		
 			re_SpadeEcho: '新·黑桃影',
 			qinglve: '轻掠',
@@ -5880,7 +5888,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ŌzoraSubaru: '新·大空昴',
 			cejing: '策竞',
 			cejing_info: '一名角色的回合结束时，若其于此回合未造成伤害，你可以弃一张牌令其执行一个指定的额外阶段。此阶段结束时，你与其各摸等同本阶段造成伤害数的牌，若未因此摸牌，本轮此技能失效。',
-			cejing_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：辅助</span>',
+			cejing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：辅助</span>',
 
 			re_TsunomakiWatame: '新·角卷绵芽',
 
@@ -5893,10 +5901,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_InuyamaTamaki: '新·犬山玉姬',
 			re_hundunliandong: '混沌联动',
 			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
+			re_hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
 			
 			re_KaguraMea: '新·神乐めあ',
 			re_luecai: '奉纳',
 			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
+			re_luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高嘲讽</span>',
 			re_xiaoyan: '嚣言',
 			re_xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。',
 
@@ -5919,7 +5929,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_DoumyoujiHaruto: '新·道明寺晴翔',
 			shengfu: '胜负',
 			shengfu_info: '每轮每项限一次，当你需要使用【决斗】/【无懈可击】时，你可以与目标/来源拼点，赢则视为使用之，没赢则不能使用牌直到回合结束。你的拼点牌亮出后，你可以令一方收回黑色拼点牌，改用牌堆顶牌代替。',
-			shengfu_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：无损拼点</span>',
+			shengfu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点</span>',
 			wanbi: '完璧',
 			wanbi_info: '当你抵消其他角色的牌后，若其手牌数不小于你，你可以获得被抵消的牌。',
 
@@ -5929,6 +5939,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huixiang: '绘象',
 			huixiang_equip: '绘象',
 			huixiang_info: '出牌阶段或结束阶段，你可以选择场上的一张非宝物装备牌并交给拥有者一张牌，若你对应装备栏没有牌，你视为装备之直到下次发动此技能。被选择的装备进入弃牌堆时，你摸一张牌。',
+			huixiang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			re_AZKi: '新·AZKi',
 			WHiTE: 'WHiTE',

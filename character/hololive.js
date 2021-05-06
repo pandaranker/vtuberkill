@@ -30,6 +30,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
 			/**大神澪 */
 			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
+			/**大脸猫 */
+			NekomataOkayu:['female','holo',3,['fantuan','shengang']],
 			
 			/**OG诸人 */
 			Civia:['female','holo',3,['kuangxin','danyan','qingjie'],['guoV']],
@@ -45,6 +47,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
 				hololive_2and3:['MinatoAqua','UsadaPekora'],
 				OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri','Rosalyn'],
+				
+				HOLOEN:['GawrGura','NinomaeInanis'],
 			}
 		},
 		characterIntro:{
@@ -2068,7 +2072,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.cards){
 						var target = trigger.player;
 						player.$giveAuto(result.cards,target);
-						target.gain(result.cards,player,'gain2').gaintag.add('youyishiyue');
+						target.gain(result.cards,player).gaintag.add('youyishiyue');
 						player.storage.youyi = result.cards[0];
 						target.storage.youyishiyue = result.cards[0];
 						target.addTempSkill('youyishiyue','phaseAfter');
@@ -3531,6 +3535,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			TokinoSora:'时乃空',
 			taiyangzhiyin:'太阳之音',
 			taiyangzhiyin_info:'你使用牌指定目标时，此牌点数每比10大1点，你便可选择不重复的一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
+			taiyangzhiyin_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制命中 强化出杀</span>',
 			renjiazhizhu:'仁家之主',
 			renjiazhizhu_info:'主公技 你的回合开始时，其他同势力角色可以展示并交给你一张牌，本回合这些点数的牌点数均改为J。',
 			renjiazhizhu_tag:'仁家之主',
@@ -3540,6 +3545,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			juhun_info:'锁定技 每回合有角色首次受到伤害后，将牌堆顶牌置于你武将牌上。每轮开始时，你获得武将牌上所有牌。',
 			meilu:'没露',
 			meilu_info:'锁定技 准备阶段，若你的手牌数比体力值多三或以上，你翻面。当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻至正面时，你回复 1 点体力。',
+			meilu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀</span>',
 
 			AkaiHaato:'赤井心',
 			liaolishiyan:'料理实验',
@@ -3548,20 +3554,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liaolishiyan2_info:'出牌阶段限一次，你可以重铸与当回合“料理实验”花色相同的两张牌令一名角色执行对应效果。♦~重铸一张牌，♣~弃置一张牌，♥~令赤井心回复 1 点体力，♠~失去 1 点体力。',
 			momizhiyan:'抹蜜之言',
 			momizhiyan_info:'当你使用牌指定目标后，你可弃置一张牌令其中一名目标执行弃置牌花色在“料理实验”的对应效果。每回合限一次。',
+			momizhiyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			NatsuiroMatsuri:'夏色祭',
 			huxi1:'呼吸',
 			huxi1_info:'出牌阶段限一次，你可以令攻击范围内的一名其他角色与你同时展示一张手牌并交换，若你获得了红色牌，你可以摸一张牌并令你本回合使用的下一张牌不受距离与次数限制；若没有人获得红色牌，你失去 1 点体力。',
+			huxi1_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌</span>',
 			lianmeng:'连梦',
 			lianmeng_info:'锁定技 当你使用武器牌或造成伤害后，你需对本回合未成为过“呼吸”目标中距离你最近的角色立即发动一次“呼吸”。当你于回合外获得其他角色的牌后，弃置你装备区的防具牌。',
+			lianmeng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			RobokoSan:'萝卜子',
 			gaonengzhanxie:'高能战械',
 			gaonengzhanxie_info:'锁定技 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)',
-			gaonengzhanxie_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：多次出杀</span>',
+			gaonengzhanxie_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀</span>',
 			ranyouxielou:'燃油泄漏',
 			ranyouxielou_info:'锁定技 你受到属性伤害时，来源需选择至少一项：改为令你回复等量体力，或令你获得来源牌。你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。',
-			ranyouxielou_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：属性伤害减免</span>',
+			ranyouxielou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：属性伤害减免</span>',
 
 			ShirakamiFubuki:'白上吹雪',
 			baihuqingguo:'白狐倾国',
@@ -3602,7 +3611,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kuali_jieshu_info: '结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。每回合限一次。',
 			youyi: '友谊誓约',
 			youyi_info: '每轮限一次，其他角色的回合开始时，你可以展示并交给其一张“誓约”牌。本回合内，当其造成伤害时，你可令其将“誓约”牌交给你以防止之。该回合结束时，其可以弃置“誓约”牌令你或其回复1点体力。',
-			youyi_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌 限制敌方输出</span>',
+			youyi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌 限制敌方输出</span>',
 			youyishiyue: '誓约',
 			youyishiyue_info: '友谊誓约生效中',
 			youyishiyue_rec_info: '弃置“誓约”牌，令你或湊阿库娅回复一点体力。',
@@ -3612,6 +3621,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pekoyu_info: '回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou: '自煲自足',
 			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
+
+						
+			NekomataOkayu: '猫又小粥',
+			fantuan: '安心饭团',
+			fantuan_info: '你使用一张延时锦囊牌时，可以令一名角色回复一点体力并摸一张牌。',
+			shengang: '神冈家计',
+			shengang_info: '每两轮每项限一次，你可以在自己与相邻角色判定区卡牌/使用实体牌结算后获得之。',
+			shengang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：回收关键牌</span>',
+
 
 			UruhaRushia: '润羽露西娅',
 			NakiriAyame: '百鬼绫目',
@@ -3633,7 +3651,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SpadeEcho: '黑桃影',
 			hangao: '函告',
 			hangao_info: '出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。',
-			hangao_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：传递关键牌 挑衅</span>',
+			hangao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌 挑衅</span>',
 			yinglve: '影掠',
 			yinglve_info: '结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你的攻击范围+X且你使用【顺手牵羊】可选择的目标数为X。（X为你废除的装备栏数）',
 			feichu_equip1:'废除',
@@ -3669,7 +3687,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bianlan_info: '当你使用牌指定目标后，你可以获得一种花色的“书”。然后你可以令其中一名本回合未因此摸牌的目标摸一张牌。',
 			futian: '覆天',
 			futian_info: '<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与“书”，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。',
-			futian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：爆发</span>',
+			futian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 
 		},
 	};

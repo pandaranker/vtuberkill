@@ -11870,10 +11870,13 @@
 				},
 				phase:function(){
 					"step 0"
+					event.trigger('phaseNext');
 					player.phaseZhunbei();
 					"step 1"
+					event.trigger('phaseNext');
 					player.phaseJudge();
 					"step 2"
+					event.trigger('phaseNext');
 					player.phaseDraw();
 					if(!player.noPhaseDelay){
 						if(player==game.me){
@@ -11884,8 +11887,10 @@
 						}
 					}
 					"step 3"
+					event.trigger('phaseNext');
 					player.phaseUse();
 					"step 4"
+					event.trigger('phaseNext');
 					game.broadcastAll(function(){
 						if(ui.tempnowuxie){
 							ui.tempnowuxie.close();
@@ -11897,6 +11902,7 @@
 					//delete player.using;
 					delete player._noSkill;
 					"step 5"
+					event.trigger('phaseNext');
 					player.phaseJieshu();
 				},
 				phaseJudge:function(){
@@ -22374,6 +22380,7 @@
 				isFriendOf:function(player){
 					if(get.mode()=='guozhan'){
 						if(this==player) return true;
+						if(this.storage.yexinjia_friend==player||player.storage.yexinjia_friend==this) return true;
 						if(this.identity=='unknown'||this.identity=='ye') return false;
 						if(player.identity=='unknown'||player.identity=='ye') return false;
 						return this.identity==player.identity;
@@ -28753,6 +28760,8 @@
 			qun:'metal',
 			western:'thunder',
 			key:'key',
+			jin:'thunder',
+			ye:'thunder',
 			holo:'soil',
 			upd8:'metal',
 			vtuber:'metal',
@@ -44003,11 +44012,11 @@
 									dialog.buttons[i].classList.add('nodisplay');
 								}
 								else if(dialog.currentgroup=='double'){
-									if(dialog.buttons[i]._changeGroup) dialog.buttons[i].classList.remove('nodisplay');
+									if(dialog.buttons[i]._changeGroup||dialog.buttons[i].group=='ye') dialog.buttons[i].classList.remove('nodisplay');
 									else dialog.buttons[i].classList.add('nodisplay');
 								}
 								else{
-									if(dialog.buttons[i]._changeGroup||dialog.buttons[i].group!=dialog.currentgroup){
+									if(dialog.buttons[i]._changeGroup||dialog.buttons[i].group=='ye'||dialog.buttons[i].group!=dialog.currentgroup){
 										dialog.buttons[i].classList.add('nodisplay');
 									}
 									else{

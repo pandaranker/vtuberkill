@@ -11,7 +11,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**gz安洁 */
 			gz_AngeKatrina:['female','nijisanji',4,['gz_lianjin']],
 			/**向晚 */
-			gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu']],
+			gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu'],['guoV']],
 			/**兔妈妈 */
 			gz_InabaHaneru:['female','upd8',3,['gz_jiance','yingqi']],
 			/**雪花菈米 */

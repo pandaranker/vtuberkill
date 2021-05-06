@@ -3018,6 +3018,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
 			tinenghuifu1_info:'锁定技 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
+			tinenghuifu1_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 			dianmingguzhen:'电鸣鼓震',
 			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
 			dianmingguzhen_append:'<span style="font-family: LuoLiTi2;color: #dbb">可以通过将自己的装备转移给队友，实现瞬间爆发</span>',
@@ -3026,6 +3027,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozhaotuji:'魔爪突击',
 			mozhaotuji_DrawOrStop:'魔爪突击',
 			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。',
+			mozhaotuji_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀</span>',
 
 			IenagaMugi:'家长麦',
 			fengxue:'奋学',
@@ -3034,6 +3036,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
 			cangxiong:'藏兄',
 			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将其从游戏除外直到其回合开始。',
+			cangxiong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌 保护友方</span>',
 			
 			MitoTsukino:'月之美兔',
 			MitoTsukino_info:'月之美兔',
@@ -3074,12 +3077,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhenyin_info: '你造成伤害后，可以将目标装备区或判定区的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
 			saqi: '飒气',
 			saqi_info: '准备阶段，你可以增加（至多到 5 ）或扣减 1 点体力上限，若选择扣减，你获得以下效果直到你的下回合开始：你使用牌结算后，所有其他角色本回合无法使用该花色的牌；发动“震音”的条件改为“你使用牌指定唯一目标后”。',
-			saqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：改变体力上限 爆发</span>',
+			saqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：改变体力上限 爆发</span>',
 			
 			UshimiIchigo: '宇志海莓',
 			kuangbaoshuangren: '狂暴双刃',
 			kuangbaoshuangren_info: '锁定技 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
-			kuangbaoshuangren_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强化出杀</span>',
+			kuangbaoshuangren_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀</span>',
 			guangsuxiabo: '光速下播',
 			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
 			
@@ -3095,13 +3098,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			YagamiKaruta: '山神歌流多',
 			suisi: '髓思',
 			suisi_info: '锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
+			suisi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高防御</span>',
 			liefeng: '猎风',
 			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。',
 			
 			YukishiroMahiro:'雪城真寻',
 			jiaoming: '骄名',
 			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
-			jiaoming_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：挑衅</span>',
+			jiaoming_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 			changhe: '唱和',
 			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：摸两张牌；或回复1点体力。',
 
@@ -3116,7 +3120,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
 			jiaku: '生笹',
 			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
-			jiaku_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：无损拼点</span>',
+			jiaku_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点</span>',
 
 
 			AibaUiha: '相羽初叶',

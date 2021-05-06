@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.72',
+	version:'1.9.101.73',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.72小更新：新增角色Hiiro、兰音、蜜球兔（测试包），语部纺、国战oto（国战），早稻叽削弱（一技能摸牌上限-1）、如月koyori加强（觉醒技改为摸至体力上限），早稻叽（纵合）与Froot（禁魅）增加配音，修复大量bug（比如拉布里和红晓音的联机bug，诗音醒迟出杀无视次数限制bug，大头菜装备时可以弃置自身bug），优化声明效果的显示，优化新手引导，继续完善了国战内容（现在可以进入该模式测试了）',
+		'101.73小更新：新增角色Veibae（测试包），帕里加强，修复bug（比如兰音的bug），优化技能特性，继续完善了国战内容（增加野心家内容、神乐mea势力改为“野”，现在可以进入该模式测试了）',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），AS全员补全，斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -20,7 +20,7 @@ window.noname_update={
 		'character/huajing.js',
 		'character/sololive.js',
 		'card/huajing.js',
-		'card/longlaoguan.js',
+		//'card/longlaoguan.js',
 		'card/yingbian.js',
 		// 'card/extra.js',
 		// 'card/sp.js',
@@ -81,7 +81,7 @@ window.noname_update={
 		'mode/boss.js',
 		'game/game.js',
 		//'game/NoSleep.js',
-		'game/config.js',
+		//'game/config.js',
 		'game/package.js',
 		'game/asset.js',
 		'game/source.js',

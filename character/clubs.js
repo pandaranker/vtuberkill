@@ -20,14 +20,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu']],
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
+			/**艾琳 */
 			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 			Yomemi:['female','eilene',3,['mokuai','yaoji']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			/**花谱 */
 			Kaf:['female','qun',3,['liuhua','yishi']],
+			/**理芽 */
+			Rim: ['female','qun',4,['shenghua','zhanchong'],],
 			/**P家诸人 */
-			Paryi:['male','paryi',4,['tiantang','haoren'],['forbidai']],
+			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['yuxia','lianjue','changxiang'],['zhu']],
@@ -2982,12 +2985,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurokawaPresents: 'Kurokawa Presents',
 
 
-			Yomemi:'ヨメミ',
+			Yomemi:'Yomemi',
+			Yomemi_ab:'ヨメミ',
 			mokuai:'模块搭载',
 			mokuai_info:'锁定技 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。',
 			yaoji:'致命药剂',
 			yaoji_info:'出牌阶段限一次，你可以选择一名角色，弃置任意张类型不同牌，然后亮出牌堆顶等量牌。目标角色需依次选择：弃置与亮出牌等量且花色相同的牌；或受到你造成的1点伤害。',
-			yaoji_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：直接伤害</span>',
+			yaoji_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：直接伤害</span>',
+
+			Eilene: '艾琳',
+			duanfu: '断缚',
+			duanfu_info: '你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。',
+			daichang: '贷偿',
+			daichang_info: '出牌阶段限一次，你可以扣减一点体力上限并摸X张牌，然后你于本阶段内造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
+			daichang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			hongtu: '宏图',
+			hongtu_info: '<font color=#faa>限定技</font> 你的出牌阶段结束时，若你处于横置状态且体力为上限：你可以亮出牌堆底牌并使用之，然后摸一张牌，重复此操作直到你无法使用亮出牌。',
+			hongtu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
@@ -3000,10 +3014,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
 			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为“财布”。准备阶段，若你的武将牌上有“财布”，你可以移去任意数量的”财布“摸等量的牌。',
-			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：顺手牵咩</span>',
+			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：顺手牵咩</span>',
 			xiaoyan: '嚣言',
 			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
-			xiaoyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强命 破军</span>',
+			xiaoyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制命中 破军</span>',
 			caibu: '财布',
 
 
@@ -3016,7 +3030,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kaguraNaNa: '神乐七奈',
 			DDzhanshou: 'DD斩首',
 			DDzhanshou_info: '当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：手牌数不少于你；体力值不少于你；装备区牌数不少于你。然后若该角色没有手牌，其摸一张牌。',
-			DDzhanshou_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：连营 破军</span>',
+			DDzhanshou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：连营 破军</span>',
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
 			xinluezhili_info: '主公技 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
@@ -3044,13 +3058,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhangjinghua: '张京华',
 			xiemen: '斜门',
 			xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
+			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：破军</span>',
 			jiai: '集爱',
 			jiai_info: '你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
 
 			XiaDi: '下地',
 			yinliu: '引流',
 			yinliu_info: '出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
-			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：赌狗</span>',
+			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：赌狗</span>',
 			dunzou: '遁走',
 			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以令你于本回合视为不存在。',
 			dunzou_enable: '遁走',
@@ -3060,13 +3075,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
-			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：卖血</span>',
+			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 
 			
 			ShizukuLulu: '雫るる',
 			duixian: '稽杀',
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
-			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：强化出杀 卖血</span>',
+			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀 卖血</span>',
 			gutai: '守峡',
 			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',
 
@@ -3075,11 +3090,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
 			yishi: '遗世',
 			yishi_info: '锁定技 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
+			yishi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			
+			Rim: '理芽',
+			shenghua: '生花',
+			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',
+			zhanchong: '绽虫',
+			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
+			zhanchong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发 易上手</span>',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',
 			shushi: '书史',
 			shushi_info: '你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）',
+			shushi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：观星</span>',
 			zengzhi: '增殖',
 			zengzhi_info: '当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。',
 			
@@ -3102,10 +3126,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			NoiR: 'NoiR',
 			mozouqiyin: '默奏起音',
-			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
+			mozouqiyin_info: '其他角色的回合开始时，你可使用一张牌，若未造成伤害，本回合其跳过弃牌阶段且不能使用点数（小）于此牌的牌。',
 			budingpaidui: '布丁派对',
 			budingpaidui_info: '当你使用一张牌后，若点数（小）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。',
-			budingpaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">技能标签：大连营</span>',
+			budingpaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：大连营</span>',
 
 			MinamiNami: '美波七海',
 			Noracat: '野良喵',

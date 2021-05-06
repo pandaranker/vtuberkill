@@ -238,7 +238,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					target.chooseControl('dialogcontrol',['弃置装备区所有牌','受到海样伤害']).set('ai',function(){
+					target.chooseControl('dialogcontrol',['弃置装备区所有牌','受到海洋伤害']).set('ai',function(){
 						var evt=_status.event.getParent();
 						if(evt.player.hasSkillTag('notricksource')) return 1;
 						if(evt.player.hasSkillTag('noocean')) return 1;
@@ -1313,7 +1313,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			haixiao: '海啸',
 			haixiao_info: '出牌阶段，对所有其他角色使用，目标依次选择一项：打出一张颜色相同的牌，或受到你造成的1点海洋伤害。',
 			langyong: '浪涌',
-			langyong_info: '出牌阶段，对一名装备区里有牌的其他角色使用，其选择一项：弃置装备区里所有的牌，或受到你造成的1点海洋伤害。',
+			langyong_info: '出牌阶段，对一名装备区里有牌的角色使用，其选择一项：弃置装备区里所有的牌，或受到你造成的1点海洋伤害。',
 			chenmo: '沉没',
 			chenmo_info: '出牌阶段，对一名角色使用，移除目标的至多三张牌直到回合结束，若因此移除了所有手牌，其摸一张牌。',
 			chenjing: '沉静',
