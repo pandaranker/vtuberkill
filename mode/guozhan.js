@@ -1209,47 +1209,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			//gz兔头
 			gz_bingdielei:{
-				group:'gz_bingdielei_on',
-				subSkill:{
-					on:{
-						trigger:{player:'damageAfter',source:'damageAfter'},
-						priority:99,
-						silent:true,
-						popup: false,
-						forced:true,
-						filter:function(event,player){
-							return !player.hasSkill('gz_bingdielei_anotherPhase');
-						},
-						direct:true,
-						content:function(){
-							"step 0"
-							if(trigger.delay==false) game.delay();
-							"step 1"
-							player.markSkill(event.name);
-							player.addTempSkill('gz_bingdielei_anotherPhase');
-						},
-					},
-					anotherPhase:{
-						audio:'bingdielei',
-						trigger:{global:'phaseEnd'},
-						marktext: '并',
-						mark:true,
-						round:1,
-						intro: {
-							content:'当前回合结束后若本轮没有获得过，可以获得一个额外回合',
-							name:'并蒂恶蕾',
-						},
-						onremove:true,
-						prompt2: '获得一个额外回合',
-						filter:function(event,player){
-							return player.getHistory('damage').length;
-						},
-						content:function(){
-							player.unmarkSkill(event.name);
-							player.logSkill(event.name);
-							player.insertPhase();
-						},
-					},
+				audio:'bingdielei',
+				trigger:{global:'phaseEnd'},
+				round:1,
+				filter:function(event,player){
+					return player.getHistory('damage').length&&player.getHistory('sourceDamage').length;
+				},
+				content:function(){
+					player.insertPhase();
 				},
 			},
 			//gz海牛
