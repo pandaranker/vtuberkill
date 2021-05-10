@@ -13,8 +13,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
-			/**异世界情绪 */
-			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
 			
 			/**喵喵人 */
 			Nyanners: ['female','qun',3,['shenghuo','dipo'],['yingV']],
@@ -44,6 +42,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			/**东爱璃 */
 			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
+			/**YY */
+			yizhiYY: ['male','psp',4,['bianshi'],['guoV']],
 
 			/**机萪 */
 			jike: ['female','qun',3,['qianjiwanbian'],['guoV']],
@@ -1369,8 +1369,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					effect:{
-						target:function(card,player,target,current){
-							if(get.name(card)=='tiesuo') return [1,2];
+						player:function(card,player,target,current){
+							if(get.name(card)=='tiesuo') return [1,1];
 						}
 					}
 				}
@@ -1621,9 +1621,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				filter:function(event,player){
 					return event.player!=player&&player.countCards('h')>0;
-				},
-				check:function(event,player){
-					return get.attitude(player,event.player)<0&&player.countCards('h')<=1;
 				},
 				content:function(){
 					'step 0'
@@ -3432,7 +3429,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							if(trigger.name=='phaseDiscard'){
 								player.logSkill('pojie');
-								if(!event.num)	event.num = player.storage.pojie;
+								if(!trigger.num)	trigger.num = player.storage.pojie;
 							}
 							'step 1'
 							player.storage.pojie = 0;
@@ -6054,6 +6051,64 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.target.phaseUse();
 				},
 			},
+			//YY
+			bianshi:{
+				trigger:{global:'phaseBegin'},
+				priority:23,
+				direct:true,
+				filter:function(event,player){
+					return event.player.hp>=player.hp&&player.countCards('h',function(card){
+						return !card.hasGaintag('ming_');
+					});
+				},
+				content:function(){
+					'step 0'
+					var check = get.attitude(player,trigger.player)<=0&&trigger.player.countCards('h')>=2;
+					player.chooseCard('h',get.prompt2('bianshi'),function(card){
+						return !card.hasGaintag('ming_');
+					}).set('ai',function(card){
+						if(_status.event.check&&get.type2(card)!='equip')	return 8-get.value(card)+Math.random();
+						else	return 0;
+					}).set('check',check);
+					'step 1'
+					if(result.bool){
+						event.target = trigger.player;
+						player.showCards(result.cards,'『辨识』亮出手牌')
+						player.addGaintag(result.cards,'ming_bianshi');
+						player.logSkill('bianshi',event.target);
+						event.target.storage.bianshi2 = get.type2(result.cards[0]);
+						event.target.addTempSkill('bianshi2');
+					}
+				}
+			},
+			bianshi2:{
+				trigger:{global:['loseEnd','cardsDiscardEnd']},
+				filter:function(event,player){
+					var record = player.storage.bianshi2;
+					return event.cards&&event.cards.filter(function(card){
+						return get.position(card,true)=='d'&&get.type2(card)==record;
+					}).length>0;
+				},
+				forced:true,
+				mark:true,
+				intro:{content:'指定的类型：$'},
+				onremove:['bianshi','bianshi2'],
+				content:function(){
+					'step 0'
+					if(player.storage.bianshi&&player.storage.bianshi>=2){
+						player.chooseToDiscard('『辨识』弃牌','h',true);
+						event.finish();
+					}else{
+						player.draw();
+					}
+					'step 1'
+					if(!player.storage.bianshi)	player.storage.bianshi = 1;
+					else	player.storage.bianshi++;
+					'step 2'
+					if(player.storage.bianshi===2)	player.loseHp();
+				}
+			},
+			ming_bianshi:{},
 			P_SP:{
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
@@ -7630,7 +7685,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						target.chooseToUse(function(card,player,event){
 							if(get.name(card)!='sha') return false;
 							return lib.filter.filterCard.apply(this,arguments);
-						},'『双星』：对'+get.translation(player)+'使用一张杀，或令其获得你的一张牌').set('targetRequired',true).set('complexSelect',true).set('filterTarget',function(card,player,target){
+						},'『星徊』：对'+get.translation(player)+'使用一张杀，或令其获得你的一张牌').set('targetRequired',true).set('complexSelect',true).set('filterTarget',function(card,player,target){
 							if(target!=_status.event.sourcex&&!ui.selected.targets.contains(_status.event.sourcex)) return false;
 							return lib.filter.targetEnabled2.apply(this,arguments);
 						}).set('sourcex',player);
@@ -8370,12 +8425,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuci: '欲词',
 			yuci_info: '锁定技 若场上的其他角色均为同一性别，你每个阶段首次摸牌时额外摸一张。',
 
-			IsekaiJoucho: 'ヰ世界情绪',
-			baiqing: '白情',
-			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
-			shuangxing: '双星',
-			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
-
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
 			lianyin_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以与其各摸一张牌。（X为你的体力上限）',
@@ -8433,6 +8482,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiace_info: '你成为黑色牌的目标时，可以将一张与之同花色的手牌交给来源，为此牌增加或减少一个目标。若为你本回合首次发动“铗策”，你于此牌结算后获得之。',
 			xiangying: '襄英',
 			xiangying_info: '出牌阶段限一次，你可将任意红色牌交给一名手牌数小于你的角色，然后若其手牌数大于你，其展示手牌，你摸其中红黑色牌数差的牌。',
+			xiangying_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 			
 			Menherachan: '七濑胡桃',
 			shangbei: '裳备',
@@ -8646,12 +8696,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			pojie_info: '回合内，一名角色装备区内的牌数变化时，你可以摸一张牌。弃牌阶段，你需弃置的牌数改为本回合发动此技能的次数。',
 			dazhen: '大振',
 			dazhen_info: '出牌阶段限一次，你可将你武器栏的牌移动至其他角色武器栏（可替换原武器），然后其弃置你手牌数与手牌上限之差的牌，若不足，受到你造成的1点伤害。',
+			dazhen_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发 破军</span>',
 
 			Shaun: '勺',
 			juxiao: '句销',
 			juxiao_info: '当你受到伤害后，可以令至多两名角色各摸一张牌，因此摸牌的角色不能使用【杀】直到回合结束。',
 			shenyan: '神言',
 			shenyan_info: '出牌阶段限一次，你可以展示并弃置手牌中一种牌名的牌，摸等量的牌。然后你可以视为使用一张名称长度等同本阶段此技能弃置牌花色数的锦囊牌；否则若你弃置了【杀】，重置此技能。',
+
+			yizhiYY: '亦枝YY',
+			bianshi: '辨识',
+			bianshi2: '辨识',
+			ming_bianshi: '辨识',
+			bianshi_info: '体力值不少于你的角色的回合开始时，你可以亮出一张手牌：直到回合结束，每当与此牌类别相同的牌进入弃牌堆时，该角色摸一张牌。以此法获得第二张牌后，该角色失去一点体力并令其因“辨识”的摸牌改为弃牌。',
 
 			Pudding: '步玎',
 			tianlve: '甜略',
@@ -8666,6 +8723,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shouru_info: '每回合限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。',
 			chonghuang: '崇皇',
 			chonghuang_info: '<font color=#dac>限定技</font> 当你体力值变为1时，你可以扣减1点体力上限，然后发现一次P-SP角色，本轮次内你视为拥有其所有技能。',
+			chonghuang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 			yinzun: '隐尊',
 			yinzun_info: '<font color=#dac>主公技</font> 你的『崇皇』可以在同势力角色体力变为1时发动。',
 			

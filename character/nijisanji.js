@@ -3114,6 +3114,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nvjiangrouhao_info: '锁定技 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
 			yinlaiyaotang: '引徕药汤',
 			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
+			yinlaiyaotang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
 			SasakiSaku: '笹木咲',
 			tiaolian: '咆咲',

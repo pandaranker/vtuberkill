@@ -1084,10 +1084,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					player.chooseToCompare(target);
+					player.chooseToCompare(target).set('small',(get.recoverEffect(target,player,player)>get.recoverEffect(player,target,player)+1));
 					"step 1"
-					event.resultBool=result.bool;
-					event.loop=true;//循环一次（询问是否发动效果后）
+					event.resultWinner = result.winner;
+					event.loop=1;
+					if(!event.resultWinner){
+						event.player1 = player;
+						event.player2 = target;
+					}
+					else{
+						event.player1 = event.resultWinner;
+						if(event.resultWinner!=player)	event.player2 = player;
+						else if(event.resultWinner!=target)	event.player2 = target;
+					}
 					event.cards=[];
 					"step 2"
 					game.getGlobalHistory('cardMove',function(evt){
@@ -1095,19 +1104,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 						for(var i=0;i<evt.cards.length;i++){
 							var card=evt.cards[i];
-							if(get.type(card)!='equip'&&get.type(card)!='delay'&&!get.info(card).multitarget&&get.info(card).name!='shan'){
-								if((event.loop&&event.resultBool)||(!event.loop&&!event.resultBool)){
-									if(game.hasPlayer(function(current){
-										return player.canUse(card,current);
-									})){
-									event.cards.add(card);
+							if(get.type(card)!='equip'&&get.type(card)!='delay'){
+								if(event.loop){
+									if(event.player1.hasUseTarget(card)){
+										event.cards.add(card);
 									}
 								}
-								else if((event.loop&&!event.resultBool)||(!event.loop&&event.resultBool)){
-									if(game.hasPlayer(function(current){
-										return event.target.canUse(card,current);
-									})){
-									event.cards.add(card);
+								else{
+									if(event.player2.hasUseTarget(card)){
+										event.cards.add(card);
 									}
 								}
 							}
@@ -1117,7 +1122,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					else{
-						game.cardsGotoOrdering(event.cards).relatedEvent=event.getParent();
+						game.cardsGotoOrdering(event.cards);
 						var dialog=ui.create.dialog('一捧一逗',event.cards,true);
 						_status.dieClose.push(dialog);
 						dialog.videoId=lib.status.videoId++;
@@ -1131,19 +1136,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.dialog=dialog;
 					}
 					"step 3"
-					if(event.resultBool){
-						player.chooseCard(1,'he','是否将一张牌当其中一张牌打出?');
+					if(event.loop){
+						event.player1.chooseCard(1,'he','是否将一张牌当其中一张牌打出?');
 					}
 					else{
-						event.target.chooseCard(1,'he','是否将一张牌当其中一张牌打出?');
+						event.player2.chooseCard(1,'he','是否将一张牌当其中一张牌打出?');
 					}
 					"step 4"
 					if(result.bool){
-						console.log(result);
 						event.viewAsCards=result.cards;
-						if(event.resultBool){
+						if(event.loop){
 							game.log(player,'观看了','#y弃牌堆的牌');
-							var chooseButton=player.chooseButton(true,function(button){
+							var chooseButton=event.player1.chooseButton(true,function(button){
 								return get.value(button.link,_status.event.player);
 							}).set('dialog',event.dialog.videoId);
 							event.chooseButton=chooseButton;
@@ -1165,15 +1169,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						event.cardUse = result.links[0];
-						if(event.resultBool){
-							if(player.hasUseTarget(event.cardUse)){
-								//player.chooseUseTarget(result.links[0],true,false);
-								player.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
+						if(event.loop){
+							if(event.player1.hasUseTarget(event.cardUse)){
+								event.player1.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
 							}
 						}
 						else{
-							if(event.target.hasUseTarget(event.cardUse)){
-								event.target.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
+							if(event.player2.hasUseTarget(event.cardUse)){
+								event.player2.chooseUseTarget(result.links[0],event.viewAsCards,true,false).viewAs=true;
 							}
 						}
 					}
@@ -1189,20 +1192,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},event.dialog.videoId);
 					if(event.loop){
-						event.loop=false;
-						event.resultBool=!event.resultBool;
-						if(event.resultBool){
-							player.chooseBool('同样发动一次效果，或取消使对方回复一点体力').set('ai',function(){
+						event.loop--;
+						if(event.loop){
+							event.player1.chooseBool('将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
 								var player = _status.event.player;
-								var target = _status.event.getParent().target;
+								var target = _status.event.getParent().player2;
 								if(get.recoverEffect(target,player,player)>1)	return 0;
 								else return -0.2+Math.random();
 							});
 						}
 						else{
-							event.target.chooseBool('同样发动一次效果，或取消使对方回复一点体力').set('ai',function(){
+							event.player2.chooseBool('将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
 								var player = _status.event.player;
-								var target = _status.event.getParent().player;
+								var target = _status.event.getParent().player1;
 								if(get.recoverEffect(target,player,player)>1)	return 0;
 								else return -0.2+Math.random();
 							});
@@ -1216,7 +1218,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.goto(2);
 					}
 					else{
-						if(event.resultBool){
+						if(event.loop==2||(event.loop&&event.resultWinner==player)||(!event.loop&&event.resultWinner!=player)){
 							event.target.recover();
 						}
 						else{
@@ -2007,7 +2009,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaoxiXiaotao:'小希小桃',
 			XiaoxiXiaotao_info:'小希小桃',
 			yipengyidou:'一捧一逗',
-			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常单体锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
+			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
 			yipengyidou_append:'<span style="font-family: LuoLiTi2;color: #dbb">通过与队友拼点，多次使用关键牌</span>',
 			renleiguancha:'人类观察',
 			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',

@@ -375,7 +375,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			Paryi:['bingtang'],
 			Kano:['HanamaruHareru'],
 			kaguraNaNa:['SpadeEcho'],
-			KaguraMea:['InuyamaTamaki','InabaHaneru'],
+			KaguraMea:['InuyamaTamaki','InabaHaneru','MononobeAlice'],
 			TenkaiTsukasa:['Fairys'],
 		},
 		characterPack:{
@@ -1449,12 +1449,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:['useCardAfter','damageAfter']},
 				priority:123,
 				filter:function(event,player){
-					return player.countDiscardableCards(player,'h');
+					return player.countDiscardableCards(player,'he');
 				},
 				direct:true,
 				content:function(){
 					'step 0'
-					player.chooseToDiscard(get.prompt2('gz_shengcai')).set('ai',function(card){
+					player.chooseToDiscard(get.prompt2('gz_shengcai'),'he').set('ai',function(card){
 						var list=[get.color(card)];
 						var stats = 0;
 						game.getGlobalHistory('cardMove',function(evt){
@@ -2123,7 +2123,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 				},
-				group:'',
+				group:'gz_tiantang_clear',
 				subSkill:{
 					clear:{
 						trigger:{global:'roundStart'},
@@ -2131,7 +2131,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						forced:true,
 						content:function(){
-							player.storage.gz_tiantang=0;
+							player.storage.gz_tiantang = 0;
 						}
 					},
 				}
@@ -9619,7 +9619,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_xiemen_info: '你使用目标不仅为你的牌时，可令其他角色随机移除一张手牌直到回合结束。',
 
 			gz_yuxia: '玉箱',
-			gz_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中的一张置于牌堆顶。',
+			gz_yuxia_info: '每回合限一次，你可以将三张牌以任意顺序置于牌堆顶，视为使用了一张通常锦囊牌。',
 			gz_lianjue: '连崛',
 			gz_lianjue_info: '回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或将你下一次发动『玉箱』条件改为“任意张牌”。',
 

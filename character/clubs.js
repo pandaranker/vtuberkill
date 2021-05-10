@@ -25,10 +25,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Yomemi:['female','eilene',3,['mokuai','yaoji']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
+			
 			/**花谱 */
 			Kaf:['female','qun',3,['liuhua','yishi']],
 			/**理芽 */
 			Rim: ['female','qun',4,['shenghua','zhanchong'],],
+			/**异世界情绪 */
+			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
 			/**P家诸人 */
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -438,7 +441,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'damageEnd'},
 				filter:function(event,player){
 					if(event.player!=player&&event.getParent().player!=player)	return false;
-					return event.card&&get.type(event.card)=='trick'&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
+					return event.card&&event.getParent().name==event.card.name&&event.getParent().targets.contains(event.player)&&event.getParent().targets[event.getParent().targets.length-1]!=event.player;
 				},
 				check:function(event,player){
 					var shouxia = event.getParent().targets.splice(event.getParent().targets.indexOf(event.player));
@@ -448,11 +451,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					return effect<0;
 				},
+				logTarget:function(event){
+					var targets=  event.getParent().targets.slice();
+					return targets.splice(targets.indexOf(event.player));
+				},
 				content:function(){
-			//		if(!trigger.getParent(2).addedSkill)	trigger.getParent(2).addedSkill = [];
-			//		trigger.getParent(2).addedSkill.add('gutai');
-					var shouxia = trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
-					player.logSkill('gutai',shouxia)
+					trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
 				},
 			},
 			//Kaf
@@ -3081,7 +3085,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShizukuLulu: '雫るる',
 			duixian: '稽杀',
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
-			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀 卖血</span>',
+			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀 卖血 易上手</span>',
 			gutai: '守峡',
 			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',
 
@@ -3098,6 +3102,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhanchong: '绽虫',
 			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
 			zhanchong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发 易上手</span>',
+
+			IsekaiJoucho: 'ヰ世界情绪',
+			baiqing: '白情',
+			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
+			shuangxing: '星徊',
+			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
+			shuangxing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',

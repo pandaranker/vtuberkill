@@ -3267,7 +3267,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return _status.event.check;
 						}).set('check',get.recoverEffect(target,player,player)>0);
 					}
-					else event.finish();
+					else event.goto(5);
 					'step 4'
 					if(result.bool){
 						target.recover(player);
@@ -3278,6 +3278,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return _status.event.check;
 						}).set('check',get.recoverEffect(player,target,target)>0);
 					}
+					else event.finish();
 					'step 6'
 					if(result.bool){
 						player.recover(target);
@@ -3965,7 +3966,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'gainAfter'},
 				filter:function(event,player){
 					if(player.countCards('h')>player.getHandcardLimit())	return player.getCardUsable('sha')>0;
-					return true;
+					else	return !player.hasSkill('xingchi_used');
 				},
 				check:function(event,player){
 					return true;
@@ -3990,13 +3991,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						});
 					}else{
 						player.draw(2);
+						player.addTempSkill('xingchi_used');
 						event.finish();
 					}
 					'step 1'
 					if(result.bool&&result.targets){
 						player.useCard({name:'sha'},result.targets,result.cards,false);
 					}
-				}
+				},
+				subSkill:{
+					used:{
+						mark:true,
+						intro:{content:'本回合已通过『醒迟』摸牌'},
+					}
+				},
 			},
 			//re鸭鸭
 			cejing:{
@@ -5864,7 +5872,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			anshu: '暗术',
 			anshu_info: '其他角色的回合结束时，若其手牌数不小于你，你可对其使用一张牌。且若此牌为♠，此牌不可被响应。',
 			xingchi: '醒迟',
-			xingchi_info: '一名角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌。',
+			xingchi_info: '一名角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌，然后本回合不再触发此项。',
 
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',
