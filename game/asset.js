@@ -222,7 +222,6 @@ window.noname_asset_list=[
 	'audio/skill/duixian1.mp3',
 	'audio/skill/duixian2.mp3',
 	'audio/skill/duixian3.mp3',
-	'audio/skill/duixian2.mp3',
 	'audio/skill/fengqing1.mp3',
 	'audio/skill/fengqing2.mp3',
 	'audio/skill/fengqing3.mp3',
