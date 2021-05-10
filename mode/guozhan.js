@@ -9533,7 +9533,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_guiren_info: '你可以将两张红色/黑色牌当做一张【杀】使用，然后根据你转化牌包含的类型获得对应效果：基本~使之具有火焰/雷电属性；锦囊~若造成伤害，令目标交给你一张牌；装备~不可被抵消。若被抵消，你可以收回之并结束此阶段。',
 
 			gz_bingdielei:'并蒂恶蕾',
-			gz_bingdielei_anotherPhase: '并蒂恶蕾',
 			gz_bingdielei_info:'每轮限一次。你造成或受到过伤害的回合结束时，可以获得一个额外回合。',
 
 			gz_kuangbaoshuangren:'狂暴双刃',

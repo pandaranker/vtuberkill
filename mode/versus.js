@@ -5088,7 +5088,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						marktext: '并',
 						mark:true,
-						frequent:true,
 						intro: {
 							content:'当前回合结束后获得一个额外回合',
 							name:'并蒂恶蕾',
