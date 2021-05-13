@@ -2203,7 +2203,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:14,
 				filter: function(event, player) {
 					return player.getHandcardLimit()&&(get.type(event.card)=='basic'||get.type(event.card)=='trick')
-						&&!(event.result.bool == false || event.result.wuxied);
+						&&!(event.result.bool == false || event.iswuxied);
 				},
 				check: function(event, player) {
 					return player!=_status.currentPhase||(player.getHandcardLimit()*2)>=player.countCards('h');
@@ -4625,7 +4625,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
-							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'re_huawen_change';
+							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = 're_huawen_change';
 						},
 					},
 					give:{

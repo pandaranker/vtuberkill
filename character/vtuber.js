@@ -46,6 +46,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**红晓音 */
 			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 
+			/**花谱 */
+			Kaf:['female','qun',3,['liuhua','yishi']],
+			/**理芽 */
+			Rim: ['female','qun',4,['shenghua','zhanchong'],],
+			/**异世界情绪 */
+			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',

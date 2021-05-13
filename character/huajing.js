@@ -1194,7 +1194,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fuyue: '富岳',
 			fuyue_info: '每回合限一次，一名角色使用属性【杀】指定目标时，你可以令其视为对你使用【沉没】，你每因此失去一张牌，便可以为此【杀】额外指定一名目标。',
 
-			Nana7mi: '七海',
+			Nana7mi: '七海Nana7mi',
+			Nana7mi_ab: '七海',
 			xieqi: '携七',
 			xieqi_info: '每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。',
 			youhai: '佑海',

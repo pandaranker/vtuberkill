@@ -10698,14 +10698,14 @@
 							player.popup('胜','wood');
 							target.popup('负','fire');
 							game.log(player,'#g胜');
-							event.result={bool:true};
+							event.result={bool:true,winner:mes};
 						}
 						else{
 							str=get.translation(target)+'胜利';
 							target.popup('胜','wood');
 							player.popup('负','fire');
 							game.log(target,'#g胜');
-							event.result={bool:false};
+							event.result={bool:false,winner:tes};
 						}
 					}
 					game.broadcastAll(function(str){

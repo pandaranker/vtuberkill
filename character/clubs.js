@@ -26,12 +26,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			
-			/**花谱 */
-			Kaf:['female','qun',3,['liuhua','yishi']],
-			/**理芽 */
-			Rim: ['female','qun',4,['shenghua','zhanchong'],],
-			/**异世界情绪 */
-			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
 			/**P家诸人 */
 			Paryi:['male','paryi',4,['tiantang','haoren']],
 			TakatsukiRitsu:['female','paryi',3,['shengya','liangshan','chongshi']],
@@ -67,6 +61,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 			/**纸木铗 */
 			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
+			/**早稻叽 */
+			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
 		},
 		characterSort:{
 			clubs:{

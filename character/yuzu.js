@@ -27,8 +27,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**阳向心美 */
 			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
-			/**早稻叽 */
-			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
@@ -36,6 +34,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Reine: ['female','qun',4,['yueyao','kongling'],['guoV']],
 			/**蜜球兔 */
 			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
+			/**无理 */
+			Muri: ['female','VirtuaReal',3,['lique','zhangdeng'],['guoV']],
+			/**Gaku */
+			FushimiGaku: ['male','nijisanji',4,['exi','suisui']],
 
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
@@ -3068,9 +3070,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//阿喵喵
 			miaomiao:{
-				trigger:{source:'damageBegin1'},
+				trigger:{global:'damageBegin3'},
 				priority:3,
-				lastDo:true,
 				direct:true,
 				filter:function(event,player){
 					return event.num == 1;
@@ -3122,7 +3123,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chengneng:{
 				trigger:{global:'damageBegin3'},
 				priority:3,
-				firstDo:true,
 				direct:true,
 				filter:function(event,player){
 					return event.num&&player.countDiscardableCards(player,'he');
@@ -6842,6 +6842,93 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//无理
+			lique:{
+				trigger:{target:'useCardToTargeted'},
+				forced:true,
+				content:function(){
+					'step 0'
+					player.loseHp();
+					'step 1'
+					player.draw();
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(get.type(card)=='equip'&&!get.cardtag(card,'gifts')) return [1,2];
+							if(player.hp) return [1,1];
+						}
+					}
+				}
+			},
+			zhangdeng:{
+				trigger:{player:'dying'},
+				forced:true,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					player.recover();
+					game.delayx();
+				},
+				ai:{
+					threaten:function (player,target){
+						if(target.hp==1) return 0.1;
+						return 1;
+					},
+				}
+			},
+			//Gaku
+			exi:{
+				enable:'phaseUse',
+				usable:1,
+				filterTarget:function(card,player,target){
+					return target.countCards('h')&&target!=player;
+				},
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					player.chooseToPSS(target);
+					'step 1'
+					if(!result.tie){
+						var card = {name:'sha'};
+						if(result.winner=='stone')	card.name = 'juedou';
+						if(result.bool){
+							player.draw(2);
+							target.useCard(card,player,false,'noai');
+						}
+						else{
+							target.draw(2);
+							player.useCard(card,target,false,'noai');
+						}
+					}
+				},
+				ai:{
+					result:{
+						player:1,
+						target:-0.1,
+					}
+				}
+			},
+			suisui:{
+				trigger:{player:'damageBegin3'},
+				forced:true,
+				usable:1,
+				filter:function(event,player){
+					return !event.source&&player.hp!=1||event.source&&player.hp==1;
+				},
+				content:function(){
+					trigger.cancel();
+				},
+				ai:{
+					threaten:function (player,target){
+						if(target.hp==1) return 0.5;
+						return 1;
+					},
+				}
+			},
 			//紫海由爱
 			lianyin:{
 				trigger:{global:['useCard','respond']},
@@ -8389,7 +8476,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			TEST: '测试员',
-			Ruki: '琉绮',
+			Ruki: '琉绮Ruki',
+			Ruki_ab: '琉绮',
 			beixie: '备械',
 			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
@@ -8456,6 +8544,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhazong_info: '出牌阶段结束时，若你于此阶段没有使用过基本牌/装备牌/锦囊牌，你可以弃置一名角色手牌区/装备区/判定区各一张牌。',
 			mengnan: '梦喃',
 			mengnan_info: '锁定技 当一张牌进入/离开你的判定区，你需要摸/弃一张牌，若此时不在判定阶段，张数+1。',
+
+			Muri: '无理Muri',
+			Muri_ab: '无理',
+			lique: '理却',
+			lique_info: '锁定技 你成为牌的目标时，失去一点体力并摸一张牌。',
+			zhangdeng: '掌灯',
+			zhangdeng_info: '锁定技 你进入濒死状态时，回复一点体力。',
+
+			FushimiGaku: '伏见学',
+			exi: '恶戏',
+			exi_info: '出牌阶段限一次，你可与一名有手牌的角色猜拳：赢家摸两张牌，输家视为对赢家使用了一张【杀】。若以剪刀输，则将使用【杀】改为使用【决斗】。',
+			suisui: '祟崇',
+			suisui_info: '锁定技 当你的体力值不为1/为1时，防止你每回合首次受到的无/有来源伤害。',
 
 			Reine: '兰音',
 			yueyao: '月谣',

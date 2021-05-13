@@ -691,9 +691,63 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 		},
+		card:{
+			pss_paper:{
+				type:'pss',
+				fullskin:true,
+				//derivation:'shenpei',
+			},
+			pss_scissor:{
+				type:'pss',
+				fullskin:true,
+				//derivation:'shenpei',
+			},
+			pss_stone:{
+				type:'pss',
+				fullskin:true,
+				//derivation:'shenpei',
+			},
+			db_atk1:{
+				type:'db_atk',
+				fullimage:true,
+				//derivation:'shenpei',
+			},
+			db_atk2:{
+				type:'db_atk',
+				fullimage:true,
+				//derivation:'shenpei',
+			},
+			db_def1:{
+				type:'db_def',
+				fullimage:true,
+				//derivation:'shenpei',
+			},
+			db_def2:{
+				type:'db_def',
+				fullimage:true,
+				//derivation:'shenpei',
+			},
+		},
 		dynamicTranslate:{
 		},
 		translate:{
+
+			pss:'手势',
+			pss_paper:'布',
+			pss_scissor:'剪刀',
+			pss_stone:'石头',
+			pss_paper_info:'石头剪刀布时的一种手势。克制石头，但被剪刀克制。',
+			pss_scissor_info:'石头剪刀布时的一种手势。克制布，但被石头克制。',
+			pss_stone_info:'石头剪刀布时的一种手势。克制剪刀，但被布克制。',
+			
+			db_atk:'进攻对策',
+			db_atk1:'全军出击',
+			db_atk2:'分兵围城',
+			
+			db_def:'防御对策',
+			db_def1:'奇袭粮道',
+			db_def2:'开城诱敌',
+			
 			gz_Ava: '国战向晚',
 			gz_yiqu: '亦趋',
 			gz_yiqu_info: '每回合限一次。当你受到伤害后，你可以交给来源一张牌。若与对你造成伤害的牌花色相同，你摸两张牌。',
