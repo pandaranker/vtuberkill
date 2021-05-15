@@ -1761,7 +1761,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
 						}
-						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
+						game.me.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
 							return Math.random();
 						});
 					}
