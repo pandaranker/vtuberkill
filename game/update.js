@@ -2,7 +2,7 @@ window.noname_update={
 	version:'1.9.101.77',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.76小更新：新增角色可不Kafu（测试包）、海向晚（化鲸包），修复bug（比如阿喵喵的bug和Yomemi致命药剂无法弃牌bug）',
+		'101.77小更新：新增势力神椿、新增角色可不Kafu（测试包）、海向晚（化鲸包），修复bug（比如阿喵喵的bug和Yomemi致命药剂无法弃牌bug）',
 		'优化技能特性，斗地主奖池扩展（虹：阿喵喵、初心相羽初叶；杏：猫又小粥、初心大空昴；企：花谱、理芽；社：Menherachan、紫海由爱），继续完善了国战内容（增加野心家内容、神乐mea势力改为“野”，现在可以进入该模式测试了）',
 		'101.40大更新：《化鲸篇》追加扩展包，增加角色皇绊爱和皇兔田佩克拉（emperor包），张京华、冰糖和真白花音（小箱），AS全员补全，斗地主增加智斗三国模式，修复bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
@@ -27,6 +27,7 @@ window.noname_update={
 		// 'card/sp.js',
 		// 'card/standard.js',
 		'card/guozhan.js',
+		'image/card/group_vwp.png',
 		//'card/remark.js',
 		// 'image/splash/boss.jpg',
 		// 'image/splash/brawl.jpg',
