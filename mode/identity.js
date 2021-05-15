@@ -51,6 +51,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nori:{
 				fullskin:true,
 			},
+			group_vwp:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1753,7 +1756,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2208,7 +2211,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2291,7 +2294,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.result2=result;
 					if(shen.length){
 						var buttonList=[];
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2389,7 +2392,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nanashi:"な",
 			group_psp:"P",
 			group_asoul:"魂",
-			group_nori:"魂",
+			group_nori:"苔",
+			group_vwp:"神椿",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
@@ -2401,11 +2405,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_VirtuaReal_bg:"维",
 			group_upd8_bg:"U",
 			group_paryi_bg:"帕",
-			group_kagura_bg:"神",
+			group_kagura_bg:"咩",
 			group_nanashi_bg:"な",
 			group_psp_bg:"な",
 			group_asoul_bg:"魂",
 			group_nori_bg:"苔",
+			group_vwp_bg:"椿",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",

@@ -20,6 +20,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sea_SasakiSaku:['female','nijisanji',4,['haishou','lishi']],
 			/**潜水夸 */
 			sea_MinatoAqua:['female','holo',3,['jinchen','qianyong']],
+			/**海向晚 */
+			sea_Ava:['female','asoul',3,['zhuiguang','ronglei']],
 			
 			/**皇团 */
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
@@ -775,6 +777,103 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					draw:{audio:2}
 				},
 			},
+			//海向晚
+			zhuiguang:{
+				enable:'phaseUse',
+				usable: 1,
+				filter:function(event,player){
+					return player.countCards('h')>0;
+				},
+				filterTarget:function(card,player,target){
+					if(player!=target) return true;
+				},
+				filterCard:true,
+				selectCard:-1,
+				lose:false,
+				discard:false,
+				prepare:'give',
+				content:function(){
+					'step 0'
+					game.hasPlayer(function(cur){
+						if(cur.hasSkill('zhuiguang_chehai')&&cur.storage.zhuiguang_chehai==player)	cur.removeSkill('zhuiguang_chehai');
+					});
+					'step 1'
+					target.gain(cards,player);
+					target.changeHujia();
+					'step 2'
+					target.storage.zhuiguang_chehai = player;
+					target.addSkill('zhuiguang_chehai');
+				},
+				subSkill:{
+					chehai:{
+						mark:'character',
+						intro:{
+							content:'需要保护$',
+						},
+						onremove:true,
+						trigger:{global:['useCardToTarget','dying']},
+						forced:true,
+						filter:function(event,player){
+							var ava = event.name=='useCardToTarget'?event.target:event.player;
+							return player.storage.zhuiguang_chehai&&ava==player.storage.zhuiguang_chehai
+							&&player.countCards('he')>0&&get.type(event.card)!='equip';
+						},
+						content:function(){
+							'step 0'
+							player.chooseCard('he',true,'###『追光澈海』###将一张牌交给'+get.translation(player.storage.zhuiguang_chehai)).set('ai',function(card){
+								var player = _status.event.player;
+								var ava = player.storage.zhuiguang_chehai
+								return get.value(card,ava,'raw')*get.attitude(player,ava)
+							});
+							'step 1'
+							if(result.bool){
+								player.give(result.cards,player.storage.zhuiguang_chehai,'giveAuto');
+							};
+						},
+					},
+				},
+				ai:{
+					order:function(item,player){
+						if(player.countCards('h')<=2)	return 6;
+						return 1;
+					},
+					result:{
+						player:function(player,target){
+							return -0.1;
+						},
+						target:function(player,target){
+							if(target.storage.zhuiguang_chehai==player)	return player.countCards('h')/3-player.hp+1;
+							return player.countCards('h')/3-player.hp+target.countCards('he')/5-1;
+						}
+					},
+					threaten:0.8,
+				},
+			},
+			ronglei:{
+				trigger:{global:"useCardToTarget"},
+				filter:function(event,player){
+					return event.target!=player&&event.targets.length==1&&player.countCards('h')<player.getHandcardLimit()&&get.type(event.card)!='equip';
+				},
+				logTarget:'target',
+				content:function(){
+					'step 0'
+					var target = trigger.target;
+					event.target = target;
+					target.judge(function(card){
+						if(get.color(card)=='red') return 1;
+						return 0;
+					});
+					'step 1'
+					if(result.color){
+						if(result.color=='red'){
+							game.asyncDraw([event.target,player]);
+						}
+						else{
+							trigger.getParent().targets.add(player);
+						}
+					}
+				}
+			},
 
 			qiming:{
 				audio:5,
@@ -1161,6 +1260,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qianyong: '潜涌',
 			qianyong_info: '锁定技 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。',
 			qianyong_draw: '潜涌',
+
+			sea_Ava: '海·向晚',
+			zhuiguang: '追光澈海',
+			zhuiguang_info: '出牌阶段限一次，你可以将所有手牌交给一名其他角色并令其获得一点护甲，然后直到你下一次发动此技能：你每一次成为非装备牌的目标或进入濒死状态时，其需交给你一张牌。',
+			zhuiguang_chehai: '追光澈海',
+			zhuiguang_chehai_info: '向晚成为非装备牌的目标或进入濒死状态时，你需交给其一张牌。',
+			ronglei: '眀渊融泪',
+			ronglei_info: '其他角色成为非装备牌的唯一目标时，若你手牌少于上限，你可以令其进行一次判定：若为红色，你和其各摸一张牌；若为黑色，你也成为此牌的目标。',
 
 			NagaoKei: '长尾景',
 			nkfumo: '伏魔',

@@ -154,7 +154,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.targ = event.targs.shift();
 					var suits = event.suits
-					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", target, 'he');
+					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", targ, 'he');
 					next.set('selectButton',suits.length);
 					next.set('filterButton',function(card){
 						if(ui.selected.buttons.length){
@@ -3084,27 +3084,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀 卖血 易上手</span>',
 			gutai: '守峡',
 			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',
-
-			Kaf: '花谱',
-			liuhua: '化羽',
-			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
-			yishi: '遗世',
-			yishi_info: '锁定技 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
-			yishi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
-			
-			Rim: '理芽',
-			shenghua: '生花',
-			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',
-			zhanchong: '绽虫',
-			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
-			zhanchong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发 易上手</span>',
-
-			IsekaiJoucho: 'ヰ世界情绪',
-			baiqing: '白情',
-			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
-			shuangxing: '星徊',
-			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
-			shuangxing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 
 
 			His_HoshinoNiya: '星野妮娅·史官',

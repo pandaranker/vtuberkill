@@ -13,6 +13,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
+			/**可不 */
+			Kafu:['female','vwp',3,['nisheng','jingyan']],
 			
 			/**喵喵人 */
 			Nyanners: ['female','qun',3,['shenghuo','dipo'],['yingV']],
@@ -3070,7 +3072,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//阿喵喵
 			miaomiao:{
-				trigger:{global:'damageBegin3'},
+				trigger:{source:'damageBegin3'},
 				priority:3,
 				direct:true,
 				filter:function(event,player){
@@ -3078,15 +3080,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var check = -1;
-					check += (get.attitude(player,target)*get.effect(trigger.player,{name:'recover'},player,player));
+					var check = 1;
+					check -= get.recoverEffect(trigger.player,player,player);
 					player.chooseTarget('『流泪喵喵』：令目标摸两张牌（取消则改本次伤害为回复）',function(card,player,target){
-						return target==trigger.player;
+						return target==_status.event.target0;
 					}).set('ai',function(target){
-						var player=_status.event.player;
-						if(_status.event.check>0)	return false;
-						return get.attitude(player,target)>0&&target.hp==target.maxHp;
-					});
+						if(_status.event.check>0)	return 0;
+						return 1;
+					}).set('check',check).set('target0',trigger.player);
 					'step 1'
 					if(result.bool){
 						result.targets[0].draw(2);
@@ -3125,7 +3126,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:3,
 				direct:true,
 				filter:function(event,player){
-					return event.num&&player.countDiscardableCards(player,'he');
+					return event.num&&event.player!=player&&player.countDiscardableCards(player,'he');
 				},
 				check:function(event,player){
 					if(event.num==1)	 return get.recoverEffect(event.player,player,player);
@@ -3545,7 +3546,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}).set('targets',event.targets);
 					'step 5'
 					if(result.bool){
-							game.asyncDraw(event.targets);
+						game.asyncDraw(event.targets);
 					}
 					event.goto(2);
 					'step 6'
@@ -5782,11 +5783,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return get.value(button.link)>0;
 							});
 							'step 1'
-							player.logSkill('quankai');
 							if(result.bool&&result.links){
+								player.logSkill('quankai');
 								player.gain(result.links,'gain2');
 							}else{
-								if(player.hasSkill('quankai_round'))	player.removeSkill('quankai_round');
+								if(player.hasSkill('quankai_round')){
+									player.logSkill('quankai');
+									player.removeSkill('quankai_round');
+								}
 							}
 						},
 					}
@@ -6846,6 +6850,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lique:{
 				trigger:{target:'useCardToTargeted'},
 				forced:true,
+				filter:function(event,player){
+					return get.type(event.card)!='equip';
+				},
 				content:function(){
 					'step 0'
 					player.loseHp();
@@ -7802,6 +7809,59 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//可不
+			nisheng:{
+				init:function(player,skill){
+					if(!player.storage[skill])	player.storage[skill] = [];
+				},
+				trigger:{global:'phaseEnd'},
+				filter:function(event,player){
+					if(event.skill)	return false;
+					return player.countCards('h',function(card1){
+						var num = get.number(card1,player);
+						if(player.getStorage('nisheng').contains(num))	return false;
+						return player.countCards('h',function(card2){
+							return card1!=card2&&num==get.number(card2,player);
+						});
+					})>=2;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard(get.prompt2('nisheng'),'h',2,function(card,player){
+						var num = get.number(card);
+						if(player.getStorage('nisheng').contains(num))	return false;
+						if(ui.selected.cards.length)	return num==get.number(ui.selected.cards[0]);
+						return true;
+					}).ai=get.unuseful2;
+					'step 1'
+					if(result.bool&&result.cards[0]){
+						player.storage.nisheng.add(get.number(result.cards[0]));
+						player.markSkill('nisheng');
+						player.insertPhase();
+					}
+					else{
+						event.finish();
+					}
+				},
+				intro:{
+					content:'已使用过的点数：#',
+				},
+			},
+			jingyan:{
+				trigger:{player:'damageEnd'},
+				filter:function(event,player){
+					return event.source&&event.source.isIn()&&event.source.countCards('he')/2>=1;
+				},
+				check:function (event,player){
+					return event.source.countCards('he')/2>=2||player.isTurnedOver();
+				},
+				content:function(){
+					'step 0'
+					player.turnOver();
+					'step 1'
+					player.gainPlayerCard(trigger.source,'he',Math.floor(trigger.source.countCards('he')/2));
+				},
+			},
 			//猫又小粥
 			fantuan:{
 				trigger:{player:'useCard2'},
@@ -8548,7 +8608,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Muri: '无理Muri',
 			Muri_ab: '无理',
 			lique: '理却',
-			lique_info: '锁定技 你成为牌的目标时，失去一点体力并摸一张牌。',
+			lique_info: '锁定技 你成为非装备牌的目标时，失去一点体力并摸一张牌。',
 			zhangdeng: '掌灯',
 			zhangdeng_info: '锁定技 你进入濒死状态时，回复一点体力。',
 
@@ -8787,6 +8847,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			miaomiao_info: '锁定技 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能突击』，摸一张牌。',
 			chengneng: '逞能龙息',
 			chengneng_info: '每回合限一次。其他角色受到伤害，你可以弃一张牌令其来源视为你，且你为其原来源时，本次伤害改为等量体力流失。',
+			chengneng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			SakuraRitsuki: '櫻凜月',
 			zhuqiao: '筑巧',
@@ -8833,6 +8894,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiren_going: '戮秋',
 			jiren2: '戮秋-重置',
 			jiren_info: '转换技 出牌阶段限一次，你可以进行判定，若为武器牌则获得之。有一张牌进入弃牌堆时，若其花色与你本回合此技能某张判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。你可以失去1点体力以重置此技能。',
+			jiren_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 			canxin: '残心',
 			canxin_info: '<font color=#ed9>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。',
 			

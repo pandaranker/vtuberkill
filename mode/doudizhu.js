@@ -2190,22 +2190,22 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		characterOnline:{
 			nijisanji:[
 				'MononobeAlice','ShizukaRin','UshimiIchigo','SisterClearie','LizeHelesta','SuzuharaLulu','KagamiHayato',
-				'KenmochiDouya','YukishiroMahiro','OnomachiHaruka','SakuraRitsuki','re_AngeKatrina',
+				'KenmochiDouya','YukishiroMahiro','OnomachiHaruka','SakuraRitsuki','re_AngeKatrina','AmamiyaKokoro','re_AibaUiha',
 				'Azusa','Shaun',
 			],
 			holo:[
-				'TokinoSora','NatsuiroMatsuri','RobokoSan','ShirakamiFubuki','AkiRosenthal','HoshimatiSuisei',
-				'SakuraMiko','MinatoAqua','UsadaPekora','ŌokamiMio','re_UruhaRushia','re_NakiriAyame',
+				'TokinoSora','NatsuiroMatsuri','RobokoSan','ShirakamiFubuki','AkiRosenthal','HoshimatiSuisei','NekomataOkayu',
+				'SakuraMiko','MinatoAqua','UsadaPekora','ŌokamiMio','re_UruhaRushia','re_NakiriAyame','re_ŌzoraSubaru',
 				'Civia','SpadeEcho','Artia','Doris','Yogiri',
 			],
 			vtuber:[
-				'ShirayukiMishiro','KaguyaLuna','UmoriHinako','SuouPatra','TenkaiTsukasa','Yousa','MiraiAkari',
+				'ShirayukiMishiro','KaguyaLuna','UmoriHinako','SuouPatra','TenkaiTsukasa','Yousa','MiraiAkari','Kaf','Rim',
 				're_YuNi','re_TomariMari','re_Omesis','re_NijikawaRaki','re_KizunaAI',
 				'Bella','Carol','Diana','EQueen',
 			],
 			clubs:[
 				'KaguraMea','TakatsukiRitsu','MorinagaMiu','OtomeOto','HanazonoSerena','MashiroKanon',
-				'Nekomasu','Eilene','Yomemi','ShizukuLulu','re_MinamiNami','kaguraNaNa',
+				'Nekomasu','Eilene','Yomemi','ShizukuLulu','re_MinamiNami','kaguraNaNa','Menherachan','ShikaiYue',
 				'Ciyana','Pudding','AyanaNana','AkiRinco',
 			],
 		},

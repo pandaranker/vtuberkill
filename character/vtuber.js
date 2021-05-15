@@ -47,11 +47,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 
 			/**花谱 */
-			Kaf:['female','qun',3,['liuhua','yishi']],
+			Kaf:['female','vwp',3,['liuhua','yishi']],
 			/**理芽 */
-			Rim: ['female','qun',4,['shenghua','zhanchong'],],
+			Rim: ['female','vwp',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
-			IsekaiJoucho: ['female','qun',4,['baiqing','shuangxing'],],
+			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
@@ -2051,6 +2051,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			hongyi_info: '每回合限一次。当出现红色判定结果后，你可以令当前回合角色交给你一张牌。',
 			jueshou: '绝收',
 			jueshou_info: '出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。',
+			jueshou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
+
+			Kaf: '花谱',
+			liuhua: '化羽',
+			liuhua_info: '有角色受到伤害的回合结束时，你可以将所有手牌置于武将牌上并执行一个额外回合，然后若你武将牌上有至少三种花色的牌，你获得每种花色牌各一张并翻面。',
+			yishi: '遗世',
+			yishi_info: '锁定技 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
+			yishi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			
+			Kafu: '可不',
+			nisheng: '拟声',
+			nisheng_info: '一个额定回合结束后，你可以展示两张点数相同的手牌并获得一个额外的回合。每个点数限一次。',
+			jingyan: '精赝',
+			jingyan_info: '你受到伤害后，可以翻面并获得来源一半的牌（向下取整）。',
+			jingyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
+
+			IsekaiJoucho: 'ヰ世界情绪',
+			baiqing: '白情',
+			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
+			shuangxing: '星徊',
+			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
+			shuangxing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 
 			DoumyoujiHaruto: '道明寺晴翔',
 			YuNi: 'YuNi',
