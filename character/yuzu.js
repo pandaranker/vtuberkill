@@ -8876,7 +8876,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chentu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡</span>',
 			sishu: '饲鼠',
 			sishu_info: '锁定技 回合内，你需要使用基本牌时，能且仅能将一组花色的牌交给一名其他角色视为使用之。',
-			sishu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：自肃</span>',
+			sishu_append:'<span style="font-family: LuoLiTi2;color: #dbb">一组花色的牌：即四张花色各不相同的牌；特性：自肃（不能以其他方式使用基本牌）</span>',
 
 			Nyanners: 'Nyanners',
 			Nyanners_ab: '喵喵人',
