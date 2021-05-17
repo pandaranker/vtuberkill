@@ -3579,7 +3579,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huyanluanyu_info:'每当你受到1点伤害后，（记你此时手牌数为X）你可令手牌数多于X的角色各交给你一张牌，然后你交给手牌数少于X的角色各一张牌。',
 			yuanlv:'远虑',
 			yuanlv_info:'你使用过锦囊牌或受到过伤害的回合结束时，可以摸等同你体力上限的牌，然后将等同你体力值的牌以任意顺序置于牌堆顶。每轮每项限一次。',
-			yuanlv_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
+			yuanlv_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 控顶</span>',
 			jinyuan:'近援',
 			jinyuan_info:'出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。',
 			jinyuan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌</span>',
