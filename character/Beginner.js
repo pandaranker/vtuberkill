@@ -5671,7 +5671,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jidao_info: '你可以防止对其他角色造成的伤害，改为令其发动一次『押运』。',
 
 			re_Fairys: '新·Fairys',
-			re_Fairys: '新·鹦鹉',
+			re_Fairys_ab: '新·鹦鹉',
 			ywshuangxing: '双形',
 			ywshuangxing_info: '当你成为黑色非基本牌/红色非装备牌的目标时，若你的体力为奇数/偶数，你可以取消之。',
 			yinni: '音拟',

@@ -9155,7 +9155,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yeyu: '夜域女王',
 			yeyu_info: '其他角色使用【杀】时，你可以弃置一张点数大于此【杀】的牌取消之。其他角色使用通常锦囊牌时，你可以重铸一张梅花牌为之增加或减少一名目标。',
 
-			Elu: '艾露',
+			Elu: 'Elu',
+			Elu_ab: '艾露',
 			huangran: '煌燃',
 			huangran_info: '你受到火焰伤害时，可以选择一名距离为1的角色与你平均承担，不能平均的额外1点由你分配。然后每有一名角色因此受伤，你摸一张牌。',
 			yinzhen: '隐真',

@@ -45,6 +45,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
 			/**红晓音 */
 			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
+			/**东爱璃 */
+			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
 
 			/**花谱 */
 			Kaf:['female','vwp',3,['liuhua','yishi']],
@@ -52,6 +54,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rim: ['female','vwp',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
 			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
+		},
+		characterSort:{
+			vtuber:{
+				asoul:['Ava','Bella','Carol','Diana','EQueen'],
+				psp:['Pudding','AyanaNana','AkiRinco','KurenaiAkane','Lovely'],
+			}
 		},
 		characterTitle:{
 			KizunaAI:'#r绊虚之始',
