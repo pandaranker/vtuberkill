@@ -47,6 +47,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**刀也 */
 			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
 		},
+		characterSort:{
+			nijisanji:{
+				nijisanji_1:['MitoTsukino','HiguchiKaede','ShizukaRin','Elu'],
+				nijisanji_2:['SuzukaUtako','UshimiIchigo','IenagaMugi','MononobeAlice','KenmochiDouya'],
+			}
+		},
 		characterIntro:{
 			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
 			HiguchiKaede: '樋口枫者，关西之游侠也，姿色天然占尽风流，善以琴杀人，来去翩翩，有宾客枫组三千，V始二十年，月之美兔兴于西北，自封委员长、上将军，建国曰彩虹，枫率宾客从之，枫尝与杏之福禄将军萝卜子交好，惺惺相惜，成V界之佳话。',
@@ -3002,8 +3008,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
 			LizeHelesta:['re_LizeHelesta','LizeHelesta','gz_LizeHelesta'],
 			re_AngeKatrina:['re_AngeKatrina','gz_AngeKatrina'],
+			
+			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
+			ShizukaRin:['re_ShizukaRin','ShizukaRin'],
+			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
+			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
+			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
+			SuzuharaLulu:['re_SuzuharaLulu','SuzuharaLulu'],
 		},
 		translate:{
+			nijisanji_1:'一期生',
+			nijisanji_2:'二期生',
 
 			nochongzhu:'禁止重铸',
 
@@ -3027,7 +3042,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozhaotuji:'魔爪突击',
 			mozhaotuji_DrawOrStop:'魔爪突击',
 			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。',
-			mozhaotuji_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀</span>',
+			mozhaotuji_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀 易上手</span>',
 
 			IenagaMugi:'家长麦',
 			fengxue:'奋学',
@@ -3068,6 +3083,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuzukaUtako: '铃鹿诗子',
 			meici: '美词',
 			meici_info: '其他角色的回合开始时，若其手牌为全场最多，其本回合使用锦囊牌后，你可以观看其手牌并重铸其中一张，若因此重铸了基本牌，你也可重铸一张牌。',
+			meici_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 			danlian: '耽恋',
 			danlian_info: '一个回合结束时，若本回合不因使用而进入弃牌堆的牌不小于当前回合角色的体力值，你可选择其中一张♦或♣牌并选择另一名其他角色，当前回合角色将♦牌当【乐不思蜀】，♣牌当【决斗】对你选择的角色使用。每轮每种花色限一次。',
 			danlian_append:'<span style="font-family: LuoLiTi2;color: #dbb">可以把弃牌转化为【乐不思蜀】和【决斗】</span>',
@@ -3114,7 +3130,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nvjiangrouhao_info: '锁定技 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
 			yinlaiyaotang: '引徕药汤',
 			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
-			yinlaiyaotang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
+			yinlaiyaotang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			SasakiSaku: '笹木咲',
 			tiaolian: '咆咲',

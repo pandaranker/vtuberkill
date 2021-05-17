@@ -43,8 +43,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			hololive:{
-				hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
 				hololive_wuyin:['TokinoSora','HoshimatiSuisei','RobokoSan','SakuraMiko'],
+				hololive_1:['YozoraMel','AkiRosenthal','AkaiHaato','ShirakamiFubuki','NatsuiroMatsuri'],
 				hololive_2and3:['MinatoAqua','UsadaPekora'],
 				OurGirls:['Civia','SpadeEcho','Artia','Doris','Yogiri','Rosalyn'],
 				

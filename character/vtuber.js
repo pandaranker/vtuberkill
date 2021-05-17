@@ -1965,7 +1965,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
 			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
 
-			Ava:['Ava','gz_Ava'],
+			Ava:['Ava','gz_Ava','sea_Ava'],
 		},
 		translate:{
 			vtuber_upd8:'UPD8',
@@ -2059,6 +2059,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yishi: '遗世',
 			yishi_info: '锁定技 你在你的额外回合内使用牌只能指定你或上一回合角色为目标且你不计入距离和座次的计算。',
 			yishi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			
+			Rim: '理芽',
+			shenghua: '生花',
+			shenghua_info: '出牌阶段，你可以弃置所有手牌，然后摸X张牌。（X为弃牌数减去本阶段此技能发动的次数）',
+			zhanchong: '绽虫',
+			zhanchong_info: '当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。',
+			zhanchong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发 易上手</span>',
 			
 			Kafu: '可不',
 			nisheng: '拟声',

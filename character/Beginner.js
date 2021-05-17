@@ -5627,13 +5627,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterReplace:{
-			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
-			ShizukaRin:['re_ShizukaRin','ShizukaRin'],
-			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
-			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
-			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
-			SuzuharaLulu:['re_SuzuharaLulu','SuzuharaLulu'],
-			
 			SisterClearie:['re_SisterClearie','SisterClearie'],
 			ShirayukiTomoe:['re_ShirayukiTomoe','ShirayukiTomoe'],
 			SukoyaKana:['re_SukoyaKana','SukoyaKana'],

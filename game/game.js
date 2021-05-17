@@ -33672,6 +33672,7 @@
 					event._skillChoice=[];
 					game.expandSkills(skills2);
 					for(i=0;i<skills2.length;i++){
+						_status.event.skillBy = skills2[i];
 						info=get.info(skills2[i]);
 						enable=false;
 						if(typeof info.enable=='function') enable=info.enable(event);
@@ -33694,6 +33695,7 @@
 							event._skillChoice.add(skills2[i]);
 						}
 					}
+					delete _status.event.skillBy;
 				}
 
 				var globalskills=[];

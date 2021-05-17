@@ -90,7 +90,7 @@ window.noname_package={
 			leader:'战棋君主'
 		},
 		single:{
-			//normal:'新1v1',
+			normal:'新1v1',
 		},
 	},
 	background:{
@@ -142,7 +142,7 @@ window.noname_package={
 		music_danji:'千里走单骑',
 		music_jifeng:'祭风',
 		music_jilve:'极略',
-		music_minatoAqua1:'凑阿库娅1',
+		music_minatoAqua1:'凑阿库娅',
 		music_usadaPekora:'兔田佩克拉',
 	},
 	font:{

@@ -104,7 +104,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			yaoji:{
-				audio:2,
+				audio:3,
 				audioname:['jike'],
 				enable:"phaseUse", 
 				usable:1,
@@ -118,7 +118,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(card){
-					return 5-get.value(card);
+					if(ui.selected.cards.length)	return 4-get.value(card);
+					return 6-get.value(card);
 				},
 				complexCard:true,
 				selectCard:[1,Infinity],
@@ -128,6 +129,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				selectTarget:function(){
 					var player = _status.event.player;
+					if(!player.hasSkill('mokuai'))	return 1;
 					var min = 1;
 					var max = Math.floor(player.countCards('e'))||1;
 					return [min,max];
@@ -171,7 +173,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					if(event.targs.length)	event.goto(1);
 				},
-				ai:{order:5,result:{target:-1}},
+				ai:{order:2,result:{target:-1}},
 			},
 			//猫宫
 			yuchong:{

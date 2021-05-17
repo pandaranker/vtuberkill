@@ -11,9 +11,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**海狗 */
 			KisaragiKoyori:['female','kagura',3,['shinve','juzu']],
 			/**鲨皇 */
-			GawrGura:['female','holo',3,['lingqun','yangliu']],
+			GawrGura:['female','holo',3,['lingqun','yangliu'],['yingV']],
 			/**Ina */
-			NinomaeInanis:['female','holo',3,['mochu','fuyue']],
+			NinomaeInanis:['female','holo',3,['mochu','fuyue'],['yingV']],
 			/**娜娜米 */
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai'],['guoV']],
 			/**海熊猫 */
@@ -21,12 +21,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**潜水夸 */
 			sea_MinatoAqua:['female','holo',3,['jinchen','qianyong']],
 			/**海向晚 */
-			sea_Ava:['female','asoul',3,['zhuiguang','ronglei']],
+			sea_Ava:['female','asoul',3,['zhuiguang','ronglei'],['guoV']],
 			
 			/**皇团 */
 			sp_HisekiErio:['female','shen','1/6',['qiming', 'shengbian','tulong']],
 			/**鲨皇 */
-			sp_GawrGura: ['female','shen',3,['sp_guaisheng', 'sp_guiliu']],
+			sp_GawrGura: ['female','shen',3,['sp_guaisheng', 'sp_guiliu'],['yingV']],
 		},
 		characterSort:{
 			huajing:{
