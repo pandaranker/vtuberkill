@@ -6956,7 +6956,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter'],
 				},
 				filter:function(event,player){
-					if(player==_status.currentPhase||event.getParent().name=='useCard') return false;
+					if(event.getParent().name=='useCard') return false;
 					var evt=event.getl(player);
 					return evt&&evt.hs&&evt.hs.length>0;
 				},
@@ -8958,7 +8958,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rouqing_info: '你体力减少1点后，可以观看牌堆顶的四张牌并获得其中至多（1）张牌，将其余的牌以任意顺序置于牌堆顶。',
 			rouqing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 			guangying: '光萦',
-			guangying_info: '锁定技 不因使用而失去手牌后，你下一次发动『柔情』时，（）内的数值+1，若大于4，你回复一点体力。',
+			guangying_info: '锁定技 当你不因使用而失去手牌后，你下一次发动『柔情』时，（）内的数值+1，若大于4，你回复一点体力。',
 
 			Reine: '兰音',
 			yueyao: '月谣',
