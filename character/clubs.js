@@ -156,7 +156,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.targ = event.targs.shift();
 					var suits = event.suits
-					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", targ, 'he');
+					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", event.targ, 'he');
 					next.set('selectButton',suits.length);
 					next.set('filterButton',function(card){
 						if(ui.selected.buttons.length){

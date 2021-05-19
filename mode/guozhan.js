@@ -2130,20 +2130,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return event.targets&&event.targets.length==1&&event.targets[0].countCards('h')>player.countCards('h');
 				},
+				logTarget:'targets',
 				check:function(event,player){
-					return event.targets[0].countCards('h')-player.countCards('h')>=2;
+					return event.targets[0].countCards('h')-player.countCards('h')>=2&&get.attitude(player,event.targets[0]);
 				},
 				content: function() {
 					'step 0'
 					event.target = trigger.targets[0];
-					event.target.chooseCard('he','『掠财』：将一张牌交给'+get.translation(player), true);
+					player.gainPlayerCard(event.target,'he',true);
 					'step 1'
-					if(result.bool&&result.cards){
-						player.gain(result.cards[0],target,'giveAuto');
-					}else{
-						event.finish();
-					}
-					'step 2'
 					if(event.target.countCards('h')<player.countCards('h')){
 						player.disableSkill('gz_luecai','gz_luecai');
 					}
@@ -9579,7 +9574,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			gz_tiantang_info: '一名角色的回合开始时，你可以弃置X张牌并声明一种花色，然后：观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，然后只能使用声明花色的牌直到回合结束。（X为本轮你发动此技能的次数且至少为1）',
 			
 			gz_luecai: '掠财',
-			gz_luecai_info: '你使用牌指定唯一目标时，若其手牌数大于你，你可以令其交给你一张牌。然后若你的手牌数大于其，你失去此技能。',
+			gz_luecai_info: '你使用牌指定唯一目标时，若其手牌数大于你，你可以获得其一张牌。然后若你的手牌数大于其，你失去此技能。',
 
 			gz_xiemen: '斜门',
 			gz_xiemen_info: '你使用目标不仅为你的牌时，可令其他角色随机移除一张手牌直到回合结束。',

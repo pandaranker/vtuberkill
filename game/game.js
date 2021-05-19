@@ -24,6 +24,11 @@
 		}],
 	};
 	var lib={
+		//独立功能
+		discoloration:"<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.5s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}16.67%{color: #FFFF00;}33.33%{color:#00FF00;}50% {color:#00FFFF;}66.67%{color: #0000FF;}83.33%{color: #FF00FF;}100%{color:#FF0000;}}</style>",
+		discoloration1:"<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}33.33%{color:#FF0F0F;}50% {color:#F000F0;}66.67%{color: #FF0F0F;}100%{color:#FFFF00;}}</style>",
+
+
 		configprefix:'noname_0.9_',
 		versionOL:27,
 		updateURLS:{
@@ -10354,7 +10359,7 @@
 			paryi2:'帕里',
 			kagura2:'神楽组',
 			nanashi2:'774inc',
-			psp2:'P-SP',
+			psp2:'psplive',
 			asoul2:'一个魂',
 			nori2:'苔箱',
 			vwp2:'神椿市',

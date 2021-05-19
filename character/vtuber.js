@@ -58,7 +58,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			vtuber:{
 				asoul:['Ava','Bella','Carol','Diana','EQueen'],
-				psp:['Pudding','AyanaNana','AkiRinco','KurenaiAkane','Lovely'],
+				psp2:['Pudding','AyanaNana','AkiRinco','KurenaiAkane','Lovely'],
 			}
 		},
 		characterTitle:{

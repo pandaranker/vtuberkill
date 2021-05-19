@@ -9,7 +9,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			// ShitoAnon: ['female','paryi',3,['jiacan','fuhui']],
 
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
-			
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
@@ -8779,7 +8778,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			niwei_tao:{
 				content:function(){
-					event.target.loseHp(player);
+					event.target.loseHp();
 					game.delay(0.5);
 				},
 			},
@@ -8865,7 +8864,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Ruki: '琉绮Ruki',
 			Ruki_ab: '琉绮',
 			beixie: '备械',
-			beixie_info: '游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
+			beixie_info: lib.discoloration1+'游戏开始时，你可以指定获得牌堆中的一张牌，且若其为武器牌，你立即装备之。',
 			hunzhan: '混战',
 			hunzhan_info: '锁定技 一名角色受到伤害时，其可立即使用一张牌，若其如此做，你摸一张牌。',
 
