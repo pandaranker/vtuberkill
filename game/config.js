@@ -75,7 +75,7 @@ window.config={
 	theme:'music',
 	layout:'mobile',
 	card_style:'default',
-	cardback_style:'default',
+	cardback_style:'vk',
 	hp_style:'default',
 
 	image_character:'default',
@@ -128,8 +128,8 @@ window.config={
 	right_click:'pause',
 	sort:'type_sort',
 
-	cards:['standard','extra'],
-	characters:['Beginner','vtuber','nijisanji'],//,'clubs'
+	cards:['standard'],//,'extra'
+	characters:['Beginner'],//,'clubs','vtuber','nijisanji'
 	connect_characters:[],
 	connect_cards:[],
 	plays:[],
@@ -144,7 +144,7 @@ window.config={
 	mode:'identity',
 	mode_config:{
 		global:{
-			player_number:8,
+			player_number:3,
 			auto_identity:'off',
 			double_character:false,
 			save_progress:true,

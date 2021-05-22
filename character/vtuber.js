@@ -1969,9 +1969,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterReplace:{
 			KizunaAI:['re_KizunaAI','KizunaAI'],
+			TenkaiTsukasa:['re_TenkaiTsukasa','TenkaiTsukasa'],
 			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
 			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
 			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
+			InabaHaneru:['InabaHaneru','gz_InabaHaneru'],
 
 			Ava:['Ava','gz_Ava','sea_Ava'],
 		},

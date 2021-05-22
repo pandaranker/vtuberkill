@@ -1134,7 +1134,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 								target.damage(get.nature(event.card),event.baseDamage+event.extraDamage);
 							}
 							else{
-								player.damage(get.nature(event.card),event.baseDamage+event.extraDamage);
+								player.damage(get.nature(event.card),target,event.baseDamage+event.extraDamage);
 							}
 						}
 					}

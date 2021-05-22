@@ -1358,6 +1358,7 @@
 						item:{
 							// wood:'木纹',
 							// music:'音乐',
+							vk:'V杀',
 							official:'原版',
 							// new:'新版',
 							feicheng:'废城',
@@ -1430,6 +1431,7 @@
 									node.className='button character dashedmenubutton';
 									break;
 								}
+								case 'vk':node.className='button character';node.setBackgroundImage('theme/style/cardback/image/vk.png');break;
 								case 'new':node.className='button character';node.setBackgroundImage('theme/style/cardback/image/new.png');break;
 								case 'feicheng':node.className='button character';node.setBackgroundImage('theme/style/cardback/image/feicheng.png');break;
 								case 'official':node.className='button character';node.setBackgroundImage('theme/style/cardback/image/official.png');break;
@@ -4445,7 +4447,7 @@
 					},
 					player_number:{
 						name:'游戏人数',
-						init:'8',
+						init:'3',
 						item:{
 							'2':'两人',
 							'3':'三人',
@@ -51701,6 +51703,15 @@
 		type2:function(card,player){
 			return get.type(card,'trick',player);
 		},
+		//新增函数
+		type3:function(cards,method,player){
+			if(get.itemtype(cards)!='cards')	return;
+			var types=[];
+			for(var i of cards){
+				types.add(get.type(i,method,player));
+			}
+			return types;
+		},
 		subtype:function(obj){
 			if(typeof obj=='string') obj={name:obj};
 			if(typeof obj!='object') return;
@@ -51742,6 +51753,14 @@
 				return card.suit;
 			}
 		},
+		suit3:function(cards,player){
+			if(get.itemtype(cards)!='cards')	return;
+			var suits=[];
+			for(var i of cards){
+				suits.add(get.suit(i,player));
+			}
+			return suits;
+		},
 		color:function(card,player){
 			if(get.itemtype(card)=='cards'){
 				var color=get.color(card[0],player)
@@ -51764,6 +51783,14 @@
 				}
 				return color;
 			}
+		},
+		color3:function(cards,player){
+			if(get.itemtype(cards)!='cards')	return;
+			var colors=[];
+			for(var i of cards){
+				colors.add(get.color(i,player));
+			}
+			return colors;
 		},
 		number:function(card,player){
 			//啥时候狗卡出相关技能我再完善

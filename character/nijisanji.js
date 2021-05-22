@@ -1403,24 +1403,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.hasMark('mark_quanxinquanyi_saycards')) player.unmarkSkill('mark_quanxinquanyi_saycards');
 							if (!player.storage.mark_quanxinquanyi_loseBy) player.storage.mark_quanxinquanyi_loseBy = true;
 							player.storage.mark_quanxinquanyi_saycards.length = 0;
+							
+							var list = [];
+							for(var i=0;i<lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								var reapeat = 0;
+								if(player.storage.mark_quanxinquanyi.length){
+									player.storage.mark_quanxinquanyi.forEach(function(his){	
+										if(his==name) reapeat ++;
+									});
+								}
+								if(reapeat||name=='wuxie'||name=='jinchan') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							if(!list.length)	event.finish();
+							else	event.list = list;
 							'step 1'
 							player.chooseBool('###是否发动『全新全异』###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
 							'step 2'
 							if(result.bool){
 								player.logSkill('mark_quanxinquanyi');
 								event.videoId = lib.status.videoId++;
-								var list=[];
-								for(var i=0;i<lib.inpile.length;i++){
-									var name=lib.inpile[i];
-									var reapeat = 0;
-									if(player.storage.mark_quanxinquanyi.length){
-										player.storage.mark_quanxinquanyi.forEach(function(his){	
-											if(his==name) reapeat ++;
-										});
-									}
-									if(reapeat||name=='wuxie'||name=='jinchan') continue;
-									else if(get.type(name)=='trick') list.push(['锦囊','',name]);
-								}
+								var list = event.list;
 								game.broadcastAll(function(id, list){
 									var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
 									dialog.videoId = id;
@@ -2197,7 +2201,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player: 'useCard2',
 							// player: 'useCardToPlayered'
 						},
-						forced: true,
+						locked:true,
 						direct:true,
 						filter:function(event,player) {
 							// if (event.getParent().triggeredTargets3.length > 1) return false;
@@ -2214,22 +2218,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.storage.blackTargets=trigger.targets;
-							player.storage.card=trigger.card;
 							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
-								if (player.storage.blackTargets.contains(target)) return false;
-								return lib.filter.targetEnabled2(player.storage.card, player, target)
+								if (_status.event.targets.contains(target)) return false;
+								return lib.filter.targetEnabled2(_status.event.card, player, target)
 									&& player.inRange(target)
 									&& !player.storage.blackTargets.contains(target)
-							}).set('targets',trigger.targets).set('card',trigger.card);
-							// .set('ai',function(target){
-							// 	// var trigger=_status.event.getTrigger();
-							// 	var player=_status.event.player;
-							// 	return get.effect(target,card,player,player);
-							// })
+							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
+								var player = _status.event.player;
+								return get.effect(target,_status.event.card,player,player);
+							});
 							'step 1'
-							delete player.storage.card;
-							delete player.storage.blackTargets;
 							if(result.bool && result.targets.length){
 								game.delayx();
 								player.logSkill('kuangbaoshuangren', result.targets);

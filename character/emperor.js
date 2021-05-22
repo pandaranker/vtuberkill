@@ -1125,6 +1125,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							trigger.num ++;
 						},
+						ai:{
+							damageBonus:true
+						},
 						mod:{
 							canBeGained:function(card,source,player){
 								if(source!=player&&['h'].contains(get.position(card))) return false;
@@ -1230,7 +1233,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.filterCards.length) event.list.push('视为使用一张本回合未以此法使用过的基本牌');
 					var list = event.list;
 					var choice = [0,1].randomGet();
-					if(player.storage.tangyan_on)	choice = 1;
+					if(!player.storage.tangyan_on)	choice = 1;
 					if(list.length>=3)	choice = 2;
 					player.chooseControlList(list,function(){
 						return _status.event.choice;

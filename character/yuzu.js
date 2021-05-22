@@ -139,7 +139,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:'yuki',
 				intro:{
 					content:function(storage,player){
-						var str='回合结束时，摸';
+						var str='下个回合开始时，摸';
 						str+=get.cnNumber(player.storage.chentu*2);
 						str+='张牌';
 						return str;
@@ -4556,7 +4556,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						content:function(){
 							'step 0'
-							var record = player.getStorage('shixi');
+							var record = player.getStorage('shixi').slice(0);
 							var list = trigger.cards.filter(function(card){
 								for(var i=0;i<record.length;i++){
 									if(player.storage.shixi_mark&&player.storage.shixi_mark.contains(record[i]))	continue;
@@ -6502,6 +6502,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'he',
 				content:function(){
 					'step 0'
+					game.playAudio('skill','daimao_'+player.getStorage('daimao_mark').length);
 					player.$give(cards,player);
 					player.lose(cards,ui.special,'toStorage');
 					player.markAuto('daimao_mark',cards);
@@ -6527,6 +6528,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:['daimao_mark','daimao_start'],
 				subSkill:{
 					mark:{
+						locked:true,
 						intro:{
 							name:'呆毛',
 							content:'cards',
@@ -7161,8 +7163,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					effect:{
 						target:function(card,player,target,current){
-							if(get.type(card)=='equip'&&!get.cardtag(card,'gifts')) return [1,2];
-							if(player.hp) return [1,1];
+							if(target.hp<0)	return [0,1];
+							if(get.type(card)!='equip')	return [1,2];
 						}
 					}
 				}
@@ -7178,10 +7180,55 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delayx();
 				},
 				ai:{
+					maixie_defend:true,
 					threaten:function (player,target){
-						if(target.hp==1) return 0.1;
+						if(target.hp==1) return 0.6;
 						return 1;
 					},
+					effect:{
+						target:function(card,player,target,current){
+							if(target.hujia) return;
+							if(player._zhangdeng_tmp) return;
+							if(_status.event.getParent('useCard',true)||_status.event.getParent('_wuxie',true)) return;
+							if(get.tag(card,'damage')){
+								var basic = player.storage.shangdong||0;
+								if(get.attitude(player,target)>0&&target.hp>1){
+									return basic;
+								}
+								if(get.attitude(player,target)<0&&!player.hasSkillTag('damageBonus',false,{
+									name:card?card.name:null,
+									target:target,
+									card:card
+								})){
+									if(card.name=='sha') return;
+									var sha=false;
+									player._zhangdeng_tmp=true;
+									var num=player.countCards('h',function(card){
+										if(card.name=='sha'){
+											if(sha){
+												return false;
+											}
+											else{
+												sha=true;
+											}
+										}
+										return get.effect(target,card,player,player)+basic>0;
+									});
+									delete player._zhangdeng_tmp;
+									if(player.hasSkillTag('damage')){
+										num++;
+									}
+									if(num<2){
+										var enemies=player.getEnemies();
+										if(enemies.length==1&&enemies[0]==target&&player.needsToDiscard()){
+											return;
+										}
+										return basic;
+									}
+								}
+							}
+						}
+					}
 				}
 			},
 			//Gaku
@@ -8134,6 +8181,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}).ai=get.unuseful2;
 					'step 1'
 					if(result.bool&&result.cards[0]){
+						player.showCards(result.cards, '拟声');
 						player.storage.nisheng.add(get.number(result.cards[0]));
 						player.markSkill('nisheng');
 						player.insertPhase();

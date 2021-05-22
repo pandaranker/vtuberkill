@@ -93,6 +93,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_OtomeOto: ['female', 'paryi', 3, ['re_yuxia', 'hanyin'],['zhu']],
 			/**团长 */
 			re_HisekiErio:['female','paryi',4,['re_huange']],
+			/**花园猫 */
+			re_HanazonoSerena: ['female', 'paryi', 3, ['re_jiumao', 're_enfan']],
 
 			/**美波 */
 			re_MinamiNami: ['female','qun',4,['re_longdan']],
@@ -3081,7 +3083,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							if(player.hasSkill('juebi_addDam'))	player.removeSkill('juebi_addDam');
 						},
-						onremove:true,
+						ai:{
+							damageBonus:true,
+						},
 					}
 				}
 			},
@@ -3648,6 +3652,168 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			//re猫猫
+			re_jiumao:{
+				audio:'jiumao',
+				group: ['re_jiumao_put','re_jiumao_use','re_jiumao_jiesuan'],
+				subSkill: {
+					put: {
+						trigger: {
+							global: 'phaseDiscardBegin',
+						},
+						filter: function(event, player) {
+							return player!=event.player;
+						},
+						direct:true,
+						content: function() {
+							'step 0'
+							trigger.player.chooseCard('###'+get.prompt('re_jiumao')+'###将任意张手牌交给'+get.translation(player), 'he', [1, Infinity]).set('ai', function(card) {
+								var player = _status.event.player;
+								var source = _status.event.source;
+								if(get.attitude(player,source)<=0)	return -1;
+								if(!source.needsToDiscard()&&!ui.selected.cards.length)	return get.value(card,target)-get.value(card,player)+4;
+								if(player.needsToDiscard()&&ui.selected.cards.length<(player.countCards('h')-source.countCards('h'))/2)	return get.value(card,target)-get.value(card,player)+1;
+								else return	get.value(card,target)-get.value(card,player)-2;
+							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”').set('source',player);
+							'step 1'
+							if (result.bool) {
+								player.logSkill('re_jiumao',trigger.player)
+								trigger.player.give(result.cards, player, false);
+							}
+							else event.finish();
+							'step 2'
+							if(player.countCards('h')==trigger.player.countCards('h')){
+								trigger._re_jiumao = true;
+							}
+							game.delayx();
+						}
+					},
+					use:{
+						trigger: {
+							global: 'phaseDiscardEnd',
+						},
+						filter: function(event, player) {
+							return player!=event.player&&event._re_jiumao==true;
+						},
+						direct:true,
+						content: function() {
+							'step 0'
+							player.chooseCardTarget({
+								position:'h',
+								filterCard:true,
+								prompt:get.prompt('re_jiumao')+'使用一张牌并使其额外结算一次',
+								filterTarget:function(card,player,target){
+									return lib.filter.filterTarget.apply(this,arguments);
+								},
+								ai1:function(card,player,target){
+									if(get.type(card)!='equip'&&get.name(card)!='jiu')		return get.order(card);
+									return 0;
+								},
+								ai2:function(card,player,target){
+									if(!_status.event.check) return 0;
+									return get.effect(target,{name:'sha'},_status.event.player);
+								}
+							});
+							'step 1'
+							if(result.bool&&result.targets){
+								player.useCard(result.cards[0],result.targets,result.cards,false).set('addedSkill','re_jiumao_use');
+							}
+						}
+					},
+					jiesuan:{
+						trigger:{player:'useCardAfter'},
+						forced: true,
+						priority:42,
+						filter:function(event,player){
+							return event.addedSkill=='re_jiumao_use';
+						},
+						content:function(){
+							var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
+							player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'re_jiumao_jiesuan';
+						}
+					},
+				}
+			},
+			re_enfan:{
+				audio:'shiqi',
+				trigger: {
+					global:'dying'
+				},
+				filter: function(event, player) {
+					return player.countCards('h')&&event.player!=player;
+				},
+				direct:true,
+				content: function() {
+					'step 0'
+					player.chooseCard([1,Infinity],get.prompt2('re_enfan'),'he').set('ai',function(card){
+						if(!_status.event.check)	return 0;
+						return 6-get.value(card);
+					}).set('check',get.attitude(player,trigger.player)>0);
+					'step 1'
+					if(result.bool){
+						event.target = trigger.player;
+						player.logSkill('re_enfan',event.target);
+						player.give(result.cards,event.target,'giveAuto');
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(event.target.countCards('h')){
+						event.target.chooseToDiscard([1,Infinity],true,'he').set('complexCard',true).set('cardResult',function(){
+							var cards=event.target.getCards('he');
+							var l=cards.length;
+							var all=Math.pow(l,2);
+							var list=[];
+							for(var i=1;i<all;i++){
+								var array = [];
+								for(var j=0;j<l;j++){
+									if(Math.floor((i%Math.pow(2,j+1))/Math.pow(2,j))>0) array.push(cards[j])
+								}
+								var types = [];
+								for(var k of array){
+									types.add(get.type2(k));
+								}
+								if(types.length==3) list.push(array);
+							}
+							console.log(list)
+							if(list.length){
+								var sortx = function(x){
+									var num = get.value(x);
+									if(x.filter(function(y){
+										return get.color(y)=='red';
+									}).length&&x.filter(function(y){
+										return get.color(y)=='black';
+									}).length)		num-=4;
+									return num;
+								}
+								list.sort(function(a,b){
+									var numa = sortx(a);
+									var numb = sortx(b);
+									return numa-numb;
+								});
+								return list[0];
+							}
+							return list;
+						}()).set('ai',function(card){
+							if(!_status.event.cardResult.length)	return 0-get.value(card);
+							if(!_status.event.cardResult.contains(card))	return 0;
+							return 10;
+						});
+					}else{
+						event.finish();
+					}
+					'step 3'
+					if(result.bool){
+						console.log(get.type3(result.cards))
+						if(get.type3(result.cards).length>=3){
+							event.target.recover();
+						}
+						if(get.color3(result.cards).length>=2){
+							game.asyncDraw([event.target,player]);
+						}
+					}
+				}
+			},
 			//re三才
 			re_yuzhan:{
 				audio:'xuanxu',
@@ -3944,7 +4110,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'anshu_directHit',
 				subSkill:{
 					directHit:{
-						direct: true,
+						direct:true,
 						trigger:{
 							player:"useCard",
 						},
@@ -5760,6 +5926,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenyou_info: '锁定技 你受到来自基本牌的伤害+1；其它的伤害-1。',
 			shenfa: '神罚',
 			shenfa_info: '当你失去一张手牌时，你可以令一名其他角色获得『神佑』直到回合结束。',
+			shenfa_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 
 			re_SuzukaUtako:'新·铃鹿诗子',
 			re_meici: '美词',
@@ -5779,6 +5946,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_AngeKatrina: '新·安洁',
 			akxiaoqiao: '小巧',
 			akxiaoqiao_info: '弃牌阶段开始时，你可以展示任意张类型不同的手牌，本回合这些牌不计入手牌上限。',
+			akxiaoqiao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 			liancheng: '链成',
 			liancheng_info: '一轮限两次。一个回合结束时，你可以重铸任意张类型不同的手牌。若你重铸了装备牌，你可以令当前回合角色调整手牌与你相同。',
 
@@ -5920,6 +6088,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_HisekiErio: '新·绯赤艾莉欧',
 			re_huange: '幻歌',
 			re_huange_info: '轮次技 一个回合开始时，你可以摸等同一名角色体力值的牌，然后于回合结束时，弃置等同于该角色当前体力值的牌。',
+			re_huange_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
+
+			re_HanazonoSerena: '花園セレナ',
+			re_jiumao: '啾猫',
+			re_jiumao_info: '其他角色的弃牌阶段开始时，其可以交给你任意张手牌，然后若此时你的手牌数与其相等，你可以于此阶段结束时使用一张牌，且此牌额外结算一次。',
+			re_enfan: '恩返',
+			re_enfan_info: '其他角色进入濒死状态时，你可以交给其任意张牌，然后其弃置任意张牌。若因此弃置的牌包含所有类型，其回复1点体力；若包含所有颜色，你与其各摸一张牌。',
 
 			re_ŌokamiMio: '新·大神澪',
 			re_yuzhan: '预占',

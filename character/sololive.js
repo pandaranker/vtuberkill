@@ -207,7 +207,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.isMaxHp()||player.isMaxEquip()&&player.countCards('e')) return num*2;
 					},
 					attackFrom:function(from,to,distance){
-						if(from.isMaxHp()||from.isMaxEquip()&&from.countCards('e')) return distance-from.getAttackRange(true,true);
+						if(from._wangxuan_tmp)	return;
+						var num = distance;
+						from._wangxuan_tmp = true;
+						if(from.isMaxHp()||from.isMaxEquip()&&from.countCards('e')) num-=from.getAttackRange();
+						delete from._wangxuan_tmp;
+						return num;
 					}
 				},
 			},
@@ -555,7 +560,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.targets&&event.targets.length==1&&event.cards&&event.cards.length;
 				},
 				check:function(event,player){
-					return get.attitude(player,event.player)>0&&get.effect(event.targets[0],event.card,event.player,player);
+					return get.attitude(player,event.player)>0&&get.effect(event.targets[0],event.card,event.player,player)&&!['equip','delay'].contains(get.type(event.card))&&get.name(event.card)==get.name(event.cards[0]);
 				},
 				prompt:function(event,player){
 					return get.translation(event.player)+'使用'+get.translation(event.card)+'指定'+get.translation(event.targets)+'为目标，'+get.prompt('lingli');
@@ -568,8 +573,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					trigger.player.gain(trigger.cards,'gain2').gaintag.add('lingli');
 					trigger.player.addTempSkill('lingli_ganshe');
-					// 'step 2'
-					// ui.clear();
 				},
 				ai:{
 					effect:{
@@ -580,7 +583,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					ganshe:{
-						trigger:{player:'useCardAfter',global:'phaseAfter'},
+						trigger:{player:'useCardAfter',global:'phaseEnd'},
 						direct:true,
 						filterx:function(event,player){
 							if(!player.isPhaseUsing()) return false;
@@ -634,19 +637,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				onuse:function(result,player){
 					if(!player.storage.chengfo_mark)	player.storage.chengfo_mark = [];
 					player.storage.chengfo_mark.add(get.suit(result.card,player));
+					player.markSkill('chengfo_mark');
 				},
 				ai:{
 					order:10,
 					player:1,
 				},
-				group:['chengfo_drawBy'],
+				group:['chengfo_drawBy','chengfo_clear'],
 				subSkill:{
 					mark:{
 						onremove:true,
 						intro:{
 							content:function (storage,player,skill){
 								if(storage.length){
-									return '本阶段『闭目成佛』使用过的花色：'+ get.translation(storage);
+									return '本回合『闭目成佛』使用过的花色：'+ get.translation(storage);
 								}
 							},
 						}
@@ -661,7 +665,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						content:function(){
 							'step 0'
-							console.log(trigger.discards);
 							//window.prompt("sometext","defaultvalue");
 							player.chooseCardButton('『闭目成佛』：使用一张装备牌',trigger.discards).set('filterButton',function(button){
 								return get.type(button.link)=='equip';
@@ -687,6 +690,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 3'
 							player.draw();
 						},
+					},
+					clear:{
+						firstDo:true,
+						silent:true,
+						direct:true,
+						trigger:{
+							player:['phaseAfter']
+						},
+						content:function(){
+							delete player.storage.chengfo_mark;
+							player.unmarkSkill('chengfo_mark');
+						}
 					}
 				}
 			},

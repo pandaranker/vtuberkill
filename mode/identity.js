@@ -290,7 +290,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(_status.brawl&&_status.brawl.chooseCharacterBefore){
 					_status.brawl.chooseCharacterBefore();
 				}
-				game.chooseCharacter();
+				game.chooseCharacter(_status.new_beginner);
 			}
 			"step 5"
 			if(ui.coin){
@@ -382,6 +382,75 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			});
 			if(_status.connectMode&&lib.configOL.change_card) game.replaceHandcards(game.players.slice(0));
 			"step 7"
+			if(_status.new_beginner){
+				var step6=function(){
+					ui.create.dialog('是否需要关于游戏内容的简单讲解？');
+					ui.dialog.add('<div class="text center">如果熟悉三国杀原版游戏规则，请随意跳过');
+					ui.create.control('跳过向导',function(){
+						clear();
+						game.resume();
+					});
+					ui.create.control('继续',step7);
+				}
+				var step7=function(){
+					clear();
+					// ui.window.classList.add('noclick_important');
+					// ui.control.classList.add('noclick_click_important');
+					//ui.control.style.top='calc(100% - 105px)';
+					ui.create.control('如你所见，V杀是一个玩家操作各自角色进行战斗的游戏',function(){
+						game.me.classList.add('glow_phase');
+						ui.create.dialog('画面左下角的虚拟角色形象('+get.translation(game.me)+')是你操纵的角色<br>（如果你是app或者客户端，你需要下载完游戏资源后才会看见图片）');
+						ui.controls[0].replace('继续',function(){
+							ui.create.dialog('在黄框右侧是你的体力值不同角色卡上记载着各自的初始体力/初始体力上限<br>一旦一名角色的体力归零且没有被救回，ta就在本局游戏内死亡了');
+							ui.controls[0].replace('黄框的右侧是你的体力值',function(){
+								game.me.classList.remove('glow_phase');
+								game.zhu.classList.add('glow_phase');
+								ui.create.dialog('现在被黄框框出的虚拟角色形象('+get.translation(game.zhu)+')本局游戏的“主公”<br>每一局标准【身份】模式都将有一个“主公”身份br>');
+								ui.controls[0].replace('“主公”是ta的身份',function(){
+									ui.create.dialog('每名玩家将在一局游戏中扮演不同的身份<br>不同的身份对应了不同的胜利条件<br>比如“主公”的胜利条件就是杀死所有身份为“反贼”或“内奸”的玩家');
+									ui.controls[0].replace('继续',function(){
+										game.zhu.classList.remove('glow_phase');
+										game.me.classList.add('glow_phase');
+										ui.create.dialog('而你的身份是“反贼”，你的胜利条件就是杀死身份为“主公”的角色<br>除此以外还有身份为“忠臣”和“内奸的玩家');
+										ui.dialog.add('<div class="text center">“忠臣”的胜利条件就是保护主公，让主公胜利，而“内奸”的胜利条件是成为最后一个存活的角色');
+										ui.controls[0].replace('一旦主公死亡，反贼立即获得胜利',function(){
+											ui.create.dialog('值得注意的是，杀死反贼的角色将摸三张牌<br>主公在杀死忠臣将弃掉所有的牌');
+											ui.controls[0].replace('继续',function(){
+												ui.create.dialog('牌和角色的技能是驱动游戏的核心要素<br>你在接下来的游戏过程中，可以随时使用鼠标右键（移动端为长按）查看角色或卡牌的技能');
+												ui.dialog.add('<div class="text center">你面前的这些牌便是你的“手牌”，尝试学会查看它们的详细信息吧！');
+												ui.controls[0].replace('每个轮次会从主公开始，由逆时针进行回合',function(){
+													ui.controls[0].replace('跟随着ai们的步伐，学会在V杀世界里战斗吧！',function(){
+														// ui.window.classList.remove('noclick_important');
+														// ui.control.classList.remove('noclick_click_important');
+														//Wui.control.style.top='';
+														step8();
+													});
+												});
+											});
+										});
+									});
+								});
+							});
+						});
+					})
+				};
+				var step8=function(){
+					clear();
+					ui.create.dialog('<a href="https://jq.qq.com/?_wv=1027&k=iVuy3lDN" target="_blank">如果还有其它问题，欢迎来到V杀联机群（623566610）进行交流</a>');
+					ui.create.control('完成',function(){
+						clear();
+						game.resume();
+					})
+				};
+				var clear=function(){
+					ui.dialog.close();
+					while(ui.controls.length) ui.controls[0].close();
+				};
+				game.pause();
+				step6();
+			}
+			"step 8"
+			delete _status.new_beginner;
 			game.phaseLoop(_status.firstAct2||game.zhong||game.zhu||_status.firstAct||game.me);
 		},
 		game:{
@@ -1039,7 +1108,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},500);
 				});
 			},
-			chooseCharacter:function(){
+			chooseCharacter:function(isbeginner){
 				if(_status.mode=='purple'){
 					game.chooseCharacterPurple();
 					return;
@@ -1377,6 +1446,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.removeSetting=removeSetting;
 					event.list=[];
 					identityList.randomSort();
+					if(_status.event.isbeginner){
+						identityList.remove('fan');
+						identityList.unshift('fan');
+						if(event.fixedseat){
+							var zhuIdentity=(_status.mode=='zhong')?'mingzhong':'zhu';
+							if(zhuIdentity!='fan'){
+								identityList.remove(zhuIdentity);
+								identityList.splice(event.fixedseat,0,zhuIdentity);
+							}
+							delete event.fixedseat;
+						}
+					}
 					if(event.identity){
 						identityList.remove(event.identity);
 						identityList.unshift(event.identity);
@@ -1497,10 +1578,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					for(i in lib.character){
-						if(_status.new_beginner){
-							var rank=lib.rank.rarity;
-							if(rank.beginner.contains(i))	list5.push(i);
-						}
 						if(list4.contains(i)) continue;
 						if(chosen.contains(i)) continue;
 						if(lib.filter.characterDisabled(i)) continue;
@@ -1511,6 +1588,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 						else{
 							list3.push(i);
+						}
+						if(_status.new_beginner){
+							var rank=lib.rank.rarity;
+							if(rank.beginner.contains(i))	list5.push(i);
 						}
 					}
 					list2.sort(lib.sort.character);
@@ -1568,7 +1649,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					var str0='选择角色';
 					if(_status.new_beginner){
-						str0 += '（新手特供）';
+						str0 += '（新手推荐）';
 						if(list5.length)	list=list5.slice(0,8);
 					}
 					delete event.swapnochoose;
@@ -1814,6 +1895,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				});
+				next.set('isbeginner',isbeginner)
 			},
 			chooseCharacterChangeOL:function(){
 				var next=game.createEvent('chooseCharacter',false);

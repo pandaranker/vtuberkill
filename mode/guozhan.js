@@ -489,10 +489,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Noracat: ['female', 'clubs', 5, ['kouhu'],['gzskin']],
 				// /**Yomemi */
 				// gz_Yomemi:['female','clubs',3,['mokuai','yaoji']],
-				//神乐
-				gz_KaguraMea: ['female', 'ye', 4, ['gz_luecai', 're_xiaoyan']],
 				/**团长 */
 				gz_HisekiErio:['female','clubs',4,['re_huange']],
+				/**花园猫 */
+				gz_HanazonoSerena: ['female', 'paryi', 3, ['re_jiumao', 're_enfan']],
 				/**美波 */
 				gz_MinamiNami: ['female','clubs',4,['gz_longdan'],['gzskin']],
 				/**下地 */
@@ -518,6 +518,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**犬山 */
 				gz_InuyamaTamaki:['male','clubs',3,['rongyaochengyuan','re_hundunliandong'],['doublegroup:clubs:vtuber:nijisanji:holo']],
 
+				//神乐
+				gz_KaguraMea: ['female', 'ye', 4, ['gz_luecai', 're_xiaoyan']],
 
 
 				gz_shibing1wei:['male','wei',0,[],['unseen']],

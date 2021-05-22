@@ -271,6 +271,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.target.storage.songzang2.add(trigger.card);
 				},
 				ai:{
+					damageBonus:true,
+					skillTagFilter:function(player,tag,arg){
+						if(!arg||!arg.card||!get.tag(arg.card,'damage')
+						){
+							return arg.card.name=='sha'&&!(arg.target.maxHp/2 < arg.target.hp);
+						}
+					},
 					effect:{
 						player:function(card,player,target,current){
 							if(card.name=='sha'&&current<0) return 0.5;
@@ -608,11 +615,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group: ['caibu', 'luecai_draw'],
 				enable: 'phaseUse',
 				usable: 1,
-				locked: true,
 				filterTarget:function(card,player,target){
-					if (player==target) return false;
-					if (target.countCards('he') == 0 || target.countCards('h') == player.countCards('h')) return false;
-					return target;
+					if(target.countCards('he')==0||target.countCards('h')==player.countCards('h')) return false;
+					return true;
 				},
 				content: function() {
 					'step 0'
@@ -630,22 +635,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.card = result.cards[0];
 					} 
 					'step 2'
-					target.$give(event.card, player, false);
-					target.lose(event.card, ui.special, 'toStorage');
-					player.storage.caibu.push(event.card);
-					player.syncStorage('caibu');
-					player.markSkill('caibu');
-					player.showCards(player.storage.caibu, '财布');
+					if(result.bool){
+						target.$give(event.card, player, false);
+						target.lose(event.card, ui.special, 'toStorage');
+						player.storage.caibu.push(event.card);
+						player.syncStorage('caibu');
+						player.markSkill('caibu');
+						player.showCards(player.storage.caibu, '财布');
+					}
 				},
 				ai:{
 					order:10,
 					result:{
 						target:function(player,target){
-							return lib.card.shunshou.ai.result.target.apply(this,arguments);
+							if (target.countCards('h') > player.countCards('h')){
+								return lib.card.shunshou.ai.result.target.apply(this,arguments);
+							}
+							else{
+								return -1.5;
+							} 
 						},
-						player:1,
+						player:function(player,target){
+							return 1.5;
+						},
 					},
-					expose:0.4,
+					expose:0.2,
 					threaten:1.1
 				},
 				subSkill: {
@@ -681,28 +695,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
-				ai:{
-					effect:{
-						target:function(card,player,target,current){
-							if(get.tag(card,'damage')&&target.storage.caibu&&target.storage.caibu.length){
-								var chk = false;
-								target.storage.caibu.forEach(function(c) {
-									if (get.suit(c) == get.suit(card)) chk = true;
-								});
-								if(chk)	return [1,0,2,-1];
-							}
-						},
-						player:function(card,player,target,current){
-							if(get.tag(card,'damage')&&player.storage.caibu&&player.storage.caibu.length){
-								var chk = false;
-								player.storage.caibu.forEach(function(c) {
-									if (get.suit(c) == get.suit(card)) chk = true;
-								});
-								if(chk)	return [1,0,2,-1];
-							}
-						}
-					}
-				}
 			},
 			xiaoyan: {
 				group: ['caibu', 'xiaoyan_res', 'xiaoyan_dam', 'xiaoyan_highlight', 'xiaoyan_clear'],
@@ -748,6 +740,39 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content: function() {
 							trigger.num++;
 						},
+						ai:{
+							damageBonus:true,
+							skillTagFilter:function(player,tag,arg){
+								if(!arg||!arg.card||!get.tag(arg.card,'damage')
+								){
+									var chk = false;
+									player.storage.caibu.forEach(function(c){
+										if(get.suit(c)==get.suit(arg.card))	chk = true;
+									});
+									return chk;
+								}
+							},
+							effect:{
+								target:function(card,player,target,current){
+									if(get.tag(card,'damage')&&target.storage.caibu&&target.storage.caibu.length){
+										var chk = false;
+										target.storage.caibu.forEach(function(c) {
+											if (get.suit(c) == get.suit(card)) chk = true;
+										});
+										if(chk)	return [1,0,2,-1];
+									}
+								},
+								player:function(card,player,target,current){
+									if(get.tag(card,'damage')&&player.storage.caibu&&player.storage.caibu.length){
+										var chk = false;
+										player.storage.caibu.forEach(function(c) {
+											if (get.suit(c) == get.suit(card)) chk = true;
+										});
+										if(chk)	return [1,0,2,-1];
+									}
+								}
+							}
+						}
 					},
 					highlight: {
 						direct: true,
@@ -895,6 +920,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.chooseTarget(get.prompt2('DDzhanshou'),function(card,player,target){
 						return _status.event.targets.contains(target);
 					}).set('ai',function(target){
+						if(get.attitude(_status.event.player,target)<0&&target.countCards('h')==0)	return 0;
 						if(get.attitude(_status.event.player,target)>0&&target.countCards('h')<=3)	return 4+get.attitude(_status.event.player,target);
 						return 2-get.attitude(_status.event.player,target);
 					}).set('targets',trigger.targets);
@@ -1025,6 +1051,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			jiumao: {
+				audio:2,
 				global: 'jiumao_put',
 				group: ['jiumao_gain'],
 				subSkill: {
@@ -1047,9 +1074,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content: function() {
 							'step 0'
 							player.chooseCard(get.prompt('jiumao'), 'he', [1, Infinity]).set('ai', function(card) {
-								if (player.needsToDiscard()&&ui.selected.cards.length<player) return 6 - get.useful(card);
+								var player = _status.event.player;
+								if (player.needsToDiscard()&&ui.selected.cards.length<player.countCards('h')) return 6 - get.useful(card);
 								else return 2 - get.useful(card);
-							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”')
+							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”');
 							'step 1'
 							if (result.bool) {
 								player.lose(result.cards, ui.special, 'visible', 'toStorage');
@@ -1231,7 +1259,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								delete player.node.shiqi;
 								delete player.node.shiqi2;
 							}, player);
-						}
+						},
+						ai:{
+							damageBonus:true,
+						},
 					}
 				}
 			},
@@ -2966,6 +2997,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguraMea:['re_KaguraMea','KaguraMea'],
 			OtomeOto:['re_OtomeOto','OtomeOto'],
 			HisekiErio:['re_HisekiErio','HisekiErio'],
+			HanazonoSerena:['re_HanazonoSerena','HanazonoSerena'],
 		},
 		dynamicTranslate:{
 			mozouqiyin:function(player){

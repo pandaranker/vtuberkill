@@ -128,6 +128,11 @@ window.noname_source_list=[
 	'theme/style/cardback/ol.css',
 	'theme/style/cardback/official.css',
 	'theme/style/cardback/wood.css',
+	//
+	'theme/style/cardback/vk.css',
+	'theme/style/cardback/image/vk.png',
+	'theme/style/cardback/image/vk2.png',
+	//
 	'theme/style/cardback/image/feicheng.png',
 	'theme/style/cardback/image/feicheng2.png',
 	'theme/style/cardback/image/liusha.png',
