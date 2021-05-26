@@ -250,7 +250,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						list[get.suit(card)]++;
 					});
 					event.list = list;
-					if(Object.keys(event.list).length==3&&!player.getStorage('gz_lianjin_used').contains('A')){
+					if(Object.keys(event.list).length>=3&&!player.getStorage('gz_lianjin_used').contains('A')){
 						event.chooseEquip = true;
 						event.useSha = true;
 					}else if(!player.getStorage('gz_lianjin_used').contains('B')){
@@ -261,7 +261,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if(event.chooseEquip){
-						player.chooseCardButton(player.storage.gz_lianjin_mark,3,true).set('filterButton',function(button){
+						player.chooseCardButton(player.storage.gz_lianjin_mark,3,true,'选择发动『炼金』的牌').set('filterButton',function(button){
 							var link = button.link;
 							if(_status.event.chosen!==true)		return _status.event.chosen==get.suit(link);
 							else{
@@ -270,7 +270,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 								return true;
 							}
-						}).set('chosen',event.chooseEquip).set('prompt','选择发动『炼金』的牌');
+						}).set('chosen',event.chooseEquip);
 					}else{
 						event.finish();
 					}
@@ -411,6 +411,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					var num = event.cards.length;
 					player.logSkill('gz_jiance',target);
+					trigger.target.lose(event.cards, ui.discardPile).set('visible', true);
 					trigger.target.$throw(event.cards,1000);
 					game.log(trigger.target,'将',event.cards,'置入了弃牌堆');
 					trigger.target.draw(num);
@@ -560,7 +561,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.targets&&event.targets.length==1&&event.cards&&event.cards.length;
 				},
 				check:function(event,player){
-					return get.attitude(player,event.player)>0&&get.effect(event.targets[0],event.card,event.player,player)&&!['equip','delay'].contains(get.type(event.card))&&get.name(event.card)==get.name(event.cards[0]);
+					if(get.attitude(player,event.player)>0){
+						return get.effect(event.targets[0],event.card,event.player,player)>1&&!['equip','delay'].contains(get.type(event.card))&&get.name(event.card)==get.name(event.cards[0])&&get.name(event.card)!='jiu';
+					}
+					if(get.attitude(player,event.player)<0){
+						return get.effect(event.targets[0],event.card,event.player,event.player)>1&&(['equip','delay'].contains(get.type(event.card))||get.name(event.card)!='jiu');
+					}
+					return 0;
 				},
 				prompt:function(event,player){
 					return get.translation(event.player)+'使用'+get.translation(event.card)+'指定'+get.translation(event.targets)+'为目标，'+get.prompt('lingli');
@@ -574,15 +581,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.player.gain(trigger.cards,'gain2').gaintag.add('lingli');
 					trigger.player.addTempSkill('lingli_ganshe');
 				},
-				ai:{
-					effect:{
-						player:function(card,player,target,current){
-							if(card.hasGaintag&&card.hasGaintag('hengxuan'))	return [2,0];
-						}
-					}
-				},
 				subSkill:{
 					ganshe:{
+						mod:{
+							aiOrder:function(player,card,num){
+								if(card.hasGaintag&&card.hasGaintag('lingli')) return num/10;
+							},
+						},
+						ai:{
+							effect:{
+								player:function(card,player,target,current){
+									if(card.hasGaintag&&card.hasGaintag('lingli'))	return [2,0,2,0];
+								}
+							}
+						},
 						trigger:{player:'useCardAfter',global:'phaseEnd'},
 						direct:true,
 						filterx:function(event,player){
@@ -612,12 +624,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return false;
 						},
 						content:function(){
+							'step 0'
 							if(trigger.name=='useCard'){
 								var card=game.createCard(trigger.card.name,trigger.card.suit,trigger.card.number,trigger.card.nature);
 								player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'lingli_ganshe';
 							}
 							else{
 								player.removeGaintag('lingli');
+								event.finish();
+							}
+							'step 1'
+							var evt=trigger.getParent('phaseUse');
+							if(evt&&evt.name=='phaseUse'){
+								evt.skipped=true;
 							}
 						}
 					}
@@ -767,7 +786,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_yiqu: '亦趋',
 			gz_yiqu_info: '每回合限一次。当你受到伤害后，你可以交给来源一张牌。若与对你造成伤害的牌花色相同，你摸两张牌。',
 			baitai: '百态',
-			baitai_info: '回合开始时，你可以展示所有手牌，根据各花色的牌数于本回合增加对应值：♦️~攻击范围，♣️~摸牌阶段摸牌数，♥️~手牌上限，♠️~出牌阶段可使用【杀】的次数；一组四种花色~使用牌指定的目标。',
+			baitai_info: '回合开始时，你可以展示所有手牌，根据各花色的牌数于本回合增加对应值：♦️~攻击范围，♣️~摸牌阶段摸牌数，♥️~手牌上限，♠️~出牌阶段可使用【杀】的次数；一组四种花色~使用牌额外选择目标。',
 
 			gz_LizeHelesta: '国战莉泽',
 			tongchen: '同尘',

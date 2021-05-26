@@ -1322,25 +1322,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delayx();
 					'step 1'
 					event.nowHandCards=target.getCards('h');
-					player.chooseCard('he',true,'###『近援』###选择给予的牌').set('ai',function(card){
+					player.chooseCard('he','###『近援』###选择给予的牌').set('ai',function(card){
 						return 5-get.value(card);
 					});
 					'step 2'
-					event.cardUsable=true;
-					console.log(event.card,result.card)
-					event.card=result.cards[0];
-					if(event.nowHandCards.length>0)
-					event.nowHandCards.forEach(element => {
-						if(get.suit(element)==get.suit(result.cards[0])){
-							event.cardUsable=false;
-						}
-					});
-					if(event.cardUsable){
-						var bool=game.hasPlayer(function(current){
-							return target.canUse(result.cards[0],current);
+					if(result.cards&&result.cards.length){
+						event.cardUsable=true;
+						event.card=result.cards[0];
+						if(event.nowHandCards.length>0)
+						event.nowHandCards.forEach(element => {
+							if(get.suit(element)==get.suit(result.cards[0])){
+								event.cardUsable=false;
+							}
 						});
-						if(!bool){
-							event.cardUsable=false;
+						if(event.cardUsable){
+							var bool=game.hasPlayer(function(current){
+								return target.canUse(result.cards[0],current);
+							});
+							if(!bool){
+								event.cardUsable=false;
+							}
 						}
 					}
 					'step 3'
@@ -2203,7 +2204,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<player.storage.pekoyu.length;i++){
 						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
 					}
-					return !(event.result.bool == false || event.result.wuxied);			
+					return !(event.result.bool == false || event.iswuxied);
 				},
 				content: function() {
 					'step 0'
@@ -2480,10 +2481,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 	//			return get.suit(card)=='spade';
 	//			},
 				filter:function(event,player){
-					var gao = player.getCards('he').filter(function(ca){
+					var hangao = player.getCards('he').filter(function(ca){
 						return get.suit(ca)=='spade';
 					});
-					return gao.length;
+					return hangao.length;
 				},
 				position:'he',
 				filterCard:function(card){
@@ -3620,7 +3621,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			UsadaPekora: '兔田佩克拉',
 			pekoyu: '嚣张咚鼓',
-			pekoyu_info: '回合内，当你的非装备牌生效后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
+			pekoyu_info: '回合内，当你的非装备牌生效并结算后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
 			hongshaoturou: '自煲自足',
 			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
 

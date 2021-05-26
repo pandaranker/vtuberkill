@@ -16,14 +16,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				selectTarget:1,
 				modTarget:true,
 				content:function(){
-                    'step 0'
-                    if(!target.hasSkill('qi_skill')){
-                        target.addTempSkill('qi_skill')
-                    }
+					'step 0'
+					if(!target.hasSkill('qi_skill')){
+						target.addTempSkill('qi_skill')
+					}
 					'step 1'
-                    if(target.isDamaged()){
-                        target.changeHujia();
-                    }
+					if(target.isDamaged()){
+						target.changeHujia();
+					}
 				},
 				ai:{
 					order:function(item,player){

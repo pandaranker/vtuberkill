@@ -126,7 +126,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_ShigureUi:['female', 'qun', 3, ['uijieyuan', 'huixiang']],
 		},
 		characterIntro:{
-			re_SisterClearie:	'神のご加護があらんことを      --《DOMAG》',
+			re_SisterClearie: '神のご加護があらんことを      --《DOMAG》',
 		},
 		characterSort:{
 			Beginner:{
@@ -836,7 +836,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					var stats = 0;
 					game.hasPlayer(function(cur){
-						var history = cur.getHistory('useCard',function(evt){
+						cur.getHistory('useCard',function(evt){
 							if(get.color(evt.card,cur)==get.color(trigger.card,player)){
 
 							}else{
@@ -2572,7 +2572,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.card = result[0];
 					if(target.hasUseTarget(event.card)){
-						target.chooseUseTarget(event.card,'是否立即使用该牌？');
+						target.chooseUseTarget(event.card,'是否立即使用该牌（'+get.translation(event.card)+'）？');
 					}
 				},
 				ai:{
@@ -2589,7 +2589,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:3,
 				filter: function(event, player) {
 					return event.cards.length&&event.targets.length&&(get.name(event.card)=='sha'||get.name(event.card)=='guohe')
-						&&!(event.result.bool == false || event.result.wuxied);
+						&&!(event.result.bool == false || event.iswuxied);
 				},
 				content:function(){
 					if(get.name(trigger.card)=='sha'){
@@ -3674,7 +3674,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(!source.needsToDiscard()&&!ui.selected.cards.length)	return get.value(card,target)-get.value(card,player)+4;
 								if(player.needsToDiscard()&&ui.selected.cards.length<(player.countCards('h')-source.countCards('h'))/2)	return get.value(card,target)-get.value(card,player)+1;
 								else return	get.value(card,target)-get.value(card,player)-2;
-							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”').set('source',player);
+							}).set('source',player);
 							'step 1'
 							if (result.bool) {
 								player.logSkill('re_jiumao',trigger.player)
@@ -3924,7 +3924,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true;
 						},	
 						filter:function(event,player){
-							if(player!=_status.currentPhase)	return false;
+							//if(player!=_status.currentPhase)	return false;
 							if(event.card&&event.card.storage&&event.card.storage.bizuo==true)	return true;
 							if(event.cards&&event.cards.length){
 								for(var i=0;i<event.cards.length;i++){

@@ -26,7 +26,7 @@
 	var lib={
 		//独立功能
 		discoloration:"<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.5s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}16.67%{color: #FFFF00;}33.33%{color:#00FF00;}50% {color:#00FFFF;}66.67%{color: #0000FF;}83.33%{color: #FF00FF;}100%{color:#FF0000;}}</style>",
-		discoloration1:"<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}33.33%{color:#FF0F0F;}50% {color:#F000F0;}66.67%{color: #FF0F0F;}100%{color:#FFFF00;}}</style>",
+		discoloration1:"<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
 
 
 		configprefix:'noname_0.9_',
@@ -10428,6 +10428,7 @@
 			_icesha:'冰杀',
 			_yamisha:'暗杀',
 			_yamisha2:'暗影',
+			_shengjie:'升阶',
 			qianxing:'潜行',
 			mianyi:'免疫',
 			fengyin:'封印',
@@ -10461,6 +10462,130 @@
 		},
 		element:{
 			content:{
+				//崭新出炉
+				chooseShengjie:function(){
+					'step 0'
+					var list = [];
+					if(!lib.cardPack.mode_derivation||!lib.cardPack.mode_derivation.length)	return false;
+					for(var i=0;i<lib.cardPack.mode_derivation.length;i++){
+						var info = lib.card[lib.cardPack.mode_derivation[i]];
+						if(info&&info.materials&&(typeof info.materials=='function'||Array.isArray(info.materials)))		list.push(lib.cardPack.mode_derivation[i]);
+					}
+					if(event.filterProduct)	list = list.filter(event.filterProduct);
+					event.list = list;
+					'step 1'
+					var next = player.chooseButton([event.prompt,[event.list,'vcard'],'素材区',[event.materials,'card'],'hidden'],event.forced);
+					next.set('filterButton',function(button){
+						if(get.itemtype(button.link)=='card'){
+							if(!ui.selected.buttons.length)	return false;
+							var ub=ui.selected.buttons;
+							var scards = ub.slice(1).map(function(scard){
+								return scard.link;
+							});
+							var product = ub[0].link[2];
+							scards = scards.filter(function(scard){
+								return get.itemtype(scard)=='card';
+							});
+							if(_status.event.filterMaterial&&!_status.event.filterMaterial(button.link,scards))	return false;
+							var filter = get.info({name:product}).materials;
+							if(Array.isArray(filter)){
+								if(filter.length>scards.length){
+									var mate = filter.slice(0);
+									for(var j=0;j<mate.length;j++){
+										for(var k of scards){
+											if(typeof mate[j]=='string'){
+												if(mate[j]==get.name(k))	mate.splice(j--,1);
+											}
+											else if(typeof mate[j]=='object'){
+												for(x in mate[j]){
+													var value;
+													if(x=='type'||x=='subtype'||x=='color'||x=='suit'||x=='number'){
+														value=get[x](k);
+													}
+													else{
+														value=k[x];
+													}
+													if((typeof mate[j][x]=='string'&&value==mate[j][x])||
+														(Array.isArray(mate[j][x])&&mate[j][x].contains(value))){
+															mate.splice(j--,1);
+													}
+												}
+											}
+											else if(typeof mate[j]=='function'){
+												if(mate[j](k)){
+													mate.splice(j--,1);
+												}
+											}
+										}
+									}
+									if(mate.contains(get.name(button.link)))	return true;
+								}
+								return false;
+							}
+							return true;
+						}
+						if(ui.selected.buttons.length) return false;
+						return true;
+					});
+					next.set('selectButton',function(){
+						var ub=ui.selected.buttons;
+						if(ub.length){
+							var scards = ub.slice(1).map(function(scard){
+								return scard.link;
+							});
+							var product = ub[0].link[2];
+							var filter = get.info({name:product}).materials;
+							if(Array.isArray(filter)){
+								if(filter.length==scards.length){
+									var mate = filter.slice(0);
+									for(var j=0;j<mate.length;j++){
+										for(var k of scards){
+											if(typeof mate[j]=='string'){
+												if(mate[j]==get.name(k))	mate.splice(j--,1);
+											}
+											else if(typeof mate[j]=='object'){
+												for(x in mate[j]){
+													var value;
+													if(x=='type'||x=='subtype'||x=='color'||x=='suit'||x=='number'){
+														value=get[x](k);
+													}
+													else{
+														value=k[x];
+													}
+													if((typeof mate[j][x]=='string'&&value==mate[j][x])||
+														(Array.isArray(mate[j][x])&&mate[j][x].contains(value))){
+															mate.splice(j--,1);
+													}
+												}
+											}
+											else if(typeof mate[j]=='function'){
+												if(mate[j](k)){
+													mate.splice(j--,1);
+												}
+											}
+										}
+									}
+									if(mate.length==0)	return ub.length;
+								}
+							}
+						}
+						return [ub.length+1,ub.length+2];
+					});
+					next.set('filterMaterial',event.filterMaterial);
+					'step 2'
+					if(result.bool){
+						var cards = result.links.slice(1);
+						var star = game.createCard2(result.links[0][2],'spade',14);
+						player.gain(star,'gain2').gaintag.add('_shengjie');
+						event.result = {
+							bool:true,
+							cards:cards,
+							materials:cards,
+							star:star,
+						};
+					}
+					else	event.result={bool:false};
+				},
 				emptyEvent:function(){
 					event.trigger(event.name);
 				},
@@ -16701,6 +16826,93 @@
 			},
 			player:{
 				//自创函数
+				chooseShengjie:function(){
+					var next=game.createEvent('chooseShengjie');
+					next.player=this;
+					for(var i=0;i<arguments.length;i++){
+						if(get.itemtype(arguments[i])=='cards') next.materials=arguments[i];
+						else if(typeof arguments[i]=='boolean') next.forced=arguments[i];
+						else if(typeof arguments[i]=='string') next.prompt=arguments[i];
+						else if(get.itemtype(arguments[i])=='select'||typeof arguments[i]=='number') next.select=arguments[i];
+						else if(typeof arguments[i]=='function') next.filterProduct=arguments[i];
+						else if(typeof arguments[i]=='function') next.filterMaterial=arguments[i];
+					}
+					if(!this.canShengjie.apply(this,arguments))	return;
+					if(next.prompt==undefined)	next.prompt='请选择升阶获得的卡牌';
+					if(next.select==undefined)	next.select=[1,Infinity];
+					next.setContent('chooseShengjie');
+					return next;
+				},
+				canShengjie:function(){
+					var list = [];
+					for(var i=0;i<lib.cardPack.mode_derivation.length;i++){
+						var info = lib.card[lib.cardPack.mode_derivation[i]];
+						if(info&&info.materials&&(typeof info.materials=='function'||Array.isArray(info.materials)))		list.push(lib.cardPack.mode_derivation[i]);
+					}
+					var materials,select,filterProduct,bool=false;
+					for(var i=0;i<arguments.length;i++){
+						if(get.itemtype(arguments[i])=='cards')		materials=arguments[i];
+						else if(get.itemtype(arguments[i])=='select'||typeof arguments[i]=='number') select=arguments[i];
+						else if(typeof arguments[i]=='function')	filterProduct=arguments[i];
+					}
+					if(filterProduct)	list = list.filter(filterProduct);
+					if(!materials||!list.length)	return false;
+					if(select==undefined)	select=[1,Infinity];
+					var materialList=[];
+					var cards=materials.slice(0);
+					var l=cards.length;
+					var all=Math.pow(l,2);
+					for(var i=1;i<all;i++){
+						var array = [];
+						for(var j=0;j<l;j++){
+							if(Math.floor((i%Math.pow(2,j+1))/Math.pow(2,j))>0) array.push(cards[j])
+						}
+						if((get.itemtype(select)=='select'&&array.length>=select[0]&&array.length<=select[1])
+						||(typeof select=='number'&&array.length==select))	materialList.push(array);
+					}
+					for(var j of materialList){
+						for(var k of list){
+							var filter = get.info({name:k}).materials;
+							if(Array.isArray(filter)&&filter.length==j.length){
+								var mate = filter.slice(0);
+								for(var l=0;l<mate.length;l++){
+									for(var m of j){
+										if(typeof mate[l]=='string'){
+											if(mate[l]==get.name(m))	mate.splice(l--,1);
+										}
+										else if(typeof mate[l]=='object'){
+											for(x in mate[l]){
+												var value;
+												if(x=='type'||x=='subtype'||x=='color'||x=='suit'||x=='number'){
+													value=get[x](m);
+												}
+												else{
+													value=m[x];
+												}
+												if((typeof mate[l][x]=='string'&&value==mate[l][x])||
+													(Array.isArray(mate[l][x])&&mate[l][x].contains(value))){
+														mate.splice(l--,1);
+												}
+											}
+										}
+										else if(typeof mate[l]=='function'){
+											if(mate[l](m)){
+												mate.splice(l--,1);
+											}
+										}
+									}
+								}
+								if(mate.length==0){
+									bool = true;
+								}
+							}
+							if(typeof filter=='function'){
+								bool = filter(j);
+							}
+						}
+					}
+					return bool;
+				},
 				isYingV:function(){
 					var info=lib.character[this.name||this.name1];
 					if(info&&info[4]){
@@ -24477,8 +24689,8 @@
 					}
 					var cardnum=card[1]||'';
 					if(parseInt(cardnum)==cardnum) cardnum=parseInt(cardnum);
-					if([1,11,12,13].contains(cardnum)){
-						cardnum={'1':'A','11':'J','12':'Q','13':'K'}[cardnum];
+					if([1,11,12,13,14].contains(cardnum)){
+						cardnum={'1':'A','11':'J','12':'Q','13':'K','14':'★'}[cardnum]
 					}
 					if(!lib.card[card[2]]){
 						lib.card[card[2]]={};
@@ -26469,6 +26681,36 @@
 			}
 		},
 		skill:{
+			//升阶
+			_shengjie:{
+				enable:'phaseUse',
+				usable:1,
+				filter:function(event,player){
+					console.log(player.canShengjie(player.getCards('h')))
+					return player.canShengjie(player.getCards('h'));
+				},
+				check:function(card){
+					return 1;
+				},
+				content:function(){
+					'step 0'
+					player.chooseShengjie(player.getCards('h'));
+					'step 1'
+					if(result.bool){
+						player.lose(result.cards,ui.discardPile,'visible');
+						player.$throw(result.cards);
+						game.log(player,'将',result.cards,'置入了弃牌堆');
+					}
+				},
+				ai:{
+					basic:{
+						order:6
+					},
+					result:{
+						player:1,
+					},
+				}
+			},
 			//搬过来的应变
 			_yingbian:{
 				trigger:{player:'useCard1'},
@@ -52153,8 +52395,8 @@
 					}
 					if(str.suit&&str.number){
 						var cardnum=str.number||'';
-						if([1,11,12,13].contains(cardnum)){
-							cardnum={'1':'A','11':'J','12':'Q','13':'K'}[cardnum]
+						if([1,11,12,13,14].contains(cardnum)){
+							cardnum={'1':'A','11':'J','12':'Q','13':'K','14':'★'}[cardnum]
 						}
 						if(arg=='viewAs'&&str.viewAs!=str.name&&str.viewAs){
 							str2+='（'+get.translation(str)+'）';
@@ -52212,6 +52454,7 @@
 				case 11:return 'J';
 				case 12:return 'Q';
 				case 13:return 'K';
+				case 14:return '★';
 				default:return num.toString();
 			}
 		},
@@ -53422,7 +53665,7 @@
 									uiintro.add('<div class="text center">来源：'+get.translation(lib.card[name].derivation)+'</div>');
 								}
 								else if(lib.card[name].derivationpack){
-									uiintro.add('<div class="text center">来源：'+get.translation(lib.card[name].derivationpack+'_card_config')+'包</div>');
+									uiintro.add('<div class="text center">来源：'+get.translation(lib.card[name].derivationpack+'_card_config')+'</div>');
 								}
 							}
 							else{
@@ -53447,6 +53690,12 @@
 							if(lib.translate[name+'_info'].indexOf('<div class="equip"')!=0){
 								uiintro._place_text=placetext;
 							}
+						}
+						if(lib.card[name].materials){
+							if(lib.card[name].materials_prompt)		uiintro.add('<div class="text" style="font-family: yuanli">★升阶：'+lib.card[name].materials_prompt+'</div>');
+							else if(typeof lib.card[name].materials=='function')	uiintro.add('<div class="text" style="font-family: yuanli">★升阶：'+lib.card[name].materials_prompt(node.link||node)+'</div>');
+							else if(Array.isArray(lib.card[name].materials))	uiintro.add('<div class="text" style="font-family: yuanli">★升阶：'+get.translation(lib.card[name].materials)+'</div>');
+							else	uiintro.add('<div class="text" style="font-family: yuanli">★升阶卡牌</div>');
 						}
 						if(lib.card[name].yingbian_prompt&&get.is.yingbian(node.link||node)){
 							if(typeof lib.card[name].yingbian_prompt=='function') uiintro.add('<div class="text" style="font-family: yuanli">应变：'+lib.card[name].yingbian_prompt(node.link||node)+'</div>');

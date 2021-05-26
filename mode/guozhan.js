@@ -413,7 +413,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**大空昴 */
 				gz_ŌzoraSubaru:['female','holo',4,['cejing'],['gzskin']],
 				/**时雨羽衣 */
-				gz_ShigureUi:['female', 'qun', 3, ['uijieyuan', 'huixiang'],['gzskin']],
+				gz_ShigureUi:['female', 'holo', 3, ['uijieyuan', 'huixiang'],['gzskin','doublegroup:holo:nijisanji:clubs']],
 				/**紫咲诗音 */
 				gz_MurasakiShion:['female','holo',3,['anshu','xingchi'],['gzskin']],
 				/**桃子 */
@@ -464,6 +464,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Siro:['female', 'vtuber', 4, ['liexing']],
 				/**巴恰鲁 */
 				gz_Bacharu:['male', 'vtuber', 4, ['gz_zuodun','gz_baidao']],
+				/**姬雏 */
+				gz_HIMEHINA:['female','vtuber',3,['jichu','mingshizhige']],
 				/**嘉然 */
 				gz_Diana: ['female','vtuber',4,['quanyu'],['gzskin']],
 				/**向晚 */
@@ -1215,7 +1217,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseEnd'},
 				round:1,
 				filter:function(event,player){
-					return player.getHistory('damage').length&&player.getHistory('sourceDamage').length;
+					return player.getHistory('damage').length||player.getHistory('sourceDamage').length;
 				},
 				content:function(){
 					player.insertPhase();

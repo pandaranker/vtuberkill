@@ -1009,7 +1009,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:'player',
 				content:function(){
 					trigger.player = player;
-					game.asyncDraw([player,trigger.source]);
+					var targets = [player];
+					if(trigger.source)	targets.add(trigger.source);
+					game.asyncDraw(targets);
 					if(!player.hasSkill('zhongxinghezou')){
 						player.addTempSkill('zhongxinghezou',{player:'phaseAfter'});
 					}

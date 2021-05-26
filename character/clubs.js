@@ -3003,7 +3003,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mozouqiyin:function(player){
 				var str = '小';
 				if(player.storage.mozouqiyin) str = player.storage.mozouqiyin;
-				return '其他角色的回合开始时，你可使用一张牌，若未造成伤害，然后本回合其跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin+'）于此牌的牌。';
+				return '其他角色的回合开始时，你可使用一张牌，若未造成伤害，本回合其跳过弃牌阶段且不能使用点数（'+player.storage.mozouqiyin+'）于此牌的牌。';
 			},
 			budingpaidui:function(player){
 				var str = 'xiao';
@@ -3039,7 +3039,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你在装备武器时，你手牌中的武器牌均视为不记次数的【杀】。',
+			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你装备着武器时，你手牌中的武器牌均视为不记次数的【杀】。',
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',

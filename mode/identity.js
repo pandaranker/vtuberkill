@@ -401,7 +401,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.classList.add('glow_phase');
 						ui.create.dialog('画面左下角的虚拟角色形象('+get.translation(game.me)+')是你操纵的角色<br>（如果你是app或者客户端，你需要下载完游戏资源后才会看见图片）');
 						ui.controls[0].replace('继续',function(){
-							ui.create.dialog('在黄框右侧是你的体力值不同角色卡上记载着各自的初始体力/初始体力上限<br>一旦一名角色的体力归零且没有被救回，ta就在本局游戏内死亡了');
+							ui.create.dialog('角色左侧的数字('+game.me.countCards('h')+')是你的手牌数，游戏开始时所有玩家都会摸四张牌<br>在角色右侧的是你的体力值，不同角色卡上记载着各自的初始体力/初始体力上限<br>一旦一名角色的体力归零且没有被救回，ta就在本局游戏内死亡了');
 							ui.controls[0].replace('黄框的右侧是你的体力值',function(){
 								game.me.classList.remove('glow_phase');
 								game.zhu.classList.add('glow_phase');
@@ -1847,7 +1847,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						});
 					}
 					"step 2"
-					event.group=result.links[0][2].slice(6)||false;
+					if(result.links&&result.links[0])	event.group=result.links[0][2].slice(6)||false;
 					if(event.chosen.length){
 						game.me.init(event.chosen[0],event.chosen[1]);
 					}
