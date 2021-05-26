@@ -10466,7 +10466,7 @@
 				chooseShengjie:function(){
 					'step 0'
 					var list = [];
-					if(!lib.cardPack.mode_derivation||!lib.cardPack.mode_derivation.length)	return false;
+					if(!lib.cardPack.mode_derivation||!lib.cardPack.mode_derivation.length)	event.finish();
 					for(var i=0;i<lib.cardPack.mode_derivation.length;i++){
 						var info = lib.card[lib.cardPack.mode_derivation[i]];
 						if(info&&info.materials&&(typeof info.materials=='function'||Array.isArray(info.materials)))		list.push(lib.cardPack.mode_derivation[i]);
@@ -16845,6 +16845,7 @@
 				},
 				canShengjie:function(){
 					var list = [];
+					if(!lib.cardPack.mode_derivation||!lib.cardPack.mode_derivation.length)	return false;
 					for(var i=0;i<lib.cardPack.mode_derivation.length;i++){
 						var info = lib.card[lib.cardPack.mode_derivation[i]];
 						if(info&&info.materials&&(typeof info.materials=='function'||Array.isArray(info.materials)))		list.push(lib.cardPack.mode_derivation[i]);
