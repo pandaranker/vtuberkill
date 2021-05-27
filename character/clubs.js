@@ -7,7 +7,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**阿梓 */
 			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
 			/**勺宝 */
-			Shaun: ['female','VirtuaReal',3,['juxiao','shenyan'],['guoV']],
+			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
 			/**胡桃 */
 			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
 
@@ -457,11 +457,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return effect<0;
 				},
 				logTarget:function(event){
-					var targets=  event.getParent().targets.slice();
-					return targets.splice(targets.indexOf(event.player));
+					var targets=  event.getParent().targets.slice(0);
+					return targets.splice(targets.indexOf(event.player)+1);
 				},
 				content:function(){
-					trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player));
+					trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player)+1);
 				},
 			},
 			//Kaf

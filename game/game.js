@@ -14764,7 +14764,7 @@
 						event.oncard(event.card,event.player);
 					}
 					event.excluded=[];
-					event.directHit=[];
+					if(!event.directHit)	event.directHit=[];
 					event.customArgs={default:{}};
 					event.baseDamage=get.info(card,false).baseDamage||1;
 					player.actionHistory[player.actionHistory.length-1].useCard.push(event);
@@ -26687,7 +26687,6 @@
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
-					console.log(player.canShengjie(player.getCards('h')))
 					return player.canShengjie(player.getCards('h'));
 				},
 				check:function(card){

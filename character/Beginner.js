@@ -3383,8 +3383,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				usable:1,
 				filterTarget:function(card,player,target){
-					for(var i=0;i<ui.selected.targets.length;i++){
-						if(ui.selected.targets[i].group==target.group) return false;
+					if(target.hasSkill('rongyaochengyuan_homolive')){
+						for(var i=0;i<ui.selected.targets.length;i++){
+							if(ui.selected.targets[i].hasSkill('rongyaochengyuan_homolive')) return false;
+						}
+					}
+					else{
+						for(var i=0;i<ui.selected.targets.length;i++){
+							if(ui.selected.targets[i].group==target.group) return false;
+						}
 					}
 					return true;
 				},

@@ -2123,7 +2123,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else event.finish();
 					'step 1'
 					if (result.bool) {
-						console.log(result);
 						event.card = result.links[0];
 						var pStr = get.suit(event.card) == 'diamond' ?
 							"选择乐不思蜀的目标" : "选择决斗的目标";
