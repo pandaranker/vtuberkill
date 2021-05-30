@@ -502,7 +502,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				check:function(event,player){
-					if(get.damageEffect(player,event.player,player)>=0) return false;
+					if(get.damageEffect(event.player,player,player)<0) return true;
 					return true;
 				},
 				content:function(){

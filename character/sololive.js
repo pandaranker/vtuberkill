@@ -677,7 +677,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					drawBy:{
 						trigger:{global:'yiyiEnd'},
 						filter:function(event,player){
-							return event.skill&&event.skill=='chengfo'&&event.discards&&(event.discards.filter(function(card){
+							return event.skill&&event.skill=='chengfo'&&event.player!=player&&event.discards&&(event.discards.filter(function(card){
 								return get.type(card)=='equip';
 							}).length||event.discards.length);
 						},
@@ -685,7 +685,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							//window.prompt("sometext","defaultvalue");
-							player.chooseCardButton('『闭目成佛』：使用一张装备牌',trigger.discards).set('filterButton',function(button){
+							player.chooseCardButton('『闭目成佛』：使用其中一张装备牌',trigger.discards).set('filterButton',function(button){
 								return get.type(button.link)=='equip';
 							});
 							'step 1'
@@ -811,7 +811,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lingli: '灵力干涉',
 			lingli_info: '轮次技 当一张牌指定唯一角色为目标时，你可以令之无效并返回来源手牌。然后其本回合使用此牌时结束当前阶段并额外结算一次。',
 			chengfo: '闭目成佛',
-			chengfo_info: '你可以将一张本回合未使用过花色的牌当【以逸待劳】使用。你可以使用其他角色因此弃置的装备牌。且若因此弃置的牌均为同色，你摸一张牌。',
+			chengfo_info: '你可以将一张本回合未使用过花色的牌当【以逸待劳】使用。其他角色因此弃置牌后，若包含装备牌，你可以使用其中一张；若为同色，你摸一张牌。',
 
 			gz_AngeKatrina: '国战安洁',
 			gz_lianjin:'炼金',

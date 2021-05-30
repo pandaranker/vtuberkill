@@ -981,6 +981,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				next.setContent(function(){
 					"step 0"
 					ui.arena.classList.add('choose-character');
+					game.no_continue_game=true;
 					lib.init.onfree();
 					"step 1"
 					var list=['rZhu','rZhong','rNei','rYe'];
@@ -2290,7 +2291,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							zhu.hp++;
 							zhu.update();
 						}
-					},game.zhu,game.zhu.name,game.zhu.name2,game.players.length>4);
+					},game.zhu,result.links[0],result.links[1],game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
 						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp'];//
@@ -2371,7 +2372,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						else{
 							result[i]=result[i].links;
 						}
-						if(lib.character[result[i][0]]&&lib.character[result[i][0]][1]=='shen') shen.push(lib.playerOL[i]);
+						if(lib.character[result[i][0]]&&lib.character[result[i][0]][1]=='shen'&&!lib.character[result[i][0]][4].contains('hiddenSkill')) shen.push(lib.playerOL[i]);
 					}
 					event.result2=result;
 					if(shen.length){
@@ -2663,7 +2664,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(game.zhu&&game.zhu.isZhu){
 						if(get.population('zhong')+get.population('nei')==0||
 						get.population('zhong')+get.population('fan')==0){
-							game.broadcastAll(game.showIdentity);
+							game.broadcastAll(function(){
+								game.showIdentity();
+								if(game.zhu&&game.zhu.isAlive()&&get.population('nei')==1&&get.config('nei_fullscreenpop')) game.me.$fullscreenpop('<span style="font-family:xinwei"><span data-nature="fire">主公</span><span data-nature="soil"> vs </span><span data-nature="thunder">内奸</span></span>',null,null,false);
+							});
 						}
 					}
 					if(game.zhu&&game.zhu.storage.enhance_zhu&&get.population('fan')<3){

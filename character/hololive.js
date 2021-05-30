@@ -3159,42 +3159,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//蘑菇人
 			maoge:{
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
 				marktext:'书',
-				mark:true,
-				hiddenCard:function(player,name){
-					if(!player.storage.maoge||player.storage.maoge.length<=player.countCards('h')) return false;
-					for(var i=0;i<player.storage.maoge.length;i++){
-						if(get.name(player.storage.maoge[i])==name) return true;
-					}
-					return false;
-				},
 				intro:{
-					name:'书',
-					content:function(storage,player){
-						if(!storage||!storage.length) return '共有〇张牌';
-						if(player.isUnderControl(true)){
-							return get.translation(storage);
-						}
-						else{
-							return '共有'+get.cnNumber(storage.length)+'张牌';
-						}
-					},
 					mark:function(dialog,storage,player){
-						if(!storage||!storage.length) return '共有〇张牌';
-						if(player.isUnderControl(true)){
-							dialog.addAuto(storage);
-						}
-						else{
-							return '共有'+get.cnNumber(storage.length)+'张牌';
-						}
+						dialog.addAuto(player.getCards('s',function(card){
+							return card.hasGaintag('maoge');
+						}));
 					},
 					markcount:function(storage,player){
-						if(storage&&storage.length) return storage.length;
-						return 0;
-					}
+						return player.getCards('s',function(card){
+							return card.hasGaintag('maoge');
+						}).length;
+					},
+					onunmark:function(storage,player){
+						var cards=player.getCards('s',function(card){
+							return card.hasGaintag('maoge');
+						});
+						if(cards.length){
+							player.lose(cards,ui.discardPile);
+							player.$throw(cards,1000);
+							game.log(cards,'进入了弃牌堆');
+						}
+					},
 				},
 				trigger:{global:'gameDrawAfter',player:['drawBegin','enterGame']},
 				forced:true,
@@ -3202,150 +3188,45 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				popup:false,
 				lastDo:true,
 				content:function(){
+					'step 0'
 					if(trigger.name=='gameDraw'){
 						var cards=player.getCards('h');
-						player.lose(cards,ui.special,'toStorage');
+						player.loseToSpecial(cards,'maoge');
 					}else{
 						var cards=get.cards(trigger.num);
+						player.$draw(cards.length);
+						player.directgains(cards,null,'maoge');
+						trigger.changeToZero();
 					}
-					player.$draw(cards.length);
-					player.markAuto('maoge',cards);
 					game.log(player,'获得了'+get.cnNumber(cards.length)+'张“书”');
-					trigger.changeToZero();
+					'step 1'
+					player.markSkill('maoge');
 				},
-				group:['maoge_nouse','maoge_use','maoge_respond','maoge_drawPhase'],
+				mod:{
+					cardEnabled2:function(cardx,player){
+						console.log(get.position(cardx))
+						if(player.countCards('s',function(card){
+							return card.hasGaintag('maoge');
+						})>player.countCards('h')){
+							return get.position(cardx)!='h';
+						}
+						else{
+							return get.position(cardx)=='h';
+						}
+					}
+				},
+				group:'maoge_drawPhase',
 				subSkill:{
 					drawPhase:{
 						trigger:{player:'phaseDrawBegin2'},
 						forced:true,
 						filter:function(event,player){
-							return player.storage.maoge.length<player.countCards('h')&&!event.numFixed;
+							return player.countCards('s',function(card){
+								return card.hasGaintag('maoge');
+							})<player.countCards('h')&&!event.numFixed;
 						},
 						content:function(){
 							trigger.num++;
-						}
-					},
-					nouse:{
-						mod:{
-							cardEnabled2:function(card,player){
-								if(player.getStorage('maoge').length>player.countCards('h')&&get.position(card)=='h'){
-									return false;
-								}
-							}
-						}
-					},
-					use:{
-						enable:'chooseToUse',
-						filter:function(event,player){
-							if(player.storage.maoge&&player.storage.maoge.length>player.countCards('h')){
-								for(var i=0;i<player.storage.maoge.length;i++){
-									if(event.filterCard(player.storage.maoge[i],player,event)) return true;
-								}
-							}
-							return false;
-						},
-						chooseButton:{
-							dialog:function(event,player){
-								return ui.create.dialog('『帽阁』',player.storage.maoge,'hidden');
-							},
-							filter:function(button,player){
-								var evt=_status.event.getParent();
-								if(evt&&evt.filterCard){
-									if(evt.getParent().name!='phaseUse'){
-										return evt.filterCard(button.link,player,evt);
-									}
-									return player.hasUseTarget(button.link)&&evt.filterCard(button.link,player,evt);
-								}
-								return true;
-							},
-							check:function(button){
-								if(button.link.name=='du') return 10;
-								var player=_status.event.player;
-								if(player.getUseValue(button.link)>0) return get.order(button.link);
-								return -1;
-							},
-							backup:function(links,player){
-								return {
-									prompt:'选择'+get.translation(links)+'的目标',
-									filterCard:function(){return false},
-									selectCard:-1,
-									viewAs:links[0],
-									onuse:function(result,player){
-										if(player.storage.maoge&&player.storage.maoge.length){
-											player.storage.maoge.remove(result.card);
-										}
-										player.updateMarks();
-									}
-								}
-							},
-						},
-						ai:{
-							order:function(item,player){
-								var event=_status.event;
-								if(event.type!='phase') return 4;
-								if(!player) return -1;
-								if(!player.storage.maoge||!player.storage.maoge.length) return -1;
-								var order=0;
-								for(var i=0;i<player.storage.maoge.length;i++){
-									if(player.getUseValue(player.storage.maoge[i])>0){
-										var order2=get.order(player.storage.maoge[i]);
-										if(order2>order) order=order2
-									}
-								}
-								return order+0.1;
-							},
-							result:{
-								player:function(player){
-									if(_status.event.dying) return get.attitude(player,_status.event.dying);
-									return 1;
-								}
-							},
-							useful:-1,
-							value:-1
-						}
-					},
-					respond:{
-						trigger:{player:'chooseToRespondBegin'},
-						filter:function(event,player){
-							if(event.responded) return false;
-							if(player.storage.maoge&&player.storage.maoge.length)	return player.storage.maoge.length>player.countCards('h');
-							return false;
-						},
-						direct:true,
-						content:function(){
-							"step 0"
-							player.chooseButton(['『帽阁』',player.storage.maoge]).set('filterButton',function(button){
-								var evt=_status.event.getTrigger();
-								if(evt&&evt.filterCard){
-									return evt.filterCard(button.link,_status.event.player,evt)&&lib.filter.cardRespondable(button.link,_status.event.player,evt);
-								}
-								return true;
-							}).set('ai',function(button){
-								var evt=_status.event.getTrigger();
-								if(evt&&evt.ai){
-									var tmp=_status.event;
-									_status.event=evt;
-									var result=evt.ai(button.link,_status.event.player,evt);
-									_status.event=tmp;
-									return result;
-								}
-								return 1;
-							});
-							"step 1"
-							if(result.bool){
-								trigger.untrigger();
-								trigger.responded=true;
-								trigger.result={bool:true,card:result.links[0],cards:result.links.slice(0)};
-								if(player.storage.maoge&&player.storage.maoge.length){
-									player.storage.maoge.remove(result.links[0]);
-								}
-								player.updateMarks();
-							}
-						},
-						ai:{
-							order:4,
-							useful:-1,
-							value:-1
 						}
 					},
 				},
@@ -3353,7 +3234,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bianlan:{
 				trigger:{player:'useCard2'},
 				filter:function(event,player){
-					if(player.storage.maoge&&player.storage.maoge.length)	return event.targets&&event.targets.length;
+					if(player.countCards('s',function(card){
+						return card.hasGaintag('maoge');
+					}))	return event.targets&&event.targets.length;
 					return false;
 				},
 				forced:true,
@@ -3362,7 +3245,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lastDo:true,
 				content:function(){
 					'step 0'
-					player.chooseButton(['###是否发动『遍览』？###选择一种花色的“书”',player.storage.maoge]).set('filterButton',function(button){
+					player.chooseButton(['###是否发动『遍览』？###选择一种花色的“书”',player.getCards('s',function(card){
+						return card.hasGaintag('maoge');
+					})]).set('filterButton',function(button){
 						return true;
 					});
 					'step 1'
@@ -3370,14 +3255,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.logSkill('bianlan')
 						event.suit = get.suit(result.links[0]);
 						event.targets = trigger.targets;
-						var shus = player.storage.maoge.filter(function(card){
-							return get.suit(card)==event.suit;
+						var shus = player.getCards('s',function(card){
+							return card.hasGaintag('maoge')&&get.suit(card)==event.suit;
 						});
-						player.storage.maoge.removeArray(shus);
-						player.updateMarks();
-						player.showCards(shus,'获得一种花色的书');
-						game.delay(1);
+						player.showCards(shus,'获得一种花色的“书”');
+						game.delayx();
+						player.lose(shus,ui.special).set('getlx',false);
 						player.gain(shus,'giveAuto');
+						player.updateMarks();
 						if(game.hasPlayer(function(cur){
 							return event.targets.contains(cur)&&!player.storage.bianlan.contains(cur);
 						})){
@@ -3423,25 +3308,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				skillAnimation:true,
 				animationColor:'fire',
 				filter:function(event,player){
-					return player.storage.maoge&&player.storage.maoge.length;
+					return player.countCards('s',function(card){
+						return card.hasGaintag('maoge');
+					});
 				},
 				check:function(event,player){
-					return player.storage.maoge&&player.storage.maoge.length>6;
+					return player.countCards('s',function(card){
+						return card.hasGaintag('maoge');
+					})>6;
 				},
 				content:function(){
 					'step 0'
 					player.awakenSkill(event.name);
 					event.hc = player.getCards('h');
-					player.lose(event.hc,ui.special,'toStorage');
-					event.shus = player.storage.maoge.splice(0);
+					event.shus = player.getCards('s',function(card){
+						return card.hasGaintag('maoge');
+					});
+					player.addTempSkill('futian_futian');
 			//		player.unmarkAuto('maoge',event.shus);
 			//		player.updateMarks();
 					'step 1'
-					player.markAuto('maoge',event.hc);
-					player.updateMarks();
+					player.loseToSpecial(event.hc,'maoge');
 					'step 2'
+					player.updateMarks();
+					player.showCards(event.shus,'获得所有的“书”');
+					game.delayx();
+					'step 3'
+					player.lose(event.shus,ui.special).set('getlx',false);
 					player.gain(event.shus,'giveAuto');
-					player.addTempSkill('futian_futian');
+				},
+				ai:{
+					combo:'maoge',
 				},
 				subSkill:{
 					futian:{

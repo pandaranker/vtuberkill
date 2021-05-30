@@ -531,7 +531,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							event.addedSkill = [];
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
-							next.skill = 'yingdan_sha';
+							next.logSkill = 'yingdan_sha';
 							next.addedSkill = [];
 							if(event.getParent().respondTo&&event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
 								event.addedSkill.add('inRange');
@@ -579,7 +579,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							event.addedSkill = [];
 							var next = player.chooseUseTarget(event.card,true,false,event.cards);
-							next.skill = 'yingdan_sha';
+							next.logSkill = 'yingdan_sha';
 							next.addedSkill = [];
 							if(event.getParent().respondTo&&event.getParent().respondTo[0]&&player.inRange(event.getParent().respondTo[0])){
 								event.addedSkill.add('inRange');
@@ -3706,7 +3706,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content: function() {
 							'step 0'
 							player.chooseCardTarget({
-								position:'h',
+								position:'hs',
 								filterCard:true,
 								prompt:get.prompt('re_jiumao')+'使用一张牌并使其额外结算一次',
 								filterTarget:function(card,player,target){
