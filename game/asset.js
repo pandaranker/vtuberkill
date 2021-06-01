@@ -1253,6 +1253,7 @@ window.noname_asset_list=[
 	'audio/die/Bella.mp3',
 	'image/character/bingtang.jpg',
 	'image/character/Carol.jpg',
+	'image/character/CierraRunis.jpg',
 	'image/character/Civia.jpg',
 	'image/character/Ciyana.jpg',
 	'image/character/Diana.jpg',
@@ -1481,6 +1482,7 @@ window.noname_asset_list=[
 	'image/character/gz_Ava.jpg',
 	'image/character/gz_Diana.jpg',
 	'image/character/gz_InabaHaneru.jpg',
+	'image/character/gz_xinke.jpg',
 	/**社 */
 	'image/character/gz_MinamiNami.jpg',
 	'image/character/gz_Noracat.jpg',

@@ -3208,10 +3208,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.countCards('s',function(card){
 							return card.hasGaintag('maoge');
 						})>player.countCards('h')){
-							return get.position(cardx)!='h';
+							return get.position(cardx)=='s'&&card.hasGaintag('maoge');
 						}
 						else{
-							return get.position(cardx)=='h';
+							return get.position(cardx)!='s'||!card.hasGaintag('maoge');
 						}
 					}
 				},
@@ -3325,8 +3325,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return card.hasGaintag('maoge');
 					});
 					player.addTempSkill('futian_futian');
-			//		player.unmarkAuto('maoge',event.shus);
-			//		player.updateMarks();
 					'step 1'
 					player.loseToSpecial(event.hc,'maoge');
 					'step 2'
@@ -3411,6 +3409,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterReplace:{
 			TokinoSora:['re_TokinoSora','TokinoSora'],
 			RobokoSan:['re_RobokoSan','RobokoSan'],
+			YozoraMel:['re_YozoraMel','YozoraMel'],
+
 			ShirakamiFubuki:['re_ShirakamiFubuki','ShirakamiFubuki'],
 			HoshimatiSuisei:['re_HoshimatiSuisei','HoshimatiSuisei'],
 			AkiRosenthal:['re_AkiRosenthal','AkiRosenthal'],
@@ -3502,7 +3502,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			SakuraMiko: '樱巫女',
 			haodu: '豪赌',
-			haodu_info: '出牌阶段限X次（X为你已损失的体力值且至少为1)，你可以将至少一张手牌交给一名其他角色并声明点数、花色、类型，然后你展示其一张手牌。根据与声明相同的项依次执行对应效果：点数，你与其交换手牌；类型，令其弃置两张牌；花色，你获得其一张牌。			',
+			haodu_info: '出牌阶段限X次（X为你已损失的体力值且至少为1)，你可以将至少一张手牌交给一名其他角色并声明点数、花色、类型，然后你展示其一张手牌。根据与声明相同的项依次执行对应效果：点数~你与其交换手牌；类型~令其弃置两张牌；花色~你获得其一张牌。			',
 		
 			MinatoAqua: '湊阿库娅',
 			kuali: '夸力满满',

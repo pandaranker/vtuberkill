@@ -374,7 +374,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			Diana:['Ava'],
 			InabaHaneru:['YuNi'],
 			Nekomasu:['Noracat'],
-			zhangjinghua:['bingtang','Paryi'],
+			zhangjinghua:['bingtang','Paryi','CierraRunis'],
 			Paryi:['bingtang'],
 			Kano:['HanamaruHareru'],
 			kaguraNaNa:['SpadeEcho'],
@@ -479,6 +479,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi'],['gzskin']],
 				/**小希小桃 */
 				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
+				/**心萪 */
+				gz_xinke:['female','vtuber',3,['zuigao','xinhuochuancheng'],['gzskin']],
 				/**兔妈妈 */
 				gz_InabaHaneru:['female','vtuber',3,['gz_jiance','yingqi'],['gzskin','doublegroup:vtuber:holo:nijisanji']],
 				/**AZKi */
@@ -508,6 +510,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Paryi:['male','clubs',4,['gz_tiantang']],
 				/**张京华 */
 				gz_zhangjinghua: ['male', 'clubs', 3, ['gz_xiemen', 'jiai']],
+				/**谢拉 */
+				gz_CierraRunis:['female','clubs',3,['minghuahongxiao']],
 				/**进击的冰糖 */
 				gz_bingtang: ['female', 'clubs', 4, ['xiou']],
 				/**OTO */

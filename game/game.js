@@ -53331,16 +53331,30 @@
 							underlinenode.listen(ui.click.autoskill2);
 						}
 						else if(lib.skill[skills[i]].clickable&&node.isIn()&&node.isUnderControl(true)){
-							var intronode=uiintro.add('<div><div class="skill">'+translation+'</div><div'+((translation.length>3)?' class="skilltext"':'')+'>'+get.skillInfoTranslation(skills[i],node)+'<br><div class="menubutton skillbutton" style="position:relative;margin-top:5px">点击发动</div></div></div>').querySelector('.skillbutton');
-							if(!_status.gameStarted||(lib.skill[skills[i]].clickableFilter&&!lib.skill[skills[i]].clickableFilter(node))){
-								intronode.classList.add('disabled');
-								intronode.style.opacity=0.5;
-							}
-							else{
+							if(lib.skill[skills[i]].clickChange){
+								var intronode=uiintro.add('<div><div class="skill">'+translation+'</div><div'+((translation.length>3)?' class="skilltext"':'')+'>'+get.skillInfoTranslation(skills[i],node)+'<br><div class="menubutton skillbutton" style="position:relative;margin-top:5px">点击'+lib.skill[skills[i]].clickChange+'</div></div></div>').querySelector('.skillbutton');
+								if(!_status.gameStarted||(lib.skill[skills[i]].clickableFilter&&!lib.skill[skills[i]].clickableFilter(node))){
+									intronode.innerHTML = lib.discoloration1+'已'+lib.skill[skills[i]].clickChange;
+									intronode.classList.add('hrefnode');
+									intronode.style.opacity=0.8;
+								}
 								intronode.link=node;
 								intronode.func=lib.skill[skills[i]].clickable;
 								intronode.classList.add('pointerdiv');
 								intronode.listen(ui.click.skillbutton);
+							}
+							else{
+								var intronode=uiintro.add('<div><div class="skill">'+translation+'</div><div'+((translation.length>3)?' class="skilltext"':'')+'>'+get.skillInfoTranslation(skills[i],node)+'<br><div class="menubutton skillbutton" style="position:relative;margin-top:5px">点击发动</div></div></div>').querySelector('.skillbutton');
+								if(!_status.gameStarted||(lib.skill[skills[i]].clickableFilter&&!lib.skill[skills[i]].clickableFilter(node))){
+									intronode.classList.add('disabled');
+									intronode.style.opacity=0.5;
+								}
+								else{
+									intronode.link=node;
+									intronode.func=lib.skill[skills[i]].clickable;
+									intronode.classList.add('pointerdiv');
+									intronode.listen(ui.click.skillbutton);
+								}
 							}
 						}
 						else if(lib.skill[skills[i]].nobracket){

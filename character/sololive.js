@@ -14,6 +14,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu'],['guoV']],
 			/**兔妈妈 */
 			gz_InabaHaneru:['female','upd8',3,['gz_jiance','yingqi']],
+			/**心萪 */
+			gz_xinke:['female','qun',3,['zuigao','xinhuochuancheng']],
 			/**雪花菈米 */
 			gz_YukihanaLamy:['female','holo',4,['hanling']],
 			/**语部纺 */
@@ -496,6 +498,156 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//心萪
+			zuigao:{
+				intro:{
+					content:"cards",
+					onunmark:function(storage,player){
+						if(storage&&storage.length){
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
+						 storage.length=0;
+						}
+					},
+				},
+				enable:'phaseUse',
+				usable:1,
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				filter:function(event,player){
+					return player.countCards('he')>0;
+				},
+				filterCard:true,
+				position:'he',
+				filterTarget:function(card,player,target){
+					return target!=player;
+				},
+				check:function(card){
+					var player = _status.event.player;
+					var zuigao = player.getStorage('zuigao');
+					for(var i of zuigao){
+						if(get.suit(i)==get.suit(card))	return 7-get.value(card);
+					}
+					return 1-get.value(card);
+				},
+				discard:false,
+				toStorage:true,
+				delay:false,
+				content:function(){
+					'step 0'
+					player.$give(cards,player,false);
+					player.markAuto('zuigao',cards);
+					'step 1'
+					if(get.mode()=='guozhan'&&target.isUnseen(2)){
+						player.chooseControl(true).set('prompt','令目标执行一项').set('choiceList',['展示所有手牌并弃置与此将牌上花色相同的牌','明置一张武将牌']);
+					}else{
+						event.goto(4);
+					}
+					'step 2'
+					if(result.control=='选项一'){
+						player.chat('展示所有手牌并弃置与此将牌上花色相同的牌');
+						game.delayx();
+						event.goto(4);
+					}
+					else if(result.control=='选项二'){
+						player.chat('明置一张武将牌');
+						game.delayx();
+						var list=[];
+						if(target.isUnseen(0))	list.push('主将');
+						if(target.isUnseen(1))	list.push('副将');
+						if(list.length>1) target.chooseControl(['主将','副将']).set('ai',function(){
+							return Math.random()>0.5?0:1;
+						}).prompt='选择并展示一张武将牌';
+						else event._result={index:list[0]=='主将'?0:1};
+					}
+					'step 3'
+					if(result.index==0){
+						target.showCharacter(0);
+					}
+					else{
+						target.showCharacter(1);
+					}
+					'step 4'
+					target.showHandcards();
+					game.delayx();
+					'step 5'
+					var suits = [];
+					player.getStorage('zuigao').forEach(function(card){
+						suits.add(get.suit(card));
+					});
+					var discards = target.getCards('he',{suit:suits});
+					target.discard(discards);
+				},
+				ai:{
+					order:8,
+					result:{
+						player:-0.2,
+						target:function(player,target){
+							if(target.countCards('h'))	return -(player.getStorage('zuigao').length+1);
+						},
+					},
+				},
+				group:'zuigao_draw',
+				subSkill:{
+					draw:{
+						trigger:{player:'phaseDrawBegin'},
+						forced:true,
+						filter:function(event,player){
+							return !event.numFixed;
+						},
+						content:function(){
+							trigger.num=game.countGroup();
+						},
+					},
+				}
+			},
+			xinhuochuancheng:{
+				trigger:{player:['damageEnd','dyingBegin'],source:['damageEnd']},
+				filter:function(event,player){
+					return player.getStorage('zuigao').length&&game.hasPlayer(function(cur){
+						return cur!=player;
+					});
+				},
+				direct:true,
+				locked:true,
+				content:function(){
+					'step 0'
+					player.chooseTarget(true,'选择『心火传承』的目标',function(card,player,target){
+						return target!=player;
+					});
+					'step 1'
+					event.target = result.targets[0];
+					if(event.target){
+						var cards = player.getStorage('zuigao');
+						if(trigger.name=='dying'){
+							player.unmarkAuto('zuigao',cards);
+							player.$give(cards,event.target)
+							event.target.gain(cards);
+							event.finish();
+						}else{
+							player.chooseCardButton(cards,'选择交给'+get.translation(event.target)+'的一张牌',true).set('ai',function(button){
+								return get.attitude2(_status.event.target)*get.value(card,'raw',_status.event.target);
+							}).set('target',event.target);
+						}
+					}else	event.finish();
+					'step 2'
+					if(result.bool&&result.links){
+						var cards = result.links.slice(0);
+						player.unmarkAuto('zuigao',cards);
+						player.$give(cards,event.target)
+						event.target.gain(cards);
+					}
+
+				},
+				ai:{
+					threaten:function(player,target){
+						if(target.getStorage('zuigao').length) return 1.5;
+						return 1;
+					},
+				},
+			},
 			//雪花菈米
 			hanling:{
 				trigger:{player:'damageBegin3'},
@@ -522,9 +674,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseEnd'},
 						filter:function(event,player){
 							var num=0;
-							player.getHistory('useCard',function(evt){
+							num+=player.getHistory('useCard',function(evt){
 								return evt.targets&&(evt.targets.length>1||evt.targets[0]!=player);
-							});
+							}).length;
 							return !num&&game.hasPlayer(function(cur){
 								return cur.countCards('h')<player.countCards('h');
 							});
@@ -802,6 +954,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_jiance_info: '每回合每项限一次，你可以将一张♠️/♣️牌当【知己知彼】使用。若选择观看手牌且其中没有你转化牌的类型，你可以展示之并重铸其中任意张。',
 			yingqi: '迎喫',
 			yingqi_info: '其他角色的牌在你的回合进入弃牌堆后，其可以令你将手牌数调整至体力上限。你的牌在其他角色的回合进入弃牌堆后，你可以令其将手牌数调整至体力上限。',
+
+			gz_xinke: '心萪',
+			zuigao: '最高指令',
+			zuigao_info: '摸牌阶段，你摸等同于场上势力数的牌。出牌阶段限一次，你可以将一张牌置于此将牌上，令一名角色：展示所有手牌并弃置与此将牌上花色相同的牌；或明置一张武将牌。',
+			xinhuochuancheng: '心火传承',
+			xinhuochuancheng_info: '锁定技 当你造成或受到伤害后，你需将此将牌上的一张牌交给其他角色。你进入濒死状态时，若此将牌上有牌，你需将此将牌上所有牌交给其他角色并回复1点体力。',
 			
 			gz_YukihanaLamy: '雪花菈米',
 			hanling: '寒灵',

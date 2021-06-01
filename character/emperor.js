@@ -68,6 +68,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'roundStart'},
 				content:function(){
 					'step 0'
+					game.broadcastAll() + ui.background.setBackgroundImage("image/上场特效/MEA.gif");
+					setTimeout(function () { game.broadcastAll() + ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg'); }, 4500);
 					var list= player.storage.tiangou_list;
 					list.removeArray(player.storage.tiangou);
 					event.videoId = lib.status.videoId++;

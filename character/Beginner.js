@@ -1288,7 +1288,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							player.storage.yinni_record = trigger.targets.length;
 							player.storage.yinni_record_color = get.color(trigger.card);
-							player.markSkill('yinni_record');
+							if(!player.isUnseen(1))	player.markSkill('yinni_record');
 						},
 						intro:{
 							content:'上一张牌的目标数为&'
@@ -4385,7 +4385,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return get.position(card,true)=='d'&&get.suit(card)!='club'&&get.type(card)=='basic';
 							});
 							player.storage.yingshi_cardsDis = [cards.pop()];
-							player.markSkill('yingshi_cardsDis');
+							if(!player.isUnseen(1))	player.markSkill('yingshi_cardsDis');
 						},
 					},
 				}
@@ -6097,7 +6097,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_huange_info: '轮次技 一个回合开始时，你可以摸等同一名角色体力值的牌，然后于回合结束时，弃置等同于该角色当前体力值的牌。',
 			re_huange_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
-			re_HanazonoSerena: '花園セレナ',
+			re_HanazonoSerena: '新·花園セレナ',
 			re_jiumao: '啾猫',
 			re_jiumao_info: '其他角色的弃牌阶段开始时，其可以交给你任意张手牌，然后若此时你的手牌数与其相等，你可以于此阶段结束时使用一张牌，且此牌额外结算一次。',
 			re_enfan: '恩返',
