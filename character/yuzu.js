@@ -4241,6 +4241,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return !card.hasGaintag('ming_')&&get.color(card)=='black';
 				},
 				check:function(card){
+					var player = _status.event.player;
 					if(player.storage.gunxun&&player.countCards('hs','sha')<2)		return 6-get.value(card);
 					if(!player.storage.gunxun&&player.countCards('hs','shan')>1)	return 2-get.value(card);
 					return 5-get.value(card);
@@ -9169,21 +9170,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			minghuahongxiao:{
 				trigger:{player:['useCard','discardAfter']},
 				filter:function(event,player){
-					return (event.name=='useCard'&&player==_status.currentPhase)
-					||(event.name=='discard'&&player!=_status.currentPhase);
+					return (event.name=='useCard'&&player!=_status.currentPhase&&event.cards.length&&event.cards.length)
+					||(event.name=='discard'&&player==_status.currentPhase&&event.cards.length);
 				},
 				check:function (event,player){
-					if(event.name=='useCard'&&player.isPhaseUsing()&&get.type2(event.card)==0&&player.needsToDiscard())	return false;
+					if(event.name=='useCard'&&player.isPhaseUsing()&&player.countCards('h')&&get.type2(event.card)=='trick')	return false;
 					return true;
 				},
 				content:function(){
 					'step 0'
 					event.list = [];
-					if(trigger.name=='useCard')	event.list.add(get.type2(trigger.card));
-					else{
-						for(var i in trigger.cards){
-							event.list.add(get.type2(i));
-						}
+					for(var i of trigger.cards){
+						event.list.add(get.type2(i));
 					}
 					'step 1'
 					if(event.list.contains('basic'))	player.addSkill('minghuahongxiao_change');
@@ -9746,7 +9744,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			naisi: '奶死',
 			naisi_info: '你回复过多次体力的回合结束时，你可以对一名角色造成X点伤害。（X为你本回合回复体力的次数）',
 			tuzai: '图崽',
-			tuzai_info: '你对一名角色造成的伤害后，可以获得其区域内一张可见牌，并令其回复一点体力。',
+			tuzai_info: '你对一名角色造成伤害后，可以获得其区域内一张可见牌，并令其回复一点体力。',
 			wuneng: '呜能',
 			ming_wuneng: '呜能',
 			wuneng_info: '出牌阶段，你可以亮出一张【桃】或【桃园结义】并摸一张牌。',

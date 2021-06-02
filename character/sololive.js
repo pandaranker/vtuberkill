@@ -709,7 +709,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//语部纺
 			lingli:{
 				trigger:{global:'useCard'},
+				clickChange:'休眠',
+				clickable:function(player){
+					if(player.storage.lingli_clickChange===undefined)	player.storage.lingli_clickChange = false;
+					else	player.storage.lingli_clickChange = !player.storage.lingli_clickChange;
+				},
+				clickableFilter:function(player){
+					return player.storage.lingli_clickChange!==false;
+				},
 				filter:function(event,player){
+					if(player.storage.lingli_clickChange===false)	return false;
 					return event.targets&&event.targets.length==1&&event.cards&&event.cards.length;
 				},
 				check:function(event,player){
