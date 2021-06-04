@@ -2651,10 +2651,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				locked:true,
 				mod:{
 					globalFrom:function(from,to,current){
-						if(game.roundNumber%2==1) return current-1;
+						if(game.roundNumber%2==1)	return current-1;
 					},
 					globalTo:function(from,to,current){
-						if(game.roundNumber%2!=1) return current+1;
+						if(game.roundNumber%2!=1)	return current+1;
 					},
 				}
 			},

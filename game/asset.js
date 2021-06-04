@@ -1294,6 +1294,7 @@ window.noname_asset_list=[
 	'image/character/LizeHelesta.jpg',
 	'image/character/Lovely.jpg',
 	'image/character/MashiroKanon.jpg',
+	'image/character/Melody.jpg',
 	'image/character/Menherachan.jpg',
 	'image/character/Merry.jpg',
 	'image/character/Mikawa.jpg',

@@ -499,7 +499,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**团长 */
 				gz_HisekiErio:['female','clubs',4,['re_huange']],
 				/**花园猫 */
-				gz_HanazonoSerena: ['female', 'paryi', 3, ['re_jiumao', 're_enfan']],
+				gz_HanazonoSerena: ['female', 'clubs', 3, ['re_jiumao', 're_enfan']],
 				/**美波 */
 				gz_MinamiNami: ['female','clubs',4,['gz_longdan'],['gzskin']],
 				/**下地 */
@@ -1272,8 +1272,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
 								if (player.storage.blackTargets.contains(target)) return false;
 								return lib.filter.targetEnabled2(player.storage.card, player, target)
-									&& player.inRange(target)
-									&& !player.storage.blackTargets.contains(target)
+									&& player.inRange(target);
 							}).set('targets',trigger.targets).set('card',trigger.card);
 							// .set('ai',function(target){
 							// 	// var trigger=_status.event.getTrigger();

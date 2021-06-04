@@ -2220,8 +2220,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
 								if (_status.event.targets.contains(target)) return false;
 								return lib.filter.targetEnabled2(_status.event.card, player, target)
-									&& player.inRange(target)
-									&& !player.storage.blackTargets.contains(target)
+									&& player.inRange(target);
 							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
 								var player = _status.event.player;
 								return get.effect(target,_status.event.card,player,player);

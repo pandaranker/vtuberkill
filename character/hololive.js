@@ -3204,14 +3204,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					cardEnabled2:function(cardx,player){
-						console.log(get.position(cardx))
 						if(player.countCards('s',function(card){
 							return card.hasGaintag('maoge');
 						})>player.countCards('h')){
-							return get.position(cardx)=='s'&&card.hasGaintag('maoge');
+							if(get.position(cardx)!='s'||!cardx.hasGaintag('maoge'))	return false;
 						}
 						else{
-							return get.position(cardx)!='s'||!card.hasGaintag('maoge');
+							if(get.position(cardx)=='s'&&cardx.hasGaintag('maoge'))	return false;
 						}
 					}
 				},

@@ -231,12 +231,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				loseDelay:false,
 				onEquip:function(){
 					if(player.countCards('he',function(cardx){
-						return cardx!=card.cards[0];
+						return cardx!=card;
 					})>0){
 						player.logSkill('tianjitu');
 						player.chooseToDiscard(true,function(cardx){
 							return cardx!=_status.event.card;
-						},'he').set('card',card.cards[0]);
+						},'he').set('card',card);
 					}
 				},
 				onLose:function(){
