@@ -1106,15 +1106,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.draw();
 							game.delay();
 						},
-						ai:{
-							directHit_ai:true,
-							skillTagFilter:function(player,tag,arg){
-								if(tag=='directHit_ai'){
-									if(arg&&get.type(arg.card)=='trick') return true;
-									return false;
-								}
-							}
-						}
+						trigger:{player:'useCard'},
+						forced:true,
+						filter:function(event){
+							return get.type(event.card)=='trick';
+						},
+						content:function(){
+							trigger.nowuxie=true;
+						},
 					},
 					haixiu:{
 						audio:3,

@@ -369,6 +369,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			HonmaHimawari:['SuzuharaLulu'],
 			SukoyaKana:['ShirayukiTomoe'],
 			SasakiSaku:['DoumyoujiHaruto'],
+			SuzuharaLulu:['SephiraSu'],
 			KizunaAI:['KaguyaLuna'],
 			Siro:['Bacharu'],
 			Diana:['Ava'],
@@ -469,6 +470,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_Bacharu:['male', 'vtuber', 4, ['gz_zuodun','gz_baidao']],
 				/**姬雏 */
 				gz_HIMEHINA:['female','vtuber',3,['jichu','mingshizhige']],
+				/**塞菲拉·苏 */
+				gz_SephiraSu:['female','vtuber',3,['mishu','xingchen']],
 				/**嘉然 */
 				gz_Diana: ['female','vtuber',4,['quanyu'],['gzskin']],
 				/**向晚 */

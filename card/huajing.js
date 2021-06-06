@@ -665,7 +665,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.num = target.hujia;
 					target.changeHujia(-event.num);
-					game.delay(0.5);
+					game.delayx();
 					'step 2'
 					var card = event.discard.result.cards[0];
 					if(get.type(card)=='equip')	target.damage(event.baseDamage,'yami');

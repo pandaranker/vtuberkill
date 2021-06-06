@@ -1478,7 +1478,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							if(element[2]=="无法响应"){
 								game.log(player,'令',trigger.card,'无法被响应');
-								trigger.directHit.addArray(players);
+								trigger.directHit.addArray(game.players);
 								trigger.nowuxie=true;
 							}
 						});
@@ -1887,14 +1887,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var att=get.attitude(player,target);
 						var sgnatt=get.sgn(att);
 						if(ui.selected.targets.length==0){
-							if(att>0){
+							if(target==player){
 								if(target.countCards('e',function(card){
 									return get.value(card,target)<0&&game.hasPlayer(function(current){
 										return current!=player&&current!=target&&get.attitude(player,current)<0&&current.isEmpty(get.subtype(card))
 									});
-								})>0) return 9;
+								})>0) return 9-get.value(card);
 							}
-							else if(att<0){
+							else{
 								if(game.hasPlayer(function(current){
 									if(current!=target&&current!=player&&get.attitude(player,current)>0){
 										var es=target.getCards('e');
@@ -1903,7 +1903,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										}
 									}
 								})){
-									return -att;
+									return -att*get.value(card);
 								}
 							}
 							return 0;
@@ -2507,8 +2507,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.name=='damage'||(event.name=='useCard'&&get.type(event.card,'trick')=='trick')){
 						return true;
 					}
-					else
-						return false;
+					else	return false;
 				},
 				content:function(){
 					'step 0'
@@ -2551,7 +2550,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				ai:{
-					threaten:0.6,
+					maixie:true,
 				}
 			},
 			re_jinyuan:{
@@ -4076,7 +4075,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					redraw:{
 						trigger:{player:'shaMiss'},
 						prompt:function(event,player){
-							return '你可以收回'+get.translation(event.cards)+'并结束此阶段';
+							return '是否收回'+get.translation(event.cards)+'并结束此阶段？';
 						},
 						filter:function(event){
 							return event.skill=='guiren'&&['sha'].contains(event.card.name)&&event.cards&&event.cards.length;
@@ -5921,7 +5920,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_jitui_info: '当你受到伤害后或在回合外正面朝上失去非基本牌后，你可以摸一张牌。',
 			
 			re_MononobeAlice:'新·物述有栖',
-			re_dianmingguzhen:'电鸣鼓震',
+			re_dianmingguzhen:'电鸣',
 			re_dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你可视为使用一张雷【杀】。',
 
 			re_MinamiNami: '新·美波七海',
@@ -6075,7 +6074,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_xuyan_info: '结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间造成过伤害，你摸一张牌。否则你与一名角色各失去1点体力。',
 			
 			re_InuyamaTamaki: '新·犬山玉姬',
-			re_hundunliandong: '混沌联动',
+			re_hundunliandong: '混联',
 			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
 			re_hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
 			

@@ -409,6 +409,33 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			rm_feilongduofeng:{
+				audio:true,
+				mode:['guozhan'],
+				fullskin:true,
+				type:'equip',
+				subtype:'equip1',
+				nomod:true,
+				nopower:true,
+				unique:true,
+				global:'g_rm_feilongduofeng_ai',
+				distance:{attackFrom:-1},
+				skills:['rm_feilongduofeng','rm_feilongduofeng3'],
+				ai:{
+					equipValue:function(card,player){
+						if(player.hasSkill('zhangwu')) return 9;
+						if(game.hasPlayer(function(current){
+							return current.hasSkill('zhangwu')&&get.attitude(player,current)<=0;
+						})){
+							return 1;
+						}
+						return 8;
+					},
+					basic:{
+						equipValue:7
+					}
+				}
+			},
 			rm_liulongcanjia:{
 				audio:true,
 				mode:['guozhan'],
@@ -1308,6 +1335,163 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			},
 			
 			
+			rm_feilongduofeng:{
+				equipSkill:true,
+				trigger:{player:'useCardToPlayered'},
+				logTarget:'target',
+				check:function(event,player){
+					return get.attitude(player,event.target)<=0;
+				},
+				filter:function(event,player){
+					return event.card.name=='sha'&&event.target.countCards('he');
+				},
+				content:function(){
+					trigger.target.chooseToDiscard('he',true);
+				},
+			},
+			rm_feilongduofeng2:{
+				equipSkill:true,
+				trigger:{source:'dieAfter'},
+				filter:function(event,player){
+					if(event.reason&&event.reason.card&&event.reason.card.name=='sha'){
+						return event.player.isDead()&&lib.group.contains(player.identity)&&player.isMinor();
+					}
+					return false;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					var list=[];
+					for(var i=0;i<_status.characterlist.length;i++){
+						var info=lib.character[_status.characterlist[i]];
+						if(info[4]&&info[4].contains('jun')) continue;
+						if(info[1]==player.identity){
+							list.push(_status.characterlist[i]);
+						}
+					}
+					event.identity=event.player.identity;
+					if(trigger.player==game.me&&!_status.auto){
+						event.dialog=ui.create.dialog('是否选择一名角色重新加入游戏？',[list,'character']);
+						event.filterButton=function(){return true};
+						event.player=game.me;
+						event.custom.replace.confirm=function(){
+							if(!ui.selected.buttons.length){
+								event.directresult='refuse';
+							}
+							else{
+								event.directresult=ui.selected.buttons[0].link;
+							}
+							event.dialog.close();
+							if(ui.confirm) ui.confirm.close();
+							delete event.player;
+							game.resume();
+						}
+						event.switchToAuto=function(){
+							event.directresult=list.randomGet();
+							event.dialog.close();
+							if(ui.confirm) ui.confirm.close();
+							delete event.player;
+						};
+						game.check();
+						game.pause();
+					}
+					else if(trigger.player.isOnline()){
+						trigger.player.send(function(player,list){
+							if(_status.auto){
+								_status.event._result=list.randomGet();
+							}
+							else{
+								var next=game.createEvent('replacePlayer');
+								next.source=player;
+								next.list=list;
+								next.setContent(function(){
+									event.dialog=ui.create.dialog('是否选择一名角色重新加入游戏？',[event.list,'character']);
+									event.filterButton=function(){return true};
+									event.player=event.source;
+									event.custom.replace.confirm=function(){
+										if(!ui.selected.buttons.length){
+											event.result='refuse';
+										}
+										else{
+											event.result=ui.selected.buttons[0].link;
+										}
+										event.dialog.close();
+										if(ui.confirm) ui.confirm.close();
+										delete event.player;
+										game.resume();
+										game.uncheck();
+									}
+									event.switchToAuto=function(){
+										event.result=list.randomGet();
+										event.dialog.close();
+										if(ui.confirm) ui.confirm.close();
+										delete event.player;
+										game.uncheck();
+									};
+									game.check();
+									game.pause();
+								});
+							}
+							game.resume();
+						},trigger.player,list);
+						trigger.player.wait();
+						game.pause();
+					}
+					else{
+						event.directresult=list.randomGet();
+					}
+					event.list=list;
+					'step 1'
+					game.uncheck();
+					if(!event.directresult){
+						if(event.resultOL){
+							event.directresult=event.resultOL[trigger.player.playerid];
+						}
+						if(!event.directresult||event.directresult=='ai'){
+							event.directresult=event.list.randomGet();
+						}
+					}
+					if(event.directresult=='refuse'){
+						game.log(trigger.player,'拒绝重新加入游戏');
+						return;
+					}
+					game.log(trigger.player,'重新加入游戏');
+					var name=event.directresult;
+					game.log(trigger.player,'将主将替换为','#b'+name);
+					_status.characterlist.remove(name);
+					game.broadcastAll(function(source,name,identity){
+						source.revive(2,false);
+						source.identity=identity;
+						source._group=identity;
+						source.setIdentity();
+						if(source==game.me){
+							ui.arena.classList.remove('selecting');
+						}
+					},trigger.player,name,event.identity);
+					trigger.player.draw();
+					trigger.player.reinit(trigger.player.name1,name,false);
+					trigger.player.removeCharacter(1);
+					trigger.getParent('damage').untrigger(false,trigger.player);
+					game.addVideo('setIdentity',trigger.player,event.identity);
+				}
+			},
+			rm_feilongduofeng3:{
+				equipSkill:true,
+				trigger:{source:'dying'},
+				filter:function(event,player){
+					var evt=event.getParent('damage');
+					return evt&&evt.card&&evt.card.name=='sha'&&event.player.countGainableCards(player,'h')>0;
+				},
+				//priority:7,
+				logTarget:'player',
+				prompt2:'获得该角色的一张手牌',
+				check:function(event,player){
+					return get.attitude(player,event.player)<0;
+				},
+				content:function(){
+					player.gainPlayerCard(trigger.player,'h',true);
+				},
+			},
 			rm_liulongcanjia:{
 				equipSkill:true,
 				mod:{
@@ -1445,6 +1629,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			rm_numa:'驽马',
 			rm_numa_info:'锁定技，当此牌进入你的装备区时，你弃置装备区内的所有其他牌。',
 
+			rm_feilongduofeng:'飞龙夺凤',
+			rm_feilongduofeng2:'飞龙夺凤',
+			rm_feilongduofeng3:'飞龙夺凤',
+			rm_feilongduofeng_info:'当你使用【杀】指定一名角色为目标后，你可令该角色弃置一张牌。当你使用【杀】令其他角色进入濒死状态时，你可以获得其一张手牌。',
 			rm_liulongcanjia:'六龙骖驾',
 			rm_liulongcanjia_info:'锁定技，你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技，当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
 						

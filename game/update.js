@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.87',
+	version:'1.9.101.88',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.87小更新：新增势力Vshojo，新增角色Melody（测试包），修复bug（比如大头菜bug）',
+		'101.88小更新：新增角色塞菲拉·苏（测试包和国战），新增犬山哥的配音，更换贝拉和乃琳的卡图，修复bug（比如时乃空不可响应选项无效的bug）',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景和海·sasaki、HOLO的海·aqua、HOLOEN的噶呜·古拉和一伊那尔栖、asoul的海·向晚、特典的绯赤艾莉欧和噶呜·古拉',
@@ -25,8 +25,11 @@ window.noname_update={
 		'card/sp.js',
 		'card/standard.js',
 		'card/guozhan.js',
-		'image/card/group_vwp.png',
 		'image/character/YukiTuan.jpg',
+		'image/character/Bella.jpg',
+		'image/character/EQueen.jpg',
+		'image/card/numa.png',
+		'image/card/feilongduofeng.png',
 		'card/remark.js',
 		// 'image/splash/boss.jpg',
 		// 'image/splash/brawl.jpg',

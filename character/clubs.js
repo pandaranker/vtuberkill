@@ -22,7 +22,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 			/**艾琳 */
 			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
+			/**嫁实 */
 			Yomemi:['female','eilene',3,['mokuai','yaoji']],
+			/**萌实 */
+			Moemi: ['female','eilene',4,['chengzhang','mengdong']],
+			/**夏实萌惠 */
+			NatsumiMoe: ['female','eilene',4,['moemanyi','cuchuan'],['yingV']],
 			/**雫るる */
 			ShizukuLulu:['female','qun',3,['duixian','gutai']],
 			

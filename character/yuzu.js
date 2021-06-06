@@ -12,8 +12,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
-			/**可不 */
-			Kafu:['female','vwp',3,['nisheng','jingyan']],
 			
 			/**喵喵人 */
 			Nyanners: ['female','vshojo',3,['shenghuo','dipo','miaoche'],['zhu','yingV']],
@@ -51,13 +49,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
 
-			/**萌实 */
-			Moemi: ['female','eilene',4,['chengzhang','mengdong']],
-			/**夏实萌惠 */
-			NatsumiMoe: ['female','eilene',4,['moemanyi','cuchuan'],['yingV']],
 			
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
+			/**塞菲拉·苏 */
+			SephiraSu:['female','qun',3,['mishu','xingchen']],
 			
 			/**谢拉 */
 			CierraRunis:['female','qun',3,['minghuahongxiao']],
@@ -3162,9 +3158,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				content:function(){
 					if(!trigger.directHit)	trigger.directHit = [];
-					trigger.directHit.addArray(game.filterPlayer(function(cur){
-						return true;
-					}));
+					trigger.directHit.addArray(game.players);
 				},
 				ai:{
 					threaten:1.5,
@@ -8887,29 +8881,32 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
-				effect:{
-					player:function(card,player,target){
-						if(get.suit(card)=='heart'&&get.position(card)=='h'){
-							return [1,(player.hp-3.2)*2,1,0]
+				ai:{
+					effect:{
+						player:function(card,player,target){
+							if(get.suit(card)=='heart'&&get.position(card)=='h'){
+								if(player.hp==1)	return [0.2,-6,1,0];
+								return [1,(player.hp-3)*2,1,0];
+							}
 						}
 					}
 				}
 			},
 			leizhu:{
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=0;
-				},
 				trigger:{player:'useCard2'},
 				filter:function(event,player){
 					return get.type2(event.card)=='trick';
 				},
 				direct:true,
+				intro:{
+					name2:'R18',
+					content:'mark',
+				},
 				content:function(){
 					'step 0'
-					player.storage.leizhu++;
-					console.log(player.storage.leizhu)
-					if(player.storage.leizhu==3){
-						player.storage.leizhu-=3;
+					player.addMark('leizhu',1,false);
+					if(player.countMark('leizhu')==3){
+						player.removeMark('leizhu',3,false);
 						if(['equip','delay'].contains(get.type(trigger.card))||!trigger.targets||!game.hasPlayer(function(cur){
 							return !trigger.targets.contains(cur)&&lib.filter.targetEnabled2(trigger.card,player,cur);
 						}))	event.finish();
@@ -9302,6 +9299,196 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.chooseUseTarget(true,result.links[0]);
 					}
 				},
+			},
+			//苏姐
+			mishu:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = [];
+				},
+				trigger:{global:'phaseEnd'},
+				filter:function(event,player){
+					var cards =[];
+					game.getGlobalHistory('cardMove',function(evt){
+						if(evt==event||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+						if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+						for(var i=0;i<evt.cards.length;i++){
+							var card=evt.cards[i];
+							cards.add(card);
+						}
+					});
+					return cards.length&&_status.currentPhase.isIn();
+				},
+				content:function(){
+					'step 0'
+					var cards =[];
+					game.getGlobalHistory('cardMove',function(evt){
+						if(evt==event||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
+						if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
+						for(var i=0;i<evt.cards.length;i++){
+							var card=evt.cards[i];
+							cards.add(card);
+						}
+					});
+					event.discards = cards;
+					var list = ['获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力','令其获得本回合进入弃牌堆的一种类型的牌，且若这些牌点数之积大于13，对其造成1点伤害','取消'];
+					list.removeArray(player.storage.mishu);
+					if(list.length){
+						player.chooseControl('dialogcontrol',list).set('ai',function(){
+							var evt = _status.event.getParent();
+							var controls = _status.event.controls.slice(0);
+							if(evt.discards.length>=4&&controls.contains('获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力'))	return 0;
+							return _status.event.att;
+						}).set('check',(get.attitude(player,_status.currentPhase)>0)?0:1).set('prompt',get.prompt2('mishu'));
+					}else	event.finish();
+					'step 1'
+					if(result.control&&result.control!='取消'){
+						var prompt = result.control;
+						event.target = _status.currentPhase;
+						event.control = result.control;
+						prompt.replace(/其/,get.translation(_status.currentPhase));
+						var next = player.chooseCardButton(event.discards,prompt);
+						if(event.control=='获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力'){
+							next.set('filterButton',function(button){
+								for(var i=0;i<ui.selected.buttons.length;i++){
+									if(get.type2(ui.selected.buttons[i].link)==get.type2(button.link)) return false;
+								}
+								return true;
+							});
+							next.set('selectButton',function(){
+								var types = [];
+								for(var i of event.discards){
+									types.add(get.type2(i))
+								}
+								return types.length;
+							}());
+						}
+						else{
+							next.set('filterButton',function(button){
+								return true;
+							});
+							next.set('ai',function(button){
+								var cards = [];
+								var type = get.type2(button.link);
+								var player = _status.event.player;
+								var target = _status.event.target;
+								cards.concat(_status.event.discards.filter(function(card){
+									return type==get.type2(card);
+								}))
+								var eff = get.attitude(player,target)*get.value(cards,'raw',target);
+								var num = 1;
+								for(var i of cards){
+									num*=get.number(i);
+								}
+								if(num>13)	eff+=get.damageEffect(target,player,player);
+								return eff;
+							});
+							next.set('discards',event.discards);
+							next.set('target',event.target);
+						}
+					}else{
+						event.finish();
+					}
+					'step 2'
+					if(result.bool&&result.links&&result.links.length){
+						player.storage.mishu.add(event.control);
+						if(event.control=='获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力'){
+							var num = 0; 
+							var count = 0;
+							var cards = result.links;
+							for(var i of cards){
+								num+=get.number(i);
+							}
+							for(var i=1;i<=num;i++){
+								if(num%i==0){
+									count++;
+								}
+							}
+							player.gain(cards,'gain2','log');
+							if(count<=2)	event.target.recover();
+						}
+						else{
+							var num = 1;
+							var cards = event.discards.filter(function(card){
+								return get.type2(result.links[0])==get.type2(card);
+							});
+							for(var i of cards){
+								num*=get.number(i);
+							}
+							event.target.gain(cards,'gain2','log');
+							if(num>13)	event.target.damage();
+
+						}
+					}
+				},
+				group:'mishu_clear',
+				subSkill:{
+					clear:{
+						trigger:{
+							global:'roundStart'
+						},
+						firstDo:true,
+						direct:true,
+						filter:function(event,player){
+							return player.storage.mishu.length;
+						},
+						content:function(){
+							player.storage.mishu = [];
+						}
+					}
+				}
+			},
+			xingchen:{
+				trigger:{player:'damageAfter'},
+				priority:2,
+				filter:function(event,player){
+					if(event.name=='damage'||(event.name=='useCard'&&get.type(event.card,'trick')=='trick')){
+						return true;
+					}
+					else	return false;
+				},
+				content:function(){
+					'step 0'
+					player.draw(5);
+					'step 1'
+					player.chooseCard(5,'he','选择放置到牌堆顶部的牌',true);
+					'step 2'
+					if(result.bool==true&&result.cards!=null){
+						event.cards=result.cards
+					}
+					if(event.cards.length>0){
+						player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
+							var player = _status.event.player;
+							var now = _status.currentPhase;
+							var next = now.getNext();
+							var att = get.attitude(player,next);
+							var card = button.link;
+							var judge = next.getCards('j')[ui.selected.buttons.length];
+							if(judge){
+								return get.judge(judge)(card)*att;
+							}
+							return next.getUseValue(card)*att;
+						});
+					}
+					'step 3'
+					if(result.bool&&result.links&&result.links.length) event.linkcards=result.links.slice(0);
+					else	event.finish();
+					game.delay();
+					'step 4'
+					var cards=event.linkcards;
+					player.lose(cards,ui.special);
+					game.delay();
+					'step 5'
+					var cards=event.linkcards;
+					while(cards.length>0){
+						var card=cards.pop();
+						card.fix();
+						ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+						game.updateRoundNumber();
+					}
+				},
+				ai:{
+					maixie:true,
+				}
 			},
 			//谢拉
 			minghuahongxiao:{
@@ -9891,6 +10078,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jichu_info: '若本回合被使用的上一张牌为锦囊牌，你使用牌可以额外选择一个目标。若本回合被使用的上一张牌为♦️，你使用牌生效并结算后摸一张牌。',
 			mingshizhige: '命逝之歌',
 			mingshizhige_info: '当你受到1点伤害后，你可以重铸所有手牌，然后使用因此失去的其中一张。',
+
+			SephiraSu: '塞菲拉·苏',
+			mishu: '数之秘术',
+			mishu_info: '其他角色的回合结束时，你可以选择一项：获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力；或令其获得本回合进入弃牌堆的一种类型的牌，且若这些牌点数之积大于13，对其造成1点伤害。每轮每项限一次。',
+			xingchen: '未卜星辰',
+			xingchen_info: '当你受到伤害后，可摸五张牌，然后将五张牌以任意顺序置于牌堆顶。',
 			
 			CierraRunis: '谢拉·露妮丝',
 			CierraRunis_ab: '谢拉',
@@ -9990,7 +10183,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			setu: '涩涂',
 			setu_info: '出牌阶段限一次，你可以将任意张点数之和小于18的手牌置于武将牌上。然后若你武将牌上牌之乘积大于100，你将这些牌置入弃牌堆，摸等量的牌，并对一名角色造成1点伤害。',
 
-			Sakurai: '樱井',
+			Sakurai: '樱井林',
 			junxu: '军序',
 			junxu_info: '你每个回合使用第X张牌时，可以摸两张牌或回复一点体力。（X为你的体力值）',
 			jingniang: '井酿',

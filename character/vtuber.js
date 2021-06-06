@@ -54,6 +54,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rim: ['female','vwp',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
 			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
+			/**可不 */
+			Kafu:['female','vwp',3,['nisheng','jingyan']],
 		},
 		characterSort:{
 			vtuber:{
@@ -596,20 +598,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.source.hasSkill('rongyaochengyuan_homolive')) return false;
 					return true;
 				},
-				direct:true,
+				prompt2:function(event,player){
+					return '给'+get.translation(event.source)+'添加homolive标记,并抵挡此次伤害';
+				},
+				logTarget:'source',
 				content:function (){
 					'step 0'
-					player.chooseBool('是否发动技能,给目标添加homolive标记,并抵挡此次伤害');
+					player.logSkill('rongyaochengyuan',trigger.source);
+					trigger.source.addSkill('rongyaochengyuan_homolive');
 					'step 1'
-					if(result.bool){
-						player.logSkill('rongyaochengyuan',trigger.source);
-						trigger.source.addSkill('rongyaochengyuan_homolive');
-					}
-					else{
-						event.finish();
-					}
-					'step 2'
-					trigger.num=0;
+					trigger.changeToZero();
 				},
 				subSkill:{
 					homolive:{
@@ -623,6 +621,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			hundunliandong:{
+				audio:3,
 				enable:'phaseUse',
 				usable:1,
 				content:function(){
@@ -638,9 +637,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.dialogId=0;
 					}
 					player.chooseTarget('指定一个不同势力目标参与联动',function(card,player,target){
-						//get.distance(target,current,'pure')==1
 						if(target==player) return false;
-						//window.console.log(player.storage);get.distance(target,player.storage.targets[i],'pure')<=1
 						if(player.storage.targets){
 							if(player.storage.targets.length==0) return true;
 							if(target.hasSkill('rongyaochengyuan_homolive')){
@@ -649,11 +646,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										return false;
 									}
 								}
-								return true;
 							}
-							for(var i =0; i< player.storage.targets.length;i++){
-								if(player.storage.targets[i].group==target.group){
-									return false;
+							else{
+								for(var i =0; i< player.storage.targets.length;i++){
+									if(player.storage.targets[i].group==target.group){
+										return false;
+									}
 								}
 							}
 							return true
@@ -662,7 +660,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return true
 						}
 					}).set('ai',function(target){
-						return get.attitude(_status.event.player,target)<1;
+						return get.attitude2(target)<=0;
 					});
 					'step 1'
 					if(result&&result.bool==false){

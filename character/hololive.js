@@ -122,7 +122,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							if(element[2]=="无法响应"){
 								game.log(player,'令',trigger.card,'无法被响应');
-								trigger.directHit.addArray(players);
+								trigger.directHit.addArray(game.players);
 								trigger.nowuxie=true;
 							}
 						});
@@ -285,24 +285,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 			},
 			juhun:{
-					trigger:{global:'damageAfter'},
-					forced:true,
-					usable:1,
-					content:function(){
-						event.card=get.cards()[0];
-						if(!player.storage.juhun) player.storage.juhun=[];
-						game.cardsGotoSpecial(event.card);
-						player.$gain2(event.card);
-						player.markAuto('juhun',[event.card]);
-						// player.showCards(player.storage.juhun,'聚魂');
-						// player.markSkill('juhun');
-					},
-					intro:{
-						content:'cards',
-						onunmark:'throw',
-					},
-					group:['juhun_get'],
-					subSkill:{
+				trigger:{global:'damageAfter'},
+				forced:true,
+				usable:1,
+				content:function(){
+					event.card=get.cards()[0];
+					if(!player.storage.juhun) player.storage.juhun=[];
+					game.cardsGotoSpecial(event.card);
+					player.$gain2(event.card);
+					player.markAuto('juhun',[event.card]);
+					// player.showCards(player.storage.juhun,'聚魂');
+					// player.markSkill('juhun');
+				},
+				intro:{
+					content:'cards',
+					onunmark:'throw',
+				},
+				group:['juhun_get'],
+				subSkill:{
 					get:{
 						trigger:{
 							global:'roundStart'
