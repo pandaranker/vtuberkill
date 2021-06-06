@@ -10139,7 +10139,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			EQueen: '乃琳',
 			yehua: '夜话',
-			yehua_info: '回合开始时，你可以将手牌调整至场上唯一最多并翻面，然后本回合你使用卡牌能且只能指定多个目标。',
+			yehua_info: '回合开始时，你可以将手牌调整至场上唯一最多并翻面。',
 			fengqing: '风情',
 			fengqing_info: '转换技 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。',
 			fengqing_jiu: '风情-酒',
