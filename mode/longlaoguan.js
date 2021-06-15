@@ -157,6 +157,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			game.gameDraw(game.zhu||_status.firstAct||game.me);
 			if(_status.connectMode&&lib.configOL.change_card) game.replaceHandcards(game.players.slice(0));
+			"step 4"
+			event.trigger('phaseLoopBefore');
+			"step 5"
 			game.phaseLoopLonglaoguan(game.zhu||_status.firstAct||game.me);
 			game.zhu.showGiveup();
 		},

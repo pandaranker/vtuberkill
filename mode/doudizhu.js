@@ -103,6 +103,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				};
 			}
 			if(_status.mode!='online'&&_status.connectMode&&lib.configOL.change_card) game.replaceHandcards(game.players.slice(0));
+			"step 4"
+			event.trigger('phaseLoopBefore');
+			"step 5"
 			game.phaseLoop(game.zhu||_status.firstAct||game.me);
 			game.zhu.showGiveup();
 		},

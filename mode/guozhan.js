@@ -215,6 +215,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			}
 			if(_status.connectMode&&lib.configOL.change_card) game.replaceHandcards(game.players.slice(0));
+			"step 4"
+			event.trigger('phaseLoopBefore');
+			"step 5"
 			game.phaseLoop(event.playerx);
 		},
 		card:{
@@ -374,13 +377,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			Siro:['Bacharu'],
 			Diana:['Ava'],
 			InabaHaneru:['YuNi'],
-			Nekomasu:['Noracat'],
+			Nekomasu:['Noracat','KaguyaLuna'],
 			zhangjinghua:['bingtang','Paryi','CierraRunis'],
 			Paryi:['bingtang'],
 			Kano:['HanamaruHareru'],
 			kaguraNaNa:['SpadeEcho'],
-			KaguraMea:['InuyamaTamaki','InabaHaneru','MononobeAlice'],
 			TenkaiTsukasa:['Fairys'],
+			
+			KaguraMea:['InuyamaTamaki','InabaHaneru','MononobeAlice'],
 		},
 		characterPack:{
 			mode_guozhan:{
@@ -911,6 +915,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			//夸
 			gz_kuali:{
+				audio:'kuali',
 				trigger:{player:'phaseDrawBegin1'},
 				check:function(event,player){
 					return game.countPlayer(function(cur){
@@ -1775,7 +1780,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.target.recover();
 						}
 						if(num>=12){
-							player.gain(result.cards,'gainAuto');
+							player.gain(result.cards,'giveAuto');
 						}
 					}
 				},

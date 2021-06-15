@@ -21,7 +21,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaDi: ['male', 'qun', 4, ['yinliu', 'dunzou']],
 			Nekomasu: ['female', 'qun', 3, ['milijianying', 'dianyinchuancheng']],
 			/**艾琳 */
-			Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
+			Eilene: ['female','eilene',4,['daimeng','changsheng'],['zhu']],
 			/**嫁实 */
 			Yomemi:['female','eilene',3,['mokuai','yaoji']],
 			/**萌实 */
@@ -179,6 +179,143 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.targs.length)	event.goto(1);
 				},
 				ai:{order:2,result:{target:-1}},
+			},
+			//艾琳
+			daimeng:{
+				audio:2,
+				enable:'phaseUse',
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[1,2,3,4];
+				},
+				filter:function(event,player){
+					if(!player.storage.daimeng)	return false;
+					for(var i of player.storage.daimeng){
+						if(!game.hasPlayer(function(cur){
+							return cur.countCards('h')>=(player.countCards('h')+i);
+						}))		return true;
+					}
+				},
+				content:function(){
+					'step 0'
+					event.videoId = lib.status.videoId++;
+					var numberlist = [];
+					for(var i of player.storage.daimeng){
+						var c = get.cnNumber(i);
+						numberlist.push(['', i, c, i, 'div3']);
+					}
+					game.broadcastAll(function(id,numberlist){
+						var dialog=ui.create.dialog('『贷梦』 选择摸牌：');
+						dialog.addText('张数');
+						dialog.add([numberlist, 'vcard']);
+						dialog.videoId = id;
+					}, event.videoId,numberlist);
+					'step 1'
+					var next = player.chooseButton(true);
+					next.set('dialog',event.videoId);
+					next.set('filterButton',function(button){
+						var now = button.link;
+						var player = _status.event.player;
+						return !game.hasPlayer(function(cur){
+							return cur.countCards('h')>=(player.countCards('h')+now[1]);
+						});
+					});
+					'step 2'
+					game.broadcastAll('closeDialog', event.videoId);
+					if(result.bool){
+						event.num = result.links[0][1];
+						player.storage.daimeng.remove(event.num);
+						player.draw(event.num);
+					}
+					else event.finish();
+					'step 3'
+					switch(event.num){
+						case 1:player.recover();break;
+						case 2:player.link(true);break;
+						case 3:player.turnOver();break;
+						case 4:{
+							var evt=_status.event.getParent('phaseUse');
+							if(evt&&evt.name=='phaseUse'){
+								evt.skipped=true;
+							}
+						}break;
+					}
+				},
+				intro:{
+					content:'已摸$张牌'
+				},
+				ai:{
+					order:7,
+					result:{
+						player:function(player,target){
+							if(player.needsToDiscard()&&player.storage.daimeng[0]==4)	return -1;
+							return 1;
+						}
+					}
+				},
+			},
+			changsheng:{
+				unique:true,
+				skillAnimation:true,
+				animationColor:'fire',
+				trigger:{player:'dying'},
+				priority:10,
+				filter:function(event,player){
+					return player.hp<3&&player.storage.changsheng!='over';
+				},
+				forced:true,
+				content:function(){
+					'step 0'
+					player.discard(player.getCards('hej'));
+					player.recover(3-player.hp);
+					'step 1'
+					player.storage.daimeng=[1,2,3,4]
+					'step 2'
+					player.storage.changsheng='over';
+					player.awakenSkill('changsheng');
+					trigger.player.addTempSkill('changsheng_diao',{target:'phaseBegin'});
+					game.broadcastAll(function(splayer){
+							splayer.out('changsheng_diao');
+						},trigger.player
+					)
+				},
+				subSkill:{
+					diao:{
+						trigger:{global:['phaseAfter','turnOverAfter']},
+						mark:true,
+						direct:true,
+						filter:function(event,player){
+							if(event.player.next!==player){
+								return false;
+							}
+							else if(event.name=='turnOver'&&event.player.isTurnedOver()) {
+								return false; 
+							}
+							else if(event.name=='turnOver'&&event.player!=_status.currentPhase){
+								return false;
+							}
+							else{
+								game.broadcastAll(function(splayer){
+										splayer.in('changsheng_diao');
+									},player
+								)
+							}
+							return true;
+							//player.in('cangxiong_diao');
+							//player.in('cangxiong_diao');
+							//
+	
+						},
+						intro:{
+							content:'移除游戏外'
+						},
+						content:function(){
+							game.broadcastAll(function(splayer){
+								_status.dying.remove(splayer);
+							},player)
+							player.removeSkill('changsheng_diao');
+						}
+					},
+				}
 			},
 			//猫宫
 			yuchong:{
@@ -480,7 +617,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
-							player.gain(storage,'gainAuto');
+							player.gain(storage,'giveAuto');
 							storage.length=0;
 						}
 					},
@@ -2608,6 +2745,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				jiaiCards:[
 					// {name:'sha', nature:'yami'},
 				],
+				usable:1,
 				chooseButton:{
 					dialog:function(event,player){
 						//选择可使用的基本牌，使用或打出
@@ -3003,6 +3141,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			OtomeOto:['re_OtomeOto','OtomeOto'],
 			HisekiErio:['re_HisekiErio','HisekiErio'],
 			HanazonoSerena:['re_HanazonoSerena','HanazonoSerena'],
+
+			Eilene:['Eilene','old_Eilene'],
 		},
 		dynamicTranslate:{
 			mozouqiyin:function(player){
@@ -3033,6 +3173,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yaoji_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：直接伤害</span>',
 
 			Eilene: '艾琳',
+			daimeng: '贷梦',
+			daimeng_info: '每项限一次。出牌阶段，你可以摸一张/两张/三张/四张牌使手牌数为全场唯一最多，然后回复1点体力/横置/翻面/立即结束此阶段。',
+			changsheng: '偿生',
+			changsheng_info: '锁定技 你首次进入濒死状态时，弃置区域内所有牌，回复体力至3，重置『贷梦』，从游戏中除外直到你的下个回合开始。',
+
 			duanfu: '断缚',
 			duanfu_info: '你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。',
 			daichang: '贷偿',
@@ -3100,7 +3245,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
 			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：破军</span>',
 			jiai: '集爱',
-			jiai_info: '你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
+			jiai_info: '每回合限一次。你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
 
 			XiaDi: '下地',
 			yinliu: '引流',

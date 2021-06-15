@@ -1919,6 +1919,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			//夸
 			kuali:{
+				audio:4,
 				group:['kuali_zhuDong','kuali_jieshu'],
 				subSkill:{
 					zhuDong:{
@@ -1954,6 +1955,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								})						
 							}
 							if(result.index==1){
+								player.logSkill('kuali');
 								var num = game.countPlayer(function(cur){
 									return cur.hp%player.hp==0&&cur!=player;
 								});
@@ -1962,10 +1964,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								_status.event.finish();
 							}
 							'step 2'
-							if(result.bool&&result.targets.length)
-							{
+							if(result.bool&&result.targets.length){
 								var num = result.targets.length;
-								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he');
+								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he').set('logSkill','kuali');
 								player.recover(num);
 							}
 						},
@@ -2010,10 +2011,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
 								function(event,player){
 									return _status.event.choice;
-								}).set('choice',choice).set('prompt',get.prompt2('kuali_jieshu'));
+								}).set('choice',choice).set('prompt',get.prompt2('kuali_jieshu')).set('logSkill','kuali');
 							'step 1'
 							if(result.index==0){
-								player.logSkill('kuali');
 								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',[1,Infinity],function(card,player,target){
 									if(target==player) 				return false;
 									return target.countCards('h')%player.countCards('h')==0;
@@ -2035,7 +2035,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool&&result.targets.length)
 							{
 								var num = result.targets.length;
-								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he');
+								player.chooseToDiscard(num,'弃置'+get.cnNumber(num)+'张牌并回复'+get.cnNumber(num)+'体力',true,'he').set('logSkill','kuali');
 								player.recover(num);
 							}
 						},
@@ -2044,6 +2044,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			youyi:{
+				audio:2,
 				trigger:{
 					global: 'phaseBegin'
 				},
@@ -2178,6 +2179,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//兔宝
 			pekoyu:{
+				audio:'tuquan',
 				init:function(player){
 					player.storage.pekoyu=[];
 				},
@@ -2194,7 +2196,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				trigger:{player:'useCardAfter'},
-				forced:false,
 				priority:111,
 				filter:function(event,player){
 					if(!player.isPhaseUsing()) return false;
@@ -2257,6 +2258,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			hongshaoturou:{
+				audio:true,
 				filter:function(event,player){
 					return !player.isLinked();
 				},
@@ -3182,14 +3184,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
-				trigger:{global:'gameDrawAfter',player:['drawBegin','enterGame']},
+				trigger:{global:'phaseLoopBefore',player:['drawBegin','enterGame']},
 				forced:true,
 				silent:true,
 				popup:false,
 				lastDo:true,
 				content:function(){
 					'step 0'
-					if(trigger.name=='gameDraw'){
+					console.log(trigger)
+					if(trigger.name=='game'){
 						var cards=player.getCards('h');
 						player.loseToSpecial(cards,'maoge');
 					}else{

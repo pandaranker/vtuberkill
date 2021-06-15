@@ -236,6 +236,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 				return player.maxHp;
 			});
+			"step 4"
+			event.trigger('phaseLoopBefore');
+			"step 5"
 			game.phaseLoop(game.zhu);
 		},
 		game:{

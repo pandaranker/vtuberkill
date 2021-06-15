@@ -1565,126 +1565,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
-			//艾琳
-			duanfu:{
-				trigger:{player:'useCardToPlayer', target:'useCardToPlayer'},
-				priority:100,
-				lastDo:true,
-				check:function(event,player){
-					if(player==event.player)	return get.effect(event.target,event.card,player)<0;
-					return get.effect(player,event.card,event.target,player)<0;
-				},
-				prompt:function(event,player){
-					if(player==event.player&&event.target!=player)	return '指定'+get.translation(event.target)+'为'+get.translation(event.card)+'的目标，'+get.prompt('duanfu');
-					else	return '被'+get.translation(event.player)+'指定为'+get.translation(event.card)+'的目标，'+get.prompt('duanfu');
-				},
-				filter:function(event,player){
-					if(player==event.player&&!event.target.isLinked())	return true;
-					if(player==event.target&&event.player.isLinked())	return true;
-					return false;
-				},
-				content:function(){
-					if(player==trigger.player){
-						trigger.target.link();
-						trigger.excluded.add(trigger.target);
-						game.log(trigger.getParent().card,'不会对',trigger.target,'生效');
-					}else{
-						trigger.player.link();
-						trigger.excluded.add(trigger.target);
-						game.log(trigger.getParent().card,'不会对',player,'生效');
-					}
-				},
-				ai:{
-					effect:{
-						player:function(card,player,target,current){
-							if(get.name(card)=='tiesuo') return [1,1];
-						}
-					}
-				}
-			},
-			daichang:{
-				enable:'phaseUse',
-				usable: 1,
-				filter:function(event,player){
-					return game.hasPlayer(function(cur){
-						return cur.isLinked();
-					});
-				},
-				content:function(){
-					'step 0'
-					player.loseMaxHp();
-					'step 1'
-					event.num = game.countPlayer(function(cur){
-						return cur.isLinked();
-					});
-					player.draw(event.num);
-					player.addTempSkill('daichang_bottom','phaseUseAfter')
-				},
-				subSkill:{
-					bottom:{
-						mark:true,
-						intro:{
-							name:'借贷',
-							content:'造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
-						},
-						trigger:{source:'damageEnd'},
-						priority:100,
-						lastDo:true,
-						forced:true,
-						filter:function(event,player){
-							return player.countCards('he')&&game.hasPlayer(function(cur){
-								return cur.isLinked();
-							});
-						},
-						content:function(){
-							'step 0'
-							event.num = game.countPlayer(function(cur){
-								return cur.isLinked();
-							});
-							player.choosePlayerCard('###『贷偿』###请选择要置于牌堆底的牌（先选择的在下）',player,'he',event.num,true);
-							'step 1'
-							event.cards = result.cards.slice(0);
-							player.lose(event.cards);
-							'step 2'
-							while(event.cards.length){
-								var card=event.cards.pop();
-								card.fix();
-								ui.cardPile.appendChild(card);
-							}
-							game.log(player,'将'+get.cnNumber(event.num)+'张牌置于牌堆底');
-						}
-					}
-				},
-			},
-			hongtu:{
-				trigger:{player:'phaseUseEnd'},
-				unique:true,
-				limited:true,
-				priority:100,
-				filter:function(event,player){
-					return player.isLinked()&&player.hp==player.maxHp;
-				},
-				content:function(){
-					'step 0'
-					player.awakenSkill('hongtu');
-					event.going = 1;
-					'step 1'
-					event.card = get.bottomCards()[0];
-					player.showCards(event.card);
-					'step 2'
-					if(player.hasUseTarget(event.card,false)){
-						player.chooseUseTarget(event.card,false,true);
-					}else{
-						event.going = 0;
-					}
-					'step 3'
-					player.draw();
-					'step 4'
-					if(event.going==1){
-						event.goto(1);
-					}
-				},
-			},
 
 			//mishiro
 			tianyi:{
@@ -1767,7 +1647,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							trigger.getParent().cancel();
 							'step 2'
-							player.gain(trigger.getParent().cards,'gainAuto');
+							player.gain(trigger.getParent().cards,'giveAuto');
 						}
 					},
 					clear:{
@@ -4553,7 +4433,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
-				trigger:{global:'gameDrawAfter',player:'enterGame'},
+				trigger:{global:'phaseLoopBefore',player:'enterGame'},
 				forced:true,
 				content:function(){
 					var cards = player.getCards('h');
@@ -5919,7 +5799,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					var func=function(result){
 						if(get.subtype(result)=='equip1'){
-							player.gain(result.card,'gainAuto')
+							player.gain(result.card,'giveAuto')
 							return 3;
 						}
 						return 0;
@@ -5928,7 +5808,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						func=function(result){
 							var suits = _status.event.player.storage.jiren_going||[];
 							if(get.subtype(result)=='equip1'){
-								player.gain(result.card,'gainAuto')
+								player.gain(result.card,'giveAuto')
 								return 3;
 							}
 							if(suits.contains(get.suit(result))) return -1;
@@ -8077,7 +7957,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								});
 								player.unmarkAuto('shang',event.cards);
 								player.$give(event.cards,event.target);
-								event.target.gain(event.cards,'gainAuto');
+								event.target.gain(event.cards,'giveAuto');
 								if(event.target!=player)	player.recover();
 							}else{
 								for(var i=0;i<dialog.buttons.length;i++){
@@ -9801,7 +9681,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.showCards(cards,'『呜能』亮出手牌');
-					player.gain(cards,player,'gainAuto').gaintag.add('ming_wuneng');
+					player.gain(cards,player,'giveAuto').gaintag.add('ming_wuneng');
 					game.delayx();
 					'step 1'
 					player.draw();

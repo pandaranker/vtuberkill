@@ -450,6 +450,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				step6();
 			}
 			"step 8"
+			event.trigger('phaseLoopBefore');
+			"step 9"
 			delete _status.new_beginner;
 			game.phaseLoop(_status.firstAct2||game.zhong||game.zhu||_status.firstAct||game.me);
 		},

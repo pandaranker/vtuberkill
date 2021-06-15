@@ -2860,7 +2860,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									player.$give(event.cards,player,false);//处理牌动画
 									player.markAuto('yinlaiyaotang_phaseUse',event.cards);//自动标记
 								}else{
-									event.target.gain(event.cards,player,'gainAuto');
+									event.target.gain(event.cards,player,'giveAuto');
 								}
 							}
 							// 'step 0'

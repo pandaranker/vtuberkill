@@ -1719,7 +1719,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter: function(event, player) {
 					var num=0;
 					event.targets.forEach(function(tar){
-						num+=tar.countCards('ej');
+						num+=tar.countCards('hej');
 					})
 					return event.targets.length
 						&& num>0
@@ -1748,6 +1748,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var subtype = get.subtype(link);
 								if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
 								else	return get.damageEffect(target,player,player);
+							}else{
+								return get.value(link,'raw',target)*get.attitude(player,target);
 							}
 						});
 					}else{
@@ -1765,7 +1767,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							re = event.B.equip(card);
 						}
-						else{
+						else if(get.position(card)=='j'){
 							var cname = card.viewAs ? card.viewAs : get.name(card);
 							event.B.getCards('j').forEach(function(c) {
 								if (get.name(c) == cname) {
@@ -1775,6 +1777,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							})
 							event.B.addJudge({name: cname}, [card]);
+						}
+						else{
+							event.B.gain(card,event.A);
 						}
 						event.A.$give(card, event.B)
 						if (dam) event.B.damage('nocard');
@@ -3207,7 +3212,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{source:'damageEnd'},
 				filter:function(event,player){
-					return player.storage.qiangyun3.contains(event.cards[0]);
+					return event.cards&&player.storage.qiangyun3.contains(event.cards[0]);
 				},
 				direct:true,
 				priority:2,
@@ -3219,6 +3224,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			tuquan:{
+				audio:4,
 				trigger:{player:'shaMiss'},
 				forced: true,
 				content:function(){
@@ -3670,7 +3676,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter: function(event, player) {
 							return player!=event.player;
 						},
-						direct:true,
+						frequent:true,
 						content: function() {
 							'step 0'
 							trigger.player.chooseCard('###'+get.prompt('re_jiumao')+'###将任意张手牌交给'+get.translation(player), 'he', [1, Infinity]).set('ai', function(card) {
@@ -5768,7 +5774,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				logTarget:'player',
 				content:function(){
-					trigger.player.draw(trigger.player.isMinHp()?3:1).gaintag=['jiazhao'];
+					trigger.player.draw(trigger.player.isMinHp()?2:1).gaintag=['jiazhao'];
 				},
 				ai:{
 					expose:0.1,
@@ -6137,7 +6143,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rangran: '昂然',
 			rangran_info: '你使用牌可指定本回合未以此法指定过的场上体力最多角色为额外目标。场上体力最多的角色受到属性伤害后，你摸一张牌。',
 			jiazhao: '佳朝',
-			jiazhao_info: '当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸两张。然后其回合开始时弃置因此获得的牌。',
+			jiazhao_info: '当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸一张。然后其回合开始时弃置因此获得的牌。',
 		
 		}
 	}

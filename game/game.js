@@ -10473,7 +10473,7 @@
 			shen2:'特典',
 			western2:'西方',
 			key2:'KEY',
-			holo2:'HoloLive',
+			holo2:'Hololive',
 			upd82:'Upd8',
 			dotlive2:'.live',
 			nijisanji2:'Nijisanji',
@@ -11465,6 +11465,12 @@
 							hs[i].discard(false);
 						}
 						game.me.directgain(get.cards(hs.length));
+						var ss=game.me.getCards('s');
+						game.addVideo('lose',game.me,[get.cardsInfo(hs),[],[],[]]);
+						for(var i=0;i<ss.length;i++){
+							ss[i].discard(false);
+						}
+						game.me.directgains(get.cards(ss.length));
 						event.goto(2);
 					}
 					else{

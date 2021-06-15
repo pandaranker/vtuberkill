@@ -210,7 +210,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					game.delay(2);
 					"step 2"
 					if(result.bool){
-						if(player.hasSkillTag('kuiquan')&&result.cards&&result.cards[0].name=='sha')	player.gain(event.card2,'gainAuto');
+						if(player.hasSkillTag('kuiquan')&&result.cards&&result.cards[0].name=='sha')	player.gain(event.card2,target,'giveAuto');
 						target.damage('fire');
 					}
 					else{
