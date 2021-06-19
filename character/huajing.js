@@ -1237,6 +1237,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		characterReplace:{
+			ShirakamiHaruka:['ShirakamiHaruka','re_ShirakamiHaruka'],
 		},
 		dynamicTranslate:{
 			tulong:function(player){

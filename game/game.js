@@ -9955,6 +9955,7 @@
 							case 'nori':r++;if(lib.config.banned.contains(i)) sr++;break;
 							case 'vwp':s++;if(lib.config.banned.contains(i)) ss++;break;
 							case 'vshojo':t++;if(lib.config.banned.contains(i)) st++;break;
+							case 'xuyan':u++;if(lib.config.banned.contains(i)) su++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -10465,6 +10466,7 @@
 			nori:'苔',
 			vwp:'神椿',
 			vshojo:'V',
+			xuyan:'虚',
 			double:'多',
 			wei2:'魏国',
 			shu2:'蜀国',
@@ -10487,6 +10489,7 @@
 			nori2:'Noripro',
 			vwp2:'神椿市',
 			vshojo2:'Vshojo',
+			xuyan2:'虚研社',
 			double2:'多势力',
 			male:'男',
 			female:'女',
@@ -26804,6 +26807,7 @@
 					if(group=='nori') return 18;
 					if(group=='vwp') return 19;
 					if(group=='vshojo') return 20;
+					if(group=='xuyan') return 21;
 					if(group=='vtuber') return 30;
 					if(group=='clubs') return 31;
 					return 40;
@@ -29218,7 +29222,7 @@
 		group:[
 			'vtuber','clubs',
 			'wei','shu','wu','qun','key',
-			'shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','nori','paryi','kagura','nanashi','psp','asoul','nori','vwp',
+			'shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','nori','paryi','kagura','nanashi','psp','asoul','nori','vwp','xuyan',
 			'vshojo'
 		],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
@@ -29247,6 +29251,7 @@
 			nori:'key',
 			vwp:'key',
 			vshojo:'metal',
+			xuyan:'ice',
 			
 			vtuber:'metal',
 			clubs:'ice',
@@ -39007,6 +39012,7 @@
 							if(group=='nori') return 18;
 							if(group=='vwp') return 19;
 							if(group=='vshojo') return 20;
+							if(group=='xuyan') return 21;
 							if(group=='vtuber') return 30;
 							if(group=='clubs') return 31;
 							return 40;
@@ -44001,7 +44007,7 @@
 				},true,true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo',function(link,node){//'wei','shu','wu','western',
+				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo','xuyan',function(link,node){//'wei','shu','wu','western',
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -44431,7 +44437,7 @@
 					}
 				}
 				if(!thisiscard){
-					var groups=['qun','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo'];//'wei','shu','wu',
+					var groups=['qun','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo','xuyan'];//'wei','shu','wu',
 					if(get.mode()=='guozhan'||(get.mode()=='versus'&&_status.mode!='jiange')) groups=['holo','nijisanji','vtuber','clubs'];
 					var bool1=false;
 					var bool2=false;
@@ -44688,6 +44694,7 @@
 						if(group=='nori') return 18;
 						if(group=='vwp') return 19;
 						if(group=='vshojo') return 20;
+						if(group=='xuyan') return 21;
 						if(group=='vtuber') return 30;
 						if(group=='clubs') return 31;
 						return 40;
@@ -54308,7 +54315,7 @@
 			return [
 				'vtuber','clubs',
 				'wei','shu','wu','qun','jin','western','key',
-				'holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp',
+				'holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','xuyan',
 				'vshojo'
 			];
 		},

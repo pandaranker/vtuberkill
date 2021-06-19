@@ -55,7 +55,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/*黑川*/
 			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai','guoV']],//, 'mingyunniezao'
 			/**进击的冰糖 */
-			bingtang: ['female', 'qun', 4, ['xiou'],['guoV']],
+			bingtang: ['female', 'xuyan', 4, ['xiou'],['guoV']],
 			/**张京华 */
 			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
 			/**NoiR */

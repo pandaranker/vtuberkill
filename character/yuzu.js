@@ -27,8 +27,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**雪团 */
 			YukiTuan: ['female','qun',4,['chentu','sishu'],['guoV']],
 
-			/**xiaorou */
-			Xiaorou: ['female','qun',3,['rouqing','guangying'],['guoV']],
+			/**小柔 */
+			Xiaorou: ['female','xuyan',3,['rouqing','guangying'],['guoV']],
 
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
@@ -37,8 +37,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
-			/**兰音 */
-			Reine: ['female','qun',4,['yueyao','kongling'],['guoV']],
 			/**蜜球兔 */
 			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
 			/**无理 */
@@ -62,6 +60,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Merry:['female','qun',4,['qinhuo','lvecao','yangxi'],['guoV']],
 			/**呜米 */
 			Umy:['female','qun',4,['naisi','tuzai','wuneng'],['guoV']],
+
+			/**林莉奈 */
+			RinaHayashi:['female','qun',3,['xilv','bana'],['guoV']],
 
 			/**樱井 */
 			Sakurai:['female','qun',4,['junxu','jingniang'],['guoV']],
@@ -2108,6 +2109,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//花那
 			huawen:{
+				audio:2,
 				init:function(player,skill){
 					if(!player.storage[skill])	player.storage[skill]=[];
 				},
@@ -2388,6 +2390,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			liaohu:{
+				audio:2,
 				trigger:{global:'phaseEnd'},
 				priority:23,
 				filter:function(event,player){
@@ -9553,7 +9556,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.$give(cards,player,false);
 					if(get.type(cards[0])=='delay')		player.addJudge(cards[0]);
 					else if(get.color(cards[0])=='red'&&player.canAddJudge('lebu'))		player.addJudge({name:'lebu'},cards);
-					else if(get.color(cards[0])=='black'&&event.target.canAddJudge('bingliang'))	player.addJudge({name:'bingliang'},cards);
+					else if(get.color(cards[0])=='black'&&player.canAddJudge('bingliang'))	player.addJudge({name:'bingliang'},cards);
 					'step 1'
 					target.damage();
 				},
@@ -9691,6 +9694,70 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:1,
 					}
+				}
+			},
+			xilv:{
+				trigger:{global:'drawAfter'},
+				filter:function(event,player){
+					console.log(event)
+					var name = lib.skill.yiqu.process(event);
+					var info=lib.skill[name];
+					if(!info||info.equipSkill||info.ruleSkill)	return false;
+					if(event.player==player)	return false;
+					return lib.translate[name+'_info']&&player.countCards('he')>0;
+				},
+				check:function(event,player){
+					return true
+					return event.num>1||get.attitude(player,event.player)>0;
+				},
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					player.chooseCard('he',get.prompt2('xilv')).set('ai',function(card){
+						var target = _status.event.target;
+						return get.attitude2(target)*get.value(card,'raw',target)+2;
+					}).set('target',event.target);
+					'step 1'
+					if(result.bool){
+						event.target.gain(result.cards,player,'giveAuto');
+					}else	event.finish();
+					'step 2'
+					var name = lib.skill.yiqu.process(trigger);
+					event.control0 = '将摸到的牌交给'+get.translation(player);
+					event.control1 = '令'+get.translation(player)+'获得<div class="skill">'+get.translation(name)+'</div>';
+					list = [event.control0,event.control1];
+					if(player.hasSkill(name))		list.pop();
+					event.target.chooseControl('dialogcontrol',list,function(){
+						return _status.event.att;
+					}).set('att',get.attitude(event.target,player)>0?1:0).set('prompt','『习律』请选择一项');
+					'step 3'
+					var name = lib.skill.yiqu.process(trigger);
+					switch(result.control){
+						case event.control0:{
+							player.gain(trigger.result,event.target,'giveAuto');
+							break;
+						}
+						case event.control1:{
+							player.addAdditionalSkill('xilv',name,true);
+							break;
+						}
+					}
+				},
+			},
+			bana:{
+				trigger:{global:'changeHp'},
+				filter:function(event,player){
+					return event.player.countCards('hej')<=event.player.hp&&event.player.hp<=game.countPlayer();
+				},
+				check:function(event,player){
+					return true
+					return get.attitude(player,event.player)>0;
+				},
+				content:function(){
+					trigger.player.draw();
+				},
+				ai:{
+					expose:0.1,
 				}
 			},
 		},
@@ -9987,6 +10054,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wuneng: '呜能',
 			ming_wuneng: '呜能',
 			wuneng_info: '出牌阶段，你可以亮出一张【桃】或【桃园结义】并摸一张牌。',
+
+			RinaHayashi: '林莉奈',
+			xilv: '习律',
+			xilv_info: '其他角色因为技能摸牌时，你可以交给其一张牌，然后其选择一项：1.交给你摸到的牌；2.若你没有对应技能，令你获得之，直到你的下个回合结束。',
+			bana: '拔奈',
+			bana_info: '当一名角色的体力改变后，若其区域内的牌数≤体力值≤场上角色数，你可以令其摸一张牌。',
 			
 			Menherachan: '七濑胡桃',
 			shangbei: '裳备',

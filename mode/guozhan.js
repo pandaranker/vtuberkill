@@ -425,7 +425,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**紫咲诗音 */
 				gz_MurasakiShion:['female','holo',3,['anshu','xingchi'],['gzskin']],
 				/**桃子 */
-				gz_SpadeEcho:['female','holo',3,['qinglve','yingshi'],['doublegroup:holo:clubs']],
+				gz_SpadeEcho:['female','holo',3,['qinglve','yingshi'],['doublegroup:holo:clubs','guoV']],
 
 				/**月之美兔 */
 				gz_MitoTsukino:['female','nijisanji',3,['gz_bingdielei'],['gzskin']],
@@ -477,17 +477,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**塞菲拉·苏 */
 				gz_SephiraSu:['female','vtuber',3,['mishu','xingchen']],
 				/**嘉然 */
-				gz_Diana: ['female','vtuber',4,['quanyu'],['gzskin']],
+				gz_Diana: ['female','vtuber',4,['quanyu'],['gzskin','guoV']],
 				/**向晚 */
-				gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu'],['gzskin']],
+				gz_Ava: ['female','vtuber',4,['baitai','gz_yiqu'],['gzskin','guoV']],
 				/**泠鸢 */
 				gz_Yousa:['female','vtuber',3,['gz_niaoji','ysxiangxing'],['doublegroup:vtuber:nijisanji']],
 				/**道明寺晴翔 */
-				gz_DoumyoujiHaruto:['male', 'vtuber', 4, ['shengfu', 'wanbi'],['gzskin']],
+				gz_DoumyoujiHaruto:['male', 'vtuber', 3, ['shengfu', 'wanbi'],['gzskin']],
 				/**小希小桃 */
-				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan']],
+				gz_XiaoxiXiaotao:['female','vtuber',3,['re_doupeng','gz_xuyan'],['guoV']],
 				/**心萪 */
-				gz_xinke:['female','vtuber',3,['zuigao','xinhuochuancheng'],['gzskin']],
+				gz_xinke:['female','vtuber',3,['zuigao','xinhuochuancheng'],['gzskin','guoV']],
+				/**白神遥 */
+				gz_ShirakamiHaruka:['female','vtuber',3,['zhenbao','heimo'],['guoV']],
 				/**兔妈妈 */
 				gz_InabaHaneru:['female','vtuber',3,['gz_jiance','yingqi'],['gzskin','doublegroup:vtuber:holo:nijisanji']],
 				/**AZKi */
@@ -520,7 +522,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**谢拉 */
 				gz_CierraRunis:['female','clubs',3,['minghuahongxiao']],
 				/**进击的冰糖 */
-				gz_bingtang: ['female', 'clubs', 4, ['xiou']],
+				gz_bingtang: ['female', 'clubs', 4, ['xiou'],['guoV']],
 				/**OTO */
 				gz_OtomeOto: ['female', 'clubs', 3, ['gz_yuxia', 'gz_lianjue']],
 				/**鹿乃 */
@@ -944,7 +946,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			//gz狗狗
 			gz_guiren:{
-				audio:2,
+				audio:'guiren',
 				enable:['chooseToUse'],
 				viewAs:{name:'sha'},
 				selectCard:2,

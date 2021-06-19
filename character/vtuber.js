@@ -13,7 +13,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**小明 */
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
 			/**小希小桃 */
-			XiaoxiXiaotao:['female','qun',3,['yipengyidou','renleiguancha'],['guoV']],
+			XiaoxiXiaotao:['female','xuyan',3,['yipengyidou','renleiguancha'],['guoV']],
+			/**兰音 */
+			Reine: ['female','xuyan',4,['yueyao','kongling'],['guoV']],
 			/**辉夜月 */
 			KaguyaLuna:['female','qun',3,['jiajiupaidui','kuangzuiluanwu']],
 			/**兔妈妈 */

@@ -84,7 +84,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//re_TsunomakiWatame:['female','holo',4,['disui','dengyan']],
 			
 			/**小希小桃 */
-			re_XiaoxiXiaotao:['female','qun',3,['re_doupeng','re_xuyan'],['guoV']],
+			re_XiaoxiXiaotao:['female','xuyan',3,['re_doupeng','re_xuyan'],['guoV']],
 			/**犬山 */
 			re_InuyamaTamaki:['male','nori',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
@@ -121,9 +121,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**天开司 */
 			re_TenkaiTsukasa: ['male','qun',4,['re_pojie','re_dazhen']],
 			/**道明寺晴翔 */
-			re_DoumyoujiHaruto:['male', 'qun', 4, ['shengfu', 'wanbi']],
+			re_DoumyoujiHaruto:['male', 'qun', 3, ['shengfu', 'wanbi']],
 			/**时雨羽衣 */
 			re_ShigureUi:['female', 'qun', 3, ['uijieyuan', 'huixiang']],
+			/**白神遥 */
+			re_ShirakamiHaruka:['female','psp',3,['zhenbao','heimo'],['guoV']],
 		},
 		characterIntro:{
 			re_SisterClearie: '神のご加護があらんことを      --《DOMAG》',
@@ -180,11 +182,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function(){
 					'step 0'
-					event.num = player.getStorage('re_ailian_clear');
+					event.num = player.storage.re_ailian_clear;
 					targets[0].gain(cards,player,'giveAuto');
 					'step 1'
 					player.storage.re_ailian_clear+=cards.length;
-					console.log(player.storage.re_ailian_clear,event.num)
 					'step 2'
 					if(player.storage.re_ailian_clear>=2&&event.num<2){
 						var list=[];
@@ -290,8 +291,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						init:function(player,skill){
 							if(!player.storage[skill]) player.storage[skill] = 0;
 						},
-						trigger:{global:['phaseZhunbeiAfter','phaseDrawAfter','phaseUseAfter','phaseDiscardAfter','phaseJieshuAfter']},
-						forced:true,
+						trigger:{global:'phaseNext'},
+						direct:true,
+						locked:true,
 						silent:true,
 						firstDo:true,
 						content:function(){
@@ -683,7 +685,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								};
 								event.goto(1);
 							}else{
-								event.finish()
+								event.finish();
 							}
 							'step 1'
 							if(result.targets&&result.targets.length){
@@ -2446,7 +2448,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else return false;
 						},
 						content:function(){
-							if(player.getStat().card.sha==3){
+							if(player.countUsed('sha',true)==3){
 								player.draw(2);
 							}
 						},
@@ -2454,7 +2456,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							useSha:1,
 							effect:{
 								player:function(card,player,target,current){
-									if(['sha'].contains(card.name)&&player.getStat().card.sha==2) return [1,2];
+									if(['sha'].contains(card.name)&&player.countUsed('sha',true)==2) return [1,4];
 								}
 							}
 						}
@@ -2484,7 +2486,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ai:{
 							effect:{
 								target:function(card,player,target,current){
-									if(get.tag(card,'respondSha')&&current<0) return 0.2;
+									if(get.tag(card,'respondSha')&&current<0) return 0.5;
 								}
 							},
 							respondSha:true,
@@ -2589,6 +2591,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re星姐
 			cansha:{
+				audio:4,
 				trigger: {player: 'useCardAfter'},
 				priority:3,
 				filter: function(event, player) {
@@ -4138,7 +4141,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xingchi:{
 				mod:{
 					targetEnabled:function(card,player,target){
-						if(!player.countUsed(null,true))	return false;
+						if(!player.hasSkill('xingchi_countUsed'))	return false;
 					},
 				},
 				trigger:{player:'gainAfter'},
@@ -4177,7 +4180,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.useCard({name:'sha'},result.targets,result.cards,false);
 					}
 				},
+				group:'xingchi_record',
 				subSkill:{
+					record:{
+						trigger:{global:'useCard1'},
+						filter:function(event,player){
+							return !event.player.hasSkill('xingchi_countUsed');
+						},
+						direct:true,
+						locked:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							trigger.player.addTempSkill('xingchi_countUsed');
+						},
+					},
+					countUsed:{},
 					used:{
 						mark:true,
 						intro:{content:'本回合已通过『醒迟』摸牌'},
@@ -4748,6 +4766,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//花那
 			re_huawen:{
+				audio:2,
 				enable:['chooseToUse','chooseToRespond'],
 				viewAs:function(cards,player){
 					var name = false;
@@ -4840,6 +4859,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			re_liaohu:{
+				audio:'liaohu',
 				trigger:{global:'phaseEnd'},
 				priority:23,
 				filter:function(event,player){
@@ -5802,7 +5822,89 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
-			}
+			},
+			//豹豹
+			zhenbao:{
+				trigger:{player:'discardAfter'},
+				filter:function(event,player){
+					if(!event.cards||event.cards.length<2)	return false;
+					return game.hasPlayer(function(cur){
+						return !cur.countCards('j');
+					});
+				},
+				priority:22,
+				direct:true,
+				content:function(){
+					'step 0'
+					event.cards = trigger.cards;
+					player.chooseTarget(function(card,player,target){
+						return !target.countCards('j');
+					}).set('card',event.card).set('ai',function(target){
+						var player = _status.event.player;
+						return -get.attitude(player,target);
+					}).set('prompt',get.prompt2('zhenbao'));
+					'step 1'
+					if(result.bool){
+						event.target = result.targets[0];
+						player.logSkill('zhenbao',event.target);
+					}else	event.finish();
+					'step 2'
+					event.target.chooseCardButton(cards,'选择一张牌置于判定区',true);
+					'step 3'
+					if(result.bool){
+						var cards = result.links.slice(0);
+						player.$give(cards,event.target,false);
+						if(get.type(cards[0])=='delay')		event.target.addJudge(cards[0]);
+						else if(get.color(cards[0])=='red'&&event.target.canAddJudge('lebu'))		event.target.addJudge({name:'lebu'},cards);
+						else if(get.color(cards[0])=='black'&&event.target.canAddJudge('bingliang'))	event.target.addJudge({name:'bingliang'},cards);
+					}
+				},
+			},
+			heimo:{
+				audio:'quru',
+				trigger:{
+					player:'damageEnd',
+				},
+				direct:true,
+				filter:function (event,player){
+					return player.countCards('he');
+				},
+				content:function (){
+					'step 0'
+					event.targets = [player];
+					if(trigger.source&&trigger.source.isIn()){
+						event.damageBy = true;
+						event.targets.add(trigger.source);
+					};
+					var next=player.chooseToDiscard('he',[1,Infinity],get.prompt2('heimo',event.targets));
+					next.set('logSkill',['heimo',event.targets,'fire']);
+					'step 1'
+					if(result.bool){
+						event.num = result.cards.length;
+					}
+					'step 2'
+					player.judge(function(card){
+						return 0;
+					}).callback=lib.skill.heimo.callback;
+					if(--event.num)	event.redo();
+					'step 3'
+					if(event.black&&event.targets[1])	event.targets[1].damage();
+					'step 4'
+					if(event.red)	player.draw(2);
+				},
+				callback:function(){
+					var evt=event.getParent(2);
+					if(event.judgeResult.color=='black'){
+						evt.black = true;
+						player.popup('黑色');
+					}
+					else if(event.judgeResult.color=='red'){
+						evt.red = true;
+						player.popup('红色');
+					}
+					game.delay(2);
+				},
+			},
 		},
 		characterReplace:{
 			SisterClearie:['re_SisterClearie','SisterClearie'],
@@ -6144,6 +6246,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rangran_info: '你使用牌可指定本回合未以此法指定过的场上体力最多角色为额外目标。场上体力最多的角色受到属性伤害后，你摸一张牌。',
 			jiazhao: '佳朝',
 			jiazhao_info: '当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸一张。然后其回合开始时弃置因此获得的牌。',
+		
+			re_ShirakamiHaruka: '新·白神遥',
+			zhenbao: '心灵震豹',
+			zhenbao_info: '当你一次性弃置两张或更多的牌后，你可以令一名判定区没有牌的角色选择其中一张置于其判定区。',
+			heimo: '黑魔唤醒',
+			heimo_info: '当你受到伤害后，你可以弃置任意张牌并进行等量次判定。若判定结果中有黑色牌，你对来源造成1点伤害；若有红色牌，你摸两张牌。',
 		
 		}
 	}
