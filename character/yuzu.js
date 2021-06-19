@@ -9743,6 +9743,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
+				group:'xilv_beDying',
+				subSkill:{
+					beDying:{
+						trigger:{player:'phaseEnd'},
+						forced:true,
+						filter:function(event,player){
+							return player.additionalSkills['xilv'];
+						},
+						content:function(){
+							player.removeAdditionalSkill('xilv');
+						}
+					}
+				}
 			},
 			bana:{
 				trigger:{global:'changeHp'},
