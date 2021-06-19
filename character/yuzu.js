@@ -9743,9 +9743,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				},
-				group:'xilv_beDying',
+				group:'xilv_phaseEnd',
 				subSkill:{
-					beDying:{
+					phaseEnd:{
 						trigger:{player:'phaseEnd'},
 						forced:true,
 						filter:function(event,player){
