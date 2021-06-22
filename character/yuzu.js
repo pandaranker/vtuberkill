@@ -32,8 +32,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
-			/**阳向心美 */
-			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
 			/**牛牛子 */
 			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
 
@@ -47,6 +45,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
 
+			/**春猿火 */
+			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
 			
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
@@ -6111,7 +6111,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							for(var j=0;j<skills.length;j++){
 								if(lib.skill[skills[j]]&&
 								(event.num?(lib.skill[skills[j]].limited):(!lib.skill[skills[j]].limited))){
-									player.addTempSkill(skills[j],'roundStart');
+									player.addTempSkill(skills[j],{player:'phaseBegin'});
 								}
 							}
 						}
@@ -6346,7 +6346,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(player.storage.bianshi&&player.storage.bianshi>=2){
-						player.chooseToDiscard('『辨识』弃牌','h',true);
+						player.chooseToDiscard('『辨识』弃牌','he',true);
 						event.finish();
 					}else{
 						player.draw();
@@ -7544,6 +7544,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//ccm
 			qijian:{
+				audio:4,
 				trigger:{global:'useCardAfter'},
 				filter:function(event,player){
 					if(player.hasSkill('qijian_lost'))	return false;
@@ -7614,6 +7615,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					}
 				},
+				audio:true,
 				group:['yizhan_count'],
 				trigger:{
 					global:"recoverAfter",
@@ -9119,6 +9121,102 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.targets[event.num])	event.goto(2);
 				},
 			},
+			//春猿火
+			huoju:{
+				trigger:{global:'damageBegin'},
+				forced:true,
+				filter:function(event,player){
+					if(!event.source)	return false;
+					if(event.source==player||get.distance(player,event.source,'pure')==1){
+						return event.nature!='fire';
+					}
+				},
+				content:function(){
+					trigger.nature = 'fire';
+				},
+				group:'huoju_turnOverBy',
+				subSkill:{
+					turnOverBy:{
+						trigger:{player:'damageAfter',source:'damageAfter'},
+						forced:true,
+						filter:function(event,player){
+							return event.nature=='fire'&&event.source&&event.source.isIn();
+						},
+						content:function(){
+							'step 0'
+							trigger.source.turnOver();
+							'step 1'
+							trigger.source.draw();
+						},
+					}
+				}
+			},
+			zouyang:{
+				trigger:{player:'useCard2'},
+				filter:function(event,player){
+					if(player.hasSkill('zouyang_used'))		return false;
+					var card=event.card;
+					var info=get.info(card);
+					if((info.type!='trick'&&info.type!='basic')||info.allowMultiple==false) return false;
+					if(event.targets&&event.targets.length==1&&!info.multitarget){
+						if(game.hasPlayer(function(current){
+							return !event.targets.contains(current)&&get.distance(event.targets[0],current,'pure')==1;
+						})){
+							return true;
+						}
+					}
+					return false;
+				},
+				logTarget:function(event,player){
+					return game.filterPlayer(function(current){
+						return !event.targets.contains(current)&&get.distance(event.targets[0],current,'pure')==1;
+					});
+				},
+				check:function(event,player){
+					return game.hasPlayer(function(current){
+						return get.effect(target,trigger.card,player,player);
+						return !event.targets.contains(current)&&get.distance(event.targets[0],current,'pure')==1;
+					});
+				},
+				content:function(){
+					'step 0'
+					event.draws = [];
+					event.targets = game.filterPlayer(function(current){
+						return !trigger.targets.contains(current)&&get.distance(trigger.targets[0],current,'pure')==1;
+					});
+					for(var i of event.targets){
+						if(lib.filter.targetEnabled2(trigger.card,trigger.player,i)){
+							if(event._zouyang_tmp&&event._zouyang_tmp!='target')	event._zouyang_tmp = 'goon';
+							else	event._zouyang_tmp = 'target';
+						}else{
+							event.draws.add(i);
+							if(event._zouyang_tmp&&event._zouyang_tmp!='draw')	event._zouyang_tmp = 'goon';
+							else	event._zouyang_tmp = 'draw';
+						}
+					}
+					event.targets.removeArray(event.draws);
+					'step 1'
+					if(event._zouyang_tmp!='goon'){
+						player.addTempSkill('zouyang_used');
+					}
+					'step 2'
+					if(event.targets.length){
+						trigger.targets.addArray(event.targets);
+					}
+					if(event.draws.length){
+						game.asyncDraw(event.draws);
+					}
+				},
+				subSkill:{
+					used:{
+						mark:true,
+						intro:{
+							content:'不能发动『奏扬』',
+						},
+						sub:true
+					},
+				}
+			},
 			//hh
 			jichu:{
 				mod:{
@@ -9513,7 +9611,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							effect:{
 								player:function(card,player,target,current){
 									if(_status.event.name=='chooseUseTarget'&&_status.event.addedSkill.contains('lvecao')){
-										if(card.name=='tiesuo'&&target.isLinked()&&target.countCards('hej',function(card){
+										if(card.name=='tiesuo'&&target&&target.isLinked()&&target.countCards('hej',function(card){
 											if(get.position(card)!='e'&&get.position(card)!='j'&&!card.hasGaintag('ming_'))	return false;
 											return true;
 										})) return [1,2,1,-1];
@@ -10031,6 +10129,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			moemanyi_info: '锁定技 你的攻击范围为全场最高/最低时，不能成为延时锦囊牌/黑色【杀】的目标。',
 			cuchuan: '粗串',
 			cuchuan_info: '摸牌阶段，你可以放弃摸牌，改为令距离为1的角色各摸一张牌，然后你获得这些角色各一张牌。',
+			
+			Harusaruhi: '春猿火',
+			huoju: '火居',
+			huoju_info: '锁定技 你和相邻角色造成的伤害改为火焰伤害。你造成或受到火焰伤害后，伤害来源翻面并摸一张牌。',
+			zouyang: '奏扬',
+			zouyang_info: '你使用非装备牌仅指定一名角色为目标时，可使其相邻角色也成为此牌目标，其中不能成为合法目标的摸一张牌，若均摸牌或均成为目标，你不能再发动此技能直到回合结束。',
 			
 			HIMEHINA: '田中姬&铃木雏',
 			HIMEHINA_ab: '姬&雏',

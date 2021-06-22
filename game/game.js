@@ -456,7 +456,7 @@
 					max_loadtime:{
 						name:'最长载入时间',
 						intro:'设置游戏从启动到完成载入所需的最长时间，超过此时间未完成载入会报错，若设备较慢或安装了较多扩展可适当延长此时间',
-						init:'5000',
+						init:'10000',
 						unfrequent:true,
 						item:{
 							5000:'5秒',
@@ -10415,6 +10415,7 @@
 			club2:"梅花",
 			red:'红色',
 			black:'黑色',
+			none:'无色',
 			ok:"确定",
 			ok2:"确定",
 			cancel:"取消",
@@ -21501,6 +21502,11 @@
 				showTimer:function(time){
 					if(!time&&lib.configOL){
 						time=parseInt(lib.configOL.choose_timeout)*1000;
+						var evt= _status.event.getParent('chooseCharacter');
+						if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
+							console.log(_status.event,evt)
+							time *= 5;
+						}
 					}
 					if(_status.connectMode&&!game.online){
 						game.broadcast(function(player,time){
@@ -29712,6 +29718,11 @@
 				}
 				else if(_status.connectMode){
 					num=lib.configOL.choose_timeout;
+					var evt= _status.event.getParent('chooseCharacter');
+					if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
+						console.log(_status.event,evt)
+						num = parseInt(num)*5;
+					}
 				}
 				else{
 					num=get.config('choose_timeout');
@@ -37718,6 +37729,11 @@
 									},
 									connect:true,
 									frequent:true
+								};
+								infoconfig.connect_chooseCharacter_timeout={
+									name:'五倍选将时间',
+									init:true,
+									connect:true
 								};
 								infoconfig.connect_observe={
 									name:'允许旁观',
