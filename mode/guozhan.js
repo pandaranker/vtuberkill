@@ -1800,7 +1800,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return event.player!=player&&event.num;
 				},
 				check:function(event,player){
-					return get.attitude(player,event.player)>1;
+					return (player.hp-event.player.hp)>0&&get.attitude(player,event.player)>(6-player.hp);
 				},
 				logTarget:'player',
 				content:function(){

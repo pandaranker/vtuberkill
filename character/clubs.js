@@ -68,6 +68,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
 			/**早稻叽 */
 			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
+			/**阳向心美 */
+			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
 		},
 		characterSort:{
 			clubs:{
