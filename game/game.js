@@ -33378,7 +33378,7 @@
 						table.appendChild(tr);
 						uploadDataRow.identity=get.translation(game.players[i].identity) //身份
 						uploadDataRow.alive=true; //存活
-						if(true){	//胜利或失败
+						if(get.mode()=='identity'){	//胜利或失败
 							if(game.zhu.isAlive()){
 								if(game.players[i].identity=='fan'||game.players[i].identity=='nei'){
 									uploadDataRow.winner=false;
@@ -33402,6 +33402,12 @@
 										uploadDataRow.winner=false;
 								}
 							}
+						}
+						else if(get.mode()=='guozhan'){
+							uploadDataRow.winner=true;
+						}
+						else{
+							uploadDataRow.winner=true;
 						}
 						tableData.push(uploadDataRow)
 					}
@@ -33485,7 +33491,7 @@
 						table.appendChild(tr);
 						uploadDataRow.identity=get.translation(game.dead[i].identity); //身份
 						uploadDataRow.alive=false; //存活
-						if(true){	//胜利或失败
+						if(get.mode()=='identity'){	//胜利或失败
 							if(game.zhu.isAlive()){
 								if(game.dead[i].identity=='fan'||game.dead[i].identity=='nei'){
 									uploadDataRow.winner=false;
@@ -33515,12 +33521,37 @@
 								}
 							}
 						}
+						else if(get.mode()=='guozhan'){
+							if(game.players[0]&&(game.dead[i].identity==game.players[0])){
+								if(game.dead[i].identity!='ye'){
+									uploadDataRow.winner=true;
+								}
+								else{
+									uploadDataRow.winner=false;
+								}
+							}
+							else
+								uploadDataRow.winner=false;
+						}
+						else{
+							if(game.players[0]&&(game.dead[i].identity==game.players[0])){
+								if(game.dead[i].identity!='ye'){
+									uploadDataRow.winner=true;
+								}
+								else{
+									uploadDataRow.winner=false;
+								}
+							}
+						}
 						tableData.push(uploadDataRow)
 					}
 					dialog.add(ui.create.div('.placeholder'));
 					dialog.content.appendChild(table);
 				}
-				var uploadData={type:'identity',playerRecords:tableData}
+				var nowType = 'other'
+				if(get.mode()=='identity') nowType='identity'
+				else if(get.mode()=='guozhan') nowType='guozhan'
+				var uploadData={type:nowType,playerRecords:tableData}
 				if(game.onlinezhu){
 					try
 					{
