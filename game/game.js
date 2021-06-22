@@ -33292,6 +33292,7 @@
 				}
 			}
 			// if(true){
+				var tableData = [];
 				if(game.players.length){
 					table=document.createElement('table');
 					tr=document.createElement('tr');
@@ -33313,9 +33314,13 @@
 					tr.appendChild(td);
 					table.appendChild(tr);
 					for(i=0;i<game.players.length;i++){
+						var uploadDataRow={}
 						tr=document.createElement('tr');
 						td=document.createElement('td');
 						td.innerHTML=get.translation(game.players[i]);
+						uploadDataRow.name=game.players[i].name; //名字拼音
+						uploadDataRow.transName=td.innerHTML; //名字
+						uploadDataRow.nickname=game.players[i].nickname;//昵称
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33323,6 +33328,7 @@
 							if(game.players[i].stat[j].damage!=undefined) num+=game.players[i].stat[j].damage;
 						}
 						td.innerHTML=num;
+						uploadDataRow.damage=num; //伤害
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33330,6 +33336,7 @@
 							if(game.players[i].stat[j].damaged!=undefined) num+=game.players[i].stat[j].damaged;
 						}
 						td.innerHTML=num;
+						uploadDataRow.damaged=num; //受伤
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33337,6 +33344,7 @@
 							if(game.players[i].stat[j].gain!=undefined) num+=game.players[i].stat[j].gain;
 						}
 						td.innerHTML=num;
+						uploadDataRow.gain=num; //摸牌
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33346,6 +33354,7 @@
 							}
 						}
 						td.innerHTML=num;
+						uploadDataRow.card=num; //出牌
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33353,8 +33362,37 @@
 							if(game.players[i].stat[j].kill!=undefined) num+=game.players[i].stat[j].kill;
 						}
 						td.innerHTML=num;
+						uploadDataRow.kill=num; //杀敌
 						tr.appendChild(td);
 						table.appendChild(tr);
+						uploadDataRow.identity=get.translation(game.players[i].identity) //身份
+						uploadDataRow.alive=true; //存活
+						if(true){	//胜利或失败
+							if(game.zhu.isAlive()){
+								if(game.players[i].identity=='fan'||game.players[i].identity=='nei'){
+									uploadDataRow.winner=false;
+								}
+								else{
+									uploadDataRow.winner=true;
+								}
+							}
+							else{
+								if(game.players.length==1){
+									if(game.players[i].identity=='zhong')
+										uploadDataRow.winner=false;
+									else
+										uploadDataRow.winner=true;
+								}
+								else{
+									if(game.players[i].identity=='fan'){
+										uploadDataRow.winner=true;
+									}
+									else 
+										uploadDataRow.winner=false;
+								}
+							}
+						}
+						tableData.push(uploadDataRow)
 					}
 					dialog.add(ui.create.div('.placeholder'));
 					dialog.content.appendChild(table);
@@ -33383,9 +33421,13 @@
 						table.appendChild(tr);
 					}
 					for(i=0;i<game.dead.length;i++){
+						var uploadDataRow={}
 						tr=document.createElement('tr');
 						td=document.createElement('td');
 						td.innerHTML=get.translation(game.dead[i]);
+						uploadDataRow.name=game.dead[i].name;//名字拼音
+						uploadDataRow.transName=td.innerHTML; //名字
+						uploadDataRow.nickname=game.players[i].nickname;//昵称
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33393,6 +33435,7 @@
 							if(game.dead[i].stat[j].damage!=undefined) num+=game.dead[i].stat[j].damage;
 						}
 						td.innerHTML=num;
+						uploadDataRow.damage=num; //伤害
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33400,6 +33443,7 @@
 							if(game.dead[i].stat[j].damaged!=undefined) num+=game.dead[i].stat[j].damaged;
 						}
 						td.innerHTML=num;
+						uploadDataRow.damaged=num; //受伤
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33407,6 +33451,7 @@
 							if(game.dead[i].stat[j].gain!=undefined) num+=game.dead[i].stat[j].gain;
 						}
 						td.innerHTML=num;
+						uploadDataRow.gain=num; //摸牌
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33416,6 +33461,7 @@
 							}
 						}
 						td.innerHTML=num;
+						uploadDataRow.card=num; //出牌
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
@@ -33423,11 +33469,60 @@
 							if(game.dead[i].stat[j].kill!=undefined) num+=game.dead[i].stat[j].kill;
 						}
 						td.innerHTML=num;
+						uploadDataRow.kill=num; //杀敌
 						tr.appendChild(td);
 						table.appendChild(tr);
+						uploadDataRow.identity=get.translation(game.dead[i].identity); //身份
+						uploadDataRow.alive=false; //存活
+						if(true){	//胜利或失败
+							if(game.zhu.isAlive()){
+								if(game.dead[i].identity=='fan'||game.dead[i].identity=='nei'){
+									uploadDataRow.winner=false;
+								}
+								else{
+									uploadDataRow.winner=true;
+								}
+							}
+							else{
+								if(game.player.length==1){
+									if(game.player[0].identity=='nei'){
+										uploadDataRow.winner=false;
+									}
+									else if (game.player[0].identity=='fan'){
+										if(game.dead[i].identity=='fan')
+											uploadDataRow.winner=true;
+										else
+											uploadDataRow.winner=false;
+									}
+								}
+								else{
+									if(game.dead[i].identity=='fan'){
+										uploadDataRow.winner=true;
+									}
+									else 
+										uploadDataRow.winner=false;
+								}
+							}
+						}
+						tableData.push(uploadDataRow)
 					}
 					dialog.add(ui.create.div('.placeholder'));
 					dialog.content.appendChild(table);
+				}
+				var uploadData={type:'identity',playerRecords:tableData}
+				if(game.onlinezhu){
+					try
+					{
+						var xhr=new XMLHttpRequest();
+						var sendForm = new FormData();
+						sendForm.append('data',JSON.stringify(uploadData))
+						xhr.open('post','http://www.vtuberkill.com:1337/game-records/',(e)=>{console.log(e)})
+						xhr.send(sendForm);
+					}
+					catch(e)
+					{
+						console.log(e);
+					}
 				}
 				if(game.additionaldead&&game.additionaldead.length){
 					table=document.createElement('table');
