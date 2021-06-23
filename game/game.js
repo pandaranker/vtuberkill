@@ -33501,11 +33501,11 @@
 								}
 							}
 							else{
-								if(game.player.length==1){
-									if(game.player[0].identity=='nei'){
+								if(game.players.length==1){
+									if(game.players[0].identity=='nei'){
 										uploadDataRow.winner=false;
 									}
-									else if (game.player[0].identity=='fan'){
+									else if (game.players[0].identity=='fan'){
 										if(game.dead[i].identity=='fan')
 											uploadDataRow.winner=true;
 										else
