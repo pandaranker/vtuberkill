@@ -33444,7 +33444,7 @@
 						td.innerHTML=get.translation(game.dead[i]);
 						uploadDataRow.name=game.dead[i].name;//名字拼音
 						uploadDataRow.transName=td.innerHTML; //名字
-						uploadDataRow.nickname=game.players[i].nickname;//昵称
+						uploadDataRow.nickname=game.dead[i].nickname;//昵称
 						tr.appendChild(td);
 						td=document.createElement('td');
 						num=0;
