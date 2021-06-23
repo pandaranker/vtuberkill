@@ -33558,7 +33558,7 @@
 						var xhr=new XMLHttpRequest();
 						var sendForm = new FormData();
 						sendForm.append('data',JSON.stringify(uploadData))
-						xhr.open('post','http://www.vtuberkill.com:1337/game-records/',(e)=>{console.log(e)})
+						xhr.open('post','https://data.vtuberkill.com/game-records/',(e)=>{console.log(e)})
 						xhr.send(sendForm);
 					}
 					catch(e)
