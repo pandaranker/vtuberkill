@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.94',
+	version:'1.9.101.95',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.91小更新：新增角色神椿的春猿火（测试），新增阳向心美的配音，联机增加设置“五倍选将时间”（终于不用再选择困难啦）',
+		'101.95小更新：新增势力ChaosLive，新增角色猫雷喵露、ChaosLive的高原守、白夜真宵（测试），联机增加设置“五倍选将时间”（终于不用再选择困难啦）',
 		'101.94小更新:开始测试收集联机对战数据，修复赛后数据错误bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -49,7 +49,7 @@ window.noname_update={
 		//'card/gwent.js',
 		//'card/yunchou.js',
 		//'card/zhenfa.js',
-		//'card/zhulu.js',
+		'card/zhulu.js',
 		'character/diy.js',
 		//'character/extra.js',
 		//'character/hearth.js',

@@ -69,6 +69,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(false){
+						var bigImg = document.createElement("img");
+						bigImg.src = lib.assetURL+"image/GIF_bg/MEA.gif";
+						bigImg.style.margin='0';
+						bigImg.style.width='100%';
+						ui.background.appendChild(bigImg);
+						setTimeout(function(){bigImg.src = lib.assetURL+"image/GIF_bg/MEA.png";}, 5580);
+						setTimeout(function(){bigImg.remove();}, 6500);
+					}
+					if(false){
 						game.broadcastAll() + ui.background.setBackgroundImage("image/GIF_bg/MEA.gif");
 						setTimeout(function () { game.broadcastAll() + ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg'); }, 5500);
 					}

@@ -3193,7 +3193,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lastDo:true,
 				content:function(){
 					'step 0'
-					console.log(trigger)
 					if(trigger.name=='game'){
 						var cards=player.getCards('h');
 						player.loseToSpecial(cards,'maoge');

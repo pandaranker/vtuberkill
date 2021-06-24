@@ -32,8 +32,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
+
 			/**牛牛子 */
-			Niuniuzi: ['female','qun',4,['qiying','hengxuan'],['guoV']],
+			Niuniuzi: ['female','chaos',4,['qiying','hengxuan'],['guoV']],
+			/**白夜真宵 */
+			ByakuyaMayoi: ['female','chaos',4,['bykuangxin'],['guoV']],
+			/**高原守 */
+			Mamoru: ['male','chaos','-3/3',['shoumi','yanwang'],['guoV']],
 
 			/**蜜球兔 */
 			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
@@ -47,7 +52,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**春猿火 */
 			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
-			
+
+			/**猫雷NyaRu */
+			NecoraNyaru: ['female','qun',3,['miaolu','benglei'],],
+
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
 			/**塞菲拉·苏 */
@@ -1056,7 +1064,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							if(result.bool&&result.links){
 								var list=result.links.slice(0);
-								if(list.length<3){
+								if(list.length){
 									event.cards.removeArray(list);
 								}
 								while(list.length){
@@ -4438,6 +4446,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{global:'phaseLoopBefore',player:'enterGame'},
 				forced:true,
+				frequent:true,
+				filter:function(event,player){
+					return !player.storage.shixi;
+				},
 				content:function(){
 					var cards = player.getCards('h');
 					if(cards.length){
@@ -4501,15 +4513,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							if(event.list[event.num]){
 								if(player.storage.shixi_mark)	event.record.removeArray(player.storage.shixi_mark);
+								var filterButtons = event.record.filter(function(card){
+									return get.suit(event.list[event.num])==get.suit(card);
+								})
 								if(event.record.length){
-									player.chooseButton(['###'+get.prompt('shixi')+'###选择要指定的牌（与'+get.translation(event.list[event.num])
-									+'花色相同）',event.record]).set('filterButton',function(button){
-										var card=_status.event.card;
-										return get.suit(button.link)==get.suit(card);
-									}).set('ai',function(button){
-										return get.value(button.link)+2*Math.random();
-									}).set('card',event.list[event.num]);
-								}else	event.finish();
+									if(lib.config.autoskilllist.contains('shixi')){
+										player.chooseButton(['###'+get.prompt('shixi')+'###选择要指定的牌（与'+get.translation(event.list[event.num])
+										+'花色相同）',event.record]).set('filterButton',function(button){
+											var card=_status.event.card;
+											return get.suit(button.link)==get.suit(card);
+										}).set('ai',function(button){
+											return get.value(button.link)+2*Math.random();
+										}).set('card',event.list[event.num]);
+									}
+									else if(filterButtons.length){
+										event._result={bool:true,links:[filterButtons.shift()]};
+									}
+								};
 							}
 							'step 2'
 							if(result.bool&&result.links){
@@ -6920,6 +6940,317 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//高原守
+			shoumi:{
+				audio:2,
+				trigger:{global:'gameDrawAfter',player:['enterGame','changeHp']},
+				filter:function(event,player){
+					if(event.name=='changeHp')	return event.num!=0;
+					return true;
+				},
+				forced:true,
+				content:function(){
+					if(player.hp==0){
+						delete player.nodying;
+						console.log(player.nodying)
+						if(trigger.num>0)	player.dying();
+					}
+					else{
+						player.nodying=true;
+						if(player.hp<0&&!player.hasSkill('shoumi_yingzi')){
+							player.removeSkill('shoumi_guicai');
+							player.addSkill('shoumi_yingzi');
+						}
+						else if(player.hp>0&&!player.hasSkill('shoumi_guicai')){
+							player.removeSkill('shoumi_yingzi');
+							player.addSkill('shoumi_guicai');
+						}
+					}
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,cur){
+							if(target.hp<0){
+								if(get.tag(card,'recover')>0)	return [-1,0];
+								if(target.hp==-1)	return [1,-1];
+								if(get.tag(card,'damage')>=1||get.tag(card,'loseHp'))	return [-1.5,0];
+							}
+						}
+					}
+				},
+			},
+			shoumi_yingzi:{
+				trigger:{player:'phaseDrawBegin2'},
+				forced:true,
+				filter:function(event,player){
+					return !event.numFixed;
+				},
+				content:function(){
+					trigger.num++;
+				},
+				ai:{
+					threaten:1.5
+				},
+				mod:{
+					maxHandcardBase:function(player,num){
+						return player.maxHp;
+					}
+				}
+			},
+			shoumi_guicai:{
+				trigger:{global:'judge'},
+				direct:true,
+				filter:function(event,player){
+					return player.countCards('he')>0;
+				},
+				content:function(){
+					"step 0"
+					player.chooseCard(get.translation(trigger.player)+'的'+(trigger.judgestr||'')+'判定为'+
+					get.translation(trigger.player.judging[0])+'，'+get.prompt('shoumi_guicai'),'he',function(card){
+						var player=_status.event.player;
+						var mod2=game.checkMod(card,player,'unchanged','cardEnabled2',player);
+						if(mod2!='unchanged') return mod2;
+						var mod=game.checkMod(card,player,'unchanged','cardRespondable',player);
+						if(mod!='unchanged') return mod;
+						return true;
+					}).set('ai',function(card){
+						var trigger=_status.event.getTrigger();
+						var player=_status.event.player;
+						var judging=_status.event.judging;
+						var result=trigger.judge(card)-trigger.judge(judging);
+						var attitude=get.attitude(player,trigger.player);
+						if(attitude==0||result==0) return 0;
+						if(attitude>0){
+							return result-get.value(card)/2;
+						}
+						else{
+							return -result-get.value(card)/2;
+						}
+					}).set('judging',trigger.player.judging[0]);
+					"step 1"
+					if(result.bool){
+						player.respond(result.cards,'shoumi_guicai','highlight','noOrdering');
+					}
+					else{
+						event.finish();
+					}
+					"step 2"
+					if(result.bool){
+						if(trigger.player.judging[0].clone){
+							trigger.player.judging[0].clone.classList.remove('thrownhighlight');
+							game.broadcast(function(card){
+								if(card.clone){
+									card.clone.classList.remove('thrownhighlight');
+								}
+							},trigger.player.judging[0]);
+							game.addVideo('deletenode',player,get.cardsInfo([trigger.player.judging[0].clone]));
+						}
+						game.cardsDiscard(trigger.player.judging[0]);
+						trigger.player.judging[0]=result.cards[0];
+						trigger.orderingCards.addArray(result.cards);
+						game.log(trigger.player,'的判定牌改为',result.cards[0]);
+						game.delay(2);
+					}
+				},
+				ai:{
+					rejudge:true,
+					tag:{
+						rejudge:1,
+					}
+				}
+			},
+			yanwang:{
+				trigger:{target:'useCardToTarget'},
+				filter:function(event,player){
+					return event.player!=player;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					player.line(trigger.player,'green');
+					var check = get.recoverEffect(player,trigger.player,trigger.player);
+					if(player.countCards('h')>0)	check+=0.5;
+					check = check>0;
+					trigger.player.chooseBool(get.prompt2('yanwang',player)).set('choice',check>0);
+					'step 1'
+					if(result.bool){
+						trigger.player.logSkill('yanwang',player);
+						player.recover();
+					}else event.finish();
+					'step 2'
+					trigger.player.gainPlayerCard(player,'h',true,'visible');
+					'step 3'
+					if(result.bool&&get.color(result.links[0])=='black'){
+						if(!game.hasPlayer(function(current){
+							return current!=player&&current!=trigger.player&&trigger.player.canUse('juedou',current);
+						})){
+							event.finish();
+							return;
+						}
+						event.source = trigger.player;
+						trigger.player.chooseTarget(true,function(card,player,target){
+							var evt=_status.event.getParent();
+							return evt.source.canUse({name:'juedou'},target);
+						},'请选择一名角色，视为'+get.translation(trigger.player)+'对其使用【决斗】').set('ai',function(target){
+							var evt=_status.event.getParent();
+							return get.effect(target,{name:'juedou'},evt.source,_status.event.player)-2;
+						});
+					}
+					else event.finish();
+					'step 4'
+					if(result.targets){
+						trigger.player.useCard({name:'juedou',isCard:true},result.targets[0],'noai');
+					}
+				},
+			},
+			//白夜真宵
+			bykuangxin:{
+				audio:2,
+				enable:'phaseUse',
+				usable:1,
+				content:function(){
+					'step 0'
+					if(event.cards==undefined)	event.cards=[];
+					if(event.d10==undefined)	event.d10=[];
+					next = player.judge(function(card){
+						if(get.number(card)>10) return 1.5;
+						return 0;
+					});
+					next.set('callback',function(){
+						var evt = event.getParent('bykuangxin');
+						if(get.number(card)>10){
+							event.getParent().orderingCards.remove(card);
+						}
+						else{
+							evt.d10.unshift(card);
+							if(!evt.num){
+								evt.num = 0;
+							}
+							evt.num++;
+							if(evt.d100==undefined){
+								evt.d100 = 0;
+								if(get.number(card)!=10)	evt.d100+=get.number(card);
+							}
+							else{
+								if(get.number(card)!=10||evt.d100==0)	evt.d100+=(get.number(card)*10);
+							}
+							if(evt.num==2){
+								player.chat('1d100='+evt.d100);
+								if(evt.d100>=96)		player.popup('大失败','yami');
+								else if(evt.d100<=5)	player.popup('大成功','wood');
+								else if(evt.d100<=40)	player.popup('成功','wood');
+								else if(evt.d100>=61)	player.popup('失败','yami');
+								game.delayx(1.5);
+							}
+						}
+						game.delayx(0.2);
+					});
+					'step 1'
+					if(event.num!=2){
+						event.card=get.cards()[0];
+						if(event.videoId==undefined)	event.videoId=lib.status.videoId++;
+						if(result.number>10)	event.cards.push(result.card);
+						for(var i of event.cards){
+							event.card = i;
+							game.addVideo('judge1',player,[get.cardInfo(event.card),false,event.videoId]);
+							game.broadcastAll(function(player,card,str,id,cardid){
+								var event;
+								if(game.online){
+									event={};
+								}
+								else{
+									event=_status.event;
+								}
+								if(game.chess){
+									event.node=card.copy('thrown','center',ui.arena).animate('start');
+								}
+								else{
+									event.node=player.$throwordered(card.copy(),true);
+								}
+								if(lib.cardOL) lib.cardOL[cardid]=event.node;
+								event.node.cardid=cardid;
+								event.node.classList.add('thrownhighlight');
+								ui.arena.classList.add('thrownhighlight');
+								event.dialog=ui.create.dialog(str);
+								event.dialog.classList.add('center');
+								event.dialog.videoId=id;
+							},player,event.card,false,event.videoId,get.id());
+						}
+						game.addVideo('centernode',null,get.cardsInfo(event.cards));
+						event.goto(0);
+					}
+					else{
+						if(event.videoId){
+							game.addVideo('judge2',null,event.videoId);
+							game.broadcast(function(id){
+								var dialog=get.idDialog(id);
+								if(dialog){
+									dialog.close();
+								}
+								ui.arena.classList.remove('thrownhighlight');
+							},event.videoId);
+						}
+						for(var i=0;i<event.cards.length;i++){
+							if(get.position(event.cards[i],true)!='o'){
+								event.cards.splice(i,1);
+								i--;
+							}
+						}
+						console.log(event.num,result.card,event.cards)
+						player.gain(event.cards,'gain2').gaintag.add('bykuangxin');
+					}
+					'step 2'
+					if(event.d100){
+						player.showCards(event.d10,'『狂信』判定结果：'+event.d100);
+						if(event.d100>=96){
+							game.filterPlayer(function(cur){
+								if(cur!=player)		player.randomGain('h',cur);
+							})
+						}
+						else if(event.d100<=5){
+							player.draw(2);
+							player.gainMaxHp(true);
+						}
+						else if(event.d100<=40){
+							player.recover();
+						}
+						else if(event.d100<=60){
+							player.loseHp();
+						}
+						else if(event.d100<=95){
+							if(player.needsToDiscard()){
+								player.chooseToDiscard(player.needsToDiscard(),true);
+							}
+						}
+					}
+					'step 3'
+					if(event.d100){
+						if(event.d100>=96){
+							player.loseMaxHp(true);
+							if(lib.config.background_audio){
+								game.playAudio('effect','damage2');
+							}
+							game.broadcast(function(){
+								if(lib.config.background_audio){
+									game.playAudio('effect','damage2');
+								}
+							});
+							player.$damage(player);
+						}
+						else if(event.d100>=41&&event.d100<=60){
+							if(player.hasUseTarget('juedou')){
+								player.chooseUseTarget({name:'juedou',isCard:true},true);
+							}
+						}
+					}
+				},
+				ai:{
+					result:{
+						player:1
+					},
+					order:11
+				},
+			},
 			//小柔
 			rouqing:{
 				init:function(player,skill){
@@ -9217,6 +9548,161 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				}
 			},
+			//猫雷NyaRu
+			miaolu:{
+				trigger:{global:'dying'},
+				filter:function(event,player){
+					return event.player.hp<=0&&event.player.countCards('h')>0;
+				},
+				direct:true,
+				content:function(){
+					"step 0"
+					var check;
+					if(trigger.player.isUnderControl(true,player)||get.attitude(player,trigger.player)>0){
+						check=trigger.player.hasCard(function(card){
+							return get.type(card)!='basic';
+						});
+					}
+					else{
+						check=trigger.player.hasCard(function(card){
+							return get.type(card)=='basic';
+						});
+					}
+					player.discardPlayerCard(trigger.player,get.prompt('miaolu',trigger.player),'h').set('ai',function(button){
+						if(!_status.event.check) return 0;
+						if(_status.event.target.isUnderControl(true,_status.event.player)||get.recoverEffect(_status.event.target,_status.event.player,_status.event.player)>0){
+							if(get.type(button.link)!='basic'){
+								return 10-get.value(button.link);
+							}
+							return 0;
+						}
+						else{
+							return Math.random();
+						}
+					}).set('check',check);
+					"step 1"
+					if(result.bool){
+						player.logSkill('miaolu',trigger.player);
+						event.card=result.links[0];
+						player.showCards([event.card],get.translation(player)+'弃置的手牌');
+					}
+					else{
+						event.finish();
+					}
+					"step 2"
+					if(get.type(event.card)!='basic'){
+						trigger.player.recover();
+					}else{
+						player.gain(event.card,'gain2','log');
+					}
+				},
+				ai:{
+					threaten:1.4
+				}
+			},
+			benglei:{
+				audio:2,
+				trigger:{player:'damageEnd'},
+				direct:true,
+				filter:function(event,player){
+					return (event.num>0);
+				},
+				content:function(){
+					'step 0'
+					event.count=trigger.num;
+					'step 1'
+					event.count--;
+					player.chooseTarget(get.prompt2('benglei')).set('ai',function(target){
+						var player = _status.event.player;
+						return get.damageEffect(target,player,player);
+					});
+					'step 2'
+					if(result.bool){
+						player.logSkill('benglei',result.targets);
+						result.targets[0].judge(function(card){
+							if(get.suit(card)=='spade')		return -3;
+							if(get.suit(card)=='club')		return -2;
+							return 0;
+						}).callback=lib.skill.benglei.callback;
+					}else	event.finish();
+					'step 3'
+					if(event.discardBy===true){
+						if(trigger.player.countDiscardableCards(player,'he')){
+							player.line(trigger.player);
+							player.discardPlayerCard('he',trigger.player,true);
+						}
+						if(event.redoBy){
+							delete event.redoBy;
+						}
+						else if(event.discardBy){
+							delete event.discardBy;
+						}
+						event.redo();
+					}
+					'step 4'
+					if(event.count>0) event.goto(1);
+				},
+				callback:function(){
+					'step 0'
+					if(event.judgeResult.suit=='spade'){
+						var evt = _status.event.getParent('damage');
+						if(evt&&evt.name=='damage'&&evt.num){
+							player.damage(evt.num,'thunder');
+						}
+					}
+					else if(event.judgeResult.suit=='club'){
+						var evt = _status.event.getParent('benglei');
+						evt.discardBy = true;
+						evt.redoBy = true;
+					}
+					else if(event.judgeResult.color=='red'){
+						var evt = _status.event.getParent('benglei');
+						event.Nyaru = evt.player;
+						event.goto(2);
+					}
+					'step 1'
+					game.delay(2);
+					event.finish();
+					'step 2'
+					event.Nyaru.discardPlayerCard(player,get.prompt('miaolu',player),'h').set('ai',function(button){
+						if(_status.event.target.isUnderControl(true,_status.event.player)||get.recoverEffect(_status.event.target,_status.event.player,_status.event.player)>0){
+							if(get.type(button.link)!='basic'){
+								return 10-get.value(button.link);
+							}
+							return 0;
+						}
+						else{
+							return Math.random();
+						}
+					});
+					'step 3'
+					if(result.bool){
+						event.Nyaru.logSkill('miaolu',player);
+						event.card=result.links[0];
+						event.Nyaru.showCards([event.card],get.translation(event.Nyaru)+'弃置的手牌');
+					}
+					else{
+						event.finish();
+					}
+					'step 4'
+					if(get.type(event.card)!='basic'){
+						player.recover();
+					}else{
+						event.Nyaru.gain(event.card,'gain2','log');
+					}
+				},
+				ai:{
+					maixie_defend:true,
+					effect:{
+						target:function(card,player,target){
+							if(player.countCards('he')>1&&get.tag(card,'damage')){
+								if(player.hasSkillTag('jueqing',false,target)) return [1,-1.5];
+								if(get.attitude(target,player)<0) return [1,1];
+							}
+						}
+					}
+				}
+			},
 			//hh
 			jichu:{
 				mod:{
@@ -10096,6 +10582,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kongling_info: '你受到伤害后，可以令一名角色将手牌调整至X。',
 			kongling_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 
+			ByakuyaMayoi: '白夜真宵',
+			bykuangxin: '狂信',
+			bykuangxin_info: '出牌阶段限一次，你可以进行判定直到出现两次点数为A～10的结果，然后你获得其他判定牌，并根据判定顺序组合（第一次为个位、第二次为十位）执行：<span class="greentext">01～05</span>--摸两张牌增加一点体力上限；<span class="changetext">06～40</span>--回复一点体力；<span class="bluetext">41～70</span>--视为使用一张【决斗】；<span class="browntext">71～95</span>--失去一点体力并弃置手牌至上限；<span class="legendtext">96～100</span>--依次获得其他角色随机一张手牌并扣减一点体力上限。',
+
+			Mamoru: '高原守',
+			shoumi: '密守',
+			shoumi_info: '锁定技 当且仅当你的体力变为0时，你进入濒死状态。你的体力小于/大于0时，视为拥有『英姿』/『鬼才』。',
+			shoumi_yingzi: '英姿(密)',
+			shoumi_yingzi_info: '锁定技 摸牌阶段摸牌时，你额外摸一张牌；你的手牌上限为你的体力上限。',
+			shoumi_guicai:'鬼才(密)',
+			shoumi_guicai_info:'在任意角色的判定牌生效前，你可以打出一张牌代替之',
+			yanwang: '妄诳',
+			yanwang_info: '其他角色使用牌指定你为目标时，其可以令你回复一点体力，然后展示并获得你的一张牌；若其因此获得了黑色牌，你可以令其视为对你指定的一名角色使用一张【决斗】。',
+
 			Niuniuzi: '牛牛子',
 			qiying: '奇嘤',
 			qiying_info: '你于其他角色的回合受到伤害后，你可以翻面并视为使用一张【南蛮入侵】。',
@@ -10135,6 +10635,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huoju_info: '锁定技 你和相邻角色造成的伤害改为火焰伤害。你造成或受到火焰伤害后，伤害来源翻面并摸一张牌。',
 			zouyang: '奏扬',
 			zouyang_info: '你使用非装备牌仅指定一名角色为目标时，可使其相邻角色也成为此牌目标，其中不能成为合法目标的摸一张牌，若均摸牌或均成为目标，你不能再发动此技能直到回合结束。',
+			
+			NecoraNyaru: '猫雷NyaRu',
+			NecoraNyaru_ab: '猫雷',
+			miaolu: '露佐',
+			miaolu_info: '一名角色进入濒死状态时，你可以弃置其一张手牌，若为基本牌，你获得之；否则，你令其回复一点体力。',
+			benglei: '绷雷',
+			benglei_info: '你受到1点伤害后，可以令一名角色进行一次判定，若结果为：♠～对其造成与本次伤害等量的雷电伤害；♣～依次弃置其两张牌；红色～对其发动一次『喵露』。',
 			
 			HIMEHINA: '田中姬&铃木雏',
 			HIMEHINA_ab: '姬&雏',
@@ -10308,7 +10815,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			OtomeOto: '乙女音',
 			yuxia: '玉匣',
-			yuxia_info: '你可以将三张牌当作一张通常锦囊牌使用。然后，你可以将这些牌以任意顺序置于牌堆顶。',
+			yuxia_info: '你可以将三张牌当作一张通常锦囊牌使用；其结算后，你可以将这些牌以任意顺序置于牌堆顶。',
 			yuxia_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：控顶</span>',
 			lianjue: '连崛',
 			lianjue_info: '回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。',

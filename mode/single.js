@@ -117,6 +117,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			hejin:['male','qun',4,['mouzhu','yanhuo']],
 			hansui:['male','qun',4,['xiaoxi','niluan']],
 			niujin:['male','wei',4,['cuorui','liewei']],
+			
+			jin_zhangchunhua:['female','jin',3,['huishi','qingleng']],
+			jin_simayi:['male','jin',3,['smyyingshi','xiongzhi','quanbian']],
+			jin_wangyuanji:['female','jin',3,['yanxi']],
+			jin_simazhao:['male','jin',3,['choufa','zhaoran']],
+			jin_xiahouhui:['female','jin',3,['jyishi','shiduo']],
+			jin_simashi:['male','jin','3/4',['yimie','tairan']],
+			zhanghuyuechen:['male','jin',4,['xijue']],
+			duyu:['male','jin',4,['sanchen','zhaotao']],
 		},
 		startBefore:function(){
 			
@@ -167,18 +176,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			if(_status.mode=='normal'){
 				lib.card.list=lib.singlePile.slice(0);
 				game.fixedPile=true;
-				game.broadcastAll(function(singleTranslate,characterSingle){
+				game.broadcastAll(function(singleTranslate,characterSingle,jin){
 					_status.mode='normal';
 					for(var j in singleTranslate) lib.translate[j]=singleTranslate[j];
 					_status.characterlist=[];
 					for(var i in characterSingle){
+						if(!jin&&characterSingle[i][1]=='jin') continue;
 						lib.character[i]=characterSingle[i];
 						if(!lib.character[i][4]){
 							lib.character[i][4]=[];
 						}
 						_status.characterlist.push(i);
 					}
-				},lib.singleTranslate,lib.characterSingle);
+				},lib.singleTranslate,lib.characterSingle,_status.connectMode?lib.configOL.enable_jin:get.config('enable_jin'));
 			}
 			else if(_status.mode=='changban'){
 				_status.characterlist=[];
@@ -219,7 +229,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			var info=[];
 			for(var i=0;i<players.length;i++){
 				info.push({
-					name:players[i].name,
+					name:players[i].name1,
 					name2:players[i].name2,
 					identity:players[i].identity
 				});
@@ -289,6 +299,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			getRoomInfo:function(uiintro){
+				if(lib.configOL.single_mode=='normal') uiintro.add('<div class="text chat">晋势力武将：'+(lib.configOL.enable_jin?'开启':'关闭'));
 				if(lib.configOL.bannedcards.length){
 					uiintro.add('<div class="text chat">禁用卡牌：'+get.translation(lib.configOL.bannedcards));
 				}
@@ -307,7 +318,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			showIdentity:function(){},
 			checkResult:function(){
-				game.over(game.me.isAlive());
+				game.over((game.me._trueMe||game.me).isAlive());
 			},
 			checkOnlineResult:function(player){
 				return player.isAlive();
@@ -865,18 +876,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		skill:{
-			xiaoxi:{
-				audio:2,
-				audioname:['machao','hansui','pangde'],
-				trigger:{
-					player:'enterGame',
-					global:'gameDrawAfter',
-				},
-				direct:true,
-				content:function(){
-					player.chooseUseTarget('sha',get.prompt('xiaoxi'),'视为使用一张【杀】').logSkill='xiaoxi';
-				},
-			},
 			manyi:{
 				audio:2,
 				trigger:{target:'useCardToBefore'},
@@ -980,22 +979,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			suzi:{
-				audio:2,
-				trigger:{global:'loseAfter'},
-				filter:function(event,player){
-					if(event.getParent().name!='die') return false;
-					for(var i=0;i<event.cards.length;i++){
-						if(get.position(event.cards[i])=='d') return true;
-					}
-					return false;
-				},
-				content:function(){
-					var list=[];
-					for(var i=0;i<trigger.cards.length;i++){
-						if(get.position(trigger.cards[i])=='d') list.push(trigger.cards[i]);
-					}
-					player.gain(list,'gain2');
-				},
+				inherit:'xingshang',
 			},
 			cangji:{
 				trigger:{player:'die'},
@@ -1199,8 +1183,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			changban2:'血战长坂坡',
 			dianjiang2:'点将单挑',
 			
-			xiaoxi:'骁袭',
-			xiaoxi_info:'当你登场时，你可以视为使用一张【杀】。',
 			manyi:'蛮裔',
 			manyi_info:'锁定技，【南蛮入侵】对你无效。当你登场时，你可以视为使用一张【南蛮入侵】。',
 			wanrong:'婉容',
@@ -1214,7 +1196,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			sgkuanggu:'狂骨',
 			sgkuanggu_info:'当你造成伤害后，若你已受伤，你可以进行判定：若结果为黑色，你回复1点体力。',
 			suzi:'肃资',
-			suzi_info:'当其他角色区域内的牌因死亡而进入弃牌堆后，你可以获得之。',
 			cangji:'藏机',
 			cangji_info:'当你死亡时，你可以将装备区内的所有牌移动到游戏外。若如此做，你的下一名角色登场时，你将这些牌置入你的装备区。',
 			sgrenwang:'仁望',

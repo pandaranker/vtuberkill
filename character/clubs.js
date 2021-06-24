@@ -67,7 +67,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**纸木铗 */
 			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
 			/**早稻叽 */
-			Zaodaoji: ['female','qun',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
+			Zaodaoji: ['female','chaos',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
 			/**阳向心美 */
 			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
 		},
@@ -1667,20 +1667,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardAfter'},
 				priority:41,
 				filter:function(event,player){
-					if(!player.isPhaseUsing())												return false;
-					if(get.name(event.card)=='jiedao'||get.name(event.card)=='shengdong')	return false;
-					return event.card.isCard&&get.type(event.card)=='trick';
+					if(!player.isPhaseUsing()||!event.card.isCard)				return false;
+					var card=event.card;
+					var info=get.info(card);
+					if(info.type!='trick'||info.allowMultiple==false)	return false;
+					if(event.targets&&!info.multitarget){
+						if(game.hasPlayer(function(current){
+							return event.targets.contains(current)&&lib.filter.targetEnabled2(card,player,current);
+						})){
+							return true;
+						}
+					}
+					return false;
 				},
 				content:function(){
 					'step 0'
+					event.card = trigger.card;
 					player.judge(function(card){
-						return get.suit(card)==get.suit(trigger.card)?1:-1;
+						return get.suit(card)==get.suit(_status.event.getParent('zengzhi').card)?2:-2;
 					});
 					'step 1'
-					if(trigger.targets&&result.bool)
-					trigger.targets.forEach(function(target){
-						player.useCard({name:trigger.card.name},target);
-					});
+					if(result.bool){
+						var card=game.createCard(event.card.name,event.card.suit,event.card.number,event.card.nature);
+						player.useCard(card,(trigger._targets||trigger.targets).slice(0),trigger.cards).skill = trigger.skill||'zengzhi';
+					}
 				},
 			},
 			

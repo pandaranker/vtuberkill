@@ -134,7 +134,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Beginner:{
 		//		界限突破:[],
 				hololive:[
-					're_TokinoSora','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_YozoraMel',
+					're_TokinoSora','re_AZKi','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_YozoraMel','re_MurasakiShion',
 					're_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia','re_ŌokamiMio','re_NakiriAyame','re_ŌzoraSubaru','re_YukihanaLamy',
 					're_SpadeEcho'
 				],
@@ -3682,7 +3682,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						frequent:true,
 						content: function() {
 							'step 0'
-							trigger.player.chooseCard('###'+get.prompt('re_jiumao')+'###将任意张手牌交给'+get.translation(player), 'he', [1, Infinity]).set('ai', function(card) {
+							trigger.player.chooseCard('###'+get.prompt('re_jiumao',player)+'###将任意张手牌交给'+get.translation(player), 'he', [1, Infinity]).set('ai', function(card) {
 								var player = _status.event.player;
 								var source = _status.event.source;
 								if(get.attitude(player,source)<=0)	return -1;
@@ -3692,7 +3692,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}).set('source',player);
 							'step 1'
 							if (result.bool) {
-								player.logSkill('re_jiumao',trigger.player)
+								trigger.player.logSkill('re_jiumao',player);
 								trigger.player.give(result.cards, player, false);
 							}
 							else event.finish();
@@ -5893,7 +5893,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.red)	player.draw(2);
 				},
 				callback:function(){
-					var evt=event.getParent(2);
+					var evt=event.getParent('heimo');
 					if(event.judgeResult.color=='black'){
 						evt.black = true;
 						player.popup('黑色');

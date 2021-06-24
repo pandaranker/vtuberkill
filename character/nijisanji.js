@@ -2333,37 +2333,34 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			sczhuwei:{
-				global:'sczhuwei_put',
-				group:['sczhuwei_moveC'],
+				group:['sczhuwei_put','sczhuwei_moveC'],
 				subSkill:{
 					put:{
-						trigger:{player:'phaseEnd'},
-						forced:false,
+						trigger:{global:'phaseEnd'},
 						priority:24,
-						check: function(event, player) {
-							var target = game.findPlayer(function(cur){
-								return cur.hasSkill('sczhuwei');
-							});
-							return target && get.attitude(player, target) >= 0;
-						},
+						direct:true,
 						filter:function(event,player){
-							if(player.hasSkill('sczhuwei'))		return false;
-							if(!game.hasPlayer(function(cur){
-								return cur.hasSkill('sczhuwei');
-							}))									return false;
-							return	player.isMinHandcard()||player.isMinHp();
+							if(player==event.player)		return false;
+							return	event.player.isMinHandcard()||event.player.isMinHp();
 						},
 						content:function(){
-							var target = game.findPlayer(function(cur) {
-								return cur.hasSkill('sczhuwei');
-							});
-							if(target) game.asyncDraw([player,target]);
+							'step 0'
+							player.line(trigger.player,'green');
+							var check = get.attitude(trigger.player,player);
+							trigger.player.chooseBool(get.prompt2('sczhuwei_put',player)).set('choice',check>0);
+							'step 1'
+							if(result.bool){
+								trigger.player.logSkill('sczhuwei',player);
+								event.target = trigger.player;
+								game.asyncDraw([player,event.target]);
+							}
 						},
 					},
 					moveC:{
 						trigger:{global:'sczhuwei_putAfter'},
 						forced:false,
 						filter:function(event,player){
+							if(!event.target)	return false;
 							var canbeM=function(a,b){
 									var es=a.getCards('e');
 									var c=0;
@@ -2372,7 +2369,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 									return c;
 								}
-							return canbeM(player,event.player)||canbeM(event.player,player);
+							return canbeM(player,event.target)||canbeM(event.target,player);
 						},	
 						content:function(){
 							player.moveCard(function(card,player,target){
