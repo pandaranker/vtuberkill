@@ -208,26 +208,26 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 			},
 
-			rmmuniu:{
+			rm_muniu:{
 				fullskin:true,
 				type:'equip',
 				subtype:'equip5',
 				nomod:true,
 				onEquip:function(){
 					if(card&&card.cards&&card.cards.length){
-						player.directgains(card.cards,null,'rmmuniu');
+						player.directgains(card.cards,null,'rm_muniu');
 					}
-					player.markSkill('rmmuniu_skill');
+					player.markSkill('rm_muniu_skill');
 				},
 				forceDie:true,
 				onLose:function(){
-					player.unmarkSkill('rmmuniu_skill');
-					delete player.getStat('skill').rmmuniu_skill;
+					player.unmarkSkill('rm_muniu_skill');
+					delete player.getStat('skill').rm_muniu_skill;
 					if(!card||!card.cards||!card.cards.length) return;
 					if((event.getParent(2)&&event.getParent(2).name!='swapEquip')&&event.parent.type!='equip'){
 						player.lose(card.cards,ui.discardPile);
 						player.$throw(card.cards,1000);
-						player.popup('rmmuniu');
+						player.popup('rm_muniu');
 						game.log(card,'掉落了',card.cards);
 						card.cards.length=0;
 					}
@@ -238,7 +238,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				clearLose:true,
 				equipDelay:false,
 				loseDelay:false,
-				skills:['rmmuniu_skill','rmmuniu_skill7'],
+				skills:['rm_muniu_skill','rm_muniu_skill7'],
 				ai:{
 					equipValue:function(card){
 						if(card.card) return 7+card.card.length;
@@ -973,7 +973,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			rmmuniu_skill:{
+			rm_muniu_skill:{
 				equipSkill:true,
 				enable:'phaseUse',
 				usable:1,
@@ -992,21 +992,21 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				discard:false,
 				lose:false,
 				delay:false,
-				sync:function(rmmuniu){
+				sync:function(rm_muniu){
 					if(game.online){
 						return;
 					}
-					if(!rmmuniu.cards){
-						rmmuniu.cards=[];
+					if(!rm_muniu.cards){
+						rm_muniu.cards=[];
 					}
-					for(var i=0;i<rmmuniu.cards.length;i++){
-						if(get.position(rmmuniu.cards[i])!='s'){
-							rmmuniu.cards.splice(i--,1);
+					for(var i=0;i<rm_muniu.cards.length;i++){
+						if(get.position(rm_muniu.cards[i])!='s'){
+							rm_muniu.cards.splice(i--,1);
 						}
 					}
-					game.broadcast(function(rmmuniu,cards){
-						rmmuniu.cards=cards;
-					},rmmuniu,rmmuniu.cards);
+					game.broadcast(function(rm_muniu,cards){
+						rm_muniu.cards=cards;
+					},rm_muniu,rm_muniu.cards);
 				},
 				filter:function(event,player){
 					return player.countCards('h')>0;
@@ -1016,27 +1016,27 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					player.loseToSpecial(cards,'rmmuniu');
+					player.loseToSpecial(cards,'rm_muniu');
 					"step 1"
 					for(var i=0;i<cards.length;i++){
-						if(cards[i].destroyed||!cards[i].hasGaintag('rmmuniu')||get.position(cards[i])!='s'){
+						if(cards[i].destroyed||!cards[i].hasGaintag('rm_muniu')||get.position(cards[i])!='s'){
 							cards[i].remove();
 							cards.splice(i--,1);
 						}
 					}
-					var rmmuniu=player.getEquip(5);
-					if(!rmmuniu||!cards.length){
+					var rm_muniu=player.getEquip(5);
+					if(!rm_muniu||!cards.length){
 						for(var i=0;i<cards.length;i++){
 							cards[i].discard();
 						}
 						event.finish();
 						return;
 					}
-					if(rmmuniu.cards==undefined) rmmuniu.cards=[];
-					rmmuniu.cards.push(cards[0]);
-					game.broadcast(function(rmmuniu,cards){
-						rmmuniu.cards=cards;
-					},rmmuniu,rmmuniu.cards);
+					if(rm_muniu.cards==undefined) rm_muniu.cards=[];
+					rm_muniu.cards.push(cards[0]);
+					game.broadcast(function(rm_muniu,cards){
+						rm_muniu.cards=cards;
+					},rm_muniu,rm_muniu.cards);
 					game.delayx();
 					"step 2"
 					var players=game.filterPlayer(function(current){
@@ -1076,60 +1076,60 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				mod:{
 					cardEnabled2:function(card,player){
 						if(!ui.selected.cards.length) return;
-						var rmmuniu=player.getEquip('rmmuniu');
-						if(!rmmuniu||!rmmuniu.cards||!rmmuniu.cards.length) return;
+						var rm_muniu=player.getEquip('rm_muniu');
+						if(!rm_muniu||!rm_muniu.cards||!rm_muniu.cards.length) return;
 						for(var i of ui.selected.cards){
-							if(i==rmmuniu&&rmmuniu.cards.contains(card)) return false;
-							if(rmmuniu.cards.contains(i)&&card==rmmuniu) return false;
+							if(i==rm_muniu&&rm_muniu.cards.contains(card)) return false;
+							if(rm_muniu.cards.contains(i)&&card==rm_muniu) return false;
 						}
 					},
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player){
-						var rmmuniu=player.getEquip(5);
-						if(!rmmuniu||!rmmuniu.cards||!rmmuniu.cards.length) return '共有〇张牌';
+						var rm_muniu=player.getEquip(5);
+						if(!rm_muniu||!rm_muniu.cards||!rm_muniu.cards.length) return '共有〇张牌';
 						if(player.isUnderControl(true)){
-							return get.translation(rmmuniu.cards);
+							return get.translation(rm_muniu.cards);
 						}
 						else{
-							return '共有'+get.cnNumber(rmmuniu.cards.length)+'张牌';
+							return '共有'+get.cnNumber(rm_muniu.cards.length)+'张牌';
 						}
 					},
 					mark:function(dialog,storage,player){
-						var rmmuniu=player.getEquip(5);
-						if(!rmmuniu||!rmmuniu.cards||!rmmuniu.cards.length) return '共有〇张牌';
+						var rm_muniu=player.getEquip(5);
+						if(!rm_muniu||!rm_muniu.cards||!rm_muniu.cards.length) return '共有〇张牌';
 						if(player.isUnderControl(true)){
-							dialog.addAuto(rmmuniu.cards);
+							dialog.addAuto(rm_muniu.cards);
 						}
 						else{
-							return '共有'+get.cnNumber(rmmuniu.cards.length)+'张牌';
+							return '共有'+get.cnNumber(rm_muniu.cards.length)+'张牌';
 						}
 					},
 					markcount:function(storage,player){
-						var rmmuniu=player.getEquip(5);
-						if(rmmuniu&&rmmuniu.cards) return rmmuniu.cards.length;
+						var rm_muniu=player.getEquip(5);
+						if(rm_muniu&&rm_muniu.cards) return rm_muniu.cards.length;
 						return 0;
 					}
 				}
 			},
-			rmmuniu_skill7:{
+			rm_muniu_skill7:{
 				trigger:{player:'loseEnd'},
 				firstDo:true,
 				silent:true,
 				filter:function(event,player){
-					if(!event.ss||!event.ss.length||event.parent.name=='lose_rmmuniu') return false;
-					var rmmuniu=player.getEquip('rmmuniu');
-					if(!rmmuniu||!rmmuniu.cards) return false;
+					if(!event.ss||!event.ss.length||event.parent.name=='lose_rm_muniu') return false;
+					var rm_muniu=player.getEquip('rm_muniu');
+					if(!rm_muniu||!rm_muniu.cards) return false;
 					return event.ss.filter(function(card){
-						return rmmuniu.cards.contains(card);
+						return rm_muniu.cards.contains(card);
 					}).length>0;
 				},
 				content:function(){
-					var rmmuniu=player.getEquip(5);
-					if(rmmuniu&&rmmuniu.cards){
-						rmmuniu.cards.removeArray(trigger.ss);
-						lib.skill.rmmuniu_skill.sync(rmmuniu);
+					var rm_muniu=player.getEquip(5);
+					if(rm_muniu&&rm_muniu.cards){
+						rm_muniu.cards.removeArray(trigger.ss);
+						lib.skill.rm_muniu_skill.sync(rm_muniu);
 					}
 					player.updateMarks();
 				},
@@ -1618,12 +1618,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			rm_baiyin_info:'锁定技，你每次受到伤害时，最多承受1点伤害（防止多余的伤害）；当你失去装备区里的【白银狮子】时，你回复1点体力。',
 			rm_baiyin_skill:'白银狮子',
 			
-			rmmuniu:'木牛流马',
-			rmmuniu_bg:'牛',
-			rmmuniu_skill:'木牛',
-			rmmuniu_skill_bg:'辎',
-			rmmuniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
-			rmmuniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
+			rm_muniu:'木牛流马',
+			rm_muniu_bg:'牛',
+			rm_muniu_skill:'木牛',
+			rm_muniu_skill_bg:'辎',
+			rm_muniu_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
+			rm_muniu_skill_info:'出牌阶段限一次，你可以将一张手牌扣置于你装备区里的【木牛流马】下，若如此做，你可以将此装备移动到一名其他角色的装备区里；你可以将此装备牌下的牌如手牌般使用或打出。',
 
 
 			rm_numa:'驽马',

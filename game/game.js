@@ -18316,7 +18316,7 @@
 						if(this.maxHp==Infinity){
 							hp.innerHTML='∞';
 						}
-						else if(get.infoHp(lib.character[this.name][2])<0){
+						else if(get.infoHp(lib.character[(this.name.indexOf('unknown')==0)?this.name1:this.name][2])<0){
 							hp.innerHTML=this.hp+'/'+this.maxHp;
 							hp.classList.add('text');
 						}

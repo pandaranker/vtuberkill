@@ -7075,7 +7075,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool){
 						trigger.player.logSkill('yanwang',player);
-						player.recover();
+						player.recover(trigger.player);
 					}else event.finish();
 					'step 2'
 					trigger.player.gainPlayerCard(player,'h',true,'visible');

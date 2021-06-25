@@ -786,6 +786,7 @@ window.noname_asset_list=[
 	'image/card/group_asoul.png',
 	'image/card/group_nori.png',
 	'image/card/group_vwp.png',
+	'image/card/group_xuyan.png',
 	'image/card/group_chaos.png',
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',

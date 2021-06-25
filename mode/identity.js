@@ -57,6 +57,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_chaos:{
 				fullskin:true,
 			},
+			group_xuyan:{
+				fullskin:true,
+			},
 		},
 		start:function(){
 			"step 0"
@@ -1843,7 +1846,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.addRecentCharacter(result.buttons[0].link);
 					}
 					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','chaos'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2299,7 +2302,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},game.zhu,result.links[0],result.links[1],game.players.length>4);
 					
 					if(game.zhu.group=='shen'){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','chaos'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2382,7 +2385,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.result2=result;
 					if(shen.length){
 						var buttonList=[];
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','chaos'];//
+						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos'];//
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
@@ -2483,6 +2486,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nori:"苔",
 			group_vwp:"神椿",
 			group_chaos:"混沌",
+			group_xuyan:"虚",
 			group_wei_bg:"魏",
 			group_shu_bg:"蜀",
 			group_wu_bg:"吴",
@@ -2501,6 +2505,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			group_nori_bg:"苔",
 			group_vwp_bg:"椿",
 			group_chaos_bg:"潮",
+			group_xuyan_bg:"虚",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",
