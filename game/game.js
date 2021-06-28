@@ -18329,11 +18329,11 @@
 						}
 					}
 					if(!this.storage.nohp){
-						var lib = lib.character[(this.name&&this.name.indexOf('unknown')==0)?this.name1:this.name];
+						var libHp = lib.character[(this.name&&this.name.indexOf('unknown')==0)?this.name1:this.name];
 						if(this.maxHp==Infinity){
 							hp.innerHTML='∞';
 						}
-						else if(lib&&lib[2]&&get.infoHp(lib[2])<0){
+						else if(libHp&&libHp[2]&&get.infoHp(libHp[2])<0){
 							hp.innerHTML=this.hp+'/'+this.maxHp;
 							hp.classList.add('text');
 						}
