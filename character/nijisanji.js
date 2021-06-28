@@ -46,6 +46,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
 			/**刀也 */
 			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
+			/**Gaku */
+			FushimiGaku: ['male','nijisanji',4,['exi','suisui']],
 		},
 		characterSort:{
 			nijisanji:{

@@ -246,7 +246,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					E:{
 						mod:{
 							selectTarget:function(card,player,range){
-								if(range[1]==-1) return;
+								console.log(card,range)
+								if(!Array.isArray(range)||range[1]==-1) return;
 								if(player.storage.baitai_E>0) range[1]+=player.storage.baitai_E;
 							},
 						},

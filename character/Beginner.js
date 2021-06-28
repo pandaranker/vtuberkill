@@ -1227,7 +1227,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					var card=event.card;
 					var info=get.info(card);
-					if(info.type=='equip'||info.type=='delay'||info.allowMultiple==false) return false;
+					if(info.allowMultiple==false) return false;
 					if(event.targets&&!info.multitarget){
 						if(player.storage.yinni_record_color&&player.storage.yinni_record_color!=get.color(card)){
 							return event.targets.length!=player.storage.yinni_record;
@@ -2480,7 +2480,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filterCard:function(card){
 							return get.type(card)=='equip';
 						},
-						position:'he',
+						position:'hes',
 						viewAs:{name:'sha',nature:'thunder'},
 						check:function(){return 1},
 						ai:{
@@ -3048,7 +3048,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return get.type(card)!='basic';
 						},
 						viewAs:{name:'shan'},
-						position:'he',
+						position:'hes',
 						prompt:'将一张非基本牌当【闪】使用或打出',
 						check:function(card){return 8-get.value(card)},
 						filter:function(event,player){
@@ -4004,7 +4004,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				viewAs:{name:'sha'},
 				selectCard:2,
 				complexCard:true,
-				position:'he',
+				position:'hes',
 				filterCard:function(card){
 					if(ui.selected.cards.length) return get.color(card)!=get.color(ui.selected.cards[0]);
 					return true;
@@ -4671,7 +4671,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
 				},
 				viewAs:{name:'huogong',nature:'fire'},
-				position:'he',
+				position:'hes',
 				viewAsFilter:function(player){
 					if(!player.countCards('h',function(card){
 						return !player.storage.kuiquan_record.contains(get.type(card,'trick'));
@@ -4965,6 +4965,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:23,
 						direct:true,
 						filter:function(event,player){
+							var card=event.card;
+							var info=get.info(card);
+							if(info.allowMultiple==false) return false;
 							return event.targets&&event.targets.length&&event.skill=='re_gonggan';
 						},
 						content:function(){
@@ -5731,7 +5734,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCard2'},
 				priority:222,
 				filter:function(event,player){
-					if(get.type(event.card)=='equip')	return false;
+					var card=event.card;
+					var info=get.info(card);
+					if(info.allowMultiple==false) return false;
 					if(!player.storage.rangran)		player.storage.rangran = [];
 					return game.countPlayer(function(cur){
 						return cur.isMaxHp()&&!player.storage.rangran.contains(cur)&&!event.targets.contains(cur)&&lib.filter.targetEnabled2(event.card, player, cur);

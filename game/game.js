@@ -13159,6 +13159,7 @@
 					if(event.num1>event.num2){
 						event.result.bool=true;
 						event.result.winner=player;
+						event.result.loser=target;
 						str=get.translation(player)+'拼点成功';
 						player.popup('胜');
 						target.popup('负');
@@ -13173,6 +13174,7 @@
 						}
 						else{
 							event.result.winner=target;
+							event.result.loser=player;
 							player.popup('负');
 							target.popup('胜');
 						}
@@ -16972,7 +16974,21 @@
 				},
 			},
 			player:{
-				//自创函数
+				//自创函数(置入相关)
+				addToJudge:function(card,source){
+					var cards = (get.itemtype(card)=='card')?[card]:card;
+					if(source)	source.$give(cards,this,false);
+					if(get.type(cards[0])=='delay')		this.addJudge(cards[0]);
+					else if(get.color(cards[0])=='red'&&this.canAddJudge('lebu'))		this.addJudge({name:'lebu'},cards);
+					else if(get.color(cards[0])=='black'&&this.canAddJudge('bingliang'))	this.addJudge({name:'bingliang'},cards);
+				},
+				canAddToJudge:function(card){
+					if(get.type(card)=='delay')		return this.canAddJudge(card);
+					if(this.canAddJudge('lebu')&&get.color(card)=='red')		return true
+					if(this.canAddJudge('bingliang')&&get.color(card)=='black')	return true
+					return false;
+				},
+				//自创函数(升阶相关)
 				chooseShengjie:function(){
 					var next=game.createEvent('chooseShengjie');
 					next.player=this;

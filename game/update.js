@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.96',
+	version:'1.9.101.97',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.95小更新：新增势力ChaosLive，新增角色猫雷喵露、ChaosLive的高原守、白夜真宵（测试），联机增加设置“五倍选将时间”（终于不用再选择困难啦）',
+		'101.97小更新：新增角色西魔幽、琴吹梦、菜菜姐（测试包），调整角色秋凛子（移回测试包）、春猿火，修复国战向晚的bug',
 		'101.96小更新：修复国战bug',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -26,7 +26,6 @@ window.noname_update={
 		// 'card/sp.js',
 		// 'card/standard.js',
 		// 'card/guozhan.js',
-		'image/card/numa.png',
 		'card/remark.js',
 		// 'image/splash/boss.jpg',
 		// 'image/splash/brawl.jpg',

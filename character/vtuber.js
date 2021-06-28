@@ -43,8 +43,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV']],
 			/**粉兔 */
 			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
-			/**阿秋 */
-			AkiRinco: ['female','psp',4,['jiren','canxin'],['guoV']],
 			/**红晓音 */
 			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 			/**东爱璃 */
@@ -58,6 +56,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
 			/**可不 */
 			Kafu:['female','vwp',3,['nisheng','jingyan']],
+			
+			/**塞菲拉·苏 */
+			SephiraSu:['female','qun',3,['mishu','xingchen']],
 		},
 		characterSort:{
 			vtuber:{

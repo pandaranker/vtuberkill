@@ -1662,7 +1662,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if (event.chi.contains(get.type(event.card,'trick'))) str += "你弃置其两张牌<br>";
 						if (event.chi.contains(get.suit(event.card))) str += "你获得其一张牌<br>";
 						player.showCards(event.card, str);
-						game.delay(2);
+						game.delayx();
 					}
 					else event.finish();
 					'step 6'

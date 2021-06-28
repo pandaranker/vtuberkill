@@ -8,6 +8,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
 			/**勺宝 */
 			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
+			/**蜜球兔 */
+			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
 			/**胡桃 */
 			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
 
@@ -46,6 +48,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**Mishiro */
 			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
 			
+			/**耳朵 */
+			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
+			
 			/**三三 */
 			Mikawa: ['male','qun',4,['zhezhuan','setu'],['guoV']],
 			/**妮娅 */
@@ -54,6 +59,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai'],['guoV']],
 			/*黑川*/
 			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai','guoV']],//, 'mingyunniezao'
+			
 			/**进击的冰糖 */
 			bingtang: ['female', 'xuyan', 4, ['xiou'],['guoV']],
 			/**张京华 */
@@ -62,14 +68,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NoiR: ['female', 'qun', 3 ,['mozouqiyin', 'budingpaidui']],
 			/**晴步子 */
 			Bafuko: ['female','qun',4,['shangsheng','jinghua']],
+			/**阳向心美 */
+			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
 			/**紫海由爱 */
 			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 			/**纸木铗 */
 			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
 			/**早稻叽 */
 			Zaodaoji: ['female','chaos',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
-			/**阳向心美 */
-			HinataCocomi: ['female','qun',4,['qijian','yizhan','jushi'],['zhu']],
+			/**牛牛子 */
+			Niuniuzi: ['female','chaos',4,['qiying','hengxuan'],['guoV']],
+			
+			/**喵喵人 */
+			Nyanners: ['female','vshojo',3,['shenghuo','dipo','miaoche'],['zhu','yingV']],
+			/**Veibae */
+			Veibae: ['female','vshojo',4,['zhexun','yuci'],['yingV']],
+			/**铁耗子 */
+			Ironmouse: ['female','vshojo',3,['haosun','banmao'],['yingV']],
 		},
 		characterSort:{
 			clubs:{
@@ -1032,7 +1047,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.player.draw(player);
 					'step 1'
 					var target = trigger.player;
-					if (target.countGainableCards(player, 'he')) {
+					if (target.countGainableCards(player,'he')) {
 						player.gainPlayerCard('he',target,true);
 					}
 				}
