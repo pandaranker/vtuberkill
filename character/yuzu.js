@@ -28,7 +28,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 
 			/**兰若Ruo */
-			lanruo: ['female','qun',4,['dieyuan','shengyang'],],
+			lanruo: ['female','qun',3,['dieyuan','shengyang'],],
 
 			/**菜菜姐 */
 			caicai: ['female','qun',5,['tibing','guangtui'],],
@@ -4838,10 +4838,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								player.storage.juehuo.ans.remove(cards[i]);
 								player.storage.juehuo.ms.push(cards[i]);
 							}else{
-								player.$drawAuto(cards[i]);
+								if(!drawAutos)	var drawAutos = [];
+								drawAutos.add(cards[i]);
+								game.cardsGotoSpecial(cards[i]);
 								player.storage.juehuo.ans.push(cards[i]);
 							}
 						}
+						if(drawAutos)	player.$drawAuto(drawAutos);
 						player.markSkill('juehuo');
 					}
 
@@ -7975,12 +7978,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}else{
 								if(!drawAutos)	var drawAutos = [];
 								drawAutos.add(cards[i]);
+								game.cardsGotoSpecial(cards[i]);
 								player.storage.mian.ans.push(cards[i]);
 							}
 						}
-						console.log(drawAutos)
 						if(drawAutos)	player.$drawAuto(drawAutos);
-						if(source&&giveAutos)	source.$giveAuto(giveAutos,player);
+						if(source&&giveAutos){
+							source.$giveAuto(giveAutos,player);
+						}
 						player.markSkill('mian');
 					}
 
@@ -8004,7 +8009,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return target.hasSkill('dianying')&&target!=player;
 				},
 				discard:false,
-				lose:false,
+				toStorage:true,
 				position:'he',
 				usable:1,
 				prompt:function(){
@@ -8113,6 +8118,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							return false;
 						},
+						direct:true,
 						content:function(){
 							'step 0'
 							event.card = trigger.card;
@@ -8137,6 +8143,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 							'step 1'
 							if(result.bool&&result.links&&result.links.length){
+								player.logSkill('ganfen');
 								lib.skill.dianying.process(player,result.links);
 								game.delay(0.5);
 							}
