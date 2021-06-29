@@ -5887,6 +5887,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						event.num = result.cards.length;
 					}
+					else	event.finish();
 					'step 2'
 					player.judge(function(card){
 						return 0;
