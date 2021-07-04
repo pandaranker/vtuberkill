@@ -94,6 +94,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				// game.delay();
 				game.showChangeLog();
 			}
+			if(get.config('card_remark')){
+				for(var i=0;i<lib.card.list.length;i++){
+					if(get.type(lib.card.list[i][2])=='equip'){
+						lib.card.list[i][2]='rm_'+lib.card.list[i][2];
+					}
+				}
+			}
 			if(!_status.connectMode){
 				_status.mode=get.config('guozhan_mode');
 				if(_status.brawl&&_status.brawl.submode){
@@ -1283,12 +1290,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								if (player.storage.blackTargets.contains(target)) return false;
 								return lib.filter.targetEnabled2(player.storage.card, player, target)
 									&& player.inRange(target);
-							}).set('targets',trigger.targets).set('card',trigger.card);
-							// .set('ai',function(target){
-							// 	// var trigger=_status.event.getTrigger();
-							// 	var player=_status.event.player;
-							// 	return get.effect(target,card,player,player);
-							// })
+							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
+								var player = _status.event.player;
+								return get.effect(target,_status.event.card,player,player);
+							});
 							'step 1'
 							delete player.storage.card;
 							delete player.storage.blackTargets;

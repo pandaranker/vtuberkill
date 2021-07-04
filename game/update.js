@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.101.102',
+	version:'1.9.101.103',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'101.101小更新：新增角色小可学妹、兰若Ruo（测试包），调整角色黑桐亚里亚、早稻叽、melody，修复初心豹豹的bug',
+		'101.103小更新：新增角色兰若Re、星宫汐（测试包），国战模式追加了“装备回调”选项',
 		'101.102小更新：调整兰若Ruo体力标注错误',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -27,6 +27,8 @@ window.noname_update={
 		// 'card/standard.js',
 		// 'card/guozhan.js',
 		'card/remark.js',
+		'image/character/lanre.jpg',
+		'image/character/lanruo.jpg',
 		// 'image/splash/boss.jpg',
 		// 'image/splash/brawl.jpg',
 		// 'image/splash/chess.jpg',

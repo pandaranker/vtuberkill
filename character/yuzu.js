@@ -12,6 +12,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
+			/**黑桐亚里亚 */
+			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
+			/**星宫汐 */
+			HosimiyaSio: ['female','qun',4,['yuanyao','gongni'],],
 			
 			/**Froot */
 			Froot: ['female','vshojo',4,['exiao','jinmei'],['yingV']],
@@ -24,14 +28,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**小柔 */
 			Xiaorou: ['female','xuyan',3,['rouqing','guangying'],['guoV']],
 
-			/**黑桐亚里亚 */
-			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 
 			/**兰若Ruo */
-			lanruo: ['female','qun',3,['dieyuan','shengyang'],],
+			lanruo: ['female','qun',3,['dieyuan','shengyang'],['guoV']],
+			/**兰若Re */
+			lanre: ['female','qun',3,['daoyi','shengyin'],['guoV']],
 
 			/**菜菜姐 */
-			caicai: ['female','qun',5,['tibing','guangtui'],],
+			caicai: ['female','qun',5,['tibing','guangtui'],['guoV']],
 
 			/**白夜真宵 */
 			ByakuyaMayoi: ['female','chaos',4,['bykuangxin'],['guoV']],
@@ -53,8 +57,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**琴吹梦 */
 			KotobukiYume: ['female','qun',4,['xuanquan','rusu'],],
 
-			/**姬雏 */
-			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
 			
 			/**谢拉 */
 			CierraRunis:['female','qun',3,['minghuahongxiao']],
@@ -8114,7 +8116,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							if(player.storage.ganfen_clickChange===false)	return false;
 							if(player.storage.mian&&player.storage.mian.ans&&player.storage.mian.ms){
-								return player.storage.mian.ans.length||player.storage.mian.ms.length;
+								if(player.storage.mian.ans.length||player.storage.mian.ms.length){
+									for(var i=0;i<event.cards.length;i++){
+										if(event.cards[i].original=='h') return true;
+									}
+								};
 							}
 							return false;
 						},
@@ -8244,6 +8250,126 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//道姑
+			daoyi:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = 0;
+				},
+				map:['color','number','suit','name'],
+				trigger:{global:'judge'},
+				filter:function(event,player){
+					return true;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					var list=[];
+					if(lib.skill.daoyi.map[player.storage.daoyi]=='name'){
+						for(var i=0;i<lib.inpile.length;i++){
+							var name=lib.inpile[i];
+							list.push([get.type2(name),'',name]);
+						}
+					}
+					else{
+						for(var i=0;i<lib[lib.skill.daoyi.map[player.storage.daoyi]].length;i++){
+							var name=lib[lib.skill.daoyi.map[player.storage.daoyi]][i];
+							list.push([lib.skill.daoyi.map[player.storage.daoyi],'',name]);
+						}
+					}
+					var str=get.translation(trigger.player)+'的'+(trigger.judgestr||'')+'判定为'+
+					get.translation(trigger.player.judging[0])+'，是否发动『道易』，修改判定结果？';
+					var dialog=ui.create.dialog(str,[list,'vcard'],'hidden');
+					player.chooseButton(dialog).set('ai',function(button){
+						var judging=_status.event.judging;
+						var player = _status.event.player;
+						var change = _status.event.change;
+						var trigger=_status.event.getTrigger();
+						var res1=trigger.judge(judging);
+						var card = {
+							name:get.name(judging),
+							nature:get.nature(judging),
+							suit:get.suit(judging),
+							color:get.color(judging),
+							number:get.number(judging),
+						};
+						var attitude=get.attitude(player,trigger.player);
+						if(attitude==0) return 0;
+						card[change] = button.link[2];
+						var now = trigger.judge(card);
+						effect = (now-res1)*attitude;
+						if(player.storage.daoyi==3&&_status.currentPhase&&_status.currentPhase.isIn())	effect+=(get.damageEffect(_status.currentPhase,player,player))*1.5;
+						return effect;
+					}).set('change',lib.skill.daoyi.map[player.storage.daoyi]).set('judging',trigger.player.judging[0]);
+					'step 1'
+					if(result.bool==true){
+						var link = result.links[0][2];
+						player.addExpose(0.25);
+						player.logSkill('daoyi',trigger.player);
+						player.popup(link);
+						game.log(player,'将判定结果改为了','#y'+get.translation(link));
+						if(!trigger.fixedResult)	trigger.fixedResult={};
+						trigger.fixedResult[lib.skill.daoyi.map[player.storage.daoyi]] = link;
+						console.log(trigger.fixedResult)
+					}
+					else	event.finish();
+					'step 2'
+					if(player.storage.daoyi<3)	player.storage.daoyi++;
+					else{
+						player.storage.daoyi = 1;
+						if(_status.currentPhase&&_status.currentPhase.isIn()){
+							player.line(_status.currentPhase);
+							_status.currentPhase.damage(1,'thunder');
+						}
+					}
+				},
+			},
+			shengyin:{
+				enable:'phaseUse',
+				// usable:1,
+				filterTarget:function(card,player,target){
+					return target!=player&&target.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					target.chooseCard('h','『盛阴』：请展示一张牌',true);
+					'step 1'
+					if(result.cards){
+						var card = result.cards[0];
+						target.showCards(card,'『盛阴』展示手牌');
+						event.card = card;
+						event.color = get.color(card);
+						event.type2 = get.type2(card);
+					}
+					else	event.finish();
+					'step 2'
+					var next = target.judge(function(card){
+						if(get.color(card)==_status.event.color)	return 2;
+						if(get.type2(card)==_status.event.type2)	return -1;
+						return 0;
+					});
+					next.set('color',event.color);
+					next.set('type2',event.type2);
+					next.set('card0',event.card);
+					next.set('source',player);
+					next.set('callback',function(){
+						var color = _status.event.getParent().color;
+						var type2 = _status.event.getParent().type2;
+						var card0 = _status.event.getParent().card0;
+						var source = _status.event.getParent().source;
+						if(get.type2(event.judgeResult.name)==type2)	source.gain(card0,player,'give');
+						if(event.judgeResult.color==color)	game.asyncDraw([player,source]);
+					});
+				},
+				ai:{
+					order:8,
+					expose:0.2,
+					result:{
+						target:function(player,target){
+							return 2;
+						}
+					}
+				}
+			},
 			//菜菜姐
 			tibing:{
 				trigger:{player:['phaseZhunbeiBegin','phaseJudgeBefore','phaseDrawBefore','phaseDiscardBefore','phaseJieshuBegin']},
@@ -8365,6 +8491,102 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return 1;
 					},
 				}
+			},
+			
+			//星宫汐
+			yuanyao:{
+				enable:'phaseUse',
+				filter:function(event,player){
+					if(player.countCards('h')>player.maxHp||player.countCards('h')==player.hp)	return false;
+					return (player.getStat('skill').yuanyao||0)<game.countPlayer(function(cur){
+						return cur.sex=='female';
+					});
+				},
+				complexCard:true,
+				filterCard:function(event,player){
+					if(player.countCards('h')>player.hp)		return true;
+					return false;
+				},
+				selectCard:function(){
+					var player=_status.event.player;
+					if(player.countCards('h')>player.hp)		return (player.countCards('h')-player.hp);
+					return -1;
+				},
+				discard:true,
+				check:function(card){
+					return 7.5-get.value(card);
+				},
+				content:function(){
+					'step 0'
+					if(cards&&cards.length){
+						event.change = 'discard';
+						event.num = cards.length;
+					}
+					else{
+						event.change = 'draw';
+						event.num = player.hp-player.countCards('h');
+					}
+					'step 1'
+					switch(event.change){
+						case 'discard':{
+							player.recover(event.num);break;
+						}
+						case 'draw':{
+							player.draw(event.num);player.loseHp(event.num);break;
+						}
+					}
+				},
+				ai:{
+					order:1.5,
+					result:{
+						player:function(player){
+							var num = game.countPlayer(function(cur){
+								return cur.sex=='female';
+							})-(player.getStat('skill').yuanyao||0);
+							if(num>1)	return player.countCards('h');
+							return player.countCards('h')-player.hp;
+						},
+					},
+				},
+			},
+			gongni:{
+				audio:true,
+				trigger:{player:['phaseZhunbeiBegin','useCardAfter']},
+				unique:true,
+				limited:true,
+				skillAnimation:true,
+				animationColor:'yami',
+				forceunique:true,
+				filter:function(event,player){
+					return game.countPlayer()==game.countPlayer(function(cur){
+						return cur.isDamaged()&&cur.hp>=0;
+					});
+				},
+				check:function(event,player){
+					var effect = 0;
+					game.filterPlayer(function(cur){
+						effect+=((cur.maxHp-cur.hp)-cur.hp)*get.attitude(player,target);
+					})
+					return effect>=3;
+				},
+				content:function(){
+					'step 0'
+					player.awakenSkill('gongni');
+					event.doon = [];
+					event.current = player;
+					'step 1'
+					event.current.hp = (event.current.maxHp-event.current.hp);
+					event.current.$thunder();
+					game.log(event.current,'的体力变为','#g'+event.current.hp);
+					event.current.update();
+					game.delayx(1.2);
+					event.doon.add(event.current);
+					'step 2'
+					if(!event.doon.contains(event.current.next)){
+						event.current = event.current.next;
+						event.goto(1);
+					}
+				},
 			},
 			//紫海由爱
 			lianyin:{
@@ -11334,6 +11556,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				if(player.storage.banmao) return '【已修改】 锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。';
 				return '锁定技 若你未受伤，你不能使用【闪】或【酒】。你造成或受到来自【杀】的伤害时，来源摸一张牌。';
 			},
+
+			daoyi:function(player){
+				var str = '转换技 你可以修改场上一次判定结果的①颜色②点数③花色④牌名。此技能转换至①时，你可以对当前回合角色造成1点雷电伤害。';
+				switch(player.storage.daoyi){
+					case 1: return str.replace(/①颜色/g,'<span class="changetext">①颜色</span>');
+					case 1: return str.replace(/②点数/g,'<span class="changetext">②点数</span>');
+					case 2: return str.replace(/③花色/g,'<span class="changetext">③花色</span>');
+					case 3: return str.replace(/④牌名/g,'<span class="changetext">④牌名</span>');
+				}
+				return str;
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -11396,6 +11629,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tonggan: '同甘',
 			tonggan_info: '主公技 转换技 与你势力相同的角色，在奇数/偶数轮次内，每阶段首次摸牌量-1/+1。',
 
+			HosimiyaSio: '星宫汐',
+			yuanyao: '鸢揺',
+			yuanyao_info: '出牌阶段限X次，若你的手牌不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）',
+			gongni: '宫逆',
+			gongni_info: '<font color=#a9f>限定技</font> 准备阶段开始或你使用一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。',
+
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
 			lianyin_info: '每回合限X次，其他角色在你的回合内使用牌时，你可以与其各摸一张牌。（X为你的体力上限）',
@@ -11449,6 +11688,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dieyuan_info: '其他角色回复1点体力后，你可以令其摸X张牌，令其选择一项：令你回复一点体力；交给你X张牌。（X为你与其的体力差且至少为1）',
 			shengyang: '盛阳',
 			shengyang_info: '出牌阶段限一次，你可以交给一名其他角色一张牌并进行一次判定，若结果的点数不大于2X，你获得其至多2X张牌；否则其回复一点体力。',
+
+			lanre: '兰若Re',
+			daoyi: '道易',
+			daoyi_info: '转换技 你可以修改场上一次判定结果的①颜色②点数③花色④牌名。此技能转换至①时，你可以对当前回合角色造成1点雷电伤害。',
+			shengyin: '盛阴',
+			shengyin_info: '出牌阶段限一次，你可以展示其他角色的一张手牌并令其进行一次判定，若结果与展示牌：类型相同～你获得展示牌；颜色相同～你与其各摸一张牌。',
 
 			caicai: '菜菜姐',
 			tibing: '体并',

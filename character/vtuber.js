@@ -59,6 +59,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			/**塞菲拉·苏 */
 			SephiraSu:['female','qun',3,['mishu','xingchen']],
+			/**姬雏 */
+			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
 		},
 		characterSort:{
 			vtuber:{

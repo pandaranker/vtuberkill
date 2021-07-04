@@ -4870,6 +4870,13 @@
 						frequent:true,
 						restart:true,
 					},
+					card_remark:{
+						name:'装备回调',
+						init:false,
+						frequent:true,
+						restart:true,
+						intro:'将军争和基础包的装备牌回调至《三国杀》原版'
+					}
 					// connect_ban_weak:{
 					// 	name:'屏蔽弱将',
 					// 	init:false,
@@ -5142,6 +5149,13 @@
 							'10':'十',
 						}
 					},
+					card_remark:{
+						name:'装备回调',
+						init:false,
+						frequent:true,
+						restart:true,
+						intro:'将军争和基础包的装备牌回调至《三国杀》原版'
+					}
 				}
 			},
 			versus:{
@@ -10404,6 +10418,7 @@
 			mode_banned_card_config:'禁卡',
 			mode_favourite_character_config:'收藏',
 			mode_banned_character_config:'禁将',
+			suit:'花色',
 			heart:"♥︎",
 			diamond:"♦︎",
 			spade:"♠︎",
@@ -10414,9 +10429,14 @@
 			diamond2:"方片",
 			spade2:"黑桃",
 			club2:"梅花",
+			color:'颜色',
 			red:'红色',
 			black:'黑色',
 			none:'无色',
+
+			number:'点数',
+			cardname:'牌名',
+			
 			ok:"确定",
 			ok2:"确定",
 			cancel:"取消",
@@ -29249,7 +29269,9 @@
 				}
 			}
 		},
+		color:['red','black','none'],
 		suit:['club','spade','diamond','heart'],
+		number:['A','2','3','4','5','6','7','8','9','X','J','Q','K'],
 		group:[
 			'vtuber','clubs',
 			'wei','shu','wu','qun','key',
@@ -52411,6 +52433,8 @@
 			return suits;
 		},
 		color:function(card,player){
+			console.log(_status.event,_status.event.name)
+			if(_status.event.name=='judge'&&card.color)	return card.color;
 			if(get.itemtype(card)=='cards'){
 				var color=get.color(card[0],player)
 				for(var i=1;i<card.length;i++){
