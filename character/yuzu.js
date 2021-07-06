@@ -7487,9 +7487,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.recover();
 						}
 						else if(event.d100<=60){
-							player.loseHp();
 						}
 						else if(event.d100<=95){
+							player.loseHp();
 							if(player.needsToDiscard()){
 								player.chooseToDiscard(player.needsToDiscard(),true);
 							}
@@ -8551,16 +8551,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			gongni:{
 				audio:true,
-				trigger:{player:['phaseZhunbeiBegin','useCardAfter']},
+				trigger:{player:['phaseZhunbeiBegin','useCardAfter','respondAfter']},
 				unique:true,
 				limited:true,
 				skillAnimation:true,
 				animationColor:'yami',
 				forceunique:true,
 				filter:function(event,player){
+					if(event.name!='phaseZhunbei'&&_status.currentPhase==player)	return false;
 					return game.countPlayer()==game.countPlayer(function(cur){
 						return cur.isDamaged()&&cur.hp>=0;
 					});
+				},
+				logTarget:function(event,player){
+					return game.players;
 				},
 				check:function(event,player){
 					var effect = 0;
@@ -8575,6 +8579,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.doon = [];
 					event.current = player;
 					'step 1'
+					player.line(event.current,'ocean');
 					event.current.hp = (event.current.maxHp-event.current.hp);
 					event.current.$thunder();
 					game.log(event.current,'的体力变为','#g'+event.current.hp);
@@ -9562,7 +9567,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					useCard:{
 						trigger:{global:['useCardAfter']},
 						filter:function(event,player){
-							console.log(event);
 							if(!game.filterPlayer(function(cur){
 								return get.distance(player,cur,'pure')==1;
 							},[player]).contains(event.player))		return false;
@@ -10558,7 +10562,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(result.bool){
 						player.logSkill('benglei',result.targets);
-						result.targets[0].judge(function(card){
+						event.target = result.targets[0];
+						event.target.judge(function(card){
 							if(get.suit(card)=='spade')		return -3;
 							if(get.suit(card)=='club')		return -2;
 							return 0;
@@ -10566,9 +10571,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}else	event.finish();
 					'step 3'
 					if(event.discardBy===true){
-						if(trigger.player.countDiscardableCards(player,'he')){
-							player.line(trigger.player);
-							player.discardPlayerCard('he',trigger.player,true);
+						if(event.target.countDiscardableCards(player,'he')){
+							player.line(event.target);
+							player.discardPlayerCard('he',event.target,true);
 						}
 						if(event.redoBy){
 							delete event.redoBy;
@@ -11631,9 +11636,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			HosimiyaSio: '星宫汐',
 			yuanyao: '鸢揺',
-			yuanyao_info: '出牌阶段限X次，若你的手牌不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）',
+			yuanyao_info: '出牌阶段限X次，若你的手牌数不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）',
 			gongni: '宫逆',
-			gongni_info: '<font color=#a9f>限定技</font> 准备阶段开始或你使用一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。',
+			gongni_info: '<font color=#a9f>限定技</font> 准备阶段开始时，或你于回合外使用或打出一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。',
 
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
@@ -11682,6 +11687,33 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			dianying_info: '锁定技 其他角色在出牌阶段限一次，其可以将一至二张手牌扣置于你的武将牌旁，称为“面”，然后其可以将两张“面”明置以回复1点体力。你受到伤害后，来源可以获得任意张明置的“面”。',
 			ganfen: '擀奋',
 			ganfen_info: '你可以跳过一个主要阶段并受到1点伤害，将牌堆顶三张牌扣置为“面”。你使用手牌时，可以将一张“面”明置或暗置。',
+
+			shanbao: '扇宝',
+			fengxu: '风许',
+			fengxu_info: '你使用牌指定唯一目标时，可以将其区域内的一张牌移至其下家（可替换），若未发生替换，则对其下家重复此流程，直到发生替换或重复了五次。若你的牌因此发生了替换，此技能结算后你摸重复次数的牌，然后不能发动此技能直到你下一次弃置手牌。',
+
+			qiudi: '秋蒂Q',
+			xiangnuo: '香诺',
+			xiangnuo_info: '你可以跳过一个主要阶段并受到1点伤害，将牌堆顶三张牌扣置为“面”。你使用手牌时，可以将一张“面”明置或暗置。',
+
+			xiaoxiayu: 'Siva小虾鱼',
+			xiaoxiayu_ab: '小虾鱼',
+			tanghuang: '堂皇',
+			tanghuang_info: '每回合限一次。你成为其他角色使用牌的目标时，可以摸X张牌并令其猜测你手牌中你指定类型牌的数量，若其猜测结果：正确～其获得你的5-X张牌；错误～其弃置你和其共计X+3张牌，弃置牌较少者受到一点伤害。（X为你已损失的体力值）',
+			xiejiang: '蟹酱',
+			xiejiang_info: '锁定技 你回复体力或摸两张以上的牌后，获得1点护甲；你失去1点护甲后，当前回合角色摸两张牌。',
+
+			tianxixi: '田汐汐',
+			lache: '拉扯',
+			lache_info: '你回复体力时，可以令当前回合角色摸两张牌；你弃置两张以上的牌或护甲减少后，可以回复一点体力，若发生在回合外，你摸等量牌。',
+			danfu: '蛋孵',
+			danfu_info: '锁定技 结束阶段，你失去一点体力并获得1点护甲；你失去1点护甲后，当前回合角色摸两张牌。',
+
+			iiivan: '伊万',
+			shuipo: '水魄',
+			shuipo_info: '锁定技 你使用锦囊牌时，需令体力多于你的一名角色或你失去一点体力并获得一点护甲，然后其可以弃置你的一张手牌。',
+			pianchao: '片超',
+			pianchao_info: '你失去体力后，可以亮出所有手牌直到回合结束；当你弃置亮出的手牌时，可以立即使用之。出牌阶段结束时，若你手牌数不为全场唯一最低且没有亮出的手牌，你可以令一名角色调整手牌至与你相同，然后若你本阶段发动过『片超』，你进行一个额外的出牌阶段。',
 
 			lanruo: '兰若Ruo',
 			dieyuan: '蝶缘',
