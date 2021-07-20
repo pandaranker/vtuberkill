@@ -2435,9 +2435,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(num||!event.hs.length)	return false;
 					var canG=0;
 					event.hs.forEach(function(car){
-						game.hasPlayer(function(cur){
-							if(player.canUse(car,cur))	canG++;
-						});;
+						if(player.hasUseTarget(car))	canG++;
 					})
 					return canG&&(event.name=='cardsDiscard'||(event.name=='lose'&&event.getParent().name=='discard'));
 				},
@@ -2447,13 +2445,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var next=player.chooseCardButton(1,'『弹言』：选择使用的牌',event.cards);
 					next.set('filterButton',function(button){
 						var player = _status.event.player;
-						return game.hasPlayer(function(cur){
-							return player.canUse(button.link,cur)
-						});
-					});;
+						return player.hasUseTarget(button.link);
+					});
+					next.set('ai',function(button){
+						var player = _status.event.player;
+						return player.getUseValue(button.link);
+					});
 					'step 1'
 					if(result.bool){
-						player.chooseUseTarget(result.links[0],true,'noanimate','nopopup');
+						player.chooseUseTarget(result.links[0],true,'nopopup');
 					}
 
 				},

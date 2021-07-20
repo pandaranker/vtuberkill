@@ -47,6 +47,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
 			/**东爱璃 */
 			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
+			/**阿秋 */
+			AkiRinco: ['female','psp',4,['jiren','luqiu','canxin'],['guoV']],
 
 			/**花谱 */
 			Kaf:['female','vwp',3,['liuhua','yishi']],

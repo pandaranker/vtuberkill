@@ -1253,7 +1253,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			haishou: '煽动海兽',
 			haishou_info: '每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。',
 			lishi: '幕下力士',
-			lishi_info: '锁定技 你失去最后一点护甲时，摸一张牌。',
+			lishi_info: '锁定技 你失去最后1点护甲时，摸一张牌。',
 			
 			sea_MinatoAqua: '海·湊阿夸',
 			jinchen: '浸沉',

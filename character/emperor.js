@@ -1147,9 +1147,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							canBeDiscarded:function (card,source,player){
 								if(source!=player&&['h'].contains(get.position(card))) return false;
 							},
-							cardDiscardable:function(card,player,name){
-								if(['h'].contains(get.position(card))) return false;
-							}
 						},
 					},
 					jiangzui:{

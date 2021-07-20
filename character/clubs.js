@@ -317,9 +317,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								)
 							}
 							return true;
-							//player.in('cangxiong_diao');
-							//player.in('cangxiong_diao');
-							//
 	
 						},
 						intro:{
@@ -2977,11 +2974,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						//禁止使用xxx
 						mod:{
 							cardUsable:function(card,player,num){
-								if(typeof card != 'object') return true;
+								if(typeof card != 'object') return;
 								var number = get.number(card, player);
 								if(typeof number != 'number'){
 									number = parseInt(number);
-									if(isNaN(number)) return true;
+									if(isNaN(number)) return;
 								}
 								var storage = player.storage.mozouqiyin_disableCard;
 								return lib.skill.budingpaidui.checkNumber( storage.number, number, storage.cond)?0:num;
@@ -2990,7 +2987,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var number = get.number(card, player);
 								if(typeof number != 'number'){
 									number = parseInt(number);
-									if(isNaN(number)) return true;
+									if(isNaN(number)) return;
 								}
 								var storage = player.storage.mozouqiyin_disableCard;
 								return lib.skill.budingpaidui.checkNumber( storage.number, number, storage.cond)?false:ori;

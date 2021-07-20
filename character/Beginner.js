@@ -4125,15 +4125,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'anshu_directHit',
 				subSkill:{
 					directHit:{
+						trigger:{player:'useCard'},
 						direct:true,
-						trigger:{
-							player:"useCard",
-						},
 						filter:function(event,player){
-							return event.logSkill=='anshu'&&get.suit(event.card)=='spade';
+							return get.suit(event.card)=='spade'&&Array.isArray(event.getParent().logSkill)&&event.getParent().logSkill[0]=='anshu';
 						},
 						content:function(){
-							trigger.directHit.addArray(game.players);
+							console.log('a')
+							trigger.directHit.add(trigger.getParent().logSkill[1]);
 						},
 					}
 				}
@@ -4208,7 +4207,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				firstDo:true,
 				filter:function(event,player){
 					if(player.hasSkill('cejing_disable'))	return false;
-					return event.player.isIn()&&player.countDiscardableCards('he')>=1;
+					return event.player.isIn()&&!event.player.getStat('damage')&&player.countDiscardableCards('he')>=1;
 				},
 				direct:true,
 				content:function(){
@@ -4902,6 +4901,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						case 1:{
 							player.logSkill('re_liaohu',event.target);
+							event.target.draw();
 							event.target.recover(player);
 							break;
 						}
@@ -6151,9 +6151,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_MurasakiShion: '新·紫咲诗音',
 			anshu: '暗术',
-			anshu_info: '其他角色的回合结束时，若其手牌数不小于你，你可对其使用一张牌。且若此牌为♠，此牌不可被响应。',
+			anshu_info: '其他角色的回合结束时，若其手牌数不小于你，你可对其使用一张牌。且若此牌为♠，此牌不可被其响应。',
 			xingchi: '醒迟',
-			xingchi_info: '一名角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌，然后本回合不再触发此项。',
+			xingchi_info: '其他角色每回合使用的第一张牌不能指定你为目标。当你获得牌后，若你的手牌数：大于手牌上限，你可以将一张牌当【杀】使用；不大于手牌上限，你摸两张牌，然后本回合不再触发此项。',
 
 			re_UsadaPekora: '新·兔田佩克拉',
 			qiangyun: '强运',

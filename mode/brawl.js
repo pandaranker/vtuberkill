@@ -3079,15 +3079,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						completeNumber:0,
 						used:['pujing','huban','caiyang'],
 						addFellow:function(name){
-							game.fan.dataset.position=2;
+							game.fan.dataset.position = 2;
 							ui.arena.setNumber(3);
-							game.fellow=game.addFellow(1,name);
+							game.fellow = game.addFellow(1, name);
 							game.fellow.gain(get.cards(4));
-   				game.fellow.identity='zhong';
-   				game.fellow.setIdentity();
-   				game.fellow.identityShown=true;
-   				game.fellow.node.identity.classList.remove('guessing');
-							_status.event.getParent('phaseLoop').player=game.fellow;
+							game.fellow.identity = 'zhong';
+							game.fellow.setIdentity();
+							game.fellow.identityShown = true;
+							game.fellow.node.identity.classList.remove('guessing');
+							_status.event.getParent('phaseLoop').player = game.fellow;
 						},
 						completeReward:[
 							['回复1点体力并摸一张牌',function(){

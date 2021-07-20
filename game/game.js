@@ -4179,6 +4179,14 @@
 			},
 		},
 		mode:{
+			//引导
+			yindao:{
+				name:'引导',
+				config:{
+					update:function(config,map){
+					},
+				}
+			},
 			identity:{
 				name:'身份',
 				connect:{
@@ -7458,6 +7466,13 @@
 					}
 					else{
 						game.closePopped();
+						var keynum;
+						if(window.event){
+							keynum = e.keyCode // IE
+						}
+						else if(e.which){
+							keynum = e.which
+						}
 						var dialogs=document.querySelectorAll('#window>.dialog.popped:not(.static)');
 						for(var i=0;i<dialogs.length;i++){
 							dialogs[i].delete();
@@ -7510,6 +7525,9 @@
 						}
 						else if(e.keyCode==74&&(e.ctrlKey||e.metaKey)&&lib.node){
 							lib.node.debug();
+						}
+						else if(keynum==17){
+							window.status = 'skip';
 						}
 						// else if(e.keyCode==27){
 						// 	if(!ui.arena.classList.contains('paused')) ui.click.config();
@@ -8442,6 +8460,7 @@
 				}
 			},
 			reset:function(){
+				console.log(lib,navigator.notification,lib.device)
 				if(window.inSplash) return;
 				if(window.resetExtension){
 					if(confirm('游戏似乎未正常载入，是否禁用扩展并重新打开？')){
@@ -9614,6 +9633,9 @@
 			},
 			parse:function(func){
 				var str=func.toString();
+				//galgame调整
+				str=str.replace(/(?!\.)galgame/g,'game.galgame');
+
 				str=str.slice(str.indexOf('{')+1);
 				if(str.indexOf('step 0')==-1){
 					str='{if(event.step==1) {event.finish();return;}'+str;
@@ -9971,6 +9993,7 @@
 							case 'vshojo':t++;if(lib.config.banned.contains(i)) st++;break;
 							case 'xuyan':u++;if(lib.config.banned.contains(i)) su++;break;
 							case 'chaos':v++;if(lib.config.banned.contains(i)) sv++;break;
+							case 'xuefeng':w++;if(lib.config.banned.contains(i)) sw++;break;
 						}
 					}
 					console.log('魏：'+(a-sa)+'/'+a);
@@ -10490,6 +10513,7 @@
 			vshojo:'V',
 			xuyan:'虚',
 			chaos:'C',
+			xuefeng:'雪',
 			double:'多',
 			wei2:'魏国',
 			shu2:'蜀国',
@@ -10514,6 +10538,7 @@
 			vshojo2:'Vshojo',
 			xuyan2:'虚研社',
 			chaos2:'ChaosLive',
+			xuefeng2:'雪风军团',
 			double2:'多势力',
 			male:'男',
 			female:'女',
@@ -15867,6 +15892,8 @@
 					for(var i=0;i<cards.length;i++){
 						if(cards[i].gaintag&&cards[i].gaintag.length){
 							event.gaintag_map[cards[i].cardid]=cards[i].gaintag.slice(0);
+							if(cards[i].hasGaintag('ming_'))	event.gaintag_map[cards[i].cardid].push('ming_');
+							if(cards[i].hasGaintag('an_'))		event.gaintag_map[cards[i].cardid].push('an_');
 							cards[i].removeGaintag(true);
 						}
 						if(!hej.contains(cards[i])){
@@ -16259,6 +16286,14 @@
 					event.trigger('changeHp');
 				},
 				changeHujia:function(){
+					if(lib.config.background_audio){
+						game.playAudio('effect','hujia');
+					}
+					game.broadcast(function(){
+						if(lib.config.background_audio){
+							game.playAudio('effect','hujia');
+						}
+					});
 					player.hujia+=num;
 					player.$damagepop((num>0?'+'+num:num),'gray');
 					if(num>0){
@@ -26859,6 +26894,7 @@
 					if(group=='vshojo') return 20;
 					if(group=='xuyan') return 21;
 					if(group=='chaos') return 22;
+					if(group=='xuefeng') return 23;
 					if(group=='vtuber') return 30;
 					if(group=='clubs') return 31;
 					return 40;
@@ -29275,8 +29311,8 @@
 		group:[
 			'vtuber','clubs',
 			'wei','shu','wu','qun','key',
-			'shen','holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','nori','paryi','kagura','nanashi','psp','asoul','nori','vwp',
-			'xuyan','chaos',
+			'holo','nijisanji','dotlive','upd8','eilene','paryi','kagura','nori','vwp','nanashi',
+			'VirtuaReal','psp','asoul','xuyan','chaos','xuefeng',
 			'vshojo'
 		],
 		nature:['fire','thunder','poison','ocean','ice','kami','yami'],
@@ -29307,6 +29343,7 @@
 			vshojo:'metal',
 			xuyan:'ice',
 			chaos:'ocean',
+			xuefeng:'ocean',
 			
 			vtuber:'metal',
 			clubs:'ice',
@@ -29339,6 +29376,306 @@
 		],
 	};
 	var game={
+		galgameMod:function(){
+			var galgame = {text:{},game:game};
+			var gal0 = function () {
+				/**
+				* @description :
+				* @author 看破一切 date 2021/2/12
+				*/
+				galgame.sce = function (shijian) {
+					var game = galgame.game;
+					var next = game.createEvent('sce', false);
+					next.shijian = shijian;
+					next.setContent(galgame.sces);
+					return next;
+				}
+				galgame.backgroundMusic = document.createElement("audio");
+				galgame.backgroundMusic.addEventListener("ended", function () {
+					galgame.backgroundMusic.currentTime = 0;
+					galgame.backgroundMusic.play();
+				});
+				galgame.audio = document.createElement("audio");
+				galgame.end = function () {
+					var game = galgame.game;
+					galgame.audio.pause();
+					galgame.backgroundMusic.pause();
+					game.resume();
+				}
+				galgame.cg = function (src, callback) {
+					var cg = document.createElement("video");
+					cg.setAttribute("width", "100%");
+					cg.setAttribute("height", "100%");
+					cg.setAttribute("src", src);
+					cg.setAttribute("autoplay", "autoplay");
+					cg.addEventListener("ended", callback);
+					cg.addEventListener("loadedmetadata", function () {
+						this.onclick = function () {
+							this.play();
+							this.currentTime = this.duration;
+						}
+					});
+					return cg;
+				}
+				galgame.sces = function () {
+					var game = galgame.game;
+					var color = {};
+					var beijing = ui.create.div('.scedi', ui.window);
+					var booth = {};
+					booth.node = ui.create.div(".scetu", beijing);
+					var node = ui.create.div('.sce', beijing);
+					var drive = ui.create.div('.drive', beijing);
+					var tou = ui.create.div('.tou', node);
+					var txt = ui.create.div('.txt', node);
+					var right = ui.create.div(node);
+					var name = ui.create.div('.name', tou);
+					var name2 = ui.create.div('.name', right);
+					var num = 0,
+						i = 0;
+					var bofang = function () {
+						if(!galgame.text[event.shijian])	return;
+						var arr = galgame.text[event.shijian][num].split(':');
+						if (arr[0] == "background") {
+							if (arr[1] == "none") {
+								beijing.style.backgroundImage = "";
+							} else {
+								beijing.setBackgroundImage('galgame/' + arr[1]);
+							}
+							num++;
+							bofang();
+							return;
+						} else if (arr[0] == "booth") {
+							if (arr[6] || (arr[1] == "none" && arr[2])) {
+								if (!booth[arr[6]]) {
+									booth[arr[6]] = ui.create.div(".scetu", beijing);
+								}
+								if (arr[1] == "none") {
+									booth[arr[2]].hide();
+								} else {
+									if (booth[arr[6]].classList.contains("hidden")) booth.show();
+									booth[arr[6]].style.width = parseInt(arr[2]) + "px";
+									booth[arr[6]].style.height = parseInt(arr[3]) + "px";
+									booth[arr[6]].style.left = parseInt(arr[4]) + "%";
+									booth[arr[6]].style.top = parseInt(arr[5]) + "%";
+									booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
+								}
+							} else {
+								if (arr[1] == "none") {
+									booth.node.hide();
+								} else {
+									if (booth.node.classList.contains("hidden")) booth.show();
+									booth.node.style.width = parseInt(arr[2]) + "px";
+									booth.node.style.height = parseInt(arr[3]) + "px";
+									booth.node.style.left = parseInt(arr[4]) + "%";
+									booth.node.style.top = parseInt(arr[5]) + "%";
+									booth.node.setBackgroundImage('galgame/' + arr[1]);
+								}
+							}
+							num++;
+							bofang();
+							return;
+						} else if (arr[0] == "color") {
+							if (arr[1] == "text") {
+								node.style.backgroundColor = arr[2];
+							}
+							if (arr[1] == "choose") {
+								if (arr[3]) {
+									color[arr[3]] = arr[2];
+								} else {
+									color.every = arr[2];
+								}
+							}
+							num++;
+							bofang();
+							return;
+						} else if (arr[0] == "music") {
+							ui.backgroundMusic.pause();
+							galgame.backgroundMusic.src = lib.assetURL + "galgame/" + arr[1];
+							galgame.backgroundMusic.play();
+							num++;
+							bofang();
+							return;
+						} else if (arr[0] == "audio") {
+							galgame.audio.src = lib.assetURL + "galgame/" + arr[1];
+							galgame.audio.play();
+							num++;
+							bofang();
+							return;
+						} else if (arr[0] == "cg") {
+							ui.backgroundMusic.pause();
+							galgame.backgroundMusic.pause();
+							var di = ui.create.div('.cg');
+							var cg = galgame.cg(lib.assetURL + "galgame/" + arr[1], function () {
+								beijing.removeChild(di);
+								ui.backgroundMusic.play();
+								bofang();
+							});
+							di.appendChild(cg);
+							beijing.appendChild(di);
+							num++;
+							return;
+						} else if (arr[0] == "choose") {
+							var choose = ui.create.div('.choose', beijing);
+							for (var j = 1; j < arr.length; j++) {
+								var sele = ui.create.div('.sele', choose);
+								sele.onclick = function () {
+									_status.event.result = {
+										bool: this.innerText,
+									}
+									ui.window.removeChild(beijing);
+									ui.backgroundMusic.play();
+									galgame.end();
+								};
+								sele.innerHTML = arr[j];
+								if (color.every) sele.style.backgroundColor = color.every;
+								if (color[j]) sele.style.backgroundColor = color[j];
+							}
+							return;
+						} else if (arr[0] == "right") {
+							if (arr[1] != "none") {
+								if (!right.classList.contains("galright")) {
+									right.classList.add("galright");
+								}
+								if (!txt.classList.contains("txt2")) {
+									txt.classList.add("txt2");
+								}
+								right.setBackgroundImage('galgame/' + arr[1]);
+								if (arr[2] == "none") {
+									name2.innerHTML = "";
+								} else {
+									name2.innerHTML = arr[2];
+								}
+								if (arr[3]) {
+									if (arr[3] == "left") {
+										if (!tou.classList.contains("yingyin")) {
+											tou.classList.add("yingyin");
+										}
+										if (right.classList.contains("yingyin")) {
+											right.classList.remove("yingyin");
+										}
+									}
+									if (arr[3] == "right") {
+										if (tou.classList.contains("yingyin")) {
+											tou.classList.remove("yingyin");
+										}
+										if (!right.classList.contains("yingyin")) {
+											right.classList.add("yingyin");
+										}
+									}
+								} else {
+									if (tou.classList.contains("yingyin")) {
+										tou.classList.remove("yingyin");
+									}
+									if (right.classList.contains("yingyin")) {
+										right.classList.remove("yingyin");
+									}
+								}
+							} else {
+								right.classList.remove("galright");
+								txt.classList.remove("txt2");
+								if (tou.classList.contains("yingyin")) {
+									tou.remove("yingyin");
+								}
+								if (right.classList.contains("yingyin")) {
+									right.remove("yingyin");
+								}
+								name2.innerHTML = "";
+							}
+							num++;
+							bofang();
+							return;
+						}
+						tou.show();
+						if (arr[0] == "none") {
+							tou.hide();
+						} else if (arr[0] == "sp") {
+							tou.setBackgroundImage("galgame/" + arr[3]);
+							name.innerHTML = arr[2];
+						} else {
+							tou.setBackground(arr[0], "character");
+							name.innerHTML = get.rawName([arr[0]]);
+						}
+						var link = arr[1].replace(/@/g, lib.config.connect_nickname);
+						var show = function () {
+							if (link[i] == "<") {
+								for (var j = i; j < link.length; j++) {
+									if (link[j] == ">") {
+										if (link[j + 1] && link[j + 1] == "<") {
+											continue;
+										}
+										i = j + 1;
+										break;
+									}
+								}
+							}
+							var str = link.substr(0, i);
+							txt.innerHTML = str;
+							i++;
+							if (i <= link.length) {
+								if(window.status=='skip'){
+									setTimeout(show, 5);
+								}
+								else{
+									setTimeout(show, 70);
+								}
+							} else {
+								if (num < galgame.text[event.shijian].length) {
+									if(window.status=='skip'){
+										i = 0;
+										galgame.audio.pause();
+										bofang();
+									}
+									drive.onclick = function () {
+										this.onclick = false;
+										i = 0;
+										galgame.audio.pause();
+										bofang();
+									}
+								} else {
+									if(window.status=='skip'){
+										ui.backgroundMusic.play();
+										ui.window.removeChild(beijing);
+										galgame.end();
+										window.status = '';
+									}
+									drive.onclick = function () {
+										ui.backgroundMusic.play();
+										ui.window.removeChild(beijing);
+										galgame.end();
+									}
+								}
+							}
+							window.onkeyup = function (e) {
+								var keynum;
+								if(window.event){
+									keynum = e.keyCode // IE
+								}
+								else if(e.which){
+									keynum = e.which
+								}
+								console.log(keynum)
+								if(keynum==17&&window.status){
+									i = 0;
+									window.status = '';
+								}
+							}
+						}
+						show();
+						num++;
+					}
+					bofang();
+					game.pause();
+				}
+			}();
+			lib.init.json(lib.assetURL + 'galgame/galgame.json', function(text) {
+				for (var i in text) {
+					galgame.text[i] = text[i];
+				}
+				lib.init.css(lib.assetURL + 'galgame', 'galgame');
+			});
+			
+			game.galgame = galgame;
+		},
 		loseAsync:function(arg){
 			var next=game.createEvent('loseAsync');
 			next.getl=function(player){
@@ -39205,6 +39542,7 @@
 							if(group=='vshojo') return 20;
 							if(group=='xuyan') return 21;
 							if(group=='chaos') return 22;
+							if(group=='xuefeng') return 22;
 							if(group=='vtuber') return 30;
 							if(group=='clubs') return 31;
 							return 40;
@@ -44199,9 +44537,10 @@
 				},true,true);
 			},
 			groupControl:function(dialog){
-				return ui.create.control('qun','key','holo','nijisanji','VirtuaReal','dotlive','upd8',
-				'eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo',
-				'xuyan','chaos',function(link,node){//'wei','shu','wu','western',
+				return ui.create.control('qun','key',
+				'holo','nijisanji','dotlive','upd8','eilene','paryi','kagura','nori','vwp','nanashi',
+				'VirtuaReal','psp','asoul','xuyan','chaos','xuefeng',
+				'vshojo',function(link,node){//'wei','shu','wu','western',
 					if(link=='全部'){
 						dialog.currentcapt='';
 						dialog.currentgroup='';
@@ -44633,7 +44972,7 @@
 				if(!thisiscard){
 					var groups=['qun','holo','nijisanji','VirtuaReal','dotlive','upd8',
 					'eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo',
-					'xuyan','chaos'];//'wei','shu','wu',
+					'xuyan','chaos','xuefeng'];//'wei','shu','wu',
 					if(get.mode()=='guozhan'||(get.mode()=='versus'&&_status.mode!='jiange')) groups=['holo','nijisanji','vtuber','clubs'];
 					var bool1=false;
 					var bool2=false;
@@ -44892,6 +45231,7 @@
 						if(group=='vshojo') return 20;
 						if(group=='xuyan') return 21;
 						if(group=='chaos') return 22;
+						if(group=='xuefeng') return 22;
 						if(group=='vtuber') return 30;
 						if(group=='clubs') return 31;
 						return 40;
@@ -45751,14 +46091,16 @@
 				if(!lib.config.show_sortcard){
 					ui.sortCard.style.display='none';
 				}
-				ui.playerids=ui.create.system('显示身份',function(){
-					if(game.showIdentity){
-						game.showIdentity();
-						_status.identityShown=true;
+				if(lib.config.mode!='yindao'){
+					ui.playerids=ui.create.system('显示身份',function(){
+						if(game.showIdentity){
+							game.showIdentity();
+							_status.identityShown=true;
+						}
+					},true);
+					if(!lib.config.show_playerids||!game.showIdentity){
+						ui.playerids.style.display='none';
 					}
-				},true);
-				if(!lib.config.show_playerids||!game.showIdentity){
-					ui.playerids.style.display='none';
 				}
 				if(!lib.config.show_replay){
 					ui.replay.style.display='none';
@@ -54514,7 +54856,8 @@
 			return [
 				'vtuber','clubs',
 				'wei','shu','wu','qun','jin','western','key',
-				'holo','nijisanji','VirtuaReal','dotlive','upd8','eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','xuyan','chaos',
+				'holo','nijisanji','dotlive','upd8','eilene','paryi','kagura','nori','vwp','nanashi',
+				'VirtuaReal','psp','asoul','xuyan','chaos','xuefeng',
 				'vshojo'
 			];
 		},
@@ -55405,5 +55748,7 @@
 		},
 		get:get
 	};
+
+	game.galgameMod();
 	lib.init.init();
 }());
