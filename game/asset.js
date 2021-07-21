@@ -1147,6 +1147,7 @@ window.noname_asset_list=[
 	'image/card/jiwangkailai.png',
 	'image/card/zhadan.png',
 	//化鲸篇
+	'audio/effect/hujia.mp3',
 	'image/card/bowen.png',
 	'image/card/chenjing.png',
 	'image/card/chenmo.png',
