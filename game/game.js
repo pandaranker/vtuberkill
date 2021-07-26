@@ -4180,13 +4180,88 @@
 		},
 		mode:{
 			//引导
-			yindao:{
-				name:'引导',
-				config:{
-					update:function(config,map){
-					},
-				}
-			},
+			// yindao:{
+			// 	name:'引导',
+			// 	config:{
+			// 		update:function(config,map){
+			// 		},
+			// 	}
+			// },
+			// richer:{
+			// 	name:'大富翁',
+			// 	connect:{
+			// 		connect_player_number:{
+			// 			name:'游戏人数',
+			// 			init:'6',
+			// 			item:{
+			// 				'2':'两人',
+			// 				'3':'三人',
+			// 				'4':'四人',
+			// 				'5':'五人',
+			// 				'6':'六人',
+			// 			},
+			// 			frequent:true,
+			// 			restart:true,
+			// 		},
+			// 		update:function(config,map){
+			// 		},
+			// 		connect_show_range:{
+			// 			name:'显示卡牌范围',
+			// 			init:true,
+			// 		},
+			// 		connect_show_distance:{
+			// 			name:'显示距离',
+			// 			init:true,
+			// 		},
+			// 		connect_chessscroll_speed:{
+			// 			name:'边缘滚动速度',
+			// 			init:'20',
+			// 			intro:'鼠标移至屏幕边缘时自动滚屏',
+			// 			item:{
+			// 				'0':'不滚动',
+			// 				'10':'10格/秒',
+			// 				'20':'20格/秒',
+			// 				'30':'30格/秒',
+			// 			}
+			// 		},
+			// 	},
+			// 	config:{
+			// 		player_number:{
+			// 			name:'游戏人数',
+			// 			init:'6',
+			// 			item:{
+			// 				'2':'两人',
+			// 				'3':'三人',
+			// 				'4':'四人',
+			// 				'5':'五人',
+			// 				'6':'六人',
+			// 			},
+			// 			frequent:true,
+			// 			restart:true,
+			// 		},
+			// 		update:function(config,map){
+			// 		},
+			// 		show_range:{
+			// 			name:'显示卡牌范围',
+			// 			init:true,
+			// 		},
+			// 		show_distance:{
+			// 			name:'显示距离',
+			// 			init:true,
+			// 		},
+			// 		chessscroll_speed:{
+			// 			name:'边缘滚动速度',
+			// 			init:'20',
+			// 			intro:'鼠标移至屏幕边缘时自动滚屏',
+			// 			item:{
+			// 				'0':'不滚动',
+			// 				'10':'10格/秒',
+			// 				'20':'20格/秒',
+			// 				'30':'30格/秒',
+			// 			}
+			// 		},
+			// 	}
+			// },
 			identity:{
 				name:'身份',
 				connect:{
@@ -10544,6 +10619,9 @@
 			female:'女',
 			mad:'混乱',
 			mad_bg:'疯',
+
+			hp:'体力',
+
 			draw_card:'摸牌',
 			discard_card:'弃牌',
 			take_damage:'受伤害',
@@ -12183,7 +12261,6 @@
 				},
 				phase:function(){
 					"step 0"
-					event.trigger('phaseNext');
 					player.phaseZhunbei();
 					"step 1"
 					event.trigger('phaseNext');
@@ -12217,6 +12294,8 @@
 					"step 5"
 					event.trigger('phaseNext');
 					player.phaseJieshu();
+					"step 6"
+					event.trigger('phaseNext');
 				},
 				phaseJudge:function(){
 					"step 0"
@@ -14075,7 +14154,7 @@
 							prompt='是否摸'+get.cnNumber(event.num1)+'张牌？';
 						}
 						else{
-							prompt='摸'+get.cnNumber(event.num1)+'张牌或回复'+get.cnNumber(event.num2)+'点体力';
+							prompt='摸'+get.cnNumber(event.num1)+'张牌或回复'+get.cnNumber(event.num2)+'点'+get.translation('hp');
 						}
 					}
 					var next=player.chooseControl(controls);
@@ -16225,7 +16304,7 @@
 							}
 						},player);
 						player.$damagepop(num,'wood');
-						game.log(player,'回复了'+get.cnNumber(num)+'点体力')
+						game.log(player,'回复了'+get.cnNumber(num)+'点'+get.translation('hp'))
 					}
 				},
 				loseHp:function(){
@@ -16238,7 +16317,7 @@
 							game.playAudio('effect','loseHp');
 						}
 					});
-					game.log(player,'失去了'+get.cnNumber(num)+'点体力')
+					game.log(player,'失去了'+get.cnNumber(num)+'点'+get.translation('hp'))
 					player.changeHp(-num);
 					"step 1"
 					if(player.hp<=0){
@@ -16256,7 +16335,7 @@
 				},
 				loseMaxHp:function(){
 					"step 0"
-					game.log(player,'减少了'+get.cnNumber(num)+'点体力上限');
+					game.log(player,'减少了'+get.cnNumber(num)+'点'+get.translation('hp')+'上限');
 					player.maxHp-=num;
 					event.loseHp=Math.max(0,player.hp-player.maxHp);
 					player.update();
@@ -16267,7 +16346,7 @@
 				},
 				gainMaxHp:function(){
 					"step 0"
-					game.log(player,'增加了'+get.cnNumber(num)+'点体力上限');
+					game.log(player,'增加了'+get.cnNumber(num)+'点'+get.translation('hp')+'上限');
 					player.maxHp+=num;
 					player.update();
 				},

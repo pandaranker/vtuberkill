@@ -535,9 +535,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					list3.randomSort();
 					var num=get.config('choice_'+game.me.identity);
 					list=event.list.slice(0,num);
-					// if(game.me==game.zhu){
-					// 	list=['KiryuuCoco'];
-					// }
+					//
+					if(game.me==game.zhu){
+						list=['KiryuuCoco'];
+					}
 					delete event.swapnochoose;
 					var dialog;
 					if(event.swapnodialog){
@@ -981,7 +982,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			// bigong: '逼宫',
 			// bigong_info: '对一名反抗军使用，令其选择一项：本轮内失去所有技能，或交给桐生可可两张不同类型的牌，使用后移出游戏。',
 			// bigong_clear: '逼宫后续',
-			chuanjia_po: 'fuck',
+			// chuanjia_po: 'fuck',
 
 			zuoyututanLimit: '手牌减少',
 			mode_longlaoguan_card_config:'龙牢关卡牌',
@@ -1041,7 +1042,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		characterPack:{
 			mode_longlaoguan:{
-				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','elongkeke','zuoyututan']],
+				KiryuuCoco:['female','holo',5,['zaoankeke', 'jierizhanbei','esuyingye','zuoyututan','elongkeke']],
 				AjatarCoco:['female','holo',1,['yanzheshengdun','zaoankeke', 'zhengzhengrishang','yugaimizhang','zuoyututan']]
 			}
 		},

@@ -744,35 +744,39 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					shan:{
 						enable:['chooseToUse'],
 						viewAs:{name:'shan'},
-						round:1,
 						viewAsFilter:function(player){
 							if(!_status.currentPhase) return false;
 						},
 						filterCard:function(){return false},
 						selectCard:-1,
 						filter:function(event,player){
+							if(player.hasSkill('kouhu_usedShan'))	return false;
 							return true;
 						},
 						precontent:function(){
+							player.addTempSkill('kouhu_usedShan','roundStart');
 							_status.currentPhase.draw();
 						}
 					},
 					sha:{
 						enable:['chooseToRespond'],
 						viewAs:{name:'sha'},
-						round:1,
 						viewAsFilter:function(player){
 							if(!_status.currentPhase) return false;
 						},
 						filterCard:function(){return false},
 						selectCard:-1,
 						filter:function(event,player){
+							if(player.hasSkill('kouhu_usedSha'))	return false;
 							return true;
 						},
 						precontent:function(){
+							player.addTempSkill('kouhu_usedSha','roundStart');
 							_status.currentPhase.draw();
 						}
-					}
+					},
+					usedShan:{},
+					usedSha:{},
 				}
 			},
 			zhiqiu:{

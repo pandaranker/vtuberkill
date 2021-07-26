@@ -897,17 +897,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						else{
 							player.logSkill('pianchao')
 							player.chooseUseTarget(result.links[0],true,'nopopup');
+							player.addTempSkill('pianchao_phaseUseBy',{});
 						}
 					}
 				},
-				group:'pianchao_phaseUseBy',
 				subSkill:{
 					phaseUseBy:{
-						trigger:{player:['phaseUseAfter']},
-						filter:function(event,player){
-							return !player.isMinHandcard();
-						},
+						mark:true,
+						marktext:'片',
+						intro:{content:'于下个额定阶段结束后进行一个额外的出牌阶段'},
+						trigger:{global:'phaseNext'},
+						forced:true,
 						content:function(){
+							player.removeSkill('pianchao_phaseUseBy');
 							player.phaseUse();
 						},
 					},
@@ -12297,7 +12299,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ming_pianchao: '片超',
 			pianchao: '片超',
 			pianchao_phaseUseBy: '片超',
-			pianchao_info: '你失去体力后，可以亮出两张手牌并获得1点护甲；当你弃置亮出的手牌时，可以使用其中一张。出牌阶段结束后，若你手牌数不为全场最少，你可以进行一个额外的出牌阶段。',
+			pianchao_info: '你体力流失后，可以亮出两张手牌并获得1点护甲；当你弃置亮出的手牌时，可以使用其中一张，并于此额定阶段结束后进行一个额外的出牌阶段。',
 
 			lanruo: '兰若Ruo',
 			dieyuan: '蝶缘',
