@@ -1096,7 +1096,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var info = get.info(button.link)
 							if(get.attitude(player,target)>=0){
 								if(target.countCards('h')<=count){
-									console.log(ui.selected.buttons);
 									if(ui.selected.buttons.length<target.countCards('h')&&get.position(button.link)=='h'){
 										return 12;
 									}
@@ -1109,7 +1108,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(info.onLose&&get.position(button.link)=='e')		return 0;
 								return get.value(button.link);
 							}
-						}).set('count',count)
+						}).set('count',count);
 					}
 					'step 2'
 					if(result.bool){
@@ -1122,7 +1121,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						// game.addVideo('storage', event.tar, ['DDzhanshou_card',get.cardsInfo(event.tar.storage.DDzhanshou_card),'cards']);
 						event.tar.addSkill('DDzhanshou_card');
-						event.tar.markSkill('DDzhanshou_card');
 						event.tar.lose(result.links,ui.special,'toStorage');
 					}
 					'step 3'

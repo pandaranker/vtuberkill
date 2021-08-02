@@ -51,6 +51,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**小可 */
 			xiaoke: ['female','VirtuaReal',4,['dianying','ganfen'],['guoV']],
 
+			/**奈罗花 */
+			Naraka: ['female','nijisanji',3,['echi','mudu'],],
 
 			/**春猿火 */
 			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
@@ -61,7 +63,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**琴吹梦 */
 			KotobukiYume: ['female','qun',4,['xuanquan','rusu'],],
 
-			
 			/**谢拉 */
 			CierraRunis:['female','qun',3,['minghuahongxiao']],
 
@@ -88,8 +89,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西魔幽 */
 			AkumaYuu: ['male','psp',4,['akjianwu','tongzhao'],['guoV']],
 
-			/**机萪 */
-			jike: ['female','qun',3,['qianjiwanbian'],['guoV']],
 			/**新科娘 */
 			xinkeniang: ['female','qun',4,['daimao','hongtou'],['zhu','guoV']],
 			/**测试用角色 */
@@ -3985,6 +3984,137 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			//奈罗花
+			echi:{
+				trigger:{
+					global:"gainAfter",
+				},
+				direct:true,
+				filter:function (event,player){
+					if(event.player.hp==player.hp)	return false;
+					var evt=event.getParent('phaseDraw');
+					if(!evt||evt.name!='phaseDraw'){
+						return event.cards&&event.cards.length>0&&event.player.hp>=player.hp;
+					}
+				},
+				content:function(){
+					'step 0'
+					event.tar = trigger.player;
+					player.chooseCard(get.prompt2('echi',event.tar)).set('logSkill',['echi',event.tar]);
+					'step 1'
+					if(result.bool){
+						event.cardtype = get.type2(result.cards[0])
+						player.showCards(result.cards,'『阿斥』：展示手牌');
+					}
+					else event.finish();
+					'step 2'
+					var type = event.cardtype;
+					event.tar.chooseToDiscard('弃置一张为'+get.translation(type)+'牌的牌或失去一点体力',function(card){
+						return get.type2(card)==_status.event.type;
+					}).set('ai',function(card){
+						if(player.hp==1)	return 11-get.value(card);
+						return 6-get.value(card);
+					}).set('type',type);
+					'step 2'
+					if(!result.bool){
+						event.tar.loseHp();
+					}
+				}
+			},
+			mudu:{
+				trigger:{
+					global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']
+				},
+				filter:function(event,player){
+					if(event.player==player||event.player.countCards('he')<2)	return false;
+					if(player.getHistory('lose',function(evt){
+						return evt.getParent(event.name)==event;
+					}).length>=1) return true;
+					return false;
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)<=0;
+				},
+				content:function(){
+					'step 0'
+					event.tar = trigger.player;
+					player.choosePlayerCard(event.tar, 'he', 2, '移除'+get.translation(event.tar)+'两张牌',true).set('ai',function(button){
+						var info = get.info(button.link);
+						if(info.onLose&&get.position(button.link)=='e')		return 0;
+						return get.value(button.link,'raw',player);
+					});
+					'step 1'
+					if(result&&get.itemtype(result.links)=='cards'){
+						var str = 'mudu_card'+player.playerid;
+						if(event.tar.storage[str]){
+							event.tar.storage[str] = event.tar.storage[str].concat(result.links);
+						}
+						else {
+							event.tar.storage[str] = result.links.slice(0);
+						}
+						event.tar.addSkill('mudu_card');
+						event.tar.lose(result.links,ui.special,'toStorage');
+					}
+				},
+				subSkill:{
+					card:{
+						mark:true,
+						trigger:{
+							global:'phaseEnd'
+						},
+						filter:function(event,player){
+							return true;
+						},
+						forced:true,
+						intro:{
+							content:'cardCount',
+							onunmark:function(storage,player){
+								if(storage&&storage.length){
+									player.$throw(storage,1000);
+									game.cardsDiscard(storage);
+									game.log(storage,'被置入了弃牌堆');
+									storage.length=0;
+								}
+							},
+						},
+						content:function(){
+							'step 0'
+							var keys = Object.keys(player.storage);
+							for(var i=0;i<keys.length;i++){
+								if(keys[i].indexOf('mudu_card')==0)	keys[i]=keys[i].slice(9);
+								else keys.splice(i--,1);
+							}
+							event.keys = keys;
+							'step 1'
+							var key = event.keys.pop();
+							var source = game.filterPlayer(function(cur){return cur.playerid==key});
+							var str = 'mudu_card'+key;
+							if(!source.length){
+								player.gain(player.storage[str],'fromStorage');
+								delete player.storage[str];
+							}
+							else{
+								source = source[0];
+								player.chooseButton(['选择收回的牌',player.storage[str],'hidden'],true).set('callback',function(player,result){
+									var cards = player.storage[str].slice(0).removeArray(result.links);
+									var source = _status.event.source;
+									player.gain(result.links);
+									if(source.isIn()){
+										player.$give(cards,source);
+										source.gain(cards);
+									}
+									delete player.storage[str];
+								}).set('source',source);
+							}
+							if(event.keys.length>0)	event.redo();
+							else player.removeSkill('mudu_card');
+						},
+					},
+				},
+				ai:{
+					threaten:1.3
+				}
+			},
 			//凛月
 			zhuqiao:{
 				audio:5,
@@ -5678,7 +5808,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						table.style.width='100%';
 						table.style.position='relative';
 						for(var i=0;i<list.length;i++){
-							if(player.isDisabled(i)) continue;
 							var td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
 							td.innerHTML='<span>'+get.translation(list[i]+'_tag')+'</span>';
 							td.link=list[i];
@@ -8901,7 +9030,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			shengyin:{
 				enable:'phaseUse',
-				// usable:1,
+				usable:1,
 				filterTarget:function(card,player,target){
 					return target!=player&&target.countCards('h');
 				},
@@ -10586,7 +10715,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return get.suit(event.card)=='heart'&&player.getHistory('lose',function(evt){
 						if(evt.getParent()!=event)	return false;
-						console.log(event,evt,evt.hs);
 						if(JSON.stringify(evt.hs)==JSON.stringify(event.cards))		return true;
 						return false;
 					}).length>0;
@@ -12632,10 +12760,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nodao: '无刀之咎',
 			nodao_info: '你没有装备武器时，可以于出牌阶段重铸【杀】，若你以此法获得武器牌，你可以立即装备之并回复1点体力。',
 
+			Naraka : '奈罗花',
+			echi: '阿斥',
+			echi_info: '其它角色于摸牌阶段外获得牌时，若该角色的体力值不小于你，你可展示一张手牌并令其选择一项：弃置一张同种类的牌；失去一点体力。',
+			mudu: '哞督',
+			mudu_info: '其它角色的阶段结束时，若你于此阶段内失去过牌，则可令其将两张牌移出游戏。当前回合结束时，该角色获得一张以此法被移出游戏的牌，并将剩余牌交给你。',
+
 			LizeHelesta: '莉泽·赫露艾斯塔',
 			LizeHelesta_ab: '莉泽',
 			shencha: '权力审查',
-			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张牌。',
+			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张。',
 			helesta: '赫露圣剑',
 			helesta_info: '你受到伤害时，可以弃置自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】并摸一张牌。',
 

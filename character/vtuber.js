@@ -63,6 +63,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SephiraSu:['female','qun',3,['mishu','xingchen']],
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
+			
+			/**机萪 */
+			jike: ['female','qun',3,['qianjiwanbian'],['guoV']],
 		},
 		characterSort:{
 			vtuber:{
@@ -225,9 +228,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.hp==1||(player.hp==2&&!player.hasShan())||player.needsToDiscard()){
 								return 'tao';
 							}
-							if(game.hasPlayer(function(current){
-								return player.canUse('sha',current)&&get.effect(current,'sha',player,player)>0;
-							})){
+							if(player.getUseValue({name:'sha'},false)){
 								return ['雷杀','火杀'].randomGet();
 							}
 							if(player.isDamaged()&&!player.needsToDiscard()) return 'qi';
