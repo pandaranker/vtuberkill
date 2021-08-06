@@ -30027,7 +30027,8 @@
 			var map=[];
 			for(var i=0;i<lib.node.clients.length;i++){
 				if(!list.length) break;
-				var current=list.randomRemove();
+				if(lib.configOL.observe_race)	var current=list.shift();
+				else	var current=list.randomRemove();
 				current.ws=lib.node.clients[i];
 				current.playerid=current.ws.id;
 				current.nickname=current.ws.nickname;
@@ -38242,6 +38243,11 @@
 								};
 								infoconfig.connect_observe_handcard={
 									name:'允许观看手牌',
+									init:false,
+									connect:true
+								};
+								infoconfig.connect_observe_race={
+									name:'比赛模式',
 									init:false,
 									connect:true
 								};
@@ -47025,6 +47031,9 @@
 					}
 				}
 				lib.inpile.sort(lib.sort.card);
+				for(var i in _status.cardtag){
+					if(!_status.cardtag[i].length) delete _status.cardtag[i];
+				}
 				game.broadcastAll(function(num,pile,top,cardtag){
 					if(ui.cardPileNumber) ui.cardPileNumber.innerHTML='0轮 剩余牌: '+num;
 					lib.inpile=pile;

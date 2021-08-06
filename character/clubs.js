@@ -3230,6 +3230,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MiraiAkari: '未来明',
 			shiyilijia: '失忆离家',
 			shiyilijia_info: '出牌阶段限一次，你可弃置所有手牌，若如此做，你于回合结束时摸等量的牌。',
+			shiyilijia_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡 克己</span>',
 			seqinghuashen: '色情化身',
 			seqinghuashen_info: '其他角色的【桃】因使用进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
 
@@ -3249,6 +3250,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			enfan_info: '发动过“啾猫”的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力',
 			shiqi: '势起',
 			shiqi_info: '锁定技 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
+			shiqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 
 			MashiroKanon: '真白花音',
 			chenzhu: '辰铸',
@@ -3265,7 +3267,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhangjinghua: '张京华',
 			xiemen: '斜门',
 			xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
-			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：破军</span>',
+			xiemen_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：破军 易上手</span>',
 			jiai: '集爱',
 			jiai_info: '每回合限一次。你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
 
