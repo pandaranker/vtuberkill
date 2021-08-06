@@ -50,9 +50,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
+			/**猫雷NyaRu */
+			NecoraNyaru: ['female','qun',3,['miaolu','benglei'],],
 			
-			/**三三 */
-			Mikawa: ['male','qun',4,['zhezhuan','setu'],['guoV']],
 			/**妮娅 */
 			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'],['guoV']],
 			/**茜科塞尔 */

@@ -22,6 +22,12 @@
 			cardMove:[],
 			custom:[],
 		}],
+		cardtag:{
+			yingbian_zhuzhan:[],
+			yingbian_kongchao:[],
+			yingbian_fujia:[],
+			yingbian_canqu:[],
+		},
 	};
 	var lib={
 		//独立功能
@@ -5853,7 +5859,7 @@
 						else{
 							map.connect_change_card.show();
 						}
-						if(config.connect_doudizhu_mode=='kaihei'||config.connect_doudizhu_mode=='huanle'||config.connect_doudizhu_mode=='online'){
+						if(config.connect_doudizhu_mode!='normal'){
 							map.connect_double_character.hide();
 						}
 						else{
@@ -5867,6 +5873,7 @@
 							normal:'休闲',
 							kaihei:'开黑',
 							huanle:'欢乐',
+							binglin:'兵临',
 							online:'智斗',
 						},
 						restart:true,
@@ -5897,7 +5904,7 @@
 							map.edit_character.hide();
 							map.reset_character.hide();
 						}
-						if(config.doudizhu_mode=='kaihei'||config.doudizhu_mode=='huanle'||config.doudizhu_mode=='online'){
+						if(config.doudizhu_mode!='normal'){
 							map.double_character.hide();
 							map.free_choose.hide();
 							map.change_identity.hide();
@@ -5919,7 +5926,7 @@
 							map.choice_fan.show();
 							map.revive.show();
 						}
-						if(config.double_character&&config.doudizhu_mode!='kaihei'&&config.doudizhu_mode!='huanle'){
+						if(config.double_character&&config.doudizhu_mode=='normal'){
 							map.double_hp.show();
 						}
 						else{
@@ -5933,6 +5940,7 @@
 							normal:'休闲',
 							kaihei:'开黑',
 							huanle:'欢乐',
+							binglin:'兵临',
 							online:'智斗',
 						},
 						restart:true,
@@ -21660,9 +21668,7 @@
 				showTimer:function(time){
 					if(!time&&lib.configOL){
 						time=parseInt(lib.configOL.choose_timeout)*1000;
-						var evt= _status.event.getParent('chooseCharacter');
-						if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
-							console.log(_status.event,evt)
+						if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
 							time *= 5;
 						}
 					}
@@ -30183,9 +30189,7 @@
 				}
 				else if(_status.connectMode){
 					num=lib.configOL.choose_timeout;
-					var evt= _status.event.getParent('chooseCharacter');
-					if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
-						console.log(_status.event,evt)
+					if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
 						num = parseInt(num)*5;
 					}
 				}
@@ -52043,8 +52047,9 @@
 				switch(config.doudizhu_mode){
 					case 'kaihei':return '开黑斗地主';
 					case 'huanle':return '欢乐斗地主';
+					case 'binglin':return '兵临城下';
 					case 'online':return '智斗三国';
-					default:return '休闲斗地主';
+					default:return '休闲'+(config.double_character?'双将':'')+'斗地主';
 				}
 			}
 			if(config.mode=='longlaoguan') return '龙牢关';
@@ -52854,7 +52859,6 @@
 			return suits;
 		},
 		color:function(card,player){
-			console.log(_status.event,_status.event.name)
 			if(_status.event.name=='judge'&&card.color)	return card.color;
 			if(get.itemtype(card)=='cards'){
 				var color=get.color(card[0],player)

@@ -57,14 +57,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**春猿火 */
 			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
 
-			/**猫雷NyaRu */
-			NecoraNyaru: ['female','qun',3,['miaolu','benglei'],],
 
 			/**琴吹梦 */
 			KotobukiYume: ['female','qun',4,['xuanquan','rusu'],],
 
 			/**谢拉 */
 			CierraRunis:['female','qun',3,['minghuahongxiao']],
+			/**三三 */
+			Mikawa: ['male','qun',4,['zhezhuan','setu'],['guoV']],
 
 			/**咩栗 */
 			Merry:['female','qun',4,['qinhuo','lvecao','yangxi'],['guoV']],
