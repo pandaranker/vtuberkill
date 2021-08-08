@@ -27114,7 +27114,7 @@
 				popup:false,
 				firstDo:true,
 				ruleSkill:true,
-				priority:666,
+				forceLoad:true,
 				filter:function(event,player){
 					if(event.card.yingbian) return false;
 					var bool=player.hasSkillTag('forceYingbian');
@@ -27156,7 +27156,7 @@
 						if(skillState){
 							player.applySkills(skillState);
 						}
-						var type=get.type(card);
+						var type=get.type2(card);
 						var str=get.translation(source);
 						if(targets&&targets.length){
 							str+='对';
@@ -27165,7 +27165,7 @@
 						str+='使用了';
 						var next=player.chooseCard({
 							filterCard:function(card){
-								return get.type(card)==type&&lib.filter.cardDiscardable.apply(this,arguments);
+								return get.type2(card)==type&&lib.filter.cardDiscardable.apply(this,arguments);
 							},
 							prompt:str+=(get.translation(card)+'，是否弃置一张'+get.translation(type)+'为其助战？'),
 							position:'h',
@@ -27189,12 +27189,12 @@
 						}
 					};
 					'step 2'
-					var type=get.type(card);
+					var type=get.type2(card);
 					var list=game.filterPlayer(function(current){
 						if(current==player) return false;
 						if(!current.countCards('h')) return false;
 						return _status.connectMode||current.countCards('h',function(cardx){
-							return get.type(cardx)==type;
+							return get.type2(cardx)==type;
 						})
 					});
 					event.list=list;

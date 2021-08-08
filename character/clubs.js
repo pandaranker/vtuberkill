@@ -125,7 +125,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filterCard:function(card){
 					for(var i=0;i<ui.selected.cards.length;i++){
-						if(get.type2(card)==get.type2(ui.selected.cards[0]))	return false;
+						if(get.type2(card)==get.type2(ui.selected.cards[i]))	return false;
 					}
 					return true;
 				},
@@ -167,18 +167,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.cardsDiscard(cards);
 					'step 1'
 					event.targ = event.targs.shift();
-					var suits = event.suits
-					var next=event.targ.discardPlayerCard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", event.targ, 'he');
-					next.set('selectButton',suits.length);
-					next.set('filterButton',function(card){
-						if(ui.selected.buttons.length){
-							console.log(ui.selected.buttons);
-							return get.suit(card) == suits[ui.selected.buttons.length];
+					var suits = event.suits;
+					var next=event.targ.chooseToDiscard("弃置与亮出牌花色和数量（"+get.translation(suits)+"）相同的牌", 'he');
+					next.set('selectCard',suits.length);
+					next.set('complexCard',true);
+					next.set('suits',suits);
+					next.set('filterCard',function(card){
+						var suits = _status.event.suits;
+						if(ui.selected.cards.length){
+							return get.suit(card) == suits[ui.selected.cards.length];
 						}
 						else{
 							return get.suit(card) == suits[0];
 						}
 					});
+					next.set('ai',function(card){
+						return 8-get.useful(card);
+					});
+					next.autochoose=function(){
+						return this.player.countCards('he')==0;
+					};
 					'step 2'
 					if(!result.cards||result.cards.length<_status.event.suits.length){
 						event.targ.damage('player',1);

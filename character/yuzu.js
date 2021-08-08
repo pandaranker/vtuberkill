@@ -9418,7 +9418,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var suits = [];
-					var es = event.player.getCards('e');
+					var es = trigger.player.getCards('e');
 					for(var i=0;i<es.length;i++){
 						suits.add(get.suit(es[i]));
 					}
@@ -9426,7 +9426,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return _status.event.suits.contains(get.suit(card));
 					}).set('suits',suits).set('ai',function(card){
 						var tri = _status.event.getTrigger();
-						if(tri.player.hasSha()&&tri.player.getUseValue('sha')&&get.attitude(player,tri.player)>0)	return 7-get.value(card);
+						if(tri.player.hasSha()&&tri.player.getUseValue('jiu')>0&&get.attitude(player,tri.player)>0)	return 7-get.value(card);
 						return 0;
 					}).set('logSkill',['yuanjiu',trigger.player]);
 					'step 1'
