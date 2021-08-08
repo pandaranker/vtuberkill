@@ -28,6 +28,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
 			/**泠鸢 */
 			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing'],['guoV']],
+
 			/**向晚 */
 			Ava: ['female','asoul',4,['yiqu','wanxian'],['guoV']],
 			/**贝拉 */
@@ -64,12 +65,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
 			
+			/**犬山 */
+			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
+			/**Mishiro */
+			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
+			
 			/**机萪 */
 			jike: ['female','qun',3,['qianjiwanbian'],['guoV']],
 		},
 		characterSort:{
 			vtuber:{
-				asoul:['Ava','Bella','Carol','Diana','EQueen'],
+				asoul2:['Ava','Bella','Carol','Diana','EQueen'],
 				psp2:['Pudding','AyanaNana','AkiRinco','KurenaiAkane','Lovely'],
 			}
 		},
@@ -219,20 +225,31 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 7'
 					if(trigger.targets.length>1){
 						trigger.num = trigger.targets.length;
-						if(player.hasUseTarget('sha')&&player.getCardUsable({name:'sha'}))
-							var next = player.chooseControl(['jiu','sha','tao','qi','雷杀','火杀','冰杀','cancel2']).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
-						else
-							var next = player.chooseControl(['jiu','tao','qi','cancel2']).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
+						var list = ['jiu','tao'];
+						if(player.hasUseTarget('sha',false)){
+							list.push('sha','雷杀','火杀','冰杀');
+						}
+						if(get.inpile('basic',function(card){
+							return get.name(card)=='qi';
+						}).length){
+							list.push('qi')
+						};
+						list.push('cancel2');
+						var next = player.chooseControl(list).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
 						next.set('ai',function(){
 							var player = _status.event.player;
-							if(player.hp==1||(player.hp==2&&!player.hasShan())||player.needsToDiscard()){
+							if(player.hp==1||(player.isDamaged()&&(!player.hasShan()||player.needsToDiscard()))){
 								return 'tao';
 							}
-							if(player.getUseValue({name:'sha'},false)){
+							if(list.contains('sha')&&player.getUseValue({name:'sha'},false)>0){
 								return ['雷杀','火杀'].randomGet();
 							}
-							if(player.isDamaged()&&!player.needsToDiscard()) return 'qi';
-						})
+							if(list.contains('jiu')&&player.getUseValue({name:'jiu'})>0&&player.hasUseTarget('sha')){
+								return 'jiu';
+							}
+							if(list.contains('qi')&&player.isDamaged()&&!player.needsToDiscard()) return 'qi';
+							return list.randomGet();
+						});
 					}
 					else{
 						event.goto(10);
@@ -263,7 +280,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var player = _status.event.player;
 							var card = _status.event.card;
 							return	get.effect(target,card,player,player);
-						}).set('card',trigger.usecard)
+						}).set('card',trigger.usecard);
 					}
 					else{
 					event.goto(10);
@@ -1366,6 +1383,84 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//兰音
+			yueyao:{
+				init:function(player,skill){
+					player.storage[skill]=0;
+				},
+				trigger:{
+					global:'gameDrawAfter',
+					player:['enterGame','phaseBegin'],
+				},
+				filter:function(event,player){
+					return true;
+				},
+				forced:true,
+				intro:{content:'月谣：#'},
+				content:function(){
+					player.storage.yueyao = player.countCards('h');
+					player.markSkill('yueyao');
+				},
+				mod:{
+					targetEnabled:function(card,player,target){
+						if(target.hasSkill('yueyao')&&target.storage.yueyao==player.countCards('h'))	return false;
+					},
+				},
+				group:'yueyao_addDam',
+				// global:'yueyao_useStop',
+				subSkill:{
+					addDam:{
+						trigger:{source:'damageBegin'},
+						forced:true,
+						filter:function(event,player){
+							return player.storage.yueyao==player.countCards('h');
+						},
+						content:function(){
+							trigger.num++;
+						}
+					},
+					useStop:{
+						mod:{
+							playerEnabled:function(card,player,target){
+								var players = game.filterPlayer(function(cur){
+									return cur!=player&&cur.hasSkill('yueyao');
+								})
+								for(var i of players){
+									if(target==player&&i.storage.yueyao==player.countCards('h'))	return false;
+								}
+							},
+						}
+					}
+				}
+			},
+			kongling:{
+				trigger:{player:'damageAfter'},
+				filter:function(event,player){
+					return event.num>0;
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					player.chooseTarget(get.prompt2('kongling'),function(card,player,target){
+						return player.storage.yueyao!=target.countCards('h');
+					}).set('ai',function(target){
+						var player = _status.event.player;
+						if(player.storage.yueyao<target.countCards('h'))	return 1-get.attitude(player,target)*(target.countCards('h')-player.storage.yueyao);
+						return get.attitude(player,target);
+					});
+					'step 1'
+					if(result.bool&&result.targets){
+						player.logSkill('kongling',result.targets);
+						var target = result.targets[0];
+						if(player.storage.yueyao<target.countCards('h'))	target.chooseToDiscard(true,target.countCards('h')-player.storage.yueyao);
+						else	target.gain(get.cards(player.storage.yueyao-target.countCards('h')),'draw');
+					}
+				},
+				ai:{
+					maixie:true,
+					combo:'yueyao'
+				}
+			},
 			jiajiupaidui:{
 				audio:3,
 				enable:'chooseToUse',
@@ -2014,7 +2109,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张装备牌。',
 			nveyu: '甜言虐语',
 			nveyu_info: '锁定技 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
-			nveyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			nveyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手 辅助</span>',
 		
 			Siro: '电脑少女小白',
 			zhongxinghezou: '众星合奏',
@@ -2027,6 +2122,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Bacharu: '巴恰鲁',
 			zuodun: '我身作盾',
 			zuodun_info: '每回合限一次，其他角色受到伤害时，你可将此伤害转移给你，然后你与伤害来源各摸一张牌并获得『众星合奏』直到你的回合结束。',
+			zuodun_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：辅助</span>',
 			baidao: '白道游星',
 			baidao_info: '出牌阶段限一次，你可以展示所有手牌，每有一张点数大于J便回复1点体力；每有一张点数小于3便令你本回合的『众星合奏』增加1次数上限。',
 
@@ -2038,6 +2134,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			renleiguancha:'人类观察',
 			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',
 			renleiguancha_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：额外摸牌</span>',
+			
+			Reine: '兰音',
+			yueyao: '月谣',
+			yueyao_info: '锁定技 游戏或回合开始时，你记录当前的手牌数为X。你手牌数为X时，造成的伤害+1；其他角色的手牌数为X时，其不能对你使用牌。',
+			yueyao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
+			kongling: '空灵',
+			kongling_info: '你受到伤害后，可以令一名角色将手牌调整至X。',
+			kongling_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 辅助</span>',
 			
 			KaguyaLuna:'辉夜月',
 			KaguyaLuna_info:'辉夜月',

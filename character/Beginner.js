@@ -6079,12 +6079,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tianqing_info: '一名角色受到伤害时，若本回合上一次伤害没有被防止，你可以防止本次伤害。',
 			mark_tianqing: '天晴烂漫',
 			mark_tianqing_info: '轮次技 一名角色受到伤害时，若本回合已有角色受过伤，你可以防止本次伤害。',
+			mark_tianqing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：减伤</span>',
 			kuiquan: '葵拳连打',
 			kuiquan_info: '你可以将一张牌当【火攻】使用，此牌类型不得为本回合你使用过的类型。当你在【火攻】中弃置了【杀】后，获得目标的展示牌。',
 			
 			re_AibaUiha: '新·相羽初叶',
 			kangding: '扛鼎膂力',
 			kangding_info: '你可以弃置一张武器牌令你即将造成的伤害+1；你可以弃置一张防具牌令你即将受到的伤害-1。',
+			kangding_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：减伤</span>',
 			longshe: '龙蛇笔走',
 			longshe_info: '出牌阶段限X次，你可以弃置一张基本牌并展示牌堆顶牌，若为基本牌，弃置之并摸一张牌。若为非基本牌，你可立即使用之。（X为你没有牌的装备栏数）',
 

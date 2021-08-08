@@ -2,7 +2,7 @@
 game.import('card',function(lib,game,ui,get,ai,_status){
  return {
 		name:'longlaoguan',
-		connect:true,
+		// connect:true,
 		card:{
 			dulun:{
 				audio:true,

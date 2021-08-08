@@ -6,6 +6,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:"sololive",
 		connect:true,
 		character:{
+			/**妮娅 */
+			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'],['guoV']],
+			/**茜科塞尔 */
+			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai'],['guoV']],
+			/*黑川*/
+			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['guoV']],//, 'mingyunniezao'
+			/**雪团 */
+			YukiTuan: ['female','qun',4,['chentu','sishu'],['guoV']],
+
 			/**旧艾琳 */
 			old_Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
 			/**gz莉泽 */
@@ -22,6 +31,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_YukihanaLamy:['female','holo',4,['hanling']],
 			/**语部纺 */
 			gz_KataribeTsumugu:['female','nijisanji',3,['lingli','chengfo']],
+		},
+		characterSort:{
+			sololive:{
+				KurokawaPresents:['Qiankesaier','heichuan'],
+				rewriteGuo:['gz_LizeHelesta','gz_AngeKatrina','gz_Ava','gz_InabaHaneru','gz_xinke','gz_YukihanaLamy','gz_KataribeTsumugu'],
+			},
 		},
 		skill:{
 
@@ -1051,6 +1066,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		dynamicTranslate:{
 		},
 		translate:{
+			KurokawaPresents: 'Kurokawa Presents',
+			rewriteGuo:'国战共通',
 
 			pss:'手势',
 			pss_paper:'布',

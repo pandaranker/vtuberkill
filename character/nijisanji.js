@@ -3134,6 +3134,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
 			jiaku_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点</span>',
 
+			LizeHelesta: '莉泽·赫露艾斯塔',
+			LizeHelesta_ab: '莉泽',
+			shencha: '权力审查',
+			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张。',
+			helesta: '赫露圣剑',
+			helesta_info: '你受到伤害时，可以弃置自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】并摸一张牌。',
+			helesta_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：减伤</span>',
+
 
 			AibaUiha: '相羽初叶',
 			KataribeTsumugu: '语部纺',

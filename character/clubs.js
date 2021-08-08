@@ -43,22 +43,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
-			/**犬山 */
-			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
-			/**Mishiro */
-			ShirayukiMishiro:['female','nori',3,['tianyi','nveyu']],
-			
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
 			/**猫雷NyaRu */
 			NecoraNyaru: ['female','qun',3,['miaolu','benglei'],],
 			
-			/**妮娅 */
-			His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'],['guoV']],
-			/**茜科塞尔 */
-			Qiankesaier:['male','qun',4,['shuangshoujiaoying','anyingxuemai'],['guoV']],
-			/*黑川*/
-			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['forbidai','guoV']],//, 'mingyunniezao'
 			
 			/**进击的冰糖 */
 			bingtang: ['female', 'xuyan', 4, ['xiou'],['guoV']],
@@ -88,8 +77,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		characterSort:{
 			clubs:{
-				ParyiPro:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
-				KurokawaPresents:['Qiankesaier','heichuan'],
+				paryi2:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
+				VirtuaReal2:['Azusa','Shaun','Miqiutu'],
+				vshojo2:['Nyanners','Veibae','Ironmouse'],
 			}
 		},
 		characterIntro:{
@@ -199,7 +189,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//艾琳
 			daimeng:{
-				audio:2,
+				audio:3,
 				enable:'phaseUse',
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[1,2,3,4];
@@ -545,6 +535,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				check:function(event,player){
 					return event.target == player||!event.target.hasSkillTag('notrick');
+				},
+				prompt2:function(event,player){
+					return '你可将'+(event.player==player?'你':get.translation(event.player))+'使用的'+get.translation(event.card)+'改为【决斗】';
 				},
 				content:function(){
 					'step 0'
@@ -3182,9 +3175,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			
-			ParyiPro: '帕里坡',
-			KurokawaPresents: 'Kurokawa Presents',
-
+			Miqiutu: '蜜球兔',
+			zhazong: '寻嬲',
+			zhazong_info: '出牌阶段结束时，若你于此阶段没有使用过基本牌/装备牌/锦囊牌，你可以弃置一名角色手牌区/装备区/判定区各一张牌。',
+			zhazong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
+			mengnan: '梦喃',
+			mengnan_info: '锁定技 当一张牌进入/离开你的判定区，你需要摸/弃一张牌，若此时不在判定阶段，张数+1。',
 
 			Yomemi:'Yomemi',
 			Yomemi_ab:'ヨメミ',
@@ -3197,6 +3193,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Eilene: '艾琳',
 			daimeng: '贷梦',
 			daimeng_info: '每项限一次。出牌阶段，你可以摸一张/两张/三张/四张牌使手牌数为全场唯一最多，然后回复1点体力/横置/翻面/立即结束此阶段。',
+			daimeng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 			changsheng: '偿生',
 			changsheng_info: '锁定技 你首次进入濒死状态时，弃置区域内所有牌，回复体力至3，重置『贷梦』，从游戏中除外直到你的下个回合开始。',
 
@@ -3257,12 +3254,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			chenzhu_info: '有武器牌被使用时，你将牌堆顶牌置于你的武将牌上。装备武器的角色的回合开始时，你可获得武将牌上的一张牌，改变其武器牌名直到回合结束。',
 			yutuo: '玉托',
 			yutuo_info: '每轮限一次，你可以令你受到的伤害-1，然后若你的<防具栏>没有牌，你可废除<>并以一个未废除的装备栏修改<>，重置此技能。', 
+			yutuo_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：减伤</span>',
 			
 			bingtang: '进击的冰糖',
 			bingtang_ab: '冰糖',
 			xiou: '戏偶',
 			xiou_info: '准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
 			xiou_gainHand_info: '准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。',
+			xiou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：辅助</span>',
 
 			zhangjinghua: '张京华',
 			xiemen: '斜门',
@@ -3284,9 +3283,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
-			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
+			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 辅助</span>',
 
-			
 			ShizukuLulu: '雫るる',
 			duixian: '稽杀',
 			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
