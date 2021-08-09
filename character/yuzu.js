@@ -52,10 +52,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**奈罗花 */
 			Naraka: ['female','nijisanji',3,['echi','mudu'],],
 
-			/**春猿火 */
-			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
-
-
 			/**琴吹梦 */
 			KotobukiYume: ['female','qun',4,['xuanquan','rusu'],],
 
@@ -284,7 +280,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								'step 2'
 								if(result.bool){
 									player.logSkill('sishu',result.targets);
-									player.give(event.cards,result.targets[0],'giveAuto');
+									player.give(event.cards,result.targets[0],true);
 								}
 							},
 						}
@@ -9315,7 +9311,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					if(result.bool&&result.cards){
 						if(get.type(result.cards[0])=='equip')	event.drawNum = 'equip';
-						player.give(result.cards,event.target,'giveAuto');
+						player.give(result.cards,event.target,true);
 					}else	event.finish();
 					'step 2'
 					player.chooseTarget('『玄荫』：令你或其摸'+get.cnNumber(event.drawNum=='equip'?player.countCards('e')+1:1)+'张牌',function(card,player,target){
@@ -9417,22 +9413,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					event.target = trigger.player;
 					var suits = [];
 					var es = trigger.player.getCards('e');
 					for(var i=0;i<es.length;i++){
 						suits.add(get.suit(es[i]));
 					}
-					player.chooseToDiscard('he',get.prompt2('yuanjiu'),function(card){
+					player.chooseCard('he',get.prompt2('yuanjiu'),function(card){
 						return _status.event.suits.contains(get.suit(card));
 					}).set('suits',suits).set('ai',function(card){
-						var tri = _status.event.getTrigger();
-						if(tri.player.hasSha()&&tri.player.getUseValue('jiu')>0&&get.attitude(player,tri.player)>0)	return 7-get.value(card);
+						var target = _status.event.getParent().target;
+						var player = _status.event.player;
+						if(target.hasSha()&&target.getUseValue('jiu')>0&&get.attitude(player,target)>0)	return 11-get.value(card);
 						return 0;
-					}).set('logSkill',['yuanjiu',trigger.player]);
+					}).set('logSkill',['yuanjiu',event.target]);
 					'step 1'
 					if(result.bool){
-						player.useCard({name:'jiu'},trigger.player);
-					}
+						player.give(result.cards,event.target,true);
+					}else event.finish();
+					'step 2'
+					player.useCard({name:'jiu'},event.target);
 				}
 			},
 			//ccm
@@ -11480,9 +11480,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delayx();
 					'step 1'
 					player.chooseCardButton(event.cards,'是否使用其中的一张？').set('filterButton',function(button){
-						return player.hasUseTarget(button.link);
+						return _status.event.player.hasUseTarget(button.link);
 					}).set('ai',function(button){
-						return player.getUseValue(button.link);
+						return _status.event.player.getUseValue(button.link);
 					});
 					'step 2'
 					if(result.bool){
@@ -12291,7 +12291,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quzhuan: '曲转',
 			quzhuan_info: '每回合限一次，其他角色在你的回合内使用牌时，你可以在其结算后获得之。',
 			yuanjiu: '援咎',
-			yuanjiu_info: '一名角色的出牌阶段开始时，你可以弃置一张与其装备区内某张牌花色相同的牌，视为对其使用了一张【酒】。',
+			yuanjiu_info: '一名角色的出牌阶段开始时，你可以交给其一张与装备区内某张牌花色相同的牌，视为对其使用了一张【酒】。',
 
 			HinataCocomi: '阳向心美',
 			qijian: '起鉴',

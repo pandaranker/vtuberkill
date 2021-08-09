@@ -10615,7 +10615,7 @@
 			kagura2:'神楽组',
 			nanashi2:'774inc',
 			psp2:'psplive',
-			asoul2:'A_SOUL',
+			asoul2:'A-SOUL',
 			nori2:'Noripro',
 			vwp2:'神椿市',
 			vshojo2:'Vshojo',

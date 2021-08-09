@@ -57,6 +57,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rim: ['female','vwp',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
 			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
+			/**春猿火 */
+			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
 			/**可不 */
 			Kafu:['female','vwp',3,['nisheng','jingyan']],
 			
@@ -2106,7 +2108,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			ShirayukiMishiro: '白雪深白',
 			tianyi: '梦幻天衣',
-			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张装备牌。',
+			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张牌。',
 			nveyu: '甜言虐语',
 			nveyu_info: '锁定技 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
 			nveyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手 辅助</span>',

@@ -3697,7 +3697,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							if (result.bool) {
 								trigger.player.logSkill('re_jiumao',player);
-								trigger.player.give(result.cards, player, false);
+								trigger.player.give(result.cards, player);
 							}
 							else event.finish();
 							'step 2'
@@ -5360,7 +5360,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
-					return !player.getStorage('kud_qiaoshou_equip').length&&player.countCards('h')>0;
+					return player.countCards('h')>0;
 				},
 				filterTarget:function(card,player,target){
 					return target!=player&&target.countCards('e',function(card){
