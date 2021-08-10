@@ -1090,6 +1090,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			tiantang:{
+				audio:2,
 				priority:987,
 				global:'paryi',
 				trigger:{
@@ -1177,7 +1178,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
 						game.delayx();
-						player.logSkill('tiantang', event.target);
+						player.logSkill('tiantang', event.target,true,true,false);
 						switch(result.links[0][0]){
 							case '观': {	
 								event.statClear = true;
@@ -1194,7 +1195,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 								}
 								else{
-									console.log(event.target);
 									var next=player.discardPlayerCard('『天扉』：弃置一张声明花色的牌', event.target, 'he').set('visible',true).set('complexSelect',true);
 									next.set('filterButton',function(button){
 										var player = _status.event.player;
@@ -1285,6 +1285,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			haoren:{
+				audio:true,
 				skillAnimation:true,
 				animationStr:'好人一生',
 				unique:true,
@@ -12583,7 +12584,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			YaotomeNoe: '八乙女のえ',
 			huiyuan: '回援',
-			huiyuan_info: '每回合限一次，当一名其他角色使用基本牌时，若其手牌数多于你，则你可以与其各摸一张牌。',
+			huiyuan_info: '每回合限一次，当其他角色使用基本牌时，若其手牌数多于你，则你可以与其各摸一张牌。',
 			suoshi: '琐事',
 			suoshi_info: '当你受到伤害时，你可以将一张手牌交给一名全场手牌数最多的角色；若你手牌数不为全场最少，你受到的伤害+1。',
 

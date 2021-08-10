@@ -21453,6 +21453,9 @@
 						if(this.ws&&!this.ws.closed){
 							var player=this;
 							var time=parseInt(lib.configOL.choose_timeout)*1000;
+							if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
+								time *= 5;
+							}
 							if(_status.event.getParent().skillHidden){
 								for(var i=0;i<game.players.length;i++){
 									game.players[i].showTimer(time);
@@ -21669,9 +21672,9 @@
 					if(!time&&lib.configOL){
 						time=parseInt(lib.configOL.choose_timeout)*1000;
 					}
-					if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
-						time *= 5;
-					}
+					// if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
+					// 	time *= 5;
+					// }
 					if(_status.connectMode&&!game.online){
 						game.broadcast(function(player,time){
 							player.showTimer(time);
@@ -30192,12 +30195,6 @@
 					num=lib.configOL.choose_timeout;
 					if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
 						num = parseInt(num)*5;
-					}
-					else{
-						var evt= _status.event.getParent('chooseCharacter');
-						if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
-							num = parseInt(num)*5;
-						}
 					}
 				}
 				else{
