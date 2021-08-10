@@ -30193,6 +30193,12 @@
 					if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
 						num = parseInt(num)*5;
 					}
+					else{
+						var evt= _status.event.getParent('chooseCharacter');
+						if(evt&&evt.name=='chooseCharacter'&&lib.configOL.chooseCharacter_timeout){
+							num = parseInt(num)*5;
+						}
+					}
 				}
 				else{
 					num=get.config('choose_timeout');
@@ -52604,6 +52610,7 @@
 				if(str[i]=='`'){
 					nobreak=!nobreak;continue;
 				}
+				if(str.slice(i,i+4)=='<BR>'){	i+=3;continue;}
 				str2+=str[i];
 				if(nobreak) continue;
 				if(sp&&str[i]=='S'&&str[i+1]=='P') continue;
