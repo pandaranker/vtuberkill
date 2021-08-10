@@ -21668,9 +21668,9 @@
 				showTimer:function(time){
 					if(!time&&lib.configOL){
 						time=parseInt(lib.configOL.choose_timeout)*1000;
-						if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
-							time *= 5;
-						}
+					}
+					if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
+						time *= 5;
 					}
 					if(_status.connectMode&&!game.online){
 						game.broadcast(function(player,time){
@@ -54059,13 +54059,13 @@
 					td.innerHTML='距离';
 					tr.appendChild(td);
 					td=document.createElement('td');
-					td.innerHTML='手牌';
+					td.innerHTML=game.chess?'道具':'手牌';
 					tr.appendChild(td);
 					td=document.createElement('td');
 					td.innerHTML='行动';
 					tr.appendChild(td);
 					td=document.createElement('td');
-					td.innerHTML='伤害';
+					td.innerHTML=game.chess?'职业':'伤害';
 					tr.appendChild(td);
 
 					tr=document.createElement('tr');
@@ -54092,14 +54092,18 @@
 					td.innerHTML=node.phaseNumber;
 					tr.appendChild(td);
 					td=document.createElement('td');
-
-					(function(){
-						num=0;
-						for(var j=0;j<node.stat.length;j++){
-							if(typeof node.stat[j].damage=='number') num+=node.stat[j].damage;
-						}
-						td.innerHTML=num;
-					}());
+					if(game.chess){
+						if(node.storage.curClass)	td.innerHTML = get.translation(node.storage.curClass);
+						else	td.innerHTML='-';
+					}else{
+						(function(){
+							num=0;
+							for(var j=0;j<node.stat.length;j++){
+								if(typeof node.stat[j].damage=='number') num+=node.stat[j].damage;
+							}
+							td.innerHTML=num;
+						}());
+					}
 					tr.appendChild(td);
 					table.style.width='calc(100% - 20px)';
 					table.style.marginLeft='10px';
