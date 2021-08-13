@@ -1869,31 +1869,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:"phaseUse",
 				usable:1,
 				filter:function(event,player){
-					if(!game.hasPlayer(function(current){
-						return current.countCards('e')>0;
-					})) return false;
-					return true
+					return player.canMoveCard(null,true);
 				},
 				content:function(){
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					//console.log(lib.skill.re_dianmingguzhen.canMoveCard(player));
-					var next=player.chooseTarget(2,function(card,player,target){
-						if(ui.selected.targets.length){
-							var from=ui.selected.targets[0];
-							if(target.isMin()) return false;
-							var es=from.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(target.isEmpty(get.subtype(es[i]))) return true;
-							}
-							return false;
-						}
-						else{
-							return target.countCards('e')>0;
-						}
-					});
-					next.set('ai',function(target){
+					player.moveCard(true).set('nojudge',true).set('ai',function(target){
 						var player=_status.event.player;
 						var att=get.attitude(player,target);
 						var sgnatt=get.sgn(att);
@@ -1903,7 +1885,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return get.value(card,target)<0&&game.hasPlayer(function(current){
 										return current!=player&&current!=target&&get.attitude(player,current)<0&&current.isEmpty(get.subtype(card))
 									});
-								})>0) return 9-get.value(card);
+								})>0) return 9;
 							}
 							else{
 								if(game.hasPlayer(function(current){
@@ -1914,7 +1896,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										}
 									}
 								})){
-									return -att*get.value(card);
+									return -att;
 								}
 							}
 							return 0;
@@ -1935,79 +1917,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return -att*get.attitude(player,ui.selected.targets[0]);
 					});
-					next.set('multitarget',true);
-					next.set('targetprompt',['被移走','移动目标']);
-					next.set('prompt',event.prompt||'移动场上的一张装备牌');
-					next.set('forced',true);
 					'step 2'
-					if(result.bool){
-						player.line2(result.targets,'green');
-						event.targets=result.targets;
-					}
-					else{
-						event.finish();
-					}
-					'step 3'
-					game.delay();
-					'step 4'
-					if(targets.length==2){
-						player.choosePlayerCard('e',true,function(button){
-							var player=_status.event.player;
-							var targets0=_status.event.targets0;
-							var targets1=_status.event.targets1;
-							if(get.attitude(player,targets0)>get.attitude(player,targets1)){
-								if(get.value(button.link,targets0)<0) return 10;
-								return 0;
-							}
-							else{
-								return get.equipValue(button.link);
-							}
-						},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
-							var targets1=_status.event.targets1;
-							return targets1.isEmpty(get.subtype(button.link));
-						});
-					}
-					else{
-						event.finish();
-					}
-					'step 5'
-					if(result.bool&&result.links.length){
-						var link=result.links[0];
-						event.targets[1].equip(link);
-						event.targets[0].$give(link,event.targets[1]);
-						event.equiptype=get.subtype(link);
-						game.delay();
-						event.result={bool:true};
-					}
-					'step 6'
-					if(event.targets[0]!=player){
-						event.finish();
-					}
-					else{
+					if(result.targets[0]==player){
 						player.chooseUseTarget({name:'sha',nature:'thunder'},'是否视为使用一张雷【杀】？',false);
 					}
-				},
-				canMoveCard:function(player,withatt){
-					return game.hasPlayer(function(current){
-						if(player==current) return false;
-						var att=get.sgn(get.attitude(player,current));
-						if(!withatt||att!=0){
-							var es=current.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(game.hasPlayer(function(current2){
-									if(player==current2) return false;
-									if(withatt){
-										if(get.sgn(get.value(es[i],current))!=-att) return false;
-										var att2=get.sgn(get.attitude(player,current2));
-										if(att2!=get.sgn(get.value(es[i],current2))) return false;
-									}
-									return current!=current2&&!current2.isMin()&&current2.isEmpty(get.subtype(es[i]));
-								})){
-									return true;
-								}
-							}
-						}
-					});
 				},
 				ai:{
 					order:7,
@@ -4407,7 +4320,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}).length>0;
 						},
 						content:function(){
-							var cards = trigger.cards.slice(0).filter(function(card){
+							var cards = trigger.cards.filter(function(card){
 								return get.position(card,true)=='d'&&get.suit(card)!='club'&&get.type(card)=='basic';
 							});
 							player.storage.yingshi_cardsDis = [cards.pop()];
@@ -5950,7 +5863,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yaozhan: '邀战',
 			yaozhan_info: '你可以跳过摸牌阶段/出牌阶段，视为使用一张【决斗】。',
 			chongxin: '崇新',
-			chongxin_info: '场上的判定牌生效前，你可以用相同花色的牌替换之，然后你可以将获得的牌置于武将牌上。其他角色不能使用与之花色相同的牌响应你使用的【决斗】。',
+			chongxin_info: '当判定牌生效前，你可以用相同花色的牌替换之，然后你可以将获得的牌置于武将牌上。其他角色不能使用与之花色相同的牌响应你使用的【决斗】。',
 
 			re_NijikawaRaki: '新·虹河ラキ',
 			yayun: '押运',
@@ -6139,7 +6052,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huangyou_info: '出牌阶段，你可以弃置两张红色牌摸三张牌或回复1点体力，然后判定一次，若不为♥，本回合不能再发动此技能。',
 			huangyou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：赌狗</span>',
 			qidao: '祈祷',
-			qidao_info: '当一张判定牌生效前，你可以弃一张牌重新判定。',
+			qidao_info: '当判定牌生效前，你可以弃一张牌重新判定。',
 
 			re_NatsuiroMatsuri:'新·夏色祭',
 			re_huxi1:'恋上',

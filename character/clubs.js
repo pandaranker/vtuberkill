@@ -621,130 +621,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					trigger.getParent().targets.splice(trigger.getParent().targets.indexOf(trigger.player)+1);
 				},
 			},
-			//Kaf
-			liuhua:{
-				init:function(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
-				mark:true,
-				intro:{
-					name:'化羽',
-					content:'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.gain(storage,'giveAuto');
-							storage.length=0;
-						}
-					},
-				},
-				trigger:{global:'phaseAfter'},
-				lastDo: true,
-				filter:function(event,player){
-					return player.countCards('h')&&game.countPlayer2(function(cur){
-						return cur.getHistory('damage').length;
-					});
-				},
-				check:function(event,player){
-					return player.countCards('h')<=2||!player.storage.liuhua||player.storage.liuhua.length<=1;
-				},
-				content:function(){
-					'step 0'
-					player.showHandcards();
-					event.cards = player.getCards('h');
-			/*		if(player.storage.liuhua.length){
-						for(var i = 0;i<player.storage.liuhua.length;i++){
-							for(var j = 0;j<event.cards.length;j++){
-								if(get.suit(player.storage.liuhua[i])==get.suit(event.cards[j])){
-									event.finish();
-								}
-							}
-						}
-					}*/
-					'step 1'
-					player.lose(event.cards,ui.special,'toStorage');
-					player.$give(event.cards,player,false);
-					player.markAuto('liuhua',event.cards);
-					game.log(player,'将',event.cards,'置于武将牌上');
-					player.insertPhase();
-				},
-				group:'liuhua_regain',
-				subSkill:{
-					regain:{
-						trigger:{player:['phaseBefore','turnOverBefore']},
-						firstDo:true,
-						direct:true,
-						filter:function(event,player){
-							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&(!event.getParent()._trigger||event.getParent()._trigger.skill!='liuhua')))	return false;
-							if(player.storage.liuhua.length<3)	return false;
-							var list = [];
-							player.storage.liuhua.forEach(function(hua){
-								list.add(get.suit(hua))
-							});
-							return list.length>=3;
-						},
-						content:function(){
-							'step 0'
-							var list = [];
-							player.storage.liuhua.forEach(function(hua){
-								list.add(get.suit(hua))
-							});
-							var next = player.chooseCardButton(list.length,'###'+get.translation('liuhua')+'###获得武将牌上的不同花色牌各一张',player.storage.liuhua,true);
-							next.set('filterButton',function(button){
-								var suit=get.suit(button.link);
-								for(var i=0;i<ui.selected.buttons.length;i++){
-									if(get.suit(ui.selected.buttons[i].link)==suit) return false;
-								}
-								return true;
-							});
-							next.set('ai',function(button){
-								return get.value(button.link);
-							});
-							'step 1'
-							if(result.bool){
-								game.delay(0.5);
-								player.logSkill('liuhua');
-								player.unmarkAuto('liuhua',result.links);
-								player.gain(result.links,player,'gain2')
-								if(trigger.name=='turnOver')	trigger.cancel(true);
-							}else	event.finish();
-							'step 2'
-							player.turnOver();
-						},
-					},
-				}
-			},
-			yishi:{
-				trigger:{player:'phaseBefore'},
-				firstDo:true,
-				forced:true,
-				filter:function(event,player){
-					return event.skill;
-				},
-				content:function(){
-					'step 0'
-					player.storage.yishi_use = _status.currentPhase;
-					'step 1'
-					player.addTempSkill('yishi_use');
-				},
-				subSkill:{
-					use:{
-						group:'undist',
-						mark:'character',
-						intro:{
-							content:function(storage,player){
-								if(storage==player)	return '使用牌只能指定自己为目标';
-								return '使用牌只能指定自己或$为目标';
-							}
-						},
-						onremove:true,
-						mod:{
-							playerEnabled:function(card,player,target){
-								if(player!=target&&player.storage.yishi_use!=target) return false;
-							}
-						}
-					}
-				}
-			},
 
 			caibu: {
 				init: function(player) {
@@ -3295,7 +3171,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			ShizukuLulu: '雫るる',
 			duixian: '稽杀',
-			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可将其改为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
+			duixian_info: '每回合限一次，你对其他角色使用【杀】或其他角色使用【杀】指定你为目标时，你可改之为【决斗】。若其因此受到伤害，你可弃置其一张牌，若你因此受到伤害，你摸两张牌。',
 			duixian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀 卖血 易上手</span>',
 			gutai: '守峡',
 			gutai_info: '当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。',

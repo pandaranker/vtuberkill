@@ -12,6 +12,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
+			/**花谱 */
+			Kaf:['female','vwp',3,['liuhua','yishi','shiji'],['zhu']],
+
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**星宫汐 */
@@ -863,7 +866,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						});
 					}
 					else{
-						event.cards = trigger.cards.slice(0).filter(function(card){
+						event.cards = trigger.cards.filter(function(card){
 							return player.getHistory('lose',function(evt){
 								if(evt.getParent()!=trigger) return false;
 								if(evt.gaintag_map[card.cardid]&&evt.gaintag_map[card.cardid].contains('ming_')) return true;
@@ -1803,6 +1806,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.player!=player&&get.attitude(player,event.player)<0&&event.player.inRange(player))	return true;
 					return event.player==player&&game.roundNumber>1&&player.hasUseTarget('sha')&&!player.needsToDiscard();
 				},
+				popup:false,
+				nopop:true,
 				content:function(){
 					'step 0'
 					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
@@ -1976,34 +1981,41 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return _status.currentPhase!=player&&_status.currentPhase.getHistory('sourceDamage').length&&player.hp<=player.storage.xhhuanshi.length;
 				},
 				check:function(event,player){
-					return player.isDamaged()||get.attitude(player,event.player);
+					return player.isDamaged()||get.attitude(player,event.player)<0;
+				},
+				logTarget:function(event,player){
+					return _status.currentPhase;
 				},
 				content:function(){
 					'step 0'
-					player.chooseCardButton('###『系绊』###可以弃置'+get.cnNumber(player.hp)+'张“士” 发动技能',player.hp,player.storage.xhhuanshi);
+					event.target = trigger.player;
+					player.chooseCardButton('###『系绊』###可以弃置'+get.cnNumber(player.hp)+'张“士” 对'+get.translation(event.target)+'发动技能',player.hp,player.storage.xhhuanshi);
 					'step 1'
 					if(result.bool){
-						event.cards = result.links;
+						event.cards = result.links.slice(0);
 						player.unmarkAuto('xhhuanshi',event.cards);
 						player.$throw(event.cards,1000);
-						var next = player.chooseTarget(get.prompt2('xiban'),function(card,player,tar){
-							if(tar==_status.event.source||tar==_status.event.player)	return true;
-						},true);
-						next.set('source',trigger.player);
-						next.set('num',event.cards.length)
-						next.set('ai',function(target){
-							if(target==_status.event.player&&_status.event.player.hp==_status.event.player.maxHp)	return -10;
-							if(target==_status.event.source&&_status.event.source.countCards('he')>=2&&_status.event.num>=2)	return 10-get.attitude(_status.event.player,target);
-							return (target==_status.event.player)?8:0;
-						});
+						game.cardsGotoOrdering(event.cards);
 					}
+					else	event.finish();
 					'step 2'
-					if(result.bool){
-						if(result.targets[0]!=player){
-							trigger.player.chooseToDiscard(true,'he',event.cards.length);
-						}else{
-							player.recover();
-						}
+					var next = event.target.chooseToDiscard('he',event.cards.length);
+					if(player.isHealthy()){	
+						next.set('forced',true);
+					}
+					else{
+						next.set('prompt2','取消则令'+get.translation(player)+'回复一点体力')
+					}
+					next.set('source',player);
+					next.set('ai',function(card){
+						var source = _status.event.source;
+						var player = _status.event.player;
+						if(source.isDamaged()&&get.recoverEffect(source,player,player)>=0)	return -1;
+						return	7-get.value(card);
+					});
+					'step 3'
+					if(!result.bool){
+						player.recover(event.target);
 					}
 				},
 				ai:{
@@ -3986,11 +3998,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				direct:true,
 				filter:function (event,player){
-					if(event.player.hp==player.hp)	return false;
+					if(event.player==player)	return false;
 					var evt=event.getParent('phaseDraw');
 					if(!evt||evt.name!='phaseDraw'){
 						return event.cards&&event.cards.length>0&&event.player.hp>=player.hp;
 					}
+				},
+				check:function (event,player){
+					return get.attitude(player,event.player)<0;
 				},
 				content:function(){
 					'step 0'
@@ -5800,7 +5815,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var dialog=ui.create.dialog('辙转','hidden');
 						dialog.add('应变标签');
 						var table=document.createElement('div');
-						var list = ['yingbian_kongchao','yingbian_canqu','yingbian_fujia','yingbian_zhuzhan']
+						var list = ['yingbian_kongchao','yingbian_canqu','yingbian_fujia','yingbian_zhuzhan'];
 						table.classList.add('add-setting');
 						table.style.margin='0';
 						table.style.width='100%';
@@ -5821,8 +5836,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var list=[];
 						for(var i=0;i<lib.inpile.length;i++){
 							var name=lib.inpile[i];
-							if(name=='du')	continue;
-							if(typeof lib.card[name].yingbian_prompt!='string'&&typeof lib.card[name].yingbian_prompt!='function')		continue;
+							if(name=='du')		continue;
+							if(!lib.card[name].yingbian_prompt)		continue;
 							if(name=='sha'){
 								list.push(['基本','','sha']);
 								list.push(['基本','','sha','fire']);
@@ -5879,30 +5894,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					backup:function(links,player){
 						if(typeof links[1]=='string') links.reverse();
-						var yingbian=links[0];
+						var yingbian=[links[0],['yingbian_damage','yingbian_gain'].randomGet()];
 						var name=links[1][2];
 						var nature=links[1][3];
 						return {
 							filterCard:function(card,player){
-								if(get.type2(card)!='trick')	return false;
-								if(get.type(name)=='trick')		return get.name(card)==name;
+								if(get.type2(card)!='trick')		return false;
+								if(get.type2(name)=='trick')		return get.name(card)==name;
 								return true;
 							},
 							selectCard:1,
 							yingbian:yingbian,
 							viewAs:{
+								cardid:get.id(),
 								name:name,
 								nature:nature,
-								yingbian:false,
-							//	cardtag:[yingbian],
 								isCard:true,
 							},
 							popname:true,
 							precontent:function(){
 								player.logSkill('zhezhuan');
-								console.log(lib.skill.zhezhuan_backup.yingbian);
-								if(!_status.cardtag.yuzu)	_status.cardtag.yuzu = [];
-								_status.cardtag.yuzu.add(lib.skill.zhezhuan_backup.yingbian);
+								var yingbian = lib.skill.zhezhuan_backup.yingbian;
+								console.log(_status.cardtag,lib.skill.zhezhuan_backup.yingbian,event);
+								_status.cardtag[yingbian[0]].add(event.result.card.cardid);
+								_status.cardtag[yingbian[1]].add(event.result.card.cardid);
 							},
 							
 						}
@@ -11076,7 +11091,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				check:function(event,player){
 					return game.hasPlayer(function(current){
-						return !event.targets.contains(current)&&get.distance(event.targets[0],current,'pure')==1&&get.effect(current,trigger.card,player,player)>0;
+						return !event.targets.contains(current)&&get.distance(event.targets[0],current,'pure')==1&&get.effect(current,event.card,player,player)>0;
 					});
 				},
 				content:function(){
@@ -12409,7 +12424,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Hiiro: '希萝',
 			jiace: '铗策',
-			jiace_info: '你成为黑色牌的目标时，可以将一张与之同花色的手牌交给来源，为此牌增加或减少一个目标。若为你本回合首次发动“铗策”，你于此牌结算后获得之。',
+			jiace_info: '你成为黑色牌的目标时，可以将一张与之同花色的手牌交给来源，为此牌增加或减少一个目标。若为你本回合首次发动『铗策』，你于此牌结算后获得之。',
 			xiangying: '襄英',
 			xiangying_info: '出牌阶段限一次，你可将任意红色牌交给一名手牌数小于你的角色，然后若其手牌数大于你，其展示手牌，你摸其中红黑色牌数差的牌。',
 			xiangying_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
@@ -12437,7 +12452,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			miaolu: '露佐',
 			miaolu_info: '一名角色进入濒死状态时，你可以弃置其一张手牌，若为基本牌，你获得之；否则，你令其回复一点体力。',
 			benglei: '绷雷',
-			benglei_info: '你受到1点伤害后，可以令一名角色进行一次判定，若结果为：♠～对其造成与本次伤害等量的雷电伤害；♣～依次弃置其两张牌；红色～对其发动一次『露佐』。',
+			benglei_info: '你受到 1 点伤害后，可以令一名角色进行一次判定，若结果为：♠～对其造成与本次伤害等量的雷电伤害；♣～依次弃置其两张牌；红色～对其发动一次『露佐』。',
 			
 			KotobukiYume: '琴吹梦',
 			xuanquan: '选权',
@@ -12450,7 +12465,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jichu: '姬雏轮舞',
 			jichu_info: '若本回合被使用的上一张牌为锦囊牌，你使用牌可以额外选择一个目标。若本回合被使用的上一张牌为♦️，你使用牌生效并结算后摸一张牌。',
 			mingshizhige: '命逝之歌',
-			mingshizhige_info: '当你受到1点伤害后，你可以重铸所有手牌，然后使用因此失去的其中一张。',
+			mingshizhige_info: '当你受到 1 点伤害后，你可以重铸所有手牌，然后使用因此失去的其中一张。',
 
 			SephiraSu: '塞菲拉·苏',
 			mishu: '数之秘术',

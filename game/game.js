@@ -12269,41 +12269,40 @@
 				},
 				phase:function(){
 					"step 0"
-					player.phaseZhunbei();
+					if(!event.stepList||!event.stepList.length)	event.stepList = lib.phaseName;
+					event.stepNum = 0;
 					"step 1"
-					event.trigger('phaseNext');
-					player.phaseJudge();
+					if(typeof player[event.stepList[event.stepNum]]=='function')	player[event.stepList[event.stepNum]]();
 					"step 2"
-					event.trigger('phaseNext');
-					player.phaseDraw();
-					if(!player.noPhaseDelay){
-						if(player==game.me){
-							game.delay();
+					if(event.stepList[event.stepNum]=='phaseDraw'){
+						if(!player.noPhaseDelay){
+							if(player==game.me){
+								game.delay();
+							}
+							else{
+								game.delayx();
+							}
 						}
-						else{
-							game.delayx();
-						}
+					}
+					if(event.stepList[event.stepNum]=='phaseUse'){
+						game.broadcastAll(function(){
+							if(ui.tempnowuxie){
+								ui.tempnowuxie.close();
+								delete ui.tempnowuxie;
+							}
+						});
+					}
+					if(event.stepList[event.stepNum]=='phaseDiscard'){
+						if(!player.noPhaseDelay) game.delayx();
+						delete player._noSkill;
 					}
 					"step 3"
 					event.trigger('phaseNext');
-					player.phaseUse();
-					"step 4"
-					event.trigger('phaseNext');
-					game.broadcastAll(function(){
-						if(ui.tempnowuxie){
-							ui.tempnowuxie.close();
-							delete ui.tempnowuxie;
-						}
-					});
-					player.phaseDiscard()
-					if(!player.noPhaseDelay) game.delayx();
-					//delete player.using;
-					delete player._noSkill;
-					"step 5"
-					event.trigger('phaseNext');
-					player.phaseJieshu();
-					"step 6"
-					event.trigger('phaseNext');
+					if(event.stepList[++event.stepNum]){
+						event.trigger('stepNext');
+						
+						event.goto(1);
+					}
 				},
 				phaseJudge:function(){
 					"step 0"
@@ -14785,7 +14784,7 @@
 					next.set('nojudge',event.nojudge||false);
 					next.set('moveHandcard',event.moveHandcard||false);
 					next.set('sourceFilterTarget',event.sourceFilterTarget||false);
-					next.set('ai',function(target){
+					next.set('ai',event.ai||function(target){
 						var player=_status.event.player;
 						var att=get.attitude(player,target);
 						var sgnatt=get.sgn(att);
@@ -19283,7 +19282,7 @@
 					next.setContent(content);
 					return next;
 				},
-				phase:function(skill){
+				phase:function(skill,stepList){
 					var next=game.createEvent('phase');
 					next.player=this;
 					next.setContent('phase');
@@ -19292,6 +19291,9 @@
 					}
 					if(skill){
 						next.skill=skill;
+					}
+					if(stepList){
+						next.stepList=stepList;
 					}
 					return next;
 				},
@@ -53600,7 +53602,6 @@
 		},
 		//标记
 		cardtag:function(item,tag){
-			if(_status.cardtag&&_status.cardtag.yuzu&&_status.cardtag.yuzu.contains(tag))	return true;
 			if(item.cardid&&(get.itemtype(item)=='card'||!item.cards||!item.cards.length||item.name==item.cards[0].name)&&_status.cardtag){
 				if(_status.cardtag[tag]&&_status.cardtag[tag].contains(item.cardid))	return true;
 			}

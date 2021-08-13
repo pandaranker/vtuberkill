@@ -66,169 +66,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SisterClearie:	'“今日也愿神加护于你……”',
 		},
 		skill:{
-			fuheijs:{
-				enable:"phaseUse",
-				filter:function(event,player){
-					return player.countDiscardableCards(player,'he')!=0;
-				},
-				content:function(){
-					'step 0'
-					var list=['弃置一名角色的1张装备牌'];
-					if(lib.skill.fuheijs.canMoveCard(player)) list.push('将一名其他角色装备区内的一张牌移动到另一名角色的装备区内');
-					player.chooseControl('cancel2').set('choiceList',list).set('prompt',get.prompt('fuheijs')).set('ai',function(){
-						if(lib.skill.fuheijs.canMoveCard(player,true)) return 1;
-						return 0;
-					});
-					'step 1'
-					if(result.control!='cancel2'){
-						player.logSkill('fuheijs');
-						if(result.index==1) event.goto(5);
-						else event.count=1;
-					}
-					else event.finish();
-					'step 2'
-					player.chooseTarget('弃置一名其他角色的一张装备牌',function(card,player,target){
-						if(player==target) return false;
-						return target.countDiscardableCards(player,'e');
-					}).set('ai',function(target){
-						return -get.attitude(_status.event.player,target);
-					});
-					'step 3'
-					if(result.bool){
-						player.chooseToDiscard('he',true);
-						player.line(result.targets[0],'green');
-						player.discardPlayerCard(result.targets[0],'e',true);
-						event.count--;
-					}
-					else event.finish();
-					'step 4'
-					if(event.count) event.goto(2);
-					else event.finish();
-					'step 5'
-					player.chooseToDiscard('he',true);
-					var next=player.chooseTarget(2,function(card,player,target){
-						if(ui.selected.targets.length){
-							var from=ui.selected.targets[0];
-							if(target.isMin()) return false;
-							var es=from.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(target.isEmpty(get.subtype(es[i]))) return true;
-							}
-							return false;
-						}
-						else{
-							return target.countCards('e')>0;
-						}
-					});
-					next.set('ai',function(target){
-						var player=_status.event.player;
-						var att=get.attitude(player,target);
-						var sgnatt=get.sgn(att);
-						if(ui.selected.targets.length==0){
-							if(att>0){
-								if(target.countCards('e',function(card){
-									return get.value(card,target)<0&&game.hasPlayer(function(current){
-										return current!=player&&current!=target&&get.attitude(player,current)<0&&current.isEmpty(get.subtype(card))
-									});
-								})>0) return 9;
-							}
-							else if(att<0){
-								if(game.hasPlayer(function(current){
-									if(current!=target&&current!=player&&get.attitude(player,current)>0){
-										var es=target.getCards('e');
-										for(var i=0;i<es.length;i++){
-											if(get.value(es[i],target)>0&&current.isEmpty(get.subtype(es[i]))&&get.value(es[i],current)>0) return true;
-										}
-									}
-								})){
-									return -att;
-								}
-							}
-							return 0;
-						}
-						var es=ui.selected.targets[0].getCards('e');
-						var i;
-						var att2=get.sgn(get.attitude(player,ui.selected.targets[0]));
-						for(i=0;i<es.length;i++){
-							if(sgnatt!=0&&att2!=0&&
-								get.sgn(get.value(es[i],ui.selected.targets[0]))==-att2&&
-								get.sgn(get.value(es[i],target))==sgnatt&&
-								target.isEmpty(get.subtype(es[i]))){
-								return Math.abs(att);
-							}
-						}
-						if(i==es.length){
-							return 0;
-						}
-						return -att*get.attitude(player,ui.selected.targets[0]);
-					});
-					next.set('multitarget',true);
-					next.set('targetprompt',['被移走','移动目标']);
-					next.set('prompt',event.prompt||'移动场上的一张装备牌');
-					next.set('forced',true);
-					'step 6'
-					if(result.bool){
-						player.line2(result.targets,'green');
-						event.targets=result.targets;
-					}
-					else{
-						event.finish();
-					}
-					'step 7'
-					game.delay();
-					'step 8'
-					if(targets.length==2){
-						player.choosePlayerCard('e',true,function(button){
-							var player=_status.event.player;
-							var targets0=_status.event.targets0;
-							var targets1=_status.event.targets1;
-							if(get.attitude(player,targets0)>get.attitude(player,targets1)){
-								if(get.value(button.link,targets0)<0) return 10;
-								return 0;
-							}
-							else{
-								return get.equipValue(button.link);
-							}
-						},targets[0]).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
-							var targets1=_status.event.targets1;
-							return targets1.isEmpty(get.subtype(button.link));
-						});
-					}
-					else{
-						event.finish();
-					}
-					'step 9'
-					if(result.bool&&result.links.length){
-						var link=result.links[0];
-						event.targets[1].equip(link);
-						event.targets[0].$give(link,event.targets[1])
-						game.delay();
-						event.result={bool:true};
-					}
-				},
-				canMoveCard:function(player,withatt){
-					return game.hasPlayer(function(current){
-						if(player==current) return false;
-						var att=get.sgn(get.attitude(player,current));
-						if(!withatt||att!=0){
-							var es=current.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(game.hasPlayer(function(current2){
-									if(player==current2) return false;
-									if(withatt){
-										if(get.sgn(get.value(es[i],current))!=-att) return false;
-										var att2=get.sgn(get.attitude(player,current2));
-										if(att2!=get.sgn(get.value(es[i],current2))) return false;
-									}
-									return current!=current2&&!current2.isMin()&&current2.isEmpty(get.subtype(es[i]));
-								})){
-									return true;
-								}
-							}
-						}
-					});
-				}
-			},
 			leiyan:{
 				trigger:{player:'useCard1'},
 				forced:true,
@@ -331,10 +168,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			tinenghuifu1:{
-				audio:'tinenghuifu',
+				audio:true,
 				trigger:{player:'loseAfter'},
-				forced:true,	
-				nopop:false,//player是否logSkill('此技能')，true为不
+				forced:true,
 				filter:function(event,player){
 					return event.es&&event.es.length>0;
 				},
@@ -346,25 +182,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.recover();
 					"step 2"
 					if(event.count>0){
-						//console.log(event.count);
-						player.chooseBool(get.prompt2('tinenghuifu1')).set('frequentSkill','tinenghuifu1').ai=lib.filter.all;
-					}
-					"step 3"
-					if(result.bool){
-						//game.delay();
-						result.bool=false;
 						event.goto(1);
 					}
 				},
 				group:['tinenghuifu1_hp'],
 				subSkill:{
 					hp:{
-						trigger:{player:['loseHpEnd','damageEnd']},
-						forced:true,	
-						nopop:true,//player是否logSkill('此技能')，true为不
+						trigger:{player:'changeHp'},
+						forced:true,
+						filter:function(event,player){
+							return event.num<0&&player.isDamaged();
+						},
 						content:function(){
 							player.draw(1);
-							player.logSkill('tinenghuifu');
 						}
 					}
 				},
@@ -378,29 +208,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:"phaseUse",
 				usable:1,
 				filter:function(event,player){
-					if(!game.hasPlayer(function(current){
-						return current.countCards('e')>0;
-					})) return false;
-					return true
+					return player.canMoveCard(null,true);
 				},
 				content:function(){
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					var next=player.chooseTarget(2,function(card,player,target){
-						if(ui.selected.targets.length){
-							var from=ui.selected.targets[0];
-							if(target.isMin()) return false;
-							var es=from.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(target.isEmpty(get.subtype(es[i]))) return true;
-							}
-							return false;
-						}
-						else{
-							return target.countCards('e')>0;
-						}
-					});
+					var next = player.moveCard(true).set('nojudge',true);
 					next.set('ai',function(target){
 						var player=_status.event.player;
 						var att=get.attitude(player,target);
@@ -461,149 +275,67 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return -att*get.attitude(player,ui.selected.targets[0]);
 					});
-					next.set('multitarget',true);
-					next.set('targetprompt',['被移走','移动目标']);
-					next.set('prompt',event.prompt||'移动场上的一张装备牌');
 					next.set('forced',true);
 					'step 2'
-					if(result.bool){
-						player.line2(result.targets,'green');
-						event.targets=result.targets;
-					}
-					else{
-						event.finish();
-					}
-					'step 3'
-					game.delay();
-					'step 4'
-					if(targets.length==2){
-						player.choosePlayerCard('e',true,targets[0]).set('ai',function(button){
-							var player=_status.event.player;
-							var targets0=_status.event.targets0;
-							var targets1=_status.event.targets1;
-							if(targets0==player&&targets1.isEmpty(get.subtype(button.link))){
-								var effect = 0;
-								game.filterPlayer(function(cur){
-									if(cur.isEmpty(get.subtype(button.link))&&cur!=targets1) effect+=get.effect(cur,{name:'sha'},player,player);
-								});
-								if(effect>2)	return 2*effect;
-							}
-							if(get.attitude(player,targets0)>get.attitude(player,targets1)){
-								if(get.value(button.link,targets0)<0) return 10;
-								return 0;
-							}
-							else{
-								return get.equipValue(button.link);
-							}
-						}).set('targets0',targets[0]).set('targets1',targets[1]).set('filterButton',function(button){
-							var targets1=_status.event.targets1;
-							return targets1.isEmpty(get.subtype(button.link));
-						});
-					}
-					else{
-						event.finish();
-					}
-					'step 5'
-					if(result.bool&&result.links.length){
-						var link=result.links[0];
-						event.targets[1].equip(link);
-						event.targets[0].$give(link,event.targets[1]);
-						event.equiptype=get.subtype(link);
-						game.delay();
-						event.result={bool:true};
-					}
-					'step 6'
-					if(event.targets[0]!=player){
+					if(result.targets[0]!=player){
 						event.finish();
 					}
 					else{
+						event.equiptype = get.subtype(result.card);
+						event.players=game.filterPlayer(function(current){
+							return (current!=player)&&(!current.getEquip(event.equiptype));
+						}).sortBySeat(player);
 						if(event.judgeGroup==null)
 							event.judgeGroup=[];
 					}
-					'step 7'
-					event.equiptype=parseInt(event.equiptype.slice(5));
-					event.players=game.filterPlayer(function(current){
-						return (current!=player)&&(!current.getEquip(event.equiptype));
-					});
-					event.players.sortBySeat(player);
-					'step 8'
+					'step 3'
 					if(event.playersIndex==null){
 						event.playersIndex=0;
 					}
 					if(event.playersIndex<event.players.length){
-						////getCards('e',{subtype:['equip3','equip4','equip6']}));
 						if(!event.players[event.playersIndex].getEquip(event.equiptype)){
 							player.useCard({name:'sha',nature:'thunder',isCard:true},event.players[event.playersIndex],false);
-							//player.getStat().card.sha--;
 						}
 					}
-					'step 9'
+					'step 4'
 					if(!result.bool){
 						event.judgeGroup.add(event.players[event.playersIndex]);
 					}
-					event.playersIndex++;
-					if(event.playersIndex<event.players.length){
-						event.goto(8);
-					}
-					'step 10'
+					if(event.players[++event.playersIndex])	event.goto(3);
+					'step 5'
 					if(event.judgeGroup.length>0){
 						var shanString='<br>';
 						for(var i=0;i<event.judgeGroup.length;i++){
 							shanString+=(get.translation(event.judgeGroup[i])+',');
 						}
-						player.chooseBool('是否对所有闪避者追加闪电判定？'+shanString);
+						var check = 0;
+						for(var i of event.judgeGroup){
+							check+=lib.card.shandian.ai.result.target(player,i)
+						}
+						player.chooseBool('是否对所有闪避者追加闪电判定？'+shanString).set('check',check).ai=function(){
+							return _status.event.check>0;
+						};
 					}
 					else{
 						event.finish();
 					}
-					'step 11'
+					'step 6'
 					if(!result.bool){
 						event.finish();
 					}
-					'step 12'
-						//console.log(player.getStat().card.sha);
-					if(event.judgeGroup.length>0){
-						event.judgeGroup[0].judge(function(card){
-							if(get.suit(card)=='spade'&&(get.number(card)>=2&&get.number(card)<=9)) return 2;
-						});
-					}
-					else{
-						event.finish();
-					}
-					'step 13'
+					'step 7'
+					event.judgeGroup[0].judge(function(card){
+						if(get.suit(card)=='spade'&&(get.number(card)>=2&&get.number(card)<=9)) return 2;
+					}).callback=function(){
+						var number = event.judgeResult.number;
+						if(event.judgeResult.suit=='spade'&&(number>=2&&number<=9)){
+							player.damage(3,'thunder','nosource');
+						}
+					};
+					'step 8'
 					game.delay();
-					if(event.judgeGroup.length>0){
-						if(result.judge==2){
-							event.judgeGroup[0].damage(3,'thunder','nosource');
-						}
-						event.judgeGroup.shift();
-						event.goto(12)
-					}
-					else{
-						event.finish();
-					}
-				},
-				canMoveCard:function(player,withatt){
-					return game.hasPlayer(function(current){
-						if(player==current) return false;
-						var att=get.sgn(get.attitude(player,current));
-						if(!withatt||att!=0){
-							var es=current.getCards('e');
-							for(var i=0;i<es.length;i++){
-								if(game.hasPlayer(function(current2){
-									if(player==current2) return false;
-									if(withatt){
-										if(get.sgn(get.value(es[i],current))!=-att) return false;
-										var att2=get.sgn(get.attitude(player,current2));
-										if(att2!=get.sgn(get.value(es[i],current2))) return false;
-									}
-									return current!=current2&&!current2.isMin()&&current2.isEmpty(get.subtype(es[i]));
-								})){
-									return true;
-								}
-							}
-						}
-					});
+					event.judgeGroup.shift();
+					if(event.judgeGroup.length>0)	event.goto(7);
 				},
 				ai:{
 					useSha:2,
@@ -613,15 +345,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.hp!=1)	return 1;
 							else return -2;
 						},
-					/*	target:function(player,target){
-							if(ui.selected.targets.length==0){
-								if(target==player&&player.hp!=1)	return 2+Math.random();	
-								return -2;
-							}
-							else{
-								return 2+Math.random();
-							}
-						}*/
 					},
 				},
 			},
@@ -3018,8 +2741,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nochongzhu:'禁止重铸',
 
 			MononobeAlice:'物述有栖',
-			fuheijs:'腹黑JS',
-			fuheijs_info:'出牌阶段，你可以弃置一张手牌，选择转移或者弃置任意一名角色装备的装备牌',
 			leiyan:'雷言',
 			leiyan_info:'锁定技 你的［雷杀］可以指定1-3个目标，并无视角色防具',
 			xiaozhangduandai:'嚣张缎带',
@@ -3027,7 +2748,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yongchun:'咏春',
 			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
 			tinenghuifu1:'体能恢复',
-			tinenghuifu1_info:'锁定技 当你失去一张装备牌后，你回复 1 点体力。当你的体力值减少后，你摸一张牌。',
+			tinenghuifu1_hp:'体能恢复',
+			tinenghuifu1_info:'锁定技 当你失去装备区的一张牌后，你回复1点体力。当你的体力值减少后，你摸一张牌。',
 			tinenghuifu1_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 			dianmingguzhen:'电鸣鼓震',
 			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',

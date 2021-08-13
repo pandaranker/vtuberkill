@@ -1274,7 +1274,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nkfumo: '伏魔',
 			nkfumo_info: '你使用牌指定其他角色为唯一目标时，你可以进行判定，若结果为黑色，将之效果改为【浪涌】。当你使用锦囊牌后，重置【忖度】。',
 			chidu: '忖度',
-			chidu_info: '当一名角色的判定牌生效前，你可以打出一张颜色与结果不同的手牌替换之。每回合限一次。',
+			chidu_info: '当判定牌生效前，你可以打出一张颜色与结果不同的手牌替换之。每回合限一次。',
 			
 			ShirakamiHaruka: '白神遥',
 			baoxiao: '豹笑',
