@@ -555,11 +555,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							game.getGlobalHistory('cardMove',function(evt){
 								if(evt.name!='lose'&&evt.name!='cardsDiscard') return false;
 								if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
-								for(var i=0;i<evt.cards.length;i++){
-											suits.add(get.suit(evt.cards[i]));
-								}
+								suits.addArray(get.suit3(evt.cards))
 							});
-							if(suits.length == 4)	return true;
+							if(suits.length>=4)	return true;
 						},
 						content:function(){
 							'step 0'

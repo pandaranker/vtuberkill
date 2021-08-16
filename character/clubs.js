@@ -164,7 +164,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						suits.push(get.suit(cards[i]));
 					}
 					event.suits = suits;
-					game.cardsDiscard(cards);
+					game.cardsGotoOrdering(cards);
 					'step 1'
 					event.targ = event.targs.shift();
 					var suits = event.suits;

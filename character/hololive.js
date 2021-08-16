@@ -2211,15 +2211,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					'step 0'
-					player.storage.pekoyu.add(get.suit(trigger.card));
 					player.draw(),
+					player.storage.pekoyu.add(get.suit(trigger.card));
+					'step 1'
 					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h',true).set('ai',function(card){
 						var name = card.name;
 						if(name=='jiu') 			return 12;
 						if(get.type(card)=='trick')	return 4;
 						return 10-get.value(card);													
 					});
-					'step 1'
+					'step 2'
 					if(result.cards){
 						if(get.name(result.cards[0],'player')=='jiu'||
 							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
@@ -2229,7 +2230,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return get.attitude(player,target)*(target.isDamaged()?2:1);
 						});
 					}
-					'step 2'
+					'step 3'
 					if(result.bool&&result.targets&&result.targets.length){
 						var target = result.targets[0];
 						player.line(target,'thunder');

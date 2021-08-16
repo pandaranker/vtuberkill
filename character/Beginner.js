@@ -1086,10 +1086,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(event.discards.length==0)	event.finish();
 						else event.cards = [];
 						'step 1'
-						var suits = [];
-						for(var i=0;i<event.discards.length;i++){
-							suits.add(get.suit(event.discards[i]));
-						}
+						var suits = get.suit3(event.discards);
 						var next=player.judge(function(card){
 							var suits = _status.event.suits;
 							if(suits.contains(get.suit(card))) return 1;
@@ -1115,10 +1112,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						'step 3'
 						if(event.cards.length==3){
-							var suits = [];
-							for(var i=0;i<event.cards.length;i++){
-								suits.add(get.suit(event.cards[i]));
-							}
+							var suits = get.suit3(event.cards);
 							if(suits.length==1){
 								player.draw(3);
 								game.playAudio('skill','laohuji');

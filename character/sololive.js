@@ -713,10 +713,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					target.showHandcards();
 					game.delayx();
 					'step 5'
-					var suits = [];
-					player.getStorage('zuigao').forEach(function(card){
-						suits.add(get.suit(card));
-					});
+					var suits = get.suit3(player.getStorage('zuigao'));
 					var discards = target.getCards('he',{suit:suits});
 					target.discard(discards);
 				},

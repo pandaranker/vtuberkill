@@ -2061,22 +2061,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							if((event.name=='phase'&&event.skill!='liuhua')||(event.name=='turnOver'&&(!event.getParent()._trigger||event.getParent()._trigger.skill!='liuhua')))	return false;
 							if(player.storage.liuhua.length<4)	return false;
-							var list = [];
-							player.storage.liuhua.forEach(function(hua){
-								list.add(get.suit(hua))
-							});
+							var list = get.suit3(player.storage.liuhua);
 							return list.length>=4;
 						},
 						content:function(){
 							'step 0'
-							var list = [];
-							player.storage.liuhua.forEach(function(hua){
-								list.add(get.suit(hua))
-							});
 							var next = player.chooseCardButton('###'+get.translation('liuhua')+'###获得一种颜色的『化羽』牌',player.storage.liuhua,true);
-							next.set('filterButton',function(button){
-								return true;
-							});
 							next.set('ai',function(button){
 								return get.value(button.link);
 							});
@@ -2182,9 +2172,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				usable:1,
 				content:function(){
 					"step 0"
-					var suits = target.getStorage('liuhua').map(function(i){
-						return get.suit(i);
-					});
+					var suits = get.suit3(target.getStorage('liuhua'));
 					player.chooseCard(true,'he','选择置于'+get.translation(target)+'『化羽』牌上的牌',[1,Infinity],function(card,player){
 						return !_status.event.suits.contains(get.suit(card));
 					}).set('suits',suits).set('ai',function(card){
@@ -2367,7 +2355,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nisheng: '拟声',
 			nisheng_info: '一个额定回合结束后，你可以展示两张点数相同的手牌并获得一个额外的回合。每个点数限一次。',
 			jingyan: '精赝',
-			jingyan_info: '你受到伤害后，可以翻面并获得来源一半的牌（向下取整）。',
+			jingyan_info: '你受到伤害后，可以翻面并获得来源一半的牌（向上取整）。',
 			jingyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 
 			IsekaiJoucho: 'ヰ世界情绪',
