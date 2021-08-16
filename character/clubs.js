@@ -82,6 +82,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				vshojo2:['Nyanners','Veibae','Ironmouse'],
 			}
 		},
+		characterTitle:{
+			OtomeOto:'#pChucolala',
+			HisekiErio:'#pChucolala',
+			MashiroKanon:'#pChucolala',
+
+			HayamiSaki: '#gChobits-live',
+			KiyoInga: '#gChobits-live',
+		},
 		characterIntro:{
 			Paryi: '帕里，巴蜀富豪者也，累世公卿，广散金帛，养士三千，昔绊爱首义，左右劝帕里图之，帕里由此建国，聚诸奇士建国帕里破一期，天时地利人和皆不顺，诸士心皆背，P家无疾而终，帕里亦败走青城，后党锢事泄，杏国树倒猴散，P家有团长绯赤艾利欧接连败诸侯，中兴P家，OTO、古守血遊等士亦借此征战，P家之势渐盛。',
 			OtomeOto: 'oto者，名歌姬也，曾学于教坊司，能歌善舞，以《初音未来的消失》之传说名曲惊煞一众善才，后烽烟四起，oto批皮入V界，人情炎凉，难以经营，如此经年，后杏溃败，oto喃喃自言曰：好风凭借力，送我上青云。有友曰绯赤艾利欧，两人相持生活数十年，V始二十年，杏礼崩乐坏，团长尽收杏社之地，亲迎oto，oto亦欣然前往，paryi系重归荣光，此二人先导也。',
