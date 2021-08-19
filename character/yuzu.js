@@ -1814,7 +1814,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.player==player&&game.roundNumber>1&&player.hasUseTarget('sha')&&!player.needsToDiscard();
 				},
 				popup:false,
-				nopop:true,
 				content:function(){
 					'step 0'
 					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
@@ -4055,7 +4054,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return get.attitude(player,event.player)<=0;
 				},
 				popup:false,
-				nopop:true,
 				content:function(){
 					'step 0'
 					event.tar = trigger.player;
@@ -4484,7 +4482,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				popup:false,
-				nopop:true,
 				content:function(){
 					'step 0'
 					if(trigger.name=='draw'){
@@ -5288,7 +5285,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//乃琳
 			yehua:{
-				audio:true,
+				audio:3,
 				trigger:{player:'phaseBegin'},
 				//frequent:true,
 				filter:function(event,player){
@@ -12027,7 +12024,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return !trigger.targets.contains(cur)&&lib.filter.targetEnabled2(trigger.card,player,cur);
 							}))		event.goto(4);
 							'step 1'
-							var prompt2='为'+get.translation(trigger.card)+'增加一个目标'
+							var prompt2='为'+get.translation(trigger.card)+'增加一个目标';
 							player.chooseTarget(get.prompt('minghuahongxiao_change'),function(card,player,target){
 								var player = _status.event.player;
 								var source = _status.event.source;

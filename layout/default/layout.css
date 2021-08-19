@@ -2172,7 +2172,9 @@ div:not(.handcards)>.card>.info>span,
 
 #arena .player.minskin>.name,
 #arena.slim_player .player.minskin>.name {
-	top: 17px;
+	font-size: 18px;
+	line-height: 120%;
+	top: 15px;
 }
 
 #arena .player.minskin>.name.long,
@@ -4591,9 +4593,6 @@ div[data-decoration="bronze"]::after{
 #me .card.glow::before {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(0, 133, 255) 0 0 5px, rgba(0, 133, 255,1) 0 0 10px;
 }
-#me .card.glow::before {
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(0, 133, 255) 0 0 5px, rgba(0, 133, 255,1) 0 0 10px;
-}
 #me .card.glows::before {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(255, 153, 51) 0 0 5px, rgba(255, 153, 51,1) 0 0 10px;
 }
@@ -4657,7 +4656,7 @@ div[data-decoration="bronze"]::after{
 .dice-container{
 	background: rgba(0,0,0,0.3);
 	z-index: 50;
-	perspective: 1000px;
+	perspective: 2000px;
 }
 .dice{
 	position: absolute;

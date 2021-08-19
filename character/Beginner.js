@@ -351,18 +351,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					var att = get.sgnAttitude(target,player)
-					event.onlyOne=target.chooseToDiscard('he','弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true);
-					event.onlyOne.set('ai',function(card){
+					target.chooseToDiscard('he','弃置一张牌(若其中有♠或点数9，则视为'+get.translation(player)+'使用了一张酒)',true).set('ai',function(card){
 						if(att>1)	return (get.suit(card)=='spade'||get.number(card)==9);
-					});
-					event.onlyOne.set('att',att);
+					}).set('att',att);
 					"step 1"
-					event.discardCards=[];
-					if(event.onlyOne!=undefined){
-						event.discardCards.addArray(event.onlyOne.result.cards);
+					if(result.bool&&result.cards){
+						event.discardCards=result.cards.slice(0);
 					}
+					else event.finish()
 					"step 2"
-					event.isJiu=false;
 					event.discardCards.forEach(discard => {
 						if(get.suit(discard)=='spade'||get.number(discard)==9)
 							event.isJiu=true;
@@ -1666,7 +1663,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re兔头
 			re_bingdielei:{
-				group:'re_bingdielei_lose',
+				audio:'bingdielei',
+				trigger:{global:'phaseEnd'},
+				round:1,
+				prompt2: '获得一个额外回合',
+				filter:function(event,player){
+					return player.getHistory('lose').length;
+				},
+				content:function(){
+					player.unmarkSkill(event.name);
+					player.logSkill(event.name);
+					player.insertPhase();
+				},
+				group:['re_bingdielei_lose'],
 				subSkill:{
 					lose:{
 						trigger:{player:'loseAfter'},
@@ -1679,32 +1688,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						direct:true,
 						content:function(){
-							"step 0"
-							if(trigger.delay==false) game.delay();
-							"step 1"
-							player.markSkill(event.name);
-							player.addTempSkill('re_bingdielei_anotherPhase');
+							player.addTempSkill('re_bingdielei_mark');
 						},
 					},
-					anotherPhase:{
-						audio:'bingdielei',
-						trigger:{global:'phaseEnd'},
+					mark:{
 						marktext: '蕾',
-						mark:true,
-						round:1,
 						intro: {
 							content:'当前回合结束后若本轮没有获得过，可以获得一个额外回合',
 							name:'盛蕾',
-						},
-						onremove:true,
-						prompt2: '获得一个额外回合',
-						filter:function(event,player){
-							return player.getHistory('lose').length;
-						},
-						content:function(){
-							player.unmarkSkill(event.name);
-							player.logSkill(event.name);
-							player.insertPhase();
 						},
 					},
 				},

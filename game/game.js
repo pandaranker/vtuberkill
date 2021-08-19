@@ -12269,7 +12269,7 @@
 				},
 				phase:function(){
 					"step 0"
-					if(!event.stepList||!event.stepList.length)	event.stepList = lib.phaseName;
+					if(!event.stepList||!event.stepList.length)	event.stepList = lib.phaseName.slice(0);
 					event.stepNum = 0;
 					"step 1"
 					if(typeof player[event.stepList[event.stepNum]]=='function')	player[event.stepList[event.stepNum]]();
@@ -26588,7 +26588,7 @@
 					player.storage.counttrigger&&player.storage.counttrigger[skill]>=info.usable){
 					return false;
 				}
-				if(info.round&&(info.round-(game.roundNumber-player.storage[skill+'_roundcount'])>0)){
+				if(info.round&&(player.storage[skill+'_roundcount']>0)){
 					return false;
 				}
 				return true;
@@ -34788,7 +34788,7 @@
 							if(info.viewAs&&typeof info.viewAs!='function'&&info.viewAsFilter&&info.viewAsFilter(player)==false) enable=false;
 							if(info.usable&&get.skillCount(skills2[i])>=info.usable) enable=false;
 							if(info.chooseButton&&_status.event.noButton) enable=false;
-							if(info.round&&(info.round-(game.roundNumber-player.storage[skills2[i]+'_roundcount'])>0)) enable=false;
+							if(info.round&&(player.storage[skill+'_roundcount']>0)) enable=false;
 						}
 						if(enable){
 							if(event.isMine()||!event._aiexclude.contains(skills2[i])){
@@ -36138,8 +36138,10 @@
 							silent:true,
 							content:function(){
 								var skill=event.name.slice(0,event.name.indexOf('_roundcount'));
-								if(player.storage[event.name]>lib.skill[skill].round)	player.storage[event.name]=lib.skill[skill].round;
-								if(--player.storage[event.name]>0){
+								if(player.storage[event.name]>0){
+									player.storage[event.name]--
+								}
+								if(player.storage[event.name]>0){
 									player.updateMarks();
 								}
 								else{

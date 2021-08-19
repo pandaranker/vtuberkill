@@ -2172,7 +2172,9 @@ div:not(.handcards)>.card>.info>span,
 
 #arena .player.minskin>.name,
 #arena.slim_player .player.minskin>.name {
-	top: 17px;
+	font-size: 18px;
+	line-height: 120%;
+	top: 15px;
 }
 
 #arena .player.minskin>.name.long,
@@ -4654,7 +4656,7 @@ div[data-decoration="bronze"]::after{
 .dice-container{
 	background: rgba(0,0,0,0.3);
 	z-index: 50;
-	perspective: 1000px;
+	perspective: 2000px;
 }
 .dice{
 	position: absolute;

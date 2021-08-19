@@ -202,17 +202,44 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				filterTarget:function(card,player,target){
-					return target!=player&&(get.mode()!='guozhan'||target.countCards('e')>0);
+					return target!=player&&(get.mode()!='guozhan'||_status.mode=='yingbian'||_status.mode=='free'||target.countCards('e')>0);
 				},
 				enable:true,
-				yingbian_prompt:'此牌的效果改为依次执行所有选项',
+				yingbian_prompt:function(card){
+					var str='';
+					if(get.cardtag(card,'yingbian_all')){
+						str+='此牌的效果改为依次执行所有选项';
+					}
+					if(!str.length||get.cardtag(card,'yingbian_add')){
+						if(str.length) str+='；';
+						str+='当你使用此牌选择目标后，你可为此牌增加一个目标';
+					}
+					return str;
+				},
+				yingbian:function(event){
+					var card=event.card,bool=false;
+					if(get.cardtag(card,'yingbian_all')){
+						bool=true;
+						card.yingbian_all=true;
+						game.log(card,'执行所有选项');
+					}
+					if(!bool||get.cardtag(card,'yingbian_add')){
+						event.yingbian_addTarget=true;
+					}
+				},
 				content:function(){
 					'step 0'
-					if(get.mode()!='guozhan'&&!get.is.single()) event.goto(2);
+					if(event.card.yingbian_all){
+						target.discard(target.getCards('e',function(card){
+							return lib.filter.cardDiscardable(card,target,'shuiyanqijunx');
+						}));
+						target.damage('thunder',event.baseDamage||1);
+						event.finish();
+					}
 					else if(!target.countCards('e',function(card){
-						return lib.filter.cardDiscardable(card,target);
+						return lib.filter.cardDiscardable(card,target,'shuiyanqijunx');
 					})){
-						var next=target.damage();
+						var next=target.damage(event.baseDamage||1);
 						if(!get.is.single()) next.nature='thunder';
 						event.finish();
 						return;
@@ -228,30 +255,27 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					});
 					'step 1'
 					if(result.control=='discard_card'){
-						target.discard(target.getCards('e'));
+						target.discard(target.getCards('e',function(card){
+							return lib.filter.cardDiscardable(card,target,'shuiyanqijunx');
+						}));
 					}
 					else{
-						var next=target.damage();
+						var next=target.damage(event.baseDamage||1);
 						if(!get.is.single()) next.nature='thunder'
 					}
 					event.finish();
-					'step 2'
-					target.chooseToDiscard(2,card.yingbian,'e').set('ai',function(card){
-						var player=_status.event.player;
-						var source=_status.event.getParent().player;
-						if(get.damageEffect(player,source,player,'thunder')>=0){
-							return 0;
-						}
-						if(player.hp>=3){
-							return 4-get.value(card);
-						}
-						return 8-get.value(card);
-					});
-					'step 3'
-					if(card.yingbian||!result.bool) target.damage('thunder');
 				},
 				ai:{
-					order:7,
+					canLink:function(player,target,card){
+						if(player.hasSkill('jueqing')||target.hasSkill('gangzhi')||target.hasSkill('gangzhi')) return false;
+						var es=target.countCards('e');
+						if(!es) return true;
+						if(target.hp>=3&&es>=2){
+							return true;
+						}
+						return false;
+					},
+					order:6,
 					value:4,
 					useful:2,
 					tag:{
@@ -262,26 +286,31 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					yingbian:function(card,player,targets,viewer){
 						if(get.attitude(viewer,player)<=0) return 0;
-						if(targets.filter(function(current){
-							return get.damageEffect(current,player,player,'thunder')>0&&current.countCards('e',function(card){
-								return get.value(card,current)<=0;
-							})<2&&current.countCards('e',function(card){
-								return get.value(card,current)>0;
-							})>0;
-						}).length) return 6;
+						var base=0;
+						if(get.cardtag(card,'yingbian_all')){
+							if(targets.filter(function(current){
+								return get.damageEffect(current,player,player,'thunder')>0&&current.countCards('e',function(card){
+									return get.value(card,current)<=0;
+								})<2&&current.countCards('e',function(card){
+									return get.value(card,current)>0;
+								})>0;
+							}).length) base+=6;
+						}
+						if(get.cardtag(card,'yingbian_add')){
+							if(game.hasPlayer(function(current){
+								return !targets.contains(current)&&lib.filter.targetEnabled2(card,player,current)&&get.effect(current,card,player,player)>0;
+							})) base+=6;
+						}
 						return 0;
 					},
 					result:{
-						target:function(player,target){
-							if(get.mode()!='guozhan'&&!get.is.single()){
-								if(target.countCards('e',function(card){
-									return get.value(card,target)<=0;
-								})>1) return 1;
-								var es=target.countCards('e');
-								if(es<2) return -1.5;
-								return -3/es;
-							}
-							return -1-target.countCards('e');
+						target:function(player,target,card,isLink){
+							if(isLink) return -1.5;
+							var es=target.getCards('e');
+							if(!es.length) return -1.5;
+							var val=0;
+							for(var i of es) val+=get.value(i,target);
+							return -Math.min(1.5,val/5);
 						}
 					}
 				}
@@ -1428,8 +1457,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			xietianzi_info:'出牌阶段，对自己使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',
 			xietianzi_info_guozhan:'出牌阶段，对为大势力角色的你使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',
 			shuiyanqijunx:'水淹七军',
+			shuiyanqijunx_info:'出牌阶段，对一名其他角色使用。目标角色选择一项：1、弃置装备区里的所有牌（至少一张）；2、受到你造成的1点雷电伤害',
 			shuiyanqijunx_info_guozhan:'出牌阶段，对一名装备区里有牌的其他角色使用。目标角色选择一项：1、弃置装备区里的所有牌；2、受到你造成的1点雷电伤害',
-			shuiyanqijunx_info:'出牌阶段，对一名其他角色使用。目标角色选择一项：1、弃置装备区内的两张牌；2、受到你造成的1点雷电伤害',
 			lulitongxin:'勠力同心',
 			lulitongxin_info:'出牌阶段，对所有大势力角色或所有小势力角色使用。若目标角色：不处于“连环状态”，其横置；处于“连环状态”，其摸一张牌',
 			lulitongxin_info_versus:'出牌阶段，对所有敌方角色或所有己方角色使用。若目标角色：为敌方角色且不处于“连环状态”，其横置；为己方角色且处于“连环状态”，其摸一张牌。',
