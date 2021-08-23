@@ -1373,10 +1373,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				content:function(){
 					"step 0"
-					if(player.hasSkill('zhongjian1_tag')){
-						event.finish()
-					}
-					else
 					player.chooseTarget('###'+get.prompt('zhongjian')+'###令一名'+get.translation(player.group+'2')+'势力角色本回合一张手牌视为无懈可击',{},function(card,player,target){
 						return target.group==player.group&&target.countCards('h')>0
 					});
@@ -1394,7 +1390,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool){
 						event.target.storage.changeWuxie=result.links[0];
 						//event.dropTarget.chooseCard('he',1,true);
-						event.target.addTempSkill('zhongjian1_zhuanhua');
+						event.target.addTempSkill('zhongjian_zhuanhua');
 					}
 					else{
 						event.finish()
