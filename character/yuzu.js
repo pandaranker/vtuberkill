@@ -12183,10 +12183,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						filter:function(event,player){
 							var chus = player.getStorage('chutan').slice(0);
-							console.log(chus)
 							if(!chus.contains(event.player))	return false;
 							chus.remove(event.player);
-							console.log(chus)
 							return event.player.getHistory('useCard',function(evt){
 								return evt.targets.contains(chus[0]);
 							}).length>0;
