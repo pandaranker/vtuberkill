@@ -14,6 +14,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			heichuan:['male','qun', 3, ['zhengtibuming', 'lunhuizuzhou'],['guoV']],//, 'mingyunniezao'
 			/**雪团 */
 			YukiTuan: ['female','qun',4,['chentu','sishu'],['guoV']],
+			/**三三 */
+			Mikawa: ['male','qun',4,['zhezhuan','setu'],['guoV']],
+			/**樱井 */
+			Sakurai:['male','qun',4,['junxu','jingniang'],['guoV']],
 
 			/**旧艾琳 */
 			old_Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],

@@ -2841,7 +2841,7 @@
 				name:'显示',
 				config:{
 					update:function(config,map){
-						if(lib.config.mode=='versus'||lib.config.mode=='chess'||lib.config.mode=='tafang'||lib.config.mode=='boss'){
+						if(lib.config.mode=='versus'||lib.config.mode=='chess'||lib.config.mode=='tafang'||lib.config.mode=='boss'||lib.config.mode=='richer'){
 							map.show_handcardbutton.show();
 						}
 						else{
@@ -6430,260 +6430,6 @@
 					},
 				}
 			},
-			chess:{
-				name:'战棋',
-				config:{
-					chess_mode:{
-						name:'游戏模式',
-						init:'combat',
-						item:{
-							combat:'自由',
-							three:'统率',
-							leader:'君主',
-						},
-						restart:true,
-						frequent:true,
-					},
-					update:function(config,map){
-						if(config.chess_mode=='leader'){
-							map.chess_leader_save.show();
-							map.chess_leader_clear.show();
-							map.chess_leader_allcharacter.show();
-							map.chess_character.hide();
-						}
-						else{
-							map.chess_leader_save.hide();
-							map.chess_leader_clear.hide();
-							map.chess_leader_allcharacter.hide();
-							map.chess_character.show();
-						}
-						if(config.chess_mode=='combat'){
-							// map.battle_number.show();
-							// map.chess_ordered.show();
-							map.free_choose.show();
-							map.change_choice.show();
-						}
-						else{
-							// map.battle_number.hide();
-							// map.chess_ordered.hide();
-							map.free_choose.hide();
-							map.change_choice.hide();
-						}
-						// if(config.chess_mode!='leader'){
-						// 	map.ban_weak.show();
-						// 	map.ban_strong.show();
-						// }
-						// else{
-						// 	map.ban_weak.hide();
-						// 	map.ban_strong.hide();
-						// }
-					},
-					chess_leader_save:{
-						name:'选择历程',
-						init:'save1',
-						item:{
-							save1:'一',
-							save2:'二',
-							save3:'三',
-							save4:'四',
-							save5:'五',
-						},
-						restart:true,
-						frequent:true,
-					},
-					chess_leader_allcharacter:{
-						name:'启用全部角色',
-						init:true,
-						onclick:function(bool){
-							if(confirm('调整该设置将清除所有进度，是否继续？')){
-								for(var i=1;i<6;i++) game.save('save'+i,null,'chess');
-								game.saveConfig('chess_leader_allcharacter',bool,'chess')
-								if(get.mode()=='chess') game.reload();
-								return;
-							}
-							else this.classList.toggle('on');
-						},
-					},
-					chess_leader_clear:{
-						name:'清除进度',
-						onclick:function(){
-							var node=this;
-							if(node._clearing){
-								for(var i=1;i<6;i++) game.save('save'+i,null,'chess');
-								game.reload();
-								return;
-							}
-							node._clearing=true;
-							node.firstChild.innerHTML='单击以确认 (3)';
-							setTimeout(function(){
-								node.firstChild.innerHTML='单击以确认 (2)';
-								setTimeout(function(){
-									node.firstChild.innerHTML='单击以确认 (1)';
-									setTimeout(function(){
-										node.firstChild.innerHTML='清除进度';
-										delete node._clearing;
-									},1000);
-								},1000);
-							},1000);
-						},
-						clear:true,
-						frequent:true,
-					},
-					// chess_treasure:{
-					// 	name:'战场机关',
-					// 	init:'0',
-					// 	frequent:true,
-					// 	item:{
-					// 		'0':'关闭',
-					// 		'0.1':'较少出现',
-					// 		'0.2':'偶尔出现',
-					// 		'0.333':'时常出现',
-					// 		'0.5':'频繁出现',
-					// 	}
-					// },
-					chess_obstacle:{
-						name:'随机路障',
-						init:'0.2',
-						item:{
-							'0':'关闭',
-							'0.2':'少量',
-							'0.333':'中量',
-							'0.5':'大量',
-						},
-						frequent:true,
-					},
-					show_range:{
-						name:'显示卡牌范围',
-						init:true,
-					},
-					show_distance:{
-						name:'显示距离',
-						init:true,
-					},
-					chess_character:{
-						name:'战棋武将',
-						init:true,
-						frequent:true,
-					},
-					chess_card:{
-						name:'战棋卡牌',
-						init:true,
-						frequent:true,
-					},
-					free_choose:{
-						name:'自由选将',
-						init:true,
-						onclick:function(bool){
-							game.saveConfig('free_choose',bool,this._link.config.mode);
-							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
-							if(!ui.cheat2&&get.config('free_choose')) ui.create.cheat2();
-							else if(ui.cheat2&&!get.config('free_choose')){
-								ui.cheat2.close();
-								delete ui.cheat2;
-							}
-						},
-					},
-					change_choice:{
-						name:'开启换将卡',
-						init:true,
-						onclick:function(bool){
-							game.saveConfig('change_choice',bool,this._link.config.mode);
-							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
-							if(!ui.cheat&&get.config('change_choice')) ui.create.cheat();
-							else if(ui.cheat&&!get.config('change_choice')){
-								ui.cheat.close();
-								delete ui.cheat;
-							}
-						},
-					},
-					// ban_weak:{
-					// 	name:'屏蔽弱将',
-					// 	init:true,
-					// 	restart:true,
-					// },
-					// ban_strong:{
-					// 	name:'屏蔽强将',
-					// 	init:false,
-					// 	restart:true,
-					// },
-					chessscroll_speed:{
-						name:'边缘滚动速度',
-						init:'20',
-						intro:'鼠标移至屏幕边缘时自动滚屏',
-						item:{
-							'0':'不滚动',
-							'10':'10格/秒',
-							'20':'20格/秒',
-							'30':'30格/秒',
-						}
-					},
-				}
-			},
-			tafang:{
-				name:'塔防',
-				config:{
-					tafang_turn:{
-						name:'游戏胜利',
-						init:'10',
-						frequent:true,
-						item:{
-							'10':'十回合',
-							'20':'二十回合',
-							'30':'三十回合',
-							'1000':'无限',
-						}
-					},
-					// tafang_size:{
-					// 	name:'战场大小',
-					// 	init:'9',
-					// 	frequent:true,
-					// 	item:{
-					// 		'6':'小',
-					// 		'9':'中',
-					// 		'12':'大',
-					// 	}
-					// },
-					tafang_difficulty:{
-						name:'战斗难度',
-						init:'2',
-						frequent:true,
-						item:{
-							'1':'简单',
-							'2':'普通',
-							'3':'困难',
-						}
-					},
-					show_range:{
-						name:'显示卡牌范围',
-						init:true,
-					},
-					show_distance:{
-						name:'显示距离',
-						init:true,
-					},
-					// ban_weak:{
-					// 	name:'屏蔽弱将',
-					// 	init:true,
-					// 	restart:true,
-					// },
-					// ban_strong:{
-					// 	name:'屏蔽强将',
-					// 	init:false,
-					// 	restart:true,
-					// },
-					chessscroll_speed:{
-						name:'边缘滚动速度',
-						intro:'鼠标移至屏幕边缘时自动滚屏',
-						init:'20',
-						item:{
-							'0':'不滚动',
-							'10':'10格/秒',
-							'20':'20格/秒',
-							'30':'30格/秒',
-						}
-					},
-				}
-			},
 			brawl:{
 				name:'乱斗',
 				config:{
@@ -6749,149 +6495,6 @@
 					}
 				}
 			},
-			stone:{
-				name:'炉石',
-				config:{
-					// update:function(config,map){
-					// 	if(config.stone_mode=='deck'){
-					// 		// map.deck_length.show();
-					// 		// map.deck_repeat.show();
-					// 		map.random_length.hide();
-					// 		map.skill_bar.show();
-					// 	}
-					// 	else{
-					// 		// map.deck_length.hide();
-					// 		// map.deck_repeat.hide();
-					// 		map.random_length.show();
-					// 		map.skill_bar.hide();
-					// 	}
-					// },
-					// stone_mode:{
-					// 	name:'游戏模式',
-					// 	init:'deck',
-					// 	item:{
-					// 		deck:'构筑',
-					// 		random:'随机'
-					// 	},
-					// 	restart:true,
-					// 	frequent:true,
-					// },
-					// deck_length:{
-					// 	name:'卡组长度',
-					// 	init:'30',
-					// 	item:{
-					// 		'30':'30张',
-					// 		'50':'50张',
-					// 		'80':'80张',
-					// 	},
-					// 	frequent:true,
-					// },
-					// deck_repeat:{
-					// 	name:'重复卡牌',
-					// 	init:'2',
-					// 	item:{
-					// 		'2':'2张',
-					// 		'3':'3张',
-					// 		'5':'5张',
-					// 		'80':'无限',
-					// 	},
-					// 	frequent:true,
-					// },
-					// random_length:{
-					// 	name:'随从牌数量',
-					// 	init:'1/80',
-					// 	item:{
-					// 		'1/120':'少',
-					// 		'1/80':'中',
-					// 		'1/50':'多',
-					// 	},
-					// 	frequent:true,
-					// },
-					battle_number:{
-						name:'出场人数',
-						init:'1',
-						frequent:true,
-						item:{
-							'1':'一人',
-							'2':'两人',
-							'3':'三人',
-							'4':'四人',
-							'6':'六人',
-							'8':'八人',
-							'10':'十人',
-						},
-						onclick:function(num){
-							game.saveConfig('battle_number',num,this._link.config.mode);
-							if(_status.connectMode) return;
-							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
-							if(_status.event.getParent().changeDialog){
-								_status.event.getParent().changeDialog();
-							}
-						},
-					},
-					mana_mode:{
-						name:'行动值变化',
-						init:'inc',
-						item:{
-							inf:'涨落',
-							inc:'递增'
-						},
-						frequent:true
-					},
-					skill_bar:{
-						name:'怒气值',
-						init:true,
-						frequent:true,
-						restart:true,
-					},
-					double_character:{
-						name:'双将模式',
-						init:false,
-						frequent:true,
-						restart:function(){
-							return _status.event.getParent().name!='chooseCharacter'||_status.event.name!='chooseButton';
-						}
-					},
-					free_choose:{
-						name:'自由选将',
-						init:true,
-						onclick:function(bool){
-							game.saveConfig('free_choose',bool,this._link.config.mode);
-							if(_status.connectMode) return;
-							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
-							if(!ui.cheat2&&get.config('free_choose')) ui.create.cheat2();
-							else if(ui.cheat2&&!get.config('free_choose')){
-								ui.cheat2.close();
-								delete ui.cheat2;
-							}
-						},
-					},
-					change_choice:{
-						name:'开启换将卡',
-						init:true,
-						onclick:function(bool){
-							game.saveConfig('change_choice',bool,this._link.config.mode);
-							if(_status.connectMode) return;
-							if(!_status.event.getParent().showConfig&&!_status.event.showConfig) return;
-							if(!ui.cheat&&get.config('change_choice')) ui.create.cheat();
-							else if(ui.cheat&&!get.config('change_choice')){
-								ui.cheat.close();
-								delete ui.cheat;
-							}
-						},
-					},
-					// ban_weak:{
-					// 	name:'屏蔽弱将',
-					// 	init:true,
-					// 	restart:true,
-					// },
-					// ban_strong:{
-					// 	name:'屏蔽强将',
-					// 	init:false,
-					// 	restart:true,
-					// },
-				}
-			},
 		},
 		status:{
 			running:false,
@@ -6903,6 +6506,7 @@
 			videoId:0,
 			globalId:0,
 		},
+		//帮助菜单
 		help:{
 			'FAQ':'<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>'+
 			'<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>'+
@@ -6927,6 +6531,7 @@
 			'<li>发现：从三张随机亮出的牌中选择一张，若无特殊说明，则获得此牌'+
 			'<li>蓄力技：发动时可以增大黄色的数字。若如此做，红色数字于技能的结算过程中改为原来的两倍'
 		},
+		//设置信息框显示
 		setIntro:function(node,func,left){
 			if(lib.config.touchscreen){
 				if(left){
@@ -7008,6 +6613,7 @@
 			}
 			dialog.style.top=idealtop+'px';
 		},
+		//设置悬浮
 		setHover:function(node,func,hoveration,width){
 			node._hoverfunc=func;
 			if(typeof hoveration=='number'){
@@ -7022,15 +6628,18 @@
 			node.addEventListener('mousemove',ui.click.mousemove);
 			return node;
 		},
+		//设置滚轮
 		setScroll:function(node){
 			node.ontouchstart=ui.click.touchStart;
 			node.ontouchmove=ui.click.touchScroll;
 			node.style.WebkitOverflowScrolling='touch';
 			return node;
 		},
+		//设置鼠标滚轮（用于切换皮肤菜单）
 		setMousewheel:function(node){
 			if(lib.config.mousewheel) node.onmousewheel=ui.click.mousewheel;
 		},
+		//设置长按
 		setLongPress:function(node,func){
 			node.addEventListener('touchstart',ui.click.longpressdown);
 			node.addEventListener('touchend',ui.click.longpresscancel);
@@ -7091,6 +6700,7 @@
 			}
 		},
 		init:{
+			//初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
 			init:function(){
 				if(typeof __dirname==='string'&&__dirname.length){
 					var dirsplit=__dirname.split('/');
@@ -8542,6 +8152,7 @@
 					proceed(config2);
 				}
 			},
+			//重置游戏
 			reset:function(){
 				console.log(lib,navigator.notification,lib.device)
 				if(window.inSplash) return;
@@ -9379,6 +8990,7 @@
 				}
 				event.goto(0);
 			},
+			//闲时执行，一般选择角色后开始执行这个方法
 			onfree:function(){
 				if(lib.onfree){
 					clearTimeout(window.resetGameTimeout);
@@ -9453,6 +9065,7 @@
 				}
 				return style;
 			},
+			//读取一个css文件
 			css:function(path,file,before){
 				var style = document.createElement("link");
 				style.rel = "stylesheet";
@@ -9471,6 +9084,7 @@
 				}
 				return style;
 			},
+			//读取一个js文件
 			js:function(path,file,onload,onerror){
 				if(path[path.length-1]=='/'){
 					path=path.slice(0,path.length-1);
@@ -9525,6 +9139,7 @@
 				oReq.open("GET", sScriptURL);
 				oReq.send();
 			},
+			//读取一个json文件
 			json:function(url,onload,onerror){
 				var oReq=new XMLHttpRequest();
 				if(onload) oReq.addEventListener("load",function(){
@@ -9811,6 +9426,7 @@
 				return str;
 			}
 		},
+		//测试用作弊方法
 		cheat:{
 			i:function(){
 				window.cheat=lib.cheat;
@@ -10498,6 +10114,7 @@
 				game.zhu.update();
 			},
 		},
+		//词汇翻译
 		translate:{
 			sc: '打钱',
 			ship: '上舰',
@@ -10720,8 +10337,24 @@
 			unknown6:'七号位',
 			unknown7:'八号位',
 		},
+		//
 		element:{
+			//内容方法，setContent所调用的方法，即事件的具体内容
 			content:{
+				resetRound:function(){
+					var skill = event.resetRound||event.name.slice(0,event.name.indexOf('_roundcount'));
+					if(!player||!lib.skill[skill])	return;
+					var roundname = skill+'_roundcount';
+					if(player.storage[roundname]>0){
+						player.storage[roundname]--
+					}
+					if(player.storage[roundname]>0){
+						player.updateMarks();
+					}
+					else{
+						player.unmarkSkill(roundname);
+					}
+				},
 				//崭新出炉
 				chooseShengjie:function(){
 					'step 0'
@@ -11843,6 +11476,7 @@
 					}
 					else event.goto(event.doing.list.length?3:2);
 				},
+				//检测时机并让玩家选择是否发动触发类技能
 				createTrigger:function(){
 					"step 0"
 					if(lib.filter.filterTrigger(trigger,player,event.triggername,event.skill)){
@@ -11937,8 +11571,8 @@
 								next.set('prompt2',info.prompt2);
 							}
 							else if(info.prompt2!=false){
-								if(lib.dynamicTranslate[event.skill]) next.set('prompt2',lib.dynamicTranslate[event.skill](player,event.skill));
-								else if(lib.translate[event.skill+'_info']) next.set('prompt2',lib.translate[event.skill+'_info']);
+								if(lib.dynamicTranslate[event.skill]||lib.translate[event.skill+'_info'])
+								next.set('prompt2',get.skillInfoTranslation(event.skill,player));
 							}
 							if(trigger.skillwarn){
 								if(next.prompt2){
@@ -11947,6 +11581,13 @@
 								else{
 									next.set('prompt2',trigger.skillwarn);
 								}
+							}
+
+							if(info.addDialog){
+								var createDialog = [str,'small'];
+								if(next.prompt2)	createDialog.push(next.prompt2);
+								createDialog.push(info.addDialog(trigger,player));
+								next.set('createDialog',createDialog);
 							}
 						}
 					}
@@ -12267,6 +11908,7 @@
 						game.pause();
 					}
 				},
+				//一个完整的回合
 				phase:function(){
 					"step 0"
 					if(!event.stepList||!event.stepList.length)	event.stepList = lib.phaseName.slice(0);
@@ -12459,12 +12101,17 @@
 					_status.noclearcountdown=true;
 					if(event.type=='phase'){
 						if(event.isMine()){
-							event.endButton=ui.create.control('结束回合','stayleft',function(){
-								if(_status.event.skill){
+							if(lib.config.mode=='richer'&&lib.skill._chessmove.filter(true,player)&&player.getStat().skill&&!player.getStat().skill._chessmove){
+								event.endButton=ui.create.control('请进行移动','stayleft',function(){});
+							}
+							else{
+								event.endButton=ui.create.control('结束回合','stayleft',function(){
+									if(_status.event.skill){
+										ui.click.cancel();
+									}
 									ui.click.cancel();
-								}
-								ui.click.cancel();
-							});
+								});
+							}
 							event.fakeforce=true;
 						}
 						else{
@@ -17114,6 +16761,7 @@
 					}	
 				},
 			},
+			//玩家方法，.player节点共用的方法（比如展示牌【showCard】）
 			player:{
 				//自创函数(置入相关)
 				addToJudge:function(card,source){
@@ -17771,7 +17419,8 @@
 					this.node.intro.innerHTML=lib.config.intro;
 					this.node.name.dataset.nature=get.groupnature(this.group);
 					lib.setIntro(this);
-					this.node.name.innerHTML=get.slimName(character);
+					if(get.slimName2)	this.node.name.innerHTML=get.slimName2(this);
+					else	this.node.name.innerHTML=get.slimName(character);
 					if(this.classList.contains('minskin')&&this.node.name.querySelectorAll('br').length>=4){
 						this.node.name.classList.add('long');
 					}
@@ -25016,6 +24665,7 @@
 					}
 				}
 			},
+			//卡牌方法，.card节点共用的方法（比如检测卡牌是否在区域内【hasPosition】和添加去除标签【add/removeGaintag】）
 			card:{
 				addGaintag:function(gaintag){
 					if(Array.isArray(gaintag)) this.gaintag=gaintag.slice(0);
@@ -25635,6 +25285,7 @@
 					_status.event.excludeButton.add(this);
 				}
 			},
+			//事件方法，游戏进行过程中每一个事件所具有的方法（比如设置事件内容【setContent】和停止事件【finish】）
 			event:{
 				changeToZero:function(){
 					this.num=0;
@@ -26196,6 +25847,7 @@
 					}
 				}
 			},
+			//弹窗方法，.dialog节点共用的方法（比如开启和关闭弹窗【open/close】）
 			dialog:{
 				add:function(item,noclick,zoom){
 					if(typeof item=='string'){
@@ -26325,6 +25977,7 @@
 					return this;
 				}
 			},
+			//选项方法，参考弹窗方法，在创建.control节点时依次为其添加
 			control:{
 				open:function(){
 					ui.control.insertBefore(this,_status.createControl||ui.confirm);
@@ -33391,6 +33044,7 @@
 				lib.hook.globalskill[i].remove(skill);
 			}
 		},
+		//将清除武将牌上的临时技能
 		resetSkills:function(){
 			for(var i=0;i<game.players.length;i++){
 				for(var j in game.players[i].tempSkills){
@@ -36136,18 +35790,7 @@
 							forced:true,
 							popup:false,
 							silent:true,
-							content:function(){
-								var skill=event.name.slice(0,event.name.indexOf('_roundcount'));
-								if(player.storage[event.name]>0){
-									player.storage[event.name]--
-								}
-								if(player.storage[event.name]>0){
-									player.updateMarks();
-								}
-								else{
-									player.unmarkSkill(event.name);
-								}
-							}
+							content:lib.element.content.resetRound
 						};
 					}(info.round,k));
 					lib.translate[k]=lib.translate[i]||'';
@@ -36263,6 +35906,7 @@
 				game.finishSkill(i);
 			}
 		},
+		//Mod类技能的相关检测
 		checkMod:function(){
 			var name=arguments[arguments.length-2];
 			var skills=arguments[arguments.length-1];
@@ -45459,7 +45103,7 @@
 				return dialog;
 			},
 			dialog:function(){
-				var i;
+				var i,small;
 				var hidden=false;
 				var notouchscroll=false;
 				var forcebutton=false;
@@ -45477,7 +45121,10 @@
 					else if(arguments[i]=='hidden') hidden=true;
 					else if(arguments[i]=='notouchscroll') notouchscroll=true;
 					else if(arguments[i]=='forcebutton') forcebutton=true;
-					else dialog.add(arguments[i]);
+					else if(arguments[i]=='small') small=true;
+					else{
+						dialog.add(arguments[i],small,small);
+					}
 				}
 				if(!hidden){
 					dialog.open();
@@ -49892,11 +49539,8 @@
 					else if(info.promptfunc){
 						event.skillDialog=ui.create.dialog(str,'<div><div style="width:100%">'+info.promptfunc(event,event.player)+'</div></div>');
 					}
-					else if(lib.dynamicTranslate[skill]){
-						event.skillDialog=ui.create.dialog(str,'<div><div style="width:100%">'+lib.dynamicTranslate[skill](event.player,skill)+'</div></div>');
-					}
-					else if(lib.translate[skill+'_info']){
-						event.skillDialog=ui.create.dialog(str,'<div><div style="width:100%">'+lib.translate[skill+'_info']+'</div></div>');
+					else if(lib.dynamicTranslate[skill]||lib.translate[skill+'_info']){
+						event.skillDialog=ui.create.dialog(str,'<div><div style="width:100%">'+get.skillInfoTranslation(skill,_status.event.player)+'</div></div>');
 					}
 				}
 			},
@@ -51802,6 +51446,7 @@
 			}
 		},
 		prompt:function(skill,target,player){
+			console.log(1)
 			player=player||_status.event.player;
 			if(target){
 				var str=get.translation(target);
@@ -51816,8 +51461,8 @@
 		},
 		prompt2:function(skill,target,player){
 			var str=get.prompt.apply(this,arguments);
-			if(!lib.translate[skill+'_info']) return str;
-			return '###'+str+'###'+lib.translate[skill+'_info'];
+			if(!lib.translate[skill+'_info']&&!lib.dynamicTranslate[skill]) return str;
+			return '###'+str+'###'+get.skillInfoTranslation(skill,player);
 		},
 		url:function(master){
 			var url=lib.config.updateURL||lib.updateURL;

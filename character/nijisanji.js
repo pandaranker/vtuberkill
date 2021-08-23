@@ -2830,17 +2830,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			YagamiKaruta: '山神歌流多',
 			suisi: '髓思',
-			suisi_info: '锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
-			suisi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高防御</span>',
+			suisi_info: '锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。<br>你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
+			suisi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高防御 自肃</span>',
 			liefeng: '猎风',
 			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。',
 			
 			YukishiroMahiro:'雪城真寻',
 			jiaoming: '骄名',
-			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
+			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：<br>对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
 			jiaoming_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 			changhe: '唱和',
-			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：摸两张牌；或回复1点体力。',
+			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：<br>摸两张牌；或回复1点体力。',
 
 			OnomachiHaruka: '小野町春香',
 			nvjiangrouhao: '女将柔豪',

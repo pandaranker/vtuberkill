@@ -5869,7 +5869,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_pojie: '破戒',
 			re_pojie_info: '回合内，一名角色失去装备区的牌时，你可以摸一张牌。出牌阶段结束时，本阶段你每发动过一次此技能便弃置一张牌。',
 			re_dazhen: '大振',
-			re_dazhen_info: '出牌阶段，你可将你武器栏的牌移动至其他角色武器栏（代替原装备），然后其选择一项：弃置你手牌数与手牌上限之差的牌；或受到你造成的1点伤害。',
+			re_dazhen_info: '出牌阶段，你可将你武器栏的牌移动至其他角色武器栏（代替原装备），然后其选择一项：<br>弃置你手牌数与手牌上限之差的牌；或受到你造成的1点伤害。',
 
 			re_KaguyaLuna: '新·辉夜月',
 			re_jiajiupaidui: '假酒派对',
@@ -5922,8 +5922,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_MitoTsukino:'新·月之美兔',
 			re_MitoTsukino_info:'月之美兔',
 			re_bingdielei:'盛蕾',
-			re_bingdielei_anotherPhase: '盛蕾',
-			re_bingdielei_info:'每轮限一次。你失去过牌的回合结束时，你可以获得一个额外回合。',
+			re_bingdielei_info:'轮次技 你失去过牌的回合结束时，你可以获得一个额外回合。',
 			
 			re_HiguchiKaede: '新·樋口枫',
 			re_zhenyin: '震音',
@@ -5970,7 +5969,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			akxiaoqiao_info: '弃牌阶段开始时，你可以展示任意张类型不同的手牌，本回合这些牌不计入手牌上限。',
 			akxiaoqiao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 			liancheng: '链成',
-			liancheng_info: '一轮限两次。一个回合结束时，你可以重铸任意张类型不同的手牌。若你重铸了装备牌，你可以令当前回合角色调整手牌与你相同。',
+			liancheng_info: '每轮限两次。一个回合结束时，你可以重铸任意张类型不同的手牌。若你重铸了装备牌，你可以令当前回合角色调整手牌与你相同。',
 
 			re_HonmaHimawari: '新·本间向日葵',
 			tianqing: '天晴烂漫',
@@ -6002,7 +6001,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_TokinoSora: '新·时乃空',
 			re_taiyangzhiyin:'阳语',
-			re_taiyangzhiyin_info:'你使用牌指定目标时，若此牌点数大于10，你可选择一项：令之无法响应；为之额外指定一名目标；或摸一张牌。',
+			re_taiyangzhiyin_info:'你使用牌指定目标时，若此牌点数大于10，你可选择一项：<br>令之无法响应；为之额外指定一名目标；或摸一张牌。',
 			re_taiyangzhiyin_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
 			re_RobokoSan:'新·萝卜子',
@@ -6024,7 +6023,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkiRosenthal: '新·亚琦',
 			re_huichu: '烩料',
-			re_huichu_info: '每轮限一次。一名角色的回合开始时，你可以展示所有手牌，若均为红色，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
+			re_huichu_info: '轮次技 一名角色的回合开始时，你可以展示所有手牌，若均为红色，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。',
 
 			re_YozoraMel: '新·夜空梅露',
 			fuyi: '蝠翼',
@@ -6105,7 +6104,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_OtomeOto: '新·乙女音',
 			re_yuxia: '龙箱',
-			re_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中的一张置于牌堆顶。',
+			re_yuxia_info: '每回合限一次。你可以将三张牌当作一张通常锦囊牌使用，此牌点数视为这些牌的合计。然后，你可以将其中一张置于牌堆顶。',
 			hanyin: '瀚音',
 			hanyin_info: '你使用牌被点数小于之的牌响应或抵消时，摸一张牌。',
 

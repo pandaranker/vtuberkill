@@ -4,15 +4,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		name:'clubs',
 		connect:true,
 		character:{
-			/**阿梓 */
-			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
-			/**勺宝 */
-			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
-			/**蜜球兔 */
-			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
-			/**胡桃 */
-			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
-
 			//神乐组
 			KaguraMea: ['female', 'kagura', 4, ['luecai', 'xiaoyan']],
 			YaotomeNoe: ['female', 'kagura', 4, ['huiyuan', 'suoshi']],
@@ -43,6 +34,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
+			/**星宫汐 */
+			HosimiyaSio: ['female','qun',4,['yuanyao','gongni'],],
 			/**耳朵 */
 			Hiiro: ['female','qun',4,['jiace','xiangying'],['yingV']],
 			/**猫雷NyaRu */
@@ -291,6 +284,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.discard(player.getCards('hej'));
 					player.recover(3-player.hp);
 					'step 1'
+					var roundname = 'quankai_roundcount';
+					if(player.storage.daimeng.length!=4){
+						player.popup('重置');
+						var next = game.createEvent('resetSkill');
+						[next.player,next.resetSkill] = [player,'quankai']
+						next.setContent(lib.element.content.resetRound);
+					}
 					player.storage.daimeng=[1,2,3,4]
 					'step 2'
 					player.storage.changsheng='over';
@@ -2429,7 +2429,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					list.push('cancel2');
 					//选择一个其他未废除的装备栏
 					var next=player.chooseControl(list);
-					next.set('prompt','请选择一个其他未废除的装备栏');
+					next.set('prompt','请选择一个其他未废除的装备栏<br>（若不选择，此技能进入冷却）');
 					next.set('ai', function(event,player,list){
 						var list = _status.event.list;
 						if(list) return list.randomGet();
@@ -3104,7 +3104,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
-			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你不相邻，你可选择一项：取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
+			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你不相邻，你可选择一项：<br>取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
@@ -3203,7 +3203,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			heichuan:'原初黑川',
 			zhengtibuming: '正体不明',
-			zhengtibuming_info: '游戏开始时，你随机获得三张武将牌作为“替身”，然后亮出其中一张。获得亮出“替身”的通常技，且性别和势力视为与“替身”相同。回合开始或结束时，你可以选择一项：更改亮出的“替身”；或随机更换一张“替身”。当你受到1点伤害后，你可以获得一张新的“替身”。',
+			zhengtibuming_info: '游戏开始时，你随机获得三张武将牌作为“替身”，然后亮出其中一张。获得亮出“替身”的通常技，且性别和势力视为与“替身”相同。回合开始或结束时，你可以选择一项：<br>更改亮出的“替身”；或随机更换一张“替身”。当你受到1点伤害后，你可以获得一张新的“替身”。',
 			lunhuizuzhou: '轮回诅咒',
 			lunhuizuzhou_info: '锁定技 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
 			mingyunniezao: '命运捏造',

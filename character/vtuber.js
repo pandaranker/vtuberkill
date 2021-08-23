@@ -26,8 +26,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SuouPatra: ['female','nanashi',4,['mianmo','tiaolv'],['forbidai']],
 			/**天开司 */
 			TenkaiTsukasa: ['male','upd8',4,['pojie','dazhen']],
-			/**泠鸢 */
-			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing'],['guoV']],
 
 			/**向晚 */
 			Ava: ['female','asoul',4,['yiqu','wanxian'],['guoV']],
@@ -51,6 +49,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**阿秋 */
 			AkiRinco: ['female','psp',4,['jiren','luqiu','canxin'],['guoV']],
 
+			/**花谱 */
+			Kaf:['female','vwp',3,['liuhua','yishi','shiji'],['zhu']],
 			/**理芽 */
 			Rim: ['female','vwp',4,['shenghua','zhanchong'],],
 			/**异世界情绪 */
@@ -65,6 +65,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**姬雏 */
 			HIMEHINA:['female','qun',3,['jichu','mingshizhige']],
 			
+			/**泠鸢 */
+			Yousa:['female','VirtuaReal',3,['niaoji','ysxiangxing'],['guoV']],
+			/**阿梓 */
+			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
+			/**勺宝 */
+			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
+			/**蜜球兔 */
+			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
+			/**胡桃 */
+			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
+
 			/**犬山 */
 			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
 			/**Mishiro */
@@ -1446,9 +1457,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				selectTarget:2,
 				multitarget:true,
+				round:1,
 				content:function(){
 					'step 0'
-					player.addSkill('jiajiupaidui_tag');
 					player.chooseCardOL(true,targets,'he','弃置一张牌(若其中有♠或9，则视为'+get.translation(player)+'使用了一张酒)').set('ai',function(card){
 						var source = _status.event.source;
 						var player = _status.event.player;
@@ -1466,23 +1477,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					'step 1'
 					var cards = [];
-					// var lose_list = [[targets[0],result[0].cards],[targets[1],result[1].cards]];
 					result.forEach(cur => {
 						cards.addArray(cur.cards);
 					});
 					targets[0].discard(cards[0]);
 					targets[1].discard(cards[1]);
-					// if(lose_list.length){
-					// 	game.loseAsync({
-					// 		lose_list:lose_list,
-					// 	}).setContent(function(){
-					// 		for(var i=0;i<event.lose_list.length;i++){
-					// 			var next=event.lose_list[i][0].discard(event.lose_list[i][1]);
-					// 			next.relatedEvent=event.getParent();
-					// 			next.getlx=false;
-					// 		}
-					// 	});
-					// }
 					event.cards = cards;
 					'step 2'
 					game.delay();
@@ -1503,7 +1502,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if(event.allJiu){
-						player.removeSkill('jiajiupaidui_tag');
+						var roundname = 'jiajiupaidui_roundcount';
+						if(player.hasMark(roundname)){
+							player.popup('重置');
+							var next = game.createEvent('resetSkill');
+							[next.player,next.resetSkill] = [player,'jiajiupaidui']
+							next.setContent(lib.element.content.resetRound);
+						}
 						player.draw();
 					}
 				},
@@ -1516,19 +1521,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 					threaten:1.2
 				},
-				subSkill:{
-					tag:{
-						trigger:{global:'roundStart'},
-						direct:true,
-						mark:true,
-						intro:{
-							content:'下轮开始后可以再次使用技能'
-						},
-						content:function(){
-							player.removeSkill('jiajiupaidui_tag');
-						}
-					},
-				}
 			},
 			kuangzuiluanwu:{
 				audio:1,
@@ -1926,7 +1918,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					var next = player.chooseTarget();
 					next.set('filterTarget',function(card,player,target){
-						return target!=player&&target.group==player.group;
+						return target.group==player.group;
 					});
 					if(trigger._result&&trigger._result.length){
 						next.set('prompt2','失去一点体力上限，令其回复一点体力');
@@ -2305,7 +2297,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:'辉夜月',
 			KaguyaLuna_info:'辉夜月',
 			jiajiupaidui:'假酒派对',
-			jiajiupaidui_info:'每轮限一次，当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
+			jiajiupaidui_info:'轮次技 当你需要使用【酒】时，你可以令两名角色各弃置一张牌，若其中包含♠或点数9，视为你使用之（不计入次数）。若均为♠或点数9，你摸一张牌并重置此技能。',
 			jiajiupaidui_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：白嫖【酒】 强制弃牌</span>',
 			kuangzuiluanwu:'狂醉乱舞',
 			kuangzuiluanwu_info:'<font color=#daa>限定技</font> 出牌阶段，你可以扣减一点体力上限，视为使用了一张无距离限制的目标数为X的【杀】。（X为你当前的【酒】层数）',
@@ -2325,7 +2317,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			wudao_info: '出牌阶段，你可以重铸一张基本牌，你以此法重铸的牌须与本回合之前重铸的牌名不同。出牌阶段结束时，若本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			wudao_useEnd_info: '本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
 			yinyuan: '缘斩',
-			yinyuan_info: '主公技 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令其他一名同势力角色执行未被选择一项。',
+			yinyuan_info: '主公技 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令一名同势力角色执行未被选择一项。',
 
 			UmoriHinako: '宇森ひなこ',
 			hongyi: '红移',
@@ -2362,7 +2354,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			baiqing: '白情',
 			baiqing_info: '一回合内第X张【杀】被使用时，你可以亮出牌堆顶X张牌，获得其中与此【杀】颜色不同的牌。（X为你已损失的体力值+1）',
 			shuangxing: '星徊',
-			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
+			shuangxing_info: '你使用仅指定其他角色为目标的锦囊牌后，可以选择一项：<br>令你本回合使用牌无次数限制；令其中一名目标对你使用一张【杀】，否则你获得其一张牌。',
 			shuangxing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 
 			DoumyoujiHaruto: '道明寺晴翔',

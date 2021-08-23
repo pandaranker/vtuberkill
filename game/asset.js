@@ -1432,6 +1432,7 @@ window.noname_asset_list=[
 	'image/character/SuouPatra.jpg',
 	'image/character/SuzuharaLulu.jpg',
 	'image/character/SuzukaUtako.jpg',
+	'image/character/Taffy.jpg',
 	'image/character/TakatsukiRitsu.jpg',
 	'audio/die/TakatsukiRitsu.mp3',
 	'image/character/TenkaiTsukasa.jpg',
