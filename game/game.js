@@ -34442,7 +34442,7 @@
 							if(info.viewAs&&typeof info.viewAs!='function'&&info.viewAsFilter&&info.viewAsFilter(player)==false) enable=false;
 							if(info.usable&&get.skillCount(skills2[i])>=info.usable) enable=false;
 							if(info.chooseButton&&_status.event.noButton) enable=false;
-							if(info.round&&(player.storage[skill+'_roundcount']>0)) enable=false;
+							if(info.round&&(player.storage[_status.event.skillBy+'_roundcount']>0)) enable=false;
 						}
 						if(enable){
 							if(event.isMine()||!event._aiexclude.contains(skills2[i])){
@@ -51446,7 +51446,6 @@
 			}
 		},
 		prompt:function(skill,target,player){
-			console.log(1)
 			player=player||_status.event.player;
 			if(target){
 				var str=get.translation(target);
