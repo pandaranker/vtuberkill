@@ -230,16 +230,34 @@
 
 
   
-  "yindao0": [
-    "shanbao:你好呀，这里是<span class=\"purple\">扇宝</span>，欢迎来到V杀（VtuberKill）！",
+  "yindaoA0": [
+    "shanbao:你好呀，这里是<span class=\"purple\">扇宝</span>，欢迎来到V杀（VtuberKill）的世界！",
     "shanbao:对于V杀有什么不懂的的地方就请来询问我吧！"
   ],
-  "yindao1": [
+  "yindaoA1": [
     "shanbao:请问您之前接触过类似于V杀（diy三国杀）的游戏嘛？",
     "choose:纯路人，什么是三国杀？:听说过，也玩过类似的桌游:在很久以前接触过一丢丢三国杀:只玩过原版的三国杀:我是资深杀友，各种版本的三国杀都有玩"
   ],
+  "yindaoB": [
+    "shanbao:咳咳~（打开搜索引擎）《三国杀》是中国传媒大学动画学院04级游戏专业学生黄恺（Kayak）设计，由游卡桌游出版发行的一款热门桌面游戏。",
+    "shanbao:该游戏结合中国三国时期历史文化背景，以身份、势力或阵营等为线索，以卡牌为形式，玩家通过合纵连横，经过一轮一轮的谋略和动作获得最终的胜利。",
+    "shanbao:大概就是这样子啦~"
+  ],
+  "yindaoC": [
+    "booth:character/Bella.jpg:160:300:20:20",
+    "shanbao:咱们这游戏是V杀，也就是将原版三国杀从古代背景跳跃到虚拟世界啦~",
+    "booth:character/LizeHelesta.jpg:160:300:40:20",
+    "shanbao:许多经典角色都会出现在游戏中哦~ 若是恰好没有实装到您推的V，您也可以为自己的推设计一套技能投稿到制作组哟~",
+    "booth:character/ShirakamiHaruka.jpg:160:300:60:20",
+    "shanbao:此外V杀在原版三国杀的基础上又拓展了一些玩法哦~ 如果想了解的话之后扇宝还会解释呢",
+    "booth:character/Kaf.jpg:160:300:80:20",
+    "shanbao:   ",
+    "booth:none",
+    "shanbao:大概就是这样子啦~"
+  ],
   "over": [
     "shanbao:那扇宝就在这里祝愿新人能快速上手吧！",
-    "shanbao:如果之后有些游戏操作和规则忘记了也可以回扇宝这里来复习一下的哦"
+    "shanbao:如果之后有些游戏操作和规则忘记了也可以回扇宝这里来复习一下的哦",
+    "choose:再引导一次:进入身份模式:进入国战模式"
   ]
 }

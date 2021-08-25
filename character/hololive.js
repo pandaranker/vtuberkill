@@ -3257,9 +3257,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			futian:{
-				init:function(player,skill){
-					player.storage[skill] = [];
-				},
 				trigger:{player:'phaseBegin'},
 				limited:true,
 				unique:true,
@@ -3277,6 +3274,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					player.storage.futian = true;
 					player.awakenSkill(event.name);
 					event.hc = player.getCards('h');
 					event.shus = player.getCards('s',function(card){
@@ -3298,11 +3296,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				subSkill:{
 					futian:{
+						init:function(player,skill){
+							player.storage[skill] = [];
+						},
 						hiddenCard:function(player,name){
 							if(player.storage.maoge&&player.storage.maoge.length>player.countCards('h')) return false;
 							var list = get.inpile('trick',function(card){
 								var player = _status.event.player;
-								if(player.storage.futian.contains(card))	return false;
+								if(player.storage.futian_futian.contains(card))	return false;
 								return true;
 							});
 							for(var i=0;i<list.length;i++){
@@ -3318,7 +3319,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							dialog:function(event,player){
 								var list = get.inpile('trick',function(card){
 									var player = _status.event.player;
-									if(player.storage.futian.contains(card))	return false;
+									if(player.storage.futian_futian.contains(card))	return false;
 									return true;
 								});
 								for(var i=0;i<list.length;i++){
@@ -3351,7 +3352,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									position:'he',
 									viewAs:{name:links[0][2]},
 									onuse:function(result,player){
-										player.storage.futian.add(result.card.name);
+										player.storage.futian_futian.add(result.card.name);
 									},
 								}
 							},

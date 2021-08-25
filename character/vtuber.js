@@ -1541,6 +1541,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				multitarget:true,
 				content:function(){
 					'step 0'
+					player.storage.kuangzuiluanwu = true;
 					player.awakenSkill('kuangzuiluanwu');
 					player.loseMaxHp();
 					'step 1'

@@ -535,7 +535,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					list3.randomSort();
 					var num=get.config('choice_'+game.me.identity);
 					list=event.list.slice(0,num);
-					//
 					if(game.me==game.zhu){
 						list=['KiryuuCoco'];
 					}

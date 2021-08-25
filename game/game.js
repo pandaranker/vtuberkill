@@ -29119,6 +29119,7 @@
 		],
 	};
 	var game={
+		//galgame相关功能
 		galgameMod:function(){
 			var galgame = {text:{},game:game};
 			var gal0 = function () {
@@ -29200,7 +29201,8 @@
 									booth[arr[6]].style.height = parseInt(arr[3]) + "px";
 									booth[arr[6]].style.left = parseInt(arr[4]) + "%";
 									booth[arr[6]].style.top = parseInt(arr[5]) + "%";
-									booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
+									booth[arr[6]].setBackgroundImage('extension/' + arr[1]);
+									// booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
 								}
 							} else {
 								if (arr[1] == "none") {
@@ -29211,7 +29213,9 @@
 									booth.node.style.height = parseInt(arr[3]) + "px";
 									booth.node.style.left = parseInt(arr[4]) + "%";
 									booth.node.style.top = parseInt(arr[5]) + "%";
-									booth.node.setBackgroundImage('galgame/' + arr[1]);
+									console.log(arr[1])
+									booth.node.setBackgroundImage('extension/' + arr[1]);
+									// booth.node.setBackgroundImage('galgame/' + arr[1]);
 								}
 							}
 							num++;
@@ -29449,6 +29453,7 @@
 			}
 			return next;
 		},
+		//获取（角色名）的评级
 		getRarity:function(name){
 			var rank=lib.rank.rarity;
 			if(rank.beginner.contains(name)) return 'beginner';

@@ -145,6 +145,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					player.storage.hongtu = true;
 					player.awakenSkill('hongtu');
 					event.going = 1;
 					'step 1'

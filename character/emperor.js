@@ -31,8 +31,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.num!=0&&event.player.isDamaged()&&player==_status.currentPhase;
 				},
 				content:function(){
-					player.awakenSkill('zhigao');
 					player.storage.zhigao = true;
+					player.awakenSkill('zhigao');
 					trigger.cancel();
 					if(trigger.num<0){
 						game.broadcast(function(){
