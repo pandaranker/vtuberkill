@@ -4240,9 +4240,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						sub:true,
 						trigger:{player:'disableEquipAfter'},
 						direct:true,
-						filter:function(event,player){
-							return true;
-						},
 						content:function(){
 							player.markSkill('qinglve_mark');
 						},

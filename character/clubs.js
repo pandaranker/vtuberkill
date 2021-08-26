@@ -67,12 +67,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Veibae: ['female','vshojo',4,['zhexun','yuci'],['yingV']],
 			/**铁耗子 */
 			Ironmouse: ['female','vshojo',3,['haosun','banmao'],['yingV']],
+			/**Froot */
+			Froot: ['female','vshojo',4,['exiao','jinmei'],['yingV']],
 		},
 		characterSort:{
 			clubs:{
 				paryi2:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
 				VirtuaReal2:['Azusa','Shaun','Miqiutu'],
-				vshojo2:['Nyanners','Veibae','Ironmouse'],
+				vshojo2:['Nyanners','Veibae','Ironmouse','Froot'],
 			}
 		},
 		characterTitle:{

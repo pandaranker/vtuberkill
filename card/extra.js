@@ -903,6 +903,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhuque_bg:'扇',
 			zhuque_skill:'RPG',
 			zhuque_info:'你可以将一张普通【杀】当具火焰伤害的【杀】使用。',
+			zhuque_skill_info:'你可以将一张普通【杀】当具火焰伤害的【杀】使用。',
 			guding:'军刀',
 			guding_info:'锁定技，当你使用【杀】对目标角色造成伤害时，若其没有手牌，此伤害+1。',
 			guding_skill:'军刀',
