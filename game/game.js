@@ -10342,7 +10342,7 @@
 			//内容方法，setContent所调用的方法，即事件的具体内容
 			content:{
 				resetRound:function(){
-					var skill = event.resetRound||event.name.slice(0,event.name.indexOf('_roundcount'));
+					var skill = event.resetSkill||event.name.slice(0,event.name.indexOf('_roundcount'));
 					if(!player||!lib.skill[skill])	return;
 					var roundname = skill+'_roundcount';
 					if(player.storage[roundname]>0){

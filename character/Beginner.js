@@ -6063,7 +6063,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_UruhaRushia: '新·润羽露西娅',
 			juebi: '绝壁',
-			juebi_info: '在你未受到伤害的回合，你可以将非基本牌当【闪】使用或打出；你受到伤害后，可以令本回合下一次造成的伤害+1。',
+			juebi_info: '在你未受到伤害的回合内，你可以将非基本牌当【闪】使用或打出；你受到伤害后，可以令本回合下一次造成的伤害+1。',
 			zhanhou: '战吼',
 			zhanhou_info: '出牌阶段开始时/其他角色阵亡时，你可以受到1点伤害/回复1点体力，视为使用一张【顺手牵羊】。',
 			zhanhou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
