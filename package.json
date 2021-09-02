@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "clean-jsdoc-theme": "^3.2.8",
+    "jsdoc": "^3.6.7"
+  },
+  "scripts": {
+    "generate-docs": "node node_modules/jsdoc/jsdoc.js game -r -c jsdoc.json -t node_modules/clean-jsdoc-theme"
+}
+}
