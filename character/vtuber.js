@@ -2142,7 +2142,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				prompt:function(){
 					var player=_status.event.player;
 					var list=game.filterPlayer(function(target){
-						return target.hasZhuSkill('shiji',player)&&player.group==target.group;
+						return target.hasZhuSkill('shiji',player)&&player.group==target.group&&target.getStorage('liuhua').length;
 					});
 					var str='选择'+get.translation(list);
 					if(list.length>1) str+='中的一人';
@@ -2152,7 +2152,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(player.countCards('h')==0) return false;
 					return game.hasPlayer(function(target){
-						return target.hasZhuSkill('shiji',player)&&player.group==target.group;
+						return target.hasZhuSkill('shiji',player)&&player.group==target.group&&target.getStorage('liuhua').length;
 					});
 				},
 				filterTarget:function(card,player,target){
@@ -2170,12 +2170,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return !_status.event.suits.contains(get.suit(card));
 					}).set('suits',suits).set('ai',function(card){
 						var evt = _status.event.getParent();
-						if(evt.target.isTurnedOver()&&(_status.event.suits+ui.selected.cards.length)<5)	return get.value(card,'raw',evt.target)-1;
-						if((evt.player.countCards('he')-ui.selected.cards.length)<3)	return get.value(card,'raw',evt.target)-9;
-						return get.value(card,'raw',evt.target)-5;
+						if(evt.target.isTurnedOver()&&(_status.event.suits+ui.selected.cards.length)<5)	return get.value(card,evt.target,'raw')-1;
+						if((evt.player.countCards('he')-ui.selected.cards.length)<3)	return get.value(card,evt.target,'raw')-9;
+						return get.value(card,evt.target,'raw')-5;
 					}).set('complexCard',true);
 					"step 1"
-					if(result.bool){
+					if(result.bool&&result.cards&&result.cards.length){
 						event.cards = result.cards;
 						player.lose(event.cards,ui.special,'toStorage');
 						player.$give(event.cards,target,false);

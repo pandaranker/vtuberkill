@@ -52519,7 +52519,7 @@
 			}
 		},
 		suit3:function(cards,player){
-			if(get.itemtype(cards)!='cards')	return;
+			if(get.itemtype(cards)!='cards')	return [];
 			var suits=[];
 			for(var i of cards){
 				suits.add(get.suit(i,player));
@@ -53158,35 +53158,22 @@
 									if(get.subtype(arguments[i])!=filter[j]) return false;
 								}
 							}
-							else if(j=='color'){
+							else if(['color','suit','number'].contains(j)){
 								if(typeof filter[j]=='object'){
-									if(filter[j].contains(get.color(arguments[i]))==false) return false;
+									if(filter[j].contains(get[j](arguments[i]))==false) return false;
 								}
 								else if(typeof filter[j]=='string'){
-									if(get.color(arguments[i])!=filter[j]) return false;
-								}
-							}
-							else if(j=='suit'){
-								if(typeof filter[j]=='object'){
-									if(filter[j].contains(get.suit(arguments[i]))==false) return false;
-								}
-								else if(typeof filter[j]=='string'){
-									if(get.suit(arguments[i])!=filter[j]) return false;
-								}
-							}
-							else if(j=='number'){
-								if(typeof filter[j]=='object'){
-									if(filter[j].contains(get.number(arguments[i]))==false) return false;
-								}
-								else if(typeof filter[j]=='string'){
-									if(get.number(arguments[i])!=filter[j]) return false;
+									if(get[j](arguments[i])!=filter[j]) return false;
 								}
 							}
 							else if(typeof filter[j]=='object'){
 								if(filter[j].contains(arguments[i][j])==false) return false;
 							}
 							else if(typeof filter[j]=='string'){
-								if(arguments[i][j]!=filter[j]) return false;
+								if(typeof get[j]=='function'){
+									if(get[j](arguments[i])!=filter[j]) return false;
+								}
+								else if(arguments[i][j]!=filter[j]) return false;
 							}
 						}
 						else{

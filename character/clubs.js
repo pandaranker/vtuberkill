@@ -56,6 +56,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ShikaiYue: ['female','qun',3,['lianyin','guixiang'],],
 			/**纸木铗 */
 			KamikiHasami: ['female','qun',4,['quzhuan','yuanjiu'],],
+			/**黑桐亚里亚 */
+			KurokiriAria: ['female','qun',4,['xuanying','houfan'],],
 			/**早稻叽 */
 			Zaodaoji: ['female','chaos',4,['guangan','lanxuan','zonghe'],['zhu','guoV']],
 			/**牛牛子 */
@@ -1453,7 +1455,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.count)
 						event.count--;
 					var X = game.countPlayer(function(cur) {
-						return cur.hp > player.hp;
+						return cur.hp >= player.hp;
 					})
 					player.storage.Xvalue=X;
 					player.chooseTarget("你可以与一名与你手牌数差不大于" + player.storage.Xvalue + "的角色交换手牌",function(card,player,target){
@@ -3176,7 +3178,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			milijianying: '迷离剑影',
 			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
-			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值大于你的角色数）',
+			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值不少于你的角色数）',
 			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 辅助</span>',
 
 			ShizukuLulu: '雫るる',

@@ -1740,7 +1740,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
 								else	return get.damageEffect(target,player,player);
 							}else{
-								return get.value(link,'raw',target)*get.attitude(player,target);
+								return get.value(link,target,'raw')*get.attitude(player,target);
 							}
 						});
 					}else{

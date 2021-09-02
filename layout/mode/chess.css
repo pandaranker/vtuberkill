@@ -211,8 +211,9 @@
 .player.playerblank{
     background: none;
 }
+
 #window .player.obstacle{
-    background: repeating-linear-gradient(
+    background-image: repeating-linear-gradient(
       135deg,
       rgba(0,0,0,0.2),
       rgba(0,0,0,0.2) 10px,
@@ -221,7 +222,7 @@
     );
 }
 #window .player.obstacle[data-obscolor='blue']{
-    background: repeating-linear-gradient(
+    background-image: repeating-linear-gradient(
         135deg,
         rgba(0, 64, 162, 0.4),
         rgba(0, 64, 162, 0.4) 10px,
@@ -231,6 +232,79 @@
     box-shadow: rgba(0, 64, 162, 0.6) 0 0 0 1px;
 }
 
+.avatar>.showMi {
+    text-shadow: rgb(41, 41, 41) 0 0 2px !important;
+	margin: 5px;
+	font-family: 'xinwei';
+    font-size: 20px !important;
+	letter-spacing: -2px;
+	right: 5px;
+	text-align: right;
+}
+.buttons.smallzoom>.button.character {
+	width: 90px;
+    height: 90px;
+	background-size: cover;
+}
+.dialog.popped .caption.race {
+	padding: 0px 0px 10px;
+    margin: 0px 0px 10px;
+}
+
+#window .player.obstacle.hO.hO1{
+    background-image: url('../../image/mode/richer/obstacle/h1.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    box-shadow: rgba(0, 133, 255, 0.5) 0 0 0 1px;
+}
+#window .player.obstacle.hO.hO2{
+    background-image: url('../../image/mode/richer/obstacle/h2.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    box-shadow: rgba(0, 133, 255, 0.5) 0 0 0 1px;
+}
+#window .player.obstacle.hO.hO3{
+    background-image: url('../../image/mode/richer/obstacle/h3.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    box-shadow: rgba(0, 133, 255, 0.5) 0 0 0 1px;
+}
+#window .player.obstacle.sO.sO1{
+    background-image: url('../../image/mode/richer/obstacle/s1.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    box-shadow: rgba(0, 133, 255, 0.5) 0 0 0 1px;
+}
+#window .player.obstacle.iO1{
+    background-image: url('../../image/mode/richer/obstacle/i1.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    box-shadow: rgba(88, 36, 5, 0.5) 0 0 0 2px;
+}
+
+#window .movethrough{
+    background-image: url('../../image/mode/richer/obstacle/path.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    /* box-shadow: rgba(88, 36, 5, 0.5) 0 0 0 2px; */
+}
+#window .pointerdiv.end{
+    background-image: url('../../image/mode/richer/obstacle/end.png');
+    background-position: 50% 50% ;
+    background-repeat: no-repeat;
+    /* box-shadow: rgba(88, 36, 5, 0.5) 0 0 0 2px; */
+}
+
+img.richerShadow{
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(2px 2px 10px aliceblue);
+}
+
+.building>.hp>div:not(.lost) {
+	background: rgba(63, 119, 173,1) !important;
+	border: 1px solid rgba(31, 82, 131, 1) !important;
+}
 .playergrid.temp{
     opacity:0.3;
 }
@@ -242,6 +316,7 @@
     position:fixed;
 }
 .chessscroll.left{
+    width:12px;
     left:0;
 }
 .chessscroll.right{

@@ -770,7 +770,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event.finish();
 						}else{
 							player.chooseCardButton(cards,'选择交给'+get.translation(event.target)+'的一张牌',true).set('ai',function(button){
-								return get.attitude2(_status.event.target)*get.value(card,'raw',_status.event.target);
+								return get.attitude2(_status.event.target)*get.value(card,_status.event.target,'raw');
 							}).set('target',event.target);
 						}
 					}else	event.finish();
