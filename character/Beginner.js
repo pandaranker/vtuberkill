@@ -4892,7 +4892,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(trigger.targets.contains(event.targets[0]))	trigger.targets.removeArray(event.targets);
 								else trigger.targets.addArray(event.targets);
 							}
-							event.finish();
 						},
 					},
 					give:{
@@ -6158,6 +6157,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhenbao_info: '当你一次性弃置两张或更多的牌后，你可以令一名判定区没有牌的角色选择其中一张置于其判定区。',
 			heimo: '黑魔唤醒',
 			heimo_info: '当你受到伤害后，你可以弃置任意张牌并进行等量次判定。若判定结果中有黑色牌，你对来源造成1点伤害；若有红色牌，你摸两张牌。',
+			heimo_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 		
 		}
 	}

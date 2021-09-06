@@ -2690,7 +2690,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						//将两张手牌当作选择的基本牌
 						return {
 							audio:'jiai',
-							audioname:['jike'],
+							audioname:['jike','Miki'],
 							selectCard:2,
 							position:'h',
 							filterCard:function(card, player, target){

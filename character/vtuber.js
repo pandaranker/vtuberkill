@@ -685,7 +685,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.playerIndex=0;
 						event.dialogId=0;
 					}
-					'step 1'
 					if(targets.length>=1){
 						if(targets[event.playerIndex].countCards('he')){
 							event.handcardsCount= targets[event.playerIndex].countCards('h');
@@ -698,24 +697,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else{
 						event.goto(3);
 					}
+					'step 1'
+					if(result.cards&&result.cards.length){
+						event.dropCards.addArray(result.cards);
+						event.dropCardsType = get.suit3(event.dropCards);
+					}
 					'step 2'
 					if(event.handcardsCount!=-1){
 						if(targets[event.playerIndex].countCards('h')==0&&event.handcardsCount!=0){
 							event.goto(3);
 						}
 						else{
-							if(result.cards&&result.cards.length){
-								event.dropCards.add(result.cards[0]);
-								event.dropCardsType.add(get.suit(result.cards[0]));
-							}
-							///显示当前弃牌框，待改进
 							ui.clear();
-							if(event.dialog){
+							if(event.dialog&&event.dialogId){
 								event.dialog.close();
 								_status.dieClose.remove(event.dialog);
-							}
-							if(event.dialogid){
-								game.broadcast('closeDialog',event.dialogid);
+								game.broadcast('closeDialog',event.dialogId);
 								game.broadcast(function(id){
 									var dialog=get.idDialog(id);
 									if(dialog){
@@ -732,7 +729,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								dialog.videoId=id;
 							},event.dropCards,event.dialog.videoId);
 							event.dialogId=event.dialog.videoId;
-							///显示当前弃牌框，待改进
 							if(event.dropCardsType.length>=4){
 								event.goto(3);
 							}
@@ -741,34 +737,35 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								if(event.playerIndex>=targets.length){
 									event.playerIndex=0;
 								}
-								event.goto(1);
+								event.goto(0);
 							}
 						}
 					}
 					else{
 						targets.splice(event.playerIndex,1);
 						if(event.playerIndex<targets.length){
-							event.goto(1);
+							event.goto(0);
 						}
 						else{
 							event.playerIndex=0;
-							event.goto(1);
+							event.goto(0);
 						}
 					}
 					'step 3'
 					///显示当前弃牌框，待改进
 					ui.clear();
-					game.broadcast('closeDialog',event.dialogid);
-					if(event.dialog){
+					game.broadcast('closeDialog',event.dialogId);
+					if(event.dialog&&event.dialogId){
 						event.dialog.close();
 						_status.dieClose.remove(event.dialog);
+						game.broadcast('closeDialog',event.dialogId);
+						game.broadcast(function(id){
+							var dialog=get.idDialog(id);
+							if(dialog){
+								_status.dieClose.remove(dialog);
+							}
+						},event.dialogId);
 					}
-					game.broadcast(function(id){
-						var dialog=get.idDialog(id);
-						if(dialog){
-							_status.dieClose.remove(dialog);
-						}
-					},event.dialogId);
 				},
 				ai:{
 					order:7,

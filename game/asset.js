@@ -1307,6 +1307,7 @@ window.noname_asset_list=[
 	'image/replace/zhadan.png',
 	
 	'image/character/AchikitaChinami.jpg',
+	'image/character/Ahab.jpg',
 	'image/character/AkaiHaato.jpg',
 	'image/character/AkiRinco.jpg',
 	'image/character/AkiRosenthal.jpg',
@@ -1384,6 +1385,7 @@ window.noname_asset_list=[
 	'image/character/Merry.jpg',
 	'image/character/mibai.jpg',
 	'image/character/Mikawa.jpg',
+	'image/character/Miki.jpg',
 	'image/character/MinatoAqua.jpg',
 	'image/character/Miqiutu.jpg',
 	'image/character/MiraiAkari.jpg',
