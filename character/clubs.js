@@ -93,7 +93,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			TakatsukiRitsu: '阿律者，帕里之衙内也，清楚三铳士之一，以超美丽3d与烂活闻名，常联动yyut，一日律问直播间观众爱者，众人皆曰yyut，律遂破防光速下播，杏溃败后，众v皆如终获青天，有欣欣向荣之势，独律未增半分，郁郁寡欢，此后毕业之，是矣，烂活可供一时，可供一世乎？',
 
 			KaguraMea: '神乐咩者，东瀛之歌女也，迫于生计西来中原，有《money》、《你好我很可爱》之名曲流传世间，咩性格直爽，以此获众拥簇，却亦因此惹祸上身，V始二十二年，西都陷落，咩于京畿聚众建国，国号曰咩，定元咩啊元年，与杏虹分庭抗礼。',
-			MiraiAkari: "未来明（V始二年），生于荆楚郡望，少时猎虎不慎坠马，遂记忆尽失，同族有长者初音未来，携明识山见水，阿满童年如此。V始十九年，绊爱既首义，天下豪杰并起，明亦王于西南，定国号为ENTUM，后为小人夺之，满知无经纬之才，遁入山中，不闻世事。",
 			kaguraNaNa: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
 			Siro: "siro（V始二年），字小白，别号电脑少女，母孕时梦海豚入怀，小白诞即能言，孩提之时即多识胡语，尤善海豚之言，既加冠，应召入宫，拜左将军V海豚候领幽州牧，善骑射，有神弓曰AKM，军中皆呼战神。",
 			HanazonoSerena: "花园sarena者（V始三年），青城之猫灵也，清楚三铳士之一，为报帕里之恩追随之，虽体弱多病然擅行刺，V始三年，以松饼鸩杀汉中太守，帕里pro遂建国巴蜀，花园猫不谙世事，常为好事者钓之。V始九年，朝廷出兵百万击巴蜀，大破蜀军，花园猫身中数刀，仍负帕里逃出益州，复还青城，人不知所踪。",
@@ -288,14 +287,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.discard(player.getCards('hej'));
 					player.recover(3-player.hp);
 					'step 1'
-					var roundname = 'quankai_roundcount';
 					if(player.storage.daimeng.length!=4){
-						player.popup('重置');
 						var next = game.createEvent('resetSkill');
-						[next.player,next.resetSkill] = [player,'quankai']
-						next.setContent(lib.element.content.resetRound);
+						[next.player,next.resetSkill] = [player,'daimeng']
+						next.setContent(function(){
+							player.popup('重置');
+							player.storage.daimeng=[1,2,3,4];
+						});
 					}
-					player.storage.daimeng=[1,2,3,4]
 					'step 2'
 					player.storage.changsheng='over';
 					player.awakenSkill('changsheng');
@@ -3042,7 +3041,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		characterReplace:{
-			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
 			NekomiyaHinata:['re_NekomiyaHinata','NekomiyaHinata'],
 			kaguraNaNa:['re_kaguraNaNa','kaguraNaNa'],
 			Siro:['re_Siro','Siro'],
@@ -3093,15 +3091,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			changsheng: '偿生',
 			changsheng_info: '锁定技 你首次进入濒死状态时，弃置区域内所有牌，回复体力至3，重置『贷梦』，从游戏中除外直到你的下个回合开始。',
 
-			duanfu: '断缚',
-			duanfu_info: '你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。',
-			daichang: '贷偿',
-			daichang_info: '出牌阶段限一次，你可以扣减一点体力上限并摸X张牌，然后你于本阶段内造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
-			daichang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
-			hongtu: '宏图',
-			hongtu_info: '<font color=#faa>限定技</font> 你的出牌阶段结束时，若你处于横置状态且体力为上限：你可以亮出牌堆底牌并使用之，然后摸一张牌，重复此操作直到你无法使用亮出牌。',
-			hongtu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
-			
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
 			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你装备着武器时，你手牌中的武器牌均视为不记次数的【杀】。',
@@ -3120,12 +3109,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			caibu: '财布',
 
 
-			MiraiAkari: '未来明',
-			shiyilijia: '失忆离家',
-			shiyilijia_info: '出牌阶段限一次，你可弃置所有手牌，若如此做，你于回合结束时摸等量的牌。',
-			shiyilijia_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡 克己</span>',
-			seqinghuashen: '色情化身',
-			seqinghuashen_info: '其他角色的【桃】因使用进入弃牌堆时，你可以令其摸一张牌，然后你获得其一张牌。',
+			KamikiHasami: '纸木铗',
+			quzhuan: '曲转',
+			quzhuan_info: '每回合限一次，其他角色在你的回合内使用牌时，你可以在其结算后获得之。',
+			yuanjiu: '援咎',
+			yuanjiu_info: '一名角色的出牌阶段开始时，你可以交给其一张与装备区内某张牌花色相同的牌，视为对其使用了一张【酒】。',
+
+			HinataCocomi: '阳向心美',
+			qijian: '起鉴',
+			qijian_info: '其他角色于自己的回合使用一张指定目标的红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌并失去此技能直到本回合结束。',
+			yizhan: '翼展',
+			yizhan_info: '每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为“群”。',
+			jushi: '聚识',
+			jushi_info: '<font color=#fae>主公技</font> 锁定技 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。',
 
 			kaguraNaNa: '神乐七奈',
 			DDzhanshou: 'DD斩首',

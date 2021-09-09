@@ -1366,6 +1366,7 @@ window.noname_asset_list=[
 	'image/character/KamikiHasami.jpg',
 	'image/character/KataribeTsumugu.jpg',
 	'image/character/KenmochiDouya.jpg',
+	'image/character/Kira.jpg',
 	'image/character/KiryuuCoco.jpg',
 	'image/character/KiyoInga.jpg',
 	'image/character/KizunaAI.jpg',
@@ -1375,6 +1376,7 @@ window.noname_asset_list=[
 	'image/character/KurokiriAria.jpg',
 	'image/character/lanre.jpg',
 	'image/character/lanruo.jpg',
+	'image/character/liqingge.jpg',
 	'image/character/LizeHelesta.jpg',
 	'image/character/Lovely.jpg',
 	'image/character/Mamoru.jpg',
@@ -1427,6 +1429,7 @@ window.noname_asset_list=[
 	'image/character/Shaun.jpg',
 	'image/character/ShikaiYue.jpg',
 	'image/character/ShirakamiFubuki.jpg',
+	'image/character/Shiratama.jpg',
 	'image/character/ShirayukiMishiro.jpg',
 	'image/character/ShirayukiTomoe.jpg',
 	'image/character/ShizukaRin.jpg',
@@ -1605,6 +1608,7 @@ window.noname_asset_list=[
 	'image/character/sea_SasakiSaku.jpg',
 
 	'image/character/old_Eilene.jpg',
+	'image/character/old_InabaHaneru.jpg',
 
 	'image/skin/AkiRinco/1.jpg',
 	'image/skin/AkiRosenthal/1.jpg',

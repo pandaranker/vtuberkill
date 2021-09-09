@@ -3121,14 +3121,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:'书',
 				intro:{
 					mark:function(dialog,storage,player){
+						if(player.countCards('s',function(card){
+							return card.hasGaintag('maoge');
+						}))
 						dialog.addAuto(player.getCards('s',function(card){
 							return card.hasGaintag('maoge');
 						}));
 					},
 					markcount:function(storage,player){
-						return player.getCards('s',function(card){
+						return player.countCards('s',function(card){
 							return card.hasGaintag('maoge');
-						}).length;
+						});
 					},
 					onunmark:function(storage,player){
 						var cards=player.getCards('s',function(card){

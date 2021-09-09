@@ -21,6 +21,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**旧艾琳 */
 			old_Eilene: ['female','eilene','4/6',['duanfu','daichang','hongtu'],['zhu']],
+			/**旧因幡 */
+			old_InabaHaneru:['female','nanashi',1,['huangtu','wudao','yinyuan'],['zhu']],
+
 			/**gz莉泽 */
 			gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan']],
 			/**gz安洁 */
@@ -1088,6 +1091,23 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			db_def2:'开城诱敌',
 			
 			old_Eilene: '旧艾琳',
+			duanfu: '断缚',
+			duanfu_info: '你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。',
+			daichang: '贷偿',
+			daichang_info: '出牌阶段限一次，你可以扣减一点体力上限并摸X张牌，然后你于本阶段内造成伤害时，需将X张牌置于牌堆底。（X为场上被横置的角色数）',
+			daichang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
+			hongtu: '宏图',
+			hongtu_info: '<font color=#faa>限定技</font> 你的出牌阶段结束时，若你处于横置状态且体力为上限：你可以亮出牌堆底牌并使用之，然后摸一张牌，重复此操作直到你无法使用亮出牌。',
+			hongtu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
+			
+			old_InabaHaneru: '旧因幡',			
+			huangtu: '颂恩',
+			huangtu_info: '锁定技 游戏开始时，你选择一名其他角色，增加与其相同的体力上限和体力。回合外，其体力变化时，你的体力进行同样的变化；回合内，你体力变化时，其体力进行同样的变化。',
+			wudao: '五道',
+			wudao_info: '出牌阶段，你可以重铸一张基本牌，你以此法重铸的牌须与本回合之前重铸的牌名不同。出牌阶段结束时，若本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
+			wudao_useEnd_info: '本回合你重铸了所有牌名的基本牌，你可以摸两张牌或回复1点体力。',
+			yinyuan: '缘斩',
+			yinyuan_info: '主公技 若你在出牌阶段结束时发动『五道』，你可以扣减一点体力上限，令一名同势力角色执行未被选择一项。',
 
 			gz_Ava: '国战向晚',
 			gz_yiqu: '亦趋',

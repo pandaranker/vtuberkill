@@ -1,14 +1,20 @@
 window.noname_update={
-	version:'1.9.102.13',
+	version:'1.9.102.14',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'102.13小更新：新增角色：VR的弥希MIKI、红圈的亚哈，林莉奈小小加强，修复了阿梓联机的bug，犬山联机的bug。',
-		'102.11小更新：修复bug',
+		'102.14小更新：新增势力：乐元素，新增角色：李清歌、白玉、姬拉Kira，林莉奈削弱（『习律』现在只能交出手牌）、小虾鱼削弱（『堂皇』改为每回合限一次）、珈乐小加强，修复了塔菲的bug，修改部分描述，珈乐觉醒配音修改为《求佛》。',
+		'',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景和海·sasaki、HOLO的海·aqua、HOLOEN的噶呜·古拉和一伊那尔栖、asoul的海·向晚、特典的绯赤艾莉欧和噶呜·古拉',
 	],
 	files:[
+		'image/character/Ava.jpg',
+		'image/character/Carol.jpg',
+		'image/character/Reine.jpg',
+		'image/character/RobokoSan.jpg',
+		'audio/skill/yuezhi.mp3',
+
 		'audio/skill/yehua1.mp3',
 		'audio/skill/yehua2.mp3',
 		'audio/skill/yehua3.mp3',
