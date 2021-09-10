@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Adding meta -->
+    
+    
+    <meta name="Description" content="VtuberKill API Document" />
+    
+    
+
+    <!-- Adding external script-->
+    
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" ></script>
+    
+    <script id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" ></script>
+    
+    
+
+    <!-- Adding external style-->
+    
+
+    <!-- Adding scripts-->
+    
+
+    <!-- Adding style-->
+    
+
+    <!-- Adding overlay script-->
+    
+
+    <!-- Adding overlay style-->
+    
+
+
+    <title>
+      character/nijisanji.js
+    </title>
+
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/third-party/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/third-party/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/reset.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme-base.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme-light.css">
+    
+    <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    style="display:none">
+    <defs>
+        <symbol id="copy-icon" viewbox="0 0 488.3 488.3">
+            <g>
+                <path
+                    d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z" />
+                <path
+                    d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z" />
+            </g>
+        </symbol>
+        <symbol id='search-icon' viewBox="0 0 512 512">
+            <g>
+                <g>
+                    <path
+                        d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z" />
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path
+                        d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z" />
+                </g>
+            </g>
+        </symbol>
+        <symbol id="down-icon" viewBox="0 0 16 16">
+            <path 
+                fill-rule="evenodd" 
+                clip-rule="evenodd" 
+                d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"
+            >
+            </path>
+        </symbol>
+    </defs>
+</svg>
+  </head>
+
+  <body>
+
+    <nav class="navbar" id="navbar">
+      <div class="navbar-heading" id="navbar-heading"><a href="index.html"><h2 class="navbar-heading-text">VK API</h2></a></div><div class="search-box" id="search-box"><div class="search-box-input-container"><input class="search-box-input" type="text" placeholder="Search..." id="search-box-input" /><svg class="search-icon" alt="search-icon"><use xlink:href="#search-icon"></use></svg></div><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-main-content" id="sidebar-main-content"><div class="accordion collapsed" id="5495492" > <h3 class="accordion-heading">Classes<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion collapsed child" id=2278750><div class="accordion-heading child"><a href="Array.html">Array</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="Array.html#add">add</a></li><li data-type='method'><a href="Array.html#addArray">addArray</a></li><li data-type='method'><a href="Array.html#contains">contains</a></li><li data-type='method'><a href="Array.html#filterInD">filterInD</a></li><li data-type='method'><a href="Array.html#find">find</a></li><li data-type='method'><a href="Array.html#from">from</a></li><li data-type='method'><a href="Array.html#numOf">numOf</a></li><li data-type='method'><a href="Array.html#randomGet">randomGet</a></li><li data-type='method'><a href="Array.html#randomGet">randomGet</a></li><li data-type='method'><a href="Array.html#randomRemove">randomRemove</a></li><li data-type='method'><a href="Array.html#randomSort">randomSort</a></li><li data-type='method'><a href="Array.html#remove">remove</a></li><li data-type='method'><a href="Array.html#removeArray">removeArray</a></li><li data-type='method'><a href="Array.html#sortBySeat">sortBySeat</a></li></ul></li><li class="accordion-list" id=""><a href="Error.html">Error</a></li><li class="accordion collapsed child" id=5567537><div class="accordion-heading child"><a href="HTMLDivElement.html">HTMLDivElement</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="HTMLDivElement.html#animate">animate</a></li><li data-type='method'><a href="HTMLDivElement.html#css">css</a></li><li data-type='method'><a href="HTMLDivElement.html#delete">delete</a></li><li data-type='method'><a href="HTMLDivElement.html#fix">fix</a></li><li data-type='method'><a href="HTMLDivElement.html#goto">goto</a></li><li data-type='method'><a href="HTMLDivElement.html#hide">hide</a></li><li data-type='method'><a href="HTMLDivElement.html#listen">listen</a></li><li data-type='method'><a href="HTMLDivElement.html#listenTransition">listenTransition</a></li><li data-type='method'><a href="HTMLDivElement.html#refocus">refocus</a></li><li data-type='method'><a href="HTMLDivElement.html#setBackground">setBackground</a></li><li data-type='method'><a href="HTMLDivElement.html#setBackgroundDB">setBackgroundDB</a></li><li data-type='method'><a href="HTMLDivElement.html#setBackgroundImage">setBackgroundImage</a></li><li data-type='method'><a href="HTMLDivElement.html#setPosition">setPosition</a></li><li data-type='method'><a href="HTMLDivElement.html#setPosition2">setPosition</a></li><li data-type='method'><a href="HTMLDivElement.html#show">show</a></li><li data-type='method'><a href="HTMLDivElement.html#unfocus">unfocus</a></li></ul></li><li class="accordion-list" id=""><a href="HTMLTableCellElement.html">HTMLTableCellElement</a></li><li class="accordion collapsed child" id=471700><div class="accordion-heading child"><a href="HTMLTableElement.html">HTMLTableElement</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="HTMLTableElement.html#get">get</a></li></ul></li></ul> </div><div class="accordion collapsed" id="4101662" > <h3 class="accordion-heading">Events<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#event:KeyboardEvent">KeyboardEvent</a></li><li class="accordion-list" id=""><a href="global.html#event:MouseEvent">MouseEvent</a></li><li class="accordion-list" id=""><a href="global.html#event:TouchEvent">TouchEvent</a></li></ul> </div><div class="accordion collapsed" id="7502854" > <h3 class="accordion-heading">Namespaces<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="-_status.html">_status</a></li><li class="accordion-list" id=""><a href="ai.html">ai</a></li><li class="accordion collapsed child" id=7687270><div class="accordion-heading child"><a href="game.html">game</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="game.html#.addCard">addCard</a></li><li data-type='method'><a href="game.html#.addCardPack">addCardPack</a></li><li data-type='method'><a href="game.html#.addCharacter">addCharacter</a></li><li data-type='method'><a href="game.html#.addCharacterPack">addCharacterPack</a></li><li data-type='method'><a href="game.html#.addMode">addMode</a></li><li data-type='method'><a href="game.html#.addSkill">addSkill</a></li><li data-type='method'><a href="game.html#.check">check</a></li><li data-type='method'><a href="game.html#.clearModeConfig">clearModeConfig</a></li><li data-type='method'><a href="game.html#.createEvent">createEvent</a></li><li data-type='method'><a href="game.html#.createTrigger">createTrigger</a></li><li data-type='method'><a href="game.html#.deleteDB">deleteDB</a></li><li data-type='method'><a href="game.html#.expandSkills">expandSkills</a></li><li data-type='method'><a href="game.html#.finishCards">finishCards</a></li><li data-type='method'><a href="game.html#.finishSkill">finishSkill</a></li><li data-type='method'><a href="game.html#.getDB">getDB</a></li><li data-type='method'><a href="game.html#.getExtensionConfig">getExtensionConfig</a></li><li data-type='method'><a href="game.html#.import">import</a></li><li data-type='method'><a href="game.html#.loop">loop</a></li><li data-type='method'><a href="game.html#.putDB">putDB</a></li><li data-type='method'><a href="game.html#.saveConfig">saveConfig</a></li><li data-type='method'><a href="game.html#.saveConfigValue">saveConfigValue</a></li><li data-type='method'><a href="game.html#.saveExtensionConfig">saveExtensionConfig</a></li></ul></li><li class="accordion-list" id=""><a href="game.videoContent.html">videoContent</a></li><li class="accordion-list" id=""><a href="GameCores.html">GameCores</a></li><li class="accordion-list" id=""><a href="GameCores.Bases.html">Bases</a></li><li class="accordion-list" id=""><a href="GameCores.Bases.Event.html">Event</a></li><li class="accordion-list" id=""><a href="GameCores.GameObjects.html">GameObjects</a></li><li class="accordion-list" id=""><a href="GameCores.GameObjects.Card.html">Card</a></li><li class="accordion-list" id=""><a href="GameCores.GameObjects.Player.html">Player</a></li><li class="accordion collapsed child" id=6296185><div class="accordion-heading child"><a href="get.html">get</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="get.html#.attitude">attitude</a></li><li data-type='method'><a href="get.html#.attitude2">attitude2</a></li><li data-type='method'><a href="get.html#.autoViewAs">autoViewAs</a></li><li data-type='method'><a href="get.html#.bottomCards">bottomCards</a></li><li data-type='method'><a href="get.html#.buttonValue">buttonValue</a></li><li data-type='method'><a href="get.html#.card">card</a></li><li data-type='method'><a href="get.html#.cardOffset">cardOffset</a></li><li data-type='method'><a href="get.html#.cards">cards</a></li><li data-type='method'><a href="get.html#.colorspan">colorspan</a></li><li data-type='method'><a href="get.html#.condition">condition</a></li><li data-type='method'><a href="get.html#.copy">copy</a></li><li data-type='method'><a href="get.html#.damageEffect">damageEffect</a></li><li data-type='method'><a href="get.html#.distance">distance</a></li><li data-type='method'><a href="get.html#.disvalue">disvalue</a></li><li data-type='method'><a href="get.html#.disvalue2">disvalue2</a></li><li data-type='method'><a href="get.html#.effect">effect</a></li><li data-type='method'><a href="get.html#.effect_use">effect_use</a></li><li data-type='method'><a href="get.html#.equipResult">equipResult</a></li><li data-type='method'><a href="get.html#.equipValue">equipValue</a></li><li data-type='method'><a href="get.html#.equipValueNumber">equipValueNumber</a></li><li data-type='method'><a href="get.html#.id">id</a></li><li data-type='method'><a href="get.html#.info">info</a></li><li data-type='method'><a href="get.html#.info2">info</a></li><li data-type='method'><a href="get.html#.infoHp">infoHp</a></li><li data-type='method'><a href="get.html#.infoMaxHp">infoMaxHp</a></li><li data-type='method'><a href="get.html#.isLuckyStar">isLuckyStar</a></li><li data-type='method'><a href="get.html#.judge">judge</a></li><li data-type='method'><a href="get.html#.mode">mode</a></li><li data-type='method'><a href="get.html#.name">name</a></li><li data-type='method'><a href="get.html#.name2">name</a></li><li data-type='method'><a href="get.html#.nature">nature</a></li><li data-type='method'><a href="get.html#.objtype">objtype</a></li><li data-type='method'><a href="get.html#.order">order</a></li><li data-type='method'><a href="get.html#.player">player</a></li><li data-type='method'><a href="get.html#.players">players</a></li><li data-type='method'><a href="get.html#.position">position</a></li><li data-type='method'><a href="get.html#.recoverEffect">recoverEffect</a></li><li data-type='method'><a href="get.html#.select">select</a></li><li data-type='method'><a href="get.html#.sgn">sgn</a></li><li data-type='method'><a href="get.html#.sgnAttitude">sgnAttitude</a></li><li data-type='method'><a href="get.html#.skillthreaten">skillthreaten</a></li><li data-type='method'><a href="get.html#.threaten">threaten</a></li><li data-type='method'><a href="get.html#.unuseful">unuseful</a></li><li data-type='method'><a href="get.html#.unuseful2">unuseful2</a></li><li data-type='method'><a href="get.html#.unuseful3">unuseful3</a></li><li data-type='method'><a href="get.html#.useful">useful</a></li><li data-type='method'><a href="get.html#.utc">utc</a></li><li data-type='method'><a href="get.html#.value">value</a></li><li data-type='method'><a href="get.html#.value2">value</a></li><li data-type='method'><a href="get.html#.verticalStr">verticalStr</a></li></ul></li><li class="accordion-list" id=""><a href="get.is.html">is</a></li><li class="accordion collapsed child" id=9952991><div class="accordion-heading child"><a href="lib.html">lib</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.html#.getUTC">getUTC</a></li><li data-type='method'><a href="lib.html#.listenEnd">listenEnd</a></li><li data-type='method'><a href="lib.html#.run">run</a></li><li data-type='method'><a href="lib.html#.saveVideo">saveVideo</a></li><li data-type='method'><a href="lib.html#.setHover">setHover</a></li><li data-type='method'><a href="lib.html#.setIntro">setIntro</a></li><li data-type='method'><a href="lib.html#.setLongPress">setLongPress</a></li><li data-type='method'><a href="lib.html#.setMousewheel">setMousewheel</a></li><li data-type='method'><a href="lib.html#.setScroll">setScroll</a></li><li data-type='method'><a href="lib.html#.updateCanvas">updateCanvas</a></li></ul></li><li class="accordion-list" id=""><a href="lib.characterDialogGroup.html">characterDialogGroup</a></li><li class="accordion-list" id=""><a href="lib.cheat.html">cheat</a></li><li class="accordion-list" id=""><a href="lib.configMenu.html">configMenu</a></li><li class="accordion-list" id=""><a href="lib.configMenu.appearence.html">appearence</a></li><li class="accordion-list" id=""><a href="lib.configMenu.appearence.config.layout.html">layout</a></li><li class="accordion-list" id=""><a href="lib.configMenu.audio.html">audio</a></li><li class="accordion-list" id=""><a href="lib.configMenu.general.html">general</a></li><li class="accordion-list" id=""><a href="lib.configMenu.others.html">others</a></li><li class="accordion-list" id=""><a href="lib.configMenu.skill.html">skill</a></li><li class="accordion-list" id=""><a href="lib.configMenu.view.html">view</a></li><li class="accordion-list" id=""><a href="lib.element.html">element</a></li><li class="accordion-list" id=""><a href="lib.element.button.html">button</a></li><li class="accordion collapsed child" id=8521427><div class="accordion-heading child"><a href="lib.element.card.html">card</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.element.card.html#.addGaintag">addGaintag</a></li><li data-type='method'><a href="lib.element.card.html#.hasGaintag">hasGaintag</a></li><li data-type='method'><a href="lib.element.card.html#.init">init</a></li><li data-type='method'><a href="lib.element.card.html#.removeGaintag">removeGaintag</a></li><li data-type='method'><a href="lib.element.card.html#.updateTransform">updateTransform</a></li></ul></li><li class="accordion-list" id=""><a href="lib.element.client.html">client</a></li><li class="accordion-list" id=""><a href="lib.element.content.html">content</a></li><li class="accordion-list" id=""><a href="lib.element.control.html">control</a></li><li class="accordion-list" id=""><a href="lib.element.dialog.html">dialog</a></li><li class="accordion collapsed child" id=9378119><div class="accordion-heading child"><a href="lib.element.event.html">event</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.element.event.html#.backup">backup</a></li><li data-type='method'><a href="lib.element.event.html#.cancel">cancel</a></li><li data-type='method'><a href="lib.element.event.html#.finish">finish</a></li><li data-type='method'><a href="lib.element.event.html#.getRand">getRand</a></li><li data-type='method'><a href="lib.element.event.html#.getTrigger">getTrigger</a></li><li data-type='method'><a href="lib.element.event.html#.goto">goto</a></li><li data-type='method'><a href="lib.element.event.html#.insert">insert</a></li><li data-type='method'><a href="lib.element.event.html#.redo">redo</a></li><li data-type='method'><a href="lib.element.event.html#.resume">resume</a></li><li data-type='method'><a href="lib.element.event.html#.set">set</a></li><li data-type='method'><a href="lib.element.event.html#.set2">set</a></li><li data-type='method'><a href="lib.element.event.html#.setContent">setContent</a></li><li data-type='method'><a href="lib.element.event.html#.trigger">trigger</a></li><li data-type='method'><a href="lib.element.event.html#.untrigger">untrigger</a></li></ul></li><li class="accordion-list" id=""><a href="lib.element.nodews.html">nodews</a></li><li class="accordion-list" id=""><a href="lib.element.ws.html">ws</a></li><li class="accordion-list" id=""><a href="lib.extensionMenu.html">extensionMenu</a></li><li class="accordion collapsed child" id=216473><div class="accordion-heading child"><a href="lib.filter.html">filter</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.filter.html#.filterTrigger">filterTrigger</a></li></ul></li><li class="accordion-list" id=""><a href="lib.help.html">help</a></li><li class="accordion collapsed child" id=6106182><div class="accordion-heading child"><a href="lib.init.html">init</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.init.html#.background">background</a></li><li data-type='method'><a href="lib.init.html#.css">css</a></li><li data-type='method'><a href="lib.init.html#.css2">css</a></li><li data-type='method'><a href="lib.init.html#.cssstyles">cssstyles</a></li><li data-type='method'><a href="lib.init.html#.decode">decode</a></li><li data-type='method'><a href="lib.init.html#.encode">encode</a></li><li data-type='method'><a href="lib.init.html#.eval">eval</a></li><li data-type='method'><a href="lib.init.html#.init">init</a></li><li data-type='method'><a href="lib.init.html#.js">js</a></li><li data-type='method'><a href="lib.init.html#.js2">js</a></li><li data-type='method'><a href="lib.init.html#.js3">js</a></li><li data-type='method'><a href="lib.init.html#.json">json</a></li><li data-type='method'><a href="lib.init.html#.layout">layout</a></li><li data-type='method'><a href="lib.init.html#.onfree">onfree</a></li><li data-type='method'><a href="lib.init.html#.onload">onload</a></li><li data-type='method'><a href="lib.init.html#.reset">reset</a></li><li data-type='method'><a href="lib.init.html#.sheet">sheet</a></li><li data-type='method'><a href="lib.init.html#.stringify">stringify</a></li><li data-type='method'><a href="lib.init.html#.stringifySkill">stringifySkill</a></li></ul></li><li class="accordion-list" id=""><a href="lib.message.html">message</a></li><li class="accordion-list" id=""><a href="lib.mode.html">mode</a></li><li class="accordion-list" id=""><a href="lib.skill.html">skill</a></li><li class="accordion-list" id=""><a href="lib.sort.html">sort</a></li><li class="accordion-list" id=""><a href="lib.status.html">status</a></li><li class="accordion-list" id=""><a href="lib.translate.html">translate</a></li><li class="accordion collapsed child" id=7841294><div class="accordion-heading child"><a href="ui.html">ui</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="ui.html#.refresh">refresh</a></li><li data-type='method'><a href="ui.html#.update">update</a></li><li data-type='method'><a href="ui.html#.updated">updated</a></li><li data-type='method'><a href="ui.html#.updateh">updateh</a></li><li data-type='method'><a href="ui.html#.updatej">updatej</a></li><li data-type='method'><a href="ui.html#.updatejm">updatejm</a></li><li data-type='method'><a href="ui.html#.updatem">updatem</a></li><li data-type='method'><a href="ui.html#.updatez">updatez</a></li></ul></li><li class="accordion collapsed child" id=1971405><div class="accordion-heading child"><a href="ui.click.html">click</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="ui.click.html#.intro">intro</a></li><li data-type='method'><a href="ui.click.html#.ok">ok</a></li></ul></li><li class="accordion collapsed child" id=4058490><div class="accordion-heading child"><a href="ui.create.html">create</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="ui.create.html#.card">card</a></li><li data-type='method'><a href="ui.create.html#.div">div</a></li><li data-type='method'><a href="ui.create.html#.menu">menu</a></li><li data-type='method'><a href="ui.create.html#.player">player</a></li></ul></li></ul> </div><div class="accordion collapsed" id="896436" > <h3 class="accordion-heading">Mixins<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion collapsed child" id=3701502><div class="accordion-heading child"><a href="lib.element.player.html">player</a><svg><use xlink:href="#down-icon"></use></svg></div><ul class='methods accordion-content'><li data-type='method'><a href="lib.element.player.html#.$damagepop">$damagepop</a></li><li data-type='method'><a href="lib.element.player.html#.$showCharacter">$showCharacter</a></li><li data-type='method'><a href="lib.element.player.html#.$skill">$skill</a></li><li data-type='method'><a href="lib.element.player.html#.$throwEmotion">$throwEmotion</a></li><li data-type='method'><a href="lib.element.player.html#.addAdditionalSkill">addAdditionalSkill</a></li><li data-type='method'><a href="lib.element.player.html#.addEquipTrigger">addEquipTrigger</a></li><li data-type='method'><a href="lib.element.player.html#.addMark">addMark</a></li><li data-type='method'><a href="lib.element.player.html#.addSkill">addSkill</a></li><li data-type='method'><a href="lib.element.player.html#.addSkill2">addSkill</a></li><li data-type='method'><a href="lib.element.player.html#.addSkillLog">addSkillLog</a></li><li data-type='method'><a href="lib.element.player.html#.addSkillTrigger">addSkillTrigger</a></li><li data-type='method'><a href="lib.element.player.html#.addSubPlayer">addSubPlayer</a></li><li data-type='method'><a href="lib.element.player.html#.addTempSkill">addTempSkill</a></li><li data-type='method'><a href="lib.element.player.html#.applySkills">applySkills</a></li><li data-type='method'><a href="lib.element.player.html#.attitudeTo">attitudeTo</a></li><li data-type='method'><a href="lib.element.player.html#.awakenSkill">awakenSkill</a></li><li data-type='method'><a href="lib.element.player.html#.callSubPlayer">callSubPlayer</a></li><li data-type='method'><a href="lib.element.player.html#.canUse">canUse</a></li><li data-type='method'><a href="lib.element.player.html#.changeSeat">changeSeat</a></li><li data-type='method'><a href="lib.element.player.html#.chat">chat</a></li><li data-type='method'><a href="lib.element.player.html#.checkConflict">checkConflict</a></li><li data-type='method'><a href="lib.element.player.html#.checkMarks">checkMarks</a></li><li data-type='method'><a href="lib.element.player.html#.chooseToGuanxing">chooseToGuanxing</a></li><li data-type='method'><a href="lib.element.player.html#.clearSkills">clearSkills</a></li><li data-type='method'><a href="lib.element.player.html#.countMark">countMark</a></li><li data-type='method'><a href="lib.element.player.html#.directgains">directgains</a></li><li data-type='method'><a href="lib.element.player.html#.disableSkill">disableSkill</a></li><li data-type='method'><a href="lib.element.player.html#.emotion">emotion</a></li><li data-type='method'><a href="lib.element.player.html#.enableSkill">enableSkill</a></li><li data-type='method'><a href="lib.element.player.html#.exitSubPlayer">exitSubPlayer</a></li><li data-type='method'><a href="lib.element.player.html#.flashAvatar">flashAvatar</a></li><li data-type='method'><a href="lib.element.player.html#.get">get</a></li><li data-type='method'><a href="lib.element.player.html#.getAllHistory">getAllHistory</a></li><li data-type='method'><a href="lib.element.player.html#.getAttackRange">getAttackRange</a></li><li data-type='method'><a href="lib.element.player.html#.getCards">getCards</a></li><li data-type='method'><a href="lib.element.player.html#.getCards2">getCards</a></li><li data-type='method'><a href="lib.element.player.html#.getCards3">getCards</a></li><li data-type='method'><a href="lib.element.player.html#.getCards4">getCards</a></li><li data-type='method'><a href="lib.element.player.html#.getCardUsable">getCardUsable</a></li><li data-type='method'><a href="lib.element.player.html#.getEnemies">getEnemies</a></li><li data-type='method'><a href="lib.element.player.html#.getEquip">getEquip</a></li><li data-type='method'><a href="lib.element.player.html#.getFriends">getFriends</a></li><li data-type='method'><a href="lib.element.player.html#.getFriends">getFriends</a></li><li data-type='method'><a href="lib.element.player.html#.getGlobalFrom">getGlobalFrom</a></li><li data-type='method'><a href="lib.element.player.html#.getGlobalTo">getGlobalTo</a></li><li data-type='method'><a href="lib.element.player.html#.getHandcardLimit">getHandcardLimit</a></li><li data-type='method'><a href="lib.element.player.html#.getHistory">getHistory</a></li><li data-type='method'><a href="lib.element.player.html#.getId">getId</a></li><li data-type='method'><a href="lib.element.player.html#.getJudge">getJudge</a></li><li data-type='method'><a href="lib.element.player.html#.getLastHistory">getLastHistory</a></li><li data-type='method'><a href="lib.element.player.html#.getLastStat">getLastStat</a></li><li data-type='method'><a href="lib.element.player.html#.getLastUsed">getLastUsed</a></li><li data-type='method'><a href="lib.element.player.html#.getLeft">getLeft</a></li><li data-type='method'><a href="lib.element.player.html#.getStat">getStat</a></li><li data-type='method'><a href="lib.element.player.html#.getState">getState</a></li><li data-type='method'><a href="lib.element.player.html#.getSubPlayers">getSubPlayers</a></li><li data-type='method'><a href="lib.element.player.html#.getTop">getTop</a></li><li data-type='method'><a href="lib.element.player.html#.getUseValue">getUseValue</a></li><li data-type='method'><a href="lib.element.player.html#.goMad">goMad</a></li><li data-type='method'><a href="lib.element.player.html#.hasMark">hasMark</a></li><li data-type='method'><a href="lib.element.player.html#.hasSkill">hasSkill</a></li><li data-type='method'><a href="lib.element.player.html#.hasUseTarget">hasUseTarget</a></li><li data-type='method'><a href="lib.element.player.html#.hasValueTarget">hasValueTarget</a></li><li data-type='method'><a href="lib.element.player.html#.init">init</a></li><li data-type='method'><a href="lib.element.player.html#.initOL">initOL</a></li><li data-type='method'><a href="lib.element.player.html#.initRoom">initRoom</a></li><li data-type='method'><a href="lib.element.player.html#.isAlive">isAlive</a></li><li data-type='method'><a href="lib.element.player.html#.isDamaged">isDamaged</a></li><li data-type='method'><a href="lib.element.player.html#.isDead">isDead</a></li><li data-type='method'><a href="lib.element.player.html#.isDying">isDying</a></li><li data-type='method'><a href="lib.element.player.html#.isEnemiesOf">isEnemiesOf</a></li><li data-type='method'><a href="lib.element.player.html#.isEnemyOf">isEnemyOf</a></li><li data-type='method'><a href="lib.element.player.html#.isFriendOf">isFriendOf</a></li><li data-type='method'><a href="lib.element.player.html#.isFriendsOf">isFriendsOf</a></li><li data-type='method'><a href="lib.element.player.html#.isHealthy">isHealthy</a></li><li data-type='method'><a href="lib.element.player.html#.isIn">isIn</a></li><li data-type='method'><a href="lib.element.player.html#.isLinked">isLinked</a></li><li data-type='method'><a href="lib.element.player.html#.isMad">isMad</a></li><li data-type='method'><a href="lib.element.player.html#.isMaxCard">isMaxCard</a></li><li data-type='method'><a href="lib.element.player.html#.isMaxEquip">isMaxEquip</a></li><li data-type='method'><a href="lib.element.player.html#.isMaxHandcard">isMaxHandcard</a></li><li data-type='method'><a href="lib.element.player.html#.isMaxHp">isMaxHp</a></li><li data-type='method'><a href="lib.element.player.html#.isMin">isMin</a></li><li data-type='method'><a href="lib.element.player.html#.isMinCard">isMinCard</a></li><li data-type='method'><a href="lib.element.player.html#.isMinEquip">isMinEquip</a></li><li data-type='method'><a href="lib.element.player.html#.isMinHandcard">isMinHandcard</a></li><li data-type='method'><a href="lib.element.player.html#.isMinHp">isMinHp</a></li><li data-type='method'><a href="lib.element.player.html#.isOffline">isOffline</a></li><li data-type='method'><a href="lib.element.player.html#.isOnline">isOnline</a></li><li data-type='method'><a href="lib.element.player.html#.isOnline2">isOnline2</a></li><li data-type='method'><a href="lib.element.player.html#.isOut">isOut</a></li><li data-type='method'><a href="lib.element.player.html#.isTurnedOver">isTurnedOver</a></li><li data-type='method'><a href="lib.element.player.html#.isUnderControl">isUnderControl</a></li><li data-type='method'><a href="lib.element.player.html#.isUnseen">isUnseen</a></li><li data-type='method'><a href="lib.element.player.html#.loseToSpecial">loseToSpecial</a></li><li data-type='method'><a href="lib.element.player.html#.mark">mark</a></li><li data-type='method'><a href="lib.element.player.html#.needsToDiscard">needsToDiscard</a></li><li data-type='method'><a href="lib.element.player.html#.popup">popup</a></li><li data-type='method'><a href="lib.element.player.html#.queue">queue</a></li><li data-type='method'><a href="lib.element.player.html#.reinit">reinit</a></li><li data-type='method'><a href="lib.element.player.html#.removeAdditionalSkill">removeAdditionalSkill</a></li><li data-type='method'><a href="lib.element.player.html#.removeEquipTrigger">removeEquipTrigger</a></li><li data-type='method'><a href="lib.element.player.html#.removeMark">removeMark</a></li><li data-type='method'><a href="lib.element.player.html#.removeSkill">removeSkill</a></li><li data-type='method'><a href="lib.element.player.html#.removeSkillTrigger">removeSkillTrigger</a></li><li data-type='method'><a href="lib.element.player.html#.removeSubPlayer">removeSubPlayer</a></li><li data-type='method'><a href="lib.element.player.html#.restoreSkill">restoreSkill</a></li><li data-type='method'><a href="lib.element.player.html#.say">say</a></li><li data-type='method'><a href="lib.element.player.html#.send">send</a></li><li data-type='method'><a href="lib.element.player.html#.setAvatar">setAvatar</a></li><li data-type='method'><a href="lib.element.player.html#.setAvatarQueue">setAvatarQueue</a></li><li data-type='method'><a href="lib.element.player.html#.setNickname">setNickname</a></li><li data-type='method'><a href="lib.element.player.html#.showCharacter">showCharacter</a></li><li data-type='method'><a href="lib.element.player.html#.showGiveup">showGiveup</a></li><li data-type='method'><a href="lib.element.player.html#.smoothAvatar">smoothAvatar</a></li><li data-type='method'><a href="lib.element.player.html#.syncStorage">syncStorage</a></li><li data-type='method'><a href="lib.element.player.html#.throwEmotion">throwEmotion</a></li><li data-type='method'><a href="lib.element.player.html#.toggleSubPlayer">toggleSubPlayer</a></li><li data-type='method'><a href="lib.element.player.html#.tryCardAnimate">tryCardAnimate</a></li><li data-type='method'><a href="lib.element.player.html#.trySkillAnimate">trySkillAnimate</a></li><li data-type='method'><a href="lib.element.player.html#.uninit">uninit</a></li><li data-type='method'><a href="lib.element.player.html#.uninitOL">uninitOL</a></li><li data-type='method'><a href="lib.element.player.html#.unMad">unMad</a></li><li data-type='method'><a href="lib.element.player.html#.unmark">unmark</a></li><li data-type='method'><a href="lib.element.player.html#.update">update</a></li><li data-type='method'><a href="lib.element.player.html#.updateMark">updateMark</a></li><li data-type='method'><a href="lib.element.player.html#.updateMarks">updateMarks</a></li><li data-type='method'><a href="lib.element.player.html#.useResult">useResult</a></li></ul></li></ul> </div><div class="accordion collapsed" id="7084166" > <h3 class="accordion-heading">Global<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#GameConfig">GameConfig</a></li><li class="accordion-list" id=""><a href="global.html#isNonameServer">isNonameServer</a></li><li class="accordion-list" id=""><a href="global.html#localStorage">localStorage</a></li><li class="accordion-list" id=""><a href="global.html#nodb">nodb</a></li><li class="accordion-list" id=""><a href="global.html#onerror">onerror</a></li><li class="accordion-list" id=""><a href="global.html#onkeydown">onkeydown</a></li><li class="accordion-list" id=""><a href="global.html#onload">onload</a></li></ul> </div></div>
+      
+        <div class="navbar-resize" id="navbar-resize">
+          <div class="resize-dots-container">
+            <div class="dots"></div>
+            <div class="dots"></div>
+            <div class="dots"></div>
+          </div> 
+        </div>
+      
+
+    </nav>
+    <div class="navbar-ham" id="navbar-ham">
+      <div>
+        <div class="first"></div>
+        <div class="second"></div>
+        <div class="third"></div>
+      </div>
+    </div>
+
+    <div id="main" class="main-content">
+      
+      <h1 id='page-title' class="page-title">
+        character/nijisanji.js
+      </h1>
+      
+
+      
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+game.import('character',function(lib,game,ui,get,ai,_status){
+	return {
+		name:'nijisanji',
+		connect:true,
+		character:{
+			/**物述有栖 */
+			MononobeAlice:['female','nijisanji',3,['tinenghuifu1','dianmingguzhen']],
+			/**静凛 */
+			ShizukaRin:['female','nijisanji',4,['mozhaotuji']],
+			/**家长麦 */
+			IenagaMugi:['female','nijisanji',3,['fengxue','yuepi','cangxiong']],
+			/**月之美兔 */
+			MitoTsukino:['female','nijisanji',3,['mark_bingdielei','mark_quanxinquanyi'],['zhu']],
+			/**宇志海莓 */
+			UshimiIchigo: ['female', 'nijisanji', 3, ['kuangbaoshuangren', 'guangsuxiabo']],
+			/**铃鹿诗子 */
+			SuzukaUtako: ['female', 'nijisanji', 3, ['meici', 'danlian']],
+			/**樋口枫 */
+			HiguchiKaede: ['female', 'nijisanji', 4, ['zhenyin', 'saqi']],
+			/**修女克蕾雅 */
+			SisterClearie:['female','nijisanji',3,['zhenxin','sczhuwei']],
+			/**熊猫人 */
+			SasakiSaku:['female','nijisanji',3,['tiaolian','jiaku']],
+			/**健屋花那 */
+			SukoyaKana:['female','nijisanji',3,['huawen','liaohu']],
+			/**白雪巴 */
+			ShirayukiTomoe:['female','nijisanji',4,['gonggan','yeyu']],
+			/**Elu */
+			Elu:['female','nijisanji',3,['huangran','yinzhen','senhu']],
+			/**皇女 */
+			LizeHelesta:['female','nijisanji',3,['shencha','helesta'],['zhu']],
+			/**露露 */
+			SuzuharaLulu:['female','nijisanji',5,['zhongli','xinhuo','weizhuang']],
+			/**阿喵喵 */
+			AmamiyaKokoro:['female','nijisanji',3,['miaomiao','chengneng']],
+			/**社长 */
+			KagamiHayato:['male','nijisanji',3,['liebo','zhongjizhimeng']],
+			/**山神歌流多 */
+			YagamiKaruta: ['female', 'nijisanji', 3, ['suisi', 'liefeng']],
+			/**雪城真寻 */
+			YukishiroMahiro: ['female', 'nijisanji', 3, ['jiaoming', 'changhe']],
+			/**小野町春香 */
+			OnomachiHaruka: ['female', 'nijisanji', 3, ['nvjiangrouhao', 'yinlaiyaotang']],
+			/**樱凛月 */
+			SakuraRitsuki: ['female','nijisanji',3,['zhuqiao']],
+			/**刀也 */
+			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
+			/**Gaku */
+			FushimiGaku: ['male','nijisanji',4,['exi','suisui']],
+		},
+		characterSort:{
+			nijisanji:{
+				nijisanji_1:['MitoTsukino','HiguchiKaede','ShizukaRin','Elu'],
+				nijisanji_2:['SuzukaUtako','UshimiIchigo','IenagaMugi','MononobeAlice','KenmochiDouya'],
+			}
+		},
+		characterIntro:{
+			MononobeAlice:'物述有栖者，雷电掌控者也，寄以jk身份隐藏之，然尝小嘴通电，小兔子皆知爱丽丝非凡人，喜红茶，尤善奥术魔刃，为北方氏族youtube恶之，V始十八年，举家迁徙bilibili，V始二十年，月之美兔揭竿而起，爱丽丝毁家纾难，以家助美兔建国，拜一字并肩王。',
+			HiguchiKaede: '樋口枫者，关西之游侠也，姿色天然占尽风流，善以琴杀人，来去翩翩，有宾客枫组三千，V始二十年，月之美兔兴于西北，自封委员长、上将军，建国曰彩虹，枫率宾客从之，枫尝与杏之福禄将军萝卜子交好，惺惺相惜，成V界之佳话。',
+			ShizukaRin:'静凛者，皇族也，因父败于樱巫女被贬为庶人，遂恨朝廷，先随绊爱征战，绊爱初建国，不慕名利，往杏国扶之，先取天水后取临沂，成杏国之伟业，元昭欲拜之国师，又避之，尝与美兔弈棋，战百余合，喜曰：美兔知我矣！遂安于彩虹。',
+			IenagaMugi:'家长麦者，诸国之辩士也，善言辞，三言便使otaku气坠于马下，吐血斗升，Mugi嗜乐如命，与当世之乐圣交好，互为知音。英语上手，身负苦难，为父母厌恶之人，麦自V始年间便游于天下，为救美兔取祸于朝廷，流亡海外，有《辩书》广为人知。',
+			MitoTsukino:'彩虹社的红龙、英才教育者，虹社的统领者、lonely eater、全人类之委员长、脑控宗师、月之小丑、双生暗影、行为艺术家、至高魔主、怒涛聚集、海洋王者、永不沉寂者、彩虹社永远滴真神，月之美兔是也。',
+			UshimiIchigo: "宇志海莓者，深海之海兔也，修炼千年化形为人，海莓原自起于海滨，拥者不计其数，性狂暴，曾以一人顶勒夫千军，V始二十年，美兔兴，海莓从之，首封平西候，海莓嗜睡，时到即宕机，美兔遣御前侍卫日夜守之。",			
+			SuzukaUtako: '腐烂的贞德、历战的尸套龙、饥饿的恐暴龙、攻击性的母性、古老的腐女、每秒都在渗出黑历史的女人、801战争的英灵、腐女子的末路、从温暖的图片中看出阴暗的女人、背景是正太自助餐、深网的魔物、过滤未成年直播者、彩虹社诞生出的怪物、DeathZone、唯一让DD害怕的大姐姐、国际问题、邪神美兔崇拜者、十年后的月之美兔、属性商店、神造兵器、有行动力的变态、出口即是真言、行走的HiAce、酒淋浴、母性的墓场、假面具即将掉落的铃鹿诗子。',
+			SisterClearie:	'“今日也愿神加护于你……”',
+		},
+		skill:{
+			leiyan:{
+				trigger:{player:'useCard1'},
+				forced:true,
+				firstDo:true,
+				filter:function(event,player){
+					//console.log(event);
+					if(event.card.name!='sha'||event.card.nature!='thunder') return false;
+					return true;
+				},
+				content:function(){
+				},
+				mod:{
+					selectTarget:function(card,player,range){
+						//console.log(card.nature,range);
+						if(card.name!='sha'||card.nature!='thunder') return;
+						if(range[1]==-1) return;
+						range[1]+=2;
+					},
+				},
+				group:['leiyan_qinggang'],
+				subSkill:{
+					qinggang:{
+						trigger:{
+							player:'useCardToPlayered',
+						},
+						filter:function(event){
+							return event.card.name=='sha'&amp;&amp;event.card.nature=='thunder';
+						},
+						forced:true,
+						logTarget:'target',
+						content:function(){
+							trigger.target.addTempSkill('leiyan2');
+							trigger.target.storage.leiyan2.add(trigger.card);
+						},
+						ai:{
+							unequip_ai:true,
+							skillTagFilter:function(player,tag,arg){
+								if(arg&amp;&amp;arg.name=='sha') return true;
+								return false;
+							}
+						}
+					},
+				}
+			},
+			leiyan2:{
+				firstDo:true,
+				ai:{unequip2:true},
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=[];
+				},
+				onremove:true,
+				trigger:{
+					player:['damage','damageCancelled','damageZero'],
+					target:['shaMiss','useCardToExcluded'],
+				},
+				filter:function(event,player){
+					return player.storage.leyan2&amp;&amp;event.card&amp;&amp;player.storage.leyan2.contains(event.card);
+				},
+				silent:true,
+				forced:true,
+				popup:false,
+				priority:12,
+				content:function(){
+					player.storage.leyan2.remove(trigger.card);
+					if(!player.storage.leyan2.length) player.removeSkill('leyan2');
+				},
+			},
+			xiaozhangduandai:{
+				skillAnimation:true,
+				animationColor:'orange',
+				unique:true,
+				juexingji:true,
+				trigger:{player:'dyingBegin'},
+				forced:true,
+				derivation:'yongchun',
+				filter:function(event,player){
+					if(player.storage.yongchun) return false;
+					return player.hp&lt;player.maxHp;
+				},
+				content:function(){
+					player.awakenSkill('qianxin');
+					player.storage.yongchun=true;
+					player.addSkill('yongchun');
+					player.hp+=3;
+					player.draw(3);
+				}
+			},
+			yongchun:{
+				enable:"phaseUse",
+				trigger:{player:'shaBegin'},
+				frequent:true,
+				forced:false,
+				filterCard:function(card){//选择的牌需要满足的条件
+					return card.name=='sha';//例子，只能选择红色牌
+				},
+				content:function(){
+					player.draw(1);
+					player.chooseToDiscard('he',true);
+					player.getStat().card.sha--;
+				}
+			},
+			tinenghuifu1:{
+				audio:true,
+				trigger:{player:'loseAfter'},
+				forced:true,
+				filter:function(event,player){
+					return event.es&amp;&amp;event.es.length>0;
+				},
+				content:function(){
+					"step 0"
+					event.count=trigger.es.length;
+					"step 1"
+					event.count--;
+					player.recover();
+					"step 2"
+					if(event.count>0){
+						event.goto(1);
+					}
+				},
+				group:['tinenghuifu1_hp'],
+				subSkill:{
+					hp:{
+						trigger:{player:'changeHp'},
+						forced:true,
+						filter:function(event,player){
+							return event.num&lt;0&amp;&amp;player.isDamaged();
+						},
+						content:function(){
+							player.draw(1);
+						}
+					}
+				},
+				ai:{
+					maixie:true,
+					maixie_hp:true
+				}
+			},
+			dianmingguzhen:{
+				audio:2,
+				enable:"phaseUse",
+				usable:1,
+				filter:function(event,player){
+					return player.canMoveCard(null,true);
+				},
+				content:function(){
+					'step 0'
+					player.loseHp(1);
+					'step 1'
+					var next = player.moveCard(true).set('nojudge',true);
+					next.set('ai',function(target){
+						var player=_status.event.player;
+						var att=get.attitude(player,target);
+						var sgnatt=get.sgn(att);
+						if(ui.selected.targets.length==0){
+							if(target==player){
+								var es=player.getCards('e');
+								for(var i=0;i&lt;es.length;i++){
+									var effect = 0;
+									game.filterPlayer(function(cur){
+										if(cur.isEmpty(get.subtype(es[i]))) effect++;
+									})
+									return 3*effect;
+								}
+							}
+							if(att>0){
+								if(target.countCards('e',function(card){
+									return get.value(card,target)&lt;0&amp;&amp;game.hasPlayer(function(current){
+										return current!=player&amp;&amp;current!=target&amp;&amp;get.attitude(player,current)&lt;0&amp;&amp;current.isEmpty(get.subtype(card))
+									});
+								})>0) return 9;
+							}
+							else if(att&lt;0){
+								if(game.hasPlayer(function(current){
+									if(current!=target&amp;&amp;current!=player&amp;&amp;get.attitude(player,current)>0){
+										var es=target.getCards('e');
+										for(var i=0;i&lt;es.length;i++){
+											if(get.value(es[i],target)>0&amp;&amp;current.isEmpty(get.subtype(es[i]))&amp;&amp;get.value(es[i],current)>0) return true;
+										}
+									}
+								})){
+									return -att;
+								}
+							}
+							return 0;
+						}
+						var es=ui.selected.targets[0].getCards('e');
+						var i;
+						var att2=get.sgn(get.attitude(player,ui.selected.targets[0]));
+						for(i=0;i&lt;es.length;i++){
+							if(ui.selected.targets[0]==player&amp;&amp;target.isEmpty(get.subtype(es[i]))){
+								var effect = 0;
+								game.filterPlayer(function(cur){
+									if(cur.isEmpty(get.subtype(es[i]))&amp;&amp;cur!=target) effect+=get.effect(cur,{name:'sha'},player,player);
+								});
+								console.log(effect+att)
+								return 2*(effect+att);
+							}
+							if(sgnatt!=0&amp;&amp;att2!=0&amp;&amp;
+								get.sgn(get.value(es[i],ui.selected.targets[0]))==-att2&amp;&amp;
+								get.sgn(get.value(es[i],target))==sgnatt&amp;&amp;
+								target.isEmpty(get.subtype(es[i]))){
+								return Math.abs(att);
+							}
+						}
+						if(i==es.length){
+							return 0;
+						}
+						return -att*get.attitude(player,ui.selected.targets[0]);
+					});
+					next.set('forced',true);
+					'step 2'
+					if(result.targets[0]!=player){
+						event.finish();
+					}
+					else{
+						event.equiptype = get.subtype(result.card);
+						event.players=game.filterPlayer(function(current){
+							return (current!=player)&amp;&amp;(!current.getEquip(event.equiptype));
+						}).sortBySeat(player);
+						if(event.judgeGroup==null)
+							event.judgeGroup=[];
+					}
+					'step 3'
+					if(event.playersIndex==null){
+						event.playersIndex=0;
+					}
+					if(event.playersIndex&lt;event.players.length){
+						if(!event.players[event.playersIndex].getEquip(event.equiptype)){
+							player.useCard({name:'sha',nature:'thunder',isCard:true},event.players[event.playersIndex],false);
+						}
+					}
+					'step 4'
+					if(!result.bool){
+						event.judgeGroup.add(event.players[event.playersIndex]);
+					}
+					if(event.players[++event.playersIndex])	event.goto(3);
+					'step 5'
+					if(event.judgeGroup.length>0){
+						var shanString='&lt;br>';
+						for(var i=0;i&lt;event.judgeGroup.length;i++){
+							shanString+=(get.translation(event.judgeGroup[i])+',');
+						}
+						var check = 0;
+						for(var i of event.judgeGroup){
+							check+=lib.card.shandian.ai.result.target(player,i)
+						}
+						player.chooseBool('是否对所有闪避者追加闪电判定？'+shanString).set('check',check).ai=function(){
+							return _status.event.check>0;
+						};
+					}
+					else{
+						event.finish();
+					}
+					'step 6'
+					if(!result.bool){
+						event.finish();
+					}
+					'step 7'
+					event.judgeGroup[0].judge(function(card){
+						if(get.suit(card)=='spade'&amp;&amp;(get.number(card)>=2&amp;&amp;get.number(card)&lt;=9)) return 2;
+					}).callback=function(){
+						var number = event.judgeResult.number;
+						if(event.judgeResult.suit=='spade'&amp;&amp;(number>=2&amp;&amp;number&lt;=9)){
+							player.damage(3,'thunder','nosource');
+						}
+					};
+					'step 8'
+					game.delay();
+					event.judgeGroup.shift();
+					if(event.judgeGroup.length>0)	event.goto(7);
+				},
+				ai:{
+					useSha:2,
+					order:7,
+					result:{
+						player:function(player,target){
+							if(player.hp!=1)	return 1;
+							else return -2;
+						},
+					},
+				},
+			},
+			mozhaotuji:{
+				group:['mozhaotuji_DrawOrStop','mozhaotuji_useCard','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
+				/**转化阶段 */
+				contentx:function(trigger,player){
+					'step 0'
+					if(!player.hasSkill('mozhaotujiStart'))
+						player.addTempSkill('mozhaotujiStart');
+					trigger.cancel();
+					'step 1'
+					player.phaseUse();
+					'step 2'
+					var stat=player.getStat();
+					//stat.card={};
+					for(var i in stat.skill){
+						var bool=false;
+						var info=lib.skill[i];
+						if(info.enable!=undefined){
+							if(typeof info.enable=='string'&amp;&amp;info.enable=='phaseUse') bool=true;
+							else if(typeof info.enable=='object'&amp;&amp;info.enable.contains('phaseUse')) bool=true;
+						}
+						if(bool) stat.skill[i]=0;
+					}
+				},
+				subSkill:{
+					DrawOrStop:{
+						audio:true,
+						audioname:['jike'],
+						trigger:{global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']},
+						filter:function(event,player){
+							if((player.storage.mozhaotuji_useCard)>=1)
+								return true;
+							else if((player.storage.mozhaotuji_useCard)==0)
+								return player==_status.currentPhase;
+							else
+								return false;
+						},
+						priority: 14,
+						direct:true,
+						content:function(){
+							'step 0'
+							if((player.storage.mozhaotuji_useCard)>=2){
+								player.logSkill('mozhaotuji');
+								player.draw(1);
+							}
+							else if(trigger.name=='phaseUse')
+								player.addTempSkill('mozhaotujiStop');
+							'step 1'
+							player.storage.mozhaotuji_useCard = 0;
+						},
+					},
+					useCard:{
+						init:function(player,skill){
+							if(!player.storage[skill]) player.storage[skill] = 0;
+						},
+						trigger:{player:'useCardAfter'},
+						direct:true,
+						silent:true,
+						priority: 1,
+						content:function(){
+							player.storage.mozhaotuji_useCard++;
+						},
+					},
+					/*Clear:{
+						trigger:{player:'phaseUseAfter'},
+						direct:true,
+						priority: 1,
+						filter:function(event,player){
+							return true;
+						},
+						forced:true,
+						content:function(){
+							player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
+							player.getHistory('respond').splice(0,player.getHistory('respond').length);
+						},
+					},*/
+					Ready:{
+						trigger:{
+							player:'phaseZhunbeiBegin'
+						},
+						check:function(event,player){
+							return player.countCards('h',function(card){
+								return player.hasUseTarget(card);
+							}).length>=3;
+						},
+						filter:function(event,player){
+							return !player.hasSkill('mozhaotujiStop');
+						},
+						prompt:function(){
+							return get.prompt('mozhaotuji')+'把准备阶段转换为出牌阶段';
+						},
+						content:function () {
+							lib.skill.mozhaotuji.contentx(trigger,player);
+						},
+					},
+					Judge:{
+						trigger:{
+							player:'phaseJudgeBefore'
+						},
+						check:function(event,player){
+							return player.countCards('h',function(card){
+								return player.hasUseTarget(card);
+							}).length>=2;
+						},
+						filter:function(event,player){
+							return !player.hasSkill('mozhaotujiStop');
+						},
+						prompt:function(){
+							return get.prompt('mozhaotuji')+'把判定阶段转换为出牌阶段';
+						},
+						content:function () {
+							lib.skill.mozhaotuji.contentx(trigger,player);
+						},
+					},
+					PhaseDraw:{
+						trigger:{
+							player:'phaseDrawBefore'
+						},
+						check:function(event,player){
+							return false;
+						},
+						filter:function(event,player){
+							return !player.hasSkill('mozhaotujiStop');
+						},
+						prompt:function(){
+							return get.prompt('mozhaotuji')+'把摸牌阶段转换为出牌阶段';
+						},
+						content:function () {
+							lib.skill.mozhaotuji.contentx(trigger,player);
+						},
+					},
+					Discard:{
+						trigger:{
+							player:'phaseDiscardBefore'
+						},
+						check:function(event,player){
+							return true;
+						},
+						filter:function(event,player){
+							return !player.hasSkill('mozhaotujiStop');
+						},
+						prompt:function(){
+							return get.prompt('mozhaotuji')+'把弃牌阶段转换为出牌阶段';
+						},
+						content:function () {
+							lib.skill.mozhaotuji.contentx(trigger,player);
+						},
+					},
+					End:{
+						trigger:{
+							player:'phaseJieshuBegin'
+						},
+						check:function(event,player){
+							return true;
+						},
+						filter:function(event,player){
+							return !player.hasSkill('mozhaotujiStop');
+						},
+						prompt:function(){
+							return get.prompt('mozhaotuji')+'把结束阶段转换为出牌阶段';
+						},
+						content:function () {
+							lib.skill.mozhaotuji.contentx(trigger,player);
+						},
+					},
+				}
+			},
+			mozhaotujiStart:{
+				trigger:{
+					player:['phaseJudgeEnd','phaseDrawEnd','phaseDiscardEnd']
+				},
+				priority: 15,
+				direct:true,
+				silent:true,
+				filter:function(event,player){
+					if((player.storage.mozhaotuji_useCard)==0)
+						return true;
+					else
+						return !player.hasSkill('mozhaotujiStop');
+				},
+				content:function(){
+					player.addTempSkill('mozhaotujiStop');
+				}
+			},
+			mozhaotujiStop:{
+
+			},
+			fengxue:{
+				trigger:{
+					player:'phaseUseBefore'
+				},
+				content:function(){
+					'step 0'
+					player.logSkill('fengxue');
+					trigger.cancel();
+					'step 1'
+					event.players=[];
+					event.players=game.filterPlayer(function(current){
+						return (current!=player)&amp;&amp;current.hp>=player.hp;
+					});
+					'step 2'
+					ui.clear();
+					var num;
+					num=event.players.length+1;
+					var cards=get.cards(num);
+					event.cards=cards;
+					event.gains=[];
+					event.discards=[];
+					game.cardsGotoOrdering(cards).relatedEvent=event.getParent();
+					var dialog=ui.create.dialog('奋学',cards,true);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['奋学',get.cardsInfo(cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						var dialog=ui.create.dialog('奋学',cards,true);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},cards,dialog.videoId);
+					event.dialog=dialog;
+					game.log(player,'观看了','#y牌堆顶的牌');
+					//var content=['牌堆顶的'+event.cards.length+'张牌',event.cards];
+					//player.chooseControl('ok').set('dialog',content);
+					var chooseButton=player.chooseButton(true,function(button){
+						return get.value(button.link,_status.event.player);
+					}).set('dialog',dialog.videoId);
+					event.chooseButton=chooseButton;
+					'step 3'
+					if(!result.links[0]){
+						ui.clear();
+						event.finish();
+					}
+					else{
+						var bool=game.hasPlayer(function(current){
+							return player.canUse(result.links[0],current);
+						});
+						if(bool){
+							player.chooseUseTarget(result.links[0],true,false);
+						}
+						else event.discards.push(result.links[0]);
+						event.cards.remove(result.links[0]);
+					}
+					'step 4'
+					//player.gain(event.cards,'gain2');
+					// if(event.discards.length){
+					// 	player.$throw(event.discards);
+					// 	game.cardsDiscard(event.discards);
+					// }
+					ui.clear();
+					'step 5'
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+					if(event.cards.length==0){
+						event.finish();
+					}
+					'step 6'
+					game.cardsGotoOrdering(cards).relatedEvent=event.getParent();
+					var dialog=ui.create.dialog('奋学(获取一种花色牌)',cards,true);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['奋学(获取一种花色牌)',get.cardsInfo(cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						var dialog=ui.create.dialog('奋学(获取一种花色牌)',cards,true);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},cards,dialog.videoId);
+					event.dialog=dialog;
+					var chooseButton=player.chooseButton(true,function(button){
+						return get.value(button.link,_status.event.player);
+					}).set('dialog',dialog.videoId);
+					event.chooseButton=chooseButton;
+					'step 7'
+					if(result.links[0]){
+						game.log(player,'选择了',get.translation(get.suit(result.links[0])+'2'));
+						event.cards.forEach(card => {
+							if(get.suit(card)==get.suit(result.links[0])){
+								event.gains.push(card);
+							}
+							else{
+								event.discards.push(card);
+							}
+						});
+					}
+					if(event.discards.length){
+						player.$throw(event.discards);
+						game.cardsDiscard(event.discards);
+					}
+					if(event.gains.length){
+						//game.log(player,'获得了',event.gains);
+						player.gain(event.gains,'gain2');
+					}
+					'step 8'
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+				},
+				check:function(event,player){
+					if(player.hp&lt;2) return false;
+					if(player.countCards('h')&lt;1) return true;
+					if(player.countCards('e')>=2) return true;
+					return false;
+				},
+				ai:{
+					result:{
+						player:function(player){
+							if(player.hp&lt;2) return -2;
+							if(player.countCards('e')>=2) return 1;
+							return -2;
+						}
+					},
+				}
+			},
+			yuepi:{
+				trigger:{
+					player:'phaseDiscardBefore',
+				},
+				filter:function (event,player){
+					return (player.countCards('h')>=player.countCards('e'))&amp;&amp;player.countCards('e')>0;
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard('h',player.countCards('e'),true,'请选择重铸的牌');
+					'step 1'
+					player.lose(result.cards, ui.discardPile);
+					player.$throw(result.cards,1000);
+					game.log(player,'将',cards,'置入了弃牌堆');
+					'step 2'
+					player.draw(player.countCards('e'));
+					player.addTempSkill('yuepi_handLimit');
+				},
+				subSkill:{
+					handLimit:{
+						mod:{
+							maxHandcard:function (player,num){
+								return num+player.countCards('e');
+							},
+						}
+					}
+				}
+			},
+			cangxiong:{
+				trigger:{
+					global:'changeHp'
+				},
+				filter:function (event,player){
+					if(!event.player||event.player==player||player.countCards('h')==0) return false;
+					return event.player.hp==1;
+				},
+				check:function (event,player){
+					var att = get.attitude(player,event.player);
+					return (att>0&amp;&amp;event.player!=_status.currentPhase)||(att&lt;0&amp;&amp;event.player==_status.currentPhase&amp;&amp;(event.player.countCards('h')-player.countCards('h'))&lt;=1);
+				},
+				content:function(){
+					'step 0'
+					player.chooseCard('h',[1,Infinity],true,'请选择要给对方的牌').set('ai',function(card){
+						var target = _status.event.getTrigger().player;
+						console.log(target);
+						if((target.countCards('h')+ui.selected.cards.length)>(player.countCards('h')-ui.selected.cards.length)) return -1;
+						return 7-get.value(card);
+					});
+					'step 1'
+					if(result.cards){
+						trigger.player.gain(result.cards,player,'giveAuto');
+					}
+					'step 2'
+					if(trigger.player.countCards('h')>player.countCards('h')){
+						if(player.storage.outPlayers==null){
+							player.storage.outPlayers=[];
+						}
+						player.storage.outPlayers.push(trigger.player);
+						trigger.player.addTempSkill('cangxiong_diao',{target:'phaseBegin'});//移除游戏
+						game.broadcastAll(function(splayer){
+								splayer.out('cangxiong_diao');
+							},trigger.player
+						)
+					}
+				},
+				subSkill:{
+					diao:{
+						trigger:{global:['phaseAfter','turnOverAfter']},
+						mark:true,
+						direct:true,
+						filter:function(event,player){
+							if(event.player.next!==player){
+								return false;
+							}
+							else if(event.name=='turnOver'&amp;&amp;event.player.isTurnedOver()) {
+								return false; 
+							}
+							else if(event.name=='turnOver'&amp;&amp;event.player!=_status.currentPhase){
+								return false;
+							}
+							else{
+								game.broadcastAll(function(splayer){
+										splayer.in('cangxiong_diao');
+									},player
+								)
+							}
+							return true;
+							//player.in('cangxiong_diao');
+							//player.in('cangxiong_diao');
+							//
+
+						},
+						intro:{
+							content:'移除游戏外'
+						},
+						content:function(){
+							game.broadcastAll(function(splayer){
+								_status.dying.remove(splayer);
+							},player)
+							player.removeSkill('cangxiong_diao');
+						}
+					},
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0
+				},
+				ai:{
+					basic:{
+						order:10
+					},
+					result:{
+						target:function(player,target){
+							return get.attitude(player,target)
+						},
+					},
+					threaten:1.3
+				}
+			},
+			chaoqianyishi:{
+				trigger:{global:['phaseEnd']},
+				filter:function(event,player){
+					if(player.hasSkill('chaoqianyishi_tag')){
+						return true;
+					}
+					else
+						return false;
+				},
+				content:function(){
+					"step 0"
+					player.draw(player.maxHp);
+					"step 1"
+					player.chooseCard(player.hp,'he','选择放置到牌堆顶部或底部的牌',true);
+					"step 2"
+					if(result.bool==true&amp;&amp;result.cards!=null){
+						event.cards=result.cards
+					}
+					player.chooseBool("选择确定放置到牌堆顶部，取消放置到牌堆底部");
+					"step 3"
+					event.intop=result.bool;
+					if(result.bool){
+						if(event.cards.length>0){
+							//player.$throw(cards,1000);
+							//player.lose(event.cards,ui.special,'visible');
+							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆顶（先选择的在上）',event.cards]).set('ai',function(button){
+								var value=get.value(button.link);
+								if(_status.event.reverse) return value;
+								return -value;
+							}).set('reverse',((_status.currentPhase&amp;&amp;_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+						}
+					}
+					else{
+						if(event.cards.length>0){
+							//player.lose(event.cards,ui.special);
+							//player.$throw(cards,1000);
+							//player.lose(event.cards,ui.special,'visible');
+							player.chooseButton(true,event.cards.length,['按顺序将卡牌置于牌堆底（先选择的在下）',event.cards]).set('ai',function(button){
+								var value=get.value(button.link);
+								if(_status.event.reverse) return value;
+								return -value;
+							}).set('reverse',((_status.currentPhase&amp;&amp;_status.currentPhase.next)?get.attitude(player,_status.currentPhase.next)>0:false))
+						}
+					}
+					"step 4"
+					if(result.bool&amp;&amp;result.links&amp;&amp;result.links.length) event.linkcards=result.links.slice(0);
+					game.delay();
+					'step 5'
+					var cards=event.linkcards;
+					//player.$throw(cards,1000);,'visible'
+					game.log(player,'将',cards,'置于牌堆');
+					player.lose(cards,ui.special);
+					'step 6'
+					game.delay();
+					'step 7'
+					var cards=event.linkcards;
+					if(event.intop){
+						while(cards.length>0){
+							var card=cards.pop();
+							card.fix();
+							ui.cardPile.insertBefore(card,ui.cardPile.firstChild);
+							game.updateRoundNumber();
+								//game.log(player,'将',card,'置于牌堆顶');
+						}
+					}
+					else{
+						while(cards.length>0){
+							var card=cards.pop();
+							card.fix();
+							// player.lose(card,ui.special,'toStorage');
+							// player.$throw(card,100);
+							ui.cardPile.appendChild(card);
+							game.updateRoundNumber();
+							//game.log(player,'将',card,'置于牌堆底');
+						}
+					}
+				},
+				group:['chaoqianyishi_ready'],
+				subSkill:{
+					ready:{
+						trigger:{player:['damageAfter','loseHpAfter','loseAfter']},
+						direct:true,
+						filter:function(event,player,name){
+							if(name=='loseAfter'){
+								var indexi=0
+								while(indexi&lt;event.cards.length){
+									if(get.type(event.cards[indexi])=='trick')
+										return true;
+									indexi++;
+								}
+								return false;
+							}
+							else 
+								return true;
+						},
+						content:function(){
+							if(!player.hasSkill('chaoqianyishi_tag'))
+								player.addTempSkill('chaoqianyishi_tag');
+						}
+					},
+					tag:{
+						mark:true,
+						intro:{
+							content:function(){
+								return '结束时触发技能'+get.translation('chaoqianyishi')
+							}
+						}
+					}
+				}
+			},
+			hengkongchushi:{
+				trigger:{player:'phaseUseBefore'},
+				content:function(){
+					player.addTempSkill('hengkongchushi_cannot',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_qiyuyong',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_moyuqi',{player:'phaseUseAfter'});
+					player.addTempSkill('hengkongchushi_nanman');
+					player.addTempSkill('nochongzhu',{player:'phaseUseAfter'});
+				},
+				subSkill:{
+					cannot:{
+						mark:true,
+						markText:'禁',
+						intro:{
+							content:'禁止出牌'
+						},
+						mod:{
+							cardEnabled:function(){
+								return false;
+							},
+							cardSavable:function(){
+								return false;
+							},
+						}
+					}
+				}
+			},
+			hengkongchushi_qiyuyong:{
+				enable:"phaseUse",
+				filter:function(event,player){
+					return player.countCards('he')>0;
+				},
+				content:function(){
+					"step 0"
+					player.chooseToDiscard(1,'选择一张牌弃置','he',true);
+					"step 1"
+					if(result.cards.length>0){
+						event.cards=get.bottomCards();
+						player.showCards(event.cards,'底牌展示');
+						game.delayx();
+					}
+					else{
+						event.finish();
+					}
+					"step 2"
+					player.removeSkill('hengkongchushi_cannot');
+					var bool=game.hasPlayer(function(current){
+						return player.canUse(event.cards[0],current)&amp;&amp;lib.filter.targetEnabled2(event.cards[0],player,current);
+					});
+					if(bool){
+						player.chooseUseTarget(event.cards[0],true,false);
+					}
+					else{
+						game.cardsDiscard(event.cards[0]);
+						game.log(event.cards[0],'从牌堆弃置到弃牌堆');
+						player.removeSkill('hengkongchushi_qiyuyong');
+					}
+					"step 3"
+					player.addTempSkill('hengkongchushi_cannot',{player:'phaseUseAfter'});
+				}
+			},
+			hengkongchushi_moyuqi:{
+				enable:"phaseUse",
+				content:function(){
+					"step 0"
+					player.draw();
+					"step 1"
+					event.cards=get.bottomCards();
+					player.showCards(event.cards,'底牌展示');
+					game.delayx();
+					"step 2"
+					var bool=get.suit(event.cards[0])=='club';
+					game.cardsDiscard(event.cards[0]);
+					game.log(event.cards[0],'从牌堆弃置到弃牌堆');
+					if(bool){
+						event.finish()
+					}
+					"step 3"
+					player.removeSkill('hengkongchushi_moyuqi');
+				}
+			},
+			hengkongchushi_nanman:{
+				trigger:{player:'phaseEnd'},
+				direct:true,
+				filter:function(event,player,name){
+						var allcards=[];
+						var newcard={};
+						player.getHistory('useCard').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						player.getHistory('respond').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						player.getHistory('lose').forEach(valueI=>{
+							allcards.addArray(valueI.cards);
+						}
+						);
+						if(allcards.length&lt;game.countPlayer()) return false;
+						while(allcards.length>0){
+							newcard=allcards.pop();
+							console.log(newcard,allcards);
+							if(get.suit(newcard)!='spade'&amp;&amp;get.suit(newcard)!='club'){
+								return false
+							}
+						}
+						return true;
+				},
+				content:function(){
+					var list=game.filterPlayer(function(current){
+						return player.canUse('nanman',current);
+					});
+					list.sortBySeat();
+					player.useCard({name:'nanman'},list);
+				}
+			},
+			nochongzhu:{
+
+			},
+			wenhuazhian:{
+				unique:true,
+				group:'wenhuazhian2',
+				zhuSkill:true,
+			},
+			wenhuazhian2:{
+				audio:2,
+				//forceaudio:true,
+				trigger:{global:'damageSource'},
+				usable:1,
+				filter:function(event,player){
+					if(player==event.source||!event.source||event.source.group!='nijisanji') return false;
+					return player.hasZhuSkill('wenhuazhian',event.source);
+				},
+				direct:true,
+				content:function(){
+					'step 0'
+					trigger.source.chooseBool('是否对'+get.translation(player)+'发动【文化之暗】？').set('choice',get.attitude(trigger.source,player)>0);
+					'step 1'
+					if(result.bool){
+						player.logSkill('wenhuazhian');
+						trigger.source.line(player,'green')
+						trigger.source.judge(function(card){
+							if(get.suit(card)=='club') return 4;
+							return 0;
+						});
+					}
+					else{
+						event.finish();
+					}
+					'step 2'
+					if(result.suit=='club'){
+						game.delayx();
+						trigger.source.draw();
+						ui.cardPile.appendChild(result.card);
+					}
+				}
+			},
+
+			
+			mark_bingdielei:{
+				audio:'bingdielei',
+				group:'mark_bingdielei_damageBy',
+				subSkill:{
+					damageBy:{
+						trigger:{player:'damageBegin4',source:'damageBegin4'},
+						priority:99,
+						filter:function(event,player){
+							return event.num&amp;&amp;!_status.event.getParent('phase').skill;
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							player.addTempSkill('mark_bingdielei_anotherPhase');
+						},
+					},
+					anotherPhase:{
+						audio:'bingdielei',
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						filter:function(event,player){
+							return player.countDiscardableCards(player,'he',{suit:'club'})||player.countCards('he',{type:'equip'});
+						},
+						intro: {
+							content:'当前回合结束后可以获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						direct:true,
+						popup:false,
+						content:function(){
+							'step 0'
+							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合','he',function(card){
+								return get.suit(card)=='club'||get.type(card)=='equip';
+							})
+							'step 1'
+							if(result.bool){
+								player.unmarkSkill(event.name);
+								player.logSkill(event.name);
+								player.insertPhase();
+							}
+						},
+					},
+				},
+				ai:{
+					maixie:true,
+				},
+			},
+			mark_quanxinquanyi:{
+				audio:'quanxinquanyi',
+				init:function(player,skill){
+					player.storage[skill]=[];
+				},
+				group:['mark_quanxinquanyi_begin','mark_quanxinquanyi_saycards','mark_quanxinquanyi_loseBy','mark_quanxinquanyi_endRound'],
+				subSkill:{
+					begin:{
+						trigger:{global:'roundStart'},
+						forced:true,
+						silent:true,
+						popup:false,
+						content:function(){
+							'step 0'
+							if(player.hasMark('mark_quanxinquanyi_saycards')) player.unmarkSkill('mark_quanxinquanyi_saycards');
+							if (!player.storage.mark_quanxinquanyi_loseBy) player.storage.mark_quanxinquanyi_loseBy = true;
+							player.storage.mark_quanxinquanyi_saycards.length = 0;
+							
+							var list = [];
+							for(var i=0;i&lt;lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								var reapeat = 0;
+								if(player.storage.mark_quanxinquanyi.length){
+									player.storage.mark_quanxinquanyi.forEach(function(his){	
+										if(his==name) reapeat ++;
+									});
+								}
+								if(reapeat||name=='wuxie'||name=='jinchan') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							if(!list.length)	event.finish();
+							else	event.list = list;
+							'step 1'
+							player.chooseBool('###是否发动『全新全异』###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
+							'step 2'
+							if(result.bool){
+								player.logSkill('mark_quanxinquanyi');
+								event.videoId = lib.status.videoId++;
+								var list = event.list;
+								game.broadcastAll(function(id, list){
+									var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
+									dialog.videoId = id;
+								}, event.videoId, list);
+							}else{
+								event.finish();
+							}
+							'step 3'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							next.set('ai',function(button){
+								var card={name:button.link[2]};
+								var value=get.value(card);
+								return value;
+							});
+							'step 4'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool) {
+								player.storage.mark_quanxinquanyi_saycards.add(result.links[0][2]);
+								player.storage.mark_quanxinquanyi.add(result.links[0][2]);
+								game.log(player,'的『全新全异』声明了【',player.storage.mark_quanxinquanyi_saycards,'】');
+								player.syncStorage('mark_quanxinquanyi_saycards');
+								player.markSkill('mark_quanxinquanyi_saycards');
+							}
+						}
+					},
+					saycards:{
+						init:function(player,skill){
+							if (!player.storage.mark_quanxinquanyi_saycards) {
+								player.storage.mark_quanxinquanyi_saycards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '异',
+						intro: {
+							content: function(storage,player){
+								if(player.storage.mark_quanxinquanyi_loseBy) return '声明了【'+get.translation(player.storage.mark_quanxinquanyi_saycards)+'】';
+								else return '声明了【'+get.translation(player.storage.mark_quanxinquanyi_saycards)+'】,当前轮次已有同名牌进入弃牌堆';
+							},
+							name:'『全新全异』',
+						}
+					},
+					loseBy:{
+						init:function(player,skill){
+							if (!player.storage[skill]){
+								player.storage[skill] = true;
+							}
+						},
+						trigger:{global:'phaseEnd'},
+						priority:999,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return game.getGlobalHistory('cardMove',function(evt){
+								if(evt.name=='cardsDiscard'||(evt.name=='lose'&amp;&amp;evt.position==ui.discardPile)){
+									var num = 0;
+									evt.cards.forEach(function(card){
+										if(get.name(card)==player.storage.mark_quanxinquanyi_saycards[0])	num++;
+									})
+									return num;
+								}
+							}).length;
+						},
+						content:function(){
+							player.storage.mark_quanxinquanyi_loseBy = false;
+							player.markSkill('mark_quanxinquanyi_saycards');
+						}
+					},
+					endRound:{
+						trigger:{global:'roundStart'},
+						priority:999,
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function(event,player){
+							return player.storage.mark_quanxinquanyi_saycards.length&amp;&amp;player.storage.mark_quanxinquanyi_loseBy;
+						},
+						content:function(){
+							'step 0'
+							if(!player.hasUseTarget({name:player.storage.mark_quanxinquanyi_saycards})){
+								event.finish();
+							}
+							'step 1'
+							player.chooseCard('###『全新全异』##是否将一张牌当作声明牌使用？',1)
+							'step 2'
+							if(result.bool){
+								player.logSkill('mark_quanxinquanyi_endRound');
+								player.chooseUseTarget(result.cards,{name:player.storage.mark_quanxinquanyi_saycards},true,false);
+							}
+						}
+					}
+				}
+			},
+
+			mark2_bingdielei:{
+				group:'mark2_bingdielei_damageBy',
+				subSkill:{
+					damageBy:{
+						trigger:{player:'damageBegin4',global:'dying'},
+						priority:99,
+						filter:function(event,player){
+							if(_status.event.getParent('phase').skill)	return false;
+							if(event.name=='damage'&amp;&amp;player==event.player)	return true;
+							return event.getParent()&amp;&amp;event.getParent().source == player;
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							player.markSkill(event.name);
+							player.logSkill(event.name);
+							player.addTempSkill('mark2_bingdielei_anotherPhase');
+						},
+					},
+					anotherPhase:{
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						silent:true,
+						forced:true,
+						intro: {
+							content:'当前回合结束后获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						content:function(){
+							player.markSkill(event.name);
+							game.delayx();
+							player.logSkill(event.name);
+							player.insertPhase();
+						},
+					},
+				},
+			},
+
+			quanxinquanyi:{
+				group:['quanxinquanyi_begin','quanxinquanyi_playerLosecard'],
+				subSkill:{
+					begin:{
+						trigger:{global:'roundStart'},
+						filter:function(event,player){
+							if(player.countCards('h')&lt;1) return false;
+							return true;
+						},
+						content:function(){
+							'step 0'
+							//delete player.storage.quanxinquanyi_showcards;
+							delete player.storage.quanxinquanyi_saycards;
+							var maxCard=player.maxHp-player.hp;
+							if(maxCard==0) maxCard=1;
+							player.chooseCard('h','选择要展示的手牌',[1,maxCard],true);
+							'step 1'
+							player.showCards(result.cards);
+							event.showCards=result.cards;
+							player.addSkill('quanxinquanyi_showcards');
+							player.addSkill('quanxinquanyi_losecard','roundStart');
+							player.addTempSkill('quanxinquanyi_discard','roundStart');
+							player.addSkill('quanxinquanyi_end','roundStart'); //为了使新加的技能不在当前roundStart被触发
+							'step 2'
+							player.storage.quanxinquanyi_showcards.addArray(event.showCards);
+							//player.showCards(player.storage.quanxinquanyi_showcards,'全新全异（展示）');
+							player.syncStorage('quanxinquanyi_showcards');
+							player.markSkill('quanxinquanyi_showcards');
+							'step 3'
+							event.videoId = lib.status.videoId++;
+							var list=[];
+							for(var i=0;i&lt;lib.inpile.length;i++){
+								var name=lib.inpile[i];
+								if(name=='wuxie') continue;
+								else if(get.type(name)=='trick') list.push(['锦囊','',name]);
+							}
+							//ui.create.dialog('声明一张牌',[list,'vcard']);
+							game.broadcastAll(function(id, list){
+								var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
+								dialog.videoId = id;
+							}, event.videoId, list);
+							'step 4'
+							var next = player.chooseButton(1 ,true);
+							next.set('dialog',event.videoId);
+							'step 5'
+							game.broadcastAll('closeDialog', event.videoId);
+							if (result.bool) {
+								player.addSkill('quanxinquanyi_saycards');
+								player.storage.quanxinquanyi_saycards = result.links;
+								player.showCards(player.storage.quanxinquanyi_saycards,'全新全异（声明）');
+								player.syncStorage('quanxinquanyi_saycards');
+								player.markSkill('quanxinquanyi_saycards');
+							}
+						}
+					},
+					end:{
+						trigger:{global:'phaseBefore'},
+						direct:true,
+						content:function(){
+							player.addSkill('quanxinquanyi_endRound');
+							player.removeSkill('quanxinquanyi_end');
+						}
+					},
+					showcards:{
+						init: function(player) {
+							if (!player.storage.quanxinquanyi_showcards) {
+								player.storage.quanxinquanyi_showcards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '新',
+						intro: {
+							content: 'cards',
+							onunmark:'throw',
+							name:'全新全异（亮出）',
+							// onunmark:function(storage,player){
+							// 	if(storage&amp;&amp;storage.length){
+							// 		player.$throw(storage,1000);
+							// 		game.cardsDiscard(storage);
+							// 		game.log(storage,'被置入了弃牌堆');
+							// 		storage.length=0;
+							// 	}
+							// },
+						}
+					},
+					saycards:{
+						init: function(player) {
+							if (!player.storage.quanxinquanyi_saycards) {
+								player.storage.quanxinquanyi_saycards = [];
+							}
+						},
+						locked:true,
+						notemp:true,
+						marktext: '异',
+						intro: {
+							content: function(storage,player){
+								if(!player.storage.saycardsInD)
+									return '声明了【'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+'】,当前未进入弃牌堆，本轮结束时可用一张亮出牌使用'
+								else
+									return '声明了【'+get.translation(player.storage.quanxinquanyi_saycards[0][2])+'】,当前已经有声明牌进入弃牌堆'
+							},
+							name:'全新全异（声明）',
+							// onunmark:function(storage,player){
+							// 	if(storage&amp;&amp;storage.length){
+							// 		player.$throw(storage,1000);
+							// 		game.cardsDiscard(storage);
+							// 		game.log(storage,'被置入了弃牌堆');
+							// 		storage.length=0;
+							// 	}
+							// },
+						}
+					},
+					discard:{
+						trigger:{global:'loseAfter'},
+						priority:99,
+						filter:function(event,player){
+							if(event.type!='discard') return false;
+							for(var i=0;i&lt;event.cards2.length;i++){
+								for(var j=0;j&lt;player.storage.quanxinquanyi_showcards.length;j++){
+									if(event.cards2[i]==player.storage.quanxinquanyi_showcards[j]&amp;&amp;get.position(event.cards2[i],true)=='d'){
+										//console.log(event.cards2[i]);
+										return true;
+									}
+								}
+							}
+							return false;
+						},
+						direct:true,
+						//frequent:'check',
+						content:function(){
+							"step 0"
+							if(trigger.delay==false) game.delay();
+							"step 1"
+							var cards=[];
+							for(var i=0;i&lt;trigger.cards2.length;i++){
+								for(var j=0;j&lt;player.storage.quanxinquanyi_showcards.length;j++){
+									if(trigger.cards2[i]==player.storage.quanxinquanyi_showcards[j]&amp;&amp;get.position(trigger.cards2[i],true)=='d'){
+										cards.push(trigger.cards2[i]);
+									}
+								}
+							}
+							if(cards.length){
+								player.markSkill(event.name);
+								player.logSkill(event.name);
+								player.addTempSkill('bingdielei_anotherPhase');
+							}
+						},
+					},
+					playerLosecard:{
+						trigger:{player:'loseAfter'},
+						direct:true,
+						filter:function(event,player){
+							if(player.storage.quanxinquanyi_showcards&amp;&amp;player.storage.quanxinquanyi_showcards.length>0)
+								return true;
+							else 
+								return false;
+						},
+						content:function(){
+							if(player.storage.quanxinquanyi_showcards)
+								for(var i=0;i&lt;trigger.cards2.length;i++){
+									if(player.storage.quanxinquanyi_showcards.contains(trigger.cards2[i])){
+										game.broadcastAll(
+											function(splayer,card){
+												splayer.storage.quanxinquanyi_showcards.remove(card)
+											},player,trigger.cards2[i]
+										);
+										player.syncStorage('quanxinquanyi_showcards');
+									}
+								}
+						}
+					},
+					losecard:{
+						trigger:{global:'loseAfter'},
+						filter:function(event,player){
+							if(event.type!='use'&amp;&amp;event.type!='discard') return false;
+							if(player.hasZhuSkill('qiujinzhiling')&amp;&amp;event.player.group==player.group) return false;
+							for(var i=0;i&lt;event.cards2.length;i++){
+								if(event.cards2[i].name==player.storage.quanxinquanyi_saycards[0][2]){
+									return true;
+								}
+							}
+							return false;
+						},
+						direct:true,
+						//frequent:'check',
+						content:function(){
+							player.storage.saycardsInD=true;
+						}
+					},
+					endRound:{
+						trigger:{global:'roundStart'},
+						priority:999,
+						prompt:function(){
+							return '是否将一张亮出牌当作声明牌使用？(若不满足使用声明牌条件将直接结算)'
+						},
+						filter:function(event,player){
+							return player.storage.quanxinquanyi_saycards;
+						},
+						content:function(){
+							'step 0'
+							if(player.storage.saycardsInD){
+								event.goto(4);
+							}
+							else{
+								var bool=game.hasPlayer(function(current){
+									return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},current);
+								});
+								if(!bool){
+									event.goto(4);
+								}
+							}
+							'step 1'
+							player.chooseCard('选择一张亮出牌',1,
+								function(card){
+									var cuplayer=_status.event.player;
+									return cuplayer.storage.quanxinquanyi_showcards.contains(card)
+								}
+							)
+							'step 2'
+							if(result.bool){
+								event.useshowCards=result.cards;
+								player.chooseUseTarget(event.useshowCards[0],{name:player.storage.quanxinquanyi_saycards[0][2]},true,false);
+								// player.chooseTarget('选择使用目标',function(card,player,target){
+								// 	return player.canUse({name:player.storage.quanxinquanyi_saycards[0][2]},target);
+								// }).ai=function(target){
+								// 	if(!check) return 0;
+								// 	return get.effect(target,{name:player.storage.quanxinquanyi_saycards[0][2]},_status.event.player);
+								// }
+							}
+							else{
+								event.goto(4);
+							}
+							'step 3'
+							if(result.bool){
+							}
+							'step 4'
+							//player.removeSkill('quanxinquanyi_showcards');
+							player.removeSkill('quanxinquanyi_saycards');
+							player.removeSkill('quanxinquanyi_endRound');
+						}
+					}
+				}
+			},
+			bingdielei:{
+				audio:3,
+				subSkill:{
+					anotherPhase:{
+						trigger:{global:'phaseEnd'},
+						marktext: '并',
+						mark:true,
+						forced:true,
+						intro: {
+							content:'当前回合结束后获得一个额外回合',
+							name:'并蒂恶蕾',
+						},
+						content:function(){
+							player.markSkill(event.name);
+							game.delayx();
+							player.logSkill(event.name);
+							player.insertPhase();
+						}
+					}
+				}
+			},
+			qiujinzhiling:{
+				unique:true,
+				zhuSkill:true,
+			},
+			zhenyin: {
+				audio:1,
+				trigger: {
+					source: 'damageEnd',
+					player: 'useCardToPlayered',
+				},
+				filter: function(event, player) {
+					if (!player.hasSkill('saqi_use')) {
+						return event.name == 'damage' &amp;&amp; event.player.countCards('ej');
+					}
+					else {
+						return event.name == 'useCardToPlayered' 
+							&amp;&amp; event.targets.length == 1
+							&amp;&amp; event.targets[0].countCards('ej');
+					}
+				},
+				content: function() {
+					'step 0'
+					event.A = trigger.name == 'damage' ? 
+						trigger.player :
+						trigger.targets[0];
+					event.B = event.A.next;
+					if (!event.A.countCards('ej')) event.finish();
+					player.choosePlayerCard('ej', event.A).set('ai',function(button){
+						var player = _status.event.player;
+						var source = _status.event.target;
+						var target = source.next;
+						var link = button.link;
+						if(get.position(link)=='j'){
+							if(target.canAddJudge(link))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}else if(get.position(link)=='e'){
+							var subtype = get.subtype(link);
+							if(!target.getEquip(subtype))	return get.effect(target,link,player,player);
+							else	return get.damageEffect(target,player,player);
+						}
+					});
+					'step 1'
+					if (result.bool) {
+						var card = result.links[0];
+						var dam = false;
+						if(get.position(card)=='e'){
+							var c = event.B.getEquip(get.subtype(card));
+							if (c) {
+								dam = true;
+								game.log(c, '掉落了');
+							}
+							re = event.B.equip(card);
+						}
+						else {
+							var cname = card.viewAs ? card.viewAs : get.name(card);
+							event.B.getCards('j').forEach(function(c) {
+								if (get.name(c) == cname) {
+									game.log(c, '掉落了');
+									game.cardsDiscard(c);
+									dam = true;
+								}
+							})
+							event.B.addJudge({name: cname}, [card]);
+						}
+						event.A.$give(card, event.B)
+						if (dam) event.B.damage('nocard');
+						game.delay();
+					}
+				}
+			},
+			saqi: {
+				init: function(player) {
+					if (!player.storage.saqi_use) {
+						player.storage.saqi_use = [];
+					}
+				},
+				trigger: {player: 'phaseZhunbeiBegin'},
+				content: function() {
+					'step 0'
+					var list = [];
+					list.push('减少上限');
+					if (player.maxHp &lt; 5) list.push('增加上限');
+					player.chooseControl(list).ai = function() {
+						if (list.length == 2) {
+							if (player.maxHp > player.hp) {
+								return 0;
+							}
+							else return 1;
+						}
+						else return 0;
+					};
+					'step 1'
+					if (result.control == '增加上限') {
+						player.gainMaxHp();
+					}
+					else {
+						player.loseMaxHp();
+						player.addTempSkill('saqi_use', {
+							player: 'phaseBegin',
+						});
+						player.addTempSkill('saqi_ban');
+					}
+				},
+				prompt: function() {
+					var str = "是否发动飒气并选择&lt;br>";
+					var add = (_status.event.player.maxHp &lt; 5);
+					var item1 = '减少体力上限&lt;br>';
+					var item2 = '增加体力上限&lt;br>';
+					if (!add) return str + item1;
+					else return str + '1. ' + item1 + '2. ' + item2;
+				},
+				global: 'saqi_banG',
+				subSkill: {
+					use: {
+						mark: true,
+						locked: true,
+						direct: true,
+						marktext: '飒',
+						intro: {
+							content: function(storage, player, skill) {
+								var str = "发动“震音”的条件改为“你使用牌指定唯一目标后”。&lt;br>";
+								if (storage &amp;&amp; storage.length) {
+									str += "其他角色本回合无法使用的花色：" + 
+										get.translation(storage);
+								}
+								return str;
+							}
+						},
+						trigger: {
+							player: 'useCardAfter',
+						},
+						content: function() {
+							var suit = get.suit(trigger.card);
+							if (player.hasSkill('saqi_ban') &amp;&amp; suit &amp;&amp; suit != 'none') {
+								if (player.storage.saqi_use.indexOf(suit) == -1) {
+									player.storage.saqi_use.push(suit);
+									player.markSkill('saqi_use');
+								}
+							}
+						},
+						mod:{
+							aiOrder:function(player,card,num){
+								if(get.itemtype(card)=='card'&amp;&amp;!get.info(card).notarget) return num+1;
+							},
+							aiValue:function(player,card,num){
+								if(get.itemtype(card)=='card'&amp;&amp;!get.info(card).notarget) return num+1;
+							},
+						},
+					},
+					banG: {
+						mod: {
+							cardEnabled: function(card, player) {
+								var cur = game.findPlayer(function(p) {
+									return p.hasSkill('saqi_ban');
+								})
+								if (cur &amp;&amp; cur != player &amp;&amp; 
+									cur.storage.saqi_use.indexOf(get.suit(card)) != -1) {
+									return false;
+								}
+							},
+							cardSavable:function(card, player){
+								var cur = game.findPlayer(function(p) {
+									return p.hasSkill('saqi_ban');
+								})
+								if (cur &amp;&amp; cur != player &amp;&amp; 
+									cur.storage.saqi_use.indexOf(get.suit(card)) != -1) {
+									return false;
+								}
+							}
+						},
+					},
+					ban: {
+						onremove: function(player) {
+							player.storage.saqi_use = [];
+							player.markSkill('saqi_use');
+						},
+					}
+				}
+			},
+			meici: {
+				audio:4,
+				group: ['meici_set', 'meici_use'],
+				subSkill: {
+					mark: {
+						mark: true,
+						intro: {
+							content: "本回合使用锦囊牌时，将被观看手牌并重铸其中一张",
+						},
+						onunmark: function(player) {
+							player.unmarkSkill('meici_mark');
+						}
+					},
+					set: {
+						direct: true,
+						trigger: {
+							global: 'phaseBegin',
+						},
+						filter: function(event, player) {
+							return event.player != player &amp;&amp; !game.findPlayer(function(cur) {
+								return cur.getCards('h') > event.player.getCards('h');
+							});
+						},
+						content: function() {
+							player.logSkill('meici', trigger.player);
+							game.delayx();
+							trigger.player.addTempSkill('meici_mark');
+							trigger.player.markSkill('meici_mark');
+						}
+					},
+					use: {
+						popup: false,
+						trigger: {
+							global: 'useCardAfter'
+						},
+						filter: function(event, player) {
+							return event.player.hasSkill('meici_mark')
+								&amp;&amp; ['trick', 'delay'].contains(get.type(event.card));
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						content: function() {
+							'step 0'
+							game.delay(0.5);
+							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target',trigger.player).ai=function(button){
+								var val = get.buttonValue(button);
+								var player = _status.event.player;
+								var target = _status.event.target;
+								if(get.attitude(player,target)>0) return 4-val+Math.random();
+								return val+Math.random();
+							};
+							'step 1'
+							if (result.bool &amp;&amp; result.cards.length) {
+								player.logSkill('meici', trigger.player,true,false,false);
+								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
+								trigger.player.$throw(result.cards);
+								game.log(trigger.player, '将', result.cards, '置入了弃牌堆');
+								trigger.player.draw();
+								if (get.type(result.cards[0]) == 'basic') {
+									player.chooseCard("重铸一张牌", 'he');
+								}
+							}
+							'step 2'
+							if (result.bool &amp;&amp; result.cards.length) {
+								player.lose(result.cards, ui.discardPile);
+								player.$throw(result.cards);
+								player.draw();
+								game.log(player, '将', result.cards, '置入了弃牌堆');
+							}
+						}
+					}
+				},
+				ai:{
+					threaten:1.5,
+				},
+			},
+			danlian: {
+				audio:3,
+				trigger: {
+					global: 'phaseEnd'
+				},
+				filter: function(event, player) {
+					var cards = [];
+					game.getGlobalHistory('cardMove',function(evt){
+						if (evt.name == 'lose' &amp;&amp; evt.parent.name != 'useCard') {
+							cards.addArray(evt.cards.filterInD('d'));
+						}
+					});
+					var suit = [];
+					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
+					if (!player.hasSkill('danlian_club')) suit.push('club');
+					return cards.length >= event.player.hp &amp;&amp; 
+						cards.filter(function(card) {
+							return suit.contains(get.suit(card));
+						}).length &amp;&amp;
+						event.player.isAlive();
+				},
+				direct:true,
+				popup:false,
+				content: function() {
+					'step 0'
+					var cards = [];
+					var suit = [];
+					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
+					if (!player.hasSkill('danlian_club')) suit.push('club');
+					game.getGlobalHistory('cardMove', function(evt) {
+						if (evt.name == 'lose' &amp;&amp; evt.parent.name != 'useCard') {
+							cards.addArray(evt.cards.filterInD('d').filter(function(card) {
+								return suit.contains(get.suit(card));
+							}));
+						}
+					});
+					if (cards) player.chooseCardButton("###『耽恋』：进入弃牌堆的牌###选择一张牌（♦牌当【乐不思蜀】，♣牌当【决斗】）", cards);
+					else event.finish();
+					'step 1'
+					if (result.bool) {
+						event.card = result.links[0];
+						var pStr = get.suit(event.card) == 'diamond' ?
+							"选择乐不思蜀的目标" : "选择决斗的目标";
+						event.cardName = get.suit(event.card) == 'diamond' ? 
+							'lebu' : 'juedou';
+						
+						game.broadcastAll(function(player, user, pStr, cardName) {
+							player.chooseTarget(pStr, function(card, player, target) {
+								return user.canUse(cardName, target)
+									&amp;&amp; target != player
+									&amp;&amp; target != user;
+							}).set('ai', function(target) {
+								return -get.attitude(player, target);
+							});
+						}, player, trigger.player, pStr, event.cardName)
+					}
+					else event.finish();
+					'step 2'
+					if (result.bool &amp;&amp; result.targets.length) {
+						var target = result.targets[0];
+						trigger.player.useCard({name: event.cardName}, target, [event.card]);
+						player.addTempSkill('danlian_' + get.suit(event.card), 'roundStart');
+					}
+					game.delay(0.5);
+				},
+				ai:{
+					threaten:1.5,
+				},
+				subSkill: {
+					diamond: {},
+					club: {},
+				}
+			},
+			kuangbaoshuangren: {
+				audio:3,
+				group: ['kuangbaoshuangren_red', 'kuangbaoshuangren_black'],
+				subSkill: {
+					red: {
+						mod: {
+							targetInRange:function(card,player){
+								if(_status.currentPhase==player &amp;&amp; get.name(card)=='sha' &amp;&amp; get.color(card) == 'red') return true;
+							},
+							cardUsable:function (card,player,num){
+								if(card.name=='sha' &amp;&amp; get.color(card) == 'red') return Infinity;
+							},
+						},
+						trigger: {
+							source:'damageEnd'
+						},
+						filter:function(event,player){
+							return event.card&amp;&amp;get.name(event.card)=='sha'&amp;&amp;event.notLink()
+								&amp;&amp; get.color(event.card) == 'red'
+								&amp;&amp; event.player.countDiscardableCards(player,'e',{subtype:['equip3','equip4','equip6']});
+						},
+						direct:true,
+						content:function(){
+							"step 0"
+							var att=(get.attitude(player,trigger.player)&lt;=0);
+							var next=player.chooseButton();
+							next.set('att',att);
+							next.set('createDialog',['是否发动狂暴双刃，弃置'+get.translation(trigger.player)+'的一张坐骑牌？',trigger.player.getDiscardableCards(player,'e',{subtype:['equip3','equip4','equip6']})]);
+							next.set('ai',function(button){
+								if(_status.event.att) return get.buttonValue(button);
+								return 0;
+							});
+							"step 1"
+							if(result.bool &amp;&amp; result.links.length){
+								player.logSkill('kuangbaoshuangren',trigger.player);
+								trigger.player.discard(result.links[0]);
+							}
+						}
+					},
+					black: {
+						trigger: {
+							player: 'useCard2',
+							// player: 'useCardToPlayered'
+						},
+						locked:true,
+						direct:true,
+						filter:function(event,player) {
+							// if (event.getParent().triggeredTargets3.length > 1) return false;
+							if (!event.card || !(event.card.name == 'sha') 
+								|| !(get.color(event.card) == 'black')) {
+								return false;
+							}
+							return game.hasPlayer(function(cur) {
+								return lib.filter.targetEnabled2(event.card, player, cur)
+									&amp;&amp; player.inRange(cur)
+									&amp;&amp; !event.targets.contains(cur)
+									&amp;&amp; player.canUse(event.card,cur);
+							})
+						},
+						content:function(){
+							'step 0'
+							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
+								if (_status.event.targets.contains(target)) return false;
+								return lib.filter.targetEnabled2(_status.event.card, player, target)
+									&amp;&amp; player.inRange(target);
+							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
+								var player = _status.event.player;
+								return get.effect(target,_status.event.card,player,player);
+							});
+							'step 1'
+							if(result.bool &amp;&amp; result.targets.length){
+								game.delayx();
+								player.logSkill('kuangbaoshuangren', result.targets);
+								trigger.targets.unshift(result.targets[0]);
+							}
+						},
+					},
+				}
+			},
+			guangsuxiabo: {
+				audio:2,
+				init: function(player) {
+					player.storage.hp = 0;
+					player.storage.loseCount = 0;
+				},
+				trigger:{
+					global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']
+				},
+				filter: function(event, player) {
+					return player.storage.hp || player.storage.loseCount > 2;
+				},
+				content: function() {
+					'step 0'
+					player.draw();
+					'step 1'
+					var evt=_status.event.getParent('phase');
+					if(evt){
+						_status.event=evt;
+						_status.event.finish();
+					}
+				},
+				ai:{
+					maixie:true,
+				},
+				group: ['guangsuxiabo_clear', 'guangsuxiabo_cnt1', 'guangsuxiabo_cnt2'],
+				subSkill: {
+					clear: {
+						forced: true,
+						silent: true,
+						trigger:{
+							global:['phaseZhunbeiBegin','phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin','phaseJieshuBegin']
+						},
+						content: function() {
+							player.storage.hp = 0;
+							player.storage.loseCount = 0;
+						}
+					},
+					cnt1: {
+						forced: true,
+						silent: true,
+						trigger: {
+							player: 'loseEnd',
+						},
+						content: function() {
+							player.storage.loseCount += trigger.cards2.length;
+						}
+					},
+					cnt2: {
+						forced: true,
+						silent: true,
+						trigger: {
+							player: 'damageEnd',
+						},
+						content: function() {
+							player.storage.hp = 1;
+						}
+					},
+				},
+			},
+
+			//修女
+			zhenxin:{
+				locked:true,
+				group:['zhenxin_from' , 'zhenxin_to'],
+				subSkill:{
+					//防止每回合你第一次对体力值小于你的角色造成的伤害
+					from:{
+						trigger:{source: 'damageBefore' },
+						forced:true,
+						usable:1,
+						priority:12,
+						filter:function(event,player){
+							if(event.player==player)	return false;
+							return player.hp>event.player.hp;
+						},
+						content:function(){
+							trigger.changeToZero();
+						},
+					},
+					//防止体力值大于你的角色每回合对你造成的第一次伤害
+					to:{
+						trigger:{player: 'damageBefore' },
+						forced:true,
+						usable:1,
+						priority:24,
+						filter:function(event,player){
+							if(event.player!=player)	return false;
+							if(!event.source)		return false;
+							return player.hp&lt;event.source.hp;
+						},
+						content:function(){
+							trigger.changeToZero();
+						},
+					}
+				}
+			},
+			sczhuwei:{
+				group:['sczhuwei_put','sczhuwei_moveC'],
+				subSkill:{
+					put:{
+						trigger:{global:'phaseEnd'},
+						priority:24,
+						direct:true,
+						filter:function(event,player){
+							if(player==event.player)		return false;
+							return	event.player.isMinHandcard()||event.player.isMinHp();
+						},
+						content:function(){
+							'step 0'
+							player.line(trigger.player,'green');
+							var check = get.attitude(trigger.player,player);
+							trigger.player.chooseBool(get.prompt2('sczhuwei_put',player)).set('choice',check>0);
+							'step 1'
+							if(result.bool){
+								trigger.player.logSkill('sczhuwei',player);
+								event.target = trigger.player;
+								game.asyncDraw([player,event.target]);
+							}
+						},
+					},
+					moveC:{
+						trigger:{global:'sczhuwei_putAfter'},
+						forced:false,
+						filter:function(event,player){
+							if(!event.target)	return false;
+							var canbeM=function(a,b){
+									var es=a.getCards('e');
+									var c=0;
+									for(var i=0;i&lt;es.length;i++){
+										if(b.isEmpty(get.subtype(es[i]))) c++;
+									}
+									return c;
+								}
+							return canbeM(player,event.target)||canbeM(event.target,player);
+						},	
+						content:function(){
+							player.moveCard(function(card,player,target){
+								if(target==player||target==_status.currentPhase)	return true;
+								return false;
+							});
+						}
+					}
+				},			
+			},
+			suisi:{
+				audio:4,
+				locked: true,
+				direct: true,
+				trigger:{
+					player: ['cardsDiscardAfter', 'chooseToDiscardAfter', 'discardAfter']
+				},
+				filter:function(event, player){
+					var cards = event.cards;
+					if(!cards)return false;
+					var ret = false;
+					if(!player.storage.suisi) player.storage.suisi ={lastCnt:0};
+					else player.storage.suisi.lastCnt = 0;
+
+					for(var i=0;i&lt;cards.length;++i){
+						if(cards[i]&amp;&amp;(cards[i].name == 'shan'||cards[i].name=='wuxie'))++player.storage.suisi.lastCnt;
+					}
+					return player.storage.suisi.lastCnt > 0;
+				},
+				content:function(){
+					if(player.storage.suisi&amp;&amp;player.storage.suisi.lastCnt>0){
+						player.draw(Math.ceil(player.storage.suisi.lastCnt/2));
+						player.logSkill('suisi');
+					}
+				},
+				group: [
+					'suisi_shanMod', 'suisi_wuxieMod'
+				], 
+				// hasShan:function(){
+				// 	var basicCards = this.getCards('h', {type: 'basic'});
+				// 	if(basicCards&amp;&amp;basicCards.length){
+				// 		for(var i=0;i&lt;basicCards.length;++i){
+				// 			if(basicCards[i]&amp;&amp;basicCards[i].name != 'shan'){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	if(this.hasSkillTag('respondShan',true,null,true)) return true;
+				// 	return false;
+				// },
+				// hasWuxie:function(){
+				// 	var trickCards = this.getCards('h', {type: 'trick'});
+				// 	if(trickCards&amp;&amp;trickCards.length){
+				// 		for(var i=0;i&lt;trickCards.length;++i){
+				// 			if(trickCards[i]&amp;&amp;trickCards[i].name != 'wuxie'){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	var skills=this.getSkills(true).concat(lib.skill.global);
+				// 	game.expandSkills(skills);
+				// 	for(var i=0;i&lt;skills.length;i++){
+				// 		var ifo=get.info(skills[i]);
+				// 		if(ifo.viewAs&amp;&amp;typeof ifo.viewAs!='function'&amp;&amp;ifo.viewAs.name=='wuxie'){
+				// 			if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
+				// 				return true;
+				// 			}
+				// 		}
+				// 		else{
+				// 			var hiddenCard=get.info(skills[i]).hiddenCard;
+				// 			if(typeof hiddenCard=='function'&amp;&amp;hiddenCard(this,'wuxie')){
+				// 				return true;
+				// 			}
+				// 		}
+				// 	}
+				// 	return false;
+				// },
+				subSkill:{
+					shanMod:{
+						hiddenCard:function(player,name){
+							if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'respondShan'){
+								if(name == 'shan'){
+									return false;
+								}
+							}
+							return true;
+						},
+						mod:{
+							cardname:function(card, player, name){
+								if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'respondShan'){
+									if(card.name != 'shan' &amp;&amp; get.type2({name:card.name}) == 'basic'){
+										return 'shan';
+									}
+								}
+							},
+							cardEnabled2:function(card, player, name){
+								if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'respondShan'){
+									if(card.name == 'shan'){
+										return false;
+									}
+								}
+							}
+						}
+					},
+					wuxieMod:{
+						hiddenCard:function(player,name){
+							if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'wuxie'){
+								if(name == 'wuxie')return false;
+							}
+							return true;
+						},
+						mod:{
+							cardname:function(card, player, name){
+								if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'wuxie'){
+									if(card.name != 'wuxie' &amp;&amp; get.type2({name:card.name}) == 'trick'){
+										return 'wuxie';
+									}
+								}
+							},
+							cardEnabled2:function(card, player, name){
+								if(_status.event.name == 'chooseToUse'&amp;&amp;_status.event.type == 'wuxie'){
+									if(card.name == 'wuxie'){
+										return false;
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			liefeng:{
+				trigger:{
+					player: 'phaseJieshu'
+				},
+				//direct: true,
+				//popup: false,
+				filter:function(event, player){
+					return player.countCards('h');
+				},
+				check:function(event, player){
+					return player.countCards('h',{name:['shan','wuxie']})==player.countCards('h');
+				},
+				content:function(){
+					'step 0'
+					var handCards = player.getCards('h').slice(0);
+					player.showCards(handCards);
+					event.handCards = handCards;
+					//player.logSkill('liefeng');
+					'step 1'
+					if(!event.handCards||!event.handCards.length){
+						event.finish();
+						return;
+					}
+					var shaCnt = 0;
+					for(var i =0;i&lt;event.handCards.length;++i){
+						if(event.handCards[i]&amp;&amp;(
+							event.handCards[i].name=='shan'
+							||event.handCards[i].name=='wuxie'
+							||!lib.filter.cardEnabled(event.handCards[i], player))){
+							++shaCnt;
+						}
+					}
+					if(shaCnt >= event.handCards.length){
+						event.shaCnt = shaCnt;
+						event.handCnt = shaCnt;
+						event._result = {bool: true};
+						player.discard(event.handCards);
+					}else{
+						event.finish();
+						return;
+					}
+					'step 2'
+					if(!result.bool||event.shaCnt&lt;=0){
+						event.finish();
+						return;
+					}
+					player.chooseUseTarget(
+						'###选择一个目标，视为对其使用一张【暗】杀。(【暗】杀：'+event.shaCnt+'/'+event.handCnt+'）张',
+						{name:'sha',nature:'yami'}, true, 'nodistance'
+					);
+					--event.shaCnt;
+					event.redo();
+
+				},
+				ai:{
+					useSha:1,
+					skillTagFilter:function(player,tag,arg){
+						if(tag=='useSha')	return player.countCards('h',{name:['shan','wuxie']})==player.countCards('h');
+					},
+					threaten:function(player,target){
+						return 1.6;
+					}
+				}
+			},
+			//雪城真寻
+			jiaoming:{
+				audio:5,
+				trigger:{
+					global: ['loseAfter', 'cardsDiscardAfter']
+				},
+				forced: true,
+				popup: false,
+				filter:function(event, player){
+					if(!player||player.hasSkill('jiaoming_invalid'))return false;
+					
+					event = event&amp;&amp;(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return false;
+					//是此player的回合
+					if(player!=event.player) return false;
+					
+					return true;
+				},
+				content:function(){
+					//获得当前event的parent，phaseUse，
+					//如果不存在就返回
+					event = event&amp;&amp;(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return;
+					//倒序遍历globalHistory的cardMove，
+					//对其中每个lose事件，遍历卡牌，并记录位于弃牌堆的牌
+					var cardnames = {};
+					game.getGlobalHistory('cardMove', function(evt){
+						if(evt.cards&amp;&amp;evt.name=='lose'&amp;&amp;evt.getParent('phaseUse') == event){
+							for(var i=evt.cards.length-1; i>=0; --i){
+								if(get.position(evt.cards[i], true) != 'd')continue;
+								if(typeof cardnames[evt.cards[i].name] === 'undefined'){
+									cardnames[evt.cards[i].name] = [];
+								}
+								if(!cardnames[evt.cards[i].name].contains(evt.cards[i])){
+									cardnames[evt.cards[i].name].push(evt.cards[i]);
+								}
+							}
+						}
+						return true;
+					});
+					//如果弃牌堆存在某个牌名重复，则添加空事件jiaoming_invalid，
+					//用于判定jiaoming本回合能否触发/使用
+					for(var nm in cardnames){
+						if(cardnames[nm]&amp;&amp;cardnames[nm].length>1){
+							player.addTempSkill('jiaoming_invalid');
+						};
+					}
+					if(nm != undefined){
+						player.addTempSkill('jiaoming_main', 'phaseUseAfter');
+					}
+				},
+				subSkill:{
+					invalid:{
+
+					},
+					main:{
+						enable:'phaseUse',
+						check:function(event, player){
+							return true;
+						},
+						filter:function(event, player){
+							return !player.hasSkill('jiaoming_invalid');
+						},
+						prompt:'你可选择攻击范围内有你的一名其他角色',
+						filterTarget:function(card, player, target){
+							return player!=target&amp;&amp;target.canUse('sha', player);
+						},
+						content:function(){
+							'step 0'
+							event.jmTarget = targets[0];
+							var next = event.jmTarget.chooseToUse(
+								'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去“骄名”。',
+								function(card, player){
+									if(get.name(card)!='sha') return false;
+									return lib.filter.filterCard.apply(this,arguments);
+								}
+							);
+							next.set('filterTarget', function(card, player , target){
+								return _status.event.shaTarget == target;
+							}).set('shaTarget', player).set('targetRequired',true);
+							//ai
+							var aiChoice = event.jmTarget.hasSha('use')?player:-1;
+							next.set('choice',aiChoice).set('ai2',function(target){return _status.event.choice});
+							'step 1'
+							if(event.directfalse||result.bool==false){
+								player.addTempSkill('jiaoming_invalid');
+								event.jmTarget.loseHp();
+							}
+						},
+						ai:{
+							pretao:true,
+							order:5,
+							result:{
+								player:function(player,target){
+									if(player.hp!=1) {
+										if(target.hp == 1&amp;&amp;!target.hasSha('use')){
+											return 2;
+										}
+										return 0;
+									}
+									else return -1;
+								},
+								target:function(player, target){
+									if(target.hasSha('use')){
+										return -1;
+									}else{
+										return -2;
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			changhe:{
+				audio:true,
+				trigger:{
+					player: 'phaseUseEnd'
+				},
+				forced: false,
+				check:function(event, player){
+					return true;
+				},
+				filter:function(event, player){
+					event = event&amp;&amp;(event.name == 'phaseUse'?event:event.getParent('phaseUse'));
+					if(!event||Object.getOwnPropertyNames(event).length == 0) return false;
+					if(!player)return false;
+					var cardnames = {};
+					game.getGlobalHistory('cardMove', function(evt){
+						if(evt.cards&amp;&amp;evt.name=='lose'&amp;&amp;evt.getParent('phaseUse') == event){
+							for(var i=evt.cards.length-1; i>=0; --i){
+								if(get.position(evt.cards[i], true) != 'd')continue;
+								if(typeof cardnames[evt.cards[i].name] === 'undefined'){
+									cardnames[evt.cards[i].name] = [];
+								}
+								if(!cardnames[evt.cards[i].name].contains(evt.cards[i])){
+									cardnames[evt.cards[i].name].push(evt.cards[i]);
+								}
+							}
+						}
+						return true;
+					});
+					//弃牌堆有大于等于三张同名牌，即可触发，返回true
+					for(var nm in cardnames){
+						if(cardnames[nm]&amp;&amp;cardnames[nm].length>2)return true;
+					}
+					return false;
+				},
+				content:function(){
+					'step 0'
+					player.chooseControl(['cancel2']).set('choiceList',[
+						'摸两张牌',
+						'回复1点体力'
+					]).set('prompt', '请选择一项').set('ai', function(){
+						if(_status.event.chPlayer){
+							return _status.event.chPlayer.maxHp > _status.event.chPlayer.hp;
+						}
+						return 0;
+					}).set('chPlayer', player);
+					'step 1'
+					if(result.control!='cancel2'){
+						if(result.index == 0){
+							player.draw(2);
+						}else{
+							player.recover();
+						}
+					}
+				}
+			},
+			//小野町春香
+			nvjiangrouhao:{
+				audio:true,
+				group:['nvjiangrouhao_shaTrigger', 'nvjiangrouhao_distanceTrigger'],
+				subSkill:{
+					shaTrigger:{
+						trigger:{
+							player:'useCardToPlayered',
+						},
+						filter:function(event){
+							return event.card.name=='sha';
+						},
+						forced:true,
+						content:function(){
+							//对杀的对象添加临时mod技能，限制使用牌的花色
+							var suit = trigger.card.suit;
+							var target  = trigger.target;
+							target.addTempSkill('nvjiangrouhao_filterShan', 'shaAfter', 'nvjiangrouhao_distanceTemp');
+							
+							if(!target.storage.nvjiangrouhao){
+								target.storage.nvjiangrouhao = {
+									shaTrigger:{}
+								};
+							}
+							target.storage.nvjiangrouhao.shaTrigger.suit = suit;
+							//同步的数据
+							if(target.isOnline()){
+								target.send(function(target,suit){
+									if(!target.storage.nvjiangrouhao){
+										target.storage.nvjiangrouhao = {
+											shaTrigger:{}
+										};
+									}
+									target.storage.nvjiangrouhao.shaTrigger.suit = suit;
+								}, target, suit);
+							}
+						},
+					},
+					//特定牌花色mod
+					filterShan:{
+						mod:{
+							cardEnabled2:function(card, player){
+								//如果player有杀，且有花色
+								var sha = (player&amp;&amp;player.storage&amp;&amp;player.storage.nvjiangrouhao)
+									&amp;&amp; player.storage.nvjiangrouhao.shaTrigger;
+								if(!sha||!sha.suit)return;
+								//只有同花色的闪能响应
+								if(get.name(card) == 'shan' &amp;&amp; get.suit(card) != sha.suit){
+									return false;
+								}
+							}
+						}
+					},
+					distanceTrigger:{
+						audio:'nvjiangrouhao',
+						trigger:{
+							source:'damageSource'
+						},
+						forced:true,
+						content:function(){
+							player.addTempSkill('nvjiangrouhao_distanceTemp', {player:'phaseBegin'});
+						}
+					},
+					//距离mod
+					distanceTemp:{
+						mark: true,
+						mod:{
+							globalFrom:function(player,target,distance){
+								return distance-1;
+							}
+						},
+						intro:{
+							content: '锁定技，直到你的下一个回合开始，你计算与其他角色的距离-1。'
+						}
+					}
+				}
+			},
+			yinlaiyaotang:{
+				audio:3,
+				group:['yinlaiyaotang_phaseUse', 'yinlaiyaotang_loseCheck'],
+				subSkill:{
+					phaseUse:{
+						enable: 'phaseUse',
+						usable: 1,
+						log:false,
+						filter:function(event, player){
+							return player.getCards('h').length > 0;
+						},
+						content:function(){
+							'step 0'
+							player.chooseCardTarget({
+								position:'he',
+								prompt: '###『引徕药汤』###将任意数量手牌交给你攻击范围内的任意角色（指定自己时表示置于武将牌上）', 
+								selectCard:[1, Infinity],
+								filterCard:true,
+								filterTarget:function(card,player,target){
+									return target==player||player.inRange(target);//自己或自己攻击范围内的角色
+								},
+								ai1:function(card){
+									var player = _status.event.player;
+									if(ui.selected.cards.length||player.storage.yinlaiyaotang_phaseUse){
+										var tang = ui.selected.cards.concat(player.storage.yinlaiyaotang_phaseUse);
+										for(var i=0;i&lt;tang.length;i++){
+											if(get.name(tang[i])==card.name)	return 0;
+										}
+									}
+									if(player.needsToDiscard()) return 7.5-get.value(card);
+									return 6-get.value(card);//选牌收益判断
+								},
+								ai2:function(target){
+									if(target!=player)	return get.recoverEffect(target, _status.event.player, _status.event.player);
+									return 1;//选人收益判断
+								},
+							});
+							'step 1'
+							if(result.bool){
+								player.logSkill('yinlaiyaotang');
+								event.cards = result.cards.slice(0);
+								event.target = result.targets[0];
+								if(event.target==player){
+									player.lose(event.cards,ui.special,'toStorage');
+									player.$give(event.cards,player,false);//处理牌动画
+									player.markAuto('yinlaiyaotang_phaseUse',event.cards);//自动标记
+								}else{
+									event.target.gain(event.cards,player,'giveAuto');
+								}
+							}
+							// 'step 0'
+							// player.chooseControl(['cancel2']).set('choiceList',[
+							// 	'你可将任意数量手牌交给你攻击范围内的任意角色',
+							// 	'将任意手牌置于武将牌上'
+							// ]).set('prompt', '请选择一项').set('ai', function(){
+							// 	return Math.random()>0.5?0:1;
+							// });
+							// 'step 1'
+							// if(result.control!='cancel2'){
+							// 	//选择任意数量手牌
+							// 	player.chooseCard('h', '选择你的手牌',true, [1, player.getCards('h').length||1]);
+							// 	event.selecetedChoice = result.index;
+							// }else{
+							// 	event.finish();
+							// }
+							// 'step 2'
+							// if(result.bool){
+							// 	//选中的牌
+							// 	event.prepareCards = result.cards.slice(0);
+							// 	if(event.selecetedChoice == 0){
+							// 		event.goto(3);
+							// 		//选择player攻击范围内的角色
+							// 		player.chooseTarget('将选中的手牌交给你攻击范围内的任意角色', true, function(card, player, target){
+							// 			return player.canUse('sha',target);
+							// 		}).set('ai',function(target){
+							// 			return get.damageEffect(target, _status.event.player, _status.event.player);
+							// 		});
+							// 	}else{
+							// 		event.goto(4);
+							// 	}
+							// }else{
+							// 	event.finish();
+							// }
+							// 'step 3'
+							// if(result.bool&amp;&amp;event.prepareCards&amp;&amp;event.prepareCards.length>0&amp;&amp;result.targets){
+							// 	//选择的角色获得选中的牌
+							// 	var prepareTarget = result.targets[0];
+							// 	prepareTarget.gain(event.prepareCards, player);
+							// }
+							// event.finish();
+							// 'step 4'
+							// //从手牌移除
+							// player.lose(event.prepareCards,ui.special,'toStorage');
+							// //同步mark，保存至player.storage.yinlaiyaotang_phaseUse 
+							// player.storage.yinlaiyaotang_phaseUse = player.storage.yinlaiyaotang_phaseUse.concat(event.prepareCards);
+							// player.syncStorage('yinlaiyaotang_phaseUse');
+							// player.markSkill('yinlaiyaotang_phaseUse');
+							// game.log(player,'将',event.prepareCards,'置于武将牌上');
+						},
+						init:function(player){
+							if(!player.storage.yinlaiyaotang_phaseUse)player.storage.yinlaiyaotang_phaseUse = [];
+						},
+						intro:{
+							name: '引徕药汤',
+							content:'cards'
+						},
+						ai:{
+							order:5,//决定AI会不会主动释放技能
+							result:{player:0.5},
+						}
+					},
+					loseCheck:{
+						audio:'yinlaiyaotang',
+						trigger:{global:'loseAfter'},
+						forced: true,
+						filter:function(event, player){
+							//在有牌置于武将牌上时继续检查
+							if(!player.storage.yinlaiyaotang_phaseUse)return;
+							if(event.hs&amp;&amp;event.hs.length&amp;&amp;event.player!=player&amp;&amp;get.distance(player, event.player)&lt;=1){
+								var tang = player.storage.yinlaiyaotang_phaseUse;
+								for(var i=0;i&lt;event.hs.length;i++){
+									for(var j=0;j&lt;tang.length;j++){
+										if(get.name(tang[j])==get.name(event.hs[i])){
+											return true;
+										}
+									}
+								}
+							}
+							
+							//仅对距离为1的角色
+							// if(get.distance(player, event.player) == 1){
+							// 	if(!event.cards||!event.cards.length)return false;
+							// 	for(var i=0;i&lt;event.cards.length;++i){
+							// 		//仅查找当前牌的位置为手牌时
+							// 		if(get.position(event.cards[i]) != 'h') continue;
+							// 		//对武将牌上的牌遍历，找到同名牌则通过
+							// 		for(var j=0;j&lt;player.storage.yinlaiyaotang_phaseUse.length;++j){
+							// 			if(player.storage.yinlaiyaotang_phaseUse[j].name == event.cards[i].name){
+							// 				//保存检索的位置信息
+							// 				player.storage.loseCheck = [i, j];
+							// 				return true;
+							// 			}
+							// 		}
+							// 	}
+							// }
+							// return false;
+						},
+						content:function(){
+							'step 0'
+							trigger.player.recover();
+							'step 1'
+							var hs = trigger.hs
+							var tang = player.storage.yinlaiyaotang_phaseUse;
+							event.cards = [];
+							for(var i=0;i&lt;hs.length;i++){
+								for(var j=0;j&lt;tang.length;j++){
+									if(get.name(tang[j])==get.name(hs[i])){
+										event.cards.push(tang[j]);
+									}
+								}
+							}
+							player.gain(event.cards,'gain2');
+							player.unmarkAuto('yinlaiyaotang_phaseUse',event.cards);
+							// 'step 1'
+							// var removedCard = player.storage.yinlaiyaotang_phaseUse.splice(player.storage.loseCheck[1], 1)[0];
+							// if(player.storage.yinlaiyaotang_phaseUse.length == 0){
+							// 	player.unmarkSkill('yinlaiyaotang_phaseUse');
+							// }else{
+							// 	//更新mark
+							// 	player.markSkill('yinlaiyaotang_phaseUse');
+							// }
+							// player.syncStorage('yinlaiyaotang_phaseUse');
+							// //获得卡牌
+							
+							// player.gain(removedCard,'fromStorage');
+							// game.log(player, '从武将牌上获得一张', removedCard);
+							// //延时
+							
+							// game.delayx();
+							'step 2'
+							//你摸一张牌。
+							player.draw();
+						}
+					}
+				}
+			},
+		},
+		characterReplace:{
+			SasakiSaku:['SasakiSaku','sea_SasakiSaku'],
+			LizeHelesta:['re_LizeHelesta','LizeHelesta','gz_LizeHelesta'],
+			re_AngeKatrina:['re_AngeKatrina','gz_AngeKatrina'],
+			
+			MononobeAlice:['re_MononobeAlice','MononobeAlice'],
+			ShizukaRin:['re_ShizukaRin','ShizukaRin'],
+			MitoTsukino:['re_MitoTsukino','MitoTsukino'],
+			UshimiIchigo:['re_UshimiIchigo','UshimiIchigo'],
+			HiguchiKaede:['re_HiguchiKaede','HiguchiKaede'],
+			SuzuharaLulu:['re_SuzuharaLulu','SuzuharaLulu'],
+		},
+		translate:{
+			nijisanji_1:'一期生',
+			nijisanji_2:'二期生',
+
+			nochongzhu:'禁止重铸',
+
+			MononobeAlice:'物述有栖',
+			leiyan:'雷言',
+			leiyan_info:'锁定技 你的［雷杀］可以指定1-3个目标，并无视角色防具',
+			xiaozhangduandai:'嚣张缎带',
+			xiaozhangduandai_info:'觉醒技。当你处于濒死状态时，立即恢复3点体力，摸3张牌并获得技能（咏春）',
+			yongchun:'咏春',
+			yongchun_info:'你在出牌阶段使用［杀］时，可以摸一张牌，并弃置一张手牌，令此［杀］不计入出牌阶段的使用次数',
+			tinenghuifu1:'体能恢复',
+			tinenghuifu1_hp:'体能恢复',
+			tinenghuifu1_info:'锁定技 当你失去装备区的一张牌后，你回复1点体力。当你的体力值减少后，你摸一张牌。',
+			tinenghuifu1_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：卖血&lt;/span>',
+			dianmingguzhen:'电鸣鼓震',
+			dianmingguzhen_info:'出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。',
+			dianmingguzhen_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">可以通过将自己的装备转移给队友，实现瞬间爆发&lt;/span>',
+
+			ShizukaRin:'静凛',
+			mozhaotuji:'魔爪突击',
+			mozhaotuji_DrawOrStop:'魔爪突击',
+			mozhaotuji_info:'回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。',
+			mozhaotuji_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：多次出杀 易上手&lt;/span>',
+
+			IenagaMugi:'家长麦',
+			fengxue:'奋学',
+			fengxue_info:'你可以跳过出牌阶段，亮出牌堆顶的X+1张牌，使用其中一张牌，然后获得其中一种花色的牌，弃置其余的牌。（X为体力值不小于你的角色数）',
+			yuepi:'乐癖',
+			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
+			cangxiong:'藏兄',
+			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将其从游戏除外直到其回合开始。',
+			cangxiong_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌 保护友方&lt;/span>',
+			
+			MitoTsukino:'月之美兔',
+			MitoTsukino_info:'月之美兔',
+			chaoqianyishi:'超前意识',
+			chaoqianyishi_info:'你失去过锦囊牌或体力减少过的回合结束时，你可以摸等同你体力上限的牌，然后将等同你体力值的牌置于牌堆顶或牌堆底。',
+			hengkongchushi:'横空出世',
+			hengkongchushi_info:'出牌阶段开始时，你可以令你本阶段无法出牌并仅能执行以下行动：&lt;br>1.弃置一张牌以使用牌堆底的一张牌，若无法使用，弃置之且本回合不能再执行此项；&lt;br>2.摸一张牌并弃置牌堆底牌，若弃置的不为♣，本回合不能再执行此项。&lt;br>本回合结束时，若你使用和弃置的黑色牌数大于其他角色数，你视为使用了一张【南蛮入侵】(从牌堆中弃置的不算你弃置的牌)。',
+			hengkongchushi_qiyuyong:'弃牌并使用底牌',
+			hengkongchushi_moyuqi:'摸牌并弃置底牌',
+			wenhuazhian:'文化之暗',
+			wenhuazhian_info:'彩虹社势力出牌阶段限一次，对其他角色造成伤害时可以进行一次判定，如果判定结果为♣，将判定牌放在牌堆底，然后其摸一张牌',
+			quanxinquanyi:'全新全异',
+			quanxinquanyi_info:'一轮开始时，你可以亮出至多X张手牌并声明一种通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你将一张亮出牌当本轮声明牌使用。（X为你已损失的体力值且至少为1）',
+			bingdielei:'并蒂恶蕾',
+			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
+			qiujinzhiling:'囚禁指令',
+			qiujinzhiling_info:'主公技 锁定技 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
+
+			mark_bingdielei: '并蒂恶蕾',
+			mark_bingdielei_anotherPhase: '并蒂恶蕾',
+			mark_bingdielei_info:'你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。',
+			mark_quanxinquanyi:'全新全异',
+			mark_quanxinquanyi_endRound:'全新全异',
+			mark_quanxinquanyi_info:'一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。',
+			
+			mark2_bingdielei: '并蒂恶蕾',
+			mark2_bingdielei_info:'你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。',
+			
+			SuzukaUtako: '铃鹿诗子',
+			meici: '美词',
+			meici_info: '其他角色的回合开始时，若其手牌为全场最多，其本回合使用锦囊牌后，你可以观看其手牌并重铸其中一张，若因此重铸了基本牌，你也可重铸一张牌。',
+			meici_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：难上手&lt;/span>',
+			danlian: '耽恋',
+			danlian_info: '一个回合结束时，若本回合不因使用而进入弃牌堆的牌不小于当前回合角色的体力值，你可选择其中一张♦或♣牌并选择另一名其他角色，当前回合角色将♦牌当【乐不思蜀】，♣牌当【决斗】对你选择的角色使用。每轮每种花色限一次。',
+			danlian_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">可以把弃牌转化为【乐不思蜀】和【决斗】&lt;/span>',
+			
+			HiguchiKaede: '樋口枫',
+			zhenyin: '震音',
+			zhenyin_info: '你造成伤害后，可以将目标装备区或判定区的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。',
+			saqi: '飒气',
+			saqi_info: '准备阶段，你可以增加（至多到 5 ）或扣减 1 点体力上限，若选择扣减，你获得以下效果直到你的下回合开始：你使用牌结算后，所有其他角色本回合无法使用该花色的牌；发动『震音』的条件改为“你使用牌指定唯一目标后”。',
+			saqi_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：改变体力上限 爆发&lt;/span>',
+			
+			UshimiIchigo: '宇志海莓',
+			kuangbaoshuangren: '狂暴双刃',
+			kuangbaoshuangren_info: '锁定技 你的黑色【杀】指定目标后，需额外指定攻击范围内的一名角色为目标。你的红色【杀】无距离与次数限制，且造成伤害后可以弃置目标的坐骑牌。',
+			kuangbaoshuangren_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：强化出杀&lt;/span>',
+			guangsuxiabo: '光速下播',
+			guangsuxiabo_info: '一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。',
+			
+			SisterClearie:'修女·克蕾雅',
+			zhenxin: '真信之诚',
+			zhenxin_info: '锁定技 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。',
+			sczhuwei: '助危之心',
+			sczhuwei_info: '其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。',
+			sczhuwei_put_info: '令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。',
+
+			HonmaHimawari: '本间向日葵',
+
+			YagamiKaruta: '山神歌流多',
+			suisi: '髓思',
+			suisi_info: '锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。&lt;br>你的【闪】或【无懈可击】进入弃牌堆时，摸这些牌一半的牌（向上取整）。',
+			suisi_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：高防御 自肃&lt;/span>',
+			liefeng: '猎风',
+			liefeng_info: '结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。',
+			
+			YukishiroMahiro:'雪城真寻',
+			jiaoming: '骄名',
+			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：&lt;br>对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
+			jiaoming_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅&lt;/span>',
+			changhe: '唱和',
+			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：&lt;br>摸两张牌；或回复1点体力。',
+
+			OnomachiHaruka: '小野町春香',
+			nvjiangrouhao: '女将柔豪',
+			nvjiangrouhao_info: '锁定技 你的【杀】只能被同花色的【闪】抵消，你造成伤害后，计算与其他角色的距离-1。',
+			yinlaiyaotang: '引徕药汤',
+			yinlaiyaotang_info: '出牌阶段限一次，你可将任意数量手牌交给你攻击范围内的任意角色或将任意手牌置于武将牌上。武将牌上的牌的同名牌从与你距离为1的角色的手牌中离开时，其回复1点体力，武将牌上的那张牌返回你的手牌且你摸一张牌。',
+			yinlaiyaotang_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：难上手&lt;/span>',
+
+			SasakiSaku: '笹木咲',
+			tiaolian: '咆咲',
+			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
+			jiaku: '生笹',
+			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
+			jiaku_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点&lt;/span>',
+
+			LizeHelesta: '莉泽·赫露艾斯塔',
+			LizeHelesta_ab: '莉泽',
+			shencha: '权力审查',
+			shencha_info: '准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张。',
+			helesta: '赫露圣剑',
+			helesta_info: '你受到伤害时，可以弃置自己装备区的一张牌使此伤害-1。你失去装备区的牌时，你可以视为使用一张冰【杀】并摸一张牌。',
+			helesta_append:'&lt;span style="font-family: LuoLiTi2;color: #dbb">特性：减伤&lt;/span>',
+
+
+			AibaUiha: '相羽初叶',
+			KataribeTsumugu: '语部纺',
+			
+		}
+	}
+}
+)</code></pre>
+        </article>
+    </section>
+
+
+
+
+    </div>
+
+    <footer class="footer" id="footer">
+      
+    </footer>
+
+    <script src="scripts/third-party/prettify.js"></script>
+    <script src="scripts/third-party/lang-css.js"></script>
+    <script type="text/javascript" src="scripts/misc.js"></script>
+
+    <script>prettyPrint();</script>
+    <script src="scripts/linenumber.js"></script>
+    <script src="scripts/fix-code-block.js"></script>
+    <script src="scripts/fix-navbar.js"></script>
+    
+      <script src="scripts/search.js"></script>
+      <script src="scripts/third-party/fuse.js"></script>
+      <script>
+        var list = [{"title":"Array","link":"<a href=\"Array.html\">Array</a>"},{"title":"Array#add","link":"<a href=\"Array.html#add\">Array &rtrif; add</a>"},{"title":"Array#addArray","link":"<a href=\"Array.html#addArray\">Array &rtrif; addArray</a>"},{"title":"Array#contains","link":"<a href=\"Array.html#contains\">Array &rtrif; contains</a>"},{"title":"Array#filterInD","link":"<a href=\"Array.html#filterInD\">Array &rtrif; filterInD</a>"},{"title":"Array#find","link":"<a href=\"Array.html#find\">Array &rtrif; find</a>"},{"title":"Array#from","link":"<a href=\"Array.html#from\">Array &rtrif; from</a>"},{"title":"Array#numOf","link":"<a href=\"Array.html#numOf\">Array &rtrif; numOf</a>"},{"title":"Array#randomGet","link":"<a href=\"Array.html#randomGet\">Array &rtrif; randomGet</a>"},{"title":"Array#randomGet","link":"<a href=\"Array.html#randomGet\">Array &rtrif; randomGet</a>"},{"title":"Array#randomRemove","link":"<a href=\"Array.html#randomRemove\">Array &rtrif; randomRemove</a>"},{"title":"Array#randomSort","link":"<a href=\"Array.html#randomSort\">Array &rtrif; randomSort</a>"},{"title":"Array#remove","link":"<a href=\"Array.html#remove\">Array &rtrif; remove</a>"},{"title":"Array#removeArray","link":"<a href=\"Array.html#removeArray\">Array &rtrif; removeArray</a>"},{"title":"Array#sortBySeat","link":"<a href=\"Array.html#sortBySeat\">Array &rtrif; sortBySeat</a>"},{"title":"Error","link":"<a href=\"Error.html\">Error</a>"},{"title":"HTMLDivElement","link":"<a href=\"HTMLDivElement.html\">HTMLDivElement</a>"},{"title":"HTMLDivElement#animate","link":"<a href=\"HTMLDivElement.html#animate\">HTMLDivElement &rtrif; animate</a>"},{"title":"HTMLDivElement#css","link":"<a href=\"HTMLDivElement.html#css\">HTMLDivElement &rtrif; css</a>"},{"title":"HTMLDivElement#delete","link":"<a href=\"HTMLDivElement.html#delete\">HTMLDivElement &rtrif; delete</a>"},{"title":"HTMLDivElement#fix","link":"<a href=\"HTMLDivElement.html#fix\">HTMLDivElement &rtrif; fix</a>"},{"title":"HTMLDivElement#goto","link":"<a href=\"HTMLDivElement.html#goto\">HTMLDivElement &rtrif; goto</a>"},{"title":"HTMLDivElement#hide","link":"<a href=\"HTMLDivElement.html#hide\">HTMLDivElement &rtrif; hide</a>"},{"title":"HTMLDivElement#listen","link":"<a href=\"HTMLDivElement.html#listen\">HTMLDivElement &rtrif; listen</a>"},{"title":"HTMLDivElement#listenTransition","link":"<a href=\"HTMLDivElement.html#listenTransition\">HTMLDivElement &rtrif; listenTransition</a>"},{"title":"HTMLDivElement#refocus","link":"<a href=\"HTMLDivElement.html#refocus\">HTMLDivElement &rtrif; refocus</a>"},{"title":"HTMLDivElement#setBackground","link":"<a href=\"HTMLDivElement.html#setBackground\">HTMLDivElement &rtrif; setBackground</a>"},{"title":"HTMLDivElement#setBackgroundDB","link":"<a href=\"HTMLDivElement.html#setBackgroundDB\">HTMLDivElement &rtrif; setBackgroundDB</a>"},{"title":"HTMLDivElement#setBackgroundImage","link":"<a href=\"HTMLDivElement.html#setBackgroundImage\">HTMLDivElement &rtrif; setBackgroundImage</a>"},{"title":"HTMLDivElement#setPosition","link":"<a href=\"HTMLDivElement.html#setPosition\">HTMLDivElement &rtrif; setPosition</a>"},{"title":"HTMLDivElement#setPosition(2)","link":"<a href=\"HTMLDivElement.html#setPosition2\">HTMLDivElement &rtrif; setPosition(2)</a>"},{"title":"HTMLDivElement#show","link":"<a href=\"HTMLDivElement.html#show\">HTMLDivElement &rtrif; show</a>"},{"title":"HTMLDivElement#unfocus","link":"<a href=\"HTMLDivElement.html#unfocus\">HTMLDivElement &rtrif; unfocus</a>"},{"title":"HTMLTableCellElement","link":"<a href=\"HTMLTableCellElement.html\">HTMLTableCellElement</a>"},{"title":"HTMLTableElement","link":"<a href=\"HTMLTableElement.html\">HTMLTableElement</a>"},{"title":"HTMLTableElement#get","link":"<a href=\"HTMLTableElement.html#get\">HTMLTableElement &rtrif; get</a>"},{"title":"KeyboardEvent","link":"<a href=\"global.html#event:KeyboardEvent\">KeyboardEvent</a>"},{"title":"MouseEvent","link":"<a href=\"global.html#event:MouseEvent\">MouseEvent</a>"},{"title":"TouchEvent","link":"<a href=\"global.html#event:TouchEvent\">TouchEvent</a>"},{"title":"_status","link":"<a href=\"-_status.html\">_status</a>"},{"title":"ai","link":"<a href=\"ai.html\">ai</a>"},{"title":"game","link":"<a href=\"game.html\">game</a>"},{"title":"game.addCard","link":"<a href=\"game.html#.addCard\">game.addCard &rtrif; undefined</a>"},{"title":"game.addCardPack","link":"<a href=\"game.html#.addCardPack\">game.addCardPack &rtrif; undefined</a>"},{"title":"game.addCharacter","link":"<a href=\"game.html#.addCharacter\">game.addCharacter &rtrif; undefined</a>"},{"title":"game.addCharacterPack","link":"<a href=\"game.html#.addCharacterPack\">game.addCharacterPack &rtrif; undefined</a>"},{"title":"game.addMode","link":"<a href=\"game.html#.addMode\">game.addMode &rtrif; undefined</a>"},{"title":"game.addSkill","link":"<a href=\"game.html#.addSkill\">game.addSkill &rtrif; undefined</a>"},{"title":"game.check","link":"<a href=\"game.html#.check\">game.check &rtrif; undefined</a>"},{"title":"game.clearModeConfig","link":"<a href=\"game.html#.clearModeConfig\">game.clearModeConfig &rtrif; undefined</a>"},{"title":"game.createEvent","link":"<a href=\"game.html#.createEvent\">game.createEvent &rtrif; undefined</a>"},{"title":"game.createTrigger","link":"<a href=\"game.html#.createTrigger\">game.createTrigger &rtrif; undefined</a>"},{"title":"game.deleteDB","link":"<a href=\"game.html#.deleteDB\">game.deleteDB &rtrif; undefined</a>"},{"title":"game.expandSkills","link":"<a href=\"game.html#.expandSkills\">game.expandSkills &rtrif; undefined</a>"},{"title":"game.finishCards","link":"<a href=\"game.html#.finishCards\">game.finishCards &rtrif; undefined</a>"},{"title":"game.finishSkill","link":"<a href=\"game.html#.finishSkill\">game.finishSkill &rtrif; undefined</a>"},{"title":"game.getDB","link":"<a href=\"game.html#.getDB\">game.getDB &rtrif; undefined</a>"},{"title":"game.getExtensionConfig","link":"<a href=\"game.html#.getExtensionConfig\">game.getExtensionConfig &rtrif; undefined</a>"},{"title":"game.import","link":"<a href=\"game.html#.import\">game.import &rtrif; undefined</a>"},{"title":"game.loop","link":"<a href=\"game.html#.loop\">game.loop &rtrif; undefined</a>"},{"title":"game.putDB","link":"<a href=\"game.html#.putDB\">game.putDB &rtrif; undefined</a>"},{"title":"game.saveConfig","link":"<a href=\"game.html#.saveConfig\">game.saveConfig &rtrif; undefined</a>"},{"title":"game.saveConfigValue","link":"<a href=\"game.html#.saveConfigValue\">game.saveConfigValue &rtrif; undefined</a>"},{"title":"game.saveExtensionConfig","link":"<a href=\"game.html#.saveExtensionConfig\">game.saveExtensionConfig &rtrif; undefined</a>"},{"title":"videoContent","link":"<a href=\"game.videoContent.html\">videoContent</a>"},{"title":"GameCores","link":"<a href=\"GameCores.html\">GameCores</a>"},{"title":"Bases","link":"<a href=\"GameCores.Bases.html\">Bases</a>"},{"title":"Event","link":"<a href=\"GameCores.Bases.Event.html\">Event</a>"},{"title":"GameObjects","link":"<a href=\"GameCores.GameObjects.html\">GameObjects</a>"},{"title":"Card","link":"<a href=\"GameCores.GameObjects.Card.html\">Card</a>"},{"title":"Player","link":"<a href=\"GameCores.GameObjects.Player.html\">Player</a>"},{"title":"get","link":"<a href=\"get.html\">get</a>"},{"title":"get.attitude","link":"<a href=\"get.html#.attitude\">get.attitude &rtrif; undefined</a>"},{"title":"get.attitude2","link":"<a href=\"get.html#.attitude2\">get.attitude2 &rtrif; undefined</a>"},{"title":"get.autoViewAs","link":"<a href=\"get.html#.autoViewAs\">get.autoViewAs &rtrif; undefined</a>"},{"title":"get.bottomCards","link":"<a href=\"get.html#.bottomCards\">get.bottomCards &rtrif; undefined</a>"},{"title":"get.buttonValue","link":"<a href=\"get.html#.buttonValue\">get.buttonValue &rtrif; undefined</a>"},{"title":"get.card","link":"<a href=\"get.html#.card\">get.card &rtrif; undefined</a>"},{"title":"get.cardOffset","link":"<a href=\"get.html#.cardOffset\">get.cardOffset &rtrif; undefined</a>"},{"title":"get.cards","link":"<a href=\"get.html#.cards\">get.cards &rtrif; undefined</a>"},{"title":"get.colorspan","link":"<a href=\"get.html#.colorspan\">get.colorspan &rtrif; undefined</a>"},{"title":"get.condition","link":"<a href=\"get.html#.condition\">get.condition &rtrif; undefined</a>"},{"title":"get.copy","link":"<a href=\"get.html#.copy\">get.copy &rtrif; undefined</a>"},{"title":"get.damageEffect","link":"<a href=\"get.html#.damageEffect\">get.damageEffect &rtrif; undefined</a>"},{"title":"get.distance","link":"<a href=\"get.html#.distance\">get.distance &rtrif; undefined</a>"},{"title":"get.disvalue","link":"<a href=\"get.html#.disvalue\">get.disvalue &rtrif; undefined</a>"},{"title":"get.disvalue2","link":"<a href=\"get.html#.disvalue2\">get.disvalue2 &rtrif; undefined</a>"},{"title":"get.effect","link":"<a href=\"get.html#.effect\">get.effect &rtrif; undefined</a>"},{"title":"get.effect_use","link":"<a href=\"get.html#.effect_use\">get.effect_use &rtrif; undefined</a>"},{"title":"get.equipResult","link":"<a href=\"get.html#.equipResult\">get.equipResult &rtrif; undefined</a>"},{"title":"get.equipValue","link":"<a href=\"get.html#.equipValue\">get.equipValue &rtrif; undefined</a>"},{"title":"get.equipValueNumber","link":"<a href=\"get.html#.equipValueNumber\">get.equipValueNumber &rtrif; undefined</a>"},{"title":"get.id","link":"<a href=\"get.html#.id\">get.id &rtrif; undefined</a>"},{"title":"get.info","link":"<a href=\"get.html#.info\">get.info &rtrif; undefined</a>"},{"title":"get.info(2)","link":"<a href=\"get.html#.info2\">get.info(2) &rtrif; undefined</a>"},{"title":"get.infoHp","link":"<a href=\"get.html#.infoHp\">get.infoHp &rtrif; undefined</a>"},{"title":"get.infoMaxHp","link":"<a href=\"get.html#.infoMaxHp\">get.infoMaxHp &rtrif; undefined</a>"},{"title":"get.isLuckyStar","link":"<a href=\"get.html#.isLuckyStar\">get.isLuckyStar &rtrif; undefined</a>"},{"title":"get.judge","link":"<a href=\"get.html#.judge\">get.judge &rtrif; undefined</a>"},{"title":"get.mode","link":"<a href=\"get.html#.mode\">get.mode &rtrif; undefined</a>"},{"title":"get.name","link":"<a href=\"get.html#.name\">get.name &rtrif; undefined</a>"},{"title":"get.name(2)","link":"<a href=\"get.html#.name2\">get.name(2) &rtrif; undefined</a>"},{"title":"get.nature","link":"<a href=\"get.html#.nature\">get.nature &rtrif; undefined</a>"},{"title":"get.objtype","link":"<a href=\"get.html#.objtype\">get.objtype &rtrif; undefined</a>"},{"title":"get.order","link":"<a href=\"get.html#.order\">get.order &rtrif; undefined</a>"},{"title":"get.player","link":"<a href=\"get.html#.player\">get.player &rtrif; undefined</a>"},{"title":"get.players","link":"<a href=\"get.html#.players\">get.players &rtrif; undefined</a>"},{"title":"get.position","link":"<a href=\"get.html#.position\">get.position &rtrif; undefined</a>"},{"title":"get.recoverEffect","link":"<a href=\"get.html#.recoverEffect\">get.recoverEffect &rtrif; undefined</a>"},{"title":"get.select","link":"<a href=\"get.html#.select\">get.select &rtrif; undefined</a>"},{"title":"get.sgn","link":"<a href=\"get.html#.sgn\">get.sgn &rtrif; undefined</a>"},{"title":"get.sgnAttitude","link":"<a href=\"get.html#.sgnAttitude\">get.sgnAttitude &rtrif; undefined</a>"},{"title":"get.skillthreaten","link":"<a href=\"get.html#.skillthreaten\">get.skillthreaten &rtrif; undefined</a>"},{"title":"get.threaten","link":"<a href=\"get.html#.threaten\">get.threaten &rtrif; undefined</a>"},{"title":"get.unuseful","link":"<a href=\"get.html#.unuseful\">get.unuseful &rtrif; undefined</a>"},{"title":"get.unuseful2","link":"<a href=\"get.html#.unuseful2\">get.unuseful2 &rtrif; undefined</a>"},{"title":"get.unuseful3","link":"<a href=\"get.html#.unuseful3\">get.unuseful3 &rtrif; undefined</a>"},{"title":"get.useful","link":"<a href=\"get.html#.useful\">get.useful &rtrif; undefined</a>"},{"title":"get.utc","link":"<a href=\"get.html#.utc\">get.utc &rtrif; undefined</a>"},{"title":"get.value","link":"<a href=\"get.html#.value\">get.value &rtrif; undefined</a>"},{"title":"get.value(2)","link":"<a href=\"get.html#.value2\">get.value(2) &rtrif; undefined</a>"},{"title":"get.verticalStr","link":"<a href=\"get.html#.verticalStr\">get.verticalStr &rtrif; undefined</a>"},{"title":"is","link":"<a href=\"get.is.html\">is</a>"},{"title":"lib","link":"<a href=\"lib.html\">lib</a>"},{"title":"lib.getUTC","link":"<a href=\"lib.html#.getUTC\">lib.getUTC &rtrif; undefined</a>"},{"title":"lib.listenEnd","link":"<a href=\"lib.html#.listenEnd\">lib.listenEnd &rtrif; undefined</a>"},{"title":"lib.run","link":"<a href=\"lib.html#.run\">lib.run &rtrif; undefined</a>"},{"title":"lib.saveVideo","link":"<a href=\"lib.html#.saveVideo\">lib.saveVideo &rtrif; undefined</a>"},{"title":"lib.setHover","link":"<a href=\"lib.html#.setHover\">lib.setHover &rtrif; undefined</a>"},{"title":"lib.setIntro","link":"<a href=\"lib.html#.setIntro\">lib.setIntro &rtrif; undefined</a>"},{"title":"lib.setLongPress","link":"<a href=\"lib.html#.setLongPress\">lib.setLongPress &rtrif; undefined</a>"},{"title":"lib.setMousewheel","link":"<a href=\"lib.html#.setMousewheel\">lib.setMousewheel &rtrif; undefined</a>"},{"title":"lib.setScroll","link":"<a href=\"lib.html#.setScroll\">lib.setScroll &rtrif; undefined</a>"},{"title":"lib.updateCanvas","link":"<a href=\"lib.html#.updateCanvas\">lib.updateCanvas &rtrif; undefined</a>"},{"title":"characterDialogGroup","link":"<a href=\"lib.characterDialogGroup.html\">characterDialogGroup</a>"},{"title":"cheat","link":"<a href=\"lib.cheat.html\">cheat</a>"},{"title":"configMenu","link":"<a href=\"lib.configMenu.html\">configMenu</a>"},{"title":"appearence","link":"<a href=\"lib.configMenu.appearence.html\">appearence</a>"},{"title":"layout","link":"<a href=\"lib.configMenu.appearence.config.layout.html\">layout</a>"},{"title":"audio","link":"<a href=\"lib.configMenu.audio.html\">audio</a>"},{"title":"general","link":"<a href=\"lib.configMenu.general.html\">general</a>"},{"title":"others","link":"<a href=\"lib.configMenu.others.html\">others</a>"},{"title":"skill","link":"<a href=\"lib.configMenu.skill.html\">skill</a>"},{"title":"view","link":"<a href=\"lib.configMenu.view.html\">view</a>"},{"title":"element","link":"<a href=\"lib.element.html\">element</a>"},{"title":"button","link":"<a href=\"lib.element.button.html\">button</a>"},{"title":"card","link":"<a href=\"lib.element.card.html\">card</a>"},{"title":"lib.element.card.addGaintag","link":"<a href=\"lib.element.card.html#.addGaintag\">lib.element.card.addGaintag &rtrif; undefined</a>"},{"title":"lib.element.card.hasGaintag","link":"<a href=\"lib.element.card.html#.hasGaintag\">lib.element.card.hasGaintag &rtrif; undefined</a>"},{"title":"lib.element.card.init","link":"<a href=\"lib.element.card.html#.init\">lib.element.card.init &rtrif; undefined</a>"},{"title":"lib.element.card.removeGaintag","link":"<a href=\"lib.element.card.html#.removeGaintag\">lib.element.card.removeGaintag &rtrif; undefined</a>"},{"title":"lib.element.card.updateTransform","link":"<a href=\"lib.element.card.html#.updateTransform\">lib.element.card.updateTransform &rtrif; undefined</a>"},{"title":"client","link":"<a href=\"lib.element.client.html\">client</a>"},{"title":"content","link":"<a href=\"lib.element.content.html\">content</a>"},{"title":"control","link":"<a href=\"lib.element.control.html\">control</a>"},{"title":"dialog","link":"<a href=\"lib.element.dialog.html\">dialog</a>"},{"title":"event","link":"<a href=\"lib.element.event.html\">event</a>"},{"title":"lib.element.event.backup","link":"<a href=\"lib.element.event.html#.backup\">lib.element.event.backup &rtrif; undefined</a>"},{"title":"lib.element.event.cancel","link":"<a href=\"lib.element.event.html#.cancel\">lib.element.event.cancel &rtrif; undefined</a>"},{"title":"lib.element.event.finish","link":"<a href=\"lib.element.event.html#.finish\">lib.element.event.finish &rtrif; undefined</a>"},{"title":"lib.element.event.getRand","link":"<a href=\"lib.element.event.html#.getRand\">lib.element.event.getRand &rtrif; undefined</a>"},{"title":"lib.element.event.getTrigger","link":"<a href=\"lib.element.event.html#.getTrigger\">lib.element.event.getTrigger &rtrif; undefined</a>"},{"title":"lib.element.event.goto","link":"<a href=\"lib.element.event.html#.goto\">lib.element.event.goto &rtrif; undefined</a>"},{"title":"lib.element.event.insert","link":"<a href=\"lib.element.event.html#.insert\">lib.element.event.insert &rtrif; undefined</a>"},{"title":"lib.element.event.redo","link":"<a href=\"lib.element.event.html#.redo\">lib.element.event.redo &rtrif; undefined</a>"},{"title":"lib.element.event.resume","link":"<a href=\"lib.element.event.html#.resume\">lib.element.event.resume &rtrif; undefined</a>"},{"title":"lib.element.event.set","link":"<a href=\"lib.element.event.html#.set\">lib.element.event.set &rtrif; undefined</a>"},{"title":"lib.element.event.set(2)","link":"<a href=\"lib.element.event.html#.set2\">lib.element.event.set(2) &rtrif; undefined</a>"},{"title":"lib.element.event.setContent","link":"<a href=\"lib.element.event.html#.setContent\">lib.element.event.setContent &rtrif; undefined</a>"},{"title":"lib.element.event.trigger","link":"<a href=\"lib.element.event.html#.trigger\">lib.element.event.trigger &rtrif; undefined</a>"},{"title":"lib.element.event.untrigger","link":"<a href=\"lib.element.event.html#.untrigger\">lib.element.event.untrigger &rtrif; undefined</a>"},{"title":"nodews","link":"<a href=\"lib.element.nodews.html\">nodews</a>"},{"title":"ws","link":"<a href=\"lib.element.ws.html\">ws</a>"},{"title":"extensionMenu","link":"<a href=\"lib.extensionMenu.html\">extensionMenu</a>"},{"title":"filter","link":"<a href=\"lib.filter.html\">filter</a>"},{"title":"lib.filter.filterTrigger","link":"<a href=\"lib.filter.html#.filterTrigger\">lib.filter.filterTrigger &rtrif; undefined</a>"},{"title":"help","link":"<a href=\"lib.help.html\">help</a>"},{"title":"init","link":"<a href=\"lib.init.html\">init</a>"},{"title":"lib.init.background","link":"<a href=\"lib.init.html#.background\">lib.init.background &rtrif; undefined</a>"},{"title":"lib.init.css","link":"<a href=\"lib.init.html#.css\">lib.init.css &rtrif; undefined</a>"},{"title":"lib.init.css(2)","link":"<a href=\"lib.init.html#.css2\">lib.init.css(2) &rtrif; undefined</a>"},{"title":"lib.init.cssstyles","link":"<a href=\"lib.init.html#.cssstyles\">lib.init.cssstyles &rtrif; undefined</a>"},{"title":"lib.init.decode","link":"<a href=\"lib.init.html#.decode\">lib.init.decode &rtrif; undefined</a>"},{"title":"lib.init.encode","link":"<a href=\"lib.init.html#.encode\">lib.init.encode &rtrif; undefined</a>"},{"title":"lib.init.eval","link":"<a href=\"lib.init.html#.eval\">lib.init.eval &rtrif; undefined</a>"},{"title":"lib.init.init","link":"<a href=\"lib.init.html#.init\">lib.init.init &rtrif; undefined</a>"},{"title":"lib.init.js","link":"<a href=\"lib.init.html#.js\">lib.init.js &rtrif; undefined</a>"},{"title":"lib.init.js(2)","link":"<a href=\"lib.init.html#.js2\">lib.init.js(2) &rtrif; undefined</a>"},{"title":"lib.init.js(3)","link":"<a href=\"lib.init.html#.js3\">lib.init.js(3) &rtrif; undefined</a>"},{"title":"lib.init.json","link":"<a href=\"lib.init.html#.json\">lib.init.json &rtrif; undefined</a>"},{"title":"lib.init.layout","link":"<a href=\"lib.init.html#.layout\">lib.init.layout &rtrif; undefined</a>"},{"title":"lib.init.onfree","link":"<a href=\"lib.init.html#.onfree\">lib.init.onfree &rtrif; undefined</a>"},{"title":"lib.init.onload","link":"<a href=\"lib.init.html#.onload\">lib.init.onload &rtrif; undefined</a>"},{"title":"lib.init.reset","link":"<a href=\"lib.init.html#.reset\">lib.init.reset &rtrif; undefined</a>"},{"title":"lib.init.sheet","link":"<a href=\"lib.init.html#.sheet\">lib.init.sheet &rtrif; undefined</a>"},{"title":"lib.init.stringify","link":"<a href=\"lib.init.html#.stringify\">lib.init.stringify &rtrif; undefined</a>"},{"title":"lib.init.stringifySkill","link":"<a href=\"lib.init.html#.stringifySkill\">lib.init.stringifySkill &rtrif; undefined</a>"},{"title":"message","link":"<a href=\"lib.message.html\">message</a>"},{"title":"mode","link":"<a href=\"lib.mode.html\">mode</a>"},{"title":"skill","link":"<a href=\"lib.skill.html\">skill</a>"},{"title":"sort","link":"<a href=\"lib.sort.html\">sort</a>"},{"title":"status","link":"<a href=\"lib.status.html\">status</a>"},{"title":"translate","link":"<a href=\"lib.translate.html\">translate</a>"},{"title":"ui","link":"<a href=\"ui.html\">ui</a>"},{"title":"ui.refresh","link":"<a href=\"ui.html#.refresh\">ui.refresh &rtrif; undefined</a>"},{"title":"ui.update","link":"<a href=\"ui.html#.update\">ui.update &rtrif; undefined</a>"},{"title":"ui.updated","link":"<a href=\"ui.html#.updated\">ui.updated &rtrif; undefined</a>"},{"title":"ui.updateh","link":"<a href=\"ui.html#.updateh\">ui.updateh &rtrif; undefined</a>"},{"title":"ui.updatej","link":"<a href=\"ui.html#.updatej\">ui.updatej &rtrif; undefined</a>"},{"title":"ui.updatejm","link":"<a href=\"ui.html#.updatejm\">ui.updatejm &rtrif; undefined</a>"},{"title":"ui.updatem","link":"<a href=\"ui.html#.updatem\">ui.updatem &rtrif; undefined</a>"},{"title":"ui.updatez","link":"<a href=\"ui.html#.updatez\">ui.updatez &rtrif; undefined</a>"},{"title":"click","link":"<a href=\"ui.click.html\">click</a>"},{"title":"ui.click.intro","link":"<a href=\"ui.click.html#.intro\">ui.click.intro &rtrif; undefined</a>"},{"title":"ui.click.ok","link":"<a href=\"ui.click.html#.ok\">ui.click.ok &rtrif; undefined</a>"},{"title":"create","link":"<a href=\"ui.create.html\">create</a>"},{"title":"ui.create.card","link":"<a href=\"ui.create.html#.card\">ui.create.card &rtrif; undefined</a>"},{"title":"ui.create.div","link":"<a href=\"ui.create.html#.div\">ui.create.div &rtrif; undefined</a>"},{"title":"ui.create.menu","link":"<a href=\"ui.create.html#.menu\">ui.create.menu &rtrif; undefined</a>"},{"title":"ui.create.player","link":"<a href=\"ui.create.html#.player\">ui.create.player &rtrif; undefined</a>"},{"title":"player","link":"<a href=\"lib.element.player.html\">player</a>"},{"title":"lib.element.player.$damagepop","link":"<a href=\"lib.element.player.html#.$damagepop\">lib.element.player.$damagepop &rtrif; undefined</a>"},{"title":"lib.element.player.$showCharacter","link":"<a href=\"lib.element.player.html#.$showCharacter\">lib.element.player.$showCharacter &rtrif; undefined</a>"},{"title":"lib.element.player.$skill","link":"<a href=\"lib.element.player.html#.$skill\">lib.element.player.$skill &rtrif; undefined</a>"},{"title":"lib.element.player.$throwEmotion","link":"<a href=\"lib.element.player.html#.$throwEmotion\">lib.element.player.$throwEmotion &rtrif; undefined</a>"},{"title":"lib.element.player.addAdditionalSkill","link":"<a href=\"lib.element.player.html#.addAdditionalSkill\">lib.element.player.addAdditionalSkill &rtrif; undefined</a>"},{"title":"lib.element.player.addEquipTrigger","link":"<a href=\"lib.element.player.html#.addEquipTrigger\">lib.element.player.addEquipTrigger &rtrif; undefined</a>"},{"title":"lib.element.player.addMark","link":"<a href=\"lib.element.player.html#.addMark\">lib.element.player.addMark &rtrif; undefined</a>"},{"title":"lib.element.player.addSkill","link":"<a href=\"lib.element.player.html#.addSkill\">lib.element.player.addSkill &rtrif; undefined</a>"},{"title":"lib.element.player.addSkill(2)","link":"<a href=\"lib.element.player.html#.addSkill2\">lib.element.player.addSkill(2) &rtrif; undefined</a>"},{"title":"lib.element.player.addSkillLog","link":"<a href=\"lib.element.player.html#.addSkillLog\">lib.element.player.addSkillLog &rtrif; undefined</a>"},{"title":"lib.element.player.addSkillTrigger","link":"<a href=\"lib.element.player.html#.addSkillTrigger\">lib.element.player.addSkillTrigger &rtrif; undefined</a>"},{"title":"lib.element.player.addSubPlayer","link":"<a href=\"lib.element.player.html#.addSubPlayer\">lib.element.player.addSubPlayer &rtrif; undefined</a>"},{"title":"lib.element.player.addTempSkill","link":"<a href=\"lib.element.player.html#.addTempSkill\">lib.element.player.addTempSkill &rtrif; undefined</a>"},{"title":"lib.element.player.applySkills","link":"<a href=\"lib.element.player.html#.applySkills\">lib.element.player.applySkills &rtrif; undefined</a>"},{"title":"lib.element.player.attitudeTo","link":"<a href=\"lib.element.player.html#.attitudeTo\">lib.element.player.attitudeTo &rtrif; undefined</a>"},{"title":"lib.element.player.awakenSkill","link":"<a href=\"lib.element.player.html#.awakenSkill\">lib.element.player.awakenSkill &rtrif; undefined</a>"},{"title":"lib.element.player.callSubPlayer","link":"<a href=\"lib.element.player.html#.callSubPlayer\">lib.element.player.callSubPlayer &rtrif; undefined</a>"},{"title":"lib.element.player.canUse","link":"<a href=\"lib.element.player.html#.canUse\">lib.element.player.canUse &rtrif; undefined</a>"},{"title":"lib.element.player.changeSeat","link":"<a href=\"lib.element.player.html#.changeSeat\">lib.element.player.changeSeat &rtrif; undefined</a>"},{"title":"lib.element.player.chat","link":"<a href=\"lib.element.player.html#.chat\">lib.element.player.chat &rtrif; undefined</a>"},{"title":"lib.element.player.checkConflict","link":"<a href=\"lib.element.player.html#.checkConflict\">lib.element.player.checkConflict &rtrif; undefined</a>"},{"title":"lib.element.player.checkMarks","link":"<a href=\"lib.element.player.html#.checkMarks\">lib.element.player.checkMarks &rtrif; undefined</a>"},{"title":"lib.element.player.chooseToGuanxing","link":"<a href=\"lib.element.player.html#.chooseToGuanxing\">lib.element.player.chooseToGuanxing &rtrif; undefined</a>"},{"title":"lib.element.player.clearSkills","link":"<a href=\"lib.element.player.html#.clearSkills\">lib.element.player.clearSkills &rtrif; undefined</a>"},{"title":"lib.element.player.countMark","link":"<a href=\"lib.element.player.html#.countMark\">lib.element.player.countMark &rtrif; undefined</a>"},{"title":"lib.element.player.directgains","link":"<a href=\"lib.element.player.html#.directgains\">lib.element.player.directgains &rtrif; undefined</a>"},{"title":"lib.element.player.disableSkill","link":"<a href=\"lib.element.player.html#.disableSkill\">lib.element.player.disableSkill &rtrif; undefined</a>"},{"title":"lib.element.player.emotion","link":"<a href=\"lib.element.player.html#.emotion\">lib.element.player.emotion &rtrif; undefined</a>"},{"title":"lib.element.player.enableSkill","link":"<a href=\"lib.element.player.html#.enableSkill\">lib.element.player.enableSkill &rtrif; undefined</a>"},{"title":"lib.element.player.exitSubPlayer","link":"<a href=\"lib.element.player.html#.exitSubPlayer\">lib.element.player.exitSubPlayer &rtrif; undefined</a>"},{"title":"lib.element.player.flashAvatar","link":"<a href=\"lib.element.player.html#.flashAvatar\">lib.element.player.flashAvatar &rtrif; undefined</a>"},{"title":"lib.element.player.get","link":"<a href=\"lib.element.player.html#.get\">lib.element.player.get &rtrif; undefined</a>"},{"title":"lib.element.player.getAllHistory","link":"<a href=\"lib.element.player.html#.getAllHistory\">lib.element.player.getAllHistory &rtrif; undefined</a>"},{"title":"lib.element.player.getAttackRange","link":"<a href=\"lib.element.player.html#.getAttackRange\">lib.element.player.getAttackRange &rtrif; undefined</a>"},{"title":"lib.element.player.getCards","link":"<a href=\"lib.element.player.html#.getCards\">lib.element.player.getCards &rtrif; undefined</a>"},{"title":"lib.element.player.getCards(2)","link":"<a href=\"lib.element.player.html#.getCards2\">lib.element.player.getCards(2) &rtrif; undefined</a>"},{"title":"lib.element.player.getCards(3)","link":"<a href=\"lib.element.player.html#.getCards3\">lib.element.player.getCards(3) &rtrif; undefined</a>"},{"title":"lib.element.player.getCards(4)","link":"<a href=\"lib.element.player.html#.getCards4\">lib.element.player.getCards(4) &rtrif; undefined</a>"},{"title":"lib.element.player.getCardUsable","link":"<a href=\"lib.element.player.html#.getCardUsable\">lib.element.player.getCardUsable &rtrif; undefined</a>"},{"title":"lib.element.player.getEnemies","link":"<a href=\"lib.element.player.html#.getEnemies\">lib.element.player.getEnemies &rtrif; undefined</a>"},{"title":"lib.element.player.getEquip","link":"<a href=\"lib.element.player.html#.getEquip\">lib.element.player.getEquip &rtrif; undefined</a>"},{"title":"lib.element.player.getFriends","link":"<a href=\"lib.element.player.html#.getFriends\">lib.element.player.getFriends &rtrif; undefined</a>"},{"title":"lib.element.player.getFriends","link":"<a href=\"lib.element.player.html#.getFriends\">lib.element.player.getFriends &rtrif; undefined</a>"},{"title":"lib.element.player.getGlobalFrom","link":"<a href=\"lib.element.player.html#.getGlobalFrom\">lib.element.player.getGlobalFrom &rtrif; undefined</a>"},{"title":"lib.element.player.getGlobalTo","link":"<a href=\"lib.element.player.html#.getGlobalTo\">lib.element.player.getGlobalTo &rtrif; undefined</a>"},{"title":"lib.element.player.getHandcardLimit","link":"<a href=\"lib.element.player.html#.getHandcardLimit\">lib.element.player.getHandcardLimit &rtrif; undefined</a>"},{"title":"lib.element.player.getHistory","link":"<a href=\"lib.element.player.html#.getHistory\">lib.element.player.getHistory &rtrif; undefined</a>"},{"title":"lib.element.player.getId","link":"<a href=\"lib.element.player.html#.getId\">lib.element.player.getId &rtrif; undefined</a>"},{"title":"lib.element.player.getJudge","link":"<a href=\"lib.element.player.html#.getJudge\">lib.element.player.getJudge &rtrif; undefined</a>"},{"title":"lib.element.player.getLastHistory","link":"<a href=\"lib.element.player.html#.getLastHistory\">lib.element.player.getLastHistory &rtrif; undefined</a>"},{"title":"lib.element.player.getLastStat","link":"<a href=\"lib.element.player.html#.getLastStat\">lib.element.player.getLastStat &rtrif; undefined</a>"},{"title":"lib.element.player.getLastUsed","link":"<a href=\"lib.element.player.html#.getLastUsed\">lib.element.player.getLastUsed &rtrif; undefined</a>"},{"title":"lib.element.player.getLeft","link":"<a href=\"lib.element.player.html#.getLeft\">lib.element.player.getLeft &rtrif; undefined</a>"},{"title":"lib.element.player.getStat","link":"<a href=\"lib.element.player.html#.getStat\">lib.element.player.getStat &rtrif; undefined</a>"},{"title":"lib.element.player.getState","link":"<a href=\"lib.element.player.html#.getState\">lib.element.player.getState &rtrif; undefined</a>"},{"title":"lib.element.player.getSubPlayers","link":"<a href=\"lib.element.player.html#.getSubPlayers\">lib.element.player.getSubPlayers &rtrif; undefined</a>"},{"title":"lib.element.player.getTop","link":"<a href=\"lib.element.player.html#.getTop\">lib.element.player.getTop &rtrif; undefined</a>"},{"title":"lib.element.player.getUseValue","link":"<a href=\"lib.element.player.html#.getUseValue\">lib.element.player.getUseValue &rtrif; undefined</a>"},{"title":"lib.element.player.goMad","link":"<a href=\"lib.element.player.html#.goMad\">lib.element.player.goMad &rtrif; undefined</a>"},{"title":"lib.element.player.hasMark","link":"<a href=\"lib.element.player.html#.hasMark\">lib.element.player.hasMark &rtrif; undefined</a>"},{"title":"lib.element.player.hasSkill","link":"<a href=\"lib.element.player.html#.hasSkill\">lib.element.player.hasSkill &rtrif; undefined</a>"},{"title":"lib.element.player.hasUseTarget","link":"<a href=\"lib.element.player.html#.hasUseTarget\">lib.element.player.hasUseTarget &rtrif; undefined</a>"},{"title":"lib.element.player.hasValueTarget","link":"<a href=\"lib.element.player.html#.hasValueTarget\">lib.element.player.hasValueTarget &rtrif; undefined</a>"},{"title":"lib.element.player.init","link":"<a href=\"lib.element.player.html#.init\">lib.element.player.init &rtrif; undefined</a>"},{"title":"lib.element.player.initOL","link":"<a href=\"lib.element.player.html#.initOL\">lib.element.player.initOL &rtrif; undefined</a>"},{"title":"lib.element.player.initRoom","link":"<a href=\"lib.element.player.html#.initRoom\">lib.element.player.initRoom &rtrif; undefined</a>"},{"title":"lib.element.player.isAlive","link":"<a href=\"lib.element.player.html#.isAlive\">lib.element.player.isAlive &rtrif; undefined</a>"},{"title":"lib.element.player.isDamaged","link":"<a href=\"lib.element.player.html#.isDamaged\">lib.element.player.isDamaged &rtrif; undefined</a>"},{"title":"lib.element.player.isDead","link":"<a href=\"lib.element.player.html#.isDead\">lib.element.player.isDead &rtrif; undefined</a>"},{"title":"lib.element.player.isDying","link":"<a href=\"lib.element.player.html#.isDying\">lib.element.player.isDying &rtrif; undefined</a>"},{"title":"lib.element.player.isEnemiesOf","link":"<a href=\"lib.element.player.html#.isEnemiesOf\">lib.element.player.isEnemiesOf &rtrif; undefined</a>"},{"title":"lib.element.player.isEnemyOf","link":"<a href=\"lib.element.player.html#.isEnemyOf\">lib.element.player.isEnemyOf &rtrif; undefined</a>"},{"title":"lib.element.player.isFriendOf","link":"<a href=\"lib.element.player.html#.isFriendOf\">lib.element.player.isFriendOf &rtrif; undefined</a>"},{"title":"lib.element.player.isFriendsOf","link":"<a href=\"lib.element.player.html#.isFriendsOf\">lib.element.player.isFriendsOf &rtrif; undefined</a>"},{"title":"lib.element.player.isHealthy","link":"<a href=\"lib.element.player.html#.isHealthy\">lib.element.player.isHealthy &rtrif; undefined</a>"},{"title":"lib.element.player.isIn","link":"<a href=\"lib.element.player.html#.isIn\">lib.element.player.isIn &rtrif; undefined</a>"},{"title":"lib.element.player.isLinked","link":"<a href=\"lib.element.player.html#.isLinked\">lib.element.player.isLinked &rtrif; undefined</a>"},{"title":"lib.element.player.isMad","link":"<a href=\"lib.element.player.html#.isMad\">lib.element.player.isMad &rtrif; undefined</a>"},{"title":"lib.element.player.isMaxCard","link":"<a href=\"lib.element.player.html#.isMaxCard\">lib.element.player.isMaxCard &rtrif; undefined</a>"},{"title":"lib.element.player.isMaxEquip","link":"<a href=\"lib.element.player.html#.isMaxEquip\">lib.element.player.isMaxEquip &rtrif; undefined</a>"},{"title":"lib.element.player.isMaxHandcard","link":"<a href=\"lib.element.player.html#.isMaxHandcard\">lib.element.player.isMaxHandcard &rtrif; undefined</a>"},{"title":"lib.element.player.isMaxHp","link":"<a href=\"lib.element.player.html#.isMaxHp\">lib.element.player.isMaxHp &rtrif; undefined</a>"},{"title":"lib.element.player.isMin","link":"<a href=\"lib.element.player.html#.isMin\">lib.element.player.isMin &rtrif; undefined</a>"},{"title":"lib.element.player.isMinCard","link":"<a href=\"lib.element.player.html#.isMinCard\">lib.element.player.isMinCard &rtrif; undefined</a>"},{"title":"lib.element.player.isMinEquip","link":"<a href=\"lib.element.player.html#.isMinEquip\">lib.element.player.isMinEquip &rtrif; undefined</a>"},{"title":"lib.element.player.isMinHandcard","link":"<a href=\"lib.element.player.html#.isMinHandcard\">lib.element.player.isMinHandcard &rtrif; undefined</a>"},{"title":"lib.element.player.isMinHp","link":"<a href=\"lib.element.player.html#.isMinHp\">lib.element.player.isMinHp &rtrif; undefined</a>"},{"title":"lib.element.player.isOffline","link":"<a href=\"lib.element.player.html#.isOffline\">lib.element.player.isOffline &rtrif; undefined</a>"},{"title":"lib.element.player.isOnline","link":"<a href=\"lib.element.player.html#.isOnline\">lib.element.player.isOnline &rtrif; undefined</a>"},{"title":"lib.element.player.isOnline2","link":"<a href=\"lib.element.player.html#.isOnline2\">lib.element.player.isOnline2 &rtrif; undefined</a>"},{"title":"lib.element.player.isOut","link":"<a href=\"lib.element.player.html#.isOut\">lib.element.player.isOut &rtrif; undefined</a>"},{"title":"lib.element.player.isTurnedOver","link":"<a href=\"lib.element.player.html#.isTurnedOver\">lib.element.player.isTurnedOver &rtrif; undefined</a>"},{"title":"lib.element.player.isUnderControl","link":"<a href=\"lib.element.player.html#.isUnderControl\">lib.element.player.isUnderControl &rtrif; undefined</a>"},{"title":"lib.element.player.isUnseen","link":"<a href=\"lib.element.player.html#.isUnseen\">lib.element.player.isUnseen &rtrif; undefined</a>"},{"title":"lib.element.player.loseToSpecial","link":"<a href=\"lib.element.player.html#.loseToSpecial\">lib.element.player.loseToSpecial &rtrif; undefined</a>"},{"title":"lib.element.player.mark","link":"<a href=\"lib.element.player.html#.mark\">lib.element.player.mark &rtrif; undefined</a>"},{"title":"lib.element.player.needsToDiscard","link":"<a href=\"lib.element.player.html#.needsToDiscard\">lib.element.player.needsToDiscard &rtrif; undefined</a>"},{"title":"lib.element.player.popup","link":"<a href=\"lib.element.player.html#.popup\">lib.element.player.popup &rtrif; undefined</a>"},{"title":"lib.element.player.queue","link":"<a href=\"lib.element.player.html#.queue\">lib.element.player.queue &rtrif; undefined</a>"},{"title":"lib.element.player.reinit","link":"<a href=\"lib.element.player.html#.reinit\">lib.element.player.reinit &rtrif; undefined</a>"},{"title":"lib.element.player.removeAdditionalSkill","link":"<a href=\"lib.element.player.html#.removeAdditionalSkill\">lib.element.player.removeAdditionalSkill &rtrif; undefined</a>"},{"title":"lib.element.player.removeEquipTrigger","link":"<a href=\"lib.element.player.html#.removeEquipTrigger\">lib.element.player.removeEquipTrigger &rtrif; undefined</a>"},{"title":"lib.element.player.removeMark","link":"<a href=\"lib.element.player.html#.removeMark\">lib.element.player.removeMark &rtrif; undefined</a>"},{"title":"lib.element.player.removeSkill","link":"<a href=\"lib.element.player.html#.removeSkill\">lib.element.player.removeSkill &rtrif; undefined</a>"},{"title":"lib.element.player.removeSkillTrigger","link":"<a href=\"lib.element.player.html#.removeSkillTrigger\">lib.element.player.removeSkillTrigger &rtrif; undefined</a>"},{"title":"lib.element.player.removeSubPlayer","link":"<a href=\"lib.element.player.html#.removeSubPlayer\">lib.element.player.removeSubPlayer &rtrif; undefined</a>"},{"title":"lib.element.player.restoreSkill","link":"<a href=\"lib.element.player.html#.restoreSkill\">lib.element.player.restoreSkill &rtrif; undefined</a>"},{"title":"lib.element.player.say","link":"<a href=\"lib.element.player.html#.say\">lib.element.player.say &rtrif; undefined</a>"},{"title":"lib.element.player.send","link":"<a href=\"lib.element.player.html#.send\">lib.element.player.send &rtrif; undefined</a>"},{"title":"lib.element.player.setAvatar","link":"<a href=\"lib.element.player.html#.setAvatar\">lib.element.player.setAvatar &rtrif; undefined</a>"},{"title":"lib.element.player.setAvatarQueue","link":"<a href=\"lib.element.player.html#.setAvatarQueue\">lib.element.player.setAvatarQueue &rtrif; undefined</a>"},{"title":"lib.element.player.setNickname","link":"<a href=\"lib.element.player.html#.setNickname\">lib.element.player.setNickname &rtrif; undefined</a>"},{"title":"lib.element.player.showCharacter","link":"<a href=\"lib.element.player.html#.showCharacter\">lib.element.player.showCharacter &rtrif; undefined</a>"},{"title":"lib.element.player.showGiveup","link":"<a href=\"lib.element.player.html#.showGiveup\">lib.element.player.showGiveup &rtrif; undefined</a>"},{"title":"lib.element.player.smoothAvatar","link":"<a href=\"lib.element.player.html#.smoothAvatar\">lib.element.player.smoothAvatar &rtrif; undefined</a>"},{"title":"lib.element.player.syncStorage","link":"<a href=\"lib.element.player.html#.syncStorage\">lib.element.player.syncStorage &rtrif; undefined</a>"},{"title":"lib.element.player.throwEmotion","link":"<a href=\"lib.element.player.html#.throwEmotion\">lib.element.player.throwEmotion &rtrif; undefined</a>"},{"title":"lib.element.player.toggleSubPlayer","link":"<a href=\"lib.element.player.html#.toggleSubPlayer\">lib.element.player.toggleSubPlayer &rtrif; undefined</a>"},{"title":"lib.element.player.tryCardAnimate","link":"<a href=\"lib.element.player.html#.tryCardAnimate\">lib.element.player.tryCardAnimate &rtrif; undefined</a>"},{"title":"lib.element.player.trySkillAnimate","link":"<a href=\"lib.element.player.html#.trySkillAnimate\">lib.element.player.trySkillAnimate &rtrif; undefined</a>"},{"title":"lib.element.player.uninit","link":"<a href=\"lib.element.player.html#.uninit\">lib.element.player.uninit &rtrif; undefined</a>"},{"title":"lib.element.player.uninitOL","link":"<a href=\"lib.element.player.html#.uninitOL\">lib.element.player.uninitOL &rtrif; undefined</a>"},{"title":"lib.element.player.unMad","link":"<a href=\"lib.element.player.html#.unMad\">lib.element.player.unMad &rtrif; undefined</a>"},{"title":"lib.element.player.unmark","link":"<a href=\"lib.element.player.html#.unmark\">lib.element.player.unmark &rtrif; undefined</a>"},{"title":"lib.element.player.update","link":"<a href=\"lib.element.player.html#.update\">lib.element.player.update &rtrif; undefined</a>"},{"title":"lib.element.player.updateMark","link":"<a href=\"lib.element.player.html#.updateMark\">lib.element.player.updateMark &rtrif; undefined</a>"},{"title":"lib.element.player.updateMarks","link":"<a href=\"lib.element.player.html#.updateMarks\">lib.element.player.updateMarks &rtrif; undefined</a>"},{"title":"lib.element.player.useResult","link":"<a href=\"lib.element.player.html#.useResult\">lib.element.player.useResult &rtrif; undefined</a>"},{"title":"GameConfig","link":"<a href=\"global.html#GameConfig\">GameConfig</a>"},{"title":"isNonameServer","link":"<a href=\"global.html#isNonameServer\">isNonameServer</a>"},{"title":"localStorage","link":"<a href=\"global.html#localStorage\">localStorage</a>"},{"title":"nodb","link":"<a href=\"global.html#nodb\">nodb</a>"},{"title":"onerror","link":"<a href=\"global.html#onerror\">onerror</a>"},{"title":"onkeydown","link":"<a href=\"global.html#onkeydown\">onkeydown</a>"},{"title":"onload","link":"<a href=\"global.html#onload\">onload</a>"}];
+        var options = 
+          setupSearch(list, options)
+      </script>
+    
+
+    
+    <script type="text/javascript">
+        MathJax = { loader: { load: ['[custom]/xypic.js'], paths: {custom: 'https://cdn.jsdelivr.net/gh/sonoisa/XyJax-v3@3.0.1/build/'} }, tex: { inlineMath:[['$', '$']], packages: {'[+]': ['xypic']} } };
+    </script>
+    
+
+    
+      <script src="scripts/resize.js"></script>
+      <script type="text/javascript">
+        var option = {"min":"300","max":"600"}
+        setupResizeOptions(option)
+      </script>
+    
+
+    
+    <script type="text/javascript">
+    MathJax = { loader: { load: ['[custom]/xypic.js'], paths: {custom: 'https://cdn.jsdelivr.net/gh/sonoisa/XyJax-v3@3.0.1/build/'} }, tex: { inlineMath:[['$', '$']], packages: {'[+]': ['xypic']} } };
+    </script>
+    
+
+    
+
+
+  </body>
+
+</html>

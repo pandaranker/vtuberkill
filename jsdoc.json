@@ -1,0 +1,54 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+        "includePattern": ".js$",
+        "excludePattern": "node_modules|doc|out"
+    },
+    "plugins": ["plugins/markdown"],
+    "opts": {
+        "encoding": "utf8",
+        "destination": "doc/light",
+        "recurse": true,
+        "template": "./",
+        "theme_opts": {
+            "theme": "light",
+            "title": "VK API",
+            "meta": [
+                {
+                    "name": "Description",
+                    "content": "VtuberKill API Document"
+                }
+            ],
+            "add_script_path":[
+                {
+                    "src":"https://polyfill.io/v3/polyfill.min.js?features=es6"
+                },
+                {
+                    "id":"MathJax-script",
+                    "async":"async",
+                    "src":"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+                }
+            ],
+            "resizeable": {
+                "navbar": {
+                    "min": "300",
+                    "max": "600"
+                }
+            },
+            "add_scripts":"MathJax = { loader: { load: ['[custom]/xypic.js'], paths: {custom: 'https://cdn.jsdelivr.net/gh/sonoisa/XyJax-v3@3.0.1/build/'} }, tex: { inlineMath:[['$', '$']], packages: {'[+]': ['xypic']} } };",
+            "codepen": {
+                "enable_for": ["examples"],
+                "options": {
+                    "js_external": "https://code.jquery.com/jquery-3.6.0.min.js",
+                    "js_pre_processor": "babel"
+                }
+            }
+        }
+    },
+    "markdown.hardwrap": true,
+    "markdown": {
+        "hardwrap": true
+    }
+}
