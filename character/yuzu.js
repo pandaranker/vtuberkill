@@ -98,6 +98,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Aza: ['male','VirtuaReal',3,['qiding','chouxin'],['guoV']],
 			/**弥希MIKI */
 			Miki: ['female','VirtuaReal',4,['xingxu','qingsui'],['guoV']],
+			/**千幽Chiyuu */
+			Chiyuu: ['female','VirtuaReal',4,['anyou','mingyou'],['guoV']],
 
 			/**幸祜 */
 			Koko: ['female','vwp',4,['xiezhen','wenzhou'],],
@@ -4215,7 +4217,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					var filter=event.filterCard;
-					return player.storage.shengni_cardsDis&&filter(player.storage.shengni_cardsDis[0],player,event);
+					if(!player.storage.shengni_cardsDis||!player.storage.shengni_cardsDis.length)	return false;
+					return filter(player.storage.shengni_cardsDis[0],player,event);
 				},
 				check:function(card){
 					var player=_status.event.player;
@@ -6550,13 +6553,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							var skills=lib.character[result.links[i]][3];
 							for(var j=0;j<skills.length;j++){
-								player.addTempSkill(skills[j],'phaseAfter');
+								player.addTempSkill(skills[j],{player:'phaseDiscardAfter'});
 							}
 						}
 						player.storage.luxian_pcr = result.links[0];
 						player.storage.P_SP.addArray(result.links);
 						player.flashAvatar('luxian',result.links[0]);
-						player.addTempSkill('luxian_pcr','phaseAfter');
+						player.addTempSkill('luxian_pcr',{player:'phaseDiscardAfter'});
 						player.markSkill('P_SP');
 					}
 				},
@@ -6703,7 +6706,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					change:{
-						trigger:{player:['shouruAfter','chonghuangAfter','baoxiaoAfter','tianlveAfter','luxianAfter','useSkillAfter']},
+						trigger:{player:['shouruAfter','chonghuangAfter','baoxiaoAfter','tianlveAfter','luxianAfter','quankaiAfter','canxinAfter','useSkillAfter']},
 						priority:199,
 						prompt2:'转换一次『耳匿』',
 						filter:function(event,player){
@@ -7491,6 +7494,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forceunique:true,
 				trigger:{player:['chooseToCompareAfter','compareMultipleAfter'],target:['chooseToCompareAfter','compareMultipleAfter']},
 				filter:function(event,player){
+					if(!player.isDamaged())		return false;
 					if(event.preserve)		return false;
 					if(event.result.tie)	return true;
 					if(player==event.player){
@@ -9270,6 +9274,87 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					threaten:1.5
 				},
 			},
+			//千幽Chiyuu
+			anyou:{
+				trigger:{player:['phaseUseBegin','damageAfter']},
+				priority:199,
+				filter:function(event,player){
+					return game.countPlayer(function(cur){
+						return cur!=player&&get.distance(cur,player)<=1;
+					});
+				},
+				check:function(event,player){
+					return player.hp>1;
+				},
+				logTarget:function(event,player){
+					return game.filterPlayer(function(cur){
+						return cur!=player&&get.distance(cur,player)<=1;
+					});
+				},
+				content:function(){
+					'step 0'
+					event.targets = game.filterPlayer(function(cur){
+						return cur!=player&&get.distance(cur,player)<=1;
+					});
+					event.targets.sortBySeat(player);
+					'step 1'
+					event.target = event.targets.shift();
+					event.target.chooseToUse();
+					'step 2'
+					if(result.bool){
+						event.goto(4);
+					}else{
+						event.target.chooseCard('he',true,'交给'+get.translation(player)+'一张牌');
+					}
+					'step 3'
+					if(result.bool&&result.cards){
+						event.target.give(result.cards,player,true);
+					}
+					'step 4'
+					if(event.targets.length)	event.goto(1);
+				},
+				group:['anyou_drawBy'],
+				subSkill:{
+					drawBy:{
+						trigger:{target:'useCardToTarget'},
+						priority:199,
+						forced:true,
+						filter:function(event,player){
+							var evt = event.getParent('anyou')
+							return evt&&evt.name=='anyou';
+						},
+						content:function(){
+							player.draw();
+						},
+					},
+				},
+				ai:{
+					maixie:true,
+				}
+			},
+			mingyou:{
+				trigger:{target:'useCardToTarget'},
+				filter:function(event,player){
+					return event.player.getHistory('damage').length;
+				},
+				frequent:true,
+				content:function(){
+					'step 0'
+					event.targets = [player];
+					event.targets.add(trigger.player);
+					'step 1'
+					event.targets.shift().recover();
+					'step 2'
+					if(event.targets.length)	event.goto(1);
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(player.getHistory('damage').length)	return [1,2];
+						}
+					},
+				},
+			},
 			//小可
 			mian:{
 				init:function(player,skill) {
@@ -9556,9 +9641,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				check:function(event,player){
 					return get.attitude(player,event.player)>0;
 				},
-				logTarget:function(event,player){
-					return event.player;
-				},
+				logTarget:'player',
 				content:function(){
 					'step 0'
 					event.gainnum = Math.abs(trigger.player.hp-player.hp)||1;
@@ -9865,7 +9948,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target.gain(event.card,'gain2','log');
 						if(!event.target.storage.zhepie_cardDisable)	event.target.storage.zhepie_cardDisable = [];
 						event.target.storage.zhepie_cardDisable.add(event.card);
-						event.target.addTempSkill('zhepie_cardDisable');
+						event.target.addTempSkill('zhepie_cardDisable',{player:'phaseAfter'});
 						game.delayx();
 					}
 				},
@@ -12421,24 +12504,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					record:{
 						trigger:{global:'disableEquipAfter'},
-						direct:true,
-						content:function(){
-							player.addTempSkill('xuanquan_drawBy');
+						filter:function(event,player){
+							return event.player!=player;
 						},
-					},
-					drawBy:{
-						trigger:{global:'phaseEnd'},
 						forced:true,
 						content:function(){
-							'step 0'
-							player.removeSkill('xuanquan_record');
-							'step 1'
 							player.draw();
 						},
-						mark:true,
-						intro:{
-							content:'当前回合结束摸一张牌'
-						}
 					},
 				},
 				ai:{
@@ -12447,8 +12519,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player:function(player){
 							if(game.hasPlayer(function(target){
 								if(player==target) return false;
-								var hs=target.countCards('h');
-								return hs>2&&get.attitude(player,target)>0;
+								var hs=target.countCards('he');
+								return hs>2&&get.attitude(player,target)>=0;
 							})) return 1;
 							return 0;
 						},
@@ -13257,7 +13329,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					else if(get.color(cards[0])=='red'&&player.canAddJudge('lebu'))		player.addJudge({name:'lebu'},cards);
 					else if(get.color(cards[0])=='black'&&player.canAddJudge('bingliang'))	player.addJudge({name:'bingliang'},cards);
 					'step 1'
-					target.damage();
+					target.damage('thunder');
 				},
 				ai:{
 					order:2,
@@ -13572,6 +13644,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				firstDo:true,
 				direct:true,
 				filter:function(event,player){
+					var usable = (player.maxHp-player.hp)||1;
+					if(player.storage.tage>=usable)	return false;
 					var num = get.number(event.card);
 					return typeof num=="number"&&player.countCards('hes',function(card){
 						return [1,-1].contains(get.number(card)-num);
@@ -13581,10 +13655,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					event.cards0 = trigger.cards.slice(0);
 					var num = get.number(trigger.card);
-					player.chooseToRespond('是否打出一张牌替代'+get.translation(event.cards0),'hes',function(card){
+					player.chooseToRespond('是否打出一张牌替换'+get.translation(event.cards0),'hes',function(card){
 						var num = _status.event.num;
 						return [1,-1].contains(get.number(card)-num);
-					}).set('num',num);
+					}).set('num',num).set('ai',function(card){
+						return 7-get.value(card);
+					}).set('check',get.value(event.cards0,player)>1);
 					'step 1'
 					if(result.bool&&result.cards){
 						if(!player.storage.tage)	player.storage.tage = 1;
@@ -13606,22 +13682,24 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return player.storage.tage>0;
 						},
 						prompt2:function(event,player){
-							return '摸'+get.cnNumber(player.storage.tage)+'张牌，并交给'+get.translation(event.player)+'至少一张牌';
+							var usable = (player.maxHp-player.hp)||1;
+							return '摸'+get.cnNumber(usable)+'张牌，并交给'+get.translation(event.player)+'至少一张牌';
 						},
 						content:function(){
 							'step 0'
-							player.draw(player.storage.tage);
+							var usable = (player.maxHp-player.hp)||1;
+							player.draw(usable);
 							'step 1'
 							player.storage.tage = 0;
 							player.unmarkSkill('tage');
 							if(player.countCards('h')&&trigger.player){
 								event.target = trigger.player;
-								player.chooseCard('h',[1,Infinity],true).set('ai',function(card){
+								player.chooseCard('h',[1,1],true).set('ai',function(card){
 									var player = _status.event.player;
 									var target = _status.event.target;
 									if(get.attitude(player,target)>0)	return get.value(card,target)-get.value(card,player);
 									return get.value(card,player)-get.value(card,target);
-								}).set('target',event.target)
+								}).set('target',event.target).set('prompt','选择交给'+get.translation(event.target)+'的牌')
 							}
 							else	event.finish();
 							'step 2'
@@ -13875,6 +13953,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qingsui_quanyu: '全域(清)',
 			qingsui_info: '转换技 你视为拥有①『集爱』②『盛阴』③『全域』。<br>当此技能于你回合外转换至①时，你可以获得当前回合角色的一张牌。',
 
+			Chiyuu: '千幽Chiyuu',
+			Chiyuu_ab: '千幽',
+			anyou: '暗友',
+			anyou_info: '出牌阶段开始或你受到伤害后时，你可以令与你距离为1的角色依次选择一项：<br>交给你一张牌；使用一张牌，以此使用的牌指定你为目标时，你摸一张牌。',
+			mingyou: '明悠',
+			mingyou_info: '明悠：本回合已受到伤害的角色使用牌指定你为目标时，你可以与其各回复一点体力。',
+
 			Mayumi: '勾檀Mayumi',
 			Mayumi_ab: '勾檀',
 			jinzhou: '晋胄',
@@ -13903,11 +13988,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shanbao: '扇宝',
 			fengxu: '风许',
 			fengxu_info: '你使用牌指定唯一目标时，可以将其区域内的一张牌移至其下家（可替换），若未发生替换，则对其下家重复此流程，直到发生替换或重复了五次。<br>若你的牌因此发生了替换，此技能结算后你摸重复次数的牌，然后不能发动此技能直到你下一次弃置手牌。',
+			fengxu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：捡瓶子</span>',
 
 			qiudi: '秋蒂Q',
 			xiangnuo: '香诺',
 			xiangnuo2: '香诺-转换',
-			xiangnuo_info: '转换技 当牌①进入②离开你的装备区时，你可以令一名角色摸两张牌，若其体力为全场最低，额外回复一点体力。出牌阶段限一次，你可以重铸点数之和为Q(12)的手牌并转换一次『香诺』。',
+			xiangnuo_info: '转换技 当牌①进入②离开你的装备区时，你可以令一名角色摸两张牌，若其体力为全场最低，额外回复一点体力。<br>出牌阶段限一次，你可以重铸点数之和为Q(12)的手牌并转换一次『香诺』。',
 
 			xiaoxiayu: 'Siva小虾鱼',
 			xiaoxiayu_ab: '小虾鱼',
@@ -14049,7 +14135,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			KotobukiYume: '琴吹梦',
 			xuanquan: '选权',
-			xuanquan_info: '出牌阶段限一次，你可废除一个装备栏，获得一名角色的一张牌，然后其获得『选权』。有角色废除有牌的装备栏的回合结束时，你摸一张牌。',
+			xuanquan_backup:'选权',
+			xuanquan_info: '出牌阶段限一次，你可以废除一个装备栏，获得其他角色的一张牌并令其获得『选权』。其他角色废除装备栏后，你摸一张牌。',
 			rusu: '入俗',
 			rusu_info: '你判定/装备区的牌减少时，你可以将一张锦囊/装备牌置于场上同区域。',
 			
@@ -14083,7 +14170,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			lvecao: '略草',
 			lvecao_info: '你受到伤害后，可以视为使用一张【铁索连环】，若有角色因此重置，你可以获得其区域内一张可见牌。',
 			yangxi: '羊袭',
-			yangxi_info: '出牌阶段限一次，你可以将一张非基本牌置于你的判定区，然后对一名角色造成1点伤害。',
+			yangxi_info: '出牌阶段限一次，你可以将一张非基本牌置于你的判定区，然后对一名角色造成1点雷电伤害。',
 			
 			Umy: '呜米',
 			naisi: '奶死',
@@ -14115,7 +14202,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			liqingge: '李清歌',
 			tage: '踏歌',
-			tage_info: '当一名角色于其回合内使用一张牌后，你可以打出一张点数与之相差1的牌代替之。其回合结束时，你可以摸X张牌，然后将至少一张手牌交给其。（X为你本回合发动的此技能次数）',
+			tage_info: '每回合限X次，当一名角色于其回合内使用一张牌后，你可以打出一张点数与之相差1的牌代替之。你以此法获得牌的回合结束时，可以摸X张牌，然后将一张手牌交给当前回合角色。（X为你已损失的体力值且至少为1）',
 
 			Bafuko: '晴步子',
 			shangsheng: '能力上升',
@@ -14309,7 +14396,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tuncai: '屯财',
 			tuncai_info: '轮次技 转换技 阳：其他角色摸牌后，你可以摸等量牌；阴：你弃牌后，可以令一名其他角色弃等量牌。',
 			zhidu: '值督',
-			zhidu_info: '主公技 当与你同势力的角色进入濒死状态或受到两点或以上伤害时，你可以重置并转换『屯财』。',
+			zhidu_info: '主公技 当同势力角色进入濒死状态或受到两点或以上伤害时，你可以重置并转换『屯财』。',
 
 			KiyoInga : '纪代因果',
 			huanxi: '浣洗',
@@ -14340,9 +14427,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			AmamiyaKokoro: '天宫心',
 			miaomiao: '流泪喵喵',
-			miaomiao_info: '锁定技 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；然后若你本回合已发动『逞能龙息』，摸一张牌。',
+			miaomiao_info: '锁定技 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；若你本回合已发动『逞能龙息』，你摸一张牌。',
 			chengneng: '逞能龙息',
-			chengneng_info: '每回合限一次。其他角色受到伤害，你可以弃一张牌令其来源视为你，且你为其原来源时，本次伤害改为等量体力流失。',
+			chengneng_info: '每回合限一次。当其他角色受到伤害时，你可以弃一张牌令其来源视为你，若你为其原来源，本次伤害改为等量体力流失。',
 			chengneng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手 combo</span>',
 
 			SakuraRitsuki: '櫻凜月',
@@ -14376,7 +14463,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tianlve_info: '出牌阶段开始时，你可以令一名其他角色回复1点体力，然后本阶段内你对其使用牌无距离限制，且指定其为唯一目标时，可以摸一张牌或增加一个额外目标。',
 			tianlve_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 辅助 强化出杀</span>',
 			luxian: '颅祭',
-			luxian_info: '<font color=#fda>限定技</font> 准备阶段，若你已受伤，你可以扣减1点体力上限，然后发现一次P-SP角色，本回合内你视为拥有其所有技能。',
+			luxian_info: '<font color=#fda>限定技</font> 准备阶段，若你已受伤，你可以扣减1点体力上限，并发现一次P-SP角色，你视为拥有其所有技能直到弃牌阶段结束。',
 			luxian_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手 爆发</span>',
 
 			AyanaNana: '绫奈奈奈',
@@ -14387,7 +14474,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shouru_info: '每回合限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。',
 			shouru_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：combo</span>',
 			chonghuang: '崇皇',
-			chonghuang_info: '<font color=#dac>限定技</font> 当你体力值变为1时，你可以扣减1点体力上限，然后发现一次P-SP角色，本轮次内你视为拥有其所有技能。',
+			chonghuang_info: '<font color=#dac>限定技</font> 当你体力值变为1时，你可以扣减1点体力上限，并发现一次P-SP角色，本轮次内你视为拥有其所有技能。',
 			chonghuang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手</span>',
 			yinzun: '隐尊',
 			yinzun_info: '<font color=#dac>主公技</font> 你的『崇皇』可以在同势力角色体力变为1时发动。',
@@ -14419,7 +14506,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			akjianwu: '剑舞',
 			akjianwu_info: '你使用或打出一张基本牌时，可以与对方拼点，赢的角色选择一项：<br>1.于此牌结算后获得之；2.展示并获得对方的一张牌。<br>以此获得【杀】或单体锦囊牌的角色可以立即使用之。',
 			tongzhao: '同召',
-			tongzhao_info: '<font color=#d87>限定技</font> 你拼点没赢时，可以发现一次（若为平局则改为发现两次）P-SP势力角色，视为拥有其所有技能直到你下一次体力减少。',
+			tongzhao_info: '<font color=#d87>限定技</font> 你拼点没赢时，若你已受伤，你可以发现一次（若为平局则改为发现两次）P-SP势力角色，视为拥有其所有技能直到你下一次体力减少。',
 
 			P_SP: 'P-SP',
 

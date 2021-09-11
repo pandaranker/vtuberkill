@@ -22,54 +22,33 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-                    var list= [['使用无法响应的杀'],['摸一张牌']];
-					event.videoId = lib.status.videoId++;
-					player.line(target,'green')
-					_status.event.target = target;
-					game.broadcastAll(function(id, choicelist){
-                        var dialog=ui.create.dialog('选择一项');
-                        choicelist.forEach(element=>{
-                            dialog.add([element,'vcard']);
-                        })
-						dialog.videoId = id;
-					}, event.videoId, list);
+					target.chooseControl('dialogcontrol',['使用无法响应的杀','摸一张牌']).set('ai',function(){
+						var player=_status.event.player;
+						if(player.countCards('h')<2)	return 1;
+						if(player.hasSha())	return 0;
+						return Math.random()<0.5?1:0;
+					}).set('prompt',get.prompt('dulun'));
 					'step 1'
-					var target = event.target;
-					target.chooseButton().set('dialog',event.videoId).set('prompt',get.prompt('dulunche'));
-					'step 2'
-					game.broadcastAll('closeDialog', event.videoId);
-                    if(result.bool){
-						var fan = event.target;
-                        result.links.forEach(element => {
-                            if(element[2]=='使用无法响应的杀'){
-                                game.log(target,'的下一张杀无法被响应');
-								fan.addTempSkill('dulun_sha');
-								fan.chooseCardTarget({
-									filterCard:{name:'sha'},
-									selectCard:1,
-									filterTarget:function(card,fan,target){
-										return target!=fan;
-									},
-									ai1:function(card){
-										if(card.nature) return 80;
-										return true;
-									},
-									ai2:function(target){
-										var att=get.attitude(_status.event.target,target);
-										return 10-att;
-									},
-								}).set('target',fan)
-                            }
-                            if(element[2]=='摸一张牌'){
-                                fan.draw();
-                            }
-                        });
-					}
-					'step 3'
-					if(result.targets){
-						var fan = event.target;
-						fan.useCard(result.cards[0],result.targets[0]);
-						fan.getStat().card.sha--;
+					var fan = event.target;
+					switch(result.control){
+						case '使用无法响应的杀':{
+							game.log(target,'的下一张杀无法被响应');
+							fan.addTempSkill('dulun_sha');
+							fan.chooseToUse({
+								filterCard:function(card,player){
+									return get.name(card)=='sha'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								filterTarget:function(card,player,target){
+									return lib.filter.filterTarget.apply(this,arguments);
+								},
+								addCount:false,
+							}).set('target',fan)
+							break;
+						}
+						case '摸一张牌':{
+							fan.draw();
+							break;
+						}
 					}
 				},
 				ai:{
@@ -253,56 +232,44 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					//_status.event.target = target;
-					var list= [['本轮内失去所有技能'],['交给桐生可可两张不同类型的牌']];
-					event.videoId = lib.status.videoId++;
-					player.line(target,'green')
-					//_status.event.target = target;
-					game.broadcastAll(function(id, choicelist){
-						var dialog=ui.create.dialog('选择一项');
-						choicelist.forEach(element=>{
-							dialog.add([element,'vcard']);
-						})
-						dialog.videoId = id;
-					}, event.videoId, list);
+					target.chooseControl('dialogcontrol',['本轮内失去所有技能','交给桐生可可两张不同类型的牌']).set('ai',function(){
+						var player=_status.event.player;
+						if(player.countCards('he')<2)	return 1;
+						if(player.hp<=1)	return 0;
+						return Math.random()<0.5?1:0;
+					}).set('prompt','【逼宫】：选择一项');
 					'step 1'
-					//var target = _status.event.target;
-					target.chooseButton(true).set('dialog',event.videoId).set('prompt',get.prompt('bigong'));
-					'step 2'
-					game.broadcastAll('closeDialog', event.videoId);
-					if(result.bool){
-						//var target = _status.event.target;
-						result.links.forEach(element => {
-							if(element[2]=='本轮内失去所有技能'){
-								game.log(target,'失去了所有技能');
-								//target.clearSkills();
-								target.addTempSkill('bigong_clear','roundStart');
-							}
-							if(element[2]=='交给桐生可可两张不同类型的牌'){
-								var next=target.chooseCardButton('交给桐生可可两张不同类型的牌(取消则依然发动效果1)',2,target.getCards('he'));
-								next.set('filterButton',function(button){
-									if(ui.selected.buttons.length){
-										var from=ui.selected.buttons[0];
-										var type=get.type(button.link);
-										if(type!=get.type(from.link)) return true;
-										return false;
-									}
-									else{
-										return true;
-									}
-								});
-							}
-						});
+					switch(result.control){
+						case '本轮内失去所有技能':{
+							game.log(target,'失去了所有技能');
+							target.addTempSkill('bigong_clear','roundStart');
+							event.finish();
+							break;
+						}
+						case '交给桐生可可两张不同类型的牌':{
+							var next=target.countCards('交给桐生可可两张不同类型的牌(取消则依然发动效果1)',2,'he',true);
+							next.set('filterCard',function(card){
+								if(ui.selected.cards.length){
+									var from=ui.selected.cards[0];
+									if(get.type(card)!=get.type(from)) return true;
+									return false;
+								}
+								else{
+									return true;
+								}
+							});
+							next.set('complexCard',true);
+							next.set('ai',function(card){
+								return 2-get.value(card);
+							});
+							break;
+						}
 					}
-					'step 3'
+					'step 2'
 					if(result.bool){
 						if(result.buttons.length){
 							game.zhu.gain(result.buttons,target);
 						}
-					}
-					else{
-						game.log(target,'失去了所有技能');
-						target.addTempSkill('bigong_clear','roundStart');
 					}
 				},
 				contentAfter:function(){
@@ -419,7 +386,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					var skills=player.getSkills(true,false);
 					for(var i=0;i<skills.length;i++){
 						var info=get.info(skills[i]);
-						if(skills[i]=='bigong_clear'||skills[i]=='rebigong_clear'||info.charlotte){
+						if(skills[i]=='bigong_clear'||info.charlotte){
 							skills.splice(i--,1);
 						}
 					}
@@ -482,7 +449,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				selectCard:1,
 				position:'he',
 				viewAs:{name:'sha'},
-				complexCard:true,
 				filter:function(event,player){
 					return player.countCards('h')>=1;
 				},

@@ -5,16 +5,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		// canvasUpdates2:[],
 		// hiddenCharacters:[],
 		init:function(){
-			var list2 = Object.keys(lib.richer.groupSkills);
-			for(var i of list2){
-				lib.group.add(i);
-				lib.card['group_'+i]={
-					fullskin:true,
-					modeimage:'richer',
-				};
-				lib.translate['group_'+i]=lib.translate[i];
-				lib.translate[i+'2']='<img src="'+lib.assetURL+'image/mode/richer/card/group_'+i+'.png" class="richerShadow">';
-			}
 		},
 		sort:{
 			ownedMi:function(a,b){
@@ -83,6 +73,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		startBefore:function(){
+			var list2 = Object.keys(lib.richer.groupSkills);
+			for(var i of list2){
+				lib.group.add(i);
+				lib.card['group_'+i]={
+					fullskin:true,
+					modeimage:'richer',
+				};
+				lib.translate['group_'+i]=lib.translate[i];
+				lib.translate[i+'2']='<img src="'+lib.assetURL+'image/mode/richer/card/group_'+i+'.png" class="richerShadow">';
+			}
 		},
 		start:function(){
 			"step 0"
@@ -489,39 +489,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			player:{
-				chooseObstacleTarget:function(){
-					var next=game.createEvent('chooseTarget');
-					next.player=this;
-					for(var i=0;i<arguments.length;i++){
-						if(typeof arguments[i]=='number'){
-							next.selectTarget=[arguments[i],arguments[i]];
-						}
-						else if(get.itemtype(arguments[i])=='select'){
-							next.selectTarget=arguments[i];
-						}
-						else if(get.itemtype(arguments[i])=='dialog'){
-							next.dialog=arguments[i];
-							next.prompt=false;
-						}
-						else if(typeof arguments[i]=='boolean'){
-							next.forced=arguments[i];
-						}
-						else if(typeof arguments[i]=='function'){
-							if(next.filterTarget) next.ai=arguments[i];
-							else next.filterTarget=arguments[i];
-						}
-						else if(typeof arguments[i]=='string'){
-							get.evtprompt(next,arguments[i]);
-						}
-					}
-					if(next.filterTarget==undefined) next.filterTarget=lib.filter.all;
-					if(next.selectTarget==undefined) next.selectTarget=[1,1];
-					if(next.ai==undefined) next.ai=get.attitude2;
-					next.setContent('chooseTarget');
-					next._args=Array.from(arguments);
-					next.forceDie=true;
-					return next;
-				},
 				//遇见其他角色
 				throwDice2:function(){
 					var next=game.createEvent('throwDice');
@@ -1794,30 +1761,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.classList.add(enemy);
 					player.node.hp.classList.add('treasure');
 					player.life=6+Math.floor(Math.random()*6);
-					game.treasures.add(player);
+					game[enemy+'s'].add(player);
 				}
 				else{
 					player.animate('start');
-					// if(enemy){
-					// 	if(get.mode()=='tafang'){
-					// 		player.side=true;
-					// 	}
-					// 	else{
-					// 		player.side=!game.me.side;
-					// 	}
-					// 	player.setIdentity('enemy');
-					// 	player.identity='enemy';
-					// }
-					// else{
-					// 	if(get.mode()=='tafang'){
-					// 		player.side=false;
-					// 	}
-					// 	else{
-					// 		player.side=game.me.side;
-					// 	}
-					// 	player.setIdentity('friend');
-					// 	player.identity='friend';
-					// }
 					player.node.identity.dataset.color=get.translation(player.side+'Color');
 					game.players.push(player);
 					// if(lib.config.animation){
@@ -4574,7 +4521,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player.line(obstacle,'gray');
 						player.changeMi(-10);
 						obstacle.storage._owned = side;
-						obstacle.markSkill('_owned');
 
 						obstacle.identity = side;
 						obstacle.setIdentity();
@@ -4586,17 +4532,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						});
 						player.storage.ownedBuilding.add(obstacle);
 					}
-				},
-				marktext:'占',
-				intro: {
-					name:'所属队伍',
-					mark:function(dialog,content,building){
-						dialog.addText(building.storage._owned);
-					},
-					content: 'cards',
-					onunmark:function(storage,building){
-						delete building.storage._owned;
-					},
 				},
 				ai:{
 					order:5,
@@ -4627,7 +4562,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return lands;
 				},
 				content:function(){
-					"step 0"
+					'step 0'
 					event.obstacles = lib.skill._chooseBuild.proccess(player);
 					event.switchToAuto = function(){
 						_status.imchoosing=false;
@@ -4679,22 +4614,99 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					if(event.obstacle){
 						var obstacle = event.obstacle;
+						event.position = obstacle.dataset.position;
 						player.storage.ownedBuilding.remove(obstacle);
 						var type = 's';
 						if(obstacle.classList.contains('hO'))	type='h';
 						player.line(event.obstacle,'wood');
-						var building = (type=='s'?'richer_building_farm':'richer_building_roughcastHouse')
-						game.build(
-							[obstacle.dataset.position],
-							[building],
-							player
-						);
+						if(type=='s'){
+							player.chooseButton(['选择建造的分支',[['richer_building_farm','richer_building_park'],'character']],true);
+						}
+						else{
+							event.building = 'richer_building_roughcastHouse';
+							event.goto(4);
+						}
 					}
+					'step 3'
+					if(result.bool&&result.links){
+						event.building = result.links[0];
+					}
+					'step 4'
+					player.changeMi(-10);
+					player.loseHp();
+					'step 5'
+					game.build(
+						[event.position],
+						[event.building],
+						player
+					);
 				},
-				result:{
-					player:function(player){
-						if(player.storage.ownedBuilding.length<2)	return 2;
-						return 1;
+				ai:{
+					order:5,
+					result:{
+						player:function(player){
+							if(player.storage.ownedBuilding.length<2)	return 2;
+							return 1;
+						}
+					}
+				}
+			},
+			_chooseUpgrade:{
+				enable:'phaseUse',
+				filter:function(event,player){
+					if(player._Mi<10)	return false;
+					return lib.skill._chooseUpgrade.proccess(player).length;
+				},
+				filterTarget:function(card,player,target){
+					console.log(lib.skill._chooseUpgrade.proccess(player));
+					return lib.skill._chooseUpgrade.proccess(player).contains(target);
+				},
+				proccess:function(player){
+					var list = [[0,1],[0,-1],[1,0],[-1,0]];
+					var lands = [];
+					for(var i of list){
+						var neighbour = player.getNeighbour.apply(player,i);
+						if(neighbour&&game.buildings.contains(neighbour)){
+							if(lib.skill._chooseUpgrade.upgradeMap[neighbour.name])	lands.push(neighbour);
+						}
+					}
+					return lands;
+				},
+				upgradeMap:{
+					richer_building_roughcastHouse:['richer_building_shop','richer_building_radioStation'],
+					richer_building_farm:['richer_building_manor','richer_building_stockFarm'],
+					richer_building_parks:['richer_building_holidayResort'],
+
+					richer_building_shop:['richer_building_sweetShop','richer_building_emporium'],
+					richer_building_holidayResort:['richer_building_marinePark'],
+				},
+				content:function(){
+					"step 0"
+					event.map = lib.skill._chooseUpgrade.upgradeMap[target.name];
+					if(event.map.length>1){
+						player.chooseButton(['选择升级的分支',[['richer_building_farm','richer_building_park'],'character']],true);
+					}
+					else{
+						event.building = event.map[0];
+						event.goto(2);
+					}
+					'step 1'
+					if(result.bool&&result.links){
+						event.building = result.links[0];
+					}
+					'step 2'
+					player.changeMi(-10);
+					player.loseHp();
+					'step 3'
+					target.reinit(target.name,event.building);
+				},
+				ai:{
+					order:5,
+					result:{
+						player:function(player){
+							if(player.storage.ownedBuilding.length<2)	return 2;
+							return 1;
+						}
 					}
 				}
 			},
@@ -4707,77 +4719,33 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		translate:{
-			// zhu_config:'启用主将',
-			// main_zhu_config:'启用副将',
-			// noreplace_end_config:'无替补时结束',
-			// reward_config:'杀敌摸牌',
-			// punish_config:'杀死队友',
-			// seat_order_config:'行动顺序',
-			// battle_number_config:'对战人数',
-			// replace_number_config:'替补人数',
-			// first_less_config:'先手少摸牌',
-			// single_control_config:'单人控制',
-			// additional_player_config:'无尽模式',
-			// choice_number_config:'无尽模式候选',
-
-			teamA: 'A',
-			teamB: 'B',
-			teamC: 'C',
-			teamD: 'D',
-			teamE: 'E',
-			teamF: 'F',
-
-
 			friend:'友',
 			enemy:'敌',
 			neutral:'中',
 			trueColor:"zhu",
 			falseColor:"wei",
 
-			teamAColor:'zhu',
-			teamBColor:'mingzhong',
-			teamCColor:'key',
-			teamDColor:'fan',
-			teamEColor:'zhong',
-			teamFColor:'kami',
-
-			teamAColor2:'fire',
-			teamBColor2:'orange',
-			teamCColor2:'key',
-			teamDColor2:'wood',
-			teamEColor2:'metal',
-			teamFColor2:'kami',
-
 			_purchase:'购买地块',
 			_chessmove:'移动',
 			_chooseBuild:'建造',
+			_chooseUpgrade:'升级',
 
-			chessscroll_speed_config:'边缘滚动速度',
-			save1:'一',
-			save2:'二',
-			save3:'三',
-			save4:'四',
-			save5:'五',
-
-			leader_2:' ',
-			leader_2_bg:'二',
-			leader_3:' ',
-			leader_3_bg:'三',
-			leader_5:' ',
-			leader_5_bg:'五',
-			leader_8:' ',
-			leader_8_bg:'八',
-
-			leader_easy:' ',
-			leader_easy_bg:'简单',
-			leader_medium:' ',
-			leader_medium_bg:'普通',
-			leader_hard:' ',
-			leader_hard_bg:'困难',
 
 
 			pulic: '公',
 			pulic2: '公共建筑',
+
+			business: '营',
+			business2: '经营建筑',
+
+			propagate: '宣',
+			propagate2: '宣传建筑',
+
+			produce: '产',
+			produce2: '生产建筑',
+
+			entertain: '娱',
+			entertain2: '娱乐建筑',
 
 			battle: '战斗（消耗1点精力并进行骰点，若结果大于<2+对方的抗压力>，你获得对方随机数量的米）',
 			tailgate: '借道（与对方交换位置，若你的米比对方多，则需要交给对方10米）',
@@ -4785,8 +4753,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			richer_building_jiaotongshuniu: '交通枢纽',
 			richer_building_roughcastHouse: '毛胚房',
 			richer_building_farm: '农场',
-			richer_building_finca: '庄园',
 			richer_building_park: '公园',
+
+			richer_building_shop:'小卖部',
+			richer_building_radioStation:'广播站',
+			richer_building_manor:'大型庄园',
+			richer_building_stockFarm:'畜牧场',
+			richer_building_holidayResort:'度假区',
+
+			richer_building_sweetShop:'零食铺',
+			richer_building_emporium:'百货商场',
+			richer_building_TVstation:'百货商场',
+			richer_building_marinePark:'海上乐园',
 
 			dingwanren:'顶碗人',
 			wanwanjun:'晚晚菌',
@@ -4825,11 +4803,54 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			// leader_zhaoxiang:'招降',
 			// leader_zhaoxiang_info:'出牌阶段限一次，你可以尝试对相邻敌方武将进行招降，若成功，你获得该武将并立即结束本局游戏，若失败，你受到一点伤害。每发动一次消耗10招募令',
 
+			chessscroll_speed_config:'边缘滚动速度',
+			save1:'一',
+			save2:'二',
+			save3:'三',
+			save4:'四',
+			save5:'五',
+
+			leader_2:' ',
+			leader_2_bg:'二',
+			leader_3:' ',
+			leader_3_bg:'三',
+			leader_5:' ',
+			leader_5_bg:'五',
+			leader_8:' ',
+			leader_8_bg:'八',
+
+			leader_easy:' ',
+			leader_easy_bg:'简单',
+			leader_medium:' ',
+			leader_medium_bg:'普通',
+			leader_hard:' ',
+			leader_hard_bg:'困难',
+
+			teamA: 'A',
+			teamB: 'B',
+			teamC: 'C',
+			teamD: 'D',
+			teamE: 'E',
+			teamF: 'F',
+
+			teamAColor:'zhu',
+			teamBColor:'mingzhong',
+			teamCColor:'key',
+			teamDColor:'fan',
+			teamEColor:'zhong',
+			teamFColor:'kami',
+
+			teamAColor2:'fire',
+			teamBColor2:'orange',
+			teamCColor2:'key',
+			teamDColor2:'wood',
+			teamEColor2:'metal',
+			teamFColor2:'kami',
+
 			common:'普通',
 			rare:'稀有',
 			epic:'史诗',
 			legend:'传说', 
-
 
 			tianjianghengcai: '天降横财',
 			tianjianghengcai_info: '移动前后使用，获得随机1~6笔现金',
@@ -4844,9 +4865,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			_chess_chuzhang:'除障',
 			_chess_chuzhang_info:'出牌阶段限一次，若你周围四格至少有三个为障碍或在边缘外，你可以选择将其中一个障碍向后推移一格（若无法推移则改为清除之）',
-
-			arenaAdd:'援军',
-			arenaAdd_info:'出牌阶段限一次，你可以令一名未出场的已方角色加入战场。战斗结束后，该角色无论是否存活均不能再次出场',
 
 			mode_richer_character_config:'战棋模式',
 			mode_richer_card_config:'战棋模式',
@@ -5030,9 +5048,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			mode_richer:{
 				richer_building_jiaotongshuniu:['none','pulic',4,[]],
 
-				richer_building_roughcastHouse:['none','pulic',3,[]],
-				richer_building_farm:['none','pulic',3,[]],
-				richer_building_park:['none','pulic',4,[]],
+				richer_building_roughcastHouse:['none','business',1,[]],
+				richer_building_farm:['none','produce',1,[]],
+				richer_building_park:['none','entertain',1,[]],
+
+				richer_building_shop:['none','business',2,[]],
+				richer_building_radioStation:['none','propagate',2,[]],
+				richer_building_manor:['none','produce',2,[]],
+				richer_building_stockFarm:['none','produce',2,[]],
+				richer_building_holidayResort:['none','entertain',2,[]],
 
 				dingwanren:['none','asoul',4,[]],
 				// wanwanjun:['none','asoul',4,[]],

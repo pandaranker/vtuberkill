@@ -1190,10 +1190,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					var list = [];
 					event.equip1 = player.getEquip(1);
 					event.equip2 = player.getEquip(2);
-					if(event.equip1&&(!player.storage.yatelandisi_skill1||!player.storage.yatelandisi_skill2.contains('equip1'))){
+					if(event.equip1&&!player.getStorage('yatelandisi_skill2').contains('equip1')){
 						list.push('武器栏');
 					}
-					if(event.equip2&&(!player.storage.yatelandisi_skill2||!player.storage.yatelandisi_skill2.contains('equip2'))){
+					if(event.equip2&&!player.getStorage('yatelandisi_skill2').contains('equip2')){
 						list.push('防具栏');
 					}
 					if(list.length==1&&att==1)	att = -1;
@@ -1233,19 +1233,18 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					game.broadcastAll('closeDialog', event.videoId);
 					if (result.bool&&event[event.subtype]) {
-						player.popup(result.links[0][2]);
+						player.popup(event.subtype,event[event.subtype],event[event.subtype].name);
 						game.delay(0.5);
-						var originalName = event[event.subtype].name;
+						var name0 = event[event.subtype].name;
 						var cardid = event[event.subtype].cardid;
-						event[event.subtype].originalName = originalName;
 						event[event.subtype].viewAs = result.links[0][2];
 						event[event.subtype].name = result.links[0][2];
-						console.log(cardid);
-						if(!player.storage.yatelandisi_skill3)	player.storage.yatelandisi_skill3 = [];
 						if(!player.storage.yatelandisi_skill2)	player.storage.yatelandisi_skill2 = [];
 						player.storage.yatelandisi_skill2.add(event.subtype);
-						player.storage.yatelandisi_skill3.add(cardid);
-						player.storage.yatelandisi_skill3.add(originalName);
+						if(player.storage.yatelandisi_skill3&&player.storage.yatelandisi_skill3.length){
+							player.removeSkill('yatelandisi_skill3');
+						}
+						player.storage.yatelandisi_skill3 = [cardid,name0,event[event.subtype]];
 						game.log(player,'的『',event.name,'』声明了【',event[event.subtype].viewAs,'】');
 						player.syncStorage('yatelandisi_skill3');
 						player.addTempSkill('yatelandisi_skill3');
@@ -1263,6 +1262,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					return player.storage.yatelandisi_skill2;
 				},
+				onremove:true,
 				content:function(){
 					player.storage.yatelandisi_skill2 = [];
 				}
@@ -1271,7 +1271,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				intro:{
 					content:function(storage,player){
-						if(storage.length==2)	return '更改了装备区【'+get.translation(storage[1])+'】的名称';
+						if(storage.length==3)	return '更改了装备区【'+get.translation(storage[1])+'】的名称';
 					},
 					markcount:function(storage,player){
 						return 0;
@@ -1280,22 +1280,22 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				equipSkill:true,
 				onremove:function(player,skill){
 					var args = player.storage.yatelandisi_skill3;
-					console.log(args);
 					var change = player.getCards('e',function(i){
-						return i.cardid = args[0];
+						return i.cardid==args[0];
 					});
-					if(change&&change[0]&&change[0].originalName==args[1]){
+					console.log(args,change);
+					if(change&&change[0]){
 						change[0].name = args[1];
 						change[0].viewAs = args[1];
+						player.popup(args[1])
 					}
 				},
 				forced:true,
-				trigger:{player:'loseAfter'},
+				trigger:{player:'loseBegin'},
 				filter:function(event,player){
 					var args = player.storage.yatelandisi_skill3;
-					console.log(args);
-					return args&&event.es.filter(function(i){
-						return i.cardid = args[0];
+					return args&&event.cards.filter(function(i){
+						return i.cardid==args[0];
 					}).length;
 				},
 				content:function(){

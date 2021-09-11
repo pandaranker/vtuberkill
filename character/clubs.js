@@ -30,7 +30,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MorinagaMiu:['female','paryi',3,['guanzhai','zhishu']],
 			OtomeOto:['female','paryi',3,['yuxia','lianjue','changxiang'],['zhu']],
 			HisekiErio:['female','paryi',4,['huange','qishi','yongtuan'],['zhu']],
-			HanazonoSerena: ['female', 'paryi', 3, ['jiumao', 'enfan', 'shiqi']],
+			HanazonoSerena: ['female', 'paryi', 4, ['jiumao', 'enfan', 'shiqi'],['zhu']],
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
@@ -1078,7 +1078,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 
 			maoliang: {
-				mark:true,
+				init:function (player){
+					player.storage.maoliang=[];
+				},
 				marktext: '粮',
 				intro:{
 					content:'cards',
@@ -1094,219 +1096,166 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			jiumao: {
 				audio:2,
-				global: 'jiumao_put',
-				group: ['jiumao_gain'],
-				subSkill: {
-					put: {
-						trigger: {
-							player: 'phaseDiscardBegin',
-						},
-						check: function(event, player) {
-							var target = game.findPlayer(function(cur) {
-								return cur.hasSkill('jiumao');
-							})
-							return target&&get.attitude(player, target)>0;
-						},
-						filter: function(event, player) {
-							return !player.hasSkill('jiumao') && player.countCards('he')
-								&& game.hasPlayer(function(cur) {
-									return cur.hasSkill('jiumao');
-								});
-						},
-						content: function() {
-							'step 0'
-							player.chooseCard(get.prompt('jiumao'), 'he', [1, Infinity]).set('ai', function(card) {
-								var player = _status.event.player;
-								if (player.needsToDiscard()&&ui.selected.cards.length<player.countCards('h')) return 6 - get.useful(card);
-								else return 2 - get.useful(card);
-							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”');
-							'step 1'
-							if (result.bool) {
-								player.lose(result.cards, ui.special, 'visible', 'toStorage');
-								player.$give(result.cards, player, false);
-								if (player.storage.maoliang) {
-									player.storage.maoliang = player.storage.maoliang.concat(result.cards);
-								}
-								else {
-									player.storage.maoliang = result.cards;
-								}
-								// game.addVideo('storage', player, ['maoliang',get.cardsInfo(player.storage.maoliang),'cards']);
-								player.addSkill('maoliang');
-								player.markSkill('maoliang');
-								player.showCards(player.storage.maoliang, "猫粮");
-							}
-							else event.finish();
-							'step 2'
-							game.delayx();
-						}
-					},
-					gain: {
-						popup: false,
-						trigger: {
-							player: 'phaseBegin',
-						},
-						content: function() {
-							'step 0'
-							event.targets = game.filterPlayer(function(cur) {
-								return cur.hasSkill('maoliang');
-							});
-							event.videoId=lib.status.videoId++;
-							game.broadcastAll(function(targets, id) {
-								var dialog = ui.create.dialog('选择猫粮');
-								targets.forEach(function(p) {
-									if (p.storage.maoliang.length) {
-										dialog.addText(get.translation(p));
-										dialog.add(p.storage.maoliang);
-									}
-								})
-								dialog.videoId = id;
-							}, event.targets, event.videoId);
-							var next = player.chooseButton([1, player.maxHp]);
-							next.set('dialog', event.videoId);
-							'step 1'
-							game.broadcastAll('closeDialog', event.videoId)
-							if (result.bool) {
-								event.cards = result.links;
-								player.logSkill('jiumao');
-								event.targets.forEach(function(p) {
-									var all = p.storage.maoliang;
-									var cho = [];
-									p.storage.maoliang = [];
-									all.forEach(function(card) {
-										if (event.cards.indexOf(card) != -1) {
-											cho.push(card);
-											p.addTempSkill('jiumao_cancel');
-										}
-										else {
-											p.storage.maoliang.push(card);
-										}
-									})
-									p.$give(cho, player, false);
-									player.gain(cho, 'fromStorage');
-									p.syncStorage('maoliang');
-									p.markSkill('maoliang');
-									game.log(player, "获得了", p, "的猫粮：", cho);
-								})
-								player.line(game.filterPlayer(function(cur) {
-									return cur.hasSkill('jiumao_cancel');
-								}), 'green');
-							}
-						}
-					},
-					cancel: {
-						mod: {
-							targetEnabled: function(card, player, target) {
-								if (get.color(card) == 'black' && player.hasSkill('jiumao')) {
-									return false;
-								}
-							}
-						}
-					},
-				}
-			},
-			enfan: {
-				popup: false, 
 				trigger: {
-					global:'dying'
+					player: 'phaseUseEnd',
 				},
 				filter: function(event, player) {
-					return event.player.hasSkill('jiumao') || event.player.hasSkill('maoliang');
+					return event.player.countCards('h');
 				},
+				direct:true,
 				content: function() {
 					'step 0'
-					event.targets = game.filterPlayer(function(cur) {
-						return cur.hasSkill('maoliang');
-					});
-					event.videoId = lib.status.videoId++;
-					game.broadcastAll(function(targets, id, current) {
-						var dialog = ui.create.dialog('选择猫粮');
-						targets.forEach(function(p) {
-							if (p != current && p.storage.maoliang.length) {
-								dialog.addText(get.translation(p));
-								dialog.add(p.storage.maoliang);
-							}
-						})
-						dialog.videoId = id;
-					}, event.targets, event.videoId,trigger.player)
-					var next = player.chooseButton([1, player.maxHp]);
-					next.set('dialog', event.videoId);
+					event.target = trigger.player;
+					event.target.chooseCard('he', [1, Infinity]).set('ai', function(card) {
+						var player = _status.event.player;
+						if (player.needsToDiscard()&&ui.selected.cards.length<player.countCards('h')) return 6 - get.useful(card);
+						else return 2 - get.useful(card);
+					}).set('prompt','###'+get.prompt('jiumao',player)+'###你在弃牌阶段开始时，可将任意数量的牌放在'+get.translation(player)+'武将牌旁，称为“猫粮”');
 					'step 1'
-					game.broadcastAll('closeDialog',event.videoId);
 					if (result.bool) {
-						event.cards = result.links;
-						var targets = [];
-						var less = false;
-						event.targets.forEach(function(p) {
-							var temp = p.storage.maoliang;
-							p.storage.maoliang = [];
-							temp.forEach(function(card) {
-								if (event.cards.indexOf(card) != -1) {
-									p.$give(card, trigger.player, false);
-									trigger.player.gain(card, 'fromStorage');
-									targets.push(p);
-								}
-								else {
-									p.storage.maoliang.push(card);
-									less = true;
-								}
-							})
-							p.syncStorage('maoliang');
-							p.markSkill('maoliang');
-						})
-						if (!less) {
-							trigger.player.recover();
+						player.logSkill('maoliang',event.target);
+						event.target.loseToSpecial(result.cards,'maoliang',player);
+						event.target.$give(result.cards, player, false);
+						if(!player.storage.maoliang){
+							player.storage.maoliang = [];
 						}
-						player.logSkill('enfan', trigger.player);
-						trigger.player.line(targets, 'green');
+						player.storage.maoliang.addArray(result.cards);
+						player.markSkill('maoliang');
+						player.showCards(player.storage.maoliang, "猫粮");
 					}
 					else event.finish();
-				}
+					'step 2'
+					game.delayx();
+				},
+				group: ['maoliang','jiumao_cardDisable','jiumao_lose'],
+				subSkill:{
+					used:{},
+					cardDisable:{
+						mod:{
+							cardEnabled2:function(cardx,player){
+								if(player.countCards('s',function(card){
+									return card.hasGaintag('maoliang');
+								})){
+									if(get.position(cardx)=='s'&&cardx.hasGaintag('maoliang')&&player.hasSkill('jiumao_used'))	return false;
+								}
+							}
+						},
+						trigger:{
+							player:'useCard1',
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function (event,player){
+							return player.getHistory('lose',function(evt){
+								if(evt.getParent()!=event) return false;
+								for(var i in evt.gaintag_map){
+									if(evt.gaintag_map[i].contains('maoliang')) return true;
+								}
+								return false;
+							}).length>0;
+						},
+						content:function (){
+							player.addTempSkill('jiumao_used');
+						},
+					},
+					lose:{
+						trigger:{player:'loseEnd'},
+						firstDo:true,
+						silent:true,
+						filter:function(event,player){
+							if(!event.ss||!event.ss.length) return false;
+							var maoliang=player.getStorage('maoliang');
+							if(!maoliang.length) return false;
+							return event.ss.filter(function(card){
+								return maoliang.contains(card);
+							}).length>0;
+						},
+						content:function(){
+							player.storage.maoliang.removeArray(trigger.ss);
+							player.updateMarks();
+						},
+					}
+				},
+			},
+			enfan: {
+				subSkill:{
+					count:{
+						trigger:{
+							global:"recoverBegin",
+						},
+						forced:true,
+						silent:true,
+						popup:false,
+						filter:function (event,player){
+							if(!event.card) return false;
+							if(!event.source||event.source!=player) return false;
+							if(!event.player.isDying()) return false;
+							if(event.player.storage.yizhan_mark!=undefined) return false;
+							return true;
+						},
+						content:function (){
+							trigger.enfan=true;
+						},
+						sub:true,
+					},
+				},
+				audio:true,
+				group:['enfan_count'],
+				trigger:{
+					global:"recoverAfter",
+				},
+				filter:function (event,player){
+					if(event.player.isDying()) return false;
+					return event.enfan==true;
+				},
+				direct:true,
+				content:function (){
+					'step 0'
+					event.target = trigger.player;
+					player.chooseCard('s',[1,Infinity],function(card){
+						return card.hasGaintag('maoliang')
+					}).set('logSkill',['enfan',event.target]).set('ai',function(card){
+						var target = _status.event.target;
+						return get.value(card,target)/1.5-target.countCards('h');
+					}).set('target',event.target).set('prompt',get.prompt2('enfan',player));
+					'step 1'
+					if(result.bool&&result.cards){
+						player.give(result.cards,event.target,false);
+					}
+					else	event.finish();
+					'step 2'
+					if(player.countCards('h')==event.target.countCards('h')&&player.storage.maoliang.length){
+						console.log(2)
+						event.target.chooseCardButton(player.storage.maoliang.slice(0)).set('filterButton',function(button){
+							var player = _status.event.player;
+							return ['basic','trick'].contains(get.type(button.link))&&player.hasUseTarget(button.link);
+						}).set('ai',function(button){
+							var player = _status.event.player;
+							return player.getUseValue(button.link);
+						}).set('prompt','可以视为使用一张'+get.translation(player)+'的“猫粮”');
+					}
+					else	event.finish();
+					'step 3'
+					if(result.bool&&result.links){
+						var card = result.links[0];
+						event.target.chooseUseTarget(game.createCard(card));
+					}
+				},
 			},
 			shiqi: {
 				audio:1,
-				forced: true,
-				trigger: {
-					player: 'phaseZhunbeiBegin',
+				trigger:{global:'phaseDrawBegin'},
+				forced:true,
+				zhuSkill:true,
+				filter:function(event,player){
+					if(!player.hasZhuSkill('shiqi')||event.player.group!=player.group)	return false;
+					return true;
 				},
-				filter: function(event, player) {
-					var cnt = game.filterPlayer(function(cur) {
-						return player.countCards('h') < cur.countCards('h');
-					})
-					return cnt == 0;
-				},
+				logTarget:'player',
 				content: function() {
-					player.addTempSkill('shiqi_addDam');
-
-					var buff = '.player_buff';
-					game.broadcastAll(function(player, buff){
-						player.node.shiqi= ui.create.div(buff ,player.node.avatar);
-						player.node.shiqi2 = ui.create.div(buff ,player.node.avatar2);
-					}, player, buff);
+					trigger.num++;
 				},
-				subSkill: {
-					addDam: {
-						direct: true, 
-						silent: true,
-						trigger: {
-							source: 'damageBegin',
-						},
-						content: function() {
-							player.removeSkill('shiqi_addDam');
-							trigger.num++;
-						},
-						onremove: function(player, skill) {
-							game.broadcastAll(function(player){
-								player.node.shiqi.delete();
-								player.node.shiqi2.delete();
-								delete player.node.shiqi;
-								delete player.node.shiqi2;
-							}, player);
-						},
-						ai:{
-							damageBonus:true,
-						},
-					}
-				}
 			},
 
 			yinliu: {
@@ -3049,7 +2998,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguraMea:['re_KaguraMea','KaguraMea'],
 			OtomeOto:['re_OtomeOto','OtomeOto'],
 			HisekiErio:['re_HisekiErio','HisekiErio'],
-			HanazonoSerena:['re_HanazonoSerena','HanazonoSerena'],
+			HanazonoSerena:['re_HanazonoSerena','HanazonoSerena','old_HanazonoSerena'],
 
 			Eilene:['Eilene','old_Eilene'],
 		},
@@ -3134,12 +3083,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HanazonoSerena: '花園セレナ',
 			maoliang: '猫粮',
 			jiumao: '啾猫',
-			jiumao_info: '其他角色在弃牌阶段开始时，可将任意数量的牌放在其武将牌旁，称为“猫粮”。你的回合开始时，可获得数量不大于你体力上限的“猫粮”，若如此做，你无法使用黑色牌指定你获得牌的来源为目标直到回合结束。',
+			jiumao_info: '一名角色出牌阶段结束时，可将任意手牌置于你武将牌上，称为“猫粮”。每回合限一次，你可将“猫粮”如手牌般使用或打出。',
 			enfan: '恩返',
-			enfan_info: '发动过『啾猫』的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力',
+			enfan_info: '你令其他角色脱离濒死状态时，可以交给其任意数量的“猫粮”，然后若其手牌数与你相同，其可以视为使用一张你的“猫粮”。',
+			enfan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：辅助</span>',
 			shiqi: '势起',
-			shiqi_info: '锁定技 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
-			shiqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
+			shiqi_info: '主公技 锁定技 同势力角色摸牌阶段多摸一张牌。',
 
 			MashiroKanon: '真白花音',
 			chenzhu: '辰铸',

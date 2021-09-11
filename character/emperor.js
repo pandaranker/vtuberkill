@@ -1699,7 +1699,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							name: '终',
 							content: 'mark',
 							mark:function(dialog, storage, player){
-								dialog.addText('每第X张牌之使用者+❸');
+								dialog.addText('每第'+get.cnNumber(storage.x)+'张牌之使用者+❸');
 								if(!storage) return;
 								dialog.addText('已使用'+get.cnNumber(storage.usedCardCount)+'牌');
 								dialog.addText('距离下一次触发还需使用'+get.cnNumber(storage.x - storage.usedCardCount%storage.x)+'张牌');

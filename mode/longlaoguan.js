@@ -947,11 +947,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			AjatarCoco:'恶龙可可',
 			AjatarCoco_info:'恶龙可可',
 			zaoankeke: '早安一刀',
-			zaoankeke_info: '锁定技 当你使用【杀】指定目标后，目标需弃置一张牌；若此【杀】为属性杀，则改为交给你一张牌。',
+			zaoankeke_info: '锁定技 当你使用【杀】指定目标后，目标需弃置一张牌；若此【杀】为属性杀，改为交给你一张牌。',
 			jierizhanbei: '扳手战备',
-			jierizhanbei_info: '锁定技 你使用过装备牌的回合内手牌上限视为5.回合结束时，若本回合你没有使用过装备牌，你随机从牌堆内获得一张装备牌。',
+			jierizhanbei_info: '锁定技 你使用过装备牌的回合内手牌上限视为5。回合结束时，若本回合你没有使用过装备牌，你从牌堆内获得一张随机装备牌。',
 			esuyingye: '滥觞之至',
-			esuyingye_info: '回合开始时，你可以将你装备区或判定区的一张牌弃置，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
+			esuyingye_info: '回合开始时，你可以弃置你场上的一张牌，若为装备区的牌，本回合你下一张牌造成的伤害+1。',
 			elongkeke:'恶龙可可',
 			elongkeke_info: '死亡时，进入恶龙形态',
 			yanzheshengdun:'演者圣盾',
@@ -1089,7 +1089,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					'step 1'
 					if(trigger.getParent().card.nature){
-						player.gain(result.cards,target,'give');
+						player.gain(result.cards,target,'giveAuto');
 					}
 				}
 			},

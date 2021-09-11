@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.102.14',
+	version:'1.9.102.15',
 	update:'1.9.100.113.6',
 	changeLog:[
-		'102.14小更新：新增势力：乐元素，新增角色：李清歌、白玉、姬拉Kira，林莉奈削弱（『习律』现在只能交出手牌）、小虾鱼削弱（『堂皇』改为每回合限一次）、珈乐小加强，修复了塔菲的bug，修改部分描述，珈乐觉醒配音修改为《求佛》。',
+		'102.102.15小更新：新增角色：千幽，花园猫重置（旧版移至特殊包），琴吹梦、咩栗、李清歌调整，步玎削弱（『颅祭』的结束时机调整为弃牌阶段结束）、西魔幽削弱（『同召』只能在已受伤时发动），修复了亚特兰蒂斯的bug，修改部分描述，优化龙牢关模式。',
 		'',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -13,11 +13,13 @@ window.noname_update={
 		'image/character/Carol.jpg',
 		'image/character/Reine.jpg',
 		'image/character/RobokoSan.jpg',
-		'audio/skill/yuezhi.mp3',
 
-		'audio/skill/yehua1.mp3',
-		'audio/skill/yehua2.mp3',
-		'audio/skill/yehua3.mp3',
+		'audio/skill/yuezhi.mp3',
+		'image/card/chenjing.png',
+		'image/card/haixiao.png',
+		'image/card/qi.png',
+		'image/card/yatelandisi.png',
+
 
 		'character/Beginner.js',
 		'character/hololive.js',

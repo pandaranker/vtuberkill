@@ -1327,6 +1327,7 @@ window.noname_asset_list=[
 	'image/character/ByakuyaMayoi.jpg',
 	'image/character/caicai.jpg',
 	'image/character/Carol.jpg',
+	'image/character/Chiyuu.jpg',
 	'image/character/CierraRunis.jpg',
 	'image/character/Civia.jpg',
 	'image/character/Ciyana.jpg',
@@ -1608,6 +1609,7 @@ window.noname_asset_list=[
 	'image/character/sea_SasakiSaku.jpg',
 
 	'image/character/old_Eilene.jpg',
+	'image/character/old_HanazonoSerena.jpg',
 	'image/character/old_InabaHaneru.jpg',
 
 	'image/skin/AkiRinco/1.jpg',
