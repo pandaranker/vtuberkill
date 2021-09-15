@@ -1144,7 +1144,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(!list.length)	event.finish();
 							else	event.list = list;
 							'step 1'
-							player.chooseBool('###是否发动『全新全异』###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
+							player.chooseBool('###是否发动『全新全异』？###一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。')
 							'step 2'
 							if(result.bool){
 								player.logSkill('mark_quanxinquanyi');
@@ -1221,7 +1221,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					endRound:{
-						trigger:{global:'roundStart'},
+						trigger:{global:'roundEnd'},
 						priority:999,
 						forced:true,
 						silent:true,
@@ -1656,7 +1656,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				prompt: function() {
-					var str = "是否发动飒气并选择<br>";
+					var str = "是否发动『飒气』并选择<br>";
 					var add = (_status.event.player.maxHp < 5);
 					var item1 = '减少体力上限<br>';
 					var item2 = '增加体力上限<br>';
@@ -1672,7 +1672,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						marktext: '飒',
 						intro: {
 							content: function(storage, player, skill) {
-								var str = "发动“震音”的条件改为“你使用牌指定唯一目标后”。<br>";
+								var str = "发动『震音』的条件改为“你使用牌指定唯一目标后”。<br>";
 								if (storage && storage.length) {
 									str += "其他角色本回合无法使用的花色：" + 
 										get.translation(storage);
@@ -1908,7 +1908,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var att=(get.attitude(player,trigger.player)<=0);
 							var next=player.chooseButton();
 							next.set('att',att);
-							next.set('createDialog',['是否发动狂暴双刃，弃置'+get.translation(trigger.player)+'的一张坐骑牌？',trigger.player.getDiscardableCards(player,'e',{subtype:['equip3','equip4','equip6']})]);
+							next.set('createDialog',['是否发动『狂暴双刃』，弃置'+get.translation(trigger.player)+'的一张坐骑牌？',trigger.player.getDiscardableCards(player,'e',{subtype:['equip3','equip4','equip6']})]);
 							next.set('ai',function(button){
 								if(_status.event.att) return get.buttonValue(button);
 								return 0;
@@ -2837,7 +2837,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			YukishiroMahiro:'雪城真寻',
 			jiaoming: '骄名',
-			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：<br>对你使用一张【杀】；或失去1点体力并令你于本回合失去“骄名”。',
+			jiaoming_info: '出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：<br>对你使用一张【杀】；或失去1点体力并令你于本回合失去『骄名』。',
 			jiaoming_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：挑衅</span>',
 			changhe: '唱和',
 			changhe_info: '出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：<br>摸两张牌；或回复1点体力。',

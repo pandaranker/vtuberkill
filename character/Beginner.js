@@ -331,7 +331,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}).set('logSkill','re_ailian');
 							'step 1'
 							if(result.bool&&result.targets){
-								player.useSkill('re_ailian',player,false).set('targets',result.targets).set('cards',result.cards);
+								player.useSkill('re_ailian',result.cards,result.targets);
 							}
 						}
 					}
@@ -2163,7 +2163,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lastDo:true,
 				content:function(){
 					'step 0'
-					player.chooseCardButton('###是否发动『小巧』？###展示任意张类型不同的手牌',player.getCards('h'),[1,3]).set('filterButton',function(button){
+					player.chooseCardButton('###'+get.prompt('akxiaoqiao')+'###展示任意张类型不同的手牌',player.getCards('h'),[1,3]).set('filterButton',function(button){
 						var type = get.type(button.link,'trick');
 						for(var i=0;i<ui.selected.buttons.length;i++){
 							if(type==get.type(ui.selected.buttons[i].link,'trick')) return false;
@@ -2557,21 +2557,32 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//re梅露
 			fuyi:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill]=(game.roundNumber%2==1);
+				},
 				locked:true,
 				mod:{
 					globalFrom:function(from,to,current){
-						if(game.roundNumber%2==1)	return current-1;
+						if(from.storage.fuyi)	return current-1;
 					},
 					globalTo:function(from,to,current){
-						if(game.roundNumber%2!=1)	return current+1;
+						if(!to.storage.fuyi)		return current+1;
 					},
-				}
+				},
+				trigger:{global:'roundStart'},
+				locked:true,
+				direct:true,
+				content:function(){
+					player.storage.fuyi = (game.roundNumber%2==1);
+				},
 			},
 			xihun:{
 				trigger:{global:'damageEnd'},
 				frequent:true,
 				usable:1,
-				filter:function(event,player){return event.card&&get.name(event.card)=='sha'&&!player.hasSkill('xihun_used')},
+				filter:function(event,player){
+					return event.card&&get.name(event.card)=='sha'&&!player.hasSkill('xihun_used');
+				},
 				content:function(){
 					'step 0'
 					player.draw();
@@ -2702,7 +2713,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
+					var next = player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌',true).set('type','compare');
 					next.set('filterTarget',function(card,player,target){
 							if(player.storage.huxiGroup&&player.storage.huxiGroup.contains(target))	return false;
 							return target!=player&&player.countCards('h')&&target.countCards('h');
@@ -2712,7 +2723,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target=result.targets[0];
 						game.log(player,'想要呼吸',event.target);
 						event.card1=result.cards[0];
-						event.target.chooseCard('请选择交换的牌',true).set('type','compare');
+						event.target.chooseCard('『呼吸』：请选择交换的牌',true).set('type','compare');
 					}else{
 						event.finish();
 					}
@@ -3855,11 +3866,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							if(player.isOnline()){
 								player.send(function(){
-									player.useSkill('re_yuzhan',player,false);
+									player.useSkill('re_yuzhan',false,false);
 								});
 							}
 							else{
-								player.useSkill('re_yuzhan',player,false);
+								player.useSkill('re_yuzhan',false,false);
 							}
 							'step 1'
 							if(trigger.card&&trigger.card.storage&&trigger.card.storage.bizuo==true)	delete trigger.card.storage.bizuo;
@@ -5458,8 +5469,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 				},
 				filterTarget:function(card,player,target){
-					if(player==target||target.hp==Infinity) return false;
-					return true;
+					return player.canCompare(target)
 				},
 				content:function(){
 					'step 0'
@@ -5485,7 +5495,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 2'
-					console.log(result)
 					if(result.winner){
 						if(event.cards.length){
 							if(result.winner==player){
@@ -5503,20 +5512,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'BLacK_compare',
 				subSkill:{
 					compare:{
-						trigger:{player:'chooseCardBefore'},
-						// check:function(){
-						// 	return 20;
-						// },
+						trigger:{player:'chooseToCompareBegin'},
+						firstDo:true,
 						direct:true,
 						filter:function(event,player){
-							if(event.getParent(2).name=='BLacK'&&player.storage.BLacK){
-								console.log(player.storage.BLacK)
-								return event.type=='compare'&&!event.directresult;
+							if(event.getParent().name=='BLacK'&&player.storage.BLacK){
+								return !event.fixedResult;
 							}
 							return false
 						},
 						content:function(){
-							trigger.directresult = [player.storage.BLacK];
+							if(!trigger.fixedResult) trigger.fixedResult={};
+							trigger.fixedResult[player.playerid]=player.storage.BLacK;
 						}
 					}
 				},
@@ -5987,7 +5994,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_huawen: '花吻',
 			re_huawen_info: '当你需要使用牌时，你可以打出两张颜色不同的牌。当你打出两张颜色不同的牌时，视为使用其中的红色牌，且此牌额外结算一次。若未造成伤害，你可将另一张牌交给一名其他角色。',
 			re_liaohu: '疗护',
-			re_liaohu_info: '你造成过伤害的回合结束时，可以令一名角色摸两张牌。若本回合你发动过“花吻”，可以改为令一名角色摸一张牌并回复 1 点体力。',
+			re_liaohu_info: '你造成过伤害的回合结束时，可以令一名角色摸两张牌。若本回合你发动过『花吻』，可以改为令一名角色摸一张牌并回复 1 点体力。',
 
 			re_ShirayukiTomoe: '新·白雪巴',
 			re_gonggan: '共感',
@@ -6025,7 +6032,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fuyi: '蝠翼',
 			fuyi_info: '锁定技 奇数轮内你计算与其他角色的距离-1，偶数轮内其他角色计算与你的距离+1。',
 			xihun: '吸魂',
-			xihun_info: '一名角色受到【杀】造成的伤害后，你可以摸一张牌。然后若你的手牌数大于手牌上限，你本轮无法再发动此技能。',
+			xihun_info: '一名角色受到【杀】造成的伤害后，你可以摸一张牌。然后若你的手牌数大于手牌上限，你本轮不能再发动此技能。',
 			
 			re_SakuraMiko: '新·樱巫女',
 			huangyou: '黄油',
@@ -6036,7 +6043,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_NatsuiroMatsuri:'新·夏色祭',
 			re_huxi1:'恋上',
-			re_huxi1_info:'当你不因此技能获得牌后，你可以与一名本回合未“恋上”过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。',
+			re_huxi1_info:'当你不因此技能获得牌后，你可以与一名本回合未『恋上』过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。',
 
 			re_AkaiHaato: '新·赤井心',
 			xinchixin: '赤心',
@@ -6088,7 +6095,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			re_InuyamaTamaki: '新·犬山玉姬',
 			re_hundunliandong: '混联',
-			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有“homo”标记的角色视为同势力。',
+			re_hundunliandong_info: '出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有「homolive」标记的角色视为同势力。',
 			re_hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
 			
 			re_KaguraMea: '新·神乐めあ',

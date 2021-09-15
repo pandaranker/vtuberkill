@@ -17,7 +17,8 @@ window.config={
 		sgscharacters:['Beginner'],
 		sgscards:['standard','extra'],
 		sgsmodes:['identity','doudizhu','versus','longlaoguan','guozhan','single','brawl','connect'],//
-		stockmode:['identity','doudizhu','versus','boss','longlaoguan','guozhan','single','connect','brawl'],//,'tafang','chess','stone'
+		stockmode:['identity','doudizhu','versus','boss','longlaoguan','guozhan','single','connect','brawl',
+		'yindao','richer'],//,'tafang','chess','stone'
 		stockextension:['cardpile','coin','wuxing'],//'boss',
 		layout:['default','newlayout'],
 		theme:['woodden','music','simple'],
@@ -128,8 +129,8 @@ window.config={
 	right_click:'pause',
 	sort:'type_sort',
 
-	cards:['standard'],//,'extra'
-	characters:['Beginner'],//,'clubs','vtuber','nijisanji'
+	cards:['standard','extra'],//
+	characters:['Beginner','vtuber'],//,'clubs','nijisanji'
 	connect_characters:[],
 	connect_cards:[],
 	plays:[],

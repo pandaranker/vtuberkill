@@ -2155,7 +2155,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				priority: 256,
 				frequent: true,
 				trigger:{
-					global: 'roundStart'
+					global: 'roundEnd'
 				},
 				filter:function(event, player){
 					if(game.hasPlayer(function(current){

@@ -428,7 +428,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								var player = _status.event.player;
 								if (player.needsToDiscard()&&ui.selected.cards.length<player.countCards('h')) return 6 - get.useful(card);
 								else return 2 - get.useful(card);
-							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为“猫粮”');
+							}).set('prompt','###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为「猫粮」');
 							'step 1'
 							if (result.bool) {
 								player.lose(result.cards, ui.special, 'visible', 'toStorage');
@@ -1480,41 +1480,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 		},
 		card:{
-			pss_paper:{
-				type:'pss',
-				fullskin:true,
-				//derivation:'shenpei',
-			},
-			pss_scissor:{
-				type:'pss',
-				fullskin:true,
-				//derivation:'shenpei',
-			},
-			pss_stone:{
-				type:'pss',
-				fullskin:true,
-				//derivation:'shenpei',
-			},
-			db_atk1:{
-				type:'db_atk',
-				fullimage:true,
-				//derivation:'shenpei',
-			},
-			db_atk2:{
-				type:'db_atk',
-				fullimage:true,
-				//derivation:'shenpei',
-			},
-			db_def1:{
-				type:'db_def',
-				fullimage:true,
-				//derivation:'shenpei',
-			},
-			db_def2:{
-				type:'db_def',
-				fullimage:true,
-				//derivation:'shenpei',
-			},
 		},
 		dynamicTranslate:{
 		},
@@ -1522,14 +1487,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KurokawaPresents: 'Kurokawa Presents',
 			rewriteGuo:'国战共通',
 
-			pss:'手势',
-			pss_paper:'布',
-			pss_scissor:'剪刀',
-			pss_stone:'石头',
-			pss_paper_info:'石头剪刀布时的一种手势。克制石头，但被剪刀克制。',
-			pss_scissor_info:'石头剪刀布时的一种手势。克制布，但被石头克制。',
-			pss_stone_info:'石头剪刀布时的一种手势。克制剪刀，但被布克制。',
-			
 			db_atk:'进攻对策',
 			db_atk1:'全军出击',
 			db_atk2:'分兵围城',
@@ -1560,9 +1517,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_HanazonoSerena: '旧花園猫',
 			old_maoliang: '猫粮(旧)',
 			old_jiumao: '啾猫(旧)',
-			old_jiumao_info: '其他角色在弃牌阶段开始时，可将任意数量的牌放在其武将牌旁，称为“猫粮”。你的回合开始时，可获得数量不大于你体力上限的“猫粮”，若如此做，你无法使用黑色牌指定你获得牌的来源为目标直到回合结束。',
+			old_jiumao_info: '其他角色在弃牌阶段开始时，可将任意数量的牌放在其武将牌旁，称为「猫粮」。你的回合开始时，可获得数量不大于你体力上限的「猫粮」，若如此做，你无法使用黑色牌指定你获得牌的来源为目标直到回合结束。',
 			old_enfan: '恩返(旧)',
-			old_enfan_info: '发动过『啾猫』的角色濒死时，你可把其以外角色的数量不大于你体力上限的“猫粮”交给该名角色，然后若场上没有“猫粮”，其回复1点体力。',
+			old_enfan_info: '发动过『啾猫』的角色濒死时，你可把其以外角色的数量不大于你体力上限的「猫粮」交给该名角色，然后若场上没有「猫粮」，其回复1点体力。',
 			old_shiqi: '势起(旧)',
 			old_shiqi_info: '锁定技 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
 			old_shiqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',

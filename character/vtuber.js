@@ -1215,7 +1215,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(event.loop){
 						event.loop--;
 						if(event.loop){
-							event.player1.chooseBool('将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
+							event.player1.chooseBool('将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
 								var player = _status.event.player;
 								var target = _status.event.getParent().player2;
 								if(get.recoverEffect(target,player,player)>1)	return 0;
@@ -1223,7 +1223,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 						}
 						else{
-							event.player2.chooseBool('将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
+							event.player2.chooseBool('将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai',function(){
 								var player = _status.event.player;
 								var target = _status.event.getParent().player1;
 								if(get.recoverEffect(target,player,player)>1)	return 0;
@@ -1983,27 +1983,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		card:{
-			"feichu_equip1":{
-				type:"equip",
-				subtype:"equip1",
-			},
-			"feichu_equip2":{
-				type:"equip",
-				subtype:"equip2",
-			},
-			"feichu_equip3":{
-				type:"equip",
-				subtype:"equip3",
-			},
-			"feichu_equip4":{
-				type:"equip",
-				subtype:"equip4",
-			},
-			"feichu_equip5":{
-				type:"equip",
-				subtype:"equip5",
-			},
-			disable_judge:{},
 		},
 		characterReplace:{
 			KizunaAI:['re_KizunaAI','KizunaAI'],
@@ -2042,14 +2021,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			InuyamaTamaki:'犬山玉姬',
 			InuyamaTamaki_info:'犬山玉姬',
 			rongyaochengyuan:'荣誉成员',
-			rongyaochengyuan_info:'其他角色对你造成伤害时，若其没有“homolive”标记，你可令其获得一个，然后防止此伤害。',
+			rongyaochengyuan_info:'其他角色对你造成伤害时，若其没有「homolive」标记，你可令其获得一个，然后防止此伤害。',
 			hundunliandong:'混沌联动',
-			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有四种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有“homolive”标记的角色视为同一势力',
+			hundunliandong_info:'出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：共有四种花色；或有角色因此失去最后一张手牌。此技能计算势力时，拥有「homolive」标记的角色视为同一势力',
 			hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
 
 			ShirayukiMishiro: '白雪深白',
 			tianyi: '梦幻天衣',
-			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为“衣”。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与“衣”不同，你摸一张牌；若花色相同，你可以取消之，然后弃置“衣”并获得此牌。准备阶段，弃置“衣”，然后你可以移动场上一张牌。',
+			tianyi_info: '出牌阶段限一次，若你没有装备防具，你可以将一张牌置于武将牌上，称为「衣」。每回合每种花色限一次，当你使用或成为锦囊牌的目标时，若该牌花色与「衣」不同，你摸一张牌；若花色相同，你可以取消之，然后弃置「衣」并获得此牌。准备阶段，弃置「衣」，然后你可以移动场上一张牌。',
 			nveyu: '甜言虐语',
 			nveyu_info: '锁定技 当你于一回合内首次造成伤害时，你令目标回复一点体力，与其各摸一张牌，然后本回合你对其使用牌无距离与次数限制。',
 			nveyu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：难上手 辅助</span>',
@@ -2072,7 +2051,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			XiaoxiXiaotao:'小希小桃',
 			XiaoxiXiaotao_info:'小希小桃',
 			yipengyidou:'一捧一逗',
-			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本阶段进入弃牌堆的一张基本牌或通常锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
+			yipengyidou_info:'出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。',
 			yipengyidou_append:'<span style="font-family: LuoLiTi2;color: #dbb">通过与队友拼点，多次使用关键牌</span>',
 			renleiguancha:'人类观察',
 			renleiguancha_info:'结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。',

@@ -11,6 +11,7 @@ window.noname_package={
 		vtuber:'企业大箱',
 		clubs: '社团小箱',
 		huajing:'化鲸篇',
+		xingtian:'星天篇',
 		// moyu: '摸鱼',
 		yuzu: '测试中可选',
 		emperor:'Emperor',
@@ -33,8 +34,9 @@ window.noname_package={
 	card:{
 		standard:'标准',
 		extra:'军争',
-		huajing:'化鲸篇',
 		yingbian:'应变篇',
+		huajing:'化鲸篇',
+		xingtian:'星天篇',
 		sp:'SP',
 		guozhan:'国战',
 		zhulu:'逐鹿天下',
@@ -56,6 +58,7 @@ window.noname_package={
 		coin:'富甲天下',
 	},
 	mode:{
+		richer:'大富翁',
 		identity:'身份',
 		doudizhu:'斗地主',
 		versus:'对决',
@@ -65,6 +68,7 @@ window.noname_package={
 		longlaoguan:'龙牢关',
 		single:'单挑',
 		brawl:'乱斗',
+		yindao:'引导',
 	},
 	submode:{
 		identity:{

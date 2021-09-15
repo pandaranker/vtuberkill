@@ -1110,7 +1110,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var player = _status.event.player;
 						if (player.needsToDiscard()&&ui.selected.cards.length<player.countCards('h')) return 6 - get.useful(card);
 						else return 2 - get.useful(card);
-					}).set('prompt','###'+get.prompt('jiumao',player)+'###你在弃牌阶段开始时，可将任意数量的牌放在'+get.translation(player)+'武将牌旁，称为“猫粮”');
+					}).set('prompt','###'+get.prompt('jiumao',player)+'###你在弃牌阶段开始时，可将任意数量的牌放在'+get.translation(player)+'武将牌旁，称为「猫粮」');
 					'step 1'
 					if (result.bool) {
 						player.logSkill('maoliang',event.target);
@@ -1233,7 +1233,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}).set('ai',function(button){
 							var player = _status.event.player;
 							return player.getUseValue(button.link);
-						}).set('prompt','可以视为使用一张'+get.translation(player)+'的“猫粮”');
+						}).set('prompt','可以视为使用一张'+get.translation(player)+'的「猫粮」');
 					}
 					else	event.finish();
 					'step 3'
@@ -1307,11 +1307,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger: {
 							player: 'phaseEnd',
 						},
+						prompt2:'若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
 						filter: function(event, player) {
 							return player.countCards('he')>0;
 						},
 						content: function () {
-							player.insertEvent('yinliu', lib.skill.yinliu.content);
+							player.useSkill('yinliu');
 						},
 					}
 				}
@@ -1451,12 +1452,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var list = ['不观看牌'];
-					var att = 5;
+					var att = Math.max(game.countPlayer(),5)-player.storage.shushi;
 					var prompt2 = player.storage.shushi?'你本回合已看'+get.cnNumber(player.storage.shushi)+'张牌':'你本回合未看牌';
-					if(player.countCards('h',{type:'trick'})<2||['phaseDraw','phaseUse'].contains(trigger.name))	att = 0;
-					for(var i=1;i<=(Math.max(game.countPlayer(),5)-player.storage.shushi);i++){
+					for(var i=1;i<=att;i++){
 						list.push('观看'+get.cnNumber(i)+'张牌');
 					}
+					if(player.countCards('h',{type:'trick'})<2||['phaseZhunbei','phaseDraw','phaseUse'].contains(trigger.name))	att = 0;
 					player.chooseControlList(prompt2
 					,list,true,function(){
 						return _status.event.att;
@@ -1741,7 +1742,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 				},
 				content:function(){
-					var opts = ['更改亮出的“替身”','随机更换一张“替身”','返回'];
+					var opts = ['更改亮出的「替身」','随机更换一张「替身」','返回'];
 					'step 0'
 					//create Dialog
 					console.log('zt 0')
@@ -2037,7 +2038,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								dialog.addSmall([storage.character,'character']);
 							}
 							else{
-								dialog.addText('共有'+get.cnNumber(storage.character.length)+'张“替身”');
+								dialog.addText('共有'+get.cnNumber(storage.character.length)+'张「替身」');
 							}
 						}
 						else{
@@ -2045,7 +2046,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					content:function(storage,player){
-							return '共有'+get.cnNumber(storage.character.length)+'张“替身”'
+							return '共有'+get.cnNumber(storage.character.length)+'张「替身」'
 					},
 					markcount:function(storage,player){
 						if(storage&&storage.character) return storage.character.length;
@@ -3050,10 +3051,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
-			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为“财布”。准备阶段，若你的武将牌上有“财布”，你可以移去任意数量的”财布“摸等量的牌。',
+			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的”财布“摸等量的牌。',
 			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：顺手牵咩</span>',
 			xiaoyan: '嚣言',
-			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的“财布”，此伤害+1。',
+			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的「财布」，此伤害+1。',
 			xiaoyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制命中 破军</span>',
 			caibu: '财布',
 
@@ -3078,14 +3079,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			DDzhanshou_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：连营 破军</span>',
 			xinluezhili: '辛略之力', 
 			xinluezhili_draw: '辛略之力',
-			xinluezhili_info: '主公技 当其他角色因“DD斩首”失去最后一张手牌时，其可令你摸一张牌', 
+			xinluezhili_info: '主公技 当其他角色因『DD斩首』失去最后一张手牌时，其可令你摸一张牌', 
 
 			HanazonoSerena: '花園セレナ',
 			maoliang: '猫粮',
 			jiumao: '啾猫',
-			jiumao_info: '一名角色出牌阶段结束时，可将任意手牌置于你武将牌上，称为“猫粮”。每回合限一次，你可将“猫粮”如手牌般使用或打出。',
+			jiumao_info: '一名角色出牌阶段结束时，可将任意手牌置于你武将牌上，称为「猫粮」。每回合限一次，你可将「猫粮」如手牌般使用或打出。',
 			enfan: '恩返',
-			enfan_info: '你令其他角色脱离濒死状态时，可以交给其任意数量的“猫粮”，然后若其手牌数与你相同，其可以视为使用一张你的“猫粮”。',
+			enfan_info: '你令其他角色脱离濒死状态时，可以交给其任意数量的「猫粮」，然后若其手牌数与你相同，其可以视为使用一张你的「猫粮」。',
 			enfan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：辅助</span>',
 			shiqi: '势起',
 			shiqi_info: '主公技 锁定技 同势力角色摸牌阶段多摸一张牌。',
@@ -3148,11 +3149,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shuangshoujiaoying_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
 			shuangshoujiaoying_gai_info:'当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。',
 			anyingxuemai:'暗影血脉',
-			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将“双首角鹰”的“【闪】”改为“红色牌”。',
+			anyingxuemai_info:'<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将『双首角鹰』的“【闪】”改为“红色牌”。',
 			
 			heichuan:'原初黑川',
 			zhengtibuming: '正体不明',
-			zhengtibuming_info: '游戏开始时，你随机获得三张武将牌作为“替身”，然后亮出其中一张。获得亮出“替身”的通常技，且性别和势力视为与“替身”相同。回合开始或结束时，你可以选择一项：<br>更改亮出的“替身”；或随机更换一张“替身”。当你受到1点伤害后，你可以获得一张新的“替身”。',
+			zhengtibuming_info: '游戏开始时，你随机获得三张武将牌作为「替身」，然后亮出其中一张。获得亮出「替身」的通常技，且性别和势力视为与「替身」相同。回合开始或结束时，你可以选择一项：<br>更改亮出的「替身」；或随机更换一张「替身」。当你受到1点伤害后，你可以获得一张新的「替身」。',
 			lunhuizuzhou: '轮回诅咒',
 			lunhuizuzhou_info: '锁定技 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。',
 			mingyunniezao: '命运捏造',

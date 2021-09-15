@@ -170,7 +170,7 @@
         //独立功能
         discoloration: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.5s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}16.67%{color: #FFFF00;}33.33%{color:#00FF00;}50% {color:#00FFFF;}66.67%{color: #0000FF;}83.33%{color: #FF00FF;}100%{color:#FF0000;}}</style>",
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
-        configprefix: 'noname_0.9_',
+        configprefix: 'vtuberkill_1.9_',
         versionOL: 27,
         updateURLS: {
             coding: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/',
@@ -2985,11 +2985,11 @@
              * 显示设置
              * @namespace
              */
-			view:{
-				name:'显示',
-				config:{
-					update:function(config,map){
-						if(lib.config.mode=='versus'||lib.config.mode=='chess'||lib.config.mode=='tafang'||lib.config.mode=='boss'||lib.config.mode=='richer'){
+            view: {
+                name: '显示',
+                config: {
+                    update: function (config, map) {
+                        if (lib.config.mode == 'versus' || lib.config.mode == 'chess' || lib.config.mode == 'tafang' || lib.config.mode == 'boss' || lib.config.mode == 'richer') {
                             map.show_handcardbutton.show();
                         }
                         else {
@@ -4354,87 +4354,105 @@
          */
         mode: {
             //引导
-            // yindao:{
-            // 	name:'引导',
-            // 	config:{
-            // 		update:function(config,map){
-            // 		},
-            // 	}
+            // yindao: {
+            //     name: '引导',
+            //     config: {
+            //         update: function (config, map) {
+            //         },
+            //     }
             // },
-            // richer:{
-            // 	name:'大富翁',
-            // 	connect:{
-            // 		connect_player_number:{
-            // 			name:'游戏人数',
-            // 			init:'6',
-            // 			item:{
-            // 				'2':'两人',
-            // 				'3':'三人',
-            // 				'4':'四人',
-            // 				'5':'五人',
-            // 				'6':'六人',
-            // 			},
-            // 			frequent:true,
-            // 			restart:true,
-            // 		},
-            // 		update:function(config,map){
-            // 		},
-            // 		connect_show_range:{
-            // 			name:'显示卡牌范围',
-            // 			init:true,
-            // 		},
-            // 		connect_show_distance:{
-            // 			name:'显示距离',
-            // 			init:true,
-            // 		},
-            // 		connect_chessscroll_speed:{
-            // 			name:'边缘滚动速度',
-            // 			init:'20',
-            // 			intro:'鼠标移至屏幕边缘时自动滚屏',
-            // 			item:{
-            // 				'0':'不滚动',
-            // 				'10':'10格/秒',
-            // 				'20':'20格/秒',
-            // 				'30':'30格/秒',
-            // 			}
-            // 		},
-            // 	},
-            // 	config:{
-            // 		player_number:{
-            // 			name:'游戏人数',
-            // 			init:'6',
-            // 			item:{
-            // 				'2':'两人',
-            // 				'3':'三人',
-            // 				'4':'四人',
-            // 				'5':'五人',
-            // 				'6':'六人',
-            // 			},
-            // 			frequent:true,
-            // 			restart:true,
-            // 		},
-            // 		update:function(config,map){
-            // 		},
-            // 		show_range:{
-            // 			name:'显示卡牌范围',
-            // 			init:true,
-            // 		},
-            // 		show_distance:{
-            // 			name:'显示距离',
-            // 			init:true,
-            // 		},
-            // 		chessscroll_speed:{
-            // 			name:'边缘滚动速度',
-            // 			init:'20',
-            // 			intro:'鼠标移至屏幕边缘时自动滚屏',
-            // 			item:{
-            // 				'0':'不滚动',
-            // 				'10':'10格/秒',
-            // 				'20':'20格/秒',
-            // 				'30':'30格/秒',
-            // 			}
-            // 		},
-            // 	}
+            // richer: {
+            //     name: '大富翁',
+            //     connect: {
+            //         connect_player_number: {
+            //             name: '游戏人数',
+            //             init: '6',
+            //             item: {
+            //                 '2': '两人',
+            //                 '3': '三人',
+            //                 '4': '四人',
+            //                 '5': '五人',
+            //                 '6': '六人',
+            //             },
+            //             frequent: true,
+            //             restart: true,
+            //         },
+            //         update: function (config, map) {
+            //         },
+            //         connect_show_range: {
+            //             name: '显示卡牌范围',
+            //             init: true,
+            //         },
+            //         // connect_show_distance:{
+            //         // 	name:'显示距离',
+            //         // 	init:true,
+            //         // },
+            //         connect_chessscroll_speed: {
+            //             name: '边缘滚动速度',
+            //             init: '20',
+            //             intro: '鼠标移至屏幕边缘时自动滚屏',
+            //             item: {
+            //                 '0': '不滚动',
+            //                 '10': '10格/秒',
+            //                 '20': '20格/秒',
+            //                 '30': '30格/秒',
+            //             }
+            //         },
+            //     },
+            //     config: {
+            //         player_number: {
+            //             name: '游戏人数',
+            //             init: '6',
+            //             item: {
+            //                 '2': '两人',
+            //                 '3': '三人',
+            //                 '4': '四人',
+            //                 '5': '五人',
+            //                 '6': '六人',
+            //             },
+            //             frequent: true,
+            //             restart: true,
+            //         },
+            //         update: function (config, map) {
+            //             switch (config.player_number) {
+            //                 case 4:
+            //                 case 6: {
+            //                     map.team_number.show();
+            //                     break;
+            //                 }
+            //                 default: {
+            //                     map.team_number.hide();
+            //                     break;
+            //                 }
+
+            //             }
+            //         },
+            //         show_range: {
+            //             name: '显示卡牌范围',
+            //             init: true,
+            //         },
+            //         team_number: {
+            //             name: '每队人数',
+            //             init: '1',
+            //             item: {
+            //                 '1': '单人',
+            //                 '2': '两人',
+            //             },
+            //             frequent: true,
+            //             restart: true,
+            //         },
+            //         chessscroll_speed: {
+            //             name: '边缘滚动速度',
+            //             init: '20',
+            //             intro: '鼠标移至屏幕边缘时自动滚屏',
+            //             item: {
+            //                 '0': '不滚动',
+            //                 '10': '10格/秒',
+            //                 '20': '20格/秒',
+            //                 '30': '30格/秒',
+            //             }
+            //         },
+            //     }
             // },
             identity: {
                 name: '身份',
@@ -6598,38 +6616,38 @@
                     },
                 }
             },
-			brawl:{
-				name:'乱斗',
-				config:{
-					huanhuazhizhan:{
-						name:'幻化之战',
-						init:true,
-						frequent:true
-					},
-					qunxionggeju:{
-						name:'群雄割据',
-						init:true,
-						frequent:true
-					},
-					duzhansanguo:{
-						name:'毒战三国',
-						init:true,
-						frequent:true
-					},
-					daoshiyueying:{
-						name:'导师爱璃',
-						init:true,
-						frequent:true
-					},
-					weiwoduzun:{
-						name:'唯我独尊',
-						init:true,
-						frequent:true
-					},
-					tongxingzhizheng:{
-						name:'同姓之争',
-						init:true,
-						frequent:true
+            brawl: {
+                name: '乱斗',
+                config: {
+                    huanhuazhizhan: {
+                        name: '幻化之战',
+                        init: true,
+                        frequent: true
+                    },
+                    qunxionggeju: {
+                        name: '群雄割据',
+                        init: true,
+                        frequent: true
+                    },
+                    duzhansanguo: {
+                        name: '毒战三国',
+                        init: true,
+                        frequent: true
+                    },
+                    daoshiyueying: {
+                        name: '导师爱璃',
+                        init: true,
+                        frequent: true
+                    },
+                    weiwoduzun: {
+                        name: '唯我独尊',
+                        init: true,
+                        frequent: true
+                    },
+                    tongxingzhizheng: {
+                        name: '同姓之争',
+                        init: true,
+                        frequent: true
                     },
                     // tongqueduopao:{
                     // 	name:'铜雀夺袍',
@@ -6681,10 +6699,10 @@
          * 帮助菜单
          * @namespace
          */
-		//帮助菜单
-		help:{
-			'FAQ':'<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>'+
-			'<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>'+
+        //帮助菜单
+        help: {
+            'FAQ': '<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>' +
+                '<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>' +
                 '<li>Q：夜雾和lulu的技能改变出牌效果时，影响牌的使用次数吗？<li>A：不影响，牌的使用次数始终在牌使用或打出时计入。特别的，lulu的技能可以改变牌名，有可能影响牌的后续结算；而夜雾的技能不改变牌名，（虽然效果已经变化）与原牌名关联的效果不会受影响（如【初始服】之于【杀】【万箭】【南蛮】）<br>',
 
             '游戏操作': '<ul><li>长按/鼠标悬停/右键单击显示信息<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管<li>键盘快捷键<br>' +
@@ -6701,7 +6719,8 @@
             // '<li>使用卡牌<br>player.useCard(card,<br>targets)<li>死亡<br>player.die()<li>复活<br>player.revive(hp)</ul>'+
             // '<div style="margin:10px">游戏操作</div><ul style="margin-top:0"><li>在命令框中输出结果<br>game.print(str)<li>清除命令框中的内容<br>cls<li>上一条/下一条输入的内容<br>up/down<li>游戏结束<br>game.over(bool)'+
             // '<li>角色资料<br>lib.character<li>卡牌资料<br>lib.card</ul>',
-            '游戏名词': '<ul><li>护甲：和体力类似，每点护甲可抵挡一点伤害，但不影响手牌上限' +
+            '游戏名词': '<ul><li>智囊：无名杀默认为过河拆桥/无懈可击/无中生有/洞烛先机。牌堆中没有的智囊牌会被过滤。可在卡牌设置中自行增减。若没有可用的智囊，则改为随机选取的三种锦囊牌的牌名。' +
+                '<li>护甲：和体力类似，每点护甲可抵挡一点伤害，但不影响手牌上限' +
                 '<li>随从：通过技能获得，拥有独立的技能、手牌区和装备区（共享判定区），出场时替代主武将的位置；随从死亡时自动切换回主武将' +
                 '<li>发现：从三张随机亮出的牌中选择一张，若无特殊说明，则获得此牌' +
                 '<li>蓄力技：发动时可以增大黄色的数字。若如此做，红色数字于技能的结算过程中改为原来的两倍'
@@ -6712,10 +6731,10 @@
          * @param {?function} func 用于自定义弹窗的回调函数
          * @param {?boolean} left 如果为true，点击事件也能触发弹窗
          */
-		//设置信息框显示
-		setIntro:function(node,func,left){
-			if(lib.config.touchscreen){
-				if(left){
+        //设置信息框显示
+        setIntro: function (node, func, left) {
+            if (lib.config.touchscreen) {
+                if (left) {
                     node.listen(ui.click.touchintro);
                 }
                 else {
@@ -6809,20 +6828,20 @@
          * @param {?number} width 弹窗宽度，为null时不设置
          * @returns {!HTMLElement}
          */
-		setHover:function(node,func,hoveration,width){
-			node._hoverfunc=func;
-			if(typeof hoveration=='number'){
-				node._hoveration=hoveration;
-			}
-			if(typeof width=='number'){
-				node._hoverwidth=width
-			}
-			node.addEventListener('mouseenter',ui.click.mouseenter);
-			node.addEventListener('mouseleave',ui.click.mouseleave);
-			node.addEventListener('mousedown',ui.click.mousedown);
-			node.addEventListener('mousemove',ui.click.mousemove);
-			return node;
-		},
+        setHover: function (node, func, hoveration, width) {
+            node._hoverfunc = func;
+            if (typeof hoveration == 'number') {
+                node._hoveration = hoveration;
+            }
+            if (typeof width == 'number') {
+                node._hoverwidth = width
+            }
+            node.addEventListener('mouseenter', ui.click.mouseenter);
+            node.addEventListener('mouseleave', ui.click.mouseleave);
+            node.addEventListener('mousedown', ui.click.mousedown);
+            node.addEventListener('mousemove', ui.click.mousemove);
+            return node;
+        },
         /**
          * 设置滚轮
          * 为节点监听滚动事件
@@ -6830,12 +6849,12 @@
          * @param {!HTMLElement} node 要监听滚动事件的节点
          * @returns {!HTMLElement}
          */
-		setScroll:function(node){
-			node.ontouchstart=ui.click.touchStart;
-			node.ontouchmove=ui.click.touchScroll;
-			node.style.WebkitOverflowScrolling='touch';
-			return node;
-		},
+        setScroll: function (node) {
+            node.ontouchstart = ui.click.touchStart;
+            node.ontouchmove = ui.click.touchScroll;
+            node.style.WebkitOverflowScrolling = 'touch';
+            return node;
+        },
         /**
          * 设置鼠标滚轮（用于切换皮肤菜单）
          * 为节点监听鼠标滚轮事件
@@ -6843,9 +6862,9 @@
          * @param {!HTMLElement} node 要监听鼠标滚轮事件的节点
          * @returns {!HTMLElement}
          */
-		setMousewheel:function(node){
-			if(lib.config.mousewheel) node.onmousewheel=ui.click.mousewheel;
-		},
+        setMousewheel: function (node) {
+            if (lib.config.mousewheel) node.onmousewheel = ui.click.mousewheel;
+        },
         /**
          * 设置长按
          * 监听长按事件
@@ -6853,10 +6872,10 @@
          * @param {?function} func 回调事件
          * @returns {!HTMLElement}
          */
-		setLongPress:function(node,func){
-			node.addEventListener('touchstart',ui.click.longpressdown);
-			node.addEventListener('touchend',ui.click.longpresscancel);
-			node._longpresscallback=func;
+        setLongPress: function (node, func) {
+            node.addEventListener('touchstart', ui.click.longpressdown);
+            node.addEventListener('touchend', ui.click.longpresscancel);
+            node._longpresscallback = func;
             return node;
         },
         /**
@@ -6947,17 +6966,17 @@
                 //如果是从PC端（node.js）载入，额外需要`__dirname`的各级文件夹首字母来拼接
                 //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'`
                 //BUG: [PC win10] 路径使用`\`时，只获取了盘符
-				if(typeof __dirname==='string'&&__dirname.length){
-					var dirsplit=__dirname.split('/');
-					for(var i=0;i<dirsplit.length;i++){
-						if(dirsplit[i]){
-							var c=dirsplit[i][0];
-							lib.configprefix+=/[A-Z]|[a-z]/.test(c)?c:'_';
-						}
-					}
-					lib.configprefix+='_';
-				}
-                window.resetGameTimeout=setTimeout(lib.init.reset,parseInt(localStorage.getItem(lib.configprefix+'loadtime'))||5000);
+                if (typeof __dirname === 'string' && __dirname.length) {
+                    var dirsplit = __dirname.split('/');
+                    for (var i = 0; i < dirsplit.length; i++) {
+                        if (dirsplit[i]) {
+                            var c = dirsplit[i][0];
+                            lib.configprefix += /[A-Z]|[a-z]/.test(c) ? c : '_';
+                        }
+                    }
+                    lib.configprefix += '_';
+                }
+                window.resetGameTimeout = setTimeout(lib.init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 5000);
                 //part: `cordovaLoadTimeout`的创建，在 ../app/redirect.js
                 if (window.cordovaLoadTimeout) {
                     clearTimeout(window.cordovaLoadTimeout);
@@ -7265,41 +7284,41 @@
                 HTMLDivElement.prototype.setBackgroundImage = function (img) {
                     this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
                 },
-                /**
-                 * {@link HTMLDivElement#listen|listen}（click）的回调函数
-                 * @callback HTMLDivElement#listen~listenCallback
-                 * @param {(MouseEvent|TouchEvent)} e - 触发事件
-                 */
-                /**
-                 * 监听点击事件
-                 * @function HTMLDivElement#listen
-                 * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.listen = function (func) {
-                    if (lib.config.touchscreen) {
-                        this.addEventListener('touchend', function (e) {
-                            console.log('listen touchend')
-                            if (!_status.dragged) {
-                                func.call(this, e);
+                    /**
+                     * {@link HTMLDivElement#listen|listen}（click）的回调函数
+                     * @callback HTMLDivElement#listen~listenCallback
+                     * @param {(MouseEvent|TouchEvent)} e - 触发事件
+                     */
+                    /**
+                     * 监听点击事件
+                     * @function HTMLDivElement#listen
+                     * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.listen = function (func) {
+                        if (lib.config.touchscreen) {
+                            this.addEventListener('touchend', function (e) {
+                                console.log('listen touchend')
+                                if (!_status.dragged) {
+                                    func.call(this, e);
+                                }
+                            });
+                            var fallback = function (e) {
+                                console.log('listen fallback:')
+                                if (!_status.touchconfirmed) {
+                                    func.call(this, e);
+                                }
+                                else {
+                                    this.removeEventListener('click', fallback);
+                                }
                             }
-                        });
-                        var fallback = function (e) {
-                            console.log('listen fallback:')
-                            if (!_status.touchconfirmed) {
-                                func.call(this, e);
-                            }
-                            else {
-                                this.removeEventListener('click', fallback);
-                            }
+                            this.addEventListener('click', fallback);
                         }
-                        this.addEventListener('click', fallback);
-                    }
-                    else {
-                        this.addEventListener('click', func);
-                    }
-                    return this;
-                };
+                        else {
+                            this.addEventListener('click', func);
+                        }
+                        return this;
+                    };
                 /**
                  * @callback HTMLDivElement#listenTransition~callback
                  * @see {@link HTMLDivElement#listenTransition}
@@ -8004,7 +8023,7 @@
                                 if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
                                     game.saveConfig('phonelayout', true);
                                 }
-                                
+
                                 game.reload();
                             }
                         }
@@ -8268,7 +8287,7 @@
                     lib.init.cordovaReady = function () {
                         if (lib.device == 'android') {
                             document.addEventListener("pause", function () {
-                                if (!_status.paused2 && !_status.event.isMine()) {
+                                if (!_status.paused2 && (typeof _status.event.isMine == 'function' && !_status.event.isMine())) {
                                     ui.click.pause();
                                 }
                                 if (ui.backgroundMusic) {
@@ -8718,11 +8737,11 @@
              * 在游戏初始载入过程中超时的回调函数，发出弹窗询问是否重置（重启）游戏。
              * @function
              */
-             reset:function(){
-				console.log(lib,navigator.notification,lib.device)
-				if(window.inSplash) return;
-				if(window.resetExtension){
-					if(confirm('游戏似乎未正常载入，是否禁用扩展并重新打开？')){
+            reset: function () {
+                console.log(lib, navigator.notification, lib.device)
+                if (window.inSplash) return;
+                if (window.resetExtension) {
+                    if (confirm('游戏似乎未正常载入，是否禁用扩展并重新打开？')) {
                         window.resetExtension();
                         window.location.reload();
                     }
@@ -10345,49 +10364,49 @@
                     target.$equip(cards[i]);
                 }
             },
-			c:function(){
-				(function(){
-					var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0,k=0,l=0,m=0;
-					var sa=0,sb=0,sc=0,sd=0,se=0,sf=0,sg=0,sh=0,si=0,sj=0,sk=0,sl=0,sm=0;
-					for(var i in lib.character){
-						switch(lib.character[i][1]){
-							case 'wei':a++;if(lib.config.banned.contains(i)) sa++;break;
-							case 'shu':b++;if(lib.config.banned.contains(i)) sb++;break;
-							case 'wu':c++;if(lib.config.banned.contains(i)) sc++;break;
-							case 'qun':d++;if(lib.config.banned.contains(i)) sd++;break;
-							case 'western':e++;if(lib.config.banned.contains(i)) se++;break;
-							case 'key':f++;if(lib.config.banned.contains(i)) sf++;break;
-							case 'holo':g++;if(lib.config.banned.contains(i)) sg++;break;
-							case 'nijisanji':h++;if(lib.config.banned.contains(i)) sh++;break;
-							case 'VirtuaReal':i++;if(lib.config.banned.contains(i)) si++;break;
-							case 'HappyElements':i++;if(lib.config.banned.contains(i)) si++;break;
-							case 'upd8':j++;if(lib.config.banned.contains(i)) sj++;break;
-							case 'dotlive':k++;if(lib.config.banned.contains(i)) sk++;break;
-							case 'eilene':l++;if(lib.config.banned.contains(i)) sl++;break;
-							case 'paryi':m++;if(lib.config.banned.contains(i)) sm++;break;
-							case 'kagura':n++;if(lib.config.banned.contains(i)) sn++;break;
-							case 'nanashi':o++;if(lib.config.banned.contains(i)) so++;break;
-							case 'psp':p++;if(lib.config.banned.contains(i)) sp++;break;
-							case 'asoul':q++;if(lib.config.banned.contains(i)) sq++;break;
-							case 'nori':r++;if(lib.config.banned.contains(i)) sr++;break;
-							case 'vwp':s++;if(lib.config.banned.contains(i)) ss++;break;
-							case 'vshojo':t++;if(lib.config.banned.contains(i)) st++;break;
-							case 'xuyan':u++;if(lib.config.banned.contains(i)) su++;break;
-							case 'chaos':v++;if(lib.config.banned.contains(i)) sv++;break;
-							case 'xuefeng':w++;if(lib.config.banned.contains(i)) sw++;break;
-						}
-					}
-					console.log('魏：'+(a-sa)+'/'+a);
-					console.log('蜀：'+(b-sb)+'/'+b);
-					console.log('吴：'+(c-sc)+'/'+c);
-					console.log('群：'+(d-sd)+'/'+d);
-					console.log('西：'+(e-se)+'/'+e);
-					console.log('键：'+(f-sf)+'/'+f);
-					console.log('杏：'+(g-sg)+'/'+g);
-					console.log('虹：'+(h-sh)+'/'+h);
-					console.log('U：'+(j-sj)+'/'+j);
-					console.log('点：'+(k-sk)+'/'+k);
-					console.log('已启用：'+((a+b+c+d+e+f+g+h+i+j+k+l+m)-(sa+sb+sc+sd+se+sf+sg+sh+hi+sj+sk+sl+sm))+'/'+(a+b+c+d+e+f+g+h+i+j+k+l+m));
+            c: function () {
+                (function () {
+                    var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
+                    var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
+                    for (var i in lib.character) {
+                        switch (lib.character[i][1]) {
+                            case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
+                            case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
+                            case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
+                            case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
+                            case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
+                            case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
+                            case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
+                            case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
+                            case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
+                            case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
+                            case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
+                            case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
+                            case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
+                            case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
+                            case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
+                            case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
+                            case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
+                            case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
+                            case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
+                            case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
+                            case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
+                            case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
+                            case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
+                            case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
+                        }
+                    }
+                    console.log('魏：' + (a - sa) + '/' + a);
+                    console.log('蜀：' + (b - sb) + '/' + b);
+                    console.log('吴：' + (c - sc) + '/' + c);
+                    console.log('群：' + (d - sd) + '/' + d);
+                    console.log('西：' + (e - se) + '/' + e);
+                    console.log('键：' + (f - sf) + '/' + f);
+                    console.log('杏：' + (g - sg) + '/' + g);
+                    console.log('虹：' + (h - sh) + '/' + h);
+                    console.log('U：' + (j - sj) + '/' + j);
+                    console.log('点：' + (k - sk) + '/' + k);
+                    console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
                 }());
                 (function () {
                     var a = 0, b = 0, c = 0, d = 0;
@@ -10876,155 +10895,181 @@
             vtuber2: '企业联合',
             clubs2: '社团联合',
 
-            wei:'魏',
-            shu:'蜀',
-            wu:'吴',
-            qun:'群',
-            shen:'皇',
-            western:'西',
-            key:'N',
-            holo:'杏',
-            dotlive:'点',
-            nijisanji:'虹',
-            VirtuaReal:'维阿',
-            HappyElements:'乐',
-            upd8:'U',
-            eilene:'艾琳',
-            paryi:'帕',
-            kagura:'神楽',
-            nanashi:'774',
-            psp:'P',
-            asoul:'魂',
-            nori:'苔',
-            vwp:'神椿',
-            vshojo:'V',
-            xuyan:'虚',
-            chaos:'C',
-            xuefeng:'雪',
-            double:'多',
-            wei2:'魏国',
-            shu2:'蜀国',
-            wu2:'吴国',
-            qun2:'群雄',
-            shen2:'特典',
-            western2:'西方',
-            key2:'KEY',
-            holo2:'Hololive',
-            upd82:'Upd8',
-            dotlive2:'.live',
-            nijisanji2:'Nijisanji',
-            VirtuaReal2:'VirtuaReal',
-            HappyElements2:'乐元素',
-            eilene2:'艾琳一家',
-            paryi2:'帕里坡',
-            kagura2:'神楽组',
-            nanashi2:'774inc',
-            psp2:'psplive',
-            asoul2:'A_SOUL',
-            nori2:'Noripro',
-            vwp2:'神椿市',
-            vshojo2:'Vshojo',
-            xuyan2:'虚研社',
-            chaos2:'ChaosLive',
-            xuefeng2:'雪风军团',
-            double2:'多势力',
-            male:'男',
-            female:'女',
-            mad:'混乱',
-            mad_bg:'疯',
+            wei: '魏',
+            shu: '蜀',
+            wu: '吴',
+            qun: '群',
+            shen: '皇',
+            western: '西',
+            key: 'N',
+            holo: '杏',
+            dotlive: '点',
+            nijisanji: '虹',
+            VirtuaReal: '维阿',
+            HappyElements: '乐',
+            upd8: 'U',
+            eilene: '艾琳',
+            paryi: '帕',
+            kagura: '神楽',
+            nanashi: '774',
+            psp: 'P',
+            asoul: '魂',
+            nori: '苔',
+            vwp: '神椿',
+            vshojo: 'V',
+            xuyan: '虚',
+            chaos: 'C',
+            xuefeng: '雪',
+            double: '多',
+            wei2: '魏国',
+            shu2: '蜀国',
+            wu2: '吴国',
+            qun2: '群雄',
+            shen2: '特典',
+            western2: '西方',
+            key2: 'KEY',
+            holo2: 'Hololive',
+            upd82: 'Upd8',
+            dotlive2: '.live',
+            nijisanji2: 'Nijisanji',
+            VirtuaReal2: 'VirtuaReal',
+            HappyElements2: '乐元素',
+            eilene2: '艾琳一家',
+            paryi2: '帕里坡',
+            kagura2: '神楽组',
+            nanashi2: '774inc',
+            psp2: 'psplive',
+            asoul2: 'A_SOUL',
+            nori2: 'Noripro',
+            vwp2: '神椿市',
+            vshojo2: 'Vshojo',
+            xuyan2: '虚研社',
+            chaos2: 'ChaosLive',
+            xuefeng2: '雪风军团',
+            double2: '多势力',
+            male: '男',
+            female: '女',
+            mad: '混乱',
+            mad_bg: '疯',
 
-            hp:'体力',
+            hp: '体力',
 
-            draw_card:'摸牌',
-            discard_card:'弃牌',
-            take_damage:'受伤害',
-            reset_character:'复原武将牌',
-            recover_hp:'回复体力',
-            lose_hp:'流失体力',
-            get_damage:'受伤害',
-            weiColor:"#b0d0e2",
-            shuColor:"#ffddb9",
-            wuColor:"#b2d9a9",
-            qunColor:"#f6f6f6",
-            shenColor:"#ffe14c",
-            westernColor:"#ffe14c",
-            jinColor:"#ffe14c",
-            keyColor:"#c9b1fd",
-            holoColor:"#ffddb9",
-            nijisanjiColor:"#b0d0e2",
-            dotliveColor:"#b2d9a9",
-            upd8Color:"#ffe14c",
-            eileneColor:"#DB7093",
-            paryiColor:"#DDAAAF",
-            VirtuaRealColor:"#77aaee",
-            HappyElementsColor:"#60ACC8",
-            kaguraColor:"#55deef",
-            nanashiColor:"#e27b6b",
-            pspColor:"#4d3d11",
-            asoulColor:"#ffddcc",
-            noriColor:"#a8ddaa",
-            basic:'基本',
-            equip:'装备',
-            trick:'锦囊',
-            delay:'延时锦囊',
-            character:'角色',
-            revive:'复活',
-            equip1:'武器',
-            equip2:'防具',
-            equip3:'防御载具',
-            equip4:'攻击载具',
-            equip5:'宝物',
-            equip6:'坐骑',
-            zero:'零',
-            one:'一',
-            two:'二',
-            three:'三',
-            four:'四',
-            five:'五',
-            six:'六',
-            seven:'七',
-            eight:'八',
-            nine:'九',
-            ten:'十',
-            _chongzhu:'重铸',
-            _lianhuan:'连环',
-            _lianhuan2:'连环',
-            _kamisha:'神杀',
-            _oceansha:'海杀',
-            _icesha:'冰杀',
-            _yamisha:'暗杀',
-            _yamisha2:'暗影',
-            _shengjie:'升阶',
-            qianxing:'潜行',
-            mianyi:'免疫',
-            fengyin:'封印',
-            baiban:'白板',
-            _disableJudge:"判定区",
-            pileTop:'牌堆顶',
-            pileBottom:'牌堆底',
+            draw_card: '摸牌',
+            discard_card: '弃牌',
+            take_damage: '受伤害',
+            reset_character: '复原武将牌',
+            recover_hp: '回复体力',
+            lose_hp: '流失体力',
+            get_damage: '受伤害',
+            weiColor: "#b0d0e2",
+            shuColor: "#ffddb9",
+            wuColor: "#b2d9a9",
+            qunColor: "#f6f6f6",
+            shenColor: "#ffe14c",
+            westernColor: "#ffe14c",
+            jinColor: "#ffe14c",
+            keyColor: "#c9b1fd",
+            holoColor: "#ffddb9",
+            nijisanjiColor: "#b0d0e2",
+            dotliveColor: "#b2d9a9",
+            upd8Color: "#ffe14c",
+            eileneColor: "#DB7093",
+            paryiColor: "#DDAAAF",
+            VirtuaRealColor: "#77aaee",
+            HappyElementsColor: "#60ACC8",
+            kaguraColor: "#55deef",
+            nanashiColor: "#e27b6b",
+            pspColor: "#4d3d11",
+            asoulColor: "#ffddcc",
+            noriColor: "#a8ddaa",
+            basic: '基本',
+            equip: '装备',
+            trick: '锦囊',
+            delay: '延时锦囊',
+            character: '角色',
+            revive: '复活',
+            equip1: '武器',
+            equip2: '防具',
+            equip3: '防御载具',
+            equip4: '攻击载具',
+            equip5: '宝物',
+            equip6: '坐骑',
+            zero: '零',
+            one: '一',
+            two: '二',
+            three: '三',
+            four: '四',
+            five: '五',
+            six: '六',
+            seven: '七',
+            eight: '八',
+            nine: '九',
+            ten: '十',
+            _chongzhu: '重铸',
+            _lianhuan: '连环',
+            _lianhuan2: '连环',
+            _kamisha: '神杀',
+            _oceansha: '海杀',
+            _icesha: '冰杀',
+            _yamisha: '暗杀',
+            _yamisha2: '暗影',
+            _shengjie: '升阶',
+            qianxing: '潜行',
+            mianyi: '免疫',
+            fengyin: '封印',
+            baiban: '白板',
+            _disableJudge: "判定区",
+            pileTop: '牌堆顶',
+            pileBottom: '牌堆底',
 
-            xiaowu_emotion:'小无表情',
-            guojia_emotion:'郭嘉表情',
-            zhenji_emotion:'甄姬表情',
-            shibing_emotion:'士兵表情',
-            xiaosha_emotion:'小杀表情',
-            xiaotao_emotion:'小桃表情',
-            xiaojiu_emotion:'小酒表情',
-            Diana_emotion:'嘉然表情',
+            xiaowu_emotion: '小无表情',
+            guojia_emotion: '郭嘉表情',
+            zhenji_emotion: '甄姬表情',
+            shibing_emotion: '士兵表情',
+            xiaosha_emotion: '小杀表情',
+            xiaotao_emotion: '小桃表情',
+            xiaojiu_emotion: '小酒表情',
+            Diana_emotion: '嘉然表情',
 
-            pause:'暂停',
-            config:'选项',
-            auto:'托管',
+            pause: '暂停',
+            config: '选项',
+            auto: '托管',
 
-            unknown:'未知',
-            unknown0:'一号位',
-            unknown1:'二号位',
-            unknown2:'三号位',
-            unknown3:'四号位',
-            unknown4:'五号位',
-            unknown5:'六号位',
-            unknown6:'七号位',
-            unknown7:'八号位',
+            unknown: '未知',
+            unknown0: '一号位',
+            unknown1: '二号位',
+            unknown2: '三号位',
+            unknown3: '四号位',
+            unknown4: '五号位',
+            unknown5: '六号位',
+            unknown6: '七号位',
+            unknown7: '八号位',
+
+            feichu_equip1: "已废除",
+            feichu_equip1_info: "武器栏已废除",
+            feichu_equip2: "已废除",
+            feichu_equip2_info: "防具栏已废除",
+            feichu_equip3: "已废除",
+            feichu_equip3_info: "防御坐骑栏已废除",
+            feichu_equip4: "已废除",
+            feichu_equip4_info: "攻击坐骑栏已废除",
+            feichu_equip5: "已废除",
+            feichu_equip5_info: "宝物栏已废除",
+            feichu_equip1_bg: "废",
+            feichu_equip2_bg: "废",
+            feichu_equip3_bg: "废",
+            feichu_equip4_bg: "废",
+            feichu_equip5_bg: "废",
+            disable_judge: '已废除',
+            disable_judge_info: '判定区已废除',
+            disable_judge_bg: '废',
+            pss: '手势',
+            pss_paper: '布',
+            pss_scissor: '剪刀',
+            pss_stone: '石头',
+            pss_paper_info: '石头剪刀布时的一种手势。克制石头，但被剪刀克制。',
+            pss_scissor_info: '石头剪刀布时的一种手势。克制布，但被石头克制。',
+            pss_stone_info: '石头剪刀布时的一种手势。克制剪刀，但被布克制。',
         },
         /**
          * 游戏基础对象和状态机
@@ -11036,21 +11081,21 @@
              * 状态机
              * @namespace
              */
-			content:{
-				resetRound:function(){
-					var skill = event.resetSkill||event.name.slice(0,event.name.indexOf('_roundcount'));
-					if(!player||!lib.skill[skill])	return;
-					var roundname = skill+'_roundcount';
-					if(player.storage[roundname]>0){
-						player.storage[roundname]--
-					}
-					if(player.storage[roundname]>0){
-						player.updateMarks();
-					}
-					else{
-						player.unmarkSkill(roundname);
-					}
-				},
+            content: {
+                resetRound: function () {
+                    var skill = event.resetSkill || event.name.slice(0, event.name.indexOf('_roundcount'));
+                    if (!player || !lib.skill[skill]) return;
+                    var roundname = skill + '_roundcount';
+                    if (player.storage[roundname] > 0) {
+                        player.storage[roundname]--
+                    }
+                    if (player.storage[roundname] > 0) {
+                        player.updateMarks();
+                    }
+                    else {
+                        player.unmarkSkill(roundname);
+                    }
+                },
                 //崭新出炉
                 chooseShengjie: function () {
                     'step 0'
@@ -11065,9 +11110,10 @@
                     'step 1'
                     var next = player.chooseButton([event.prompt, [event.list, 'vcard'], '素材区', [event.materials, 'card'], 'hidden'], event.forced);
                     next.set('filterButton', function (button) {
+                        var ub = ui.selected.buttons;
                         if (get.itemtype(button.link) == 'card') {
-                            if (!ui.selected.buttons.length) return false;
-                            var ub = ui.selected.buttons;
+                            if (!ub.length) return false;
+                            var card = button.link;
                             var scards = ub.slice(1).map(function (scard) {
                                 return scard.link;
                             });
@@ -11080,40 +11126,77 @@
                             if (Array.isArray(filter)) {
                                 if (filter.length > scards.length) {
                                     var mate = filter.slice(0);
+                                    var smate = [];
                                     for (var j = 0; j < mate.length; j++) {
                                         for (var k of scards) {
-                                            if (typeof mate[j] == 'string') {
-                                                if (mate[j] == get.name(k)) mate.splice(j--, 1);
-                                            }
-                                            else if (typeof mate[j] == 'object') {
-                                                for (x in mate[j]) {
-                                                    var value;
-                                                    if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
-                                                        value = get[x](k);
-                                                    }
-                                                    else {
-                                                        value = k[x];
-                                                    }
-                                                    if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
-                                                        (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
-                                                        mate.splice(j--, 1);
+                                            if (!smate.contains(k)) {
+                                                var check = false;
+                                                if (typeof mate[j] == 'string') {
+                                                    if (mate[j] == get.name(k)) check = true;
+                                                }
+                                                else if (typeof mate[j] == 'object') {
+                                                    for (x in mate[j]) {
+                                                        var value;
+                                                        if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
+                                                            value = get[x](k);
+                                                        }
+                                                        else {
+                                                            value = k[x];
+                                                        }
+                                                        if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
+                                                            (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
+                                                            check = true;
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            else if (typeof mate[j] == 'function') {
-                                                if (mate[j](k)) {
+                                                else if (typeof mate[j] == 'function') {
+                                                    if (mate[j](k)) {
+                                                        check = true;
+                                                    }
+                                                }
+                                                if (check) {
+                                                    smate.push(k)
                                                     mate.splice(j--, 1);
                                                 }
                                             }
                                         }
                                     }
-                                    if (mate.contains(get.name(button.link))) return true;
+                                    for (var j = 0; j < mate.length; j++) {
+                                        var check = false;
+                                        if (typeof mate[j] == 'string') {
+                                            if (mate[j] == get.name(card)) check = true;
+                                        }
+                                        else if (typeof mate[j] == 'object') {
+                                            for (x in mate[j]) {
+                                                var value;
+                                                if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
+                                                    value = get[x](card);
+                                                }
+                                                else {
+                                                    value = card[x];
+                                                }
+                                                if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
+                                                    (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
+                                                    check = true;
+                                                }
+                                            }
+                                        }
+                                        else if (typeof mate[j] == 'function') {
+                                            if (mate[j](card)) {
+                                                check = true;
+                                            }
+                                        }
+                                        if (check) {
+                                            return true
+                                        }
+                                    }
+
                                 }
                                 return false;
                             }
                             return true;
                         }
-                        if (ui.selected.buttons.length) return false;
+                        if (ub.length) return false;
                         return true;
                     });
                     next.set('selectButton', function () {
@@ -11165,7 +11248,6 @@
                     if (result.bool) {
                         var cards = result.links.slice(1);
                         var star = game.createCard2(result.links[0][2], 'spade', 14);
-                        player.gain(star, 'gain2').gaintag.add('_shengjie');
                         event.result = {
                             bool: true,
                             cards: cards,
@@ -12311,9 +12393,9 @@
                             else if (typeof info.prompt2 == 'string') {
                                 next.set('prompt2', info.prompt2);
                             }
-							else if(info.prompt2!=false){
-								if(lib.dynamicTranslate[event.skill]||lib.translate[event.skill+'_info'])
-								next.set('prompt2',get.skillInfoTranslation(event.skill,player));
+                            else if (info.prompt2 != false) {
+                                if (lib.dynamicTranslate[event.skill] || lib.translate[event.skill + '_info'])
+                                    next.set('prompt2', get.skillInfoTranslation(event.skill, player));
                             }
                             if (trigger.skillwarn) {
                                 if (next.prompt2) {
@@ -12324,12 +12406,12 @@
                                 }
                             }
 
-							if(info.addDialog){
-								var createDialog = [str,'small'];
-								if(next.prompt2)	createDialog.push(next.prompt2);
-								createDialog.push(info.addDialog(trigger,player));
-								next.set('createDialog',createDialog);
-							}
+                            if (info.addDialog) {
+                                var createDialog = [str, 'small'];
+                                if (next.prompt2) createDialog.push(next.prompt2);
+                                createDialog.push(info.addDialog(trigger, player));
+                                next.set('createDialog', createDialog);
+                            }
                         }
                     }
                     "step 2"
@@ -12891,21 +12973,21 @@
                             info.onChooseToUse(event);
                         }
                     }
-					_status.noclearcountdown=true;
-					if(event.type=='phase'){
-						if(event.isMine()){
-							if(lib.config.mode=='richer'&&lib.skill._chessmove.filter(true,player)&&player.getStat().skill&&!player.getStat().skill._chessmove){
-								event.endButton=ui.create.control('请进行移动','stayleft',function(){});
-							}
-							else{
-								event.endButton=ui.create.control('结束回合','stayleft',function(){
-									if(_status.event.skill){
+                    _status.noclearcountdown = true;
+                    if (event.type == 'phase') {
+                        if (event.isMine()) {
+                            if (lib.config.mode == 'richer' && lib.skill._chessmove.filter(true, player) && player.getStat().skill && !player.getStat().skill._chessmove) {
+                                event.endButton = ui.create.control('请进行移动', 'stayleft', function () { });
+                            }
+                            else {
+                                event.endButton = ui.create.control('结束回合', 'stayleft', function () {
+                                    if (_status.event.skill) {
+                                        ui.click.cancel();
+                                    }
                                     ui.click.cancel();
-                                }
-                                ui.click.cancel();
-                            });
-							}
-							event.fakeforce=true;
+                                });
+                            }
+                            event.fakeforce = true;
                         }
                         else {
                             if (event.endButton) {
@@ -16581,6 +16663,10 @@
                 lose: function () {
                     "step 0"
                     var evt = event.getParent();
+                    if (evt.name != 'discard' && event.type != 'discard') {
+                        event.delay = false;
+                        return;
+                    }
                     if (evt.name != 'discard' && event.type != 'discard') return;
                     if (evt.delay === false) event.delay = false;
                     if (evt.animate != false) {
@@ -18545,9 +18631,9 @@
                     this.node.intro.innerHTML = lib.config.intro;
                     this.node.name.dataset.nature = get.groupnature(this.group);
                     lib.setIntro(this);
-					if(get.slimName2)	this.node.name.innerHTML=get.slimName2(this);
-					else	this.node.name.innerHTML=get.slimName(character);
-					if(this.classList.contains('minskin')&&this.node.name.querySelectorAll('br').length>=4){
+                    if (get.slimName2) this.node.name.innerHTML = get.slimName2(this);
+                    else this.node.name.innerHTML = get.slimName(character);
+                    if (this.classList.contains('minskin') && this.node.name.querySelectorAll('br').length >= 4) {
                         this.node.name.classList.add('long');
                     }
                     if (info[4].contains('hiddenSkill')) {
@@ -21390,7 +21476,7 @@
                             this.ai.tempIgnore.add(next.targets[i]);
                         }
                     }
-                    if (typeof this.logAi == 'function' && !next.noai) {
+                    if (typeof this.logAi == 'function' && !next.noai && !get.info(next.card).noai) {
                         var postAi = get.info(next.card).postAi;
                         if (postAi && postAi(next.targets)) {
                             next.postAi = true;
@@ -28137,6 +28223,41 @@
         //??
         card: {
             list: [],
+            //石头剪刀布
+            pss_paper: {
+                type: 'pss',
+                fullskin: true,
+            },
+            pss_scissor: {
+                type: 'pss',
+                fullskin: true,
+            },
+            pss_stone: {
+                type: 'pss',
+                fullskin: true,
+            },
+            //区域废弃标志
+            feichu_equip1: {
+                type: "equip",
+                subtype: "equip1",
+            },
+            feichu_equip2: {
+                type: "equip",
+                subtype: "equip2",
+            },
+            feichu_equip3: {
+                type: "equip",
+                subtype: "equip3",
+            },
+            feichu_equip4: {
+                type: "equip",
+                subtype: "equip4",
+            },
+            feichu_equip5: {
+                type: "equip",
+                subtype: "equip5",
+            },
+            disable_judge: {},
         },
         /**
          * 用于简单筛选的回调函数组
@@ -28582,21 +28703,21 @@
                     if (group) return group[0];
                     return lib.character[name][1];
                 }
-				var groupSort=function(name){
-					if(!lib.character[name]) return 50;
-					var group=getGroup(name);
-					if(group=='shen') return -1;
-					var list = [
-						'wei','shu','wu','qun','jin','western','key',
-						'holo','nijisanji','VirtuaReal','HappyElements',
-						'dotlive','upd8','nanashi','psp','asoul','nori','xuyan','xuefeng',
-						'eilene','paryi','kagura','vshojo','chaos'
+                var groupSort = function (name) {
+                    if (!lib.character[name]) return 50;
+                    var group = getGroup(name);
+                    if (group == 'shen') return -1;
+                    var list = [
+                        'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
+                        'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
+                        'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                        'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
 
-					];
-					if(list.contains(group))	return list.indexOf(group);
-					if(group=='vtuber') return 40;
-					if(group=='clubs') return 41;
-					return 49;
+                    ];
+                    if (list.contains(group)) return list.indexOf(group);
+                    if (group == 'vtuber') return 40;
+                    if (group == 'clubs') return 41;
+                    return 49;
                 }
                 var del = groupSort(a) - groupSort(b);
                 if (del != 0) return del;
@@ -28703,9 +28824,6 @@
                 filter: function (event, player) {
                     return player.canShengjie(player.getCards('h'));
                 },
-                check: function (card) {
-                    return 1;
-                },
                 content: function () {
                     'step 0'
                     player.chooseShengjie(player.getCards('h'));
@@ -28714,6 +28832,21 @@
                         player.lose(result.cards, ui.discardPile, 'visible');
                         player.$throw(result.cards);
                         game.log(player, '将', result.cards, '置入了弃牌堆');
+                        event.star = result.star;
+                    }
+                    if (!result.bool) {
+                        var skill = player.getStat().skill;
+                        skill._shengjie--;
+                        if (typeof skill._shengjietried == 'number') {
+                            skill._shengjietried++;
+                        }
+                        else {
+                            skill._shengjietried = 1;
+                        }
+                    }
+                    'step 2'
+                    if (event.star) {
+                        player.gain(event.star, 'gain2').gaintag.add('_shengjie');
                     }
                 },
                 ai: {
@@ -28721,8 +28854,13 @@
                         order: 6
                     },
                     result: {
-                        player: 1,
-                    },
+                        player: function (player) {
+                            if (player.getStat().skill._shengjietried >= 10) {
+                                return 0;
+                            }
+                            return 0;
+                        }
+                    }
                 }
             },
             //搬过来的应变
@@ -29653,9 +29791,11 @@
                 popup: false,
                 firstDo: true,
                 content: function () {
-                    // for(var i=0;i<game.players.length;i++){
-                    // 	game.players[i].in();
-                    // }
+                    'step 0'
+                    if ((player == _status.roundStart || _status.roundSkipped) && !trigger.skill) {
+                        event.trigger('roundEnd');
+                    }
+                    'step 1'
                     if (player.isTurnedOver()) {
                         trigger.cancel();
                         player.turnOver();
@@ -29664,6 +29804,7 @@
                     else {
                         player.phaseSkipped = false;
                     }
+                    'step 2'
                     if ((player == _status.roundStart || _status.roundSkipped) && !trigger.skill) {
                         delete _status.roundSkipped;
                         game.roundNumber++;
@@ -31069,54 +31210,54 @@
          * 卡牌属性
          * @type {('fire'|'thunder'|'poison'|'ocean'|'ice'|'kami'|'yami')}
          */
-         nature:['fire','thunder','poison','ocean','ice','kami','yami'],
+        nature: ['fire', 'thunder', 'poison', 'ocean', 'ice', 'kami', 'yami'],
         /**
          * 铁索属性 - TODO
          * @type {string}
          */
-         linked:['fire','thunder','ocean','ice','kami','yami'],
+        linked: ['fire', 'thunder', 'ocean', 'ice', 'kami', 'yami'],
         /**
          * 势力对应属性
          * @constant
          */
-         groupnature:{
-			shen:'thunder',
-			wei:'water',
-			shu:'soil',
-			wu:'wood',
-			qun:'metal',
-			western:'thunder',
-			key:'key',
-			jin:'thunder',
-			ye:'thunder',
-			holo:'soil',
-			upd8:'metal',
-			dotlive:'wood',
-			nijisanji:'water',
-			VirtuaReal:'ocean',
-			HappyElements:'ocean',
-			eilene:'thunder',
-			paryi:'ice',
-			kagura:'ocean',
-			nanashi:'wood',
-			psp:'fire',
-			asoul:'fire',
-			nori:'key',
-			vwp:'key',
-			vshojo:'metal',
-			xuyan:'ice',
-			chaos:'ocean',
-			xuefeng:'ocean',
-			
-			vtuber:'metal',
-			clubs:'ice',
-		},
+        groupnature: {
+            shen: 'thunder',
+            wei: 'water',
+            shu: 'soil',
+            wu: 'wood',
+            qun: 'metal',
+            western: 'thunder',
+            key: 'key',
+            jin: 'thunder',
+            ye: 'thunder',
+            holo: 'soil',
+            upd8: 'metal',
+            dotlive: 'wood',
+            nijisanji: 'water',
+            VirtuaReal: 'ocean',
+            HappyElements: 'ocean',
+            eilene: 'thunder',
+            paryi: 'ice',
+            kagura: 'ocean',
+            nanashi: 'wood',
+            psp: 'fire',
+            asoul: 'fire',
+            nori: 'key',
+            vwp: 'key',
+            vshojo: 'metal',
+            xuyan: 'ice',
+            chaos: 'ocean',
+            xuefeng: 'ocean',
+
+            vtuber: 'metal',
+            clubs: 'ice',
+        },
         /**
          * 游戏阶段
          * 
          * @type {string}
          */
-         phaseName:['phaseZhunbei','phaseJudge','phaseDraw','phaseUse','phaseDiscard','phaseJieshu'],
+        phaseName: ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'],
         /**
          * 快捷语音 - TODO
          * @type {string}
@@ -31146,7 +31287,7 @@
             '哥哥，交个朋友吧',
             '妹子，交个朋友吧',
         ],
-    
+
     };
     /**
      * 游戏内核
@@ -31155,7 +31296,7 @@
      * @global
      */
     var game = /**@lends game */ {
-		//galgame相关功能
+        //galgame相关功能
         galgameMod: function () {
             var galgame = { text: {}, game: game };
             var gal0 = function () {
@@ -31237,8 +31378,8 @@
                                     booth[arr[6]].style.height = parseInt(arr[3]) + "px";
                                     booth[arr[6]].style.left = parseInt(arr[4]) + "%";
                                     booth[arr[6]].style.top = parseInt(arr[5]) + "%";
-									booth[arr[6]].setBackgroundImage('extension/' + arr[1]);
-									// booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
+                                    booth[arr[6]].setBackgroundImage('extension/' + arr[1]);
+                                    // booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
                                 }
                             } else {
                                 if (arr[1] == "none") {
@@ -31249,9 +31390,9 @@
                                     booth.node.style.height = parseInt(arr[3]) + "px";
                                     booth.node.style.left = parseInt(arr[4]) + "%";
                                     booth.node.style.top = parseInt(arr[5]) + "%";
-									console.log(arr[1])
-									booth.node.setBackgroundImage('extension/' + arr[1]);
-									// booth.node.setBackgroundImage('galgame/' + arr[1]);
+                                    console.log(arr[1])
+                                    booth.node.setBackgroundImage('extension/' + arr[1]);
+                                    // booth.node.setBackgroundImage('galgame/' + arr[1]);
                                 }
                             }
                             num++;
@@ -31489,14 +31630,14 @@
             }
             return next;
         },
-		//获取（角色名）的评级
-		getRarity:function(name){
-			var rank=lib.rank.rarity;
-			if(rank.beginner.contains(name)) return 'beginner';
-			if(rank.legend.contains(name)) return 'legend';
-			if(rank.epic.contains(name)) return 'epic';
-			if(rank.rare.contains(name)) return 'rare';
-			if(get.mode()!='chess'&&rank.junk.contains(name)) return 'junk';
+        //获取（角色名）的评级
+        getRarity: function (name) {
+            var rank = lib.rank.rarity;
+            if (rank.beginner.contains(name)) return 'beginner';
+            if (rank.legend.contains(name)) return 'legend';
+            if (rank.epic.contains(name)) return 'epic';
+            if (rank.rare.contains(name)) return 'rare';
+            if (get.mode() != 'chess' && rank.junk.contains(name)) return 'junk';
             return 'common';
         },
         getGlobalHistory: function (key, filter) {
@@ -34850,7 +34991,7 @@
              * 创建事件，见{@link game.createEvent}
              * @namespace GameCores.Bases.Event
              */
-            var next = 
+            var next =
             /**@lends GameCores.Bases.Event */
             {
                 /**
@@ -35177,10 +35318,10 @@
                 lib.hook.globalskill[i].remove(skill);
             }
         },
-		//将清除武将牌上的临时技能
-		resetSkills:function(){
-			for(var i=0;i<game.players.length;i++){
-				for(var j in game.players[i].tempSkills){
+        //将清除武将牌上的临时技能
+        resetSkills: function () {
+            for (var i = 0; i < game.players.length; i++) {
+                for (var j in game.players[i].tempSkills) {
                     game.players[i].removeSkill(j);
                 }
                 var skills = game.players[i].getSkills();
@@ -36573,23 +36714,23 @@
                     game.expandSkills(skills2);
                     for (i = 0; i < skills2.length; i++) {
                         _status.event.skillBy = skills2[i];
-						info=get.info(skills2[i]);
-						enable=false;
-						if(typeof info.enable=='function') enable=info.enable(event);
-						else if(typeof info.enable=='object') enable=info.enable.contains(event.name);
-						else if(info.enable=='phaseUse') enable=(event.type=='phase');
-						else if(typeof info.enable=='string') enable=(info.enable==event.name);
-						if(enable){
-							if(!game.expandSkills(player.getSkills().concat(lib.skill.global)).contains(skills2[i])&&(info.noHidden||get.mode()!='guozhan'||player.hasSkillTag('nomingzhi',false,null,true))) enable=false;
-							if(info.filter&&!info.filter(event,player)) enable=false;
-							if(info.viewAs&&typeof info.viewAs!='function'&&event.filterCard&&!event.filterCard(info.viewAs,player,event)) enable=false;
-							if(info.viewAs&&typeof info.viewAs!='function'&&info.viewAsFilter&&info.viewAsFilter(player)==false) enable=false;
-							if(info.usable&&get.skillCount(skills2[i])>=info.usable) enable=false;
-							if(info.chooseButton&&_status.event.noButton) enable=false;
-							if(info.round&&(player.storage[_status.event.skillBy+'_roundcount']>0)) enable=false;
-						}
-						if(enable){
-							if(event.isMine()||!event._aiexclude.contains(skills2[i])){
+                        info = get.info(skills2[i]);
+                        enable = false;
+                        if (typeof info.enable == 'function') enable = info.enable(event);
+                        else if (typeof info.enable == 'object') enable = info.enable.contains(event.name);
+                        else if (info.enable == 'phaseUse') enable = (event.type == 'phase');
+                        else if (typeof info.enable == 'string') enable = (info.enable == event.name);
+                        if (enable) {
+                            if (!game.expandSkills(player.getSkills().concat(lib.skill.global)).contains(skills2[i]) && (info.noHidden || get.mode() != 'guozhan' || player.hasSkillTag('nomingzhi', false, null, true))) enable = false;
+                            if (info.filter && !info.filter(event, player)) enable = false;
+                            if (info.viewAs && typeof info.viewAs != 'function' && event.filterCard && !event.filterCard(info.viewAs, player, event)) enable = false;
+                            if (info.viewAs && typeof info.viewAs != 'function' && info.viewAsFilter && info.viewAsFilter(player) == false) enable = false;
+                            if (info.usable && get.skillCount(skills2[i]) >= info.usable) enable = false;
+                            if (info.chooseButton && _status.event.noButton) enable = false;
+                            if (info.round && (player.storage[_status.event.skillBy + '_roundcount'] > 0)) enable = false;
+                        }
+                        if (enable) {
+                            if (event.isMine() || !event._aiexclude.contains(skills2[i])) {
                                 skills.add(skills2[i]);
                             }
                             event._skillChoice.add(skills2[i]);
@@ -37939,11 +38080,11 @@
                                 return 0;
                             }
                         },
-							trigger:{global:'roundStart'},
-							forced:true,
-							popup:false,
-							silent:true,
-							content:lib.element.content.resetRound
+                        trigger: { global: 'roundStart' },
+                        forced: true,
+                        popup: false,
+                        silent: true,
+                        content: lib.element.content.resetRound
                     };
                 }(info.round, k));
                 lib.translate[k] = lib.translate[i] || '';
@@ -38061,13 +38202,13 @@
                 game.finishSkill(i);
             }
         },
-		//Mod类技能的相关检测
-		checkMod:function(){
-			var name=arguments[arguments.length-2];
-			var skills=arguments[arguments.length-1];
-			if(skills.getSkills){
-				if(name!='cardname') skills=skills.getSkills();
-				else skills=skills.getSkills(null,false);
+        //Mod类技能的相关检测
+        checkMod: function () {
+            var name = arguments[arguments.length - 2];
+            var skills = arguments[arguments.length - 1];
+            if (skills.getSkills) {
+                if (name != 'cardname') skills = skills.getSkills();
+                else skills = skills.getSkills(null, false);
             }
             skills = skills.concat(lib.skill.global);
             game.expandSkills(skills);
@@ -40142,6 +40283,11 @@
                                     init: false,
                                     connect: true
                                 };
+                                infoconfig.connect_protect_beginner = {
+                                    name: '保护新手模式',
+                                    init: true,
+                                    connect: true
+                                };
                                 infoconfig.connect_observe_race = {
                                     name: '比赛模式',
                                     init: false,
@@ -41498,20 +41644,20 @@
                             if (group) return group[0];
                             return lib.character[name][1];
                         };
-						var groupSort=function(name){
-							if(!lib.character[name]) return 50;
-							var group=getGroup(name);
-							var list = [
-								'wei','shu','wu','qun','jin','western','key',
-								'holo','nijisanji','VirtuaReal','HappyElements',
-								'dotlive','upd8','nanashi','psp','asoul','nori','xuyan','xuefeng',
-								'eilene','paryi','kagura','vshojo','chaos'
-		
-							];
-							if(list.contains(group))	return list.indexOf(group);
-							if(group=='vtuber') return 40;
-							if(group=='clubs') return 41;
-							return 49;
+                        var groupSort = function (name) {
+                            if (!lib.character[name]) return 50;
+                            var group = getGroup(name);
+                            var list = [
+                                'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
+                                'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
+                                'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                                'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
+
+                            ];
+                            if (list.contains(group)) return list.indexOf(group);
+                            if (group == 'vtuber') return 40;
+                            if (group == 'clubs') return 41;
+                            return 49;
                         }
                         list.sort(function (a, b) {
                             var del = groupSort(a) - groupSort(b);
@@ -46494,16 +46640,16 @@
                     }
                 }, true, true);
             },
-			groupControl:function(dialog){
-				return ui.create.control('qun',
-				'holo','nijisanji','dotlive','upd8','eilene','paryi','kagura','nori','vwp','nanashi',
-				'VirtuaReal','HappyElements','psp','asoul','xuyan','chaos','xuefeng',
-				'vshojo',function(link,node){//'wei','shu','wu','western','key',
-					if(link=='全部'){
-						dialog.currentcapt='';
-						dialog.currentgroup='';
-						for(var i=0;i<dialog.buttons.length;i++){
-							dialog.buttons[i].style.display='';
+            groupControl: function (dialog) {
+                return ui.create.control('qun',
+                    'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
+                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng',
+                    'vshojo', function (link, node) {//'wei','shu','wu','western','key',
+                        if (link == '全部') {
+                            dialog.currentcapt = '';
+                            dialog.currentgroup = '';
+                            for (var i = 0; i < dialog.buttons.length; i++) {
+                                dialog.buttons[i].style.display = '';
                             }
                         }
                         else {
@@ -46927,30 +47073,30 @@
                         node.appendChild(span);
                     }
                 }
-				if(!thisiscard){
-					var groups=['qun','holo','nijisanji','VirtuaReal','HappyElements','dotlive','upd8',
-					'eilene','paryi','kagura','nanashi','psp','asoul','nori','vwp','vshojo',
-					'xuyan','chaos','xuefeng'];//'wei','shu','wu','key',
-					if(get.mode()=='guozhan'||(get.mode()=='versus'&&_status.mode!='jiange')) groups=['holo','nijisanji','vtuber','clubs'];
-					var bool1=false;
-					var bool2=false;
-					var bool3=(get.mode()=='guozhan'&&_status.forceKey!=true&&get.config('onlyguozhan'));
-					var bool4=(get.mode()!='guozhan');
-					for(var i in lib.character){
-						if(lib.character[i][1]=='shen'){
-							bool1=true;
-						}
-						if(bool3||lib.character[i][1]=='key'){
-							bool2=true;
-						}
-						if(!bool4&&get.is.double(i)) bool4=true;
-						if(bool1&&bool2&&bool4) break;
-					}
-					if(bool1) groups.add('shen');
-					if(bool2&&!bool3) groups.add('key');
-					if(bool4&&get.mode()=='guozhan') groups.add('double');
-					var natures=['water','soil','wood','metal'];
-					var span=document.createElement('span');
+                if (!thisiscard) {
+                    var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
+                        'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp', 'vshojo',
+                        'xuyan', 'chaos', 'xuefeng'];//'wei','shu','wu','key',
+                    if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
+                    var bool1 = false;
+                    var bool2 = false;
+                    var bool3 = (get.mode() == 'guozhan' && _status.forceKey != true && get.config('onlyguozhan'));
+                    var bool4 = (get.mode() != 'guozhan');
+                    for (var i in lib.character) {
+                        if (lib.character[i][1] == 'shen') {
+                            bool1 = true;
+                        }
+                        if (bool3 || lib.character[i][1] == 'key') {
+                            bool2 = true;
+                        }
+                        if (!bool4 && get.is.double(i)) bool4 = true;
+                        if (bool1 && bool2 && bool4) break;
+                    }
+                    if (bool1) groups.add('shen');
+                    if (bool2 && !bool3) groups.add('key');
+                    if (bool4 && get.mode() == 'guozhan') groups.add('double');
+                    var natures = ['water', 'soil', 'wood', 'metal'];
+                    var span = document.createElement('span');
                     newlined.appendChild(span);
                     span.style.margin = '8px';
                     var clickGroup = function () {
@@ -47162,20 +47308,20 @@
                         if (group) return group[0];
                         return lib.character[name][1];
                     }
-					groupSort=function(name){
-						if(!lib.character[name]) return 50;
-						var group=getGroup(name);
-						var list = [
-							'wei','shu','wu','qun','jin','western','key',
-							'holo','nijisanji','VirtuaReal','HappyElements',
-							'dotlive','upd8','nanashi','psp','asoul','nori','xuyan','xuefeng',
-							'eilene','paryi','kagura','vshojo','chaos'
-	
-						];
-						if(list.contains(group))	return list.indexOf(group);
-						if(group=='vtuber') return 40;
-						if(group=='clubs') return 41;
-						return 49;
+                    groupSort = function (name) {
+                        if (!lib.character[name]) return 50;
+                        var group = getGroup(name);
+                        var list = [
+                            'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
+                            'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
+                            'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                            'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
+
+                        ];
+                        if (list.contains(group)) return list.indexOf(group);
+                        if (group == 'vtuber') return 40;
+                        if (group == 'clubs') return 41;
+                        return 49;
                     }
                 }
                 list.sort(function (a, b) {
@@ -47301,29 +47447,29 @@
                 }
                 return dialog;
             },
-			dialog:function(){
-				var i,small;
-				var hidden=false;
-				var notouchscroll=false;
-				var forcebutton=false;
-				var dialog=ui.create.div('.dialog');
-				dialog.contentContainer=ui.create.div('.content-container',dialog);
-				dialog.content=ui.create.div('.content',dialog.contentContainer);
-				dialog.bar1=ui.create.div('.bar.top',dialog);
-				dialog.bar2=ui.create.div('.bar.bottom',dialog);
-				dialog.buttons=[];
-				for(i in lib.element.dialog){
-					dialog[i]=lib.element.dialog[i];
-				}
-				for(i=0;i<arguments.length;i++){
-					if(typeof arguments[i]=='boolean') dialog.static=arguments[i];
-					else if(arguments[i]=='hidden') hidden=true;
-					else if(arguments[i]=='notouchscroll') notouchscroll=true;
-					else if(arguments[i]=='forcebutton') forcebutton=true;
-					else if(arguments[i]=='small') small=true;
-					else{
-						dialog.add(arguments[i],small,small);
-					}
+            dialog: function () {
+                var i, small;
+                var hidden = false;
+                var notouchscroll = false;
+                var forcebutton = false;
+                var dialog = ui.create.div('.dialog');
+                dialog.contentContainer = ui.create.div('.content-container', dialog);
+                dialog.content = ui.create.div('.content', dialog.contentContainer);
+                dialog.bar1 = ui.create.div('.bar.top', dialog);
+                dialog.bar2 = ui.create.div('.bar.bottom', dialog);
+                dialog.buttons = [];
+                for (i in lib.element.dialog) {
+                    dialog[i] = lib.element.dialog[i];
+                }
+                for (i = 0; i < arguments.length; i++) {
+                    if (typeof arguments[i] == 'boolean') dialog.static = arguments[i];
+                    else if (arguments[i] == 'hidden') hidden = true;
+                    else if (arguments[i] == 'notouchscroll') notouchscroll = true;
+                    else if (arguments[i] == 'forcebutton') forcebutton = true;
+                    else if (arguments[i] == 'small') small = true;
+                    else {
+                        dialog.add(arguments[i], small, small);
+                    }
                 }
                 if (!hidden) {
                     dialog.open();
@@ -51827,8 +51973,8 @@
                     else if (info.promptfunc) {
                         event.skillDialog = ui.create.dialog(str, '<div><div style="width:100%">' + info.promptfunc(event, event.player) + '</div></div>');
                     }
-					else if(lib.dynamicTranslate[skill]||lib.translate[skill+'_info']){
-						event.skillDialog=ui.create.dialog(str,'<div><div style="width:100%">'+get.skillInfoTranslation(skill,_status.event.player)+'</div></div>');
+                    else if (lib.dynamicTranslate[skill] || lib.translate[skill + '_info']) {
+                        event.skillDialog = ui.create.dialog(str, '<div><div style="width:100%">' + get.skillInfoTranslation(skill, _status.event.player) + '</div></div>');
                     }
                 }
             },
@@ -53850,10 +53996,10 @@
                 return '是否发动『' + get.skillTranslation(skill, player) + '』？';
             }
         },
-		prompt2:function(skill,target,player){
-			var str=get.prompt.apply(this,arguments);
-			if(!lib.translate[skill+'_info']&&!lib.dynamicTranslate[skill]) return str;
-			return '###'+str+'###'+get.skillInfoTranslation(skill,player);
+        prompt2: function (skill, target, player) {
+            var str = get.prompt.apply(this, arguments);
+            if (!lib.translate[skill + '_info'] && !lib.dynamicTranslate[skill]) return str;
+            return '###' + str + '###' + get.skillInfoTranslation(skill, player);
         },
         url: function (master) {
             var url = lib.config.updateURL || lib.updateURL;
@@ -54962,11 +55108,11 @@
                 return card.suit;
             }
         },
-		suit3:function(cards,player){
-			if(get.itemtype(cards)!='cards')	return [];
-			var suits=[];
-			for(var i of cards){
-				suits.add(get.suit(i,player));
+        suit3: function (cards, player) {
+            if (get.itemtype(cards) != 'cards') return [];
+            var suits = [];
+            for (var i of cards) {
+                suits.add(get.suit(i, player));
             }
             return suits;
         },
@@ -55699,22 +55845,22 @@
                                     if (get.subtype(arguments[i]) != filter[j]) return false;
                                 }
                             }
-							else if(['color','suit','number'].contains(j)){
-								if(typeof filter[j]=='object'){
-									if(filter[j].contains(get[j](arguments[i]))==false) return false;
-								}
-								else if(typeof filter[j]=='string'){
-									if(get[j](arguments[i])!=filter[j]) return false;
+                            else if (['color', 'suit', 'number'].contains(j)) {
+                                if (typeof filter[j] == 'object') {
+                                    if (filter[j].contains(get[j](arguments[i])) == false) return false;
+                                }
+                                else if (typeof filter[j] == 'string') {
+                                    if (get[j](arguments[i]) != filter[j]) return false;
                                 }
                             }
                             else if (typeof filter[j] == 'object') {
                                 if (filter[j].contains(arguments[i][j]) == false) return false;
                             }
-							else if(typeof filter[j]=='string'){
-								if(typeof get[j]=='function'){
-									if(get[j](arguments[i])!=filter[j]) return false;
-								}
-								else if(arguments[i][j]!=filter[j]) return false;
+                            else if (typeof filter[j] == 'string') {
+                                if (typeof get[j] == 'function') {
+                                    if (get[j](arguments[i]) != filter[j]) return false;
+                                }
+                                else if (arguments[i][j] != filter[j]) return false;
                             }
                         }
                         else {
@@ -57136,10 +57282,10 @@
         },
         groups: function () {
             return [
-				'vtuber','clubs',
-				'wei','shu','wu','qun','jin','western','key',
-				'holo','nijisanji','dotlive','upd8','eilene','paryi','kagura','nori','vwp','nanashi',
-				'VirtuaReal','HappyElements','psp','asoul','xuyan','chaos','xuefeng',
+                'vtuber', 'clubs',
+                'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
+                'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
+                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng',
                 'vshojo'
             ];
         },
