@@ -58,7 +58,7 @@ window.noname_package={
 		coin:'富甲天下',
 	},
 	mode:{
-		richer:'大富翁',
+		// richer:'大富翁',
 		identity:'身份',
 		doudizhu:'斗地主',
 		versus:'对决',
@@ -68,7 +68,7 @@ window.noname_package={
 		longlaoguan:'龙牢关',
 		single:'单挑',
 		brawl:'乱斗',
-		yindao:'引导',
+		// yindao:'引导',
 	},
 	submode:{
 		identity:{
