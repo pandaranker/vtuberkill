@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.102.16',
-	update:'1.9.100.113.6',
+	version:'1.9.103.1',
+	update:'1.9.101.1.1',
 	changeLog:[
-		'102.102.16小更新：新增角色：天气阿准、VR的茉里，朵莉丝调整，修复了李清歌『踏歌』在部分情况下次数不重置的bug，修改部分描述。',
+		'102.103.1大更新：新增机制：升阶（在同时开启武将包与卡牌包的《星天篇》时激活），新增主公：乐元素的神宫司玉藻，重置角色：兔田佩可拉（旧版移至特殊包），修改部分描述。',
 		'',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
@@ -14,11 +14,8 @@ window.noname_update={
 		'image/character/Reine.jpg',
 		'image/character/RobokoSan.jpg',
 
-		'audio/skill/yuezhi.mp3',
-		'image/card/chenjing.png',
-		'image/card/haixiao.png',
-		'image/card/qi.png',
-		'image/card/yatelandisi.png',
+		'image/card/sha.png',
+		'image/card/chuqibuyi.png',
 
 
 		'character/Beginner.js',

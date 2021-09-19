@@ -75,7 +75,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			clubs:{
 				paryi2:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
-				VirtuaReal2:['Azusa','Shaun','Miqiutu'],
 				vshojo2:['Nyanners','Veibae','Ironmouse','Froot'],
 			}
 		},
@@ -3117,7 +3116,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yinliu_info: '出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
 			yinliu_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：赌狗</span>',
 			dunzou: '遁走',
-			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以令你于本回合视为不存在。',
+			dunzou_info: '你于其他角色的回合被♣牌指定并结算后，你可以将你移出游戏直到回合结束。',
 			dunzou_enable: '遁走',
 
 			Nekomasu: 'ねこます',

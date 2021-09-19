@@ -260,7 +260,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								game.filterPlayer(function(cur){
 									if(cur.isEmpty(get.subtype(es[i]))&&cur!=target) effect+=get.effect(cur,{name:'sha'},player,player);
 								});
-								console.log(effect+att)
 								return 2*(effect+att);
 							}
 							if(sgnatt!=0&&att2!=0&&
@@ -2767,7 +2766,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuepi:'乐癖',
 			yuepi_info:'弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。',
 			cangxiong:'藏兄',
-			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将其从游戏除外直到其回合开始。',
+			cangxiong_info:'其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将直到其回合开始。',
 			cangxiong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：传递关键牌 保护友方</span>',
 			
 			MitoTsukino:'月之美兔',

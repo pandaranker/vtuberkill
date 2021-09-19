@@ -109,6 +109,38 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			wudaoqu:{
+				fullskin:true,
+				type:'trick',
+				vanish:true,
+				wuxieable:true,
+				global:['g_wudaoqu'],
+				notarget:true,
+				materials:['shan','wuxie'],
+				materials_prompt: '【闪】+【无懈可击】',
+				derivation:true,
+				derivationpack:'xingtian',
+				content:function(){
+					var evt=event.getParent(3)._trigger;
+					if(evt.wudaoqu){
+						evt.cancel();
+						event.cards = evt.cards;
+						var next=game.createEvent('wudaoqu_gain');
+						next.player=player;
+						next.setContent(function(){
+							var cards=event.getParent().cards.filterInD();
+							if(cards.length) player.gain(cards,'gain2','log');
+						});
+					}
+				},
+				ai:{
+					basic:{
+						useful:[6,4],
+						value:[7,4],
+					},
+					result:{player:1},
+				},
+			},
 			
 		},
 		character:{
@@ -138,18 +170,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(player.stat[player.stat.length-1].card.sha>0){
 						player.stat[player.stat.length-1].card.sha--;
 					}
+					player.addTempSkill('g_ci2',{player:'useCardAfter'});
 				},
 			},
-			_ci:{
+			g_ci2:{
+				cardSkill:true,
 				trigger:{source:'damageBegin4'},
 				forced:true,
 				logTarget:'player',
 				filter:function(event,player){
-					console.log(player.hasSkillTag('overHujia',true,{
-						name: event.card.name,
-						target: event.player,
-						card: event.card
-					}))
 					return event.player.hujia>0&&player.hasSkillTag('overHujia',true,{
 						name: event.card.name,
 						target: event.player,
@@ -161,10 +190,37 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					unequip:true,
 					overHujia:true,
 					skillTagFilter:function(player,tag,arg){
-						console.log(arg)
-
-						if(!arg||!arg.card||arg.card.name!='sha') return false;
+						if(!arg||!arg.card||arg.card.name!='sha'){
+							 return false;
+						}
+						var cards = arg.card.cards
+						if(!cards||cards.length!=1||get.name(cards[0],null)!='ci'){
+							return false;
+						}
 					},
+				}
+			},
+			g_wudaoqu:{
+				cardSkill:true,
+				trigger:{global:'useCard'},
+				forced:true,
+				popup:false,
+				filter:function(event,player){
+					if(!event.targets.contains(player)||!event.cards||!event.cards.length)	return false;
+					if(event.getParent().directHit&&event.getParent().directHit.contains(player)) return false;
+					return player.hasUsableCard('wudaoqu');
+				},
+				content:function(){
+					'step 0'
+					trigger.wudaoqu=true;
+					player.chooseToUse('是否对'+get.translation(trigger.card)+'使用【无刀取】？').set('ai1',function(card){
+						return _status.event.bool;
+					}).set('bool',-get.effect(player,trigger.card,trigger.player,player)).set('respondTo',[trigger.player,trigger.card]).set('filterCard',function(card,player){
+						if(get.name(card)!='wudaoqu') return false;
+						return lib.filter.cardEnabled(card,player,'forceEnable');
+					});
+					'step 1'
+					delete trigger.wudaoqu;
 				}
 			},
 		},
@@ -189,7 +245,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gao_info: '其他角色的濒死阶段，对其使用，目标回复3点体力。',
 
 			wudaoqu: '无刀取',
-			wudaoqu_info: '成为一张牌的目标时使用，取消此牌，并立即获得之。',
+			wudaoqu_info: '成为实体牌的目标时使用，取消此牌，并立即获得之。',
 
 			ruiping: '锐评',
 			ruiping_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得双方拼点牌并受到一点火焰伤害。',

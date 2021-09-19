@@ -25,6 +25,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_InabaHaneru:['female','nanashi',1,['huangtu','wudao','yinyuan'],['zhu']],
 			/**旧花园猫 */
 			old_HanazonoSerena:['female', 'paryi', 3, ['old_jiumao', 'old_enfan', 'old_shiqi']],
+			/**兔田佩克拉 */
+			old_UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
 
 			/**gz莉泽 */
 			gz_LizeHelesta:['female','nijisanji',3,['tongchen','wangxuan']],
@@ -615,6 +617,152 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							damageBonus:true,
 						},
 					}
+				}
+			},
+			//旧兔宝
+			pekoyu:{
+				audio:'tuquan',
+				init:function(player){
+					player.storage.pekoyu=[];
+				},
+				marktext:"peko",
+				intro:{
+					name:'嚣张咚鼓',
+					content:function (storage,player,skill){
+						if(storage.length){
+							return '本回合已通过花色为'+ get.translation(storage) +'的牌发动了技能';
+						}
+						else{
+							return '本回合尚未发动技能';
+						}
+					},
+				},
+				trigger:{player:'useCardAfter'},
+				priority:111,
+				filter:function(event,player){
+					if(!player.isPhaseUsing()) return false;
+					if(!(get.type(event.card) =='basic'||get.type(event.card)=='trick'))	return false;
+					if(event.result.bool == false || event.result.wuxied)					return false;
+					if(!player.storage.pekoyu.length)										return true;
+					for(var i=0;i<player.storage.pekoyu.length;i++){
+						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
+					}
+					return !(event.result.bool == false || event.iswuxied);
+				},
+				content: function() {
+					'step 0'
+					player.draw(),
+					player.storage.pekoyu.add(get.suit(trigger.card));
+					'step 1'
+					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h',true).set('ai',function(card){
+						var name = card.name;
+						if(name=='jiu') 			return 12;
+						if(get.type(card)=='trick')	return 4;
+						return 10-get.value(card);													
+					});
+					'step 2'
+					if(result.cards){
+						if(get.name(result.cards[0],'player')=='jiu'||
+							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
+						player.chooseTarget('###『嚣张咚鼓』###选择一名角色，令其摸两张牌').set('ai',function(target){
+							var player=_status.event.player;
+							if(player.countCards('h')<player.getHandcardLimit())	return target==player;
+							return get.attitude(player,target)*(target.isDamaged()?2:1);
+						});
+					}
+					'step 3'
+					if(result.bool&&result.targets&&result.targets.length){
+						var target = result.targets[0];
+						player.line(target,'thunder');
+						target.draw(2,player);
+					}
+				},
+				group:['pekoyu_update', 'pekoyu_back'],
+				subSkill:{
+					update:{
+						trigger:{player:'phaseBegin'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.markSkill('pekoyu');
+						}
+					},
+					back:{
+						trigger:{player:'phaseAfter'},
+						forced:true,
+						silent:true,
+						firstDo:true,
+						content:function(){
+							player.unmarkSkill('pekoyu');
+							player.storage.pekoyu = [];
+						}
+					},
+				},
+			},
+			hongshaoturou:{
+				audio:true,
+				filter:function(event,player){
+					return !player.isLinked();
+				},
+				enable:"phaseUse",
+				usable:1,
+				content:function(){
+					player.link(true);
+					player.addMark('hongshaoturou',1,false);
+					player.addTempSkill('hongshaoturou_viewAs','phaseAfter');
+					player.addTempSkill('hongshaoturou_shao','phaseAfter');
+					var buff = '.player_buff';
+					game.broadcastAll(function(player, buff){
+						player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
+					}, player, buff);
+				},
+				onremove: function(player, skill) {
+					player.removeSkill('hongshaoturou_shao');
+				},
+				subSkill:{
+					viewAs:{
+						mod:{
+							cardname:function(card,player){
+								if(card.name=='shan'||card.name=='tao')														return 'jiu';
+								if(get.subtype(card)=='equip3'||get.subtype(card)=='equip4'||get.subtype(card)=='equip6')	return 'tiesuo';
+							},
+						},
+						trigger:{player:['useCard1','respond','loseBeign']},
+						firstDo:true,
+						forced:	true,
+						filter:function(event,player){
+							return event.card.name=='jiu'&&!event.skill&&
+							event.cards.length==1&&(event.cards[0].name=='tao'||event.cards[0].name=='shan');
+						},
+						content:function(){
+						},
+					},
+					shao:{
+						trigger:{player:'phaseEnd'},
+						marktext: '炎',
+						mark: true,
+						forced: true,
+						intro: {
+							content:'当前回合结束后受到一点火焰伤害',
+							name:'自煲自足',
+						},
+						onremove:function(player, skill) {
+							game.broadcastAll(function(player){
+								if(player.node.hongshaoturou){
+									player.node.hongshaoturou.delete();
+									delete player.node.hongshaoturou;
+								}
+							}, player);
+						},
+						filter:function(event,player){
+							return true;
+						},
+						content:function(){
+							player.damage('fire');
+							player.removeSkill('hongshaoturou_shao');	
+						}
+					},
 				}
 			},
 			//向晚
@@ -1523,6 +1671,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_shiqi: '势起(旧)',
 			old_shiqi_info: '锁定技 准备阶段，若你的手牌数为全场最多，本回合你造成的第一次伤害+1。',
 			old_shiqi_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
+				
+			old_UsadaPekora: '旧兔田',
+			pekoyu: '嚣张咚鼓',
+			pekoyu_info: '回合内，当你的非装备牌生效并结算后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
+			hongshaoturou: '自煲自足',
+			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
+
 
 			gz_Ava: '国战向晚',
 			gz_yiqu: '亦趋',

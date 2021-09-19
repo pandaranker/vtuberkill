@@ -73,6 +73,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
 			/**蜜球兔 */
 			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
+			/**阿萨Aza */
+			Aza: ['male','VirtuaReal',3,['qiding','chouxin'],['guoV']],
+			
 			/**胡桃 */
 			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
 
@@ -87,6 +90,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		characterSort:{
 			vtuber:{
 				asoul2:['Ava','Bella','Carol','Diana','EQueen'],
+				VirtuaReal2:['Yousa','Aza','Shaun','Miqiutu',,'Azusa'],
 				psp2:['Pudding','AyanaNana','AkiRinco','KurenaiAkane','Lovely'],
 			}
 		},

@@ -27,7 +27,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**湊阿库娅 */
 			MinatoAqua:['female','holo',3,['kuali','youyi']],
 			/**兔田佩克拉 */
-			UsadaPekora:['female','holo',3,['pekoyu','hongshaoturou']],
+			UsadaPekora:['female','holo',3,['zhonggong','binzhan']],
 			/**大神澪 */
 			ŌokamiMio:['female','holo',3,['xuanxu','weizeng'],['forbidai']],
 			/**大脸猫 */
@@ -169,19 +169,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			renjiazhizhu:{
 				audio:2,
 				unique:true,
-				trigger:{player:'phaseUseBefore'},
+				trigger:{player:'phaseBefore'},
 				zhuSkill:true,
 				forced:true,
 				filter:function(event,player){
 					if(!player.hasZhuSkill('renjiazhizhu')) return false;
-					return true;
+					return game.countPlayer(function(current){
+						return current.group=='holo'&&current!=player;
+					});
 				},
 				content:function(){
 					if(player.storage.skillCardID==null){
 						player.storage.skillCardID=[];
 					}
 					event.players=game.filterPlayer(function(current){
-						return current.group=='holo'&&(current!=player);
+						return current.group=='holo'&&current!=player;
 					});
 					event.players.sortBySeat(player);
 					'step 0'
@@ -2094,22 +2096,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							game.broadcastAll(function(player){
-								var shi;
-								var aqua;
-								game.hasPlayer(function(cur){
-									if(cur.hasSkill('youyi')){
-										aqua = cur
-										shi = cur.storage.youyi;
-									}
-								});
-								event.card = player.storage.youyishiyue||shi;
-								player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
-									return [player,aqua].contains(target)&&target.isDamaged();
-								}).set('ai',function(target){
-									return get.recoverEffect(target,player,player)+Math.random();
-								});
-							}, player);
+							var shi;
+							var aqua;
+							game.hasPlayer(function(cur){
+								if(cur.hasSkill('youyi')){
+									aqua = cur
+									shi = cur.storage.youyi;
+								}
+							});
+							event.card = player.storage.youyishiyue||shi;
+							player.chooseTarget('让你或她回复一点体力',1,function(card,player,target){
+								return [player,_status.event.aqua].contains(target)&&target.isDamaged();
+							}).set('ai',function(target){
+								return get.recoverEffect(target,player,player)+Math.random();
+							}).set('aqua',aqua);
 							'step 1'
 							if(result.bool){
 								event.target = result.targets[0];
@@ -2124,102 +2124,97 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			//兔宝
-			pekoyu:{
+			zhonggong:{
 				audio:'tuquan',
-				init:function(player){
-					player.storage.pekoyu=[];
-				},
-				marktext:"peko",
-				intro:{
-					name:'嚣张咚鼓',
-					content:function (storage,player,skill){
-						if(storage.length){
-							return '本回合已通过花色为'+ get.translation(storage) +'的牌发动了技能';
-						}
-						else{
-							return '本回合尚未发动技能';
-						}
-					},
-				},
-				trigger:{player:'useCardAfter'},
-				priority:111,
+				trigger:{player:'phaseZhunbeiBegin'},
+				frequent:true,
 				filter:function(event,player){
-					if(!player.isPhaseUsing()) return false;
-					if(!(get.type(event.card) =='basic'||get.type(event.card)=='trick'))	return false;
-					if(event.result.bool == false || event.result.wuxied)					return false;
-					if(!player.storage.pekoyu.length)										return true;
-					for(var i=0;i<player.storage.pekoyu.length;i++){
-						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
-					}
-					return !(event.result.bool == false || event.iswuxied);
+					return player.isMinEquip(true)||player.isMaxEquip(true);
 				},
+				popup:false,
 				content: function() {
 					'step 0'
-					player.draw(),
-					player.storage.pekoyu.add(get.suit(trigger.card));
-					'step 1'
-					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌','h',true).set('ai',function(card){
-						var name = card.name;
-						if(name=='jiu') 			return 12;
-						if(get.type(card)=='trick')	return 4;
-						return 10-get.value(card);													
-					});
-					'step 2'
-					if(result.cards){
-						if(get.name(result.cards[0],'player')=='jiu'||
-							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
-						player.chooseTarget('###『嚣张咚鼓』###选择一名角色，令其摸两张牌').set('ai',function(target){
-							var player=_status.event.player;
-							if(player.countCards('h')<player.getHandcardLimit())	return target==player;
-							return get.attitude(player,target)*(target.isDamaged()?2:1);
+					if(player.isMinEquip(true)){
+						player.logSkill('zhonggong');
+						player.storage.zhonggong_mark++;
+						player.markSkill('zhonggong_mark');
+					}
+					if(player.isMaxEquip(true)){
+						player.chooseTarget('###'+get.prompt('zhonggong')+'###：令两名角色横置',2,function(card,player,target){
+							return !target.isLinked();
+						}).set('ai',function(target){
+							var player = _status.event.player;
+							if(target==player)	return 1;
+							return -get.attitude(player,target)+Math.random();
 						});
 					}
-					'step 3'
+					'step 1'
 					if(result.bool&&result.targets&&result.targets.length){
-						var target = result.targets[0];
-						player.line(target,'thunder');
-						target.draw(2,player);
+						var targets = result.targets;
+						player.logSkill('zhonggong',targets)
+						while(targets.length){
+							targets.shift().link(true);
+						}
 					}
 				},
-				group:['pekoyu_update', 'pekoyu_back'],
+				group:'zhonggong_mark',
 				subSkill:{
-					update:{
-						trigger:{player:'phaseBegin'},
-						forced:true,
-						silent:true,
-						firstDo:true,
-						content:function(){
-							player.markSkill('pekoyu');
-						}
-					},
-					back:{
-						trigger:{player:'phaseAfter'},
-						forced:true,
-						silent:true,
-						firstDo:true,
-						content:function(){
-							player.unmarkSkill('pekoyu');
-							player.storage.pekoyu = [];
-						}
+					mark:{
+						init:function(player){
+							player.storage.zhonggong_mark = 0;
+						},
+						intro:{
+							name:'重工',
+							content:'手牌上限+#',
+						},
+						locked:true,
+						mod:{
+							maxHandcard:function(player,num){
+								var Buff = (player.storage.zhonggong_mark)||0;
+								return num+=Buff;
+							},
+						},
 					},
 				},
 			},
-			hongshaoturou:{
+			binzhan:{
 				audio:true,
 				filter:function(event,player){
-					return !player.isLinked();
+					return player.countCards('h')!=player.getHandcardLimit();
 				},
 				enable:"phaseUse",
 				usable:1,
+				filterCard:function(event,player){
+					if(player.countCards('h')>player.getHandcardLimit())	return true;
+					return false;
+				},
+				selectCard:function(){
+					var player = _status.event.player;
+					if(player.countCards('h')>player.getHandcardLimit())	return player.countCards('h')-player.getHandcardLimit();
+					return 0;
+				},
 				content:function(){
-					player.link(true);
-					player.addMark('hongshaoturou',1,false);
-					player.addTempSkill('hongshaoturou_viewAs','phaseAfter');
-					player.addTempSkill('hongshaoturou_shao','phaseAfter');
-					var buff = '.player_buff';
-					game.broadcastAll(function(player, buff){
-						player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
-					}, player, buff);
+					'step 0'
+					if(cards&&cards.length){
+						player.chooseTarget([1,cards.length],'『缤绽』：选择角色，对其造成火焰伤害',function(card,player,target){
+							return player.inRange(target);
+						}).set('ai',function(target){
+							var player = _status.event.target;
+							return get.damageEffect(target,player,player);
+						});
+					}
+					else{
+						player.draw(player.getHandcardLimit()-player.countCards('h'));
+						event.finish();
+					}
+					'step 1'
+					if(result.bool&&result.targets&&result.targets.length){
+						var targets = result.targets;
+						player.line2(targets,'fire');
+						while(targets.length){
+							targets.shift().damage('fire');
+						}
+					}
 				},
 				onremove: function(player, skill) {
 					player.removeSkill('hongshaoturou_shao');
@@ -2320,7 +2315,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							player.chooseTarget('『旷心』：令你或其摸一张牌').set('filterTarget',function(card,player,target){
 								return target==player||target==player.storage.kuangxin_draw[1];
-							})
+							});
 							'step 1'
 							if(result.bool&&result.targets&&result.targets[0]){
 								result.targets[0].draw(player);
@@ -3342,7 +3337,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SakuraMiko:['re_SakuraMiko','SakuraMiko'],
 			NatsuiroMatsuri:['re_NatsuiroMatsuri','NatsuiroMatsuri'],
 			AkaiHaato:['re_AkaiHaato','AkaiHaato'],
-			UsadaPekora:['re_UsadaPekora','UsadaPekora'],
+			UsadaPekora:['re_UsadaPekora','UsadaPekora','old_UsadaPekora'],
 			ŌokamiMio:['re_ŌokamiMio','ŌokamiMio'],
 			SpadeEcho:['re_SpadeEcho','SpadeEcho'],
 
@@ -3441,11 +3436,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			youyishiyue_rec_info: '弃置「誓约」牌，令你或湊阿库娅回复一点体力。',
 			
 			UsadaPekora: '兔田佩克拉',
-			pekoyu: '嚣张咚鼓',
-			pekoyu_info: '回合内，当你的非装备牌生效并结算后，若本回合未因此花色的牌发动此技能，你可以摸一张牌然后弃置一张牌。若你因此弃置了【酒】，你可以令一名角色摸两张牌。',
-			hongshaoturou: '自煲自足',
-			hongshaoturou_info: '出牌阶段限一次，你可以横置武将牌，令你在回合结束时受到1点火焰伤害。然后本回合内你的【闪】和【桃】视为【酒】，你的坐骑牌视为【铁索连环】。',
-
+			zhonggong: '重工',
+			zhonggong_info: '准备阶段，若你装备区牌数为全场唯一最少/唯一最多，你令手牌上限永久+1/两名角色横置。',
+			binzhan: '缤绽',
+			binzhan_info: '出牌阶段限一次，你可以调整手牌至上限，若你因此弃牌，你可以对攻击范围内的X名角色各造成1点火焰伤害（X为你弃置的牌数）。',
 						
 			NekomataOkayu: '猫又小粥',
 			fantuan: '安心饭团',

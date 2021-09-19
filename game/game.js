@@ -11130,31 +11130,7 @@
                                     for (var j = 0; j < mate.length; j++) {
                                         for (var k of scards) {
                                             if (!smate.contains(k)) {
-                                                var check = false;
-                                                if (typeof mate[j] == 'string') {
-                                                    if (mate[j] == get.name(k)) check = true;
-                                                }
-                                                else if (typeof mate[j] == 'object') {
-                                                    for (x in mate[j]) {
-                                                        var value;
-                                                        if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
-                                                            value = get[x](k);
-                                                        }
-                                                        else {
-                                                            value = k[x];
-                                                        }
-                                                        if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
-                                                            (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
-                                                            check = true;
-                                                        }
-                                                    }
-                                                }
-                                                else if (typeof mate[j] == 'function') {
-                                                    if (mate[j](k)) {
-                                                        check = true;
-                                                    }
-                                                }
-                                                if (check) {
+                                                if (get.is.filterCardBy(k,mate[j])) {
                                                     smate.push(k)
                                                     mate.splice(j--, 1);
                                                 }
@@ -11162,31 +11138,7 @@
                                         }
                                     }
                                     for (var j = 0; j < mate.length; j++) {
-                                        var check = false;
-                                        if (typeof mate[j] == 'string') {
-                                            if (mate[j] == get.name(card)) check = true;
-                                        }
-                                        else if (typeof mate[j] == 'object') {
-                                            for (x in mate[j]) {
-                                                var value;
-                                                if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
-                                                    value = get[x](card);
-                                                }
-                                                else {
-                                                    value = card[x];
-                                                }
-                                                if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
-                                                    (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
-                                                    check = true;
-                                                }
-                                            }
-                                        }
-                                        else if (typeof mate[j] == 'function') {
-                                            if (mate[j](card)) {
-                                                check = true;
-                                            }
-                                        }
-                                        if (check) {
+                                        if (get.is.filterCardBy(card,mate[j])) {
                                             return true
                                         }
                                     }
@@ -11212,28 +11164,8 @@
                                     var mate = filter.slice(0);
                                     for (var j = 0; j < mate.length; j++) {
                                         for (var k of scards) {
-                                            if (typeof mate[j] == 'string') {
-                                                if (mate[j] == get.name(k)) mate.splice(j--, 1);
-                                            }
-                                            else if (typeof mate[j] == 'object') {
-                                                for (x in mate[j]) {
-                                                    var value;
-                                                    if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
-                                                        value = get[x](k);
-                                                    }
-                                                    else {
-                                                        value = k[x];
-                                                    }
-                                                    if ((typeof mate[j][x] == 'string' && value == mate[j][x]) ||
-                                                        (Array.isArray(mate[j][x]) && mate[j][x].contains(value))) {
-                                                        mate.splice(j--, 1);
-                                                    }
-                                                }
-                                            }
-                                            else if (typeof mate[j] == 'function') {
-                                                if (mate[j](k)) {
-                                                    mate.splice(j--, 1);
-                                                }
+                                            if (get.is.filterCardBy(k,mate[j])) {
+                                                mate.splice(j--, 1);
                                             }
                                         }
                                     }
@@ -11247,7 +11179,7 @@
                     'step 2'
                     if (result.bool) {
                         var cards = result.links.slice(1);
-                        var star = game.createCard2(result.links[0][2], 'spade', 14);
+                        var star = game.createCard2(result.links[0][2], get.suit3(cards).randomGet(), 14);
                         event.result = {
                             bool: true,
                             cards: cards,
@@ -17996,29 +17928,9 @@
                             if (Array.isArray(filter) && filter.length == j.length) {
                                 var mate = filter.slice(0);
                                 for (var l = 0; l < mate.length; l++) {
-                                    for (var m of j) {
-                                        if (typeof mate[l] == 'string') {
-                                            if (mate[l] == get.name(m)) mate.splice(l--, 1);
-                                        }
-                                        else if (typeof mate[l] == 'object') {
-                                            for (x in mate[l]) {
-                                                var value;
-                                                if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
-                                                    value = get[x](m);
-                                                }
-                                                else {
-                                                    value = m[x];
-                                                }
-                                                if ((typeof mate[l][x] == 'string' && value == mate[l][x]) ||
-                                                    (Array.isArray(mate[l][x]) && mate[l][x].contains(value))) {
-                                                    mate.splice(l--, 1);
-                                                }
-                                            }
-                                        }
-                                        else if (typeof mate[l] == 'function') {
-                                            if (mate[l](m)) {
-                                                mate.splice(l--, 1);
-                                            }
+                                    for (var card of j) {
+                                        if (get.is.filterCardBy(card,mate[l])) {
+                                            mate.splice(l--, 1);
                                         }
                                     }
                                 }
@@ -19940,35 +19852,9 @@
                         return cards;
                     }
                     if (arg2) {
-                        if (typeof arg2 == 'string') {
-                            for (i = 0; i < cards.length; i++) {
-                                if (get.name(cards[i]) != arg2) {
-                                    cards.splice(i, 1); i--;
-                                }
-                            }
-                        }
-                        else if (typeof arg2 == 'object') {
-                            for (i = 0; i < cards.length; i++) {
-                                for (j in arg2) {
-                                    var value;
-                                    if (j == 'type' || j == 'subtype' || j == 'color' || j == 'suit' || j == 'number') {
-                                        value = get[j](cards[i]);
-                                    }
-                                    else {
-                                        value = cards[i][j];
-                                    }
-                                    if ((typeof arg2[j] == 'string' && value != arg2[j]) ||
-                                        (Array.isArray(arg2[j]) && !arg2[j].contains(value))) {
-                                        cards.splice(i--, 1); break;
-                                    }
-                                }
-                            }
-                        }
-                        else if (typeof arg2 == 'function') {
-                            for (i = 0; i < cards.length; i++) {
-                                if (!arg2(cards[i])) {
-                                    cards.splice(i--, 1);
-                                }
+                        for (i = 0; i < cards.length; i++) {
+                            if (!get.is.filterCardBy(cards[i],arg2)) {
+                                cards.splice(i--, 1);
                             }
                         }
                     }
@@ -53439,6 +53325,31 @@
          * @namespace
          */
         is: {
+            filterCardBy:function (card,arg) {
+                if(!card||!arg) return false;
+                if (typeof arg == 'string') {
+                    if (arg == get.name(card)) return true;
+                }
+                else if (typeof arg == 'object') {
+                    for (var x in arg) {
+                        var value;
+                        if (x == 'type' || x == 'subtype' || x == 'color' || x == 'suit' || x == 'number') {
+                            value = get[x](card);
+                        }
+                        else {
+                            value = card[x];
+                        }
+                        if ((typeof arg[x] == 'string' && value == arg[x]) ||
+                            (Array.isArray(arg[x]) && arg[x].contains(value))) {
+                                return true;
+                        }
+                    }
+                }
+                else if (typeof arg == 'function') {
+                    return arg(card);
+                }
+                return false;
+            },
             double: function (name, array) {
                 if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0) return false;
                 for (var i of lib.character[name][4]) {
@@ -55149,17 +55060,16 @@
             return colors;
         },
         number: function (card, player) {
-            //啥时候狗卡出相关技能我再完善
             //柚子：已修改
             var number = null;
             if (card.number && typeof card.number == 'number') number = card.number;
+            else if (card.cards && card.cards.length == 1) number = get.number(card.cards[0]);
             if (number != null && get.itemtype(player) == 'player' || (player !== false && get.position(card) == 'h')) {
                 var owner = player || get.owner(card);
                 if (owner) {
                     return game.checkMod(card, owner, number, 'number', owner);
                 }
             }
-            else if (card.cards && card.cards.length == 1) number = get.number(card.cards[0]);
             return number;
         },
         /**

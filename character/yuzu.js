@@ -79,6 +79,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**李清歌 */
 			liqingge:['female','HappyElements',4,['tage'],['guoV']],
+			/**神宫司玉藻 */
+			JingujiTamamo:['female','HappyElements',3,['aowei','meizhan'],['zhu','guoV']],
 
 			/**虾皇 */
 			xiaoxiayu: ['female','xuefeng',4,['tanghuang','xiejiang'],['zhu','guoV']],
@@ -94,8 +96,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**勾檀Mayumi */
 			Mayumi: ['female','VirtuaReal',4,['jinzhou','gouhun'],['guoV']],
-			/**阿萨Aza */
-			Aza: ['male','VirtuaReal',3,['qiding','chouxin'],['guoV']],
 			/**弥希MIKI */
 			Miki: ['female','VirtuaReal',4,['xingxu','qingsui'],['guoV']],
 			/**千幽Chiyuu */
@@ -124,6 +124,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Shiratama:'#y幼术师',
 
 			liqingge:'#y战斗吧歌姬！',
+			JingujiTamamo:'#y战斗吧歌姬！',
 		},
 		skill:{
 			//Ruki
@@ -11204,8 +11205,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){},
 						mod:{
 							maxHandcard:function(player,num){
-								var Buff = (player.storage.shangsheng_Buff)||1;
-								return num+=Buff;
+								if(_status.event.name=='phaseDiscard'){
+									var Buff = (player.storage.shangsheng_Buff)||1;
+									return num+=Buff;
+								}
 							},
 						},
 						mark:true,
@@ -14099,14 +14102,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					event.cards0 = trigger.cards.slice(0);
 					var num = get.number(trigger.card);
-					player.chooseToRespond('是否打出一张牌替换'+get.translation(event.cards0),'hes',function(card){
+					player.chooseToRespond('『踏歌』：是否打出一张牌替换'+get.translation(event.cards0),'hes',function(card){
 						var num = _status.event.num;
 						return [1,-1].contains(get.number(card)-num);
 					}).set('num',num).set('ai',function(card){
+						if(!_status.event.check)	return 1-get.value(card);
 						return 7-get.value(card);
-					}).set('check',get.value(event.cards0,player)>1);
+					}).set('check',get.value(event.cards0,player)>1||((player.maxHp-player.hp)>=2));
 					'step 1'
 					if(result.bool&&result.cards){
+						player.logSkill('tage');
 						if(!player.storage.tage)	player.storage.tage = 1;
 						else	player.storage.tage++;
 						player.markSkill('tage');
@@ -14163,6 +14168,93 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
+			},
+			//神宫司玉藻
+			aowei:{
+				trigger:{global:'cardsDiscardAfter'},
+				firstDo:true,
+				direct:true,
+				filter:function(event,player){
+					var evt = event.getParent();
+					if(evt.name!='orderingDiscard'||!evt.relatedEvent||evt.relatedEvent.player==player||!['useCard','respond'].contains(evt.relatedEvent.name)||get.name(evt.relatedEvent.card)!='sha')	return false;
+					var cards = (event.cards2||event.cards).filterInD('d');
+					var card0 = evt.relatedEvent.card;
+					return cards.length>0&&player.countCards('hes',function(card){
+						return get.suit(card)==get.suit(card0)
+						||get.number(card)==get.number(card0);
+					});
+				},
+				content:function(){
+					'step 0'
+					var evt = trigger.getParent();
+					var cards = (trigger.cards2||trigger.cards).filterInD('d');
+					var card0 = evt.relatedEvent.card;
+					event.cards0 = cards.slice(0);
+					event.change = 1&&!card0.nature;
+					
+					player.chooseToRespond('『傲尾』：是否打出一张牌替换'+get.translation(event.cards0),'hes',function(card){
+						var card0 = _status.event.card0;
+						return get.suit(card)==get.suit(card0)
+						||get.number(card)==get.number(card0);
+					}).set('card0',card0).set('ai',function(card){
+						if(!_status.event.check)	return 1-get.value(card);
+						return 7-get.value(card);
+					}).set('check',1);
+					'step 1'
+					if(result.bool&&result.cards){
+						player.logSkill('aowei');
+						event.cards = result.cards.slice(0);
+						trigger.cards = event.cards;
+						player.gain(event.cards0,'gain2','log');
+					}
+					else	event.finish();
+					'step 2'
+					player.chooseTarget('『傲尾』：你可以'+(event.change?'弃置一名角色一张牌':'令一名角色回复一点体力')).set('ai',function(target){
+						var player = _status.event.target;
+						if(_status.event.change)	return 1-get.attitude(player,target);
+						return get.recoverEffect(target,player,player);
+					}).set('change',event.change);
+					'step 3'
+					if(result.bool&&result.targets){
+						event.target = result.targets[0];
+						if(event.change){
+							player.discardPlayerCard(event.target,true,'he');
+						}
+						else{
+							event.target.recover();
+						}
+					}
+				},
+			},
+			meizhan:{
+				audio:true,
+				zhuSkill:true,
+				trigger:{global:'gainAfter'},
+				filter:function(event,player){
+					if(!player.hasZhuSkill('meizhan'))	return false;
+					if(event.getParent().name=='draw')	return false;
+					return event.player.group==player.group;
+				},
+				direct:true,
+				usable:1,
+				content:function(){
+					'step 0'
+					event.target = trigger.player;
+					var check = get.attitude(event.target,player)>0;
+					var next = event.target.chooseBool(get.prompt2('meizhan',player,event.target));
+					next.set('ai',function(){
+						if(!_status.event.check) return 0;
+						return 1;
+					});
+					next.set('check',check)
+					'step 1'
+					if(result.bool){
+						player.logSkill('meizhan',event.target);
+						var draws = [event.target];
+						draws.add(player);
+						game.asyncDraw(draws);
+					}
+				},
 			},
 		},
 		card:{
@@ -14663,6 +14755,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			liqingge: '李清歌',
 			tage: '踏歌',
 			tage_info: '每回合限X次，当一名角色于其回合内使用一张牌后，你可以打出一张点数与之相差1的牌替换之。你以此法获得牌的回合结束时，可以摸X张牌，然后将一张手牌交给当前回合角色。（X为你已损失的体力值且至少为1）',
+			
+			JingujiTamamo: '神宫司玉藻',
+			aowei: '傲尾',
+			aowei_info: '当其他角色的【杀】结算完毕即将进入弃牌堆时，你可打出一张同花色或点数的手牌替换之。若你获得的牌：<br>有属性~你可以令一名角色回复一点体力；无属性~你可以弃置一名角色的一张牌。',
+			meizhan: '魅绽',
+			meizhan_info: '主公技 每回合限一次，与你同势力的角色不因摸牌获得牌时，可以与你各摸一张牌。',
 
 			Bafuko: '晴步子',
 			shangsheng: '能力上升',
