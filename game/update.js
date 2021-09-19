@@ -27,6 +27,7 @@ window.noname_update={
 		'character/yuzu.js',
 		'character/huajing.js',
 		'character/sololive.js',
+		'character/xingtian.js',
 		
 		'card/huajing.js',
 		'card/longlaoguan.js',
@@ -40,6 +41,7 @@ window.noname_update={
 		'card/yunchou.js',
 		'card/zhenfa.js',
 		'card/zhulu.js',
+		'card/xingtian.js',
 		// 'character/diy.js',
 		// 'character/refresh.js',
 		// 'character/shenhua.js',
