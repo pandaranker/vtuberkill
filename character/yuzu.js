@@ -6438,7 +6438,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{source:'damageEnd'},
 				round:1,
 				filter:function(event,player){
-					return event.player.isIn();
+					return event.player.isIn()&&event.player!=player;
 				},
 				check:function(event,player){
 					return get.attitude(player,event.player)>0;
@@ -6461,8 +6461,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					effect:{
 						player:function(card,player,target,current){
 							if(get.tag(card,'damage')==1&&!player.hasMark('tuhui_roundname')&&!target.hujia&&target.hp>1&&get.attitude(player,target)>0){
-								if(target.hasSkillTag('maixie'))	return [1,1,0,3];
-								return [1,1,0,0.5];
+								if(target!=player){
+									if(target.hasSkillTag('maixie'))	return [1,1,0,3];
+									return [1,1,0,0.5];
+								}
 							}
 						}
 					}
@@ -6472,7 +6474,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'damageEnd'},
 				round:1,
 				filter:function(event,player){
-					return event.source.isIn();
+					return event.source.isIn()&&event.source!=player;
 				},
 				check:function(event,player){
 					return get.attitude(player,event.source)>0;
@@ -6494,7 +6496,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					effect:{
 						target:function(card,player,target,current){
 							if(get.tag(card,'damage')==1&&!target.hasMark('tuhui_B_roundcount')&&!target.hujia&&target.hp>1&&get.attitude(target,player)>0){
-								return [0,0,1,1];
+								if(target!=player)	return [0,0,1,1];
 							}
 						}
 					}
@@ -6535,7 +6537,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:function(item,player){
 						if(player.hp>=3&&game.countPlayer(function(cur){
-							return get.attitude(player,target)<0&&cur.hp<=1;
+							return get.attitude(player,cur)<0&&cur.hp<=1;
 						}))	return 10;
 						return 0;
 					},
