@@ -1969,15 +1969,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					backup:function(links,player){
 						return {
 							filterCard:function(card,player){
-								if(player.storage.re_longdan==false) return get.name(card)=='sha';
-								return get.type(card)=='basic'&&get.name(card)!='sha';
+								if(player.storage.re_longdan==false)	return get.name(card)=='sha';
+								if(get.type(card)=='basic'&&get.name(card)!='sha'){
+									return true;
+								}
+								return false;
 							},
 							selectCard:1,
 							popname:true,
 							check:function(card){
 								return 6-get.value(card);
 							},
-							position:'he',
+							position:'hes',
 							viewAs:{name:links[0][2],nature:links[0][3],isCard:true},
 							onrespond:function(){return this.onuse.apply(this,arguments)},
 							onuse:function(result,player){
@@ -1995,7 +1998,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(_status.event.skill=='re_longdan_backup' && get.number(card)>7) return true;
 					},
 					cardUsable:function (card,player,num){
+						console.log(_status.event.skill,card)
 						if(_status.event.skill=='re_longdan_backup' && get.number(card)>7) return Infinity;
+						var result = _status.event.getParent().result;
+						if(result&&result.skill=='re_longdan' && player.countCards('hes',function(card0){
+							return get.number(card0)>7;
+						})) return Infinity;
 					},
 				},
 				ai:{
@@ -2397,7 +2405,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mod:{
 							targetInRange:function(card,player,target){
-								if(_status.event.skill=='re_chongdian_leisha' && get.type(card)=='equip') return true;
+								if(_status.event.skill=='re_chongdian_leisha' && get.type(card.cards[0])=='equip') return true;
 							},
 						},
 					},

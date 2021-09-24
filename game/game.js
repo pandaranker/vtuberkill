@@ -1234,7 +1234,12 @@
                                 }
                             }
                             else {
-                                node.setBackgroundImage('image/background/' + link + '.jpg');
+                                if (link.indexOf('svg_')==0) {
+                                    node.setBackgroundImage('image/background/' + link.slice(4) + '.svg');
+                                }
+                                else{
+                                    node.setBackgroundImage('image/background/' + link + '.jpg');
+                                }
                                 node.style.backgroundSize = 'cover';
                             }
                         },
@@ -1321,7 +1326,12 @@
                                 });
                             }
                             else {
-                                ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+                                if (lib.config.image_background.indexOf('svg_')==0) {
+                                    ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
+                                }
+                                else{
+                                    ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+                                }
                             }
                             ui.background.style.backgroundSize = 'cover';
                             ui.background.style.backgroundPosition = '50% 50%';
@@ -7031,9 +7041,14 @@
                         }
                     }
                     if (htmlbg) {
-                        document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg + '.jpg")';
-                        document.documentElement.style.backgroundSize = 'cover';
-                        document.documentElement.style.backgroundPosition = '50% 50%';
+                        if (htmlbg.indexOf('svg_')==0) {
+                            document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg.slice(4) + '.svg")';
+                        }
+                        else{
+                            document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg + '.jpg")';
+                            document.documentElement.style.backgroundSize = 'cover';
+                            document.documentElement.style.backgroundPosition = '50% 50%';
+                        }
                     }
                 }
                 //part: get, ui, ai, game 引用到 lib对象
@@ -7734,12 +7749,17 @@
                         else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
                             lib.node.debug();
                         }
-                        else if (keynum == 17) {
+                        else if (e.ctrlKey) {
                             window.status = 'skip';
                         }
                         // else if(e.keyCode==27){
                         // 	if(!ui.arena.classList.contains('paused')) ui.click.config();
                         // }
+                    }
+                };
+                window.onkeyup = function (e) {
+                    if (e.ctrlKey) {
+                        window.status = '';
                     }
                 };
                 /**
@@ -8816,7 +8836,12 @@
                 ui.background.style.backgroundSize = "cover";
                 ui.background.style.backgroundPosition = '50% 50%';
                 if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
-                    ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+                    if (lib.config.image_background.indexOf('svg_')==0) {
+                        ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
+                    }
+                    else{
+                        ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+                    }
                     if (lib.config.image_background_blur) {
                         ui.background.style.filter = 'blur(8px)';
                         ui.background.style.webkitFilter = 'blur(8px)';
@@ -10394,6 +10419,7 @@
                             case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
                             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
                             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
+                            case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
                         }
                     }
                     console.log('魏：' + (a - sa) + '/' + a);
@@ -10920,6 +10946,7 @@
             xuyan: '虚',
             chaos: 'C',
             xuefeng: '雪',
+            ego: '复',
             double: '多',
             wei2: '魏国',
             shu2: '蜀国',
@@ -10946,6 +10973,7 @@
             xuyan2: '虚研社',
             chaos2: 'ChaosLive',
             xuefeng2: '雪风军团',
+            ego2: 'Egolive',
             double2: '多势力',
             male: '男',
             female: '女',
@@ -10969,7 +10997,7 @@
             westernColor: "#ffe14c",
             jinColor: "#ffe14c",
             keyColor: "#c9b1fd",
-            holoColor: "#ffddb9",
+            holoColor: "#38ABE0",
             nijisanjiColor: "#b0d0e2",
             dotliveColor: "#b2d9a9",
             upd8Color: "#ffe14c",
@@ -16990,7 +17018,8 @@
                             }
                         }, player);
                         player.$damagepop(num, 'wood');
-                        game.log(player, '回复了' + get.cnNumber(num) + '点' + get.translation('hp'))
+                        game.log(player, '回复了' + get.cnNumber(num) + '点' + get.translation('hp'));
+                        event.result = num;
                     }
                 },
                 /**
@@ -28596,7 +28625,7 @@
                     var list = [
                         'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                         'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                        'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                        'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
                         'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
 
                     ];
@@ -31089,7 +31118,7 @@
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'key',
             'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng',
+            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
             'vshojo'
         ],
         /**
@@ -31134,6 +31163,7 @@
             xuyan: 'ice',
             chaos: 'ocean',
             xuefeng: 'ocean',
+            ego: 'ocean',
 
             vtuber: 'metal',
             clubs: 'ice',
@@ -31276,7 +31306,6 @@
                                     booth.node.style.height = parseInt(arr[3]) + "px";
                                     booth.node.style.left = parseInt(arr[4]) + "%";
                                     booth.node.style.top = parseInt(arr[5]) + "%";
-                                    console.log(arr[1])
                                     booth.node.setBackgroundImage('extension/' + arr[1]);
                                     // booth.node.setBackgroundImage('galgame/' + arr[1]);
                                 }
@@ -31423,10 +31452,10 @@
                             i++;
                             if (i <= link.length) {
                                 if (window.status == 'skip') {
-                                    setTimeout(show, 5);
+                                    setTimeout(show, 10);
                                 }
                                 else {
-                                    setTimeout(show, 70);
+                                    setTimeout(show, 90);
                                 }
                             } else {
                                 if (num < galgame.text[event.shijian].length) {
@@ -31441,6 +31470,14 @@
                                         galgame.audio.pause();
                                         bofang();
                                     }
+                                    drive.onkeydown = function (e) {
+                                        console.log(e);
+                                        if (e.ctrlKey) {
+                                            i = 0;
+                                            galgame.audio.pause();
+                                            bofang();
+                                        }
+                                    }
                                 } else {
                                     if (window.status == 'skip') {
                                         ui.backgroundMusic.play();
@@ -31453,20 +31490,14 @@
                                         ui.window.removeChild(beijing);
                                         galgame.end();
                                     }
-                                }
-                            }
-                            window.onkeyup = function (e) {
-                                var keynum;
-                                if (window.event) {
-                                    keynum = e.keyCode // IE
-                                }
-                                else if (e.which) {
-                                    keynum = e.which
-                                }
-                                console.log(keynum)
-                                if (keynum == 17 && window.status) {
-                                    i = 0;
-                                    window.status = '';
+                                    drive.onkeydown = function (e) {
+                                        console.log(e);
+                                        if (e.ctrlKey) {
+                                            ui.backgroundMusic.play();
+                                            ui.window.removeChild(beijing);
+                                            galgame.end();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -41536,7 +41567,7 @@
                             var list = [
                                 'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                                 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                                'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                                'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
                                 'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
 
                             ];
@@ -46529,7 +46560,7 @@
             groupControl: function (dialog) {
                 return ui.create.control('qun',
                     'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng',
+                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
                     'vshojo', function (link, node) {//'wei','shu','wu','western','key',
                         if (link == '全部') {
                             dialog.currentcapt = '';
@@ -46962,7 +46993,8 @@
                 if (!thisiscard) {
                     var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
                         'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp', 'vshojo',
-                        'xuyan', 'chaos', 'xuefeng'];//'wei','shu','wu','key',
+                        'xuyan', 'chaos', 'xuefeng','ego'
+                    ];//'wei','shu','wu','key',
                     if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                     var bool1 = false;
                     var bool2 = false;
@@ -47200,7 +47232,7 @@
                         var list = [
                             'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                             'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                            'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng',
+                            'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
                             'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
 
                         ];
@@ -55446,9 +55478,9 @@
                 .replace(/阵法技 /g, '<font color=#fe2>阵法技 </font>')
                 .replace(/轮次技 /g, '<font color=#fc2>轮次技 </font>')
                 .replace(/转换技 /g, '<font color=#88e>转换技 </font>')
+                .replace(/限定技 /g, '<font color=#a9f>限定技 </font>')
                 .replace(/主公技 /g, '<font color=#ff4>主公技 </font>');
             return str;
-            // 	replace(/限定技/g,'<span class="yellowtext">限定技</span>').
             // 	replace(/觉醒技/g,'<span class="greentext">觉醒技</span>').
             // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
             // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
@@ -57195,7 +57227,7 @@
                 'vtuber', 'clubs',
                 'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                 'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng',
+                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
                 'vshojo'
             ];
         },

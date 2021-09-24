@@ -114,16 +114,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			_status.videoInited=true;
 			game.addVideo('init',null,info);
 			'step 4'
+			event.player = game.me;
 			event.trigger('gameStart');
 			'step 5'
-			'step 6'
-			if(_status.reYinda){
-				_status.reYinda = false;
+			if(_status.reYindao){
+				_status.reYindao = false;
 				event.goto(4);
 			}
-			'step 7'
 			game.delay(3);
-			'step 8'
+			'step 6'
 			game.over();
 		},
 		game:{
@@ -200,7 +199,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		skill:{
 			_yindaoA:{
-				trigger:{global:'gameStart'},
+				trigger:{player:'gameStart'},
 				silent:true,
 				popup:false,
 				filter:function(event,player){
@@ -213,14 +212,30 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					galgame.sce("yindaoA1");
 					'step 2'
 					switch(result.bool){
-						case '纯路人，什么是三国杀？':galgame.sce("yindaoB");
-						case '听说过，也玩过类似的桌游':galgame.sce("yindaoC");
+						case '纯路人，什么是三国杀？':{
+							galgame.sce("yindaoB");
+						}
+						case '听说过，也玩过类似的桌游':{
+							galgame.sce("yindaoC");
+							_status.oneYindao = true
+							break;
+						}
+						case '只接触过原版的三国杀':{
+							galgame.sce("yindaoD");
+						}
+						case '我是资深杀友，各种版本的三国杀都有玩':{
+
+						}
 					}
 					'step 3'
-					galgame.sce("over");
+					if(_status.oneYindao){
+						event.trigger('yindaoCard');
+					}	
 					'step 4'
+					galgame.sce("over");
+					'step 5'
 					switch(result.bool){
-						case '回到开始':_status.reYindao;break;
+						case '再引导一次':{_status.reYindao = true;break;}
 						case '进入身份模式':{
 							game.saveConfig('mode','identity');
 							game.reload();break;
@@ -230,10 +245,61 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.reload();break;
 						}
 					}
+					'step 6'
+					if(_status.reYindao){
+						event.goto(1);
+						_status.reYindao = false;
+					}
+					else{
+						game.over();
+					}
+					
 				},
 			},
-			_yindaoC:{
-				trigger:{global:'yindaoC'},
+			_yindaoCard:{
+				trigger:{player:'yindaoCard'},
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return true;
+				},
+				content:function(){
+					'step 0'
+					player.gain(game.createCard('sha'),'gain2');
+					game.delay(2);
+					'step 1'
+					galgame.sce("yindaoCard1");
+					'step 2'
+					player.chooseToUse({
+						prompt:'###选择手牌中的【杀】，再选择〖扇宝〗，就可以使用出这张【杀】###（一张牌被使用后会离开手牌区，并在“结算”后进入名为“弃牌堆的地方）',
+						filterCard:function(card,player){
+							return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
+						},
+						addCount:false,
+						forced:true,
+					});
+					'step 3'
+					player.gain(game.createCard('shan'),'gain2');
+					player.next.gain(game.createCard('sha'),'gain2');
+					game.delay(2);
+					'step 4'
+					galgame.sce("yindaoCard2");
+					'step 5'
+					player.next.chooseToUse({
+						filterCard:function(card,player){
+							return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
+						},
+						addCount:false,
+						forced:true,
+					});
+					'step 6'
+					switch(result.bool){
+		
+					}
+				},
+			},
+			_yindaoD:{
+				trigger:{global:'yindaoD'},
 				silent:true,
 				popup:false,
 				filter:function(event,player){

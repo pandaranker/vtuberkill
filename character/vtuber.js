@@ -2063,7 +2063,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			Reine: '兰音',
 			yueyao: '月谣',
-			yueyao_info: '锁定技 游戏或回合开始时，你记录当前的手牌数为X。你手牌数为X时，造成的伤害+1；其他角色的手牌数为X时，其不能对你使用牌。',
+			yueyao_info: '锁定技 游戏或回合开始时，你记录当前的手牌数为X。你手牌数为X时，造成的伤害+1；一名角色的手牌数为X时，其不能对你使用牌。',
 			yueyao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：爆发</span>',
 			kongling: '空灵',
 			kongling_info: '你受到伤害后，可以令一名角色将手牌调整至X。',
@@ -2080,6 +2080,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			InabaHaneru: '因幡はねる',
 			jiance: '监策',
 			jiance_info: '你体力减少后，可以令一名角色展示所有手牌，若不包含所有类型的牌，你可以令另一名角色摸X张牌（X为其中不包含的类型数）。',
+			jiance_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血</span>',
 			chanbing: '缠病',
 			chanbing_info: '锁定技 一轮开始时，你进行判定，若点数与你武将牌上的牌均不相同，将之置于你武将牌上并回复1点体力；否则，你失去1点体力。',
 			buyu: '不渝',

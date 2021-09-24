@@ -348,7 +348,7 @@ table {
 	pointer-events: none;
 }
 #splash>div {
-	width: 100px;
+	width: 110px;
 	height: 300px;
 	top: calc(50% - 150px);
 	margin-left: 10px;
@@ -397,11 +397,12 @@ table {
 }
 
 #splash.slim>div>.splashtext{
+	filter: drop-shadow(5px 3px 3px  rgb(15, 15, 97));
 	right: 5px;
 	bottom: 5px;
 }
 #splash.slim>div>.avatar{
-	width: 90px;
+	width: calc(100% - 10px);
 	height: calc(100% - 10px);
 	left: 5px;
 	top: 5px;

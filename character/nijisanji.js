@@ -2853,7 +2853,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tiaolian_info: '当你使用牌指定其他角色为目标时，可用一张手牌与其中任意名目标同时拼点，对于你没赢的取消此目标，你赢的不可响应此牌；当你成为其他角色使用牌的目标时，你可以与其拼点，若你赢，此牌对你无效，若你没赢，你不可响应此牌。每回合限一次。',
 			jiaku: '生笹',
 			jiaku_info: '锁定技 你赢得拼点时，获得目标一张牌；你没赢得拼点时，摸一张牌。',
-			jiaku_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点</span>',
+			jiaku_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：无损拼点 易上手</span>',
 
 			LizeHelesta: '莉泽·赫露艾斯塔',
 			LizeHelesta_ab: '莉泽',

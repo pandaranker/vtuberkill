@@ -236,7 +236,7 @@
   ],
   "yindaoA1": [
     "shanbao:请问您之前接触过类似于V杀（diy三国杀）的游戏嘛？",
-    "choose:纯路人，什么是三国杀？:听说过，也玩过类似的桌游:在很久以前接触过一丢丢三国杀:只玩过原版的三国杀:我是资深杀友，各种版本的三国杀都有玩"
+    "choose:纯路人，什么是三国杀？:听说过，也玩过类似的桌游:只接触过原版的三国杀:我是资深杀友，各种版本的三国杀都有玩"
   ],
   "yindaoB": [
     "shanbao:咳咳~（打开搜索引擎）《三国杀》是中国传媒大学动画学院04级游戏专业学生黄恺（Kayak）设计，由游卡桌游出版发行的一款热门桌面游戏。",
@@ -244,16 +244,28 @@
     "shanbao:大概就是这样子啦~"
   ],
   "yindaoC": [
-    "booth:character/Bella.jpg:160:300:20:20",
+    "booth:yindao/Bella.jpg:160:300:20:20",
     "shanbao:咱们这游戏是V杀，也就是将原版三国杀从古代背景跳跃到虚拟世界啦~",
-    "booth:character/LizeHelesta.jpg:160:300:40:20",
+    "booth:yindao/LizeHelesta.jpg:160:300:40:20",
     "shanbao:许多经典角色都会出现在游戏中哦~ 若是恰好没有实装到您推的V，您也可以为自己的推设计一套技能投稿到制作组哟~",
-    "booth:character/ShirakamiHaruka.jpg:160:300:60:20",
+    "booth:yindao/ShirakamiHaruka.jpg:160:300:60:20",
     "shanbao:此外V杀在原版三国杀的基础上又拓展了一些玩法哦~ 如果想了解的话之后扇宝还会解释呢",
-    "booth:character/Kaf.jpg:160:300:80:20",
-    "shanbao:   ",
+    "booth:yindao/Kaf.jpg:160:300:80:20",
     "booth:none",
     "shanbao:大概就是这样子啦~"
+  ],
+  "yindaoCard1": [
+    "booth:yindao/path2.png:100:250:8:40",
+    "shanbao:这个游戏是依靠卡牌的驱动的，刚才加入你的“手牌区”的是一张【杀】",
+    "shanbao:每张卡牌都有自己的效果，我们可以使用“手牌区”的一张牌来激活其效果——而【杀】的效果是对其他角色造成一点伤害",
+    "booth:none",
+    "shanbao:那么，向我使用【杀】吧！"
+  ],
+  "yindaoCard2": [
+    "shanbao:和其他游戏一样，一名角色受到伤害之后体力就会减少，体力减少到“0”后就会“死亡”。所以一般而言我们要避免受到伤害哦~",
+    "booth:yindao/path2.png:100:250:8:40",
+    "shanbao:刚才加入你的“手牌区”的是一张【闪】，在你被杀的时候，可以使用这张牌来“抵消”这张【杀】",
+    "shanbao:呼呼~我要杀过来了哦~"
   ],
   "over": [
     "shanbao:那扇宝就在这里祝愿新人能快速上手吧！",

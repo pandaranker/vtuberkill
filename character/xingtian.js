@@ -14,6 +14,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				materials_prompt: '【杀】+【杀】',
 				derivation:true,
 				derivationpack:'xingtian',
+				// autoViewAs:'sha',
+				addinfo:'杀'
 			},
 			peng:{
 				fullskin:true,
@@ -166,9 +168,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.cards.length==1&&get.name(event.cards[0],null)=='ci';
 				},
 				content:function(){
-					trigger.addCount=false;
-					if(player.stat[player.stat.length-1].card.sha>0){
-						player.stat[player.stat.length-1].card.sha--;
+					if(trigger.addCount!==false){
+						trigger.addCount=false;
+						if(player.stat[player.stat.length-1].card.sha>0){
+							player.stat[player.stat.length-1].card.sha--;
+						}
 					}
 					player.addTempSkill('g_ci2',{player:'useCardAfter'});
 				},

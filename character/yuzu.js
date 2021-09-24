@@ -94,6 +94,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西魔幽 */
 			AkumaYuu: ['male','psp',4,['akjianwu','tongzhao'],['guoV']],
 
+			/**宇佐纪诺诺 */
+			UsakiNono: ['female','ego',4,['tuhui','fuyou'],['guoV']],
+			/**莱妮娅 */
+			Rynia: ['female','ego',4,['yinxu'],['guoV']],
+
 			/**勾檀Mayumi */
 			Mayumi: ['female','VirtuaReal',4,['jinzhou','gouhun'],['guoV']],
 			/**弥希MIKI */
@@ -3176,7 +3181,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						noHidden:true,
 						inherit:'tengjia1',
 						filter:function(event,player){
-							if(!lib.skill.tengjia1.filter(event,player)) return false;
 							if(!player.isEmpty(2)) return false;
 							return true;
 						},
@@ -3186,7 +3190,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						noHidden:true,
 						inherit:'tengjia2',
 						filter:function(event,player){
-							if(!lib.skill.tengjia2.filter(event,player)) return false;
 							if(!player.isEmpty(2)) return false;
 							return true;
 						},
@@ -3196,7 +3199,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						noHidden:true,
 						inherit:'tengjia3',
 						filter:function(event,player){
-							if(!lib.skill.tengjia3.filter(event,player)) return false;
 							if(!player.isEmpty(2)) return false;
 							return true;
 						},
@@ -3217,11 +3219,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter:function(event,player){
 					if(player.storage.tiaolian_clickChange===false)	return false;
-					if(event.player==player&&!game.hasPlayer(function(cur){
-						return event.targets.contains(cur)&&cur!=player&&player.canCompare(cur);
-					}))	return false;
+					if(event.player==player&&!event.targets.filter(function(cur){
+						return player.canCompare(cur);
+					}).length)	return false;
 					if(event.player!=player&&!player.canCompare(event.player))	return false;
 					return player.countCards('h')>0;
+				},
+				check:function(event,player){
+					if(event.player==player&&event.targets.filter(function(cur){
+						return player.canCompare(cur)&&get.attitude(player,cur)<1;
+					}))	return 1;
+					if(event.player!=player)	return get.attitude(player,event.player)<1;
 				},
 				content:function(){
 					'step 0'
@@ -3245,6 +3253,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var next = player.chooseTarget('###『咆咲』###选择拼点的对象',true);
 					next.set('filterTarget',function(card,player,target){
 						return player.canCompare(target)&&_status.event.targets.contains(target);
+					})
+					next.set('ai',function(target){
+						return 7-get.attitude2(target);
 					})
 					next.set('selectTarget',[1,Infinity]);
 					next.set('multitarget',true);
@@ -6399,7 +6410,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							trigger.baseDamage+=player.countMark('jingniang');
 							if(trigger.addCount!==false){
 								trigger.addCount=false;
-								trigger.player.getStat().card.sha--;
+								if(player.stat[player.stat.length-1].card.sha>0){
+									player.stat[player.stat.length-1].card.sha--;
+								}
 							}
 						},
 						onremove:function(player,skill){
@@ -6417,6 +6430,211 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 					threaten:1.2
+				}
+			},
+			//宇佐纪诺诺
+			tuhui:{
+				group:'tuhui_B',
+				trigger:{source:'damageEnd'},
+				round:1,
+				filter:function(event,player){
+					return event.player.isIn();
+				},
+				check:function(event,player){
+					return get.attitude(player,event.player)>0;
+				},
+				logTarget:'player',
+				content:function(){
+					'step 0'
+					event.targets = [player];
+					event.targets.add(trigger.player);
+					event.num = player.storage.fuyou?2:1;
+					'step 1'
+					event.target = event.targets.shift();
+					event.recover = event.target.recover(event.num);
+					'step 2'
+					if(!event.recover.result)	event.target.draw(event.num);	
+					if(event.targets.length)	event.goto(1);
+				},
+				ai:{
+					threaten:1.6,
+					effect:{
+						player:function(card,player,target,current){
+							if(get.tag(card,'damage')==1&&!player.hasMark('tuhui_roundname')&&!target.hujia&&target.hp>1&&get.attitude(player,target)>0){
+								if(target.hasSkillTag('maixie'))	return [1,1,0,3];
+								return [1,1,0,0.5];
+							}
+						}
+					}
+				}
+			},
+			tuhui_B:{
+				trigger:{player:'damageEnd'},
+				round:1,
+				filter:function(event,player){
+					return event.source.isIn();
+				},
+				check:function(event,player){
+					return get.attitude(player,event.source)>0;
+				},
+				logTarget:'source',
+				content:function(){
+					'step 0'
+					event.targets = [player];
+					event.targets.add(trigger.player);
+					event.num = player.storage.fuyou?2:1;
+					'step 1'
+					event.target = event.targets.shift();
+					event.recover = event.target.recover(event.num);
+					'step 2'
+					if(!event.recover.result)	event.target.draw(event.num);	
+					if(event.targets.length)	event.goto(1);
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(get.tag(card,'damage')==1&&!target.hasMark('tuhui_B_roundcount')&&!target.hujia&&target.hp>1&&get.attitude(target,player)>0){
+								return [0,0,1,1];
+							}
+						}
+					}
+				}
+			},
+			fuyou:{
+				audio:true,
+				enable:'phaseUse',
+				unique:true,
+				limited:true,
+				content:function(){
+					'step 0'
+					player.storage.fuyou = true;
+					player.awakenSkill('fuyou');
+					'step 1'
+					var roundname = 'tuhui_roundcount';
+					if(player.hasMark(roundname)){
+						player.popup('重置');
+						var next = game.createEvent('resetSkill');
+						[next.player,next.resetSkill] = [player,'tuhui']
+						next.setContent(lib.element.content.resetRound);
+						game.delayx();
+					}
+					'step 2'
+					var roundname = 'tuhui_B_roundcount';
+					if(player.hasMark(roundname)){
+						player.popup('重置');
+						var next = game.createEvent('resetSkill');
+						[next.player,next.resetSkill] = [player,'tuhui_B']
+						next.setContent(lib.element.content.resetRound);
+						game.delayx();
+					}
+					'step 3'
+					game.filterPlayer(function(cur){
+						cur.addTempSkill('fuyou2');
+					});
+				},
+				ai:{
+					order:function(item,player){
+						if(player.hp>=3&&game.countPlayer(function(cur){
+							return get.attitude(player,target)<0&&cur.hp<=1;
+						}))	return 10;
+						return 0;
+					},
+					result:{player:1},
+				}
+			},
+			fuyou2:{
+				mark:true,
+				locked: true,
+				marktext:'幼',
+				intro:{
+					name:'复幼',
+					content:'无法回复体力',
+				},
+				trigger:{
+					player:'recoverBegin'
+				},
+				content:function(){
+					trigger.cancel();
+				},
+				ai:{
+					effect:{
+						target:function(card,player,target,current){
+							if(get.tag(card,'recover')) return 'zeroplayertarget';
+						}
+					}
+				}
+			},
+			//莱妮娅Rynia
+			yinxu:{
+				init:function(player,skill){
+					if(!player.storage[skill]) player.storage[skill] = true;
+				},
+				hiddenCard:function(player,name){
+					if(name=='sha'&&lib.inpile.contains(name)){
+						if(player.storage.yinxu==true)	return player.countCards('h',{type:['trick','delay']});
+						if(player.storage.yinxu==false)	return player.countCards('h',{type:'equip'});
+					}
+				},
+				enable:['chooseToUse'],
+				filter:function(event,player){
+					return lib.inpile.contains('sha');
+				},
+				filterCard:function(card,player){
+					if(!player.storage.yinxu) return get.type(card)=='equip';
+					return get.type2(card)=='trick';
+				},
+				selectCard:1,
+				check:function(card){
+					return 6-get.value(card);
+				},
+				position:'hes',
+				viewAs:{name:'sha'},
+				onuse:function(result,player){
+					player.storage.yinxu = !player.storage.yinxu;
+				},
+				mod:{
+					targetInRange:function(card,player,target){
+						if(_status.event.skill=='yinxu')	return true;
+					},
+					cardUsable:function (card,player,num){
+						if(_status.event.skillBy=='yinxu'||_status.event.skill=='yinxu')	return Infinity;
+					},
+				},
+				ai:{
+					useSha:1,
+					result:{player:1},
+				},
+				group:'yinxu_shaMiss',
+				subSkill:{
+					shaMiss:{
+						trigger:{player:'shaMiss'},
+						direct:true,
+						filter:function(event,player){
+							return event.skill=='yinxu';
+						},
+						content:function(){
+							'step 0'
+							player.chooseTarget('令你或'+get.translation(trigger.target)+'调整手牌至上限',function(card,player,target){
+								if(![player,_status.event.target0].contains(target))	return false;
+								return target.getHandcardLimit()!=target.countCards('h');
+							},function(target){
+								var player = _status.event.player;
+								return (target.getHandcardLimit()-target.countCards('h'))*get.attitude(player,target);
+							}).set('target0',trigger.target);
+							'step 1'
+							if(result.bool){
+								event.target = result.targets[0];
+								player.logSkill('yinxu',event.target);
+								var num = event.target.getHandcardLimit()-event.target.countCards('h')
+								if(num>0){
+									event.target.draw(num);
+								}
+								else{
+									event.target.chooseToDiscard(-num,true);
+								}
+							}
+						},
+					}
 				}
 			},
 
@@ -7078,7 +7296,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				round:1,
 				filter:function(event,player){
-					return event.player.isIn()&&event.player.countDiscardableCards(player,'hej')&&!player.hasSkill('quankai_round');
+					return event.player.isIn()&&event.player.countDiscardableCards(player,'hej');
 				},
 				content:function(){
 					'step 0'
@@ -7088,14 +7306,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.logSkill('quankai',trigger.player);
 						player.storage.quankai = result.links.slice(0);
 						player.markSkill('quankai');
-						player.addTempSkill('quankai_round','roundStart');
 					}
 				},
 				mark:true,
 				intro:{content:'cards'},
 				group:'quankai_gainBy',
 				subSkill:{
-					round:{},
 					gainBy:{
 						trigger:{player:'useCardAfter'},
 						direct:true,
@@ -11724,6 +11940,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					player.gainPlayerCard(trigger.source,true,'he',Math.ceil(trigger.source.countCards('he')/2));
 				},
+				ai:{
+					maixie:true,
+					skillTagFilter:function(player){
+						return player.isTurnedOver();
+					},
+				}
 			},
 			//猫又小粥
 			fantuan:{
@@ -14392,6 +14614,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				if(player.storage.tuncai===true) return '轮次技 转换技 <span class="changetext">阳：其他角色摸牌后，你可以摸等量牌；</span>阴：你弃牌后，可以令一名其他角色弃等量牌。';
 				return '轮次技 转换技 阳：其他角色摸牌后，你可以摸等量牌；<span class="changetext">阴：你弃牌后，可以令一名其他角色弃等量牌。</span>';
 			},
+			yinxu:function(player){
+				if(player.storage.yinx===true) return '转换技 你可以将一张<span class="changetext">①锦囊牌</span>②装备牌当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。';
+				return '转换技 你可以将一张①锦囊牌<span class="changetext">②装备牌</span>当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。';
+			},
 		},
 		translate:{
 			TEST: '测试员',
@@ -14459,7 +14685,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuanyao_info: '出牌阶段限X次，若你的手牌数不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）',
 			yuanyao_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡</span>',
 			gongni: '宫逆',
-			gongni_info: '<font color=#a9f>限定技</font> 准备阶段开始时，或你于回合外使用或打出一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。',
+			gongni_info: '限定技 准备阶段开始时，或你于回合外使用或打出一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。',
 
 			ShikaiYue: '紫海由爱',
 			lianyin: '联音',
@@ -14893,6 +15119,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MorinagaMiu: '森永缪',
 			guanzhai: '观宅',
 			guanzhai_info: '其他角色的回合结束时，若其本回合使用的牌少于（2）张，你可观看其手牌并获得其中（1）张。',
+			guanzhai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 			zhishu: '直抒',
 			zhishu_info: '出牌阶段开始或你的体力值变化时，你可以展示一张手牌，令一名其他角色选择一项：<br>交给你一张同花色的牌；令你与其下个回合内『观宅』的（）值+1。',
 
@@ -15025,6 +15252,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shshenyan: '神言',
 			shshenyan_info: '出牌阶段限一次，你可以展示并弃置手牌中一种牌名的牌，摸等量的牌。然后你可以：视为使用一张名称长度等于本阶段此技能弃置牌花色数的锦囊牌；否则若你弃置了【杀】，重置此技能。',
 			shshenyan_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：制衡</span>',
+
+			UsakiNono: '宇佐纪诺诺',
+			tuhui: '兔烩',
+			tuhui_info: '每轮每项限一次。你对其他角色造成伤害或其他角色对你造成伤害后，你可以与其各回复（1）点体力；无法回复体力的角色摸（1）张牌。',
+			fuyou: '复幼',
+			fuyou_info: '限定技 出牌阶段，你可以令所有角色无法回复体力直到回合结束，重置『兔烩』并令其的（）值+1。',
+
+			Rynia: '莱妮娅Rynia',
+			Rynia_ab: '莱妮娅',
+			yinxu: '吟虚',
+			yinxu_info: '转换技 你可以将一张①锦囊牌②装备牌当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。',
 
 			yizhiYY: '亦枝YY',
 			bianshi: '辨识',

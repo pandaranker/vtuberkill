@@ -2034,7 +2034,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageBegin'},
 						priority:80,
 						check:function(event,player){
-							return 3-get.damageEffect(event.player,event.source,player)-get.attitude(player,event.source);
+							return 3-get.damageEffect(event.player,event.source,player)*2-get.attitude(player,event.source);
 						},	
 						filter:function(event,player){
 							if(!event.source||!event.source.hasSkill('youyishiyue'))	return false;
@@ -2045,11 +2045,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							});
 						},
 						prompt:'是否收回「誓约」牌？',
+						logTarget:'player',
 						content:function(){
 							trigger.changeToZero();
 							player.line(trigger.source,'thunder');
-							trigger.source.$giveAuto(result.cards,player);
-							player.gain(player.storage.youyi,trigger.source);
+							player.gain(player.storage.youyi,trigger.source,'giveAuto');
 						}
 					},
 				},
