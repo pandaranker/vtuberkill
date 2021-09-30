@@ -2,7 +2,7 @@
 game.import('card',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'remark',
-		// connect:true,
+		connect:true,
 		card:{
 			rm_bagua:{
 				fullskin:true,

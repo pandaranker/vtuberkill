@@ -39,15 +39,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			EQueen: ['female','asoul',4,['yehua', 'fengqing'],['guoV']],
 
 			/**步玎 */
-			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV']],
+			Pudding: ['female','psp',4,['tianlve','luxian'],['guoV','P_SP']],
 			/**粉兔 */
-			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV']],
+			AyanaNana: ['female','psp','2/4',['erni','shouru','chonghuang','yinzun'],['zhu','guoV','P_SP']],
 			/**红晓音 */
-			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV']],
+			KurenaiAkane: ['female','psp',4,['quankai','heyuan'],['guoV','P_SP']],
 			/**东爱璃 */
-			Lovely: ['female','psp',4,['yangyao','shili'],['guoV']],
+			Lovely: ['female','psp',4,['yangyao','shili'],['guoV','P_SP']],
 			/**阿秋 */
-			AkiRinco: ['female','psp',4,['jiren','luqiu','canxin'],['guoV']],
+			AkiRinco: ['female','psp',4,['jiren','luqiu','canxin'],['guoV','P_SP']],
 
 			/**花谱 */
 			Kaf:['female','vwp',3,['liuhua','yishi','shiji'],['zhu']],

@@ -1263,36 +1263,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter: function(event, player) {
 					return	player.countDiscardableCards(player,'he')>0;
 				},
+				check:function(card){
+					return 7-get.value(card);
+				},
+				filterCard:true,
+				position:'he',
+				selectCard:[1,3],
 				content: function() {
 					'step 0'
-					player.chooseToDiscard('###『引流』###弃置至多三张牌','he', [1,3], true).set('ai',function(card){
-						var suit = get.suit(card);
-						for(var i=0;i<ui.selected.cards.length;i++){
-							if(suit==get.suit(ui.selected.cards[i])) return -Math.random();
-						}
-						if (player.needsToDiscard()) return 7-get.useful(card)+Math.random();
-						else return 5-get.useful(card)+Math.random();
-					});
-					'step 1'
-					if(result.bool&&result.cards){
-						event.cards = result.cards;
-					}else{
-						event.finish();
-					}
-					'step 2'
 					game.delayx();
 					if(player.countCards('h')==0){
 						player.addTempSkill('yinliu_end');
 					}
-					while (true) {
-						var card=get.cards()[0]
-						player.showCards(card);
-						player.gain(card, 'gain2');
-						var chk = false;
-						event.cards.forEach(function(cur) {
-							if (get.suit(cur) == get.suit(card)) chk = true;
+					'step 1'
+					player.draw();
+					'step 2'
+					if(get.itemtype(result)=='cards'){
+						player.showCards(result);
+						cards.forEach(function(cur) {
+							if(get.suit3(result).contains(get.suit(cur)))	event.goto(1);
 						})
-						if (!chk) break;
 					}
 				},
 				ai:{
@@ -3121,7 +3111,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			Nekomasu: 'ねこます',
 			milijianying: '迷离剑影',
-			milijianying_info: '锁定技 你始终拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
+			milijianying_info: '锁定技 你视为拥有装备【节奏双剑】的效果。当你使用一张【杀】后，改变你的性别。',
 			dianyinchuancheng: '点引承传',
 			dianyinchuancheng_info: '当你受到 1 点伤害后，你可以与一名与你手牌数差不大于 X 的角色交换手牌，然后手牌较少的一方将手牌数调整至与较多一方相同。（X为体力值不少于你的角色数）',
 			dianyinchuancheng_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：卖血 辅助</span>',

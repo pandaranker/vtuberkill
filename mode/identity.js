@@ -414,7 +414,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							ui.controls[0].replace('黄框的右侧是你的体力值',function(){
 								game.me.classList.remove('glow_phase');
 								game.zhu.classList.add('glow_phase');
-								ui.create.dialog('现在被黄框框出的虚拟角色形象('+get.translation(game.zhu)+')本局游戏的“主公”<br>每一局标准【身份】模式都将有一个“主公”身份br>');
+								ui.create.dialog('现在被黄框框出的虚拟角色形象('+get.translation(game.zhu)+')本局游戏的“主公”<br>每一局标准【身份】模式都将有一个“主公”身份');
 								ui.controls[0].replace('“主公”是ta的身份',function(){
 									ui.create.dialog('每名玩家将在一局游戏中扮演不同的身份<br>不同的身份对应了不同的胜利条件<br>比如“主公”的胜利条件就是杀死所有身份为“反贼”或“内奸”的玩家');
 									ui.controls[0].replace('继续',function(){

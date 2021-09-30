@@ -549,7 +549,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseEnd'},
 						forced:false,
 						priority:555,
-						prompt:'你可选择一项：令一名其他角色获得“小兔子”标记，或令所有“小兔子”各摸一张牌。',
+						prompt:'你可选择一项：令一名其他角色获得「小兔子」标记，或令所有「小兔子」各摸一张牌。',
 						filter:function(event,player){
 							var suits = [];
 							game.getGlobalHistory('cardMove',function(evt){
@@ -562,8 +562,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							player.chooseControlList(
-								['令一名其他角色获得“小兔子”标记',
-								'令所有“小兔子”各摸一张牌'],
+								['令一名其他角色获得「小兔子」标记',
+								'令所有「小兔子」各摸一张牌'],
 								true,function(event,player){
 									return _status.event.index;
 								});
@@ -1683,8 +1683,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									}
 								}
 								
-								if(storage.point > 0)dialog.addText('共有'+get.cnNumber(storage.point)+'个“●标记”');
-								else dialog.addText('没有●标记');;
+								if(storage.point > 0)dialog.addText('共有'+get.cnNumber(storage.point)+'个「●标记」');
+								else dialog.addText('没有「●标记」');;
 							},
 							markcount:function(storage, player){
 								return storage.point;
@@ -2303,13 +2303,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			liuxuan:function(player){
-				var str = '锁定技 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。'
+				var str = '锁定技 游戏开始时，你处于「拉胯」姿态（对应<4>）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入「活力」/「害羞」/「犟嘴」/「可爱」姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到「拉胯」姿态。'
 				switch(player.storage.liuxuan){
-					case 'liuxuan_lakua': return str.replace(/“拉胯”/g,'<span class="changetext">“拉胯”</span>');
-					case 'liuxuan_huoli': return str.replace('“活力”','<span class="changetext">“活力”</span>');
-					case 'liuxuan_haixiu': return str.replace('“害羞”','<span class="changetext">“害羞”</span>');
-					case 'liuxuan_jiangzui': return str.replace('“犟嘴”','<span class="changetext">“犟嘴”</span>');
-					case 'liuxuan_keai': return str.replace('“可爱”','<span class="changetext">“可爱”</span>');
+					case 'liuxuan_lakua': return str.replace(/「拉胯」/g,'<span class="changetext">「拉胯」</span>');
+					case 'liuxuan_huoli': return str.replace('「活力」','<span class="changetext">「活力」</span>');
+					case 'liuxuan_haixiu': return str.replace('「害羞」','<span class="changetext">「害羞」</span>');
+					case 'liuxuan_jiangzui': return str.replace('「犟嘴」','<span class="changetext">「犟嘴」</span>');
+					case 'liuxuan_keai': return str.replace('「可爱」','<span class="changetext">「可爱」</span>');
 				}
 				return ;
 			 },
@@ -2331,7 +2331,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			
 			sp_MononobeAlice: '皇·物述有栖',
 			xianjing: '仙境奇遇',
-			xianjing_info: '当你使用一张牌后，若与本回合被使用的上一张牌在Alice序列（♥️、♠️、♦️、♣️、♥️......）中连续，你可以令一名角色摸一张牌。一个回合结束时，若此回合进入弃牌堆的牌包含所有花色，你可选择一项：令一名其他角色获得“小兔子”标记，或令所有“小兔子”各摸一张牌。',
+			xianjing_info: '当你使用一张牌后，若与本回合被使用的上一张牌在Alice序列（♥️、♠️、♦️、♣️、♥️......）中连续，你可以令一名角色摸一张牌。一个回合结束时，若此回合进入弃牌堆的牌包含所有花色，你可选择一项：令一名其他角色获得「小兔子」标记，或令所有「小兔子」各摸一张牌。',
 			chahui: '茶会交流',
 			chahui_info: '你于出牌阶段使用牌后，可以令一名小兔子选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用。小兔子于出牌阶段使用牌后也可以对你如此做。',
 			duandai: '嚣张缎带',
@@ -2350,14 +2350,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			tangyan: '穿心糖言',
 			tangyan_info: '若你已受伤，你使用、打出或弃置一张基本牌后，可以选择一项：1.令一名角色摸一张牌；2.防止你下一次受到的伤害；3.视为使用一张本回合未以此法使用过的基本牌。',
 			tianyin: '万象天引',
-			tianyin_info: '出牌阶段，你可以受到1点无来源的伤害，并将一张手牌交给一名其他角色，此牌称为“心嘉”牌。在持有“心嘉”牌角色的回合中，你发动『穿心糖言』改为依次执行所有选项。',
+			tianyin_info: '出牌阶段，你可以受到1点无来源的伤害，并将一张手牌交给一名其他角色，此牌称为「心嘉」牌。在持有「心嘉」牌角色的回合中，你发动『穿心糖言』改为依次执行所有选项。',
 			xinjia: '心嘉',
 
 			sp_Ava: '皇·向晚',
 			shuimu: '降雨水母',
 			shuimu_info: '锁定技 你首次受到伤害前没有体力牌。首次受到伤害后，你获得当前姿态对应的体力牌。',
 			liuxuan: '无限溜旋',
-			liuxuan_info: '锁定技 游戏开始时，你处于“拉胯”姿态（对应“4”）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入“活力”/“害羞”/“犟嘴”/“可爱”姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到“拉胯”姿态。<br>'
+			liuxuan_info: '锁定技 游戏开始时，你处于「拉胯」姿态（对应<4>）。你使用或打出一张点数为3/4/5/7倍数的牌时，进入「活力」/「害羞」/「犟嘴」/「可爱」姿态（若同时满足则选择先进入其中一个然后切换至另一个）；使用或打出其它点数牌的时，回到「拉胯」姿态。<br>'
 			+'<br><span class="yellowtext">拉胯</span>：其他角色计算与你的距离-1。'
 			+'<br><span class="legendtext">活力</span>：你的锦囊牌无法被抵消；离开此姿态时，你摸一张牌。'
 			+'<br><span class="greentext">害羞</span>：你造成或受到的伤害+1，你的手牌无法被其他角色获得或弃置。'

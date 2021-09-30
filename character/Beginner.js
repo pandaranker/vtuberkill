@@ -2294,9 +2294,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//re下地
 			re_yinliu: {
 				enable:'phaseUse',
+				usable:1,
 				filter:function(event,player){
-					return	(player.countCards('he') >= 1
-						&&!player.hasSkill('re_yinliu_used'));
+					return	player.countDiscardableCards(player,'he')>0;
 				},
 				check:function(card){
 					return 7-get.value(card);
@@ -2305,18 +2305,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				position:'he',
 				selectCard:[1,3],
 				content:function(){
-					event.cards = cards;
-					player.addTempSkill('re_yinliu_used','phaseUseEnd');
+					'step 0'
 					game.delayx();
-					while (true){
-						var card=get.cards()[0];
-						player.showCards(card);
-						player.gain(card, 'gain2');
-						var chk = false;
-						event.cards.forEach(function(cur) {
-							if (get.suit(cur) == get.suit(card)) chk = true;
+					'step 1'
+					player.draw();
+					'step 2'
+					if(get.itemtype(result)=='cards'){
+						player.showCards(result);
+						cards.forEach(function(cur) {
+							if(get.suit3(result).contains(get.suit(cur)))	event.goto(1);
 						})
-						if (!chk) break;
 					}
 				},
 				ai:{
@@ -5883,7 +5881,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_dazhen_info: '出牌阶段，你可将你武器栏的牌移动至其他角色武器栏（代替原装备），然后其选择一项：<br>弃置你手牌数与手牌上限之差的牌；或受到你造成的1点伤害。',
 
 			re_KaguyaLuna: '新·辉夜月',
-			re_jiajiupaidui: '假酒派对',
+			re_jiajiupaidui: '假酒',
 			re_jiajiupaidui_info: '每回合限一次，当你需要使用【酒】时，你可以令一名角色弃一张牌，若为♠或点数9，视为你使用之。',
 
 			re_MiraiAkari: '新·未来明',

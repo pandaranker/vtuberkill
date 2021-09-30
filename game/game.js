@@ -1234,10 +1234,10 @@
                                 }
                             }
                             else {
-                                if (link.indexOf('svg_')==0) {
+                                if (link.indexOf('svg_') == 0) {
                                     node.setBackgroundImage('image/background/' + link.slice(4) + '.svg');
                                 }
-                                else{
+                                else {
                                     node.setBackgroundImage('image/background/' + link + '.jpg');
                                 }
                                 node.style.backgroundSize = 'cover';
@@ -1326,10 +1326,10 @@
                                 });
                             }
                             else {
-                                if (lib.config.image_background.indexOf('svg_')==0) {
+                                if (lib.config.image_background.indexOf('svg_') == 0) {
                                     ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
                                 }
-                                else{
+                                else {
                                     ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
                                 }
                             }
@@ -7041,10 +7041,10 @@
                         }
                     }
                     if (htmlbg) {
-                        if (htmlbg.indexOf('svg_')==0) {
+                        if (htmlbg.indexOf('svg_') == 0) {
                             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg.slice(4) + '.svg")';
                         }
-                        else{
+                        else {
                             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg + '.jpg")';
                             document.documentElement.style.backgroundSize = 'cover';
                             document.documentElement.style.backgroundPosition = '50% 50%';
@@ -8836,10 +8836,10 @@
                 ui.background.style.backgroundSize = "cover";
                 ui.background.style.backgroundPosition = '50% 50%';
                 if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
-                    if (lib.config.image_background.indexOf('svg_')==0) {
+                    if (lib.config.image_background.indexOf('svg_') == 0) {
                         ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
                     }
-                    else{
+                    else {
                         ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
                     }
                     if (lib.config.image_background_blur) {
@@ -10390,50 +10390,51 @@
                 }
             },
             c: function () {
-                (function () {
-                    var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
-                    var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
-                    for (var i in lib.character) {
-                        switch (lib.character[i][1]) {
-                            case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
-                            case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
-                            case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
-                            case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
-                            case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
-                            case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
-                            case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
-                            case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
-                            case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
-                            case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
-                            case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
-                            case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
-                            case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
-                            case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
-                            case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
-                            case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
-                            case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
-                            case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
-                            case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
-                            case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
-                            case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
-                            case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
-                            case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
-                            case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
-                            case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-                        }
-                    }
-                    console.log('魏：' + (a - sa) + '/' + a);
-                    console.log('蜀：' + (b - sb) + '/' + b);
-                    console.log('吴：' + (c - sc) + '/' + c);
-                    console.log('群：' + (d - sd) + '/' + d);
-                    console.log('西：' + (e - se) + '/' + e);
-                    console.log('键：' + (f - sf) + '/' + f);
-                    console.log('杏：' + (g - sg) + '/' + g);
-                    console.log('虹：' + (h - sh) + '/' + h);
-                    console.log('U：' + (j - sj) + '/' + j);
-                    console.log('点：' + (k - sk) + '/' + k);
-                    console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
-                }());
+                // (function () {
+                //     var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
+                //     var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
+                //     for (var i in lib.character) {
+                //         switch (lib.character[i][1]) {
+                //             case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
+                //             case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
+                //             case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
+                //             case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
+                //             case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
+                //             case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
+                //             case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
+                //             case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
+                //             case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
+                //             case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
+                //             case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
+                //             case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
+                //             case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
+                //             case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
+                //             case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
+                //             case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
+                //             case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
+                //             case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
+                //             case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
+                //             case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
+                //             case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
+                //             case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
+                //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
+                //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
+                //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
+                //             case 'chidori': w++; if (lib.config.banned.contains(i)) sw++; break;
+                //         }
+                //     }
+                //     console.log('魏：' + (a - sa) + '/' + a);
+                //     console.log('蜀：' + (b - sb) + '/' + b);
+                //     console.log('吴：' + (c - sc) + '/' + c);
+                //     console.log('群：' + (d - sd) + '/' + d);
+                //     console.log('西：' + (e - se) + '/' + e);
+                //     console.log('键：' + (f - sf) + '/' + f);
+                //     console.log('杏：' + (g - sg) + '/' + g);
+                //     console.log('虹：' + (h - sh) + '/' + h);
+                //     console.log('U：' + (j - sj) + '/' + j);
+                //     console.log('点：' + (k - sk) + '/' + k);
+                //     console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
+                // }());
                 (function () {
                     var a = 0, b = 0, c = 0, d = 0;
                     var aa = 0, bb = 0, cc = 0, dd = 0;
@@ -10947,6 +10948,8 @@
             chaos: 'C',
             xuefeng: '雪',
             ego: '复',
+            chidori: '鸟',
+            lucca: 'L',
             double: '多',
             wei2: '魏国',
             shu2: '蜀国',
@@ -10974,6 +10977,8 @@
             chaos2: 'ChaosLive',
             xuefeng2: '雪风军团',
             ego2: 'Egolive',
+            chidori2: '千鸟战队',
+            lucca2: 'Lucca事务所',
             double2: '多势力',
             male: '男',
             female: '女',
@@ -11158,7 +11163,7 @@
                                     for (var j = 0; j < mate.length; j++) {
                                         for (var k of scards) {
                                             if (!smate.contains(k)) {
-                                                if (get.is.filterCardBy(k,mate[j])) {
+                                                if (get.is.filterCardBy(k, mate[j])) {
                                                     smate.push(k)
                                                     mate.splice(j--, 1);
                                                 }
@@ -11166,7 +11171,7 @@
                                         }
                                     }
                                     for (var j = 0; j < mate.length; j++) {
-                                        if (get.is.filterCardBy(card,mate[j])) {
+                                        if (get.is.filterCardBy(card, mate[j])) {
                                             return true
                                         }
                                     }
@@ -11192,7 +11197,7 @@
                                     var mate = filter.slice(0);
                                     for (var j = 0; j < mate.length; j++) {
                                         for (var k of scards) {
-                                            if (get.is.filterCardBy(k,mate[j])) {
+                                            if (get.is.filterCardBy(k, mate[j])) {
                                                 mate.splice(j--, 1);
                                             }
                                         }
@@ -13621,6 +13626,8 @@
                     event.result.num2[event.iwhile] = event.num2;
                     var str;
                     if (event.num1 > event.num2) {
+                        event.result.winner = player;
+                        event.result.loser = target;
                         str = get.translation(player) + '拼点成功';
                         player.popup('胜');
                         target.popup('负');
@@ -13628,10 +13635,13 @@
                     else {
                         str = get.translation(player) + '拼点失败';
                         if (event.num1 == event.num2) {
+                            event.result.tie = true;
                             player.popup('平');
                             target.popup('平');
                         }
                         else {
+                            event.result.winner = target;
+                            event.result.loser = player;
                             player.popup('负');
                             target.popup('胜');
                         }
@@ -13657,6 +13667,7 @@
                         next.card2 = event.card2;
                         next.num1 = event.num1;
                         next.num2 = event.num2;
+                        next.winner = event.result.winner;
                         next.setContent(event.callback);
                     }
                     "step 6"
@@ -17924,6 +17935,7 @@
                     return next;
                 },
                 canShengjie: function () {
+                    if (lib.configOL.protect_beginner) return false;
                     var list = [];
                     if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
                     for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
@@ -17958,7 +17970,7 @@
                                 var mate = filter.slice(0);
                                 for (var l = 0; l < mate.length; l++) {
                                     for (var card of j) {
-                                        if (get.is.filterCardBy(card,mate[l])) {
+                                        if (get.is.filterCardBy(card, mate[l])) {
                                             mate.splice(l--, 1);
                                         }
                                     }
@@ -19882,7 +19894,7 @@
                     }
                     if (arg2) {
                         for (i = 0; i < cards.length; i++) {
-                            if (!get.is.filterCardBy(cards[i],arg2)) {
+                            if (!get.is.filterCardBy(cards[i], arg2)) {
                                 cards.splice(i--, 1);
                             }
                         }
@@ -28257,6 +28269,7 @@
                 if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) return true;
                 if (_status.connectMode) {
                     if (lib.configOL.banned.contains(i) || lib.connectBanned.contains(i)) return true;
+                    if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
                     var double_character = false;
                     if (lib.configOL.mode == 'guozhan') {
                         double_character = true;
@@ -28617,23 +28630,17 @@
                     var group = get.is.double(name, true);
                     if (group) return group[0];
                     return lib.character[name][1];
-                }
-                var groupSort = function (name) {
+                },
+                    groupSort = function (name) {
                     if (!lib.character[name]) return 50;
                     var group = getGroup(name);
                     if (group == 'shen') return -1;
-                    var list = [
-                        'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
-                        'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                        'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
-                        'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
-
-                    ];
-                    if (list.contains(group)) return list.indexOf(group);
                     if (group == 'vtuber') return 40;
                     if (group == 'clubs') return 41;
+                        var list = get.groups();
+                        if (list.contains(group)) return list.indexOf(group);
                     return 49;
-                }
+                    };
                 var del = groupSort(a) - groupSort(b);
                 if (del != 0) return del;
                 var aa = a, bb = b;
@@ -31118,7 +31125,7 @@
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'key',
             'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
+            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
             'vshojo'
         ],
         /**
@@ -31164,6 +31171,8 @@
             chaos: 'ocean',
             xuefeng: 'ocean',
             ego: 'ocean',
+            chidori: 'wood',
+            lucca: 'wood',
 
             vtuber: 'metal',
             clubs: 'ice',
@@ -41540,6 +41549,7 @@
                         for (var i in info) {
                             if (info[i][4] && info[i][4].contains('unseen')) continue;
                             if (connectMenu && lib.connectBanned.contains(i)) continue;
+                            if (connectMenu && lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
                             list.push(i);
                             if (boolAI && !lib.config.forbidai_user.contains(i)) boolAI = false;
                             for (var j = 0; j < info[i][3].length; j++) {
@@ -41560,22 +41570,16 @@
                             var group = get.is.double(name, true);
                             if (group) return group[0];
                             return lib.character[name][1];
-                        };
-                        var groupSort = function (name) {
+                        },
+                            groupSort = function (name) {
                             if (!lib.character[name]) return 50;
                             var group = getGroup(name);
-                            var list = [
-                                'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
-                                'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                                'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
-                                'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
-
-                            ];
-                            if (list.contains(group)) return list.indexOf(group);
                             if (group == 'vtuber') return 40;
                             if (group == 'clubs') return 41;
+                                var list = get.groups();
+                                if (list.contains(group)) return list.indexOf(group);
                             return 49;
-                        }
+                            };
                         list.sort(function (a, b) {
                             var del = groupSort(a) - groupSort(b);
                             if (del != 0) return del;
@@ -46560,7 +46564,7 @@
             groupControl: function (dialog) {
                 return ui.create.control('qun',
                     'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
+                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
                     'vshojo', function (link, node) {//'wei','shu','wu','western','key',
                         if (link == '全部') {
                             dialog.currentcapt = '';
@@ -46992,8 +46996,9 @@
                 }
                 if (!thisiscard) {
                     var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
-                        'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp', 'vshojo',
-                        'xuyan', 'chaos', 'xuefeng','ego'
+                        'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
+                        'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
+                        'vshojo'
                     ];//'wei','shu','wu','key',
                     if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                     var bool1 = false;
@@ -47075,7 +47080,7 @@
                         var span = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
                         span.style.margin = '3px';
                         newlined.appendChild(span);
-                        span.innerHTML = get.translation(groups[i] + '2');
+                        span.innerHTML = get.translation(groups[i] + '2')||get.translation(groups[i]);
                         span.link = groups[i];
                         span._nature = natures[i];
                         span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickGroup);
@@ -47225,22 +47230,16 @@
                         var group = get.is.double(name, true);
                         if (group) return group[0];
                         return lib.character[name][1];
-                    }
+                    },
                     groupSort = function (name) {
                         if (!lib.character[name]) return 50;
                         var group = getGroup(name);
-                        var list = [
-                            'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
-                            'holo', 'nijisanji', 'VirtuaReal', 'HappyElements',
-                            'dotlive', 'upd8', 'nanashi', 'psp', 'asoul', 'nori', 'xuyan', 'xuefeng','ego',
-                            'eilene', 'paryi', 'kagura', 'vshojo', 'chaos'
-
-                        ];
-                        if (list.contains(group)) return list.indexOf(group);
                         if (group == 'vtuber') return 40;
                         if (group == 'clubs') return 41;
+                            var list = get.groups();
+                            if (list.contains(group)) return list.indexOf(group);
                         return 49;
-                    }
+                        };
                 }
                 list.sort(function (a, b) {
                     var del = groupSort(a) - groupSort(b);
@@ -49021,6 +49020,7 @@
                                 if (lib.config.bannedcards.contains(lib.card.list[i][2])) continue;
                             }
                             else {
+                                if (lib.configOL.protect_beginner && get.is.banForBeginner(lib.card.list[i][2])) continue;
                                 if (lib.configOL.bannedcards.contains(lib.card.list[i][2])) continue;
                             }
                             if (game.bannedcards && game.bannedcards.contains(lib.card.list[i][2])) continue;
@@ -52208,6 +52208,7 @@
                     fav.classList.add('active');
                 }
                 var intro = ui.create.div('.characterintro', get.characterIntro(name), uiintro);
+                var intro1 = ui.create.div('.characterintro.intro1', get.characterTag(name), uiintro);
                 var intro2 = ui.create.div('.characterintro.intro2', uiintro);
                 var list = get.character(name, 3) || [];
                 var skills = ui.create.div('.characterskill', uiintro);
@@ -53357,8 +53358,40 @@
          * @namespace
          */
         is: {
-            filterCardBy:function (card,arg) {
-                if(!card||!arg) return false;
+            //“保护新手”模式的ban将
+            banForBeginner: function (current) {
+                if (current in lib.character) {
+                    for (var i in lib.characterPack) {
+                        if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
+                            if (current in lib.characterPack[i]) {
+                                return true
+                            }
+                        }
+                    }
+                    if ([
+                        're_ShigureUi', 're_NijikawaRaki',
+                        'ŌokamiMio',
+                        'Elu', 'SuzukaUtako', 'MononobeAlice', 'SakuraRitsuki', 'YagamiKaruta',
+                        'Bella', 'Carol', 'Azusa', 'Yousa', 'AkiRinco', 'Lovely', 'Pudding', 'jike', 'Bacharu', 'SephiraSu', 'Reine', 'IsekaiJoucho', 'Rim', 'Harusaruhi',
+                        'Bafuko', 'Hiiro', 'Eilene', 'YaotomeNoe', 'Niuniuzi', 'Zaodaoji'
+                    ].contains(current)) return true;
+                    return false;
+                }
+                if (current in lib.card) {
+                    console.log(current in lib.card&&lib.cardPack)
+                    for (var i in lib.cardPack) {
+                        if (!['standard', 'extra'].contains(i)) {
+                            if (lib.cardPack[i].contains(current)) {
+                                return true
+                            }
+                        }
+                    }
+                    return false;
+                }
+            },
+            //检查卡牌是否符合要求的快捷方法(只要求满足至少一种条件，无条件时默认不满足)
+            filterCardBy: function (card, arg) {
+                if (!card || !arg) return false;
                 if (typeof arg == 'string') {
                     if (arg == get.name(card)) return true;
                 }
@@ -53862,6 +53895,25 @@
             if (lib.characterIntro[name]) return lib.characterIntro[name];
             return '暂无武将介绍';
         },
+        characterTag: function (name) {
+            var str = '';
+            var tags = get.character(name, 4);
+            if (!tags) return str;
+            if (tags) {
+                for (var i = 0; i < tags.length; i++) {
+                    if (tags[i].indexOf('des:') == 0) {
+                        continue;
+                    }
+                    var str0 = lib.translate[tags[i] + '_tag'] || lib.translate[tags[i]];
+                    if (str0) {
+                        if (!str.length) str += '标签:';
+                        str += ' ';
+                        str += str0;
+                    }
+                }
+            }
+            return str;
+        },
         groupnature: function (group, method) {
             var nature = lib.groupnature[group];
             if (!nature) return '';
@@ -54246,6 +54298,7 @@
                 for (var j in pack) {
                     if (typeof func == 'function' && func(j)) continue;
                     if (lib.connectBanned.contains(j)) continue;
+                    if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
                     if (lib.character[j]) libCharacter[j] = pack[j];
                 }
             }
@@ -55755,6 +55808,7 @@
             }
             return selectable;
         },
+        //检查卡牌是否符合要求的快捷方法(要求满足全部条件，无条件时默认满足)
         filter: function (filter, i) {
             if (typeof filter == 'function') return filter;
             if (i == undefined) i = 0;
@@ -56158,7 +56212,7 @@
                 }
                 var capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
-                    capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? get.translation(node.group + '2') : lib.translate[lib.character[node.name][1]]);
+                    capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? (get.translation(node.group + '2')||get.translation(node.group)) : lib.translate[lib.character[node.name][1]]);
                 }
                 uiintro.add(capt);
 
@@ -56858,6 +56912,12 @@
                             if (typeof lib.card[name].yingbian_prompt == 'function') uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt(node.link || node) + '</div>');
                             else uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt + '</div>');
                         }
+                        if (node.nature == 'ocean') {
+                            uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' + '<span class="bluetext">海洋</span>' + '：海洋属性的牌被使用时，若此牌没有「伤害」标签且目标没有护甲，则令目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' + '</div>');
+                        }
+                        if (node.nature == 'yami') {
+                            uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' + '<span class="legendtext">暗影</span>' + '：暗影属性的牌可以在其他角色的结束阶段对其使用；暗影属性的牌被使用时，若目标手牌数多于使用者，则其不能响应此牌且此牌造成的伤害不产生传递' + '</div>');
+                        }
                         if (lib.translate[name + '_append']) {
                             uiintro.add('<div class="text" style="display:inline">' + lib.translate[name + '_append'] + '</div>');
                         }
@@ -57227,7 +57287,7 @@
                 'vtuber', 'clubs',
                 'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                 'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','ego',
+                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
                 'vshojo'
             ];
         },

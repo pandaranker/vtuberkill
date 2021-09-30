@@ -28,22 +28,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		start:function(){
 			"step 0"
-			if(!_status.connectMode){
-				for(var i in lib.characterPack){
-					if(i=='clubs'){
-						for(var j in lib.characterPack[i]){
-							lib.characterPack[i][j][1] = 'clubs';
-						}
+			for(var i in lib.characterPack){
+				if(i=='clubs'){
+					for(var j in lib.characterPack[i]){
+						lib.characterPack[i][j][1] = 'clubs';
 					}
-					else if(i=='vtuber'){
-						for(var j in lib.characterPack[i]){
-							lib.characterPack[i][j][1] = 'vtuber';
-						}
+				}
+				else if(i=='vtuber'){
+					for(var j in lib.characterPack[i]){
+						lib.characterPack[i][j][1] = 'vtuber';
 					}
-					else{
-						for(var j in lib.characterPack[i]){
-							if(['upd8','asoul','dotlive'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
-						}
+				}
+				else{
+					for(var j in lib.characterPack[i]){
+						if(['psp','xuefeng','VirtuaReal','HappyElements','asoul','dotlive'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
+						else if(!['holo','nijisanji'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'clubs';
 					}
 				}
 			}

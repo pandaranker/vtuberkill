@@ -2552,8 +2552,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				filter:function(event,player){
 					if(event.player.storage.shuangzhi2&&event.player.storage.shuangzhi2>=2)	return false;
-					if(event.player.isAlive()&&event.player!=player)	return false;
-					if(event.type=='discard'&&event.cards.filterInD('d').length)	return true;
+					if(event.player.isAlive()&&event.player!=player){
+						if(event.type=='discard'&&event.cards.filterInD('d').length)	return true;
+					}
 				},
 				content:function(){
 					'step 0'

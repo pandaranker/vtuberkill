@@ -397,7 +397,7 @@ table {
 }
 
 #splash.slim>div>.splashtext{
-	filter: drop-shadow(5px 3px 3px  rgb(15, 15, 97));
+	filter: drop-shadow(3px 3px 2px  rgb(69, 69, 121));
 	right: 5px;
 	bottom: 5px;
 }
