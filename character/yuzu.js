@@ -6662,7 +6662,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				usable:1,
 				content:function(){
 					'step 0'
-					player.chooseCard('he',get.prompt2('bianyin'),tr);
+					player.chooseCard('he',get.prompt2('bianyin'),true);
 					'step 1'
 					if(result.bool){
 						// player.logSkill('bianyin');
@@ -6838,7 +6838,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							game.log(player,'使命失败');
 							player.unmarkSkill('zhengen');
 							event.num = player.countCards('h');
-							player.chooseTarget('『政恩』：令'+get.cnNumber(event.num)+'名角色横置',true,function(card,player,target){
+							player.chooseTarget(event.num,'『政恩』：令'+get.cnNumber(event.num)+'名角色横置',true,function(card,player,target){
 								return !target.isLinked();
 							},function(target){
 								var player = _status.event.player;
@@ -6854,7 +6854,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								}
 							}
 							'step 2'
-							player.damage(event.num,'fire');
+							player.damage(player.countCards('h'),'fire');
 						},
 					},
 				},
