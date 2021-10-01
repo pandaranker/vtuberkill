@@ -115,7 +115,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				fullskin:true,
 				type:'trick',
 				vanish:true,
-				wuxieable:true,
 				global:['g_wudaoqu'],
 				notarget:true,
 				materials:['shan','wuxie'],
@@ -141,6 +140,48 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						value:[7,4],
 					},
 					result:{player:1},
+				},
+			},
+			daluandou:{
+				fullskin:true,
+				enable:true,
+				type:'trick',
+				vanish:true,
+				// wuxieable:true,
+				materials:[{color:'red'},{color:'black'}],
+				materials_prompt: '红色牌+黑色牌',
+				derivation:true,
+				derivationpack:'xingtian',
+				filterTarget:function(card,player,target){
+					return player.canCompare(target);
+				},
+				content:function(){
+					'step 0'
+					player.chooseToCompare(target);
+					'step 1'
+					if(result.winner==player){
+						player.gainPlayerCard(target,[1,3],'hej',true).set('filterButton',function(button){
+							for(var i=0;i<ui.selected.buttons.length;i++){
+								if(get.position(button.link)==get.position(ui.selected.buttons[i].link)) return false;
+							}
+							return true;
+						});
+						
+					}else if(result.winner==target){
+						target.gainPlayerCard(player,[1,3],'hej',true).set('filterButton',function(button){
+							for(var i=0;i<ui.selected.buttons.length;i++){
+								if(get.position(button.link)==get.position(ui.selected.buttons[i].link)) return false;
+							}
+							return true;
+						});
+					}
+				},
+				ai:{
+					basic:{
+						useful:[5,4,2],
+						value:[7,3,1],
+					},
+					result:{player:1,target:-1},
 				},
 			},
 			
@@ -253,6 +294,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			ruiping: '锐评',
 			ruiping_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得双方拼点牌并受到一点火焰伤害。',
+
+			daluandou: '大乱斗',
+			daluandou_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得对方每个区域各一张牌。',
 
 		},
 	}

@@ -1990,6 +1990,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					prompt:function(links,player){
+						if(player.storage.re_longdan==false)	return '将一张【杀】当作'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'使用或打出';
 						return '将一张基本牌当作'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'使用或打出';
 					}
 				},

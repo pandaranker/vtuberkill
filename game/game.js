@@ -28632,14 +28632,14 @@
                     return lib.character[name][1];
                 },
                     groupSort = function (name) {
-                    if (!lib.character[name]) return 50;
-                    var group = getGroup(name);
-                    if (group == 'shen') return -1;
-                    if (group == 'vtuber') return 40;
-                    if (group == 'clubs') return 41;
+                        if (!lib.character[name]) return 50;
+                        var group = getGroup(name);
+                        if (group == 'shen') return -1;
+                        if (group == 'vtuber') return 40;
+                        if (group == 'clubs') return 41;
                         var list = get.groups();
                         if (list.contains(group)) return list.indexOf(group);
-                    return 49;
+                        return 49;
                     };
                 var del = groupSort(a) - groupSort(b);
                 if (del != 0) return del;
@@ -41572,13 +41572,13 @@
                             return lib.character[name][1];
                         },
                             groupSort = function (name) {
-                            if (!lib.character[name]) return 50;
-                            var group = getGroup(name);
-                            if (group == 'vtuber') return 40;
-                            if (group == 'clubs') return 41;
+                                if (!lib.character[name]) return 50;
+                                var group = getGroup(name);
+                                if (group == 'vtuber') return 40;
+                                if (group == 'clubs') return 41;
                                 var list = get.groups();
                                 if (list.contains(group)) return list.indexOf(group);
-                            return 49;
+                                return 49;
                             };
                         list.sort(function (a, b) {
                             var del = groupSort(a) - groupSort(b);
@@ -47080,7 +47080,7 @@
                         var span = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
                         span.style.margin = '3px';
                         newlined.appendChild(span);
-                        span.innerHTML = get.translation(groups[i] + '2')||get.translation(groups[i]);
+                        span.innerHTML = lib.translate[groups[i] + '2'] ? get.translation(groups[i] + '2') : get.translation(groups[i]);
                         span.link = groups[i];
                         span._nature = natures[i];
                         span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickGroup);
@@ -47231,14 +47231,14 @@
                         if (group) return group[0];
                         return lib.character[name][1];
                     },
-                    groupSort = function (name) {
-                        if (!lib.character[name]) return 50;
-                        var group = getGroup(name);
-                        if (group == 'vtuber') return 40;
-                        if (group == 'clubs') return 41;
+                        groupSort = function (name) {
+                            if (!lib.character[name]) return 50;
+                            var group = getGroup(name);
+                            if (group == 'vtuber') return 40;
+                            if (group == 'clubs') return 41;
                             var list = get.groups();
                             if (list.contains(group)) return list.indexOf(group);
-                        return 49;
+                            return 49;
                         };
                 }
                 list.sort(function (a, b) {
@@ -53378,7 +53378,7 @@
                     return false;
                 }
                 if (current in lib.card) {
-                    console.log(current in lib.card&&lib.cardPack)
+                    console.log(current in lib.card && lib.cardPack)
                     for (var i in lib.cardPack) {
                         if (!['standard', 'extra'].contains(i)) {
                             if (lib.cardPack[i].contains(current)) {
@@ -53406,7 +53406,7 @@
                         }
                         if ((typeof arg[x] == 'string' && value == arg[x]) ||
                             (Array.isArray(arg[x]) && arg[x].contains(value))) {
-                                return true;
+                            return true;
                         }
                     }
                 }
@@ -55531,7 +55531,8 @@
                 .replace(/阵法技 /g, '<font color=#fe2>阵法技 </font>')
                 .replace(/轮次技 /g, '<font color=#fc2>轮次技 </font>')
                 .replace(/转换技 /g, '<font color=#88e>转换技 </font>')
-                .replace(/限定技 /g, '<font color=#a9f>限定技 </font>')
+                .replace(/限定技 /g, '<font color=#baf>限定技 </font>')
+                .replace(/使命技 /g, '<font color=#bf9>使命技 </font>')
                 .replace(/主公技 /g, '<font color=#ff4>主公技 </font>');
             return str;
             // 	replace(/觉醒技/g,'<span class="greentext">觉醒技</span>').
@@ -56212,7 +56213,7 @@
                 }
                 var capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
-                    capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? (get.translation(node.group + '2')||get.translation(node.group)) : lib.translate[lib.character[node.name][1]]);
+                    capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? (lib.translate[node.group + '2'] ? get.translation(node.group + '2') : get.translation(node.group)) : lib.translate[lib.character[node.name][1]]);
                 }
                 uiintro.add(capt);
 
@@ -56937,7 +56938,7 @@
                         }
                         uiintro.add(str);
                     }
-                    else uiintro.add(get.translation(character) + '&nbsp;&nbsp;' + lib.translate[lib.character[node.link][1]]);
+                    else uiintro.add(get.translation(character) + '&nbsp;&nbsp;' + lib.translate[lib.character[node.link][1]] || lib.character[node.link][1]);
                 }
                 else {
                     uiintro.add(get.translation(character));

@@ -57,6 +57,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			IsekaiJoucho: ['female','vwp',4,['baiqing','shuangxing'],],
 			/**春猿火 */
 			Harusaruhi: ['female','vwp',4,['huoju','zouyang'],],
+			/**幸祜 */
+			Koko: ['female','vwp',4,['xiezhen','wenzhou'],],
 			/**可不 */
 			Kafu:['female','vwp',3,['nisheng','jingyan']],
 			

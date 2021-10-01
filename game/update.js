@@ -1,24 +1,16 @@
 window.noname_update={
-	version:'1.9.103.4',
+	version:'1.9.103.5',
 	update:'1.9.101.1.1',
 	changeLog:[
-		'1.9.103.4小更新：完善「保护新手」机制，新增势力：千鸟战队、Lucca事务所，新增角色：文静、艾白、乌拉、云玉鸾、星汐seki',
-		'修改部分bug，修复下地『引流』的描述错误，调整背景分布。',
+		'1.9.103.5小更新：完善「保护新手」机制，新增势力：千鸟战队，新增角色：艾瑞思【主公】',
+		'修改部分bug，修复文静『政恩』的各种bug。',
 		'',
 		'在菜单-其他-帮助里，增加“FAQ”栏',
 		'化鲸篇新增机制可以在帮助中查看',
 		'化鲸篇人物：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景和海·sasaki、HOLO的海·aqua、HOLOEN的噶呜·古拉和一伊那尔栖、asoul的海·向晚、特典的绯赤艾莉欧和噶呜·古拉',
 	],
 	files:[
-		'image/character/Ava.jpg',
-		'image/character/Carol.jpg',
-		'image/character/Reine.jpg',
-		'image/character/RobokoSan.jpg',
 		'image/character/Xiaorou.jpg',
-
-		'image/card/sha.png',
-		'image/card/chuqibuyi.png',
-
 
 		'character/Beginner.js',
 		'character/hololive.js',
@@ -30,6 +22,9 @@ window.noname_update={
 		'character/huajing.js',
 		'character/sololive.js',
 		'character/xingtian.js',
+		// 'character/diy.js',
+		// 'character/refresh.js',
+		// 'character/shenhua.js',
 		
 		'card/huajing.js',
 		'card/longlaoguan.js',
@@ -39,14 +34,11 @@ window.noname_update={
 		'card/standard.js',
 		'card/guozhan.js',
 		'card/remark.js',
-		// 'card/gwent.js',
 		'card/yunchou.js',
 		'card/zhenfa.js',
 		'card/zhulu.js',
 		'card/xingtian.js',
-		// 'character/diy.js',
-		// 'character/refresh.js',
-		// 'character/shenhua.js',
+		// 'card/gwent.js',
 		'character/sp.js',
 		//'extension/boss/extension.js',
 		'layout/default/layout.css',
