@@ -2514,8 +2514,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 8'
 					if(event.wuxieresult&&event.wuxieresult2&&event.wuxieresult2.skill){
 						var info=get.info(event.wuxieresult2.skill);
-						if(info&&info.precontent&&!game.online){
-							var next=game.createEvent('pre_'+event.wuxieresult2);
+						console.log(event,info,event.wuxieresult2)
+						if(info&&info.precontent&&!info.viewAs&&!game.online){
+							var next=game.createEvent('pre_'+event.wuxieresult2.skill);
 							next.setContent(info.precontent);
 							next.set('result',event.wuxieresult2);
 							next.set('player',event.wuxieresult);

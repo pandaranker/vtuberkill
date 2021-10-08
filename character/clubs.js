@@ -196,7 +196,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					if(event.targs.length)	event.goto(1);
 				},
-				ai:{order:2,result:{target:-1}},
+				ai:{order:2,result:{
+					target:function(player,target){
+						if(target.hasSkill('shenyou')) return 0;
+						return get.damageEffect(target,player,target);
+					}
+				}},
 			},
 			//艾琳
 			daimeng:{

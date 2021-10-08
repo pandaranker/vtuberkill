@@ -540,7 +540,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								event.addedSkill.add('number');
 								next.addedSkill.add('number');
 							}
-							console.log(event);
 						},
 						ai:{
 							respondShan:true,
@@ -588,7 +587,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								event.addedSkill.add('number');
 								next.addedSkill.add('number');
 							}
-							console.log(event);
 						}
 					}
 				},
@@ -5971,7 +5969,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_LizeHelesta: '新·莉泽',
 			yubing: '语冰',
-			yubing_info: '你使用基本牌或通常锦囊牌后，若未被抵消，你可以令你不为零的手牌上限-1直到回合结束，然后摸两张牌。',
+			yubing_info: '你使用基本牌或通常锦囊牌后，若未被抵消，你可以令你不为0的手牌上限-1直到回合结束，然后摸两张牌。',
 			yubing_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手</span>',
 
 			re_AngeKatrina: '新·安洁',
@@ -6054,7 +6052,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_AkaiHaato: '新·赤井心',
 			xinchixin: '赤心',
-			xinchixin_info: '当有本回合未以此技能获得的♥牌不因使用进入弃牌堆时，若其中有牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
+			xinchixin_info: '当牌进入弃牌堆时，若其中有本回合未以此技能获得的♥牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。',
 			xinchixin_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：回收关键牌</span>',
 
 			re_NakiriAyame: '新·百鬼绫目',

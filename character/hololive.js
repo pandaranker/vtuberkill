@@ -3446,6 +3446,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fantuan: '安心饭团',
 			fantuan_info: '你使用一张延时锦囊牌时，可以令一名角色回复一点体力并摸一张牌。',
 			shengang: '神冈家计',
+			shengang_judge: '神冈家计-判定',
+			shengang_useCard: '神冈家计-使用',
 			shengang_info: '每两轮每项限一次，你可以在自己与相邻角色判定区卡牌/使用实体牌结算后获得之。',
 			shengang_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：回收关键牌</span>',
 
