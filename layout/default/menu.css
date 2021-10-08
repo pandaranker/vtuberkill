@@ -284,7 +284,7 @@
 	align-items: center;
 
 	order: 2;
-	flex: 0.01 0.1;
+	flex: 0.1 2.5;
 	color: aquamarine;
     overflow-x: scroll;
 	height: 16px;
