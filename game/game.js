@@ -1331,6 +1331,10 @@
                                 }
                                 else {
                                     ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+
+                                    ui.backgroundSVG = ui.create.div('.background',ui.background);
+                                    ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
+                                    ui.backgroundSVG.style.opacity = '.3';
                                 }
                             }
                             ui.background.style.backgroundSize = 'cover';
@@ -8841,6 +8845,10 @@
                     }
                     else {
                         ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+                        
+                        ui.backgroundSVG = ui.create.div('.background',ui.background);
+                        ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
+                        ui.backgroundSVG.style.opacity = '.3';
                     }
                     if (lib.config.image_background_blur) {
                         ui.background.style.filter = 'blur(8px)';
@@ -10940,13 +10948,14 @@
             kagura: '神楽',
             nanashi: '774',
             psp: 'P',
-            asoul: '魂',
+            asoul: 'A',
             nori: '苔',
             vwp: '神椿',
             vshojo: 'V',
             xuyan: '虚',
             chaos: 'C',
             xuefeng: '雪',
+            hunmiao: '魂',
             ego: '复',
             chidori: '鸟',
             lucca: 'L',
@@ -10976,6 +10985,7 @@
             xuyan2: '虚研社',
             chaos2: 'ChaosLive',
             xuefeng2: '雪风军团',
+            hunmiao2: '魂喵科技',
             ego2: 'Egolive',
             chidori2: '千鸟战队',
             lucca2: 'Lucca事务所',
@@ -31125,7 +31135,7 @@
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'key',
             'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
+            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
             'vshojo'
         ],
         /**
@@ -31170,6 +31180,7 @@
             xuyan: 'ice',
             chaos: 'ocean',
             xuefeng: 'ocean',
+            hunmiao: 'ocean',
             ego: 'ocean',
             chidori: 'wood',
             lucca: 'wood',
@@ -31464,7 +31475,11 @@
                                     setTimeout(show, 10);
                                 }
                                 else {
-                                    setTimeout(show, 90);
+                                    var t = setTimeout(show, 100);
+                                    drive.onclick = function () {
+                                        t = null;
+                                        show();
+                                    }
                                 }
                             } else {
                                 if (num < galgame.text[event.shijian].length) {
@@ -31472,20 +31487,13 @@
                                         i = 0;
                                         galgame.audio.pause();
                                         bofang();
+                                        window.status = '';
                                     }
                                     drive.onclick = function () {
                                         this.onclick = false;
                                         i = 0;
                                         galgame.audio.pause();
                                         bofang();
-                                    }
-                                    drive.onkeydown = function (e) {
-                                        console.log(e);
-                                        if (e.ctrlKey) {
-                                            i = 0;
-                                            galgame.audio.pause();
-                                            bofang();
-                                        }
                                     }
                                 } else {
                                     if (window.status == 'skip') {
@@ -31498,14 +31506,6 @@
                                         ui.backgroundMusic.play();
                                         ui.window.removeChild(beijing);
                                         galgame.end();
-                                    }
-                                    drive.onkeydown = function (e) {
-                                        console.log(e);
-                                        if (e.ctrlKey) {
-                                            ui.backgroundMusic.play();
-                                            ui.window.removeChild(beijing);
-                                            galgame.end();
-                                        }
                                     }
                                 }
                             }
@@ -45954,7 +45954,7 @@
                             checkCheat();
                         };
                         menuUpdates.push(function () {
-                            if (_status.video || _status.connectMode) {
+                            if (_status.video || _status.connectMode || _status.yindao) {
                                 node.classList.add('off');
                                 if (node.classList.contains('active')) {
                                     node.classList.remove('active');
@@ -46564,7 +46564,7 @@
             groupControl: function (dialog) {
                 return ui.create.control('qun',
                     'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
+                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
                     'vshojo', function (link, node) {//'wei','shu','wu','western','key',
                         if (link == '全部') {
                             dialog.currentcapt = '';
@@ -46997,7 +46997,7 @@
                 if (!thisiscard) {
                     var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
                         'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
-                        'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
+                        'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
                         'vshojo'
                     ];//'wei','shu','wu','key',
                     if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
@@ -52207,11 +52207,16 @@
                 else if (lib.config.favouriteCharacter.contains(name)) {
                     fav.classList.add('active');
                 }
-                var intro = ui.create.div('.characterintro', get.characterIntro(name), uiintro);
-                var intro1 = ui.create.div('.characterintro.intro1', get.characterTag(name), uiintro);
-                var intro2 = ui.create.div('.characterintro.intro2', uiintro);
+                var intro = ui.create.div('.charactercontainer', uiintro);
+                if(get.characterIntro(name).length){
+                    var intro0 = ui.create.div('.characterintro', get.characterIntro(name), intro);
+                }
+                if(get.characterTag(name).length){
+                    var intro1 = ui.create.div('.characterintro.intro1', get.characterTag(name), intro);
+                }
+                var intro2 = ui.create.div('.characterintro.intro2', intro);
                 var list = get.character(name, 3) || [];
-                var skills = ui.create.div('.characterskill', uiintro);
+                var skills = ui.create.div('.characterskill', intro);
                 if (lib.config.touchscreen) {
                     lib.setScroll(intro);
                     lib.setScroll(intro2);
@@ -53893,7 +53898,8 @@
                 name = name.slice(name.indexOf('_') + 1);
             }
             if (lib.characterIntro[name]) return lib.characterIntro[name];
-            return '暂无武将介绍';
+            // return '暂无武将介绍';
+            return '';
         },
         characterTag: function (name) {
             var str = '';
@@ -57288,7 +57294,7 @@
                 'vtuber', 'clubs',
                 'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                 'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'ego', 'chidori', 'lucca',
+                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
                 'vshojo'
             ];
         },
