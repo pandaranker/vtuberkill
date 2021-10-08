@@ -11246,12 +11246,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				logTarget:function(event,player){
 					return _status.currentPhase;
 				},
+				forced:true,
 				content:function(){
 					'step 0'
 					if(!player.storage.xiuyou)	player.storage.xiuyou = [];
 					event.target = _status.currentPhase;
 					event.cards = player.getStorage('xiuyou_mark').slice(0);
-					player.chooseCardButton(event.cards,get.prompt2('xiuyou'),true).set('ai',function(button){
+					player.chooseCardButton(event.cards, '###『修又』选择交给'+get.translation(event.target)+'的牌###'+get.skillInfoTranslation('xiuyou', player),true).set('ai',function(button){
 						var player = _status.event.player;
 						return get.attitude(player,_status.currentPhase)&&get.buttonValue(button);
 					});
@@ -11278,6 +11279,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					event.target.chooseButton(true,event.num).set('dialog',event.videoId).set('prompt',get.prompt('tiantang'));
 					'step 4'
+					game.broadcastAll('closeDialog', event.videoId);
 					if(result.bool){
 						result.links.forEach(element=>{
 							switch(element[0]){
