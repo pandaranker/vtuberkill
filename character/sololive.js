@@ -390,17 +390,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**旧花园猫 */
 			old_maoliang: {
 				mark:true,
+				locked:true,
 				marktext: '粮',
 				intro:{
 					content:'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							game.log(storage,'被置入了弃牌堆');
-							storage.length=0;
-						}
-					},
+					onunmark:'throw',
+					cardAround:true
 				},
 			},
 			old_jiumao: {
@@ -1125,8 +1120,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						popup:false,
 						content:function(){
 							player.storage.gz_lianjin_used=[];
-						}
-					},
+						},
+						cardAround:true
+					}
 				}
 			},
 			//黄兔
@@ -1245,16 +1241,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			//心萪
 			zuigao:{
 				intro:{
-					content:"cards",
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							game.log(storage,'被置入了弃牌堆');
-						 storage.length=0;
-						}
-					},
+					content:'cards',
+					onunmark:'throw',
 				},
+				cardAround:true,
 				enable:'phaseUse',
 				usable:1,
 				init:function(player,skill){
@@ -1361,6 +1351,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.target = result.targets[0];
 					if(event.target){
+						player.logSkill('xinhuochuancheng',event.target);
 						var cards = player.getStorage('zuigao');
 						if(trigger.name=='dying'){
 							player.unmarkAuto('zuigao',cards);

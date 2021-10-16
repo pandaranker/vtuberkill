@@ -97,7 +97,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HanazonoSerena: "花园sarena者（V始三年），青城之猫灵也，清楚三铳士之一，为报帕里之恩追随之，虽体弱多病然擅行刺，V始三年，以松饼鸩杀汉中太守，帕里pro遂建国巴蜀，花园猫不谙世事，常为好事者钓之。V始九年，朝廷出兵百万击巴蜀，大破蜀军，花园猫身中数刀，仍负帕里逃出益州，复还青城，人不知所踪。",
 			XiaDi: '下地者，V8之健将也，自群雄并起，囚人草莽之徒自成一国，名曰V8，V8奉绅宝为主，总领V8事宜，次年勒夫以鸩杀之，夺绅宝之权，下地作丹青《不要以为这样就赢了》缅之，领自家军离V8，后为勒夫击，大败，遁于江城。',
 			Nekomasu: '狐叔者，原国相也，屡谏朝廷，针砭时弊，谗人间之，放于巴蜀，巴蜀有奇人曰野良喵，叔与野良一见如故，尝与青城饮之，后绊爱起义，屡请狐叔，狐叔自认忠于朝廷，屡拒之，叔素修黄帝之道，善养生之经，建宗“养生”，后日竟成第一宗。',
-			NekomiyaHinata: '“猫宫日向者，游侠也，尤善射术，有“飞将”之称，以一人一枪往艾伦格百次余，屠者以千计，日向好游戏，性天然，行事率真常为联动对象捉弄，节目效果斐然，日向家境贫寒，尚不能备衣物，以塑料袋蔽身，为邻人笑，邻人有九石玉、隐神木荫者素与日向交好，昔绊爱首义，日向与玉、木荫筹划建国，后为小人所泄，破之，日向遁于江湖，转个人势，与玉、木荫经营。”',
+			NekomiyaHinata: '猫宫日向者，游侠也，尤善射术，有“飞将”之称，以一人一枪往艾伦格百次余，屠者以千计，日向好游戏，性天然，行事率真常为联动对象捉弄，节目效果斐然，日向家境贫寒，尚不能备衣物，以塑料袋蔽身，为邻人笑，邻人有九石玉、隐神木荫者素与日向交好，昔绊爱首义，日向与玉、木荫筹划建国，后为小人所泄，破之，日向遁于江湖，转个人势，与玉、木荫经营。',
 		},
 		skill:{
 			//Yomemi
@@ -656,7 +656,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							storage.length=0;
 						}
 					},
-				}
+				},
+				cardAround:true
 			},
 			luecai: {
 				audio:2,
@@ -1096,6 +1097,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							storage.length=0;
 						}
 					},
+					cardAround:true
 				},
 			},
 			jiumao: {
@@ -1301,12 +1303,21 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger: {
 							player: 'phaseEnd',
 						},
-						prompt2:'若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。',
+						direct:true,
 						filter: function(event, player) {
 							return player.countCards('he')>0;
 						},
 						content: function () {
-							player.useSkill('yinliu');
+							'step 0'
+							player.chooseCard({
+								position:'he',
+								selectCard:[1,3],
+								prompt:get.prompt2('yinliu'),
+							})
+							'step 1'
+							if(result.bool){
+								player.useSkill('yinliu',result.cards);
+							}
 						},
 					}
 				}
@@ -2045,7 +2056,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					markcount:function(storage,player){
 						if(storage&&storage.character) return storage.character.length;
 						return 0;
-					}
+					},
+					cardAround:true
 				},
 				subSkill:{
 					init:{
@@ -2092,25 +2104,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.cancel();
 					}
 				},
-				// init:function(player, skill){
-				// 	player.lastRecover = player.recover;
-				// 	player.recover = function(){
-				// 		var next = this.lastRecover();
-				// 		if(!next)return;
-				// 		for(var i=0;i<arguments.length;++i){
-				// 			if(get.itemtype(arguments[i])=='player'){
-				// 				next.source = _status.event.player;
-				// 			}
-				// 		}
-				// 		if(typeof(next.source)==='undefined') next.source = _status.event.player;
-				// 	};
-				// },
-				// onremove:function(player, skill){
-				// 	if(!player.lastRecover) return;
-				// 	delete player.recover;
-				// 	player.recover = player.lastRecover;
-				// 	delete player.lastRecover;
-				// },
 				subSkill:{
 					onDie:{
 						trigger:{player:'die'},
@@ -3045,7 +3038,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
-			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的”财布“摸等量的牌。',
+			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的「财布」摸等量的牌。',
 			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：顺手牵咩</span>',
 			xiaoyan: '嚣言',
 			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的「财布」，此伤害+1。',

@@ -1206,7 +1206,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:'kongsheng',
 				marktext:"箜",
 				intro:{
-					content:"cards",
+					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);

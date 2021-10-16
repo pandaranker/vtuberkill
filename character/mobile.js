@@ -7457,7 +7457,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			rebiaozhao:{
 				audio:'biaozhao',
 				intro:{
-					content:"cards",
+					content:'cards',
 				},
 				trigger:{
 					player:"phaseJieshuBegin",
@@ -8268,7 +8268,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			"xinfu_zhaoxin":{
 				group:["zhaoxin_give"],
 				intro:{
-					content:"cards",
+					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);

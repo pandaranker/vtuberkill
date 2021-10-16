@@ -628,11 +628,20 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				group:'lingsi_discard',
 				subSkill:{
 					discard:{
-						trigger:{player:['loseAfter','cardsDiscardAfter']},
+						trigger:{player:['loseAfter']},
 						filter:function(event,player){
 							if(!event.cards||event.cards.length<2)	return false;
-							console.log(event.cards);
-							if(event.name=='lose'&&event.position!=ui.discardPile) return false;
+							var num1=0,num2=0;
+							event.cards.forEach(function(card){
+								if(get.type(card)=='basic'){
+									num1++;
+								}else{
+									num2++;
+								}
+							});
+							return Math.max(num1,num2)>=2;
+						},
+						prompt2:function(event,player){
 							var num1=0,num2=0;
 							event.cards.forEach(function(card){
 								if(get.type(card)=='basic'){
@@ -650,10 +659,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}else if(num2>=2){
 								prompt2 += '令一名角色回复一点体力'
 							}
-							lib.skill.lingsi_discard.prompt2 = prompt2;
-							return Math.max(num1,num2)>=2;
+							return prompt2;
 						},
-						prompt2:'',
 						priority:22,
 						content:function(){
 							'step 0'
@@ -671,18 +678,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 									return get.effect(target,{name:'sha'},player,player);
 								});
 							}
-							if(num2>=2){
+							if(num2>=2)	event.change = true;
+							'step 1'
+							if(event.change){
 								player.chooseTarget('令一名角色回复一点体力',function(card,player,target){
 									return target.hp<target.maxHp;
 								}).ai=function(target){
 									var att=get.attitude(_status.event.player,target);
 									return att;
 								};
-								event.goto(1);
 							}else{
 								event.finish();
 							}
-							'step 1'
+							'step 2'
 							if(result.targets&&result.targets.length){
 								result.targets[0].recover();
 							}
@@ -961,6 +969,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				cardAround:true,
 				trigger:{global:'judge'},
 				filter:function(event,player){
 					var suit0 = get.suit(event.player.judging[0]);
@@ -1179,7 +1188,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return event.num>0;
 				},
 				check:function(event,player){
-					return player.countCards('h')>(-get.attitude(player,event.player));
+					return get.damageEffect(event.player,player,player)<0
+					||(event.player.countCards('h')>4&&get.attitude(player,event.player)<0);
 				},
 				logTarget:'player',
 				content:function(){
@@ -2565,7 +2575,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				init:function(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=(game.roundNumber%2==1);
 				},
-				locked:true,
 				mod:{
 					globalFrom:function(from,to,current){
 						if(from.storage.fuyi)	return current-1;
@@ -3913,7 +3922,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					},
-				},				
+				},
+				ai:{
+					expose:0.1,
+				}		
 			},
 			//re狗狗
 			guiren:{

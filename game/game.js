@@ -167,9 +167,8 @@
      * @global
      */
     var lib = /**@lends lib */ {
-        //独立功能
-        discoloration: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.5s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}16.67%{color: #FFFF00;}33.33%{color:#00FF00;}50% {color:#00FFFF;}66.67%{color: #0000FF;}83.33%{color: #FF00FF;}100%{color:#FF0000;}}</style>",
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
+        
         configprefix: 'vtuberkill_1.9_',
         versionOL: 27,
         updateURLS: {
@@ -7753,19 +7752,16 @@
                         else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
                             lib.node.debug();
                         }
-                        else if (e.ctrlKey) {
-                            window.status = 'skip';
-                        }
                         // else if(e.keyCode==27){
                         // 	if(!ui.arena.classList.contains('paused')) ui.click.config();
                         // }
                     }
                 };
-                window.onkeyup = function (e) {
-                    if (e.ctrlKey) {
-                        window.status = '';
-                    }
-                };
+                // window.onkeyup = function (e) {
+                //     if (e.ctrlKey) {
+                //         window.status = '';
+                //     }
+                // };
                 /**
                  * window加载结束时调用
                  * @function
@@ -13908,7 +13904,7 @@
                     if (_status.connectMode) {
                         if (choice.length == 1) event._result = { control: list[0] };
                         else player.chooseControl(choice).set('prompt', '选择获得一个技能').set('forceDie', true).set('ai', function () {
-                            return list.randomGet();
+                            return event.skillai(choice);
                         });
                     }
                     else if (event.isMine()) {
@@ -17912,9 +17908,30 @@
              * @mixin
              */
             player: {
+                //自创函数(检定相关)
+                hasCardAround: function () {
+                    let cards = [];
+					let skills = this.getSkills(true,false,false);
+                    game.expandSkills(skills);
+					for(let i of skills){
+                        if(lib.skill[i]&&lib.skill[i].cardAround){
+                            let key = [];
+                            let storage = this.getStorage(i)
+                            if(Array.isArray(lib.skill[i].cardAround)){
+                                for(let j of lib.skill[i].cardAround)   key = key.concat(storage[j]);
+                            }
+                            else if(Array.isArray(storage)) key = key.concat(storage);
+                            else    key.push(storage);
+                            console.log(key);
+                            cards.addArray(key);
+                        }
+					}
+                    if(cards.length)    return cards;
+                    return false;
+                },
                 //自创函数(置入相关)
                 addToJudge: function (card, source) {
-                    var cards = (get.itemtype(card) == 'card') ? [card] : card;
+                    let cards = (get.itemtype(card) == 'card') ? [card] : card;
                     if (source) source.$give(cards, this, false);
                     if (get.type(cards[0]) == 'delay') this.addJudge(cards[0]);
                     else if (get.color(cards[0]) == 'red' && this.canAddJudge('lebu')) this.addJudge({ name: 'lebu' }, cards);
@@ -17928,7 +17945,7 @@
                 },
                 //自创函数(升阶相关)
                 chooseShengjie: function () {
-                    var next = game.createEvent('chooseShengjie');
+                    let next = game.createEvent('chooseShengjie');
                     next.player = this;
                     for (var i = 0; i < arguments.length; i++) {
                         if (get.itemtype(arguments[i]) == 'cards') next.materials = arguments[i];
@@ -17946,7 +17963,7 @@
                 },
                 canShengjie: function () {
                     if (lib.configOL.protect_beginner) return false;
-                    var list = [];
+                    let list = [];
                     if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
                     for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
                         var info = lib.card[lib.cardPack.mode_derivation[i]];
@@ -18008,7 +18025,6 @@
                         if (info[4].contains('guoV')) return true;
                     }
                 },
-                //新新函数
                 /**
                  * 本角
                  */
@@ -18028,6 +18044,9 @@
                     });
                     return next;
                 },
+                /**
+                 * 为角色的手牌添加标签
+                 */
                 addGaintag: function (cards, tag) {
                     game.addVideo('addGaintag', this, [get.cardsInfo(cards), tag]);
                     game.broadcastAll(function (player, cards, tag) {
@@ -18037,6 +18056,9 @@
                         }
                     }, this, cards, tag);
                 },
+                /**
+                 * 为角色的手牌移除标签
+                 */
                 removeGaintag: function (tag) {
                     game.addVideo('removeGaintag', this, tag);
                     game.broadcastAll(function (player, tag) {
@@ -31315,7 +31337,6 @@
                                     booth[arr[6]].style.left = parseInt(arr[4]) + "%";
                                     booth[arr[6]].style.top = parseInt(arr[5]) + "%";
                                     booth[arr[6]].setBackgroundImage('extension/' + arr[1]);
-                                    // booth[arr[6]].setBackgroundImage('galgame/' + arr[1]);
                                 }
                             } else {
                                 if (arr[1] == "none") {
@@ -31327,7 +31348,6 @@
                                     booth.node.style.left = parseInt(arr[4]) + "%";
                                     booth.node.style.top = parseInt(arr[5]) + "%";
                                     booth.node.setBackgroundImage('extension/' + arr[1]);
-                                    // booth.node.setBackgroundImage('galgame/' + arr[1]);
                                 }
                             }
                             num++;
@@ -31454,6 +31474,22 @@
                             tou.setBackground(arr[0], "character");
                             name.innerHTML = get.rawName([arr[0]]);
                         }
+                        function skip0(e) {
+                            if (e.ctrlKey) {
+                                window.status = 'skip';
+                            }
+                        }
+                        function skip1(e) {
+                            if (e.keyCode=='17') {
+                                window.status = '';
+                            }
+                        }
+                        var skipfun0 = function(e){
+                            skip0(e);
+                        }
+                        var skipfun1 = function(e){
+                            skip1(e);
+                        }
                         var link = arr[1].replace(/@/g, lib.config.connect_nickname);
                         var show = function () {
                             if (link[i] == "<") {
@@ -31471,11 +31507,13 @@
                             txt.innerHTML = str;
                             i++;
                             if (i <= link.length) {
+                                window.addEventListener('keydown',skipfun0);
+                                window.addEventListener('keyup',skipfun1);
                                 if (window.status == 'skip') {
-                                    setTimeout(show, 10);
+                                    setTimeout(show, 200);
                                 }
                                 else {
-                                    var t = setTimeout(show, 100);
+                                    var t = setTimeout(show, 1000);
                                     drive.onclick = function () {
                                         t = null;
                                         show();
@@ -31496,6 +31534,8 @@
                                         bofang();
                                     }
                                 } else {
+                                    window.removeEventListener('keydown',skipfun0);
+                                    window.removeEventListener('keyup',skipfun1);
                                     if (window.status == 'skip') {
                                         ui.backgroundMusic.play();
                                         ui.window.removeChild(beijing);
@@ -54934,6 +54974,12 @@
             }
             else if (str2.indexOf('新·') == 0 && str.indexOf('re_') == 0) {
                 str2 = str2.slice(2);
+            }
+            else if (str2.indexOf('皇·') == 0 && str.indexOf('sp_') == 0) {
+                str2 = str2.replace('皇·','皇');
+            }
+            else if (str2.indexOf('海·') == 0 && str.indexOf('sea_') == 0) {
+                str2 = str2.replace('海·','海');
             }
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                 str2 = str2.slice(2);

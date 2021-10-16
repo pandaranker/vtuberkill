@@ -2359,7 +2359,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							event.jmTarget = targets[0];
 							var next = event.jmTarget.chooseToUse(
-								'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去“骄名”。',
+								'对'+get.translation(player)+'使用一张【杀】；或失去1点体力并令'+get.translation(player)+'于本回合失去『骄名』。',
 								function(card, player){
 									if(get.name(card)!='sha') return false;
 									return lib.filter.filterCard.apply(this,arguments);
@@ -2784,7 +2784,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bingdielei:'并蒂恶蕾',
 			bingdielei_info:'回合结束时，若本回合你弃置过亮出牌，获得一个额外的回合。',
 			qiujinzhiling:'囚禁指令',
-			qiujinzhiling_info:'主公技 锁定技 其他同势力角色回合内进入弃牌堆的牌不触发“全新全异”',
+			qiujinzhiling_info:'主公技 锁定技 其他同势力角色回合内进入弃牌堆的牌不触发『全新全异』',
 
 			mark_bingdielei: '并蒂恶蕾',
 			mark_bingdielei_anotherPhase: '并蒂恶蕾',

@@ -13436,7 +13436,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						mark:true,
 						intro:{
-							content:"cards",
+							content:'cards',
 						},
 						content:function (){
 							'step 0'
@@ -13491,7 +13491,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 				intro:{
-					content:"cards",
+					content:'cards',
 				},
 				group:"jugong_1",
 				subSkill:{

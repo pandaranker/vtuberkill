@@ -303,6 +303,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:'cards',
 					onunmark:'throw',
 				},
+				cardAround:true,
 				group:['juhun_get'],
 				subSkill:{
 					get:{
@@ -1649,15 +1650,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext: '咏',
 				intro: {
 					content: 'cards',
-					onunmark:function(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							game.log(storage,'被置入了弃牌堆');
-							storage.length=0;
-						}
-					},
-				}
+					onunmark:'throw',
+				},
+				cardAround:true
 			},
 			yemuxingyong: {
 				audio:3,
@@ -2457,7 +2452,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				locked:true,
 				intro:{
 					name:'函告',
-	//				content:'cards',
 					content:function (storage,player,skill){
 						return '在回合结束时展示手牌';
 					},

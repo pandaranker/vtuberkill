@@ -669,7 +669,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				usable:1,
 				filterTarget:function(card,player,target){
 					var targets=[player].concat(ui.selected.targets);
-					if(targets.contains(target)) return false;
+					if(targets.contains(target))	return false;
 					for(var i=0;i<targets.length;i++){
 						if(targets[i].hasSkill('rongyaochengyuan_homolive')&&target.hasSkill('rongyaochengyuan_homolive')){
 							return false;
@@ -678,7 +678,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return false;
 						}
 					}
-					return true
+					return target.countCards('he');
 				},
 				complexTarget:true,
 				multitarget:true,
@@ -695,7 +695,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(targets.length>=1){
 						if(targets[event.playerIndex].countCards('he')){
 							event.handcardsCount= targets[event.playerIndex].countCards('h');
-							targets[event.playerIndex].chooseToDiscard(true,1,'he','弃置一张牌');
+							targets[event.playerIndex].chooseToDiscard(true,1,'he','『混沌联动』：弃置一张牌');
 						}
 						else{
 							event.handcardsCount=-1;
@@ -749,7 +749,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					else{
-						targets.splice(event.playerIndex,1);
+						event.playerIndex++;
 						if(event.playerIndex<targets.length){
 							event.goto(0);
 						}
@@ -782,7 +782,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							else return -0.2;
 						},
 						target:function(player,target){
-							if(!target.countCards('h'))	return -target.countCards('e');
+							if(!target.countCards('h'))	return -2;
 							return -target.countCards('h')/2;
 						}
 					},
@@ -1813,6 +1813,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				cardAround:true,
 				trigger:{global:'phaseAfter'},
 				lastDo: true,
 				filter:function(event,player){

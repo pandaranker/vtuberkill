@@ -6916,7 +6916,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			biaozhao:{
 				audio:2,
 				intro:{
-					content:"cards",
+					content:'cards',
 				},
 				trigger:{
 					player:"phaseJieshuBegin",

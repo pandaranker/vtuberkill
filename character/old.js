@@ -376,7 +376,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				marktext:"方",
 				audio:"xinfu_jijun",
 				intro:{
-					content:"cards",
+					content:'cards',
 				},
 				enable:"phaseUse",
 				filterCard:true,

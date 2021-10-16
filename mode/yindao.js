@@ -84,6 +84,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		start:function(){
 			'step 0'
+			_status.yindao = true;
 			var playback=localStorage.getItem(lib.configprefix+'playback');
 			if(playback){
 				event.finish();
@@ -217,23 +218,31 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 						case '听说过，也玩过类似的桌游':{
 							galgame.sce("yindaoC");
-							_status.oneYindao = true
+							_status.oneYindao = true;
 							break;
 						}
 						case '只接触过原版的三国杀':{
 							galgame.sce("yindaoD");
+							break;
 						}
 						case '我是资深杀友，各种版本的三国杀都有玩':{
-
+							galgame.sce("yindaoE");
+							break;
 						}
 					}
 					'step 3'
 					if(_status.oneYindao){
 						event.trigger('yindaoCard');
-					}	
+					}
 					'step 4'
-					galgame.sce("over");
+					if(_status.oneYindao){
+						event.trigger('yindaoSkill');
+					}
 					'step 5'
+					event.trigger('yindaoD');
+					'step 6'
+					galgame.sce("over");
+					'step 7'
 					switch(result.bool){
 						case '再引导一次':{_status.reYindao = true;break;}
 						case '进入身份模式':{
@@ -245,15 +254,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							game.reload();break;
 						}
 					}
-					'step 6'
-					if(_status.reYindao){
-						event.goto(1);
-						_status.reYindao = false;
-					}
-					else{
-						game.over();
-					}
-					
 				},
 			},
 			_yindaoCard:{
@@ -266,22 +266,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.gain(game.createCard('sha'),'gain2');
-					game.delay(2);
+					game.delay(1.5);
 					'step 1'
 					galgame.sce("yindaoCard1");
 					'step 2'
-					player.chooseToUse({
-						prompt:'###选择手牌中的【杀】，再选择〖扇宝〗，就可以使用出这张【杀】###（一张牌被使用后会离开手牌区，并在“结算”后进入名为“弃牌堆的地方）',
-						filterCard:function(card,player){
-							return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
-						},
-						addCount:false,
-						forced:true,
-					});
+					if(result.bool=='跳过这个部分'){
+						event.goto(6);
+					}
+					else{
+						player.chooseToUse({
+							prompt:'###选择手牌中的【杀】，再选择〖扇宝〗，就可以使用出这张【杀】###（一张牌被使用后会离开手牌区，并在“结算”后进入名为“弃牌堆的地方）',
+							filterCard:function(card,player){
+								return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
+							},
+							addCount:false,
+							forced:true,
+						});
+					}
 					'step 3'
 					player.gain(game.createCard('shan'),'gain2');
 					player.next.gain(game.createCard('sha'),'gain2');
-					game.delay(2);
+					game.delay(1.5);
 					'step 4'
 					galgame.sce("yindaoCard2");
 					'step 5'
@@ -293,13 +298,260 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						forced:true,
 					});
 					'step 6'
+					player.lose(player.getCards('hej'),ui.special);
+					player.next.lose(player.next.getCards('hej'),ui.special);
+					'step 7'
+					var dialog = ui.create.dialog('forcebutton');
+					dialog.add('基本牌');
+					dialog.addSmall([['sha','shan','tao'],'vcard']);
+					dialog.add('锦囊牌');
+					dialog.addSmall([['wuzhong','shunshou','lebu'],'vcard']);
+					dialog.add('装备牌');
+					dialog.addSmall([['zhuge','renwang','muniu'],'vcard']);
+					event.dialog = dialog;
+					game.delay();
+					'step 8'
+					galgame.sce("yindaoCard3");
+					'step 9'
+					game.filterPlayer(function(cur){
+						cur.recover(4);
+						cur.lose(cur.getCards('hej'),ui.special);
+					})
+					event.dialog.close();
+					galgame.sce("yindaoCardIndex");
+					'step 10'
 					switch(result.bool){
-		
+						case '装备牌的分类与使用':
+							player.gain(game.createCard('guding'),'gain2');
+							player.gain(game.createCard('sha'),'gain2');
+							event.going = 1;break;
+						case '通常锦囊牌的使用':
+							player.gain(game.createCard('wuzhong'),'gain2');
+							player.next.gain(game.createCard('shan'),'gain2');
+							event.going = 2;break;
+						case '回合与阶段':
+							var dialog = ui.create.dialog('forcebutton');
+							dialog.add('每个回合会按阶段进行');
+							dialog.addSmall([lib.phaseName.slice(0),'vcard']);
+							event.going = 3;break;
+						case '判定与延时锦囊牌的使用':
+							player.gain(game.createCard('lebu'),'gain2');
+							player.next.gain([game.createCard('sha'),game.createCard('sha'),game.createCard('sha')],'gain2');
+							event.going = 4;break;
+						case '卡牌的「使用」与「打出」':
+							player.gain(game.createCard('juedou'),'gain2');
+							player.next.gain(game.createCard('sha'),'gain2');
+							player.gain(game.createCard('sha'),'gain2');
+							event.going = 5;break;
+						case '无懈可击！':
+							player.gain(game.createCard('juedou'),'gain2');
+							player.next.gain(game.createCard('wuxie'),'gain2');
+							player.gain(game.createCard('wuxie'),'gain2');
+							event.going = 6;break;
+						case '跳过这个部分':
+							event.going = 'skip';break;
+					}
+					game.delay(1.5);
+					'step 11'
+					switch(event.going){
+						case 1:
+							player.chooseToUse({
+								prompt:'###试试点击手牌中的装备牌来使用它<br>右键点击也可以查看详细信息###（一般的装备牌都是默认使用者为目标，所以没有指定的过程）',
+								filterCard:function(card,player){
+									return get.type(card)=='equip'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 1;break;
+						case 2:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌中的锦囊【无中生有】吧###（锦囊牌的效果千奇百怪，在合适的情形下功能十分强大，类似于游戏王里的魔法卡和炉石里的法术）',
+								filterCard:function(card,player){
+									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 2;break;
+						case 3:
+							galgame.sce("yindaoCard33");
+							event.going = 3;break;
+						case 4:
+							galgame.sce("yindaoCard34");
+							event.going = 4;break;
+						case 5:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌中的锦囊【决斗】吧###锦囊【决斗】的效果是让对方打出一张【杀】<br>（“打出”不同于“使用”，只是单纯的声明一张牌，然后将其置入弃牌堆，这个过程没有目标没有效果，但是否完成“打出”这一动作会影响卡牌或技能的效果）',
+								filterCard:function(card,player){
+									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 5;break;
+						case 6:
+							player.chooseToUse({
+								prompt:'###锦囊【无懈可击】并不能直接使用，而是在一些合适的时机去使用它###（试试使用手牌中除了【无懈可击】的锦囊牌叭）',
+								filterCard:function(card,player){
+									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 6;break;
+						case 'skip':
+							event.finish();break;
+					}
+					game.delay(0.5);
+					'step 12'
+					switch(event.going){
+						case 1:
+							player.chooseToUse({
+								prompt:'###因为你装备了武器【军刀】，所以你的能力获得了强化，现在再对扇宝使用【杀】试试叭~###（【军刀】的效果是：当你使用【杀】对目标角色造成伤害时，若其没有手牌，此伤害+1）',
+								filterCard:function(card,player){
+									return get.type(card)=='basic'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 1;break;
+						case 2:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌中的锦囊牌【无中生有】吧###（锦囊牌的效果千奇百怪，【无中生有】的效果是摸两张牌）',
+								filterCard:function(card,player){
+									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 2;break;
+						case 3:
+							event.going = 3;break;
+						case 4:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌中的延时锦囊牌【乐不思蜀】吧###（【无中生有】的效果是跳过出牌阶段，并且只有在判定结果不为♥时才会生效）',
+								filterCard:function(card,player){
+									return get.type(card)=='delay'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 4;break;
+						case 5:
+							event.going = 5;break;
+						case 6:
+							event.going = 6;break;
+						case 'skip':
+							event.finish();break;
+					}
+					game.delay(0.5);
+					'step 13'
+					switch(event.going){
+						case 1:
+							player.gain(game.createCard('bagua'),'gain2');
+							player.next.gain(game.createCard('sha'),'gain2');
+							event.going = 1;break;
+						case 2:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌中的锦囊牌吧###（【过河拆桥】的效果是弃置目标一张牌，用它来瓦解敌人的防御吧！）',
+								filterCard:function(card,player){
+									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 2;break;
+						case 3:
+							event.going = 3;break;
+						case 4:
+							event.going = 4;break;
+						case 5:
+							event.going = 5;break;
+						case 6:
+							event.going = 6;break;
+						case 'skip':
+							event.finish();break;
+					}
+					game.delay(0.5);
+					'step 14'
+					switch(event.going){
+						case 1:
+							player.chooseToUse({
+								prompt:'###与倾向攻击的武器类装备相对，还有倾向防御的防具类装备，来试试使用手牌中的防具【宣传战】吧###（值得一提的是，每种类型的装备同时只能装备一个）',
+								filterCard:function(card,player){
+									return get.type(card)=='equip'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 1;break;
+						case 2:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌吧###（敌人手中的【闪】已被弃置，已经没有手段阻止【杀】了）',
+								filterCard:function(card,player){
+									return get.type(card)=='basic'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 2;break;
+						case 3:
+							event.going = 3;break;
+						case 4:
+							event.going = 4;break;
+						case 5:
+							event.going = 5;break;
+						case 6:
+							event.going = 6;break;
+						case 'skip':
+							event.finish();break;
+					}
+					game.delay(0.5);
+					'step 15'
+					switch(event.going){
+						case 1:
+							player.next.chooseToUse({
+								filterCard:function(card,player){
+									return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 1;break;
+						case 2:
+							player.chooseToUse({
+								prompt:'###来试试使用手牌吧###（敌人手中的【闪】已被弃置，已经没有手段阻止【杀】了',
+								filterCard:function(card,player){
+									return get.type(card)=='basic'&&lib.filter.filterCard.apply(this,arguments);
+								},
+								addCount:false,
+								forced:true,
+							});
+							event.going = 2;break;
+						case 3:
+							event.going = 3;break;
+						case 4:
+							event.going = 4;break;
+						case 5:
+							event.going = 5;break;
+						case 6:
+							event.going = 6;break;
+						case 'skip':
+							event.finish();break;
+					}
+					game.delay(0.5);
+					'step 16'
+					switch(event.going){
+						case 1:case 2:case 3:case 4:case 5:case 6:
+							event.goto(9);break;
+						case 'skip':
+							event.finish();break;
 					}
 				},
 			},
 			_yindaoD:{
-				trigger:{global:'yindaoD'},
+				trigger:{player:'yindaoD'},
 				silent:true,
 				popup:false,
 				filter:function(event,player){
@@ -307,37 +559,92 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					galgame.sce("yindao0");
+					galgame.sce("yindaoD0");
 					'step 1'
-					galgame.sce("yindao1");
+					galgame.sce("yindaoDIndex");
 					'step 2'
 					switch(result.bool){
-		
+						case '转换技与使命技':
+							event.going = 1;break;
+						case '新增机制：护甲':
+							event.going = 2;break;
+						case '新增机制：海洋与暗影属性':
+							event.going = 3;break;
+						case '新增机制：升阶':
+							event.going = 4;break;
+						case '跳过这个部分':
+							event.going = 'skip';break;
+					}
+					game.delay(1.5);
+					'step 3'
+					switch(event.going){
+						case 1:
+							event.going = 1;break;
+						case 2:
+							event.going = 2;break;
+						case 3:
+							event.going = 3;break;
+						case 4:
+							event.going = 4;break;
+						case 'skip':
+							event.finish();break;
+					}
+					'step 4'
+					switch(event.going){
+						case 1:case 2:case 3:case 4:case 5:case 6:
+							event.goto(1);break;
+						case 'skip':
+							event.finish();break;
 					}
 				},
 			},
-			_yindaoJiben:{
-				trigger:{global:'yindaoJiben'},
+			_yindaoWuxie:{
+				trigger:{global:'wuxieAfter'},
 				silent:true,
 				popup:false,
 				filter:function(event,player){
-					return true;
+					return player==game.me&&!player.storage.studyWuxie;
 				},
 				content:function(){
 					'step 0'
-					galgame.sce("yindao0");
-					'step 1'
-					galgame.sce("yindao1");
-					'step 2'
-					switch(result.bool){
-		
+					player.storage.studyWuxie = true;
+					galgame.sce("yindaoWuxie");
+				},
+			},
+			_yindaoRespond:{
+				trigger:{global:'chooseToRespond'},
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return player==game.me&&!player.storage.studyRespond;
+				},
+				content:function(){
+					'step 0'
+					player.storage.studyRespond = true;
+				},
+			},
+			_yindaDraw:{
+				trigger:{global:'drawBegin'},
+				silent:true,
+				popup:false,
+				filter:function(event,player){
+					return player==game.me;
+				},
+				content:function(){
+					'step 0'
+					var list = []
+					var evt = trigger.getParent('_yindaoCard');
+					if(evt&&evt.name=='_yindaoCard'){
+						if(evt.going==2)
+						list = [game.createCard('guohe'),game.createCard('sha')]
+					}
+					while(list.length){
+						ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
 					}
 				},
-			}
+			},
 		},
 		yindaoTranslate:{
-		},
-		translate:{
 			zhu:"先",
 			fan:"后",
 			zhu2:"先手",

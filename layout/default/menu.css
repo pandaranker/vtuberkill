@@ -284,10 +284,9 @@
 	align-items: center;
 
 	order: 2;
-	flex: 0.1 2.5;
+	flex: 0.05 0 18px;
 	color: aquamarine;
     overflow-x: scroll;
-	height: 16px;
 }
 .menubg.charactercard .characterintro.intro2{
 	order: 4;
