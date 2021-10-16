@@ -8640,7 +8640,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.$gain2(event.cards);
 					'step 1'
 					if(player.getStorage('ze').length>6){
-						let discard = player.getStorage('ze').splice(-6);
+						let discard = player.getStorage('ze').splice(0,1);
 						game.cardsDiscard(discard);
 						player.markSkill('ze');
 					}
@@ -8649,7 +8649,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					aiOrder:function(player,card,num){
 						let card0 = player.getStorage('ze')[player.getHistory('useCard').length];
-						if(card0&&(get.suit(card0)==get.suit(card)||get.type(card0)==get.type(card)))	return num+4;
+						if(card0&&(get.suit(card0)==get.suit(card)||get.type2(card0)==get.type2(card)))	return num+4;
 					},
 				},
 				group:['ze','menghuan_drawBy'],
@@ -8660,7 +8660,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter:function(event,player){
 							if(player.getStorage('ze')){
 								let card = player.getStorage('ze')[player.getHistory('useCard').length-1];
-								return card&&(get.suit(card)==get.suit(event.card)||get.type(card)==get.type(event.card));
+								return card&&(get.suit(card)==get.suit(event.card)||get.type2(card)==get.type2(event.card));
 							}
 						},
 						content:function(){
