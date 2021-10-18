@@ -188,24 +188,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage.re_ailian_clear+=cards.length;
 					'step 2'
 					if(player.storage.re_ailian_clear>=2&&event.num<2){
-						var list=[];
-						if(lib.filter.cardUsable({name:'sha'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
-							return player.canUse('sha',current);
-						})){
-							list.push(['基本','','sha']);
-							list.push(['基本','','sha','fire']);
-							list.push(['基本','','sha','thunder']);
-							list.push(['基本','','sha','ice']);
-						}
-						if(lib.filter.cardUsable({name:'tao'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
-							return player.canUse('tao',current);
-						})){
-							list.push(['基本','','tao']);
-						}
-						if(lib.filter.cardUsable({name:'jiu'},player,event.getParent('chooseToUse'))&&game.hasPlayer(function(current){
-							return player.canUse('jiu',current);
-						})){
-							list.push(['基本','','jiu']);
+						let list=[];
+						for(let i of get.inpile('basic')){
+							if(lib.filter.cardUsable({name:i},player)&&player.hasUseTarget(i)){
+								list.push(['基本','',i]);
+								if(i=='sha'){
+									list.push(['基本','','sha','fire']);
+									list.push(['基本','','sha','thunder']);
+									list.push(['基本','','sha','ice']);
+								}
+							}
 						}
 						if(list.length){
 							player.chooseButton(['是否视为使用一张基本牌？',[list,'vcard']]).set('ai',function(button){
@@ -242,7 +234,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 3'
 					if(result&&result.bool&&result.links[0]){
-						var card={name:result.links[0][2],nature:result.links[0][3]};
+						let card={name:result.links[0][2],nature:result.links[0][3]};
 						player.chooseUseTarget(card,true);
 					}
 				},

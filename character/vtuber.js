@@ -135,10 +135,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage.targets) player.storage.targets=[];
 					if(player.countCards('h')>0){
 						player.chooseTarget('指定一个给予牌的目标',function(card,player,target){
-							//get.distance(target,current,'pure')==1
-							if(target==player) return false;
+							if(target==player)	return false;
 							if(player.storage.targets){
-								if(player.storage.targets.length==0) return true;
 								for(var i =0; i< player.storage.targets.length;i++){
 									if(player.storage.targets[i]==target){
 										return false;
@@ -165,7 +163,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						if(result.targets){
-								if(!player.storage.targets) player.storage.targets=[];
+							if(!player.storage.targets) player.storage.targets=[];
 							if(!trigger.targets.contains(result.targets[0])){
 								trigger.targets.addArray(result.targets);
 								player.storage.targets.addArray(result.targets);
@@ -243,54 +241,53 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 7'
 					if(trigger.targets.length>1){
 						trigger.num = trigger.targets.length;
-						var list = ['jiu','tao'];
-						if(player.hasUseTarget('sha',false)){
-							list.push('sha','雷杀','火杀','冰杀');
+						let list=[];
+						for(let i of get.inpile('basic')){
+							if(lib.filter.cardUsable({name:i},player,event.getParent('chooseToUse'))&&player.hasUseTarget(i)){
+								list.push(['基本','',i]);
+								if(i=='sha'){
+									list.push(['基本','','sha','fire']);
+									list.push(['基本','','sha','thunder']);
+									list.push(['基本','','sha','ice']);
+								}
+							}
 						}
-						if(get.inpile('basic',function(card){
-							return get.name(card)=='qi';
-						}).length){
-							list.push('qi')
-						};
-						list.push('cancel2');
-						var next = player.chooseControl(list).set('prompt','是否视为对至多'+ get.cnNumber(trigger.num) +'名角色使用一次基本牌？');
-						next.set('ai',function(){
-							var player = _status.event.player;
-							if(player.hp==1||(player.isDamaged()&&(!player.hasShan()||player.needsToDiscard()))){
-								return 'tao';
-							}
-							if(list.contains('sha')&&player.getUseValue({name:'sha'},false)>0){
-								return ['雷杀','火杀'].randomGet();
-							}
-							if(list.contains('jiu')&&player.getUseValue({name:'jiu'})>0&&player.hasUseTarget('sha')){
-								return 'jiu';
-							}
-							if(list.contains('qi')&&player.isDamaged()&&!player.needsToDiscard()) return 'qi';
-							return list.randomGet();
-						});
+						if(list.length){
+							player.chooseButton(['是否视为使用一张基本牌？',[list,'vcard']]).set('ai',function(button){
+								var player=_status.event.player;
+								var card={name:button.link[2],nature:button.link[3]};
+								switch(card.name){
+									case 'tao':
+										if(player.hp==1||(player.hp==2&&!player.hasShan())||player.needsToDiscard()){
+											return 5;
+										}
+										return 1+Math.random();
+									case 'sha':
+										if(game.hasPlayer(function(current){
+											return player.canUse(card,current)&&get.effect(current,card,player,player)>0
+										})){
+											if(card.nature=='fire') return 2.95;
+											if(card.nature=='thunder'||card.nature=='ice') return 2.92;
+											return 2.9;
+										}
+										return 0;
+									case 'jiu':
+										if(player.getCardUsable('sha')==0||!player.hasSha()||!player.hasUseTarget('sha')) return 0;
+										return 0.8+Math.random();
+									case 'qi':
+										if(player.isDamaged()) return 1.1+Math.random();
+										return 0.1;
+									default: return 0;
+								}
+							});
+						}
 					}
 					else{
 						event.goto(10);
 					}
 					'step 8'
 					if(result.control!='cancel2'){
-						var usecard={name:result.control,isCard:false};
-						switch (usecard.name) {
-							case '雷杀':
-								usecard.name='sha';
-								usecard.nature='thunder';
-								break;
-							case '火杀':
-								usecard.name='sha';
-								usecard.nature='fire';
-								break;
-							case '冰杀':
-								usecard.name='sha';
-								usecard.nature='ice';
-								break;
-							default:
-								break;
-						}
+						let usecard={name:result.links[0][2],nature:result.links[0][3]};
 						trigger.usecard=usecard;
 						player.chooseTarget('选择至多'+ trigger.targets.length.toString() +'个目标',[1,trigger.num],function(card,player,target){
 							return lib.filter.targetEnabled(_status.event.card,player,target)

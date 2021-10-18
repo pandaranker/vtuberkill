@@ -168,7 +168,7 @@
      */
     var lib = /**@lends lib */ {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
-        
+
         configprefix: 'vtuberkill_1.9_',
         versionOL: 27,
         updateURLS: {
@@ -16478,9 +16478,18 @@
                 gain: function () {
                     "step 0"
                     if (cards) {
-                        var owner = event.source || get.owner(cards[0]);
-                        if (owner) {
-                            var next = owner.lose(cards, ui.special).set('type', 'gain').set('forceDie', true).set('getlx', false);
+                        var map = {};
+                        for (var i of cards) {
+                            var owner = get.owner(i, 'judge');
+                            if (owner && (owner != player || get.position(i) != 'h')) {
+                                var id = owner.playerid;
+                                if (!map[id]) map[id] = [];
+                                map[id].push(i);
+                            }
+                        }
+                        for (var i in map) {
+                            var owner = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
+                            var next = owner.lose(map[i], ui.special).set('type', 'gain').set('forceDie', true).set('getlx', false);
                             if (event.animate == 'give' || event.visible == true) next.visible = true;
                             event.relatedLose = next;
                         }
@@ -17908,7 +17917,9 @@
              * @mixin
              */
             player: {
-                //自创函数(检定相关)
+                /**
+                 * 检测本角色武将牌周围是否有牌
+                 */
                 hasCardAround: function () {
                     let cards = [];
 					let skills = this.getSkills(true,false,false);
@@ -17916,9 +17927,13 @@
 					for(let i of skills){
                         if(lib.skill[i]&&lib.skill[i].cardAround){
                             let key = [];
-                            let storage = this.getStorage(i)
-                            if(Array.isArray(lib.skill[i].cardAround)){
-                                for(let j of lib.skill[i].cardAround)   key = key.concat(storage[j]);
+                            let storage = this.getStorage(i);
+                            let method = lib.skill[i].cardAround;
+                            if(Array.isArray(method)){
+                                for(let j of method)   key = key.concat(storage[j]);
+                            }
+                            else if(typeof method == 'function'){
+                                key = key.concat(method(this));
                             }
                             else if(Array.isArray(storage)) key = key.concat(storage);
                             else    key.push(storage);
@@ -17929,7 +17944,21 @@
                     if(cards.length)    return cards;
                     return false;
                 },
-                //自创函数(置入相关)
+                isYingV: function () {
+                    var info = lib.character[this.name || this.name1];
+                    if (info && info[4]) {
+                        if (info[4].contains('yingV')) return true;
+                    }
+                },
+                isGuoV: function () {
+                    var info = lib.character[this.name || this.name1];
+                    if (info && info[4]) {
+                        if (info[4].contains('guoV')) return true;
+                    }
+                },
+                /**
+                 * 将一张牌置入本角色的判定区
+                 */
                 addToJudge: function (card, source) {
                     let cards = (get.itemtype(card) == 'card') ? [card] : card;
                     if (source) source.$give(cards, this, false);
@@ -17937,6 +17966,9 @@
                     else if (get.color(cards[0]) == 'red' && this.canAddJudge('lebu')) this.addJudge({ name: 'lebu' }, cards);
                     else if (get.color(cards[0]) == 'black' && this.canAddJudge('bingliang')) this.addJudge({ name: 'bingliang' }, cards);
                 },
+                /**
+                 * 判断一张牌能否本角色的判定区
+                 */
                 canAddToJudge: function (card) {
                     if (get.type(card) == 'delay') return this.canAddJudge(card);
                     if (this.canAddJudge('lebu') && get.color(card) == 'red') return true
@@ -18013,20 +18045,25 @@
                     }
                     return bool;
                 },
-                isYingV: function () {
-                    var info = lib.character[this.name || this.name1];
-                    if (info && info[4]) {
-                        if (info[4].contains('yingV')) return true;
-                    }
+                //新函数
+                /**
+                 * 将技能移入本角色的封锁列表
+                 */
+                addSkillBlocker: function (skill) {
+                    if (!this.storage.skill_blocker) this.storage.skill_blocker = [];
+                    this.storage.skill_blocker.push(skill);
                 },
-                isGuoV: function () {
-                    var info = lib.character[this.name || this.name1];
-                    if (info && info[4]) {
-                        if (info[4].contains('guoV')) return true;
+                /**
+                 * 将技能移出本角色的封锁列表
+                 */
+                removeSkillBlocker: function (skill) {
+                    if (this.storage.skill_blocker) {
+                        this.storage.skill_blocker.remove(skill);
+                        if (!this.storage.skill_blocker.length) delete this.storage.skill_blocker;
                     }
                 },
                 /**
-                 * 本角
+                 * 将本角色的卡牌移入(目标角色)特殊区
                  */
                 loseToSpecial: function (cards, tag, target) {
                     var next = game.loseAsync({
@@ -18045,7 +18082,7 @@
                     return next;
                 },
                 /**
-                 * 为角色的手牌添加标签
+                 * 为本角色的手牌添加标签
                  */
                 addGaintag: function (cards, tag) {
                     game.addVideo('addGaintag', this, [get.cardsInfo(cards), tag]);
@@ -18057,7 +18094,7 @@
                     }, this, cards, tag);
                 },
                 /**
-                 * 为角色的手牌移除标签
+                 * 为本角色手牌移除标签
                  */
                 removeGaintag: function (tag) {
                     game.addVideo('removeGaintag', this, tag);
@@ -18066,7 +18103,11 @@
                         for (var i of cards) i.removeGaintag(tag);
                     }, this, tag);
                 },
-                //新函数
+                /**
+                 * 判断本角色能否在濒死求桃事件中救治目标角色
+                 * @param {string} target 目标角色
+                 * @returns {!boolean} 可以救治返回`true`，不可以返回`false`
+                 */
                 canSave: function (target) {
                     var player = this;
                     if (player.hasSkillTag('save', true, target, true)) return true;
@@ -18292,6 +18333,11 @@
                         }
                     }
                 },
+                /**
+                 * 判断目标角色是否在本角色的攻击范围内
+                 * @param {string} to 目标角色
+                 * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
+                 */
                 inRange: function (to) {
                     var from = this;
                     if (from == to || from.hasSkill('undist') || to.hasSkill('undist')) return false;
@@ -18366,6 +18412,11 @@
                     }
                     return m <= 1;
                 },
+                /**
+                 * 判断本角色是否在目标角色的攻击范围内
+                 * @param {string} source 目标角色
+                 * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
+                 */
                 inRangeOf: function (source) {
                     return source.inRange(this);
                 },
@@ -29585,76 +29636,55 @@
                     player.storage.disableEquip = [];
                 },
             },
+            /**
+             * 使非锁定技失效
+             */
             fengyin: {
                 init: function (player, skill) {
-                    var skills = player.getSkills(true, false);
-                    for (var i = 0; i < skills.length; i++) {
-                        if (get.is.locked(skills[i]) || lib.skill[skills[i]].charlotte) {
-                            skills.splice(i--, 1);
-                        }
-                    }
-                    player.disableSkill(skill, skills);
+                    player.addSkillBlocker(skill);
                 },
                 onremove: function (player, skill) {
-                    player.enableSkill(skill);
+                    player.removeSkillBlocker(skill);
                 },
-                locked: true,
                 charlotte: true,
+                skillBlocker: function (skill, player) {
+                    return !lib.skill[skill].charlotte && !get.is.locked(skill, player);
+                },
                 mark: true,
                 intro: {
                     content: function (storage, player, skill) {
-                        var list = [];
-                        for (var i in player.disabledSkills) {
-                            if (player.disabledSkills[i].contains(skill)) {
-                                list.push(i)
-                            }
-                        }
-                        if (list.length) {
-                            var str = '失效技能：';
-                            for (var i = 0; i < list.length; i++) {
-                                if (lib.translate[list[i] + '_info']) {
-                                    str += get.translation(list[i]) + '、';
-                                }
-                            }
-                            return str.slice(0, str.length - 1);
-                        }
+                        var list = player.getSkills(null, null, false).filter(function (i) {
+                            return lib.skill.fengyin.skillBlocker(i, player);
+                        });
+                        if (list.length) return '失效技能：' + get.translation(list);
+                        return '无失效技能';
                     }
                 }
             },
+            /**
+             * 使全部技能失效
+             */
             baiban: {
                 init: function (player, skill) {
-                    var skills = player.getSkills(true, false);
-                    for (var i = 0; i < skills.length; i++) {
-                        if (lib.skill[skills[i]].charlotte) {
-                            skills.splice(i--, 1);
-                        }
-                    }
-                    player.disableSkill(skill, skills);
+                    player.addSkillBlocker(skill);
                 },
                 onremove: function (player, skill) {
-                    player.enableSkill(skill);
+                    player.removeSkillBlocker(skill);
+                },
+                charlotte: true,
+                skillBlocker: function (skill, player) {
+                    return !lib.skill[skill].charlotte;
                 },
                 mark: true,
-                locked: true,
                 intro: {
                     content: function (storage, player, skill) {
-                        var list = [];
-                        for (var i in player.disabledSkills) {
-                            if (player.disabledSkills[i].contains(skill)) {
-                                list.push(i)
-                            }
-                        }
-                        if (list.length) {
-                            var str = '失效技能：';
-                            for (var i = 0; i < list.length; i++) {
-                                if (lib.translate[list[i] + '_info']) {
-                                    str += get.translation(list[i]) + '、';
-                                }
-                            }
-                            return str.slice(0, str.length - 1);
-                        }
-                    },
-                },
+                        var list = player.getSkills(null, null, false).filter(function (i) {
+                            return lib.skill.baiban.skillBlocker(i, player);
+                        });
+                        if (list.length) return '失效技能：' + get.translation(list);
+                        return '无失效技能';
+                    }
+                }
             },
             qianxing: {
                 mark: true,
@@ -39155,10 +39185,15 @@
             }
         },
         filterSkills: function (skills, player) {
-            var out = skills.slice(0);
-            for (var i in player.disabledSkills) {
+            let out = skills.slice(0);
+            for (let i in player.disabledSkills) {
                 out.remove(i);
             }
+			if(player.storage.skill_blocker&&player.storage.skill_blocker.length){
+				for(let i=0;i<out.length;i++){
+					if(get.is.blocked(out[i],player)) out.splice(i--,1);
+				}
+			}
             return out;
         },
         /**
@@ -53460,6 +53495,19 @@
                 }
                 return false;
             },
+            /**
+             * 判断技能是否被封锁
+             */
+            blocked: function (skill, player) {
+                if (!player.storage.skill_blocker || !player.storage.skill_blocker.length) return false;
+                for (var i of player.storage.skill_blocker) {
+                    if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player)) return true;
+                }
+                return false;
+            },
+            /**
+             * 判断角色是否为多势力
+             */
             double: function (name, array) {
                 if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0) return false;
                 for (var i of lib.character[name][4]) {
@@ -53470,6 +53518,9 @@
                 }
                 return false;
             },
+            /**
+             * 判断卡牌是否携带应变标签
+             */
             yingbian: function (node) {
                 return get.cardtag(node, 'yingbian_zhuzhan') || get.cardtag(node, 'yingbian_fujia') || get.cardtag(node, 'yingbian_canqu') || get.cardtag(node, 'yingbian_kongchao');
             },
@@ -53656,8 +53707,12 @@
             pos: function (str) {
                 return (str == 'h' || str == 'e' || str == 'j' || str == 'he' || str == 'hj' || str == 'ej' || str == 'hej');
             },
-            locked: function (skill) {
+            /**
+             * 判断技能是否为锁定技
+             */
+            locked: function (skill, player) {
                 var info = lib.skill[skill];
+                if (typeof info.locked == 'function') return info.locked(skill, player);
                 if (info.locked == false) return false;
                 if (info.trigger && info.forced) return true;
                 if (info.mod) return true;
@@ -54315,10 +54370,11 @@
                     case 'dianjiang': return '点将单挑';
                 }
             }
-            else if (config.mode == 'identity' && config.identity_mode != 'normal') {
+            else if (config.mode == 'identity') {
                 switch (config.identity_mode) {
                     case 'purple': return '三对三对二';
-                    case 'zhong': return '忠胆英杰';
+                    case 'zhong': return (config.double_character ? '双将' : '') + '忠胆英杰';
+                    default: return get.cnNumber(parseInt(config.number)) + '人' + (config.double_character ? '双将' : '') + '身份';
                 }
             }
             else if (config.mode == 'guozhan' && config.guozhan_mode != 'normal') {
@@ -55009,6 +55065,11 @@
         xyDistance: function (from, to) {
             return Math.sqrt((from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]));
         },
+        /**
+         * 判断对象物品类型(字符串(区域名或属性名)，玩家及玩家组，卡牌及卡牌组，选择范围，元素坐标，按钮，弹窗，事件)
+         * @param {Object} obj 要判断物品类型的对象
+         * @returns {?string} 对象的物品类型
+         */
         itemtype: function (obj) {
             var i, j;
             if (typeof obj == 'string') {
@@ -55055,6 +55116,9 @@
                 if (obj.classList.contains('card')) return 'card';
                 if (obj.classList.contains('player')) return 'player';
                 if (obj.classList.contains('dialog')) return 'dialog';
+            }
+            if (get.is.object(obj)) {
+                if (obj.isMine == lib.element.event.isMine) return 'event';
             }
         },
         equipNum: function (card) {
@@ -55585,6 +55649,7 @@
                 .replace(/转换技 /g, '<font color=#88e>转换技 </font>')
                 .replace(/限定技 /g, '<font color=#baf>限定技 </font>')
                 .replace(/使命技 /g, '<font color=#bf9>使命技 </font>')
+                .replace(/觉醒技 /g, '<font color=#fcd>觉醒技 </font>')
                 .replace(/主公技 /g, '<font color=#ff4>主公技 </font>');
             return str;
             // 	replace(/觉醒技/g,'<span class="greentext">觉醒技</span>').
@@ -55947,9 +56012,10 @@
             return num;
         },
         owner: function (card, method) {
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].getCards('hej').contains(card)) return game.players[i];
-                if (game.players[i].judging[0] == card && method != 'judge') return game.players[i];
+            var list = game.players.concat(game.dead);
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].getCards('hej').contains(card)) return list[i];
+                if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
             //for(var i=0;i<game.players.length;i++){
             //	if(game.players[i].using&&game.players[i].using.contains(card)) return game.players[i];
@@ -56291,11 +56357,7 @@
                     }
                 }
 
-                var skills = node.getSkills(false, false);
-                for (var i in node.forbiddenSkills) {
-                    skills.add(i);
-                }
-                skills = skills.slice(0);
+                var skills = node.getSkills(null, null, false).slice(0);
                 var skills2 = game.filterSkills(skills, node);
                 if (node == game.me && node.hiddenSkills.length) {
                     skills.addArray(node.hiddenSkills);
@@ -56304,7 +56366,7 @@
                     if (node.disabledSkills[i].length == 1 &&
                         node.disabledSkills[i][0] == i + '_awake' &&
                         !node.hiddenSkills.contains(i)) {
-                        skills.push(i);
+                        skills.add(i);
                     }
                 }
                 for (i = 0; i < skills.length; i++) {
@@ -57517,30 +57579,34 @@
          * @param {!GameCores.GameObjects.Card} card 游戏牌对象
          * @returns {number} 如果是判定区的牌，返回-1；如果 `useful`未定义，此函数返回-1(`useful`默认为-1)
          */
-        useful: function (card) {
+        useful: function (card, player) {
             if (get.position(card) == 'j') return -1;
             if (get.position(card) == 'e') return get.equipValue(card);
             if (card._modUseful) {
                 return card._modUseful();
             }
             var i = 0;
-            if (_status.event.player) {
-                i = _status.event.player.getCards('h', card.name).indexOf(card);
+            player = player || _status.event.player;
+            if (player) {
+                i = player.getCards('h', card.name).indexOf(card);
                 if (i < 0) i = 0;
             }
             var aii = get.info(card).ai;
             var useful;
             if (aii && aii.useful) useful = aii.useful;
             else if (aii && aii.basic) useful = aii.basic.useful;
-            if (useful == undefined) return -1;
-            if (typeof useful == 'function') {
-                return useful(card, i);
+            var result;
+            if (useful == undefined) result = -1;
+            else if (typeof useful == 'function') {
+                result = useful(card, i);
             }
-            if (typeof useful == 'number') return useful;
-            if (i < useful.length) {
-                return useful[i];
+            else if (typeof useful == 'number') result = useful;
+            else if (i < useful.length) {
+                result = useful[i];
             }
-            return useful[useful.length - 1];
+            else result = useful[useful.length - 1];
+            result = game.checkMod(player, card, result, 'aiUseful', player);
+            return result;
         },
         /**
          * 返回牌的留牌收益，但是此函数返回的留牌收益为原留牌收益的相反数
@@ -57616,7 +57682,7 @@
             if (player == undefined || get.itemtype(player) != 'player') player = _status.event.player;
             var geti = function () {
                 var num = 0, i;
-                var cards = player.getCards('h', card.name);
+                var cards = player.getCards('hs', card.name);
                 if (cards.contains(card)) {
                     return cards.indexOf(card);
                 }

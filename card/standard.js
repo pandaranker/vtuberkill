@@ -246,12 +246,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							target:target,
 							card:card,
 						},true)) return false;
-						if(player.hasSkill('jueqing')||target.hasSkill('gangzhi')||target.hasSkill('gangzhi')) return false;
+						if(player.hasSkill('jueqing')||player.hasSkill('gangzhi')||target.hasSkill('gangzhi')) return false;
 						return true;
 					},
 					basic:{
-						useful:[5,1],
-						value:[5,1],
+						useful:[5,3,1],
+						value:[5,3,1],
 					},
 					order:function(item,player){
 						if(player.hasSkillTag('presha',true,null,true)) return 10;
@@ -320,8 +320,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			shacopy:{
 				ai:{
 					basic:{
-						useful:[5,1],
-						value:[5,1],
+						useful:[5,3,1],
+						value:[5,3,1],
 					},
 					order:3,
 					result:{
@@ -387,8 +387,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:3,
 					basic:{
-						useful:[7,2],
-						value:[7,2],
+						useful:[7,5.1,2],
+						value:[7,5.1,2],
 					},
 					result:{player:1},
 					//expose:0.2
@@ -421,8 +421,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							if(player.hasSkillTag('pretao')) return 5;
 							return 2;
 						},
-						useful:[8,6.5,5,4],
-						value:[8,6.5,5,4],
+						useful:[6.5,4,3,2],
+						value:[6.5,4,3,2],
 					},
 					result:{
 						target:2,

@@ -3097,6 +3097,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				cardAround:function(player){
+					return player.getCards('s',function(card){
+						return card.hasGaintag('maoge');
+					});
+				},
 				trigger:{global:'phaseLoopBefore',player:['drawBegin','enterGame']},
 				forced:true,
 				silent:true,

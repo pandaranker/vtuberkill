@@ -1404,6 +1404,7 @@ window.noname_asset_list=[
 	'image/character/yunyuluan.jpg',
 	'image/character/Zaodaoji.jpg',
 	'image/character/zhangjinghua.jpg',
+	'image/character/zhongguobanai.jpg',
 	
 	'image/character/sp_Ava.jpg',
 	'audio/die/Ava.mp3',
