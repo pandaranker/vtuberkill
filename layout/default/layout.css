@@ -2148,6 +2148,7 @@ div:not(.handcards)>.card>.info>span,
 	width: 100%;
 	font-size: 12px;
 	text-align: center;
+	white-space: nowrap;
 	/*opacity: 0;*/
 }
 .player:hover>.nameol {
@@ -3263,6 +3264,47 @@ div:not(.handcards)>.card>.info>span,
 	left: calc(50% + 20px);
 	top: calc(50% + 80px)
 }
+#window>.player.connect[data-position='cx0']{
+	left:calc(150% / 7 - 1275px / 7);
+	top:calc(300% / 7 - 160px + 5px);
+}
+#window>.player.connect[data-position='cx1']{
+	left:calc(247% / 7 - 850px / 7);
+	top:calc(300% / 7 - 160px + 5px);
+}
+#window>.player.connect[data-position='cx2']{
+	left:calc(350% / 7 - 525px / 7);
+	top:calc(300% / 7 - 160px + 5px);
+}
+#window>.player.connect[data-position='cx3']{
+	left:calc(453% / 7 - 200px / 7);
+	top:calc(300% / 7 - 160px + 5px);
+}
+#window>.player.connect[data-position='cx4']{
+	left:calc(550% / 7 + 125px / 7);
+	top:calc(300% / 7 - 160px + 5px);
+}
+#window>.player.connect[data-position='cx5']{
+	left:calc(150% / 7 - 1275px / 7);
+	top:calc(400% / 7 - 40px + 5px);
+}
+#window>.player.connect[data-position='cx6']{
+	left:calc(247% / 7 - 850px / 7);
+	top:calc(400% / 7 - 40px + 5px);
+}
+#window>.player.connect[data-position='cx7']{
+	left:calc(350% / 7 - 525px / 7);
+	top:calc(400% / 7 - 40px + 5px);
+}
+#window>.player.connect[data-position='cx8']{
+	left:calc(453% / 7 - 200px / 7);
+	top:calc(400% / 7 - 40px + 5px);
+}
+#window>.player.connect[data-position='cx9']{
+	left:calc(550% / 7 + 125px / 7);
+	top:calc(400% / 7 - 40px + 5px);
+}
+
 #window>.player.connect {
 	width: 120px;
 }
@@ -3279,6 +3321,7 @@ div:not(.handcards)>.card>.info>span,
 	top: auto;
 	right: 20px;
 	bottom: 20px;
+	z-index: 5;
 }
 .connectevents.server{
 	left: 20px;
@@ -3286,6 +3329,9 @@ div:not(.handcards)>.card>.info>span,
 }
 .connectevents.left{
 	transform: translateX(-85px);
+}
+.connectevents.left2{
+	transform: translateX(-170px);
 }
 .connectevents.icon{
 	width: 20px;
@@ -4452,7 +4498,7 @@ div[data-decoration="bronze"]::after{
 }
 .coin_menu .content>.caption>.coin_buy>.menubutton {
 	width: auto;
-	display: inline-block;
+	/* display: inline-block; */
 	position: relative;
 	float: right;
 	padding-left: 5px;
@@ -4573,7 +4619,6 @@ div[data-decoration="bronze"]::after{
 }*/
 .player.selectable:not(.selected)::before,
 .card.glow::before,
-.card.glows::before,
 .button.glow::before {
 	opacity: 1;
 }
@@ -4594,9 +4639,7 @@ div[data-decoration="bronze"]::after{
 #me .card.glow::before {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(0, 133, 255) 0 0 5px, rgba(0, 133, 255,1) 0 0 10px;
 }
-#me .card.glows::before {
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(255, 153, 51) 0 0 5px, rgba(255, 153, 51,1) 0 0 10px;
-}
+
 #me>#handcards1:not(.scrollh),
 #me>#handcards2:not(.scrollh) {
 	z-index: 3;
@@ -4607,8 +4650,10 @@ div[data-decoration="bronze"]::after{
 #me>div:not(.scrollh)>.handcards>.card.selected{
 	top:-20px;
 }*/
-.glows:not(.button):not(.card){
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(255, 153, 51, 0.4) 0 0 5px, rgba(255, 153, 51, 0.5) 0 0 12px, rgba(255, 153, 51, 0.8) 0 0 15px !important;
+
+#me .card.glows {
+	opacity: 1;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgb(255, 153, 51) 0 0 5px, rgba(255, 153, 51,1) 0 0 10px;
 }
 .glow:not(.button):not(.card){
 	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 133, 255, 0.4) 0 0 5px, rgba(0, 133, 255, 0.5) 0 0 12px, rgba(0, 133, 255, 0.8) 0 0 15px !important;

@@ -142,7 +142,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			// jiling:['male','qun',4,['shuangren']],
 			// zangba:['male','wei',4,['rehengjiang']],
 			// zhangren:['male','qun',4,['chuanxin','zfengshi']],
-			// zoushi:['female','qun',3,['zhuoshui','zqingcheng']],
 
 			// wangyun:['male','qun',4,['xinlianji','xinmoucheng']],
 			// sunqian:['male','shu',3,['qianya','shuimeng']],
@@ -5148,32 +5147,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			
-			huoshui:{
-				audio:2,
-				enable:'phaseUse',
-				unique:true,
-				forceunique:true,
-				filter:function(event,player){
-					if(player.name1=='gz_zoushi') return player.isUnseen(0);
-					return player.isUnseen(1);
-				},
-				content:function(){
-					if(player.name1=='gz_zoushi') player.showCharacter(0);
-					else player.showCharacter(1);
-				},
-				global:'huoshui_mingzhi'
-			},
-			huoshui_mingzhi:{
-				ai:{
-					nomingzhi:true,
-					skillTagFilter:function(player){
-						if(_status.currentPhase&&_status.currentPhase!=player&&_status.currentPhase.hasSkill('huoshui')){
-							return true;
-						}
-						return false;
-					}
-				}
-			},
 			qingcheng:{
 				audio:2,
 				enable:'phaseUse',
@@ -5249,19 +5222,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(get.tag(card,'damage')) return 2;
 						}
 					}
-				}
-			},
-			zhuoshui:{
-				audio:'huoshui',
-				trigger:{player:'phaseZhunbeiBegin'},
-				forced:true,
-				content:function(){
-					game.countPlayer(function(current){
-						if(current!=player&&!current.hasSkill('fengyin')){
-							player.line(current,'green');
-							current.addTempSkill('fengyin');
-						}
-					});
 				}
 			},
 			zqingcheng:{
@@ -16384,12 +16344,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			fenyue2_bg:'钺',
 			fenyue_info:'出牌阶段限X次，你可以与一名角色拼点，若你赢，你选择一项：1.令其不能使用或打出手牌直到回合结束；2.视为你对其使用了【杀】（不计入次数限制）。若你没赢，你结束出牌阶段。（X为存活的忠臣数）',
 			
-			huoshui:'祸水',
-			huoshui_info:'出牌阶段，你可以明置此武将牌：你的回合内，若此武将牌处于明置状态，其他角色不能明置其武将牌。',
-			qingcheng:'倾城',
-			qingcheng_info:'出牌阶段，你可以弃置一张装备牌并选择一名两张武将牌均明置的其他角色，你暗置其一张武将牌',
-			zhuoshui:'祸水',
-			zhuoshui_info:'锁定技，准备阶段，你令所有其他角色的非锁定技失效直到回合结束。',
 			zqingcheng:'倾城',
 			zqingcheng_info:'出牌阶段，你可以弃置一张装备牌，然后令一名角色翻面并摸两张牌。',
 			zfengshi:'锋矢',

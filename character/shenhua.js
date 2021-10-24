@@ -83,6 +83,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuanshu:['jiling'],
 			zhangxiu:['jiaxu'],
 			wangping:['jiangfei'],
+			jiangwei:['xiahouba'],
 		},
 		characterFilter:{
 			zuoci:function(mode){
@@ -759,6 +760,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					player.storage.drlt_poshi=true;
+					player.awakenSkill('drlt_poshi');
 					player.loseMaxHp();
 					"step 1"
 					var num=player.maxHp-player.countCards('h');
@@ -977,6 +979,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(target.hasSkill('drlt_xiongluan2')) return true;
 					},
 				},
+				charlotte:true,
 			},
 			'drlt_xiongluan2':{
 				mod:{
@@ -991,6 +994,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
+				charlotte:true,
 			},
 			
 			
@@ -1206,7 +1210,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:'kongsheng',
 				marktext:"箜",
 				intro:{
-					content:'cards',
+					content:"cards",
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);
@@ -3261,6 +3265,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.suit(card)=='heart') return -1;
 						return 1;
 					});
+					next.judge2=function(result){
+						return result.bool;
+					};
 					if(get.mode()!='guozhan'){
 						next.callback=lib.skill.tuntian.callback;
 						event.finish();
@@ -4903,7 +4910,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.source.judge(function(card){
 							if(get.suit(card)=='spade') return 4;
 							return 0;
-						});
+						}).judge2=function(result){
+							return result.bool?true:false;
+						};
 					}
 					else{
 						event.finish();
@@ -4935,16 +4944,22 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 1"
 					event.currented.push(event.current);
 					event.current.animate('target');
-					event.current.chooseToUse('乱武：使用一张杀或流失一点体力',{name:'sha'},function(card,player,target){
+					event.current.chooseToUse('乱武：使用一张杀或失去一点体力',function(card){
+						if(get.name(card)!='sha') return false;
+						return lib.filter.filterCard.apply(this,arguments)
+					},function(card,player,target){
 						if(player==target) return false;
-						if(!player.canUse('sha',target)) return false;
-						if(get.distance(player,target)<=1) return true;
-						if(game.hasPlayer(function(current){
-							return current!=player&&get.distance(player,current)<get.distance(player,target);
-						})){
-							return false;
+						var dist=get.distance(player,target);
+						if(dist>1){
+							if(game.hasPlayer(function(current){
+								return current!=player&&get.distance(player,current)<dist;
+							})){
+								return false;
+							}
 						}
-						return true;
+						return lib.filter.filterTarget.apply(this,arguments)
+					}).set('ai2',function(){
+						return get.effect_use.apply(this,arguments)+0.01;
 					});
 					"step 2"
 					if(result.bool==false) event.current.loseHp();
@@ -5085,6 +5100,29 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			kanpo:{
+				mod:{
+					aiValue:function(player,card,num){
+						if(get.name(card)!='wuxie'&&get.color(card)!='black') return;
+						var cards=player.getCards('hs',function(card){
+							return get.name(card)=='wuxie'||get.color(card)=='black';
+						});
+						cards.sort(function(a,b){
+							return (get.name(b)=='wuxie'?1:2)-(get.name(a)=='wuxie'?1:2);
+						});
+						var geti=function(){
+							if(cards.contains(card)){
+								return cards.indexOf(card);
+							}
+							return cards.length;
+						};
+						if(get.name(card)=='wuxie') return Math.min(num,[6,4,3][Math.min(geti(),2)])*0.6;
+						return Math.max(num,[6,4,3][Math.min(geti(),2)]);
+					},
+					aiUseful:function(){
+						return lib.skill.kanpo.mod.aiValue.apply(this,arguments);
+					},
+				},
+				locked:false,
 				audio:2,
 				enable:'chooseToUse',
 				filterCard:function(card){
@@ -5834,7 +5872,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(suit=='spade') return -4;
 							if(suit=='club') return -2;
 							return 0;
-						});
+						}).judge2=function(result){
+							return result.bool==false?true:false;
+						};
 					}
 					else{
 						event.finish();
@@ -6519,7 +6559,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				group:'gzbuqu_recover',
 				//locked:true,
-				frequent:true,
+				forced:true,
+				locked:false,
 				ondisable:true,
 				onremove:function(player){
 					if(player.storage.gzbuqu.length){
@@ -6725,7 +6766,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target.judge(function(card){
 							if(get.suit(card)=='spade') return -4;
 							return 0;
-						});
+						}).judge2=function(result){
+							return result.bool==false?true:false;
+						};
 					}
 					else{
 						event.finish();
@@ -7107,65 +7150,28 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			chanyuan:{
-				//charlotte:true,
-				firstDo:true,
-				trigger:{
-					player:["phaseBefore","changeHp"],
+				init:function(player,skill){
+					player.addSkillBlocker(skill);
 				},
-				priority:99,
-				forced:true,
-				popup:false,
-				unique:true,
-				content:function(){
-					if(player.hp==1){
-						var skills=player.getSkills(true,false);
-						for(var i=0;i<skills.length;i++){
-							var info=get.info(skills[i]);
-							if(skills[i]=='chanyuan'||skills[i]=='rechanyuan'||info.charlotte){
-								skills.splice(i--,1);
-							}
-						}
-						player.disableSkill('chanyuan',skills);
-					}
-					else player.enableSkill('chanyuan');
+				onremove:function(player,skill){
+					player.removeSkillBlocker(skill);
+				},
+				charlotte:true,
+				locked:true,
+				skillBlocker:function(skill,player){
+					return skill!='chanyuan'&&skill!='rechanyuan'&&!lib.skill[skill].charlotte&&player.hp<=1;
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player,skill){
 						var str='<li>锁定技，你不能质疑于吉，只要你的体力值为1，你的其他技能便全部失效。';
-						var list=[];
-						for(var i in player.disabledSkills){
-							if(player.disabledSkills[i].contains(skill)){
-								list.push(i)
-							}
-						}
-						if(list.length){
-							str+='<br><li>失效技能：';
-							for(var i=0;i<list.length;i++){
-								if(lib.translate[list[i]+'_info']){
-									str+=get.translation(list[i])+'、';
-								}
-							}
-							return str.slice(0,str.length-1);
-						}else return str;
-					},
-				},
-				init:function(player,skill){
-					if(player.hp==1){
-						var skills=player.getSkills(true,false);
-						for(var i=0;i<skills.length;i++){
-							var info=get.info(skills[i]);
-							if(skills[i]=='chanyuan'||skills[i]=='rechanyuan'||info.charlotte){
-								skills.splice(i--,1);
-							}
-						}
-						player.disableSkill(skill,skills);
+						var list=player.getSkills(null,null,false).filter(function(i){
+							return lib.skill.rechanyuan.skillBlocker(i,player);
+						});
+						if(list.length) str+=('<br><li>失效技能：'+get.translation(list))
+						return str;
 					}
-				},
-				onremove:function(player,skill){
-					player.enableSkill(skill);
-				},
-				locked:true,
+				}
 			},
 			"guhuo_respond":{
 				trigger:{
@@ -7349,7 +7355,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			menghuo:['re_menghuo','menghuo'],
 			zhurong:['re_zhurong','ol_zhurong','zhurong'],
 			sunjian:['ol_sunjian','re_sunjian','sunjian'],
-			jiaxu:['jiaxu','ns_jiaxu'],
+			jiaxu:['re_jiaxu','jiaxu','ns_jiaxu'],
 			dongzhuo:['ol_dongzhuo','sp_dongzhuo','re_dongzhuo','dongzhuo'],
 			dengai:['re_dengai','ol_dengai','dengai'],
 			sp_zhanghe:['sp_zhanghe','yj_zhanghe'],
@@ -7363,6 +7369,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			guanqiujian:['guanqiujian','re_guanqiujian','old_guanqiujian'],
 			chendao:['chendao','ns_chendao'],
 			zhugezhan:['zhugezhan','old_zhugezhan'],
+			ol_lusu:['ol_lusu','re_lusu'],
 		},
 		translate:{
 			re_yuanshao:'袁绍',
@@ -7715,7 +7722,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xinliegong:'烈弓',
 			xinkuanggu:'狂骨',
 			gzbuqu:'不屈',
-			gzbuqu_info:'当你扣减1点体力时，若你的体力值为0，你可以将牌堆顶的一张牌置于你的武将牌上：若此牌的点数与你武将牌上的其他牌均不同，你不会死亡；若你的武将牌上有点数相同的牌，你进入濒死状态',
+			gzbuqu_info:'①当你扣减1点体力时，若你的体力值小于1，则你将牌堆顶的一张牌置于你的武将牌上，称为“创”。②当你回复1点体力时，你移去一张“创”。③若你有“创”且点数均不相同，则你不结算濒死状态。',
 			xinkuanggu_info:'当你对距离1以内的一名角色造成1点伤害后，你可以回复1点体力或摸一张牌。',
 			xinliegong_info:'你使用【杀】可以选择你距离不大于此【杀】点数的角色为目标；当你使用【杀】指定一个目标后，你可以根据下列条件执行相应的效果：1.其手牌数小于等于你的手牌数，此【杀】不可被【闪】响应，2.其体力值大于等于你的体力值，此【杀】伤害+1。',
 			jiewei_info:'当你的武将牌翻面后，你可以摸一张牌。然后你可以使用一张锦囊牌或装备牌，并可以在此牌结算后弃置场上一张同类型的牌',

@@ -637,12 +637,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(!player.isPhaseUsing()) return false;
 					if(!(get.type(event.card) =='basic'||get.type(event.card)=='trick'))	return false;
-					if(event.result.bool == false || event.result.wuxied)					return false;
-					if(!player.storage.pekoyu.length)										return true;
-					for(var i=0;i<player.storage.pekoyu.length;i++){
-						if(get.suit(event.card)==player.storage.pekoyu[i])					return false
+					if(event.result.bool == false || event.iswuxied)	return false;
+					for(let i of player.getStorage('pekoyu')){
+						if(get.suit(event.card)==i)	return false
 					}
-					return !(event.result.bool == false || event.iswuxied);
+					return true;
 				},
 				content: function() {
 					'step 0'
@@ -1616,6 +1615,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					}
 				}
+			},
+
+
+			
+			g_hidden_ai:{
+				charlotte:true,
+				ai:{
+					threaten:function(player,target){
+						if(get.mode()!='guozhan'&&target.isUnseen(2)) return 0.0001;
+						return 1;
+					},
+				},
 			},
 		},
 		card:{

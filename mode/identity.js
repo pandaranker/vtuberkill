@@ -2,68 +2,6 @@
 game.import('mode',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'identity',
-		card:{
-			group_wei:{
-				fullskin:true,
-			},
-			group_shu:{
-				fullskin:true,
-			},
-			group_wu:{
-				fullskin:true,
-			},
-			group_qun:{
-				fullskin:true,
-			},
-			group_key:{
-				fullskin:true,
-			},
-			group_jin:{
-				fullskin:true,
-			},
-			group_holo:{
-				fullskin:true,
-			},
-			group_nijisanji:{
-				fullskin:true,
-			},
-			group_VirtuaReal:{
-				fullskin:true,
-			},
-			group_upd8:{
-				fullskin:true,
-			},
-			group_paryi:{
-				fullskin:true,
-			},
-			group_kagura:{
-				fullskin:true,
-			},
-			group_nanashi:{
-				fullskin:true,
-			},
-			group_psp:{
-				fullskin:true,
-			},
-			group_asoul:{
-				fullskin:true,
-			},
-			group_nori:{
-				fullskin:true,
-			},
-			group_vwp:{
-				fullskin:true,
-			},
-			group_chaos:{
-				fullskin:true,
-			},
-			group_xuyan:{
-				fullskin:true,
-			},
-			group_xuefeng:{
-				fullskin:true,
-			},
-		},
 		start:function(){
 			"step 0"
 			if(!lib.config.new_tutorial){
@@ -857,7 +795,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					for(var i in libCharacter){
 						if(lib.filter.characterDisabled(i,libCharacter)) continue;
-						if(i.indexOf('lingju')!=-1) continue;
+						if(i.indexOf('lingju')!=-1||get.is.double(i)) continue;
 						var group=lib.character[i][1];
 						if(group=='shen') continue;
 						if(!map[group]){
@@ -1031,7 +969,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					for(var i in lib.character){
 						if(lib.filter.characterDisabled(i)) continue;
-						if(i.indexOf('lingju')!=-1) continue;
+						if(i.indexOf('lingju')!=-1||get.is.double(i)) continue;
 						var group=lib.character[i][1];
 						if(group=='shen') continue;
 						if(!map[group]){
@@ -1231,26 +1169,25 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(typeof lib.config.test_game=='string'&&player==game.me.next){
 						player.init(lib.config.test_game);
 					}
-					if(get.config('choose_group')&&player.group=='shen'){
-							var list=lib.group.slice(0);
-							list.remove('shen');
-							if(list.length) player.group=function(){
-							 if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
-							  if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo'].contains(game.zhu.name)) return game.zhu.group;
-							  if(game.zhu.name=='sunhao'&&player.identity=='zhong') return 'wu';
-							  if(game.zhu.name=='yl_yuanshu'){
-							   if(player.identity=='zhong') list.remove('qun');
-							   else return 'qun';
-							  }
-							  if(['sunhao','xin_yuanshao','re_yuanshao','re_sunce','ol_yuanshao','yuanshu'].contains(game.zhu.name)){
-							   if(player.identity!='zhong') list.remove(game.zhu.group);
-							   else return game.zhu.group;
-							  }
-							 }
-							 return list.randomGet();
-							}();
-						}
+					if(get.is.double(player.name1)){
+						player._groupChosen=true;
+						player.group=get.is.double(player.name1,true).randomGet();
 						player.node.name.dataset.nature=get.groupnature(player.group);
+					}
+					else if(get.config('choose_group')&&player.group=='shen'&&!player.isUnseen(0)){
+						var list=lib.group2.slice(0);
+						if(list.length) player.group=function(){
+						 if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
+							if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi'].contains(game.zhu.name)) return game.zhu.group;
+							if(['sunhao','xin_yuanshao','re_yuanshao','re_sunce','ol_yuanshao','yuanshu','jin_simazhao','liubian'].contains(game.zhu.name)){
+							  if(player.identity!='zhong') list.remove(game.zhu.group);
+							  else return game.zhu.group;
+							}
+						 }
+						 return list.randomGet();
+						}();
+					}
+					player.node.name.dataset.nature=get.groupnature(player.group);
 				}
 				next.setContent(function(){
 					"step 0"
@@ -1613,14 +1550,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(_status.brawl&&_status.brawl.chooseCharacterFilter){
 						_status.brawl.chooseCharacterFilter(event.list,list2,list3);
 					}
-					var num=Number(get.config('choice_'+game.me.identity));
+					var num = Number(get.config('choice_'+game.me.identity)) + Number(get.config('choice_ex'));
 					if(event.zhongmode){
 						num=6;
 						if(game.me.identity=='zhu'||game.me.identity=='nei'||game.me.identity=='mingzhong'){
 							num=8;
 						}
 					}
-					num += Number(get.config('choice_ex'));
 					if(game.zhu!=game.me){
 						event.ai(game.zhu,event.list,list2)
 						event.list.remove(get.sourceCharacter(game.zhu.name1));
@@ -1824,49 +1760,37 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						ui.cheat2.close();
 						delete ui.cheat2;
 					}
-					var chooseGroup=false;
 					if(event.chosen.length){
-						if(lib.character[event.chosen[0]][1]=='shen'){
-							chooseGroup=true;
-						}
+						event.choosed=event.chosen;
 					}
 					else if(event.modchosen){
 						if(event.modchosen[0]=='random') event.modchosen[0]=result.buttons[0].link;
 						else event.modchosen[1]=result.buttons[0].link;
+						event.choosed=event.modchosen;
 					}
 					else if(result.buttons.length==2){
 						event.choosed=[result.buttons[0].link,result.buttons[1].link];
 						game.addRecentCharacter(result.buttons[0].link,result.buttons[1].link);
-						if(lib.character[event.choosed[0]][1]=='shen'){
-							chooseGroup=true;
-						}
 					}
 					else{
 						event.choosed=[result.buttons[0].link];
-						if(lib.character[event.choosed[0]][1]=='shen'){
-							chooseGroup=true;
-						}
 						game.addRecentCharacter(result.buttons[0].link);
 					}
-					if(get.config('choose_group')&&chooseGroup){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos','xuefeng'];//
+					var name=event.choosed[0];
+					if(get.is.double(name)){
+						game.me._groupChosen=true;
+						game.me.chooseControl(get.is.double(name,true)).set('prompt','请选择你的势力');
+					}
+					else if(lib.character[name][1]=='shen'&&!lib.character[name][4].contains('hiddenSkill')&&get.config('choose_group')){
+						var list=lib.group2.slice(0);
 						for(var i=0;i<list.length;i++){
-							if(!lib.group.contains(list[i])) list.splice(i--,1);
-							else list[i]=['','','group_'+list[i]];
+							list[i]=['','','group_'+list[i]];
 						}
-						game.me.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
-							return Math.random();
-						});
+						game.me.chooseButton(['请选择神武将的势力',[list,'vcard']],true);
 					}
 					"step 2"
 					if(result.links&&result.links[0])	event.group=result.links[0][2].slice(6)||false;
-					if(event.chosen.length){
-						game.me.init(event.chosen[0],event.chosen[1]);
-					}
-					else if(event.modchosen){
-						game.me.init(event.modchosen[0],event.modchosen[1]);
-					}
-					else if(event.choosed.length==2){
+					if(event.choosed.length==2){
 						game.me.init(event.choosed[0],event.choosed[1]);
 					}
 					else{
@@ -2304,13 +2228,24 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					},game.zhu,result.links[0],result.links[1],game.players.length>4);
 					
-					if(game.zhu.group=='shen'){
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos','xuefeng'];//
+					if(game.zhu.group=='shen'&&!game.zhu.isUnseen(0)){
+						var list=lib.group2.slice(0);
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
 						}
 						game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
+							return Math.random();
+						});
+					}
+					else if(get.is.double(game.zhu.name1)){
+						game.zhu._groupChosen=true;
+						var list=get.is.double(game.zhu.name1,true);
+						for(var i=0;i<list.length;i++){
+							if(!lib.group.contains(list[i])) list.splice(i--,1);
+							else list[i]=['','','group_'+list[i]];
+						}
+						game.zhu.chooseButton(['请选择你的势力',[list,'vcard']],true).set('ai',function(){
 							return Math.random();
 						});
 					}
@@ -2356,7 +2291,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(game.players[i].special_identity){
 								str+='（'+get.translation(game.players[i].special_identity)+'）';
 							}
-							//list.push(game.players[i])
 							list.push([game.players[i],[str,[event.list.randomRemove(num+num3+Number(get.config('choice_ex'))),'characterx']],selectButton,true]);
 						}
 					}
@@ -2383,134 +2317,91 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						else{
 							result[i]=result[i].links;
 						}
-						if(lib.character[result[i][0]]&&lib.character[result[i][0]][1]=='shen'&&!lib.character[result[i][0]][4].contains('hiddenSkill')) shen.push(lib.playerOL[i]);
+						if(get.is.double(result[i][0])||
+						 lib.character[result[i][0]]&&lib.character[result[i][0]][1]=='shen'&&!lib.character[result[i][0]][4].contains('hiddenSkill')) shen.push(lib.playerOL[i]);
 					}
 					event.result2=result;
 					if(shen.length){
-						var buttonList=[];
-						var list=['qun','holo','nijisanji','VirtuaReal','nori','paryi','upd8','kagura','nanashi','psp','asoul','vwp','xuyan','chaos','xuefeng'];//
+						var list=lib.group2.slice(0);
 						for(var i=0;i<list.length;i++){
 							if(!lib.group.contains(list[i])) list.splice(i--,1);
 							else list[i]=['','','group_'+list[i]];
 						}
-						// game.zhu.chooseButton(['请选择神武将的势力',[list,'vcard']],true).set('ai',function(){
-						// 	return Math.random();
-						// });
 						for(var i=0;i<shen.length;i++){
-							buttonList.push([shen[i],['请选择神武将的势力',[list,'vcard']],true])
+							if(get.is.double(result[shen[i].playerid][0])){
+								shen[i]._groupChosen=true;
+								shen[i]=[shen[i],['请选择你的势力',[get.is.double(result[shen[i].playerid][0],true).map(function(i){
+									return ['','','group_'+i];
+								}),'vcard']],1,true];
+							}
+							else shen[i]=[shen[i],['请选择神武将的势力',[list,'vcard']],1,true];
 						}
-						game.me.chooseButtonOL(buttonList,function(player,result){
+						game.me.chooseButtonOL(shen,function(player,result){
 							if(player==game.me) player.changeGroup(result.links[0][2].slice(6),false,false);
 						}).set('switchToAuto',function(){
  							_status.event.result='ai';
 						}).set('processAI',function(){
-							return 'ai';
-						}).set('ai',function(){
-							return Math.random();
+							return {
+								bool:true,
+								links:[_status.event.dialog.buttons.randomGet().link],
+							}
 						});
-				   }
-				   else event._result={};
-				   "step 5"
-				   if(!result) result={};
-				   for(var i in result){
-					   if(result[i]&&result[i].links) result[i]=result[i].links[0][2].slice(6);
-					   else if(result[i]=='ai') result[i]=function(){
-						var player=lib.playerOL[i];
-						var list=['wei','shu','wu','qun','jin','key'];
-						for(var ix=0;ix<list.length;ix++){
-							if(!lib.group.contains(list[ix])) list.splice(ix--,1);
+					}
+					else event._result={};
+					"step 5"
+					if(!result) result={};
+					for(var i in result){
+						if(result[i]&&result[i].links) result[i]=result[i].links[0][2].slice(6);
+						else if(result[i]=='ai') result[i]=function(){
+							var player=lib.playerOL[i];
+							var list=lib.group2.slice(0);
+							if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
+							if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi'].contains(game.zhu.name)) return game.zhu.group;
+							if(['sunhao','xin_yuanshao','re_yuanshao','re_sunce','ol_yuanshao','yuanshu','jin_simazhao','liubian'].contains(game.zhu.name)){
+							if(player.identity!='zhong') list.remove(game.zhu.group);
+								else return game.zhu.group;
+							}
+							}
+							return list.randomGet();
+						}();
+					}
+					var result2=event.result2;
+					game.broadcast(function(result,result2){
+						for(var i in result){
+							if(!lib.playerOL[i].name){
+								lib.playerOL[i].init(result[i][0],result[i][1]);
+							}
+							if(result2[i]&&result2[i].length) lib.playerOL[i].changeGroup(result2[i],false,false);
 						}
-						if(_status.mode!='zhong'&&game.zhu&&game.zhu.group){
-						 if(['re_zhangjiao','liubei','re_liubei','caocao','re_caocao','sunquan','re_sunquan','zhangjiao','sp_zhangjiao','caopi','re_caopi','liuchen','caorui','sunliang','sunxiu','sunce','re_sunben','ol_liushan','re_liushan','key_akane','dongzhuo','re_dongzhuo','ol_dongzhuo','jin_simashi'].contains(game.zhu.name)) return game.zhu.group;
-							if(game.zhu.name=='yl_yuanshu'){
-						  if(player.identity=='zhong') list.remove('qun');
-						  else return 'qun';
-						 }
-						 if(['sunhao','xin_yuanshao','re_yuanshao','re_sunce','ol_yuanshao','yuanshu','jin_simazhao','liubian'].contains(game.zhu.name)){
-						  if(player.identity!='zhong') list.remove(game.zhu.group);
-						  else return game.zhu.group;
-						 }
+						setTimeout(function(){
+							ui.arena.classList.remove('choose-character');
+						},500);
+					},result2,result);
+					
+					for(var i in result2){
+						if(!lib.playerOL[i].name){
+							lib.playerOL[i].init(result2[i][0],result2[i][1]);
 						}
-						return list.randomGet();
-					   }();
-				   }
-				   var result2=event.result2;
-				   game.broadcast(function(result,result2){
-					   for(var i in result){
-						   if(!lib.playerOL[i].name){
-							   lib.playerOL[i].init(result[i][0],result[i][1]);
-						   }
-						   if(result2[i]&&result2[i].length) lib.playerOL[i].changeGroup(result2[i],false,false);
-					   }
-					   setTimeout(function(){
-						   ui.arena.classList.remove('choose-character');
-					   },500);
-				   },result2,result);
-				   
-				   for(var i in result2){
-					   if(!lib.playerOL[i].name){
-						   lib.playerOL[i].init(result2[i][0],result2[i][1]);
-					   }
-					   if(result[i]&&result[i].length) lib.playerOL[i].changeGroup(result[i],false,false);
-				   }
-				   
-				   if(event.special_identity){
-					   for(var i in event.special_identity){
-						   game.zhu.addSkill(i);
-					   }
-				   }
-				   for(var i=0;i<game.players.length;i++){
-					   _status.characterlist.remove(game.players[i].name);
-					   _status.characterlist.remove(game.players[i].name1);
-					   _status.characterlist.remove(game.players[i].name2);
-				   }
-				   setTimeout(function(){
-					   ui.arena.classList.remove('choose-character');
-				   },500);
+						if(result[i]&&result[i].length) lib.playerOL[i].changeGroup(result[i],false,false);
+					}
+					
+					if(event.special_identity){
+						for(var i in event.special_identity){
+							game.zhu.addSkill(i);
+						}
+					}
+					for(var i=0;i<game.players.length;i++){
+						_status.characterlist.remove(game.players[i].name);
+						_status.characterlist.remove(game.players[i].name1);
+						_status.characterlist.remove(game.players[i].name2);
+					}
+					setTimeout(function(){
+						ui.arena.classList.remove('choose-character');
+					},500);
 				});
 			},
 		},
 		translate:{
-			group_wei:"魏势力",
-			group_shu:"蜀势力",
-			group_wu:"吴势力",
-			group_jin:"晋势力",
-			group_qun:"群",
-			group_key:"键",
-			group_holo:"杏",
-			group_nijisanji:"虹",
-			group_VirtuaReal:"维",
-			group_upd8:"U",
-			group_paryi:"帕",
-			group_kagura:"神楽",
-			group_nanashi:"な",
-			group_psp:"P",
-			group_asoul:"魂",
-			group_nori:"苔",
-			group_vwp:"神椿",
-			group_chaos:"混沌",
-			group_xuyan:"虚",
-			group_xuefeng:"雪风",
-			group_wei_bg:"魏",
-			group_shu_bg:"蜀",
-			group_wu_bg:"吴",
-			group_qun_bg:"群",
-			group_jin_bg:"晋",
-			group_key_bg:"键",
-			group_holo_bg:"杏",
-			group_nijisanji_bg:"虹",
-			group_VirtuaReal_bg:"维",
-			group_upd8_bg:"U",
-			group_paryi_bg:"帕",
-			group_kagura_bg:"咩",
-			group_nanashi_bg:"な",
-			group_psp_bg:"な",
-			group_asoul_bg:"魂",
-			group_nori_bg:"苔",
-			group_vwp_bg:"椿",
-			group_chaos_bg:"潮",
-			group_xuyan_bg:"虚",
-			group_xuefeng_bg:"雪",
 			zhu:"主",
 			zhong:"忠",
 			mingzhong:"忠",
@@ -2557,7 +2448,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			sheshen:'舍身',
 			sheshen_info:'锁定技，主公处于濒死状态即将死亡时，令主公+1体力上限，回复体力至X点（X为你的体力值数），获得你的所有牌，然后你死亡',
 			yexinbilu:'野心毕露',
-	
 		},
 		element:{
 			player:{

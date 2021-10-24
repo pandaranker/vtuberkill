@@ -1299,7 +1299,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							//delete player.storage.quanxinquanyi_showcards;
 							delete player.storage.quanxinquanyi_saycards;
-							var maxCard=player.maxHp-player.hp;
+							var maxCard=player.getDamagedHp();
 							if(maxCard==0) maxCard=1;
 							player.chooseCard('h','选择要展示的手牌',[1,maxCard],true);
 							'step 1'

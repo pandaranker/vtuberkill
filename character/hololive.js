@@ -1451,7 +1451,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						filter: function(event, player) {
 							if (!player.storage.meiwu_trace) return false;
 							return player.storage.meiwu_trace.cardid == event.card.cardid &&
-								(event.result.bool == false || event.result.wuxied);
+								(event.result.bool == false || event.iswuxied);
 						},
 						content: function() {
 							'step 0'
@@ -2517,7 +2517,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='shunshou'){
-							return range[1]=player.countDisabled()||range[1];
+							range[1]=player.countDisabled()||range[1];
 						}
 					},
 					attackFrom:function(from,to,distance){
@@ -2675,7 +2675,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				priority:420,
 				onremove:function(player){
-					if(player.maxHp-player.hp){
+					if(player.isDamaged()){
 						game.log('『希握』后续效果');
 					}
 					game.delay(0.5);

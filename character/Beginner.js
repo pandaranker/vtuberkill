@@ -88,7 +88,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**犬山 */
 			re_InuyamaTamaki:['male','nori',3,['rongyaochengyuan','re_hundunliandong']],
 			/**咩宝 */
-			re_KaguraMea: ['female', 'paryi', 3, ['re_luecai', 're_xiaoyan']],
+			re_KaguraMea: ['female', 'paryi', 3, ['fengna', 're_xiaoyan']],
 			/**OTO */
 			re_OtomeOto: ['female', 'paryi', 3, ['re_yuxia', 'hanyin'],['zhu']],
 			/**团长 */
@@ -3331,16 +3331,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:8,
 					result:{
-						target:-1,
+						target:function(player,target){
+							return lib.card.guohe_copy2.ai.result.target.apply(this,arguments);
+						},
 					},
 				},
 			},
 			//reMEA
-			re_luecai: {
+			fengna: {
 				audio:'luecai',
 				enable: 'phaseUse',
 				filter:function(event,player){
-					return !player.hasSkill('re_luecai_used')&&!player.isMaxHandcard();
+					return !player.hasSkill('fengna_used')&&!player.isMaxHandcard();
 				},
 				filterTarget:function(card,player,target){
 					if (player==target) return false;
@@ -3353,14 +3355,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					target.chooseCard('he','『奉纳』：将一张牌交给'+get.translation(player), true);
 					'step 1'
 					player.gain(result.cards[0],target,'giveAuto');
-					player.addTempSkill('re_luecai_used','phaseUseEnd')
+					player.addTempSkill('fengna_used','phaseUseEnd')
 				},
 				ai:{
 					threaten:1.8,
 					order:4,
 					result:{
 						target:function(player,target){
-							return lib.card.shunshou.ai.result.target.apply(this,arguments);
+							return lib.card.shunshou_copy2.ai.result.target.apply(this,arguments);
+						},
+						player:function(player,target){
+							return lib.card.shunshou_copy2.ai.result.player.apply(this,arguments);
 						},
 					},
 				},
@@ -5633,7 +5638,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mark:true,
 						onremove:function(player){
-							if(player.maxHp-player.hp){
+							if(player.maxHp.isDamaged()){
 								game.log('『失光』后续效果');
 							}
 							game.delayx(0.5);
@@ -6018,7 +6023,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			re_RobokoSan:'新·萝卜子',
 			re_zhanxie:'战械',
-			re_zhanxie_info:'锁定技 你出牌阶段可使用三张【杀】。当你使用第三张【杀】时，摸两张牌。',
+			re_zhanxie_info:'锁定技 你于出牌阶段可多使用两张【杀】。当你使用第三张【杀】时，摸两张牌。',
 			re_chongdian:'机电',
 			re_chongdian_info:'你受到雷电伤害时可改为回复等量体力。你的装备牌可当无距离限制的雷【杀】使用。',
 			
@@ -6108,9 +6113,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			re_hundunliandong_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：强制弃牌</span>',
 			
 			re_KaguraMea: '新·神乐めあ',
-			re_luecai: '奉纳',
-			re_luecai_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
-			re_luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高嘲讽</span>',
+			fengna: '奉纳',
+			fengna_info: '出牌阶段限一次，你可以令手牌数大于你的角色依次交给你一张牌。',
+			fengna_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：高嘲讽</span>',
 			re_xiaoyan: '嚣言',
 			re_xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。',
 

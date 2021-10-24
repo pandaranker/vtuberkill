@@ -1300,6 +1300,7 @@ window.noname_asset_list=[
 	'image/character/liqingge.jpg',
 	'image/character/LizeHelesta.jpg',
 	'image/character/Lovely.jpg',
+	'image/character/Mahiru.jpg',
 	'image/character/Mamoru.jpg',
 	'image/character/Mari.jpg',
 	'image/character/MashiroKanon.jpg',

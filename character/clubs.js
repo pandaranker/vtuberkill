@@ -105,7 +105,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				mod:{
 					selectTarget:function(card,player,range){
 						if(get.name(card)=='sha')
-							return range[1]=Math.floor(player.countCards('e'))||1;
+							range[1]=Math.floor(player.countCards('e'))||1;
 					},
 				},
 				forced:true,
@@ -698,14 +698,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					result:{
 						target:function(player,target){
 							if (target.countCards('h') > player.countCards('h')){
-								return lib.card.shunshou.ai.result.target.apply(this,arguments);
+								return lib.card.shunshou_copy2.ai.result.target.apply(this,arguments);
 							}
 							else{
-								return -1.5;
+								return -1;
 							} 
 						},
 						player:function(player,target){
-							return 1.5;
+							if (target.countCards('h') > player.countCards('h')){
+								return lib.card.shunshou_copy2.ai.result.player.apply(this,arguments);
+							}
+							else{
+								return 1;
+							} 
 						},
 					},
 					expose:0.2,

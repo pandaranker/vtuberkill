@@ -1665,7 +1665,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							player.$throw(storage,1000);
 							game.cardsDiscard(storage);
 							game.log(storage,'被置入了弃牌堆');
-						 storage.length=0;
+							storage.length=0;
 						}
 					},
 					mark:function(dialog,content,player){
@@ -1805,7 +1805,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					content:'cards',
 					onunmark:function(storage,player){
 						if(storage&&storage.length){
-							player.gain(storage,'giveAuto');
+							player.$throw(storage,1000);
+							game.cardsDiscard(storage);
+							game.log(storage,'被置入了弃牌堆');
 							storage.length=0;
 						}
 					},

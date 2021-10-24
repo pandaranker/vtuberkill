@@ -632,7 +632,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lastDo:true,
 				content:function(){
 					'step 0'
-					event.num = player.maxHp-player.hp;
+					event.num = player.getDamagedHp();
 					event.targets = [];
 					'step 1'
 					player.chooseTarget([1,event.num],'###『佑海』###分配'+get.cnNumber(event.num)+'点护甲').set('ai',function(target){
@@ -650,11 +650,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}else{
 						return false;
 					}
-					// 'step 3'
-					// if(event.num<player.maxHp-player.hp){
-					// 	event.num++;
-					// 	event.goto(1);
-					// }
 				},
 			},
 			//特典角色
