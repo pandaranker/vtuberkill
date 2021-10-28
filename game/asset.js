@@ -211,6 +211,9 @@ window.noname_asset_list=[
 	'audio/skill/ai6.mp3',
 	'audio/skill/ai7.mp3',
 	'audio/skill/ailian1.mp3',
+	'audio/skill/appojian1.mp3',
+	'audio/skill/appojian2.mp3',
+	'audio/skill/appojian3.mp3',
 	'audio/skill/aswusheng1.mp3',
 	'audio/skill/aswusheng2.mp3',
 	'audio/skill/aswusheng3.mp3',
@@ -419,6 +422,7 @@ window.noname_asset_list=[
 	'audio/skill/nodao1.mp3',
 	'audio/skill/nodao2.mp3',
 	'audio/skill/nvjiangrouhao.mp3',
+	'audio/skill/puyu.mp3',
 	'audio/skill/qianyong1.mp3',
 	'audio/skill/qianyong2.mp3',
 	'audio/skill/qianyong_draw1.mp3',
@@ -464,6 +468,9 @@ window.noname_asset_list=[
 	'audio/skill/rongyaochengyuan3.mp3',
 	'audio/skill/seqinghuashen1.mp3',
 	'audio/skill/seqinghuashen2.mp3',
+	'audio/skill/shalu1.mp3',
+	'audio/skill/shalu2.mp3',
+	'audio/skill/shalu3.mp3',
 	'audio/skill/shangsheng1.mp3',
 	'audio/skill/shangsheng2.mp3',
 	'audio/skill/shangsheng3.mp3',
@@ -1335,6 +1342,7 @@ window.noname_asset_list=[
 	'image/character/ŌzoraSubaru.jpg',
 	'image/character/OtomeOto.jpg',
 	'image/character/Paryi.jpg',
+	'image/character/PinkyPopHepburn.jpg',
 	'image/character/Pudding.jpg',
 	'image/character/qingzezi.jpg',
 	'image/character/qiudi.jpg',
@@ -1406,6 +1414,9 @@ window.noname_asset_list=[
 	'image/character/Zaodaoji.jpg',
 	'image/character/zhangjinghua.jpg',
 	'image/character/zhongguobanai.jpg',
+
+	'image/character/ap_Azusa.jpg',
+	'image/character/ap_Nana7mi.jpg',
 	
 	'image/character/sp_Ava.jpg',
 	'audio/die/Ava.mp3',
@@ -1419,7 +1430,6 @@ window.noname_asset_list=[
 	'image/character/sp_MinatoAqua.jpg',
 	'image/character/sp_MononobeAlice.jpg',
 	'image/character/sp_UsadaPekora.jpg',
-
 
 	'image/character/re_AibaUiha.jpg',
 	'image/character/re_AkaiHaato.jpg',

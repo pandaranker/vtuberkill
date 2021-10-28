@@ -582,8 +582,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content: function() {
 					player.addTempSkill('old_shiqi_addDam');
-
-					var buff = '.player_buff';
+					let buff = '.player_buff';
 					game.broadcastAll(function(player, buff){
 						player.node.old_shiqi= ui.create.div(buff ,player.node.avatar);
 						player.node.old_shiqi2 = ui.create.div(buff ,player.node.avatar2);
@@ -656,8 +655,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 2'
 					if(result.cards){
-						if(get.name(result.cards[0],'player')=='jiu'||
-							(player.hasSkill('hongshaoturou_viewAs')&&(result.cards[0].name=='shan'||result.cards[0].name=='tao')))
+						if(get.name(result.cards[0],player)=='jiu')
 						player.chooseTarget('###『嚣张咚鼓』###选择一名角色，令其摸两张牌').set('ai',function(target){
 							var player=_status.event.player;
 							if(player.countCards('h')<player.getHandcardLimit())	return target==player;
@@ -704,9 +702,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					player.link(true);
 					player.addMark('hongshaoturou',1,false);
-					player.addTempSkill('hongshaoturou_viewAs','phaseAfter');
-					player.addTempSkill('hongshaoturou_shao','phaseAfter');
-					var buff = '.player_buff';
+					player.addTempSkill('hongshaoturou_viewAs');
+					player.addTempSkill('hongshaoturou_shao');
+					let buff = '.player_buff';
 					game.broadcastAll(function(player, buff){
 						player.node.hongshaoturou= ui.create.div(buff ,player.node.avatar);
 					}, player, buff);
@@ -1705,7 +1703,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			gz_xinke: '心萪',
 			zuigao: '最高指令',
 			zuigao_info: '摸牌阶段，你摸等同于场上势力数的牌。出牌阶段限一次，你可以将一张牌置于此将牌上，令一名角色：展示所有手牌并弃置与此将牌上花色相同的牌；或明置一张武将牌。',
-			xinhuochuancheng: '心火传承',
+			xinhuochuancheng: '心心之火',
 			xinhuochuancheng_info: '锁定技 当你造成或受到伤害后，你需将此将牌上的一张牌交给其他角色。你进入濒死状态时，若此将牌上有牌，你需将此将牌上所有牌交给其他角色并回复1点体力。',
 			
 			gz_YukihanaLamy: '雪花菈米',

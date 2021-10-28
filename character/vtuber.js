@@ -1999,6 +1999,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
 			InabaHaneru:['InabaHaneru','gz_InabaHaneru','old_InabaHaneru'],
 
+			Azusa:['Azusa','ap_Azusa'],
+			Nana7mi:['Nana7mi','ap_Nana7mi'],
+
 			Ava:['Ava','gz_Ava','sea_Ava'],
 		},
 		translate:{

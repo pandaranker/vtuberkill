@@ -114,7 +114,7 @@
  * @param {?GameCores.GameObjects.Card} cards 牌数组，等同于`event.cards`
  * @param {?string} skill 技能ID，等同于`event.skill`
  * @param {?boolean} forced 事件是否必选，通常使用于选择事件，如果为true，表示必选项，玩家/ai必须做出选择，不可取消；如果为虚值，表示可以回退/取消；如果事件不需要该项，默认未指定(undefined)；等同于`event.forced`
- * @param {?number} num 见{@link lib.element.content.useCard}，等同于`event.num`
+ * @param {?number} num 见{@link content.useCard}，等同于`event.num`
  * @param {?GameCores.Bases.Event} trigger 当前事件的触发源(事件)，等同于`event.trigger`
  * @param {?Object} result 子事件的返回结果，等同于`event._result`
  * @param {!_status} _status 全局变量
@@ -138,9 +138,25 @@
         over: false,
         clicked: false,
         auto: false,
+        /**
+         * 当前事件对象，游戏内所有未定义的event等价于_status.event
+         * @name _status.event
+         * @type {!Object}
+         */
         event: {
             finished: true,
+            /**
+             * _status.event.next：插入事件列表，当前step结束后，该列表内的事件会被执行
+             * {@link game.createEvent}生成的事件默认插入其中
+             * @name _status.event_next
+             * @type {!Array}
+             */
             next: [],
+            /**
+             * _status.event.after：后续事件列表，当前事件结束后，该列表内的事件会被执行
+             * @name _status.event_after
+             * @type {!Array}
+             */
             after: []
         },
         ai: {},
@@ -226,9 +242,10 @@
         imported: {},
         layoutfixed: ['chess', 'tafang', 'stone'],//??
         /**
-         * 角色列表子菜单
+         * 角色选择弹窗中的特殊选项
          * ['收藏', '最近']
-         * @namespace
+         * @name lib.characterDialogGroup
+         * @see {@link ui.create.characterDialog}
          */
         characterDialogGroup: {
             '收藏': function (name, capt) {
@@ -260,12 +277,15 @@
         },
         /**
          * 游戏菜单
+         * @name configMenu
          * @namespace
+         * @type {!Object}
          */
         configMenu: {
             /**
              * 通用设置
-             * @namespace
+             * @name configMenu.general
+             * @type {!Object}
              */
             general: {
                 name: '通用',
@@ -910,7 +930,8 @@
             },
             /**
              * 外观设置
-             * @namespace
+             * @name configMenu.appearence
+             * @type {!Object}
              */
             appearence: {
                 name: '外观',
@@ -947,7 +968,7 @@
                     },
                     /**
                      * 游戏布局
-                     * @namespace
+                     * @name configMenu.appearence.layout
                      */
                     layout: {
                         name: '布局',
@@ -3091,7 +3112,8 @@
             },
             /**
              * 显示设置
-             * @namespace
+             * @name configMenu.view
+             * @type {!Object}
              */
             view: {
                 name: '显示',
@@ -3759,7 +3781,8 @@
             },
             /**
              * 音效设置
-             * @namespace
+             * @name configMenu.audio
+             * @type {!Object}
              */
             audio: {
                 name: '音效',
@@ -3877,7 +3900,8 @@
             },
             /**
              * (自动, 禁用)技能设置
-             * @namespace
+             * @name configMenu.skill
+             * @type {!Object}
              */
             skill: {
                 name: '技能',
@@ -3906,7 +3930,8 @@
             },
             /**
              * 其他菜单项
-             * @namespace
+             * @name configMenu.others
+             * @type {!Object}
              */
             others: {
                 name: '其它',
@@ -4140,7 +4165,7 @@
         },
         /**
          * 拓展菜单
-         * @namespace
+         * @name configMenu.extensionMenu
          */
         extensionMenu: {
             cardpile: {
@@ -4457,8 +4482,9 @@
             },
         },
         /**
-         * 游戏模式
-         * @namespace
+         * 游戏模式菜单
+         * @name configMenu.mode
+         * @type {!Object}
          */
         mode: {
             //引导
@@ -6778,7 +6804,8 @@
             },
         },
         /**
-         * @namespace
+         * lib状态，储存如delayed、videoId等动态数据
+         * @type {!Object}
          */
         status: {
             running: false,
@@ -6792,9 +6819,8 @@
         },
         /**
          * 帮助菜单
-         * @namespace
+         * @type {!Object}
          */
-        //帮助菜单
         help: {
             'FAQ': '<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>' +
                 '<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>' +
@@ -6823,9 +6849,11 @@
         },
         /**
          * 设置(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
+         * @name lib.setIntro
          * @param {!HTMLDivElement} node 要弹窗的节点
          * @param {?function} func 用于自定义弹窗的回调函数
          * @param {?boolean} left 如果为true，点击事件也能触发弹窗
+         * @see {@link get.nodeintro}
          */
         setIntro: function (node, func, left) {
             if (lib.config.touchscreen) {
@@ -7059,7 +7087,7 @@
             init: function () {
                 //part: `lib.configprefix` 初始化
                 //如果是从PC端（node.js）载入，额外需要`__dirname`的各级文件夹首字母来拼接
-                //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'`
+                //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'|'vtuberkill_1.9_Fvts_'`
                 //BUG: [PC win10] 路径使用`\`时，只获取了盘符
                 if (typeof __dirname === 'string' && __dirname.length) {
                     var dirsplit = __dirname.split('/');
@@ -10227,7 +10255,7 @@
         },
         /**
          * 测试用作弊方法
-         * @namespace
+         * @name cheat
          */
         cheat: {
             i: function () {
@@ -10922,7 +10950,7 @@
         /**
          * 词汇翻译
          * 翻译文本
-         * @namespace
+         * @type {!Object}
          */
         translate: {
             sc: '打钱',
@@ -11226,13 +11254,19 @@
         },
         /**
          * 游戏基础对象和状态机
+         * @name element
          * @namespace
+         * @see {@link content}
+         * @see {@link lib.element.player}
+         * @see {@link lib.element.card}
          */
         element: {
             /**
              * 内容方法，setContent所调用的方法，即事件的具体内容
              * 状态机
+             * @name content
              * @namespace
+             * @global
              */
             content: {
                 resetRound: function () {
@@ -11851,6 +11885,11 @@
                     'step 1'
                     event.trigger('phaseBeginStart');
                 },
+                /**
+                 * 更换随从
+                 * @name content.toggleSubPlayer
+                 * @type {GameCores.Bases.StateMachine}
+                 */
                 toggleSubPlayer: function () {
                     'step 0'
                     var list = event.list || player.storage.subplayer.skills.slice(0);
@@ -11906,6 +11945,11 @@
                         if (cfg.es.length) player.directequip(cfg.es);
                     }
                 },
+                /**
+                 * 结束调遣随从
+                 * @name content.callSubPlayer
+                 * @type {GameCores.Bases.StateMachine}
+                 */
                 exitSubPlayer: function () {
                     'step 0'
                     if (player.storage.subplayer) {
@@ -11949,6 +11993,11 @@
                         event.trigger('subPlayerDie');
                     }
                 },
+                /**
+                 * 调遣随从
+                 * @name content.callSubPlayer
+                 * @type {GameCores.Bases.StateMachine}
+                 */
                 callSubPlayer: function () {
                     'step 0'
                     var list = player.getSubPlayers(event.tag);
@@ -12006,6 +12055,11 @@
                     'step 2'
                     game.delay();
                 },
+                /**
+                 * 反转结算顺序
+                 * @name content.reverseOrder
+                 * @type {GameCores.Bases.StateMachine}
+                 */
                 reverseOrder: function () {
                     "step 0"
                     game.delay();
@@ -12031,12 +12085,17 @@
                         }
                     }
                 },
+                /**
+                 * 使用判定牌
+                 * @name content.addJudgeCard
+                 * @type {GameCores.Bases.StateMachine}
+                 */
                 addJudgeCard: function () {
                     if (lib.filter.judge(card, player, target) && cards.length && get.position(cards[0], true) == 'o') target.addJudge(card, cards);
                 },
                 /**
                  * 使用装备牌
-                 * @name lib.element.content.equipCard
+                 * @name content.equipCard
                  * @type {GameCores.Bases.StateMachine}
                  */
                 equipCard: function () {
@@ -12044,7 +12103,7 @@
                 },
                 /**
                  * 游戏开始前分牌
-                 * @name lib.element.content.gameDraw
+                 * @name content.gameDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
                 gameDraw: function () {
@@ -12128,7 +12187,7 @@
                 },
                 /**
                  * 阶段循环
-                 * @name lib.element.content.phaseLoop
+                 * @name content.phaseLoop
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phaseLoop: function () {
@@ -12148,7 +12207,7 @@
                 },
                 /**
                  * 加载包
-                 * @name lib.element.content.loadPackage
+                 * @name content.loadPackage
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Array<Object>} event.packages 包名数组，用于加载
@@ -12247,7 +12306,7 @@
                 },
                 /**
                  * 加载模组
-                 * @name lib.element.content.loadMode
+                 * @name content.loadMode
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!string} event.mode 要加载的mode名
@@ -12265,7 +12324,7 @@
                 },
                 /**
                  * 强制结束
-                 * @name lib.element.content.forceOver
+                 * @name content.forceOver
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {?string} event.bool 是否调用{@link game.over}，如果为'noover'，则不调用
@@ -12289,7 +12348,7 @@
                 },
                 /**
                  * 事件触发调度状态机
-                 * @name lib.element.content.arrangeTrigger
+                 * @name content.arrangeTrigger
                  * @type {GameCores.Bases.StateMachine}
                  */
                 arrangeTrigger: function () {
@@ -12390,7 +12449,7 @@
                 /**
                  * 检测时机并让玩家选择是否发动触发类技能
                  * 创建触发器
-                 * @name lib.element.content.createTrigger
+                 * @name content.createTrigger
                  * @type {GameCores.Bases.StateMachine}
                  */
                 createTrigger: function () {
@@ -12583,7 +12642,7 @@
                 },
                 /**
                  * Play video
-                 * @name lib.element.content.playVideoContent
+                 * @name content.playVideoContent
                  * @type {GameCores.Bases.StateMachine}
                  */
                 playVideoContent: function () {
@@ -12714,7 +12773,7 @@
                 },
                 /**
                  * wait for player
-                 * @name lib.element.content.waitForPlayer
+                 * @name content.waitForPlayer
                  * @type {GameCores.Bases.StateMachine}
                  */
                 waitForPlayer: function () {
@@ -12780,7 +12839,7 @@
                 },
                 /**
                  * 置换手牌(单机)
-                 * @name lib.element.content.replaceHandcards
+                 * @name content.replaceHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 replaceHandcards: function () {
@@ -12802,7 +12861,7 @@
                 },
                 /**
                  * 置换手牌[support online]
-                 * @name lib.element.content.replaceHandcards
+                 * @name content.replaceHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 replaceHandcardsOL: function () {
@@ -12846,8 +12905,7 @@
                 },
                 /**
                  * 一个完整的回合
-                 * 一个角色的回合
-                 * @name lib.element.content.phase
+                 * @name content.phase
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phase: function () {
@@ -12889,7 +12947,7 @@
                 },
                 /**
                  * 判定阶段
-                 * @name lib.element.content.phaseJudge
+                 * @name content.phaseJudge
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phaseJudge: function () {
@@ -12952,7 +13010,7 @@
                 },
                 /**
                  * 摸牌阶段
-                 * @name lib.element.content.phaseDraw
+                 * @name content.phaseDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phaseDraw: function () {
@@ -12986,7 +13044,7 @@
                 },
                 /**
                  * 出牌阶段
-                 * @name lib.element.content.phaseUse
+                 * @name content.phaseUse
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phaseUse: function () {
@@ -13027,7 +13085,7 @@
                 },
                 /**
                  * 弃牌阶段
-                 * @name lib.element.content.phaseDiscard
+                 * @name content.phaseDiscard
                  * @type {GameCores.Bases.StateMachine}
                  */
                 phaseDiscard: function () {
@@ -13047,7 +13105,7 @@
                 },
                 /**
                  * 选择以使用(牌|技能)
-                 * @name lib.element.content.chooseToUse
+                 * @name content.chooseToUse
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -13307,7 +13365,7 @@
                 },
                 /**
                  * 选择以响应(牌|技能)
-                 * @name lib.element.content.chooseToUse
+                 * @name content.chooseToUse
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -13490,7 +13548,7 @@
                 },
                 /**
                  * 选择以弃置牌
-                 * @name lib.element.content.chooseToDiscard
+                 * @name content.chooseToDiscard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -13643,7 +13701,7 @@
                 },
                 /**
                  * 拼点失败
-                 * @name lib.element.content.chooseToCompareLose
+                 * @name content.chooseToCompareLose
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -13657,7 +13715,7 @@
                 },
                 /**
                  * 多人拼点
-                 * @name lib.element.content.chooseToCompareMultiple
+                 * @name content.chooseToCompareMultiple
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -13819,7 +13877,7 @@
                 },
                 /**
                  * 两人拼点
-                 * @name lib.element.content.chooseToCompare
+                 * @name content.chooseToCompare
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14009,7 +14067,7 @@
                 },
                 /**
                  * 选择以获得一项技能
-                 * @name lib.element.content.discoverSkill
+                 * @name content.discoverSkill
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14096,7 +14154,7 @@
                 },
                 /**
                  * 选择以获得一项技能
-                 * @name lib.element.content.chooseSkill
+                 * @name content.chooseSkill
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14162,7 +14220,7 @@
                 },
                 /**
                  * 选择以(获得|使用)牌
-                 * @name lib.element.content.chooseSkill
+                 * @name content.chooseSkill
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14240,7 +14298,7 @@
                 },
                 /**
                  * 选择项(按钮)
-                 * @name lib.element.content.chooseButton
+                 * @name content.chooseButton
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14301,7 +14359,7 @@
                 },
                 /**
                  * 多人选择牌
-                 * @name lib.element.content.chooseCardOL
+                 * @name content.chooseCardOL
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14382,7 +14440,7 @@
                 },
                 /**
                  * 多人选择项(按钮)
-                 * @name lib.element.content.chooseButtonOL
+                 * @name content.chooseButtonOL
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14457,7 +14515,7 @@
                 },
                 /**
                  * 选择牌
-                 * @name lib.element.content.chooseCard
+                 * @name content.chooseCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14549,7 +14607,7 @@
                 },
                 /**
                  * 选择角色对象
-                 * @name lib.element.content.chooseTarget
+                 * @name content.chooseTarget
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14631,7 +14689,7 @@
                 },
                 /**
                  * 选择卡牌和目标角色
-                 * @name lib.element.content.chooseCardTarget
+                 * @name content.chooseCardTarget
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14688,7 +14746,7 @@
                 },
                 /**
                  * 选择项(列表项)
-                 * @name lib.element.content.chooseControl
+                 * @name content.chooseControl
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14867,7 +14925,7 @@
                 },
                 /**
                  * 确认项(确认|取消)
-                 * @name lib.element.content.chooseBool
+                 * @name content.chooseBool
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -14927,7 +14985,7 @@
                 },
                 /**
                  * 选择(摸牌|回血)
-                 * @name lib.element.content.chooseDrawRecover
+                 * @name content.chooseDrawRecover
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -15000,7 +15058,7 @@
                 },
                 /**
                  * 从目标角色选择牌
-                 * @name lib.element.content.choosePlayerCard
+                 * @name content.choosePlayerCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -15076,7 +15134,7 @@
                 },
                 /**
                  * 从目标角色选择牌弃置
-                 * @name lib.element.content.discardPlayerCard
+                 * @name content.discardPlayerCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -15197,7 +15255,7 @@
                 },
                 /**
                  * 从目标角色选择牌获得
-                 * @name lib.element.content.gainPlayerCard
+                 * @name content.gainPlayerCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -15326,7 +15384,7 @@
                 },
                 /**
                  * 展示角色手牌
-                 * @name lib.element.content.showHandcards
+                 * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 showHandcards: function () {
@@ -15355,7 +15413,7 @@
                 },
                 /**
                  * 展示角色的牌
-                 * @name lib.element.content.showHandcards
+                 * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 showCards: function () {
@@ -15410,7 +15468,7 @@
                 },
                 /**
                  * 查看牌
-                 * @name lib.element.content.showHandcards
+                 * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 viewCards: function () {
@@ -15446,7 +15504,7 @@
                 },
                 /**
                  * 移动牌位置
-                 * @name lib.element.content.moveCard
+                 * @name content.moveCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Object} event.result 返回选择结果给父事件
@@ -15610,7 +15668,7 @@
                 },
                 /**
                  * 角色使用牌
-                 * @name lib.element.content.useCard
+                 * @name content.useCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {?Object} event.result 返回选择使用结果(如果有)给父事件
@@ -16069,7 +16127,7 @@
                 },
                 /**
                  * 角色使用技能
-                 * @name lib.element.content.useSkill
+                 * @name content.useSkill
                  * @type {GameCores.Bases.StateMachine}
                  */
                 useSkill: function () {
@@ -16290,7 +16348,7 @@
                 },
                 /**
                  * 从(牌库|牌堆顶|牌堆底)摸牌
-                 * @name lib.element.content.useCard
+                 * @name content.useCard
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 当前事件
                  * @property {!Array<GameCores.GameObjects.Card>} event.result 返回摸到的牌数组
@@ -16355,7 +16413,7 @@
                 },
                 /**
                  * 从(手牌区|装备区|武将牌上|判定区)弃置牌
-                 * @name lib.element.content.discard
+                 * @name content.discard
                  * @type {GameCores.Bases.StateMachine}
                  */
                 discard: function () {
@@ -16367,7 +16425,7 @@
                 },
                 /**
                  * 角色打出牌
-                 * @name lib.element.content.respond
+                 * @name content.respond
                  * @type {GameCores.Bases.StateMachine}
                  */
                 respond: function () {
@@ -16444,7 +16502,7 @@
                 },
                 /**
                  * 角色和目标交换(手)牌
-                 * @name lib.element.content.swapHandcards
+                 * @name content.swapHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
                 swapHandcards: function () {
@@ -16490,7 +16548,7 @@
                 },
                 /**
                  * 角色从每个目标获得一张牌
-                 * @name lib.element.content.gainMultiple
+                 * @name content.gainMultiple
                  * @type {GameCores.Bases.StateMachine}
                  */
                 gainMultiple: function () {
@@ -16514,7 +16572,7 @@
                 },
                 /**
                  * 角色获得牌
-                 * @name lib.element.content.lose
+                 * @name content.lose
                  * @type {GameCores.Bases.StateMachine}
                  */
                 gain: function () {
@@ -16685,7 +16743,7 @@
                 },
                 /**
                  * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
-                 * @name lib.element.content.lose
+                 * @name content.lose
                  * @type {GameCores.Bases.StateMachine}
                  */
                 lose: function () {
@@ -16917,7 +16975,7 @@
                 },
                 /**
                  * 令角色受到伤害
-                 * @name lib.element.content.damage
+                 * @name content.damage
                  * @type {GameCores.Bases.StateMachine}
                  */
                 damage: function () {
@@ -17066,7 +17124,7 @@
                 },
                 /**
                  * 角色回复血量
-                 * @name lib.element.content.recover
+                 * @name content.recover
                  * @type {GameCores.Bases.StateMachine}
                  */
                 recover: function () {
@@ -17096,7 +17154,7 @@
                 },
                 /**
                  * 令角色失去血量
-                 * @name lib.element.content.loseHp
+                 * @name content.loseHp
                  * @type {GameCores.Bases.StateMachine}
                  */
                 loseHp: function () {
@@ -17119,7 +17177,7 @@
                 },
                 /**
                  * 双将模式下，如果“双将体力设置”选择为“平均值”，因此向下取整体力的角色可以摸一张牌
-                 * @name lib.element.content.doubleDraw
+                 * @name content.doubleDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
                 doubleDraw: function () {
@@ -17132,7 +17190,7 @@
                 },
                 /**
                  * 令角色减少血量上限
-                 * @name lib.element.content.loseMaxHp
+                 * @name content.loseMaxHp
                  * @type {GameCores.Bases.StateMachine}
                  */
                 loseMaxHp: function () {
@@ -17148,7 +17206,7 @@
                 },
                 /**
                  * 令角色增加血量上限
-                 * @name lib.element.content.gainMaxHp
+                 * @name content.gainMaxHp
                  * @type {GameCores.Bases.StateMachine}
                  */
                 gainMaxHp: function () {
@@ -17159,7 +17217,7 @@
                 },
                 /**
                  * 令角色改变血量(不能超过上限)
-                 * @name lib.element.content.changeHp
+                 * @name content.changeHp
                  * @type {GameCores.Bases.StateMachine}
                  */
                 changeHp: function () {
@@ -17189,7 +17247,7 @@
                 },
                 /**
                  * 令角色获得/失去护甲
-                 * @name lib.element.content.changeHujia
+                 * @name content.changeHujia
                  * @type {GameCores.Bases.StateMachine}
                  */
                 changeHujia: function () {
@@ -17217,7 +17275,7 @@
                 },
                 /**
                  * 角色濒死事件
-                 * @name lib.element.content.dying
+                 * @name content.dying
                  * @type {GameCores.Bases.StateMachine}
                  */
                 dying: function () {
@@ -17266,7 +17324,7 @@
                 },
                 /**
                  * 角色死亡事件
-                 * @name lib.element.content.die
+                 * @name content.die
                  * @type {GameCores.Bases.StateMachine}
                  */
                 die: function () {
@@ -17451,7 +17509,7 @@
                 },
                 /**
                  * 角色使用装备牌
-                 * @name lib.element.content.equip
+                 * @name content.equip
                  * @type {GameCores.Bases.StateMachine}
                  */
                 equip: function () {
@@ -17578,7 +17636,7 @@
                 },
                 /**
                  * 角色添加判定牌
-                 * @name lib.element.content.addJudge
+                 * @name content.addJudge
                  * @type {GameCores.Bases.StateMachine}
                  */
                 addJudge: function () {
@@ -17663,7 +17721,7 @@
                 },
                 /**
                  * 角色进行判定
-                 * @name lib.element.content.judge
+                 * @name content.judge
                  * @type {GameCores.Bases.StateMachine}
                  * @property {!Object} event 本事件
                  * @property {!Object} event.result 将判定牌信息返回给父事件
@@ -17762,7 +17820,7 @@
                 },
                 /**
                  * 角色武将牌翻面
-                 * @name lib.element.content.turnOver
+                 * @name content.turnOver
                  * @type {GameCores.Bases.StateMachine}
                  */
                 turnOver: function () {
@@ -17775,7 +17833,7 @@
                 },
                 /**
                  * 角色连环/解除连环
-                 * @name lib.element.content.link
+                 * @name content.link
                  * @type {GameCores.Bases.StateMachine}
                  */
                 link: function () {
@@ -19541,6 +19599,39 @@
                     }
                 },
                 /**
+                 * 本角色头像下绘制图像
+                 * @param {!string} buff 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
+                 * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
+                 * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
+                 */
+                buffAvatar: function (buff,skill, name) {
+                    if (lib.skill[name] && !lib.character[name]) {
+                        var stop = false;
+                        var list = lib.config.all.characters.slice(0);
+                        for (var i in lib.characterPack) {
+                            list.add(i);
+                        }
+                        for (var i = 0; i < list.length; i++) {
+                            for (var j in lib.characterPack[list[i]]) {
+                                if (lib.characterPack[list[i]][j][3].contains(name)) {
+                                    name = j;
+                                    stop = true;
+                                    break;
+                                }
+                            }
+                            if (stop) {
+                                break;
+                            }
+                        }
+                    }
+                    if (lib.character[this.name2] && lib.character[this.name2][3].contains(skill)) {
+                        this.setAvatarQueue(this.name2, [name]);
+                    }
+                    else {
+                        this.setAvatarQueue(this.name, [name]);
+                    }
+                },
+                /**
                  * 同步本角色数据(联网)
                  * @returns {?GameCores.GameObjects.Player} this self；如果是回放模式且该函数被无参调用，返回空值(undefined)
                  */
@@ -19895,7 +19986,9 @@
                     if (!card) {
                         num = 0;
                         for (var i in stat) {
-                            if (typeof stat[i] == 'number') num += stat[i];
+                            if (typeof stat[i] == 'number'){ 
+                                console.log(i,stat[i])
+                                num += stat[i];}
                         }
                         return num;
                     }
@@ -20091,6 +20184,15 @@
                     }
                     return skills;
                 },
+                /**
+                 * 返回本角色的技能组；
+                 * 该技能组不包括子技能；
+                 * @param {!string} skill 技能名
+                 * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
+                 * @param {*} arg3 为false时表示不计入装备技能
+                 * @param {*} arg4 为false时表示计入失效的技能
+                 * @returns {!Array<string>}
+                 */
                 getSkills: function (arg2, arg3, arg4) {
                     var skills = this.skills.slice(0);
                     var es = [];
@@ -20395,6 +20497,10 @@
                     }, this, time);
                     return this;
                 },
+                /**
+                 * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link lib.element.player.updateMarks})
+                 * @param {!string} skill 技能名
+                 */
                 setIdentity: function (identity) {
                     if (!identity) identity = this.identity;
                     if (get.is.jun(this)) {
@@ -20446,13 +20552,6 @@
                     next.setContent(content);
                     return next;
                 },
-                /**
-                 * 令本角色进行一个回合
-                 * @typedef {string} GameCores.PlayerPhaseExecute
-                 * @see {@link lib.element.content.phase}
-                 * @param {string} [skill] 该回合的来源技能
-                 * @param {Array} [stageList] 该回合内的阶段次序
-                 */
                 phase: function (skill, stageList) {
                     var next = game.createEvent('phase');
                     next.player = this;
@@ -22388,10 +22487,6 @@
                     }
                     return this;
                 },
-                /**
-                 * 装备事件
-                 * @returns {!boolean}
-                 */
                 equip: function (card, arg2) {
                     if (get.type(card) != 'equip') return;
                     var next = game.createEvent('equip');
@@ -23413,7 +23508,7 @@
                     return list;
                 },
                 /**
-                 * 
+                 * 同时将info.global内的技能添加到{@link lib.skill.global}
                  * @returns {!boolean}
                  */
                 addSkillTrigger: function (skill, hidden, triggeronly) {
@@ -26666,6 +26761,7 @@
              * 卡牌方法，.card节点共用的方法（比如检测卡牌是否在区域内【hasPosition】和添加去除标签【add/removeGaintag】）
              * 卡牌
              * @namespace
+             * @mixin
              */
             card: {
                 /**
@@ -26710,6 +26806,8 @@
                 },
                 /**
                  * 初始化
+                 * 同时将info.global内的技能添加到{@link lib.skill.global}
+                 * @function
                  * @param {(Array|Object)} card TODO
                  * @returns {!GameCores.GameObjects.Card} this self
                  */
@@ -27294,16 +27392,25 @@
                     }
                     return false;
                 },
+                /**
+                 * 判断本卡牌是否在某角色的区域中
+                 * @returns {!boolean}
+                 */
                 hasPosition: function () {
                     return ['h', 'e', 'j'].contains(get.position(this));
                 },
+                /**
+                 * 判断本卡牌是否在牌堆或弃牌堆中
+                 * @returns {!boolean}
+                 */
                 isInPile: function () {
                     return ['c', 'd'].contains(get.position(this));
                 }
             },
             /**
-             * 按钮
-             * @namespace
+             * 按钮方法
+             * @name element.button
+             * @type {!Object}
              */
             button: {
                 exclude: function () {
@@ -27317,6 +27424,7 @@
              * 事件方法，游戏进行过程中每一个事件所具有的方法（比如设置事件内容【setContent】和停止事件【finish】）
              * 事件
              * @namespace
+             * @mixin
              */
             event: {
                 changeToZero: function () {
@@ -28010,7 +28118,8 @@
             /**
              * 弹窗方法，.dialog节点共用的方法（比如开启和关闭弹窗【open/close】）
              * 对话框(弹窗)
-             * @namespace
+             * @name element.dialog
+             * @type {!Object}
              */
             dialog: {
                 add: function (item, noclick, zoom) {
@@ -28144,7 +28253,8 @@
             /**
              * 选项方法，参考弹窗方法，在创建.control节点时依次为其添加
              * 选择项
-             * @namespace
+             * @name element.control
+             * @type {!Object}
              */
             control: {
                 open: function () {
@@ -28223,7 +28333,8 @@
             },
             /**
              * 客户端
-             * @namespace
+             * @name element.client
+             * @type {!Object}
              */
             client: {
                 send: function () {
@@ -28280,7 +28391,8 @@
             },
             /**
              * Node Web Server listeners and callbacks
-             * @namespace
+             * @name element.nodews
+             * @type {!Object}
              */
             nodews: {
                 send: function (message) {
@@ -28295,7 +28407,8 @@
             },
             /**
              * Web Server
-             * @namespace
+             * @name element.ws
+             * @type {!Object}
              */
             ws: {
                 onopen: function () {
@@ -28864,9 +28977,15 @@
         },
         /**
          * 用于简单排序的回调函数组
+         * @name sort
          * @namespace
          */
         sort: {
+            /**
+             * 将角色按照势力排列
+             * @name sort.character
+             * @function
+             */
             character: function (a, b) {
                 var getGroup = function (name) {
                     var group = get.is.double(name, true);
@@ -28897,6 +29016,11 @@
                 }
                 return aa > bb ? 1 : -1;
             },
+            /**
+             * 将卡牌按照类型排列
+             * @name sort.card
+             * @function
+             */
             card: function (a, b) {
                 var typeSort = function (name) {
                     var type = get.type(name);
@@ -28928,6 +29052,11 @@
             random: function () {
                 return (Math.random() - 0.5);
             },
+            /**
+             * 将角色按照距离排列
+             * @name sort.seat
+             * @function
+             */
             seat: function (a, b) {
                 var player = lib.tempSortSeat || _status.event.player;
                 var delta = get.distance(player, a, 'absolute') - get.distance(player, b, 'absolute');
@@ -29621,6 +29750,12 @@
                     },
                 },
             },
+            /**
+             * 特殊_全局技能
+             * 将全局技能的技能名储存于此数组中
+             * @type {!Array<string>}
+             * @see {@link game.addGlobalSkill}
+             */
             global: [],
             globalmap: {},
             storage: {},
@@ -29863,6 +29998,10 @@
                     }
                 }
             },
+            /**
+             * 技能_免疫
+             * 防止受到的伤害
+             */
             mianyi: {
                 trigger: { player: 'damageBefore' },
                 mark: true,
@@ -29930,6 +30069,10 @@
                     trigger.cancel();
                 },
             },
+            /**
+             * 规则技能_翻面
+             * 被翻面的角色跳过回合
+             */
             _turnover: {
                 trigger: { player: 'phaseBefore' },
                 forced: true,
@@ -29968,6 +30111,10 @@
                     }
                 },
             },
+            /**
+             * 规则技能_使用
+             * 使用一张牌结算后，通过{@link ui.clear}清除残留ui
+             */
             _usecard: {
                 trigger: { global: 'useCardAfter' },
                 forced: true,
@@ -29984,6 +30131,10 @@
                     event._cleared = true;
                 }
             },
+            /**
+             * 规则技能_弃牌
+             * 弃牌结算后，延时一段时间清除残留弃牌效果
+             */
             _discard: {
                 trigger: { global: 'discardAfter' },
                 forced: true,
@@ -30102,6 +30253,10 @@
                     }
                 }
             },
+            /**
+             * 规则技能_重铸
+             * 令角色可以重铸特定的牌
+             */
             _chongzhu: {
                 enable: 'phaseUse',
                 logv: false,
@@ -30181,6 +30336,10 @@
                     },
                 }
             },
+            /**
+             * 规则技能_连环
+             * 被横置的角色传递属性伤害
+             */
             _lianhuan: {
                 trigger: { player: 'damageAfter' },
                 filter: function (event, player) {
@@ -30234,14 +30393,14 @@
         },
         character: {},
         /**
-         * 珠联璧合映射perfectPair
-         * @namespace
+         * 珠联璧合映射
+         * @type {!Object}
          */
         perfectPair: {},
         cardPile: {},
         /**
          * 网络部分的消息处理（回调）函数
-         * @namespace
+         * @type {!Object}
          */
         message: {
             server: {
@@ -33181,7 +33340,7 @@
         },
         /**
          * 一些函数的回放实现(录像功能)
-         * @namespace
+         * @type {!Object}
          */
         videoContent: {
             arrangeLib: function (content) {
@@ -35487,6 +35646,12 @@
             }
             game.saveConfig('extensionMode', lib.config.extensionInfo);
         },
+        /**
+         * 添加全局技能
+         * @param {string} skill 技能名
+         * @param {?string} player 可以为该技能绑定一名角色
+         * @deprecated [never used] 
+         */
         addGlobalSkill: function (skill, player) {
             var info = lib.skill[skill];
             if (!info) return false;
@@ -36477,7 +36642,23 @@
                     if (lib.phaseName.contains(next.name)) next.player.getHistory('skipped').add(next.name);
                 }
                 else {
+                    /**
+                     * _status.event.parent(即event.parent)：当前正在执行事件的父事件
+                     * 当_status.event.next或_status.event.after内的事件被执行时，当前事件会成为被执行事件的父事件
+                     * @name _status.event_parent
+                     * @type {!Object}
+                     */
                     next.parent = event;
+                    /**
+                     * _status.event.player(即event.player)：当前正在执行事件的角色
+                     * @name _status.event_player
+                     * @type {!HTMLDivElement}
+                     */
+                    /**
+                     * _status.event.target(即event.target)：当前正在执行事件的目标
+                     * @name _status.event_target
+                     * @type {!HTMLDivElement}
+                     */
                     _status.event = next;
                 }
             }
@@ -38137,6 +38318,7 @@
         },
         /**
          * 为角色技能添加`translate`文本，设置默认ai，进行预处理
+         * 同时将下划线(_)开头的技能添加到{@link lib.skill.global}
          * @param {string} i 技能名
          * @param {*} [sub] 
          * @see{@link game.finishCards}
@@ -39401,6 +39583,13 @@
                 }
             }
         },
+        /**
+         * 检测一组技能，返回其中未失效的技能
+         * @param {!Array<string>} skills 技能名数组
+         * @param {!HTMLDivElement} player 检测角色
+         * @param {?Function} exclude 用于筛选的函数
+         * @returns {Array<string>} 排除失效技能的数组
+         */
         filterSkills: function (skills, player, exclude) {
             let out = skills.slice(0);
             for (let i in player.disabledSkills) {
@@ -39444,6 +39633,11 @@
                 }
             }
         },
+        /**
+         * 判定是否存在满足条件的角色
+         * @param {?Function} func 用于筛选的函数
+         * @returns {!boolean} 是否存在
+         */
         hasPlayer: function (func) {
             for (var i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut()) continue;
@@ -39451,6 +39645,11 @@
             }
             return false;
         },
+        /**
+         * 判定是否存在满足条件的角色（包括已死亡角色）
+         * @param {?Function} func 用于筛选的函数
+         * @returns {!boolean} 是否存在
+         */
         hasPlayer2: function (func) {
             var players = game.players.slice(0).concat(game.dead);
             for (var i = 0; i < players.length; i++) {
@@ -39459,6 +39658,11 @@
             }
             return false;
         },
+        /**
+         * 获取满足条件的角色
+         * @param {?Function} func 用于筛选的函数
+         * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
+         */
         countPlayer: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -39476,6 +39680,11 @@
             }
             return num;
         },
+        /**
+         * 获取满足条件的角色（包括已死亡角色）
+         * @param {?Function} func 用于筛选的函数
+         * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
+         */
         countPlayer2: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -39556,6 +39765,10 @@
             }
             return cards;
         },
+        /**
+         * 用 countPlayer 计算场上存在的势力数
+         * @returns {!number} 势力数
+         */
         countGroup: function () {
             var list = lib.group.slice(0);
             return game.countPlayer(function (current) {
@@ -39649,7 +39862,7 @@
              * @param {?Object} style 参考{@link HTMLDivElement#css}，如果为null，不设置内联样式
              * @param {?number[]} offsets 元素定位，参考{@link HTMLDivElement#setPosition}
              * @param {?function} clickCallback 点击回调函数
-             * @returns {HTMLDivElement}
+             * @returns {HTMLDivElement} 返回生成的div
              */
             div: function () {
                 var str, innerHTML, position, position2, style, divposition, listen;
@@ -46929,6 +47142,12 @@
                         }
                     });
             },
+            /**
+             * 生成带有卡牌按钮的弹窗
+             * @function
+             * @returns {HTMLDivElement} 返回生成的弹窗
+             * @see {@link ui.create.characterDialog}
+             */
             cardDialog: function () {
                 var args = ['thisiscard'];
                 for (var i = 0; i < arguments.length; i++) {
@@ -47025,6 +47244,16 @@
                 var node = ui.create.div('.dialogbutton.menubutton.large', '筛选', packnode);
                 return dialog;
             },
+            /**
+             * 生成带有卡牌或角色按钮的弹窗
+             * @function
+             * @param {?string} thisiscard 是否是卡牌
+             * @param {?string} heightset 是否是大弹窗
+             * @param {?string} characterx 同一角色是否可替换武将牌（例如在标准和界限突破间切换）
+             * @param {?function} filter 卡牌或角色的筛选条件
+             * @param {?boolean} noclick 按钮是否可以被点击
+             * @returns {HTMLDivElement} 返回生成的弹窗
+             */
             characterDialog: function () {
                 // if(lib.config.character_dialog_style=='newstyle'){
                 //     for(var i=0;i<arguments.length;i++){
@@ -47790,6 +48019,14 @@
                 caption.innerHTML = str;
                 return caption;
             },
+            /**
+             * 生成底部控制按钮
+             * @function
+             * @param {?Array} controls 控制按钮列表
+             * @param {?string} stayleft 控制按钮是否靠左侧
+             * @param {?function} clickCallback 点击回调函数
+             * @returns {HTMLDivElement} 反正生成的按钮
+             */
             control: function () {
                 var nc = !ui.control.querySelector('div:not(.removing):not(.stayleft)');
                 // for(var i=0;i<ui.control.childNodes.length;i++){
@@ -48740,6 +48977,15 @@
                 _status.prebutton.push(node);
                 return node;
             },
+            /**
+             * 生成一个按钮
+             * @function
+             * @param {!Object} item 按钮link指向的物件
+             * @param {!string} type 按钮类型（'blank'空按钮；'card'卡牌；'vcard'虚拟卡牌
+             * @param {!HTMLElement} position 按钮添加的位置，参考{@link ui.create.div}的父元素
+             * @param {?boolean} noclick 按钮是否可以被点击
+             * @returns {HTMLDivElement} 返回生成的生成一个按钮
+             */
             button: function (item, type, position, noclick, node) {
                 switch (type) {
                     case 'blank':
@@ -48973,6 +49219,14 @@
                 }
                 return node;
             },
+            /**
+             * 生成一组按钮
+             * @function
+             * @param {!Array} list 按钮列表
+             * @param {!string} type 按钮类型
+             * @returns {HTMLDivElement} 返回生成的一组按钮
+             * @see {@link ui.create.button}
+             */
             buttons: function (list, type, position, noclick, zoom) {
                 var buttons = [];
                 var pre = (type.slice(0, 3) == 'pre');
@@ -52273,6 +52527,11 @@
                 }
                 game.resume();
             },
+            /**
+             * 托管按钮点击函数
+             * @function
+             * @param {?HTMLDivElement} node 调用确认函数的节点，如果不为null，对`node`的父节点调用`close()`函数
+             */
             cancel: function (node) {
                 var event = _status.event;
                 if (event.custom.replace.confirm) {
@@ -52677,6 +52936,7 @@
             },
             /**
              * 详细信息弹窗
+             * @function
              * @param {(MouseEvent|TouchEvent)} e 
              * @returns {(undefined|false|HTMLDivElement)}
              */
@@ -52789,6 +53049,10 @@
                     }
                 }
             },
+            /**
+             * 托管按钮点击函数
+             * @function
+             */
             auto: function () {
                 if (ui.auto.classList.contains('hidden') && arguments[0] !== 'forced') return;
                 if (_status.paused2) return;
@@ -52841,6 +53105,10 @@
                     }
                 }
             },
+            /**
+             * 无懈按钮点击函数
+             * @function
+             */
             wuxie: function () {
                 if (this.classList.contains('hidden')) return;
                 this.classList.toggle('glow');
@@ -53160,9 +53428,20 @@
                 return false;
             }
         },
+        /**
+         * 当前被选择的对象
+         * 在游戏中非常有用的对象
+         * ui.selected = {buttons: [被选择的按钮], cards: [被选择的卡牌], targets: [被选择的角色]},
+         * @type {!Object}
+         */
         selected: {
             buttons: [], cards: [], targets: []
         },
+        /**
+         * 清除残留ui
+         * 例如：被使用或打出的牌，会显示并停留在画面中央，直到ui.clear将其清除
+         * @function
+         */
         clear: function () {
             game.addVideo('uiClear');
             var thrown = document.getElementsByClassName('thrown');
@@ -55375,7 +55654,7 @@
             return Math.sqrt((from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]));
         },
         /**
-         * 判断对象物品类型(字符串(区域名或属性名)，玩家及玩家组，卡牌及卡牌组，选择范围，元素坐标，按钮，弹窗，事件)
+         * 判断对象物品类型(字符串(区域名|属性名)，玩家及玩家组，卡牌及卡牌组，选择范围，元素坐标，按钮，弹窗，事件)
          * @param {Object} obj 要判断物品类型的对象
          * @returns {?string} 对象的物品类型
          */
@@ -56159,6 +56438,12 @@
             }
             return skills;
         },
+        /**
+         * 返回本角色可获得的技能；
+         * @param {?Function} func 筛选条件
+         * @param {?HTMLDivElement} player 可选
+         * @returns {!Array<string>}
+         */
         gainableSkills: function (func, player) {
             var list = [];
             for (var i in lib.character) {
@@ -56181,6 +56466,12 @@
             }
             return list;
         },
+        /**
+         * 返回目标角色可被获得的技能；
+         * @param {!string} name 角色名
+         * @param {?Function} func 筛选条件
+         * @returns {!Array<string>}
+         */
         gainableSkillsName: function (name, func) {
             var list = [];
             if (name && lib.character[name]) {
@@ -56200,6 +56491,11 @@
             }
             return list;
         },
+        /**
+         * 返回可获得的武将牌；
+         * @param {?Function} func 筛选条件
+         * @returns {!Array<string>}
+         */
         gainableCharacters: function (func) {
             var list = [];
             for (var i in lib.character) {
@@ -56614,6 +56910,14 @@
                 }
             }
         },
+        /**
+         * 生成(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
+         * @name get.nodeintro
+         * @function
+         * @param {!HTMLDivElement} node 要弹窗的节点
+         * @returns {!HTMLDivElement} 返回生成的弹窗
+         * @see {@link lib.setIntro}
+         */
         nodeintro: function (node, simple, evt) {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
             if (node.classList.contains('player') && !node.name) {
@@ -58844,6 +59148,10 @@
                 }
             }
         },
+        /**
+         * AI用取值
+         * @see {@link get}
+         */
         get: get
     };
 

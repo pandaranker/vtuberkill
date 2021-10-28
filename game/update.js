@@ -1,15 +1,17 @@
 window.noname_update={
-	version:'1.9.103.9',
+	version:'1.9.103.10',
 	update:'1.9.101.1.1',
 	changeLog:[
-		'1.9.103.9小更新：新增角色：真绯瑠mahiru(VR)',
-		'修复『魅舞』转移牌被无懈不算被抵消的bug，修改了部分描述，优化了部分标记效果',
+		'1.9.103.10小更新：新增角色：天启七海(界七海)、天启阿梓(界阿梓)、PinkyPopHepburn(独立运营/群)',
+		'米白与亚哈移出测试包，修复部分bug，修改部分描述',
 		'',
 		'',
 		'化鲸篇新增机制可以在游戏内或者设置的“帮助”中查看',
 		'化鲸篇角色：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景、HOLO的噶呜·古拉和一伊那尔栖、海洋特典角色（湊阿夸、笹木咲、向晚）、特典（绯赤艾莉欧、噶呜·古拉）',
 	],
 	files:[
+		'image/character/Nekomasu.jpg',
+		'image/character/re_Nekomasu.jpg',
 		'image/character/Xiaorou.jpg',
 
 		'character/Beginner.js',

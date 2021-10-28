@@ -5638,7 +5638,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 						mark:true,
 						onremove:function(player){
-							if(player.maxHp.isDamaged()){
+							if(player.isDamaged()){
 								game.log('『失光』后续效果');
 							}
 							game.delayx(0.5);

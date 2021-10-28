@@ -63,6 +63,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**牛牛子 */
 			Niuniuzi: ['female','chaos',4,['qiying','hengxuan'],['guoV']],
 			
+			/**米白 */
+			mibai: ['female','qun',4,['zhepie','chumo'],['guoV']],
+			/**亚哈 */
+			Ahab: ['female','qun',4,['ahbingyi','sujian'],['guoV']],
+			
 			/**喵喵人 */
 			Nyanners: ['female','vshojo',3,['shenghuo','dipo','miaoche'],['zhu','yingV']],
 			/**Veibae */
@@ -434,6 +439,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						//无法被响应	
 					//trigger.getParent().directHit.add(trigger.target);
 						//伤害+1
+					trigger.getParent().songzang_buffed = true;
 					trigger.getParent().baseDamage++;
 					trigger.target.addTempSkill('songzang2');
 					trigger.target.addTempSkill('songzang4');
@@ -490,7 +496,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				silent:true,
 				firstDo:true,
 				filter:function(event,player){
-					return event.getParent(2).songzang_buffed=true;
+					return event.getParent(2).songzang_buffed==true;
 				},
 				content:function(){
 					player.addTempSkill('songzang3',{global:['dyingEnd','phaseEnd']});
