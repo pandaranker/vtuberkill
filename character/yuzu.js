@@ -7056,7 +7056,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target.draw(2);
 					}else{
 						player.line(event.target);
-						event.target.damage();
+						event.target.damage('nocard');
 					}
 				},
 				ai:{
@@ -11514,6 +11514,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					})){
 						player.turnOver();
 						player.draw(2);
+					}
+					else{
 						player.markSkill('niyou');
 						player.storage.niyou = player.storage.niyou?(player.storage.niyou+1):1;
 					}
@@ -11541,7 +11543,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				selectCard:-1,
 				content:function(){
 					'step 0'
-					target.damage(player);
+					target.damage('nocard');
 					'step 1'
 					if(target.hp>0)	player.draw(target.hp);
 				},
@@ -12048,7 +12050,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					next.set('callback',function(){
 						if(event.judgeResult.color=='red')	player.draw(2);
-						if(event.judgeResult.color=='black')	player.damage('nosource');
+						if(event.judgeResult.color=='black')	player.damage('nosource','nocard');
 					});
 				},
 			},

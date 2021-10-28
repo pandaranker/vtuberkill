@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.103.10',
+	version:'1.9.103.11',
 	update:'1.9.101.1.1',
 	changeLog:[
 		'1.9.103.10小更新：新增角色：天启七海(界七海)、天启阿梓(界阿梓)、PinkyPopHepburn(独立运营/群)',
@@ -12,6 +12,7 @@ window.noname_update={
 	files:[
 		'image/character/Nekomasu.jpg',
 		'image/character/re_Nekomasu.jpg',
+		'image/character/PinkyPopHepburn.jpg',
 		'image/character/Xiaorou.jpg',
 
 		'character/Beginner.js',
