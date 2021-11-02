@@ -48,6 +48,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KenmochiDouya: ['male','nijisanji',4,['shenglang','nodao']],
 			/**Gaku */
 			FushimiGaku: ['male','nijisanji',4,['exi','suisui']],
+			/**奈罗花 */
+			Naraka: ['female','nijisanji',3,['echi','mudu'],],
 		},
 		characterSort:{
 			nijisanji:{

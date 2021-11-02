@@ -2553,7 +2553,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							}
 							else{
 								trigger.cancel();
-								trigger.getParent().iswuxied = true;
+								trigger.getParent('useCard').iswuxied = true;
 								if(event.guowuxie==true){
 									if(trigger.target.identity!='ye'&&trigger.target.identity!='unknown'){
 										trigger.getParent().excluded.addArray(game.filterPlayer(function(current){

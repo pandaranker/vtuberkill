@@ -77,6 +77,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
 			/**阿萨Aza */
 			Aza: ['male','VirtuaReal',3,['qiding','chouxin'],['guoV']],
+			/**千幽Chiyuu */
+			Chiyuu: ['female','VirtuaReal',4,['anyou','mingyou'],['guoV']],
+			/**茉里Mari */
+			Mari: ['female','VirtuaReal',4,['tingzhu','xuemo'],['guoV']],
 			
 			/**胡桃 */
 			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],

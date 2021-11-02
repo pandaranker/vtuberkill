@@ -41,6 +41,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			/**猫雷NyaRu */
 			NecoraNyaru: ['female','qun',3,['miaolu','benglei'],],
 			
+			/**咩栗 */
+			Merry:['female','qun',4,['qinhuo','lvecao','yangxi'],['guoV']],
+			/**呜米 */
+			Umy:['female','qun',4,['naisi','tuzai','wuneng'],['guoV']],
 			
 			/**进击的冰糖 */
 			bingtang: ['female', 'xuyan', 4, ['xiou'],['guoV']],
@@ -81,6 +85,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			clubs:{
 				paryi2:['Paryi','TakatsukiRitsu','MorinagaMiu','HanazonoSerena','OtomeOto','HisekiErio','MashiroKanon'],
 				vshojo2:['Nyanners','Veibae','Ironmouse','Froot'],
+				MeUmy:['Merry','Umy'],
 			}
 		},
 		characterTitle:{
@@ -197,7 +202,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					'step 2'
 					if(!result.cards||result.cards.length<_status.event.suits.length){
-						event.targ.damage('player',1);
+						event.targ.damage('player','nocard');
 					}
 					if(event.targs.length)	event.goto(1);
 				},
@@ -3016,6 +3021,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		translate:{
+			MeUmy:'MeUmy',
 			
 			Miqiutu: '蜜球兔',
 			zhazong: '寻嬲',
@@ -3041,15 +3047,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 
 			NekomiyaHinata:'猫宫日向',
 			yuchong: '一命通关',
-			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你装备着武器时，你手牌中的武器牌均视为不记次数的【杀】。',
+			yuchong_info: '锁定技 你装备区内的武器牌不能被弃置。你装备着武器时，你手牌中的武器牌均视为不计入次数的【杀】。',
 			songzang: '送葬天使',
 			songzang_info: '你使用【杀】指定已损失体力值超过体力上限一半的角色为目标时，你可令此【杀】伤害+1，若其因此【杀】的伤害而进入濒死状态，则其不能使用【桃】直到此濒死事件结算。',
 			zhimao: '只箱只猫',
-			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你不相邻，你可选择一项：<br>取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
+			zhimao_info: '当你成为普通锦囊牌的目标时，若来源与你不相邻，你可选择一项：<br>'+
+			'取消之并摸一张牌；获得其武器牌，视为对其使用一张【杀】。',
 
 			KaguraMea: '神乐めあ',
 			luecai: '掠财',
-			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的「财布」摸等量的牌。',
+			luecai_info: '出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。'+
+			'准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的「财布」摸等量的牌。',
 			luecai_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：顺手牵咩</span>',
 			xiaoyan: '嚣言',
 			xiaoyan_info: '锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的「财布」，此伤害+1。',
@@ -3067,7 +3075,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			qijian: '起鉴',
 			qijian_info: '其他角色于自己的回合使用一张指定目标的红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌并失去此技能直到本回合结束。',
 			yizhan: '翼展',
-			yizhan_info: '每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为“群”。',
+			yizhan_info: '每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为「群」。',
 			jushi: '聚识',
 			jushi_info: '<font color=#fae>主公技</font> 锁定技 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。',
 
@@ -3106,7 +3114,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhangjinghua: '张京华',
 			xiemen: '斜门',
 			xiemen_info: '你使用或打出牌时，可令其他角色各随机移除一张手牌直到回合结束。',
-			xiemen_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：破军 易上手</span>',
+			xiemen_append:'<span style="font-family: LuoLiTi2;color: #dbb">特性：易上手 破军</span>',
 			jiai: '集爱',
 			jiai_info: '每回合限一次。你可以将两张手牌当任意基本牌使用或打出，当你以此法响应其他角色使用的牌时，摸一张牌。',
 

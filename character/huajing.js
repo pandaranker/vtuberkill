@@ -521,18 +521,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 						return result;
 					}
-					for (var i = 1; i <= list.length; i++) {
-						var num = getNumbers(list, i, false);
-						for(var j = 0;j < num.length;j ++){
-							var sum = 0;
-							for (var k = 1; k < num[j].length; k++) {
+					for (let i in list) {
+						let num = getNumbers(list, i, false);
+						for(let j = 0;j < num.length;j ++){
+							let sum = 0;
+							for (let k = 1; k < num[j].length; k++) {
 								sum += num[j][k];
 							}
 							if(sum>0&&sum%7==0)	return true;
 						}
 					}
-					var sum = 0;
-					for (var k = 0; k < list.length; k++) {
+					let sum = 0;
+					for (let i in list) {
 						sum += Number(list[k]);
 					}
 					if(sum>0&&sum%7==0)	return true;
