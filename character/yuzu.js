@@ -3,6 +3,7 @@
 
 game.import('character',function(lib,game,ui,get,ai,_status){
 	lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
+	lib.figurer = (text) =>	` ${lib.figure}${text}</span> `
 	return {
 		name:"yuzu",
 		connect:true,
@@ -196,6 +197,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								return lib.skill.chisha_cardDisable.mod.cardSavable.apply(this,arguments);
 							},
 							cardSavable(card,player){
+								if(!card.cards)	return
 								let cards = [],hs=player.getCards('h');
 								player.getHistory('gain',evt => {
 									if(evt.getParent().name!='draw')	return false;
@@ -221,7 +223,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return [player,event.source];
 				},
 				check(event,player){
-					return player.hasSkill('chisha_cardDisable')&&player.countCards('h')>(player==event.source?event.player:event.source).countCards('h')<=1;
+					return player.hasSkill('chisha_cardDisable')&&(player.countCards('h')-(player==event.source?event.player:event.source).countCards('h'))>=-1;
 				},
 				filter(event,player){
 					return player.countCards('h')>(player==event.source?event.player:event.source).countCards('h');
@@ -16265,19 +16267,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xinyuelan_ab: `炒作大师`,
 			chisha: `迟砂`,
 			chisha_info: `准备阶段，你可以将手牌调整至全场唯一最多，若如此做，你不能使用本回合摸到的牌直到回合结束。`,
-			chisha_append:`${lib.figure}FAQ:“将手牌调整至全场唯一最多”不属于摸牌</span>`,
+			chisha_append:lib.figurer(`FAQ:“将手牌调整至全场唯一最多”不属于摸牌`),
 			wujian: `鹜荐`,
 			wujian_info: `你对其他角色造成伤害或受到其他角色的伤害后，若你手牌数多于对方，你可以与其交换手牌。`,
 
 			Shiranekoyuki: `白音小雪`,
 			jvliu: `拒流`,
 			jvliu_info: `其他角色使用非基本牌时，你可以失去一点体力取消之。`,
-			jvliu_append:`${lib.figure}特性：干扰</span>`,
+			jvliu_append:lib.figurer(`特性：干扰`),
 			wuxia: `无瑕`,
 			wuxia_info: `觉醒技 准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『鸢揺』。`,
 			wuxia_yuanyao: `鸢揺`,
 			wuxia_yuanyao_info: `出牌阶段限X次，若你的手牌不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）。`,
-			wuxia_yuanyao_append:`${lib.figure}特性：制衡</span>`,
+			wuxia_yuanyao_append:lib.figurer(`特性：制衡`),
 
 /**------------------------------------------------------------------------------------------------------- */
 
@@ -16293,16 +16295,16 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			YukiTuan_ab: `雪团`,
 			chentu: `衬兔`,
 			chentu_info: `出牌阶段限一次，你可以弃置任意张牌，然后若你的手牌数为全场最低，你于下个回合开始时摸此次弃牌数两倍的牌。`,
-			chentu_append:`${lib.figure}特性：制衡</span>`,
+			chentu_append:lib.figurer(`特性：制衡`),
 			sishu: `饲鼠`,
 			sishu_info: `锁定技 回合内，你需要使用基本牌时，能且仅能将一组花色的牌交给一名其他角色视为使用之。`,
-			sishu_append:`${lib.figure}一组花色的牌：即四张花色各不相同的牌；特性：自肃（不能以其他方式使用基本牌）</span>`,
+			sishu_append:lib.figurer(`一组花色的牌：即四张花色各不相同的牌；特性：自肃（不能以其他方式使用基本牌）`),
 
 			Nyanners: `Nyanners`,
 			Nyanners_ab: `喵喵人`,
 			shenghuo: `圣火`,
 			shenghuo_info: `出牌阶段限X次，你可以观看牌堆顶与底各X张牌，然后将其中的任意张置于牌堆另一端。（X为你上一次受到伤害的伤害值+1）`,
-			shenghuo_append:`${lib.figure}特性：控顶</span>`,
+			shenghuo_append:lib.figurer(`特性：控顶`),
 			dipo: `底破`,
 			dipo_info: `锁定技 若你已受伤，你摸牌时从牌堆底摸取且摸牌量+1。`,
 			miaoche: `喵车`,
@@ -16359,7 +16361,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			HosimiyaSio: `星宫汐`,
 			yuanyao: `鸢揺`,
 			yuanyao_info: `出牌阶段限X次，若你的手牌数不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）`,
-			yuanyao_append:`${lib.figure}特性：制衡</span>`,
+			yuanyao_append:lib.figurer(`特性：制衡`),
 			gongni: `宫逆`,
 			gongni_info: `限定技 准备阶段开始时，或你于回合外使用或打出一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。`,
 		
@@ -16378,7 +16380,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shanbao: `扇宝`,
 			fengxu: `风许`,
 			fengxu_info: `你使用牌指定唯一目标时，可以将其区域内的一张牌移至其下家（可替换），若未发生替换，则对其下家重复此流程，直到发生替换或重复了五次。<br>若你的牌因此发生了替换，此技能结算后你摸重复次数的牌，然后不能发动此技能直到你下一次弃置手牌。`,
-			fengxu_append:`${lib.figure}特性：捡瓶子</span>`,
+			fengxu_append:lib.figurer(`特性：捡瓶子`),
 		
 			qiudi: `秋蒂Q`,
 			xiangnuo: `香诺`,
@@ -16456,7 +16458,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Xiaorou: `小柔`,
 			rouqing: `柔情`,
 			rouqing_info: `每回合限一次。一名角色体力减少1点后，你可以令其观看牌堆顶的四张牌并获得其中至多（1）张牌，将其余的牌以任意顺序置于牌堆顶。`,
-			rouqing_append:`${lib.figure}特性：卖血</span>`,
+			rouqing_append:lib.figurer(`特性：卖血`),
 			guangying: `光萦`,
 			guangying_info: `锁定技 当你不因使用而失去手牌后，你下一次发动『柔情』时（）值+1，若大于4，你回复一点体力。`,
 		
@@ -16488,7 +16490,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Zaodaoji: `早稻叽`,
 			guangan: `珖黯`,
 			guangan_info: `你的上家对你使用牌，或你对你的下家使用牌时，你可以摸一张牌。每轮限X次（X为场上存活的其他角色数）。`,
-			guangan_append:`${lib.figure}特性：易上手</span>`,
+			guangan_append:lib.figurer(`特性：易上手`),
 			lanxuan: `澜绚`,
 			lanxuan_info: `每回合每项限一次，你造成或受到伤害后，可以立即无视距离与次数限制使用一张牌。`,
 			zonghe: `纵合`,
@@ -16499,7 +16501,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiace_info: `你成为黑色牌的目标时，可以将一张与之同花色的手牌交给来源，为此牌增加或减少一个目标。若为你本回合首次发动『铗策』，你于此牌结算后获得之。`,
 			xiangying: `襄英`,
 			xiangying_info: `出牌阶段限一次，你可将任意红色牌交给一名手牌数小于你的角色，然后若其手牌数大于你，其展示手牌，你摸其中红黑色牌数差的牌。`,
-			xiangying_append:`${lib.figure}特性：难上手</span>`,
+			xiangying_append:lib.figurer(`特性：难上手`),
 		
 			Moemi: `萌实`,
 			chengzhang: `澄涨`,
@@ -16628,7 +16630,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Bafuko: `晴步子`,
 			shangsheng: `能力上升`,
 			shangsheng_info: `回合开始时，你于本回合获得一项效果：A.于摸牌阶段多摸1张牌；B.于出牌阶段多出1张【杀】；C.于弃牌阶段手牌上限+1。然后若本次选择与前两次均不同，此技能所有数字+1；否则-1（至少为1）。`,
-			shangsheng_append:`${lib.figure}特性：成长</span>`,
+			shangsheng_append:lib.figurer(`特性：成长`),
 			jinghua: `镜花水月`,
 			jinghua_info: `出牌阶段限一次，你可以将X张牌依次展示并交给不同角色，令其无法使用相同类型的牌，直到你的下个回合开始（X为你本回合使用【杀】的次数）。`,
 			
@@ -16641,7 +16643,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jike: `机萪`,
 			qianjiwanbian: `千机万变`,
 			qianjiwanbian_info: `你可将你造成的伤害改为（雷电）属性。一个回合开始时或你于一个独立的事件中首次造成伤害时，可修改（）内属性并发现一个有字与此技能某字拼音相同的技能，在你下个回合开始之前获得之。若选择『千机万变』，直到你的下个回合开始前此技能触发时额外发现一次。`,
-			qianjiwanbian_append:`${lib.figure}特性：难上手</span>`,
+			qianjiwanbian_append:lib.figurer(`特性：难上手`),
 			
 			xinkeniang: `新科娘`,
 			daimao: `呆毛科技`,
@@ -16696,7 +16698,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Diana: `嘉然`,
 			quanyu: `全域`,
 			quanyu_info: `其他角色使用一张牌时，若你没有该花色的手牌，你可以令此牌无效并获得之，然后你展示所有手牌，每缺少一种花色便受到1点无来源的伤害。`,
-			quanyu_append:`${lib.figure}特性：干扰</span>`,
+			quanyu_append:lib.figurer(`特性：干扰`),
 			wulian: `舞连`,
 			wulian_info: `<font color=#ecd>限定技</font> 出牌阶段，你可以摸等同于已损失体力值的牌，然后在本轮内获得『连破』。`,
 			lianpo:`连破`,
@@ -16705,7 +16707,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Bella: `贝拉`,
 			aswusheng: `舞圣`,
 			aswusheng_info: `你连续使用或打出第（）张基本牌时，可以触发对应项：（0）使之不计入次数；（1）摸一张牌；（2）获得对方的一张牌；（3）回复1点体力。`,
-			aswusheng_append:`${lib.figure}特性：易上手</span>`,
+			aswusheng_append:lib.figurer(`特性：易上手`),
 			gunxun: `棍训`,
 			gunxun_info: `转换技 出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【杀】②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。`,
 			ming_gunxunshan: `棍训:闪`,
@@ -16730,7 +16732,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xuanxu_info: `出牌阶段开始时，你可以亮出任意张基本牌，称为「逆位」牌，「逆位」牌不计入手牌数，且只能以以下效果对原不合法的目标使用：【杀】∽回复1点体力；【闪】∽摸两张牌；【桃】∽失去1点体力；【酒】∽立即使用一张牌。`,
 			weizeng: `味增弼佐`,
 			weizeng_info: `其他角色的回合开始时，你可以将任意亮出牌以任意顺序置于牌堆顶，其获得这些牌后，其所有同名牌在本回合内均视为「逆位」。`,
-			weizeng_append:`${lib.figure}特性：难上手 控顶</span>`,
+			weizeng_append:lib.figurer(`特性：难上手 控顶`),
 		
 			Ciyana: `希亚娜`,
 			yankui: `魇窥`,
@@ -16739,7 +16741,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			YaotomeNoe: `八乙女のえ`,
 			huiyuan: `回援`,
 			huiyuan_info: `每回合限一次，当其他角色使用基本牌时，若其手牌数多于你，则你可以与其各摸一张牌。`,
-			huiyuan_append:`${lib.figure}特性：辅助</span>`,
+			huiyuan_append:lib.figurer(`特性：辅助`),
 			suoshi: `琐事`,
 			suoshi_info: `当你受到伤害时，你可以将一张手牌交给一名全场手牌数最多的角色；若你手牌数不为全场最少，你受到的伤害+1。`,
 		
@@ -16748,7 +16750,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			mianmo_info: `每回合限一次，你使用牌的目标可改为任意体力和等于之点数或合计点数的角色，若包括你，重置此技能。`,
 			tiaolv: `调律`,
 			tiaolv_info: `你使用一张牌时，可以令其点数增加/减少X（X为你已损失的体力值且至少为1），然后若你以此牌发动『眠魔』，则你可以令目标横置/各摸一张牌。`,
-			tiaolv_append:`${lib.figure}特性：难上手</span>`,
+			tiaolv_append:lib.figurer(`特性：难上手`),
 		
 			Paryi: `帕里`,
 			tiantang: `天扉`,
@@ -16756,12 +16758,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			观看并弃置其一张声明花色的牌，令其执行一个额外的出牌阶段；或令其摸两张牌，只能使用声明花色的牌直到回合结束。（X为你对目标发动此技能的次数且至少为1）`,
 			haoren: `好人`,
 			haoren_info: `觉醒技 你发动『天扉』后，若发动次数大于存活人数，你扣减1点体力上限，将『天扉』的“弃置”改为“重铸”；且在『天扉』的额外出牌阶段内，当前回合角色获得『引流』。`,
-			haoren_append:`${lib.figure}特性：难上手</span>`,
+			haoren_append:lib.figurer(`特性：难上手`),
 		
 			TakatsukiRitsu: `高槻律`,
 			shengya: `生涯`,
 			shengya_info: `<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你亮出牌堆顶一张牌并获得之。若你亮出了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。`,
-			shengya_append:`${lib.figure}特性：易上手</span>`,
+			shengya_append:lib.figurer(`特性：易上手`),
 			liangshan: `汉歌`,
 			liangshan_info: `其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。`,
 			chongshi: `铳士`,
@@ -16770,14 +16772,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			MorinagaMiu: `森永缪`,
 			guanzhai: `观宅`,
 			guanzhai_info: `其他角色的回合结束时，若其本回合使用的牌少于（2）张，你可观看其手牌并获得其中（1）张。`,
-			guanzhai_append:`${lib.figure}特性：易上手</span>`,
+			guanzhai_append:lib.figurer(`特性：易上手`),
 			zhishu: `直抒`,
 			zhishu_info: `出牌阶段开始或你的体力改变时，你可以展示一张手牌，令一名其他角色选择一项：<br>交给你一张同花色的牌；令你与其下个回合内『观宅』的（）值+1。`,
 		
 			OtomeOto: `乙女音`,
 			yuxia: `玉匣`,
 			yuxia_info: `你可以将三张牌当作一张通常锦囊牌使用；其结算后，你可以将这些牌以任意顺序置于牌堆顶。`,
-			yuxia_append:`${lib.figure}特性：控顶</span>`,
+			yuxia_append:lib.figurer(`特性：控顶`),
 			lianjue: `连崛`,
 			lianjue_info: `回合结束时，若你的手牌数与本回合开始时差值为三的倍数，你可以选择一项：<br>令至多三名角色各摸一张牌；或视为使用一张未以此法使用过的通常锦囊牌。`,
 			changxiang: `长箱`,
@@ -16799,7 +16801,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			niaoji_info: `你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值+1）`,
 			ysxiangxing: `翔星`,
 			ysxiangxing_info: `出牌阶段限一次，你可以将所有手牌以任意顺序置于牌堆顶，然后对攻击范围内一名角色造成1点伤害。`,
-			ysxiangxing_append:`${lib.figure}特性：易上手 直接伤害</span>`,
+			ysxiangxing_append:lib.figurer(`特性：易上手 直接伤害`),
 		
 			Hanser: `hanser`,
 			Hanser_ab: `憨色`,
@@ -16807,15 +16809,15 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			naiwei_info: `出牌阶段限一次，你可令体力值最大的一名角色失去1点体力，或令体力值最小的一名角色回复1点体力。然后若满足该项的角色不止一名，你可发动另一项。`,
 			cishan: `慈善赌王`,
 			cishan_info: `摸牌阶段，你可改为将手牌数翻倍。然后其他角色可以选择与你拼点，赢的角色获得你一张牌。`,
-			cishan_append:`${lib.figure}特性：爆发</span>`,
+			cishan_append:lib.figurer(`特性：爆发`),
 		
 			Shaun: `勺`,
 			juxiao: `句销`,
 			juxiao_info: `当你受到伤害后，可以令至多两名角色各摸一张牌，因此摸牌的角色不能使用【杀】直到回合结束。`,
-			juxiao_append:`${lib.figure}特性：卖血</span>`,
+			juxiao_append:lib.figurer(`特性：卖血`),
 			shshenyan: `神言`,
 			shshenyan_info: `出牌阶段限一次，你可以展示并弃置手牌中一种牌名的牌，摸等量的牌。然后你可以：视为使用一张名称长度等于本阶段此技能弃置牌花色数的锦囊牌；否则若你弃置了【杀】，重置此技能。`,
-			shshenyan_append:`${lib.figure}特性：制衡</span>`,
+			shshenyan_append:lib.figurer(`特性：制衡`),
 		
 			Muri: `无理Muri`,
 			Muri_ab: `无理`,
@@ -16869,7 +16871,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jinzhou_info: `锁定技 当你失去装备区的防具牌时，你摸（1）张牌，然后令所有（）值+1。`,
 			gouhun: `勾魂`,
 			gouhun_info: `出牌阶段限一次，你可以亮出牌堆顶（3）张牌，并选择一项：获得其中一种类型的牌；令所有（）值+1。<br>你以此技能获得的基本牌不计入次数，锦囊牌不计入手牌上限。`,
-			gouhun_append:`${lib.figure}特性：成长</span>`,
+			gouhun_append:lib.figurer(`特性：成长`),
 		
 			xiaoke: `小可学妹`,
 			xiaoke_ab: `小可`,
@@ -16888,7 +16890,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			zhiyue_info: `游戏开始时，你将牌堆顶牌扣置于武将牌旁，称为「绝活」。<br>
 			当你使用与暗置「绝活」类型相同的牌时，可以将其中一张明置，然后若所有「绝活」均明置，你扣置牌堆顶牌于武将牌旁；<br>
 			当你使用与明置「绝活」花色相同的牌时，可以将其中任意张暗置并摸等量的牌。`,
-			zhiyue_append:`${lib.figure}特性：成长</span>`,
+			zhiyue_append:lib.figurer(`特性：成长`),
 			zhengniu: `蒸牛`,
 			zhengniu_info: `其他角色令你重置、回复体力或摸牌时，你可以令其获得任意的「绝活」。`,
 			
@@ -16926,17 +16928,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			SukoyaKana: `健屋花那`,
 			huawen: `花吻交染`,
 			huawen_info: `出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。`,
-			huawen_append:`${lib.figure}特性：难上手 爆发</span>`,
+			huawen_append:lib.figurer(`特性：难上手 爆发`),
 			liaohu: `逃杀疗护`,
 			liaohu_info: `你造成过伤害的回合结束时，若该回合未发动/发动了『花吻交染』，你可以令你/本轮『花吻交染』选择的其他角色回复1点体力。`,
 		
 			ShirayukiTomoe: `白雪巴`,
 			gonggan: `奇癖共感`,
 			gonggan_info: `其他角色的回合开始时，你可以展示所有手牌然后扣置其中一张，令当前回合角色猜测此牌花色，若猜对，其获得此牌，且本回合你手牌花色、点数均视为与此牌相同；若猜错，你收回此牌，且本回合你手牌点数均视为Q。`,
-			gonggan_append:`${lib.figure}特性：难上手</span>`,
+			gonggan_append:lib.figurer(`特性：难上手`),
 			yeyu: `夜域女王`,
 			yeyu_info: `其他角色使用【杀】时，你可以弃置一张点数大于此【杀】的牌取消之。其他角色使用通常锦囊牌时，你可以重铸一张梅花牌为之增加或减少一名目标。`,
-			yeyu_append:`${lib.figure}特性：干扰</span>`,
+			yeyu_append:lib.figurer(`特性：干扰`),
 		
 			Elu: `Elu`,
 			Elu_ab: `艾露`,
@@ -16952,14 +16954,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			shenglang_info: `出牌阶段限一次，你可以将一张【杀】当【决斗】使用。你失去过牌的回合结束时，摸等同于该回合进入弃牌堆的♠【杀】数量的牌`,
 			nodao: `无刀之咎`,
 			nodao_info: `你没有装备武器时，可以于出牌阶段重铸【杀】，若你以此法获得武器牌，你可以立即装备之并回复1点体力。`,
-		
-			Naraka : `奈罗花`,
-			ming_echi: `阿斥`,
-			echi: `阿斥`,
-			echi_info: `其它角色于摸牌阶段外获得牌时，若该角色的体力值不小于你，你可亮出一张手牌并令其选择一项：<br>弃置一张同类型的牌；失去一点体力。`,
-			mudu: `哞督`,
-			mudu_info: `其它角色的阶段结束时，若你于此阶段内失去过牌，则可令其将两张牌移出游戏。当前回合结束时，该角色获得一张以此法被移出游戏的牌，并将剩余牌交给你。`,
-			mudu_append:`${lib.figure}特性：控制</span>`,
 		
 			AchikitaChinami : `远北千南`,
 			yingkuo: `影拓`,
@@ -16978,6 +16972,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			huanxi_info: `出牌阶段开始或结束时，你可以弃置所有手牌，然后摸等量牌。若均弃牌且两次弃牌不包含同名牌，重置『册吕』`,
 			celv: `册吕`,
 			celv_info: `你体力减少或弃置与体力等量的牌时，可以展示并获得其他角色的一张手牌，然后你不能使用或打出与此牌同名的牌。`,
+			celv_append:lib.figurer(`特性：自肃`),
 		
 			AngeKatrina: `安洁·卡特琳娜`,
 			chuangzuo: `创作延续`,
@@ -16992,7 +16987,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			weizhuang: `魔界伪装`,
 			weizhuang_discard: `魔界伪装`,
 			weizhuang_info: `锁定技 你在一回合内多次使用基本牌/锦囊牌后，摸/弃X张牌。（X为此牌指定的目标数）`,
-			weizhuang_append:`${lib.figure}特性：自肃</span>`,
+			weizhuang_append:lib.figurer(`特性：自肃`),
 		
 			KagamiHayato: `加賀美隼人`,
 			liebo: `裂帛核哮`,
@@ -17005,19 +17000,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			miaomiao_info: `锁定技 你造成数值为1的伤害时，需将其改为等量体力回复，或令目标摸两张牌；若你本回合已发动『逞能龙息』，你摸一张牌。`,
 			chengneng: `逞能龙息`,
 			chengneng_info: `每回合限一次。当其他角色受到伤害时，你可以弃一张牌令其来源视为你，若你为其原来源，本次伤害改为等量体力流失。`,
-			chengneng_append:`${lib.figure}特性：难上手 combo</span>`,
+			chengneng_append:lib.figurer(`特性：难上手 combo`),
 		
 			SakuraRitsuki: `櫻凜月`,
 			zhuqiao: `筑巧`,
 			zhuqiao_info: `出牌阶段，若你本回合因此进入弃牌堆的牌点数之和小于24，你可重铸一张牌。回合结束时，你可令一名角色将手牌数补至X张（X为你本回合以此重铸牌的花色数）。`,
-			zhuqiao_append:`${lib.figure}特性：易上手</span>`,
+			zhuqiao_append:lib.figurer(`特性：易上手`),
 		
 			TenkaiTsukasa: `天开司`,
 			pojie: `破戒`,
 			pojie_info: `回合内，一名角色装备区内的牌数变化时，你可以摸一张牌。弃牌阶段，你需弃置的牌数改为本回合发动此技能的次数。`,
 			dazhen: `大振`,
 			dazhen_info: `出牌阶段限一次，你可将你武器栏的牌移动至其他角色武器栏（可替换原武器），然后其弃置你手牌数与手牌上限之差的牌，若不足，受到你造成的1点伤害。`,
-			dazhen_append:`${lib.figure}特性：爆发 破军</span>`,
+			dazhen_append:lib.figurer(`特性：爆发 破军`),
 		
 			UsakiNono: `宇佐纪诺诺`,
 			tuhui: `兔烩`,
@@ -17029,7 +17024,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Rynia_ab: `莱妮娅`,
 			yinxu: `吟虚`,
 			yinxu_info: `转换技 你可以将一张①锦囊牌②装备牌当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。`,
-			yinxu_append:`${lib.figure}特性：易上手 爆发</span>`,
+			yinxu_append:lib.figurer(`特性：易上手 爆发`),
 		
 			airuisi: `艾瑞思`,
 			maozhi: `茆织`,
@@ -17070,26 +17065,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			bianshi2: `辨识`,
 			ming_bianshi: `辨识`,
 			bianshi_info: `体力值不少于你的角色的回合开始时，你可以亮出一张手牌：直到回合结束，每当与此牌类别相同的牌进入弃牌堆时，该角色摸一张牌。以此法获得第二张牌后，该角色失去一点体力并令其因『辨识』的摸牌改为弃牌。`,
-			bianshi_append:`${lib.figure}特性：干扰</span>`,
+			bianshi_append:lib.figurer(`特性：干扰`),
 		
 			Pudding: `步玎`,
 			tianlve: `甜略`,
 			tianlve_info: `出牌阶段开始时，你可以令一名其他角色回复1点体力，然后本阶段内你对其使用牌无距离限制，且指定其为唯一目标时，可以摸一张牌或增加一个额外目标。`,
-			tianlve_append:`${lib.figure}特性：卖血 辅助 强化出杀</span>`,
+			tianlve_append:lib.figurer(`特性：卖血 辅助 强化出杀`),
 			luxian: `颅祭`,
 			luxian_info: `<font color=#fda>限定技</font> 准备阶段，若你已受伤，你可以扣减1点体力上限，并发现一次P-SP角色，你视为拥有其所有技能直到弃牌阶段结束。`,
-			luxian_append:`${lib.figure}特性：难上手 爆发</span>`,
+			luxian_append:lib.figurer(`特性：难上手 爆发`),
 		
 			AyanaNana: `绫奈奈奈`,
 			erni: `耳匿`,
 			erni_info: `转换技 你可以展示一张手牌并置于牌堆顶，视为使用或打出了一张同花色的①【杀】②【闪】③【桃】；当你发动其他技能后，可以转换一次『耳匿』。`,
-			erni_append:`${lib.figure}特性：控顶</span>`,
+			erni_append:lib.figurer(`特性：控顶`),
 			shouru: `受乳`,
 			shouru_info: `每回合限一次。你受到伤害/发动『耳匿』后，可以获得当前回合角色上家或下家的一张牌。`,
-			shouru_append:`${lib.figure}特性：combo</span>`,
+			shouru_append:lib.figurer(`特性：combo`),
 			chonghuang: `崇皇`,
 			chonghuang_info: `<font color=#dac>限定技</font> 当你体力值变为1时，你可以扣减1点体力上限，并发现一次P-SP角色，本轮次内你视为拥有其所有技能。`,
-			chonghuang_append:`${lib.figure}特性：难上手</span>`,
+			chonghuang_append:lib.figurer(`特性：难上手`),
 			yinzun: `隐尊`,
 			yinzun_info: `<font color=#dac>主公技</font> 你的『崇皇』可以在同势力角色体力变为1时发动。`,
 			
@@ -17099,7 +17094,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			jiren_info: `出牌阶段限一次，你可以进行判定，若结果为：红色~你摸一张牌；武器牌~你获得之。你可以失去1点体力以重置此技能。`,
 			luqiu: `戮秋`,
 			luqiu_info: `转换技 当一张牌进入弃牌堆时，若其花色与你本回合上一次『祭刃』的判定牌相同，你可以①视为使用一张【杀】②摸一张牌③弃一张牌。`,
-			luqiu_append:`${lib.figure}特性：难上手 爆发 combo</span>`,
+			luqiu_append:lib.figurer(`特性：难上手 爆发 combo`),
 			canxin: `残心`,
 			canxin_info: `<font color=#ed9>限定技</font> 出牌阶段结束时，若你已受伤，你可以重铸一张牌。若你以此法重铸了【杀】或伤害类锦囊牌，重复此操作；否则回复1点体力并立即结束回合。`,
 			
@@ -17108,12 +17103,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			quankai_info: `轮次技 你造成伤害后，可以弃置目标区域内的一张牌；当你使用锦囊牌后，可以从弃牌堆中获得上一次『拳开』的弃牌，或重置此技能。`,
 			heyuan: `合缘`,
 			heyuan_info: `<font color=#f57>限定技</font> 摸牌阶段，若你已受伤，你可以放弃摸牌，改为发现两次P-SP势力角色，然后视为拥有前者的非限定技和后者的限定技直到你的下个回合开始。`,
-			heyuan_append:`${lib.figure}特性：难上手</span>`,
+			heyuan_append:lib.figurer(`特性：难上手`),
 			
 			Lovely: `东爱璃`,
 			yangyao: `秧耀`,
 			yangyao_info: `出牌阶段，你可以失去一点体力或弃置两张同色的牌，令一名角色从弃牌堆获得一张锦囊牌；每种锦囊牌每回合限一次。`,
-			yangyao_append:`${lib.figure}特性：爆发 combo</span>`,
+			yangyao_append:lib.figurer(`特性：爆发 combo`),
 			shili: `拾璃`,
 			shili_info: `<font color=#987>限定技</font> 一个回合结束时，若你已受伤，你可以令一名角色摸X张牌并执行一个额外的出牌阶段（X为你本回合使用过的非基本牌数量）。`,
 		
@@ -17127,7 +17122,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Seki_ab: `星汐`,
 			zhuxing: `铸星`,
 			zhuxing_info: `出牌阶段限一次，你可以观看牌堆顶的七张牌，并用手牌替换其中任意张。`,
-			zhuxing_append:`${lib.figure}特性：观星</span>`,
+			zhuxing_append:lib.figurer(`特性：观星`),
 			shanzhu: `潸逐`,
 			shanzhu_info: `限定技 结束阶段，若你已受伤，你可以获得本回合你使用的所有实体牌。`,
 		

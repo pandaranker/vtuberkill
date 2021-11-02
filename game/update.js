@@ -1,10 +1,10 @@
 window.noname_update={
-	version:'1.9.103.12',
+	version:'1.9.103.13',
 	update:'1.9.101.1.1',
 	changeLog:[
 		'1.9.103.12小更新：新增角色：白音小雪(Re:Act【尚未建立势力】/群)、闪光Pika(小社团/群)、新月岚(小社团/群)',
 		'千幽茉里、奈罗花、MeUmy移出测试包，修复部分bug，修改部分描述，修改神宫司玉藻『傲尾』ai',
-		'',
+		'1.9.103.13微型更新，修复新月岚ai的bug',
 		'',
 		'化鲸篇新增机制可以在游戏内或者设置的“帮助”中查看',
 		'化鲸篇角色：VR的七海、神乐组的koyori、P-SP的白神遥、彩虹的长尾景、HOLO的噶呜·古拉和一伊那尔栖、海洋特典角色（湊阿夸、笹木咲、向晚）、特典（绯赤艾莉欧、噶呜·古拉）',
@@ -12,7 +12,6 @@ window.noname_update={
 	files:[
 		'image/character/Nekomasu.jpg',
 		'image/character/re_Nekomasu.jpg',
-		'image/character/PinkyPopHepburn.jpg',
 		'image/character/Xiaorou.jpg',
 
 		'character/Beginner.js',
@@ -28,6 +27,7 @@ window.noname_update={
 		// 'character/diy.js',
 		// 'character/refresh.js',
 		// 'character/shenhua.js',
+		// 'character/sp.js',
 		
 		'card/huajing.js',
 		'card/longlaoguan.js',
@@ -37,12 +37,11 @@ window.noname_update={
 		'card/standard.js',
 		'card/guozhan.js',
 		'card/remark.js',
-		'card/yunchou.js',
-		'card/zhenfa.js',
-		'card/zhulu.js',
+		// 'card/yunchou.js',
+		// 'card/zhenfa.js',
+		// 'card/zhulu.js',
 		'card/xingtian.js',
 		// 'card/gwent.js',
-		'character/sp.js',
 		//'extension/boss/extension.js',
 		'layout/default/layout.css',
 		'layout/default/menu.css',
