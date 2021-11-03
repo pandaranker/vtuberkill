@@ -59155,6 +59155,8 @@
         get: get
     };
 
+	lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
+	lib.figurer = (text) =>	` ${lib.figure}${text}</span> `
     game.galgameMod();
     lib.init.init();
 }());

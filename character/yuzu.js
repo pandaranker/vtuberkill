@@ -2,8 +2,6 @@
 
 
 game.import('character',function(lib,game,ui,get,ai,_status){
-	lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
-	lib.figurer = (text) =>	` ${lib.figure}${text}</span> `
 	return {
 		name:"yuzu",
 		connect:true,
