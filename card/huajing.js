@@ -106,7 +106,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					'step 1'
 					if(result.cards&&result.cards.length){
-						target.changeHujia();
+						target.changeHujia(event.baseDamage);
 						event.finish();
 					}
 					'step 2'
@@ -179,7 +179,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							}
 						return 8-get.value(card);
 						});
-						next.set('prompt','打出一张颜色为'+get.translation(sourcecolor)+'的牌响应之，否则受到'+get.cnNumber(event.baseDamage)+'点海洋伤害');
+						next.set('prompt',`【海啸】：打出一张颜色为${get.translation(sourcecolor)}的牌响应之，否则受到${get.cnNumber(event.baseDamage)}点海洋伤害`);
 						next.autochoose=lib.filter.autoRespondShan;
 					}
 					'step 1'
@@ -233,7 +233,6 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				modTarget:true,
 				filterTarget:function(card,player,target){
 					return target.countCards('e');
-					return target.countDiscardableCards(player,'e');
 				},
 				content:function(){
 					'step 0'
@@ -245,7 +244,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						if(evt.target.hasSkillTag('notrick')) return 1;
 						if(evt.target.hp==1)	return 0;
 						return Math.random()<0.5?1:0;
-					}).set('prompt','【浪涌】：弃置装备区里所有的牌，或受到'+(get.translation(player))+'造成的1点海洋伤害。');
+					}).set('prompt',`【浪涌】：弃置装备区里所有的牌，或受到${get.translation(player)}造成的${get.cnNumber(event.baseDamage)}点海洋伤害。`);
 					'step 1'
 					if(result.control=='弃置装备区所有牌'){
 						target.discard(target.getCards('e'))
@@ -656,7 +655,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					event.discard = player.chooseToDiscard('he',true).set('prompt2','若弃置装备牌，则额外对目标造成一点暗影伤害').set('ai',function(card){
+					event.discard = player.chooseToDiscard('he',true).set('prompt2',`若弃置装备牌，则额外对目标造成${get.cnNumber(event.baseDamage)}点暗影伤害`).set('ai',function(card){
 						var target = _status.event.getParent().target;
 						var player = _status.event.player;
 						if(get.type(card)=='equip') return get.damageEffect(target,player,player)+7-get.value(card);
@@ -702,7 +701,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number')	event.baseDamage=1;
 					event.num = target.hujia;
 					target.chooseToDiscard(event.num,true);
 					'step 1'
@@ -743,11 +742,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					target.changeHujia(-1);
+					if(typeof event.baseDamage!='number')	event.baseDamage=1;
+					target.changeHujia(-event.baseDamage);
 					game.delay(0.5);
 					'step 1'
-					if(player.isDamaged())	player.changeHujia(2);
-					else					player.changeHujia();
+					player.changeHujia(event.baseDamage + (player.isDamaged()?1:0));
 				},
 				ai:{
 					basic:{

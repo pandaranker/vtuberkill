@@ -83,7 +83,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			Mari: ['female','VirtuaReal',4,['tingzhu','xuemo'],['guoV']],
 			
 			/**胡桃 */
-			Menherachan: ['female','qun',4,['shangbei','qianqing'],['guoV']],
+			Menherachan: ['female','NetEase',4,['shangbei','qianqing'],['guoV']],
 
 			/**犬山 */
 			InuyamaTamaki:['male','nori',3,['rongyaochengyuan','hundunliandong']],
@@ -105,13 +105,26 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			KaguyaLuna:'#p不羁的夜空之月',
 			XiaoxiXiaotao:'#p研虚之实',
 
-			sp_Ava: '#rA_SOUL',
-			sp_Diana: '#rA_SOUL',
 			Ava: '#rA_SOUL',
 			Bella: '#rA_SOUL',
 			Diana: '#rA_SOUL',
 			Carol: '#rA_SOUL',
 			EQueen: '#rA_SOUL',
+		},
+		characterReplace:{
+			KizunaAI:['re_KizunaAI','KizunaAI','sp_KizunaAI'],
+			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
+			TenkaiTsukasa:['re_TenkaiTsukasa','TenkaiTsukasa'],
+			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
+			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
+			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
+			InabaHaneru:['InabaHaneru','gz_InabaHaneru','old_InabaHaneru'],
+
+			Azusa:['Azusa','ap_Azusa'],
+			Nana7mi:['Nana7mi','ap_Nana7mi'],
+
+			Ava:['Ava','sp_Ava','sea_Ava','gz_Ava'],
+			Diana:['Diana','sp_Diana'],
 		},
 		characterIntro:{
 			KizunaAI:'绊爱者，沛国焦郡人也，生于V始元年，以人工智障号之，有《FAQ赋》流传于世，爱有贤相，名曰望，左右心害其能，因谗之，望行仁义而怀anti，遂还相位，是以绊爱得王V界，威加四海，世人多之.',
@@ -162,10 +175,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 1'
 					//console.log(result);
-					if(result&&result.bool==false){
-						event.goto(3);
-					}
-					else{
+					if(result?.bool){
 						if(result.targets){
 							if(!player.storage.targets) player.storage.targets=[];
 							if(!trigger.targets.contains(result.targets[0])){
@@ -174,10 +184,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							trigger.target=result.targets[0];
 						}
-						player.chooseCard(true, 'h', '选择要交给'+get.translation(trigger.target)+'的牌',[1,Infinity]).set('ai',function(card){
+						player.chooseCard(true, 'h', '选择要交给'+get.translation(trigger.target)+'的牌',[1,Infinity]).set('ai',card => {
 							if(player.isZhu)	return 6-get.useful(card);
 							return 7-get.useful(card);
 						})
+					}
+					else{
+						event.goto(3);
 					}
 					'step 2'
 					if(result.bool==true){
@@ -218,9 +231,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					});
 					'step 5'
 					if(result.bool==true){
-						result.targets.forEach(element => {
-							element.link(); 
-						});
+						result.targets.forEach(element => element.link());
 					}
 					'step 6'
 					var distanceGroup=false;
@@ -267,8 +278,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 										}
 										return 1+Math.random();
 									case 'sha':
-										if(game.hasPlayer(function(current){
-											return player.canUse(card,current)&&get.effect(current,card,player,player)>0
+										if(game.hasPlayer(cur => {
+											return player.canUse(card,cur)&&get.effect(cur,card,player,player)>0
 										})){
 											if(card.nature=='fire') return 2.95;
 											if(card.nature=='thunder'||card.nature=='ice') return 2.92;
@@ -322,7 +333,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				ai:{
 					order(skill,player){
-						if(game.hasPlayer(function(cur){
+						if(game.hasPlayer(cur => {
 							return cur!=player&&get.attitude(player,cur)>0;
 						})){
 							if(player.needsToDiscard()){
@@ -368,8 +379,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.hasZhuSkill('qixu')) return false;
 					if(player.hasSkill('qixu3')) return false;
 					if(!event.filterCard({name:'sha'},player,event)) return false;
-					return game.hasPlayer(function(current){
-						return current!=player;
+					return game.hasPlayer(cur => {
+						return cur!=player;
 					});
 				},
 				content(){
@@ -436,8 +447,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.hasZhuSkill('qixu')) return false;
 					if(player.hasSkill('qixu3')) return false;
 					if(!lib.filter.cardUsable({name:'sha'},player)) return false;
-					return game.hasPlayer(function(current){
-						return current!=player;
+					return game.hasPlayer(cur => {
+						return cur!=player;
 					});
 				},
 				filterTarget(card,player,target){
@@ -463,7 +474,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							event=event||_status.event;
 							return card.name=='sha';
 						},{name:'sha'},1);
-						next.set('ai',function(card){
+						next.set('ai',card => {
 							var event=_status.event;
 							return -get.effect(event.target,card,event.source,event.player);
 						});
@@ -570,7 +581,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							// 	return card.name=='shan';
 							// },
 							1,false);
-							// next.set('ai',function(card){
+							// next.set('ai',card => {
 							// 	var event=_status.event;
 							// 	return get.effect(event.target,card,event.event.source,event.player);
 							// });
@@ -842,7 +853,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 								effect+=get.effect(trigger.targets[i],trigger.card,event.starget,player);
 							}
 						}
-						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌').set('ai',function(card){
+						event.starget.chooseCard(true, 'h','众星合奏：亮出一张手牌').set('ai',card => {
 							var source = _status.event.source;
 							var att = _status.event.att;
 							var num = _status.event.num;
@@ -924,7 +935,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseUseBegin'},
 				priority:199,
 				filter(event,player){
-					return game.hasPlayer(function(cur){
+					return game.hasPlayer(cur => {
 						return cur!=player;
 					});
 				},
@@ -1043,12 +1054,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				lose:false,
 				content(){
 					player.showHandcards();
-					var overJ = cards.filter(function(card){
-						return get.number(card)>11;
-					});
-					var under3 = cards.filter(function(card){
-						return get.number(card)<3;
-					});
+					var overJ = cards.filter(card => get.number(card)>11);
+					var under3 = cards.filter(card => get.number(card)<3);
 					player.recover(overJ.length);
 					if(under3.length&&player.hasSkill('zhongxinghezou')){
 						if(player.getStat().skill.zhongxinghezou){
@@ -1063,9 +1070,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					order:10,
 					result:{
 						player(player,target){
-							if(player.countCards('h',function(card){
-								return get.number(card)>11;
-							}))	return get.recoverEffect(player,player,player);
+							if(player.countCards('h',card => get.number(card)>11))	return get.recoverEffect(player,player,player);
 							else return -0.2;
 						},
 					},
@@ -1127,7 +1132,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					event.cards=[];
 					"step 2"
-					game.getGlobalHistory('cardMove',function(evt){
+					game.getGlobalHistory('cardMove',evt => {
 						if(evt==trigger||(evt.name!='lose'&&evt.name!='cardsDiscard')) return false;
 						if(evt.name=='lose'&&evt.position!=ui.discardPile) return false;
 						for(var i=0;i<evt.cards.length;i++){
@@ -1285,19 +1290,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseBegin'},
 						forced:true,
 						filter(event,player){
-							return player.hasSkill('renleiguancha_damaged')||player.hasSkill('renleiguancha_dead')||game.filterPlayer(function(current){
-								if(current.hasSkill('renleiguancha_mark')){
-									return true;
-								}
-								else
-									return false;
-							}).length>0
+							return player.hasSkill('renleiguancha_damaged')||player.hasSkill('renleiguancha_dead')
+							||game.filterPlayer(cur => cur.hasSkill('renleiguancha_mark')).length>0
 						},
 						content(){
 							'step 0'
-							game.filterPlayer(function(current){
-								if(current.hasSkill('renleiguancha_mark')){
-									current.removeSkill('renleiguancha_mark');
+							game.filterPlayer(cur => {
+								if(cur.hasSkill('renleiguancha_mark')){
+									cur.removeSkill('renleiguancha_mark');
 									return true;
 								}
 								else
@@ -1411,7 +1411,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					useStop:{
 						mod:{
 							playerEnabled(card,player,target){
-								var players = game.filterPlayer(function(cur){
+								var players = game.filterPlayer(cur => {
 									return cur!=player&&cur.hasSkill('yueyao');
 								})
 								for(var i of players){
@@ -1465,7 +1465,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				content(){
 					'step 0'
-					player.chooseCardOL(true,targets,'he','弃置一张牌(若其中有♠或9，则视为'+get.translation(player)+'使用了一张酒)').set('ai',function(card){
+					player.chooseCardOL(true,targets,'he','弃置一张牌(若其中有♠或9，则视为'+get.translation(player)+'使用了一张酒)').set('ai',card => {
 						var source = _status.event.source;
 						var player = _status.event.player;
 						if(get.attitude(player,source)>0&&(get.suit(card)=='spade'||get.number(card)==9))	return 12-get.value(card);
@@ -1482,9 +1482,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					};
 					'step 1'
 					var cards = [];
-					result.forEach(cur => {
-						cards.addArray(cur.cards);
-					});
+					result.forEach(cur => cards.addArray(cur.cards));
 					targets[0].discard(cards[0]);
 					targets[1].discard(cards[1]);
 					event.cards = cards;
@@ -1645,7 +1643,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					for(var i=0;i<player.storage.chanbing.length;i++){
 						numbers.add(get.number(player.storage.chanbing[i]));
 					}
-					var next=player.judge(function(card){
+					var next=player.judge(card => {
 						var numbers = _status.event.numbers;
 						if(numbers&&numbers.contains(get.number(card))) return -1;
 						return 1;
@@ -1820,7 +1818,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseAfter'},
 				lastDo: true,
 				filter(event,player){
-					return player.countCards('h')&&game.countPlayer2(function(cur){
+					return player.countCards('h')&&game.countPlayer2(cur => {
 						return cur.getHistory('damage').length;
 					});
 				},
@@ -1861,9 +1859,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 								game.delay(0.5);
 								player.logSkill('liuhua');
-								event.cards = player.storage.liuhua.filter(function(card){
-									return get.color(card)==get.color(result.links[0]);
-								});
+								event.cards = player.storage.liuhua.filter(card => get.color(card)==get.color(result.links[0]));
 								player.unmarkAuto('liuhua',event.cards);
 								player.$give(event.cards,player,false);
 								player.gain(event.cards);
@@ -1888,7 +1884,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					player.addTempSkill('yishi_use');
 					'step 2'
-					game.filterPlayer(function(cur){
+					game.filterPlayer(cur => {
 						if(cur!=player&&cur!=player.storage.yishi_use){
 							cur.addTempSkill('yishi_cardDisable');
 						}
@@ -1961,7 +1957,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					var suits = get.suit3(target.getStorage('liuhua'));
 					player.chooseCard(true,'he','选择置于'+get.translation(target)+'『化羽』牌上的牌',[1,Infinity],function(card,player){
 						return !_status.event.suits.contains(get.suit(card));
-					}).set('suits',suits).set('ai',function(card){
+					}).set('suits',suits).set('ai',card => {
 						var evt = _status.event.getParent();
 						if(evt.target.isTurnedOver()&&(_status.event.suits+ui.selected.cards.length)<5)	return get.value(card,evt.target,'raw')-1;
 						if((evt.player.countCards('he')-ui.selected.cards.length)<3)	return get.value(card,evt.target,'raw')-9;
@@ -1993,20 +1989,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			}
 		},
 		card:{
-		},
-		characterReplace:{
-			KizunaAI:['re_KizunaAI','KizunaAI'],
-			MiraiAkari:['re_MiraiAkari','MiraiAkari'],
-			TenkaiTsukasa:['re_TenkaiTsukasa','TenkaiTsukasa'],
-			KaguyaLuna:['re_KaguyaLuna','KaguyaLuna'],
-			XiaoxiXiaotao:['re_XiaoxiXiaotao','XiaoxiXiaotao'],
-			InuyamaTamaki:['re_InuyamaTamaki','InuyamaTamaki'],
-			InabaHaneru:['InabaHaneru','gz_InabaHaneru','old_InabaHaneru'],
-
-			Azusa:['Azusa','ap_Azusa'],
-			Nana7mi:['Nana7mi','ap_Nana7mi'],
-
-			Ava:['Ava','gz_Ava','sea_Ava'],
 		},
 		translate:{
 			vtuber_upd8:`UPD8`,
@@ -2048,7 +2030,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		
 			Siro: `电脑少女小白`,
 			zhongxinghezou: `众星合奏`,
-			zhongxinghezou_info: `每回合限一次。你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12~你获得亮出牌令你使用的牌无效；不小于12~你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12~你摸一张牌并令亮出牌的角色回复1点体力。`,
+			zhongxinghezou_info: `每回合限一次，你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12~你获得亮出牌令你使用的牌无效；不小于12~你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12~你摸一张牌并令亮出牌的角色回复1点体力。`,
 			zhongxinghezou_append:lib.figurer(`通过指定队友或自己，实现一回合出多次【杀】和摸牌`),
 			xiugong: `天道宿宫`,
 			xiugong_info: `出牌阶段开始时，你可以猜测一名其他角色手牌中锦囊牌的数量并令其展示手牌，若猜测正确，你摸一张牌并令你本回合的『众星合奏』增加等量次数上限。`,
@@ -2098,7 +2080,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 		
 			UmoriHinako: `宇森ひなこ`,
 			hongyi: `红移`,
-			hongyi_info: `每回合限一次。当出现红色判定结果后，你可以令当前回合角色交给你一张牌。`,
+			hongyi_info: `每回合限一次，当出现红色判定结果后，你可以令当前回合角色交给你一张牌。`,
 			jueshou: `绝收`,
 			jueshou_info: `出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。`,
 			jueshou_append:lib.figurer(`特性：易上手`),
@@ -2111,7 +2093,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yishi_append:lib.figurer(`特性：难上手`),
 			shiji: `市迹`,
 			shiji2: `市迹`,
-			shiji_info: `主公技 同势力角色于出牌阶段限一次，其可以将『化羽』牌不包含花色的任意张牌置于之上。`,
+			shiji_info: `主公技 同势力角色的出牌阶段限一次，其可以将『化羽』牌不包含花色的任意张牌置于之上。`,
 			shiji_append:lib.figurer(`只能在已有『化羽』牌时发动`),
 			
 			Rim: `理芽`,

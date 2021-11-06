@@ -4720,12 +4720,12 @@
                         init: '0',
                         restart: true,
                         item: {
-                            '0': '〇',
+                            '0': '关闭',
                             '1': '一',
-                            '2': '二',
                             '3': '三',
-                            '4': '四',
                             '5': '五',
+                            '7': '七',
+                            '9': '九',
                         },
                         intro: '为所有玩家分配额外选将框'
                     },
@@ -10152,7 +10152,7 @@
             /**
              * 执行一个，或一组无参函数，并返回结果；如果是`{a:function(){}, b:function(){}}`的形式，返回`{a: any, b: any}`作为结果
              * @function
-             * @param {(function():any|Object<string, fuction():any>)} func 要执行的函数/函数组
+             * @param {(function():any|Object<string, function():any>)} func 要执行的函数/函数组
              * @returns {(any|Object<string, any>)}
              */
             eval: function (func) {
@@ -11039,6 +11039,7 @@
             nijisanji: '虹',
             VirtuaReal: '维阿',
             HappyElements: '乐',
+            NetEase: '网',
             upd8: 'U',
             eilene: '艾琳',
             paryi: '帕',
@@ -11070,6 +11071,7 @@
             nijisanji2: 'Nijisanji',
             VirtuaReal2: 'VirtuaReal',
             HappyElements2: '乐元素',
+            NetEase2: '网易',
             eilene2: '艾琳一家',
             paryi2: '帕里坡',
             kagura2: '神楽组',
@@ -11866,7 +11868,7 @@
                         custom: [],
                     });
                     game.countPlayer2(function (current) {
-                        current.actionHistory.push({ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], custom: [] });
+                        current.actionHistory.push({ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], changeHujia: [], custom: [] });
                         current.stat.push({ card: {}, skill: {} });
                         if (event.parent._roundStart) {
                             current.getHistory().isRound = true;
@@ -17271,6 +17273,7 @@
                     if (player.hujia < 0) {
                         player.hujia = 0;
                     }
+                    player.getHistory('changeHujia').push(event);
                     player.update();
                 },
                 /**
@@ -31486,7 +31489,7 @@
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'jin', 'shen',
             'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'hunmiao', 'ego', 'chidori', 'lucca',
+            'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
             'vshojo'
         ],
         /**
@@ -31537,6 +31540,7 @@
             xuyan: 'ice',
             chaos: 'ocean',
             xuefeng: 'ocean',
+            NetEase: 'fire',
             hunmiao: 'ocean',
             ego: 'ocean',
             chidori: 'wood',
@@ -47099,7 +47103,7 @@
             groupControl: function (dialog) {
                 return ui.create.control('qun',
                     'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
+                    'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase','hunmiao', 'ego', 'chidori', 'lucca',
                     'vshojo', function (link, node) {//'wei','shu','wu','western','key',
                         if (link == '全部') {
                             dialog.currentcapt = '';
@@ -47548,7 +47552,7 @@
                 if (!thisiscard) {
                     var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
                         'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
-                        'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
+                        'xuyan', 'chaos', 'xuefeng', 'NetEase','hunmiao', 'ego', 'chidori', 'lucca',
                         'vshojo'
                     ];//'wei','shu','wu','key',
                     if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
@@ -49352,7 +49356,7 @@
                 node.damagepopups = [];
                 node.judging = [];
                 node.stat = [{ card: {}, skill: {} }];
-                node.actionHistory = [{ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], custom: [] }];
+                node.actionHistory = [{ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], changeHujia: [], custom: [] }];
                 node.tempSkills = {};
                 node.storage = {};
                 node.marks = {};
@@ -56230,16 +56234,17 @@
             var str = lib.translate[name + '_info'];
             if (player && lib.dynamicTranslate[name]) str = lib.dynamicTranslate[name](player, name);
             if (!str) return '';
-            str = str.replace(/锁定技 /g, '<font color=#f66>锁定技 </font>')
-                .replace(/阵法技 /g, '<font color=#fe2>阵法技 </font>')
-                .replace(/轮次技 /g, '<font color=#fc2>轮次技 </font>')
-                .replace(/转换技 /g, '<font color=#88e>转换技 </font>')
-                .replace(/限定技 /g, '<font color=#baf>限定技 </font>')
-                .replace(/使命技 /g, '<font color=#bf9>使命技 </font>')
-                .replace(/觉醒技 /g, '<font color=#fcd>觉醒技 </font>')
-                .replace(/主公技 /g, '<font color=#ff4>主公技 </font>');
+            str = str
+                .replace(/(?<!\/)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$1</font>，')
+                .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
+                .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
+                .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')
+                .replace(/(转换技) /g, '<font color=#8ae>$1 </font>')
+                .replace(/(限定技) /g, '<font color=#baf>$1 </font>')
+                .replace(/(使命技) /g, '<font color=#bf9>$1 </font>')
+                .replace(/(觉醒技) /g, '<font color=#fcd>$1 </font>')
+                .replace(/(主公技) /g, '<font color=#ff4>$1 </font>')
             return str;
-            // 	replace(/觉醒技/g,'<span class="greentext">觉醒技</span>').
             // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
             // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
         },
@@ -58017,7 +58022,7 @@
                 'vtuber', 'clubs',
                 'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
                 'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng','hunmiao', 'ego', 'chidori', 'lucca',
+                'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
                 'vshojo'
             ];
         },
@@ -59156,7 +59161,11 @@
     };
 
 	lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
-	lib.figurer = (text) =>	` ${lib.figure}${text}</span> `
+	lib.figurer = text => ` ${lib.figure}${text}</span> `
+	lib.spanClass = (str,classes)=>{
+		return `<span class="${classes}">${str}</span>`
+	}
+    
     game.galgameMod();
     lib.init.init();
 }());

@@ -16,6 +16,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			NinomaeInanis:['female','holo',3,['mochu','fuyue'],['yingV']],
 			/**娜娜米 */
 			Nana7mi:['female','VirtuaReal',4,['xieqi','youhai'],['guoV']],
+			
+			/**海星宫汐 */
+			sea_HosimiyaSio: ['female','qun',5,['zhuhan','pobing'],],
 			/**海熊猫 */
 			sea_SasakiSaku:['female','nijisanji',4,['haishou','lishi']],
 			/**潜水夸 */
@@ -249,6 +252,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
+				ai:{
+					gainHujia:true
+				}
 			},
 			shinve:{
 				trigger:{player:'changeHp'},
@@ -345,6 +351,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 				ai:{
+					gainHujia:true,
 					nohujia:true,
 					skillTagFilter(player,tag,arg){
 						if(tag=='nohujia')	return player.countCards('h')>player.hp;
@@ -462,7 +469,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 2'
-					if(result.targets&&result.targets.length){
+					if(result.targets?.length){
 						event.targets = result.targets;
 						player.logSkill('fuyue',event.targets);
 						trigger.targets.addArray(event.targets);
@@ -523,17 +530,17 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					for (let i in list) {
 						let num = getNumbers(list, i, false);
-						for(let j = 0;j < num.length;j ++){
+						for(let j in num){
 							let sum = 0;
-							for (let k = 1; k < num[j].length; k++) {
-								sum += num[j][k];
+							for (let k = 1; k < j.length; k++) {
+								sum += j[k];
 							}
 							if(sum>0&&sum%7==0)	return true;
 						}
 					}
 					let sum = 0;
 					for (let i in list) {
-						sum += Number(list[k]);
+						sum += Number(i);
 					}
 					if(sum>0&&sum%7==0)	return true;
 					return false;
@@ -543,9 +550,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var list = get.libCard(function(card){
 							return card.ai&&card.ai.tag&&card.ai.tag.huajing&&card.ai.tag.huajing>0;
 						});
-						for(var i=0;i<list.length;i++){
-							if(get.type(list[i],'trick')=='trick') list[i]=['锦囊','',list[i]];
-							if(get.type(list[i],'trick')=='equip') list[i]=['装备','',list[i]];
+						for(let i=0;i<list.length;i++){
+							list[i]=[get.translation(get.type2(list[i])),'',list[i]];
 						}
 						list.push(['基本','','tao','ocean']);
 						list.push(['基本','','sha','ocean']);
@@ -591,7 +597,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							viewAs:{name:links[0][2],nature:links[0][3]},
 							onuse(result,player){
 								player.logSkill('xieqi');
-								if(result.targets&&result.targets.length==1) player.draw(result.cards.length);
+								if(result.targets?.length==1) player.draw(result.cards.length);
 							},
 						}
 					},
@@ -641,7 +647,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return get.attitude(player,target)/2;
 					});
 					'step 2'
-					if(result.targets&&result.targets.length){
+					if(result.targets?.length){
 						event.targets.addArray(result.targets);
 						player.line(result.targets,'ocean');
 						for(var i=0;i<event.targets.length;i++){
@@ -651,8 +657,65 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return false;
 					}
 				},
+				ai:{
+					gainHujia:true
+				}
 			},
 			//特典角色
+			//海企鹅
+			zhuhan:{
+				trigger:{player:'changeHujiaBegin'},
+				filter(event,player){
+					return event.num>=0;
+				},
+				forced:true,
+				lastDo:true,
+				content(){
+					trigger.num++;
+				},
+				group:'zhuhan_gainBy',
+				subSkill:{
+					gainBy:{
+						trigger:{global:'roundStart'},
+						forced:true,
+						filter(event,player){
+							return player.hujia<player.hp;
+						},
+						content(){
+							'step 0'
+							player.loseHp();
+							'step 1'
+							player.changeHujia();
+						}
+					},
+				},
+				ai:{
+					gainHujia:true
+				}
+			},
+			pobing:{
+				trigger:{source:'damageBegin2'},
+				filter(event,player){
+					return player.hujia>event.player?.hujia;
+				},
+				// check(event,player){
+				// 	return event.player.hp>player.hp&&get.attitude(player,event.player)<0;
+				// },
+				forced:true,
+				logTarget:'player',
+				content(){
+					'step 0'
+					event.target = trigger.player;
+					player.changeHujia(-player.hujia);
+					'step 1'
+					let num = 0;
+					if(trigger.nature)	num++;
+					if(event.target.hp>player.hp)	num++;
+					if(event.target.getHistory('changeHujia').length)	num++;
+					num>0 && (trigger.num+=num);
+				},
+			},
+			//海熊猫
 			haishou:{
 				audio:3,
 				enable:'chooseToUse',
@@ -687,6 +750,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
+				ai:{
+					gainHujia:true
+				}
 			},
 			lishi:{
 				audio:2,
@@ -700,6 +766,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw();
 				}
 			},
+			//海夸
 			jinchen:{
 				audio:2,
 				trigger:{player:'phaseUseEnd'},
@@ -734,7 +801,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return get.effect(target,{name:'sha',nature:'ocean'},player,player);
 					});
 					'step 1'
-					if(result.targets&&result.targets.length){
+					if(result.targets?.length){
 						player.logSkill('qianyong',result.targets);
 						player.useCard({name:'sha',nature:'ocean'},result.targets,false).card.qianyong=true;
 					}
@@ -789,7 +856,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				prepare:'give',
 				content(){
 					'step 0'
-					game.hasPlayer(function(cur){
+					game.hasPlayer(cur => {
 						if(cur.hasSkill('zhuiguang_chehai')&&cur.storage.zhuiguang_chehai==player)	cur.removeSkill('zhuiguang_chehai');
 					});
 					'step 1'
@@ -870,6 +937,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				}
 			},
 
+			//SP团长
 			qiming:{
 				audio:5,
 				global:'qiming_viewH',
@@ -879,7 +947,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						ai:{
 							viewHandcard:true,
 							skillTagFilter(player,tag,target){
-								if(!game.hasPlayer(function(cur){
+								if(!game.hasPlayer(cur => {
 										return cur.hasSkill('qiming');
 								})) return false;
 							},
@@ -1125,7 +1193,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return get.attitude(player,target);
 					});						
 					'step 4'
-					if(result.targets&&result.targets.length){
+					if(result.targets?.length){
 						player.logSkill('sp_guaisheng',result.targets[0]);
 						result.targets[0].draw();						
 					}
@@ -1140,6 +1208,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.changeHujia();
 					}					
 				},
+				ai:{
+					gainHujia:true
+				}
 			},
 			sp_guiliu:{
 				audio:5,
@@ -1244,9 +1315,18 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sea_emperor: `化鲸皇`,
 			HOLOEN: `holoEN`,
 		
+			sea_HosimiyaSio: `海·星宫汐`,
+			zhuhan: `筑寒`,
+			zhuhan_info: `锁定技 你的护甲获得量+1；轮次开始时，若你的护甲少于体力，你失去一点体力并获得等量护甲。`,
+			zhuhan_append:lib.figurer(`特性：叠甲`),
+			pobing: `破冰`,
+			pobing_info: `锁定技 你对护甲少于自己的角色造成伤害时，失去所有护甲，根据满足的项数，令此伤害等量增加：<br>
+			伤害为属性伤害；目标体力多于你；目标在当前回合获得了护甲。`,
+		
 			sea_SasakiSaku: `海·笹木咲`,
 			haishou: `煽动海兽`,
 			haishou_info: `每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。`,
+			haishoun_append:lib.figurer(`特性：叠甲`),
 			lishi: `幕下力士`,
 			lishi_info: `锁定技 你失去最后1点护甲时，摸一张牌。`,
 			
@@ -1269,17 +1349,19 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			nkfumo: `伏魔`,
 			nkfumo_info: `你使用牌指定其他角色为唯一目标时，你可以进行判定，若结果为黑色，将之效果改为【浪涌】。当你使用锦囊牌后，重置『忖度』。`,
 			chidu: `忖度`,
-			chidu_info: `当判定牌生效前，你可以打出一张颜色与结果不同的手牌替换之。每回合限一次。`,
+			chidu_info: `每回合限一次，当判定牌生效前，你可以打出一张颜色与结果不同的手牌替换之。`,
 			
 			ShirakamiHaruka: `白神遥`,
 			baoxiao: `豹笑`,
 			baoxiao_info: `锁定技 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。`,
 			quru: `取乳`,
 			quru_info: `出牌阶段，你可以将两张非基本牌当作海【杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。`,
+			quru_append:lib.figurer(`特性：叠甲`),
 		
 			KisaragiKoyori: `如月こより`,
 			shinve: `尸虐`,
 			shinve_info: `锁定技 你体力减少时，获得等量护甲。准备阶段，你失去所有护甲，摸等量的牌。`,
+			shinve_append:lib.figurer(`特性：叠甲`),
 			juzu: `举组`,
 			juzu_info: `<font color=#ed5>觉醒技</font> 手牌数多于你的角色对你造成伤害后，你增加1点体力上限并摸牌至体力上限，获得技能『海狗』。`,
 			haigou: `海狗`,
@@ -1288,6 +1370,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			GawrGura: `噶呜·古拉`,
 			lingqun: `领群`,
 			lingqun_info: `锁定技 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。`,
+			lingqun_append:lib.figurer(`特性：叠甲`),
 			yangliu: `洋流`,
 			yangliu_info: `当你使用能造成伤害的牌时，可以扣减1点护甲将此伤害改为海洋属性。然后你摸一张牌；或令之不可被响应。`,
 		
@@ -1303,6 +1386,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
 			youhai: `佑海`,
 			youhai_info: `你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲。（X为你已损失的体力值）`,
+			youhai_append:lib.figurer(`特性：叠甲`),
 		
 			sp_HisekiErio: `皇·绯赤艾利欧`,
 			qiming: `启明星辰`,
@@ -1315,8 +1399,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			sp_GawrGura: `皇·噶呜·古拉`,
 			sp_guaisheng: `海洋怪声`,
 			sp_guaisheng_info: `当一名角色造成海洋伤害时，你可选择以下任意项构成未执行过的组合以执行：1.令一名角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性。然后若你执行过所有的组合，获得1点护甲，重置此技能。`,
+			sp_guaisheng_append:lib.figurer(`特性：叠甲`),
 			sp_guiliu: `百川归流`,
-			sp_guiliu_info: `每回合限一次。当一张牌不因使用进入弃牌堆时，你可以展示任意同色的牌，将此牌的等量复制洗入牌堆。且若此牌牌面中有“氵”，你获得之。`,
+			sp_guiliu_info: `每回合限一次，当一张牌不因使用进入弃牌堆时，你可以展示任意同色的牌，将此牌的等量复制洗入牌堆。且若此牌牌面中有“氵”，你获得之。`,
 		
 		},
 	}
