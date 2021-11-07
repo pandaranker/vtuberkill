@@ -10962,6 +10962,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                 e.stopPropagation();
             },
             hoverpopped: function () {
+                
                 if (this._uiintro) {
                     return;
                 }
@@ -13046,7 +13047,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                 
                 if (_status.dragged) return;
                 _status.clicked = true;
-                if (this.classList.contains('player') && !this.name) {
+                if (this.classList.contains('player') && (!this.getModel || !this.getModel().name)) {
                     return;
                 }
                 if (this.parentNode == ui.historybar) {

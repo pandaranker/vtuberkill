@@ -2988,7 +2988,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
          */
         nodeintro: function (node, simple, evt) {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
-            if (node.classList.contains('player') && !node.name) {
+            if (node.classList.contains('player') && (!node.getModel || !node.getModel().name)) {
                 return uiintro;
             }
             var i, translation, intro, str;
@@ -3347,7 +3347,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                 if (lib.config.show_favourite && lib.character[node.name] && game.players.contains(node) &&
                     (!modepack || !modepack[node.name]) && (!simple || get.is.phoneLayout())) {
                     var addFavourite = ui.create.div('.text.center.pointerdiv');
-                    addFavourite.link = node.link;debugger;
+                    addFavourite.link = node.link;
                     if (lib.config.favouriteCharacter.contains(node.name)) {
                         addFavourite.innerHTML = '移除收藏';
                     }
@@ -3522,7 +3522,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                     }
                 }
                 else {
-                    debugger;
+                    
                     var stint = get.storageintro(info.content, player.storage[node.skill], player, uiintro, node.skill);
                     if (stint) {
                         if (stint[0] == '@') {

@@ -6672,12 +6672,13 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
         /**
          * 设置(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
          * @name lib.setIntro
-         * @param {!HTMLDivElement} node 要弹窗的节点
+         * @param {(HTMLDivElement|PlayerModel)} node 要弹窗的节点
          * @param {?function} func 用于自定义弹窗的回调函数
          * @param {?boolean} left 如果为true，点击事件也能触发弹窗
          * @see {@link get.nodeintro}
          */
         setIntro: function (node, func, left) {
+            if(node instanceof PlayerModel) {node = node.element;}
             if (lib.config.touchscreen) {
                 if (left) {
                     node.listen(ui.click.touchintro);
