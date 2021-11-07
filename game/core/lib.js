@@ -1,4 +1,4 @@
-moduleManager.define(['view/PlayerControl'], function(PlayerControl){
+moduleManager.define(['view/PlayerModel'], function(PlayerModel){
     /**
      * 包(游戏牌, 武将牌, 拓展)管理相关
      * 游戏入口{@link lib.init.init}
@@ -8960,7 +8960,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
-                        mixin(PlayerControl, mode[lib.config.mode].element.player);
+                        mixin(PlayerModel, mode[lib.config.mode].element.player);
                         for (j in mode[lib.config.mode].element[i]) {
                             if (j == 'init') {
                                 if (!lib.element[i].inits) lib.element[i].inits = [];

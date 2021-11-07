@@ -1,11 +1,11 @@
 moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy) {
     /**
      * Player类
-     * @class PlayerControl
+     * @class PlayerModel
      * @extends HTMLDivElementProxy
      * @global
      */
-    class PlayerControl extends HTMLDivElementProxy {
+    class PlayerModel extends HTMLDivElementProxy {
         /**
          * 创建Player
          * @param {HTMLElement} parent 父元素
@@ -22,7 +22,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
              * 回合计数，初始为0，每回合开始则加1
              * @name phaseNumber
              * @type {!number}
-             * @memberof PlayerControl
+             * @memberof PlayerModel
              * @instance
              */
             node.phaseNumber = 0;
@@ -30,7 +30,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
              * 事件跳过列表，如果一个事件e的事件名在该列表中存在X个，则接下来的X个事件e会被直接跳过，不执行；每跳过一个事件，列表中就会相应移除一个事件名
              * @name skipList
              * @type {!Array<string>}
-             * @memberof PlayerControl
+             * @memberof PlayerModel
              * @instance
              */
             node.skipList = [];
@@ -38,7 +38,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
              * 技能列表
              * @name skills
              * @type {!Array<any>}
-             * @memberof PlayerControl
+             * @memberof PlayerModel
              * @instance
              */
             node.skills = [];
@@ -46,7 +46,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
              * ??
              * @name initedSkills
              * @type {!Array<any>}
-             * @memberof PlayerControl
+             * @memberof PlayerModel
              * @instance
              */
             node.initedSkills = [];
@@ -72,7 +72,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
             /**
              * 角色的子节点
              * @name node
-             * @memberof PlayerControl
+             * @memberof PlayerModel
              * @instance
              * @property {HTMLDivElement} avatar (主将)头像
              * @property {HTMLDivElement} avatar2 副将头像
@@ -136,7 +136,7 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
                 node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickCharacter);
                 node.node.identity.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickIdentity);
                 if (lib.config.touchscreen) {
-                    node.addEventListener('touchstart', ui.click.playertouchstart);
+                    node.addEventListener('touchstart', ui.click.playertouchstart);//[never used]
                 }
             }
             else node.noclick = true;
@@ -144,6 +144,9 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
             this.element.onClickAvatar2 = this.onClickAvatar2;
             this.element.onClickCharacter = this.onClickCharacter;
             this.element.onClickIdentity = this.onClickIdentity;
+            this.element.getModel = ()=>{
+                return this;
+            };
         }
         /**
          * 点击(主)头像时
@@ -153,13 +156,13 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
             if (this.isUnseen(0)) return;
             if (!lib.character[this.name]) return;
             if (!ui.menuContainer) return;
-            var avatar = this.node.avatar;
+            // var avatar = this.node.avatar;
             var player = this;
             if (!game.players.contains(player) && !game.dead.contains(player)) return;
             if (!this._doubleClicking) {
                 this._doubleClicking = true;
-                setTimeout(function () {
-                    avatar._doubleClicking = false;
+                setTimeout(()=>{
+                    this._doubleClicking = false;//[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
                 }, 500);
                 return;
             }
@@ -9119,5 +9122,5 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
         }
 
     }
-    return PlayerControl;
+    return PlayerModel;
 });

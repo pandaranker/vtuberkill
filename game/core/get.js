@@ -1,4 +1,4 @@
-moduleManager.define(['view/PlayerControl'], function(PlayerControl){
+moduleManager.define(['view/PlayerModel'], function(PlayerModel){
 
     /**
      * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
@@ -1771,7 +1771,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
                 if (obj.classList.contains('player')) return 'player';//[to be deprecated]
                 if (obj.classList.contains('dialog')) return 'dialog';
             }
-            if(obj instanceof PlayerControl) return 'player';
+            if(obj instanceof PlayerModel) return 'player';
             if (get.is.object(obj)) {
                 if (obj.isMine == lib.element.event.isMine) return 'event';
             }
@@ -3011,6 +3011,8 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
             else if (node.classList.contains('player') || node.linkplayer) {
                 if (node.linkplayer) {
                     node = node.link;
+                }else{
+                    node = node.getModel();//get player model
                 }
                 var capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
@@ -3345,7 +3347,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
                 if (lib.config.show_favourite && lib.character[node.name] && game.players.contains(node) &&
                     (!modepack || !modepack[node.name]) && (!simple || get.is.phoneLayout())) {
                     var addFavourite = ui.create.div('.text.center.pointerdiv');
-                    addFavourite.link = node.link;
+                    addFavourite.link = node.link;debugger;
                     if (lib.config.favouriteCharacter.contains(node.name)) {
                         addFavourite.innerHTML = '移除收藏';
                     }
@@ -3476,7 +3478,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
             else if (node.classList.contains('mark') && node.info &&
                 node.parentNode && node.parentNode.parentNode && node.parentNode.parentNode.classList.contains('player')) {
                 var info = node.info;
-                var player = node.parentNode.parentNode;
+                var player = node.parentNode.parentNode.getModel();//get player model
                 if (info.name) {
                     if (typeof info.name == 'function') {
                         var named = info.name(player.storage[node.skill], player);
@@ -3520,6 +3522,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
                     }
                 }
                 else {
+                    debugger;
                     var stint = get.storageintro(info.content, player.storage[node.skill], player, uiintro, node.skill);
                     if (stint) {
                         if (stint[0] == '@') {
