@@ -1,4 +1,4 @@
-moduleManager.define(['view/PlayerControl'], function(PlayerControl){
+moduleManager.define(['view/PlayerModel'], function(PlayerModel){
     /**
      * 游戏UI库
      * @namespace
@@ -9474,7 +9474,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
              */
             player: function (position, noclick) {
                 //[todo player] position 
-                return new PlayerControl(position, noclick);
+                return new PlayerModel(position, noclick);
             },
             connectPlayers: function (ip) {
                 game.connectPlayers = [];
@@ -13043,6 +13043,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
              * @returns {(undefined|false|HTMLDivElement)}
              */
             intro: function (e) {
+                
                 if (_status.dragged) return;
                 _status.clicked = true;
                 if (this.classList.contains('player') && !this.name) {
@@ -13492,6 +13493,7 @@ moduleManager.define(['view/PlayerControl'], function(PlayerControl){
             //     }
             // },
             rightplayer: function (e) {
+                
                 if (this._nopup) return false;
                 if (_status.clickedplayer) {
                     return false;
