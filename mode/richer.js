@@ -290,7 +290,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				cur.player.group = curGroup;
 				cur.player.storage.ownedBuilding = [];
 				game.players.push(cur.player);
-				ui.chess.appendChild(cur.player);
+				ui.chess.appendChild(cur.player.element);//[todo player]
 				if(event.video){
 					ui.placeChess(cur.player,curlistmap.shift());
 				}
@@ -1227,6 +1227,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return node;
 				},
 				$phaseJudge:function(card){
+                    
 					game.addVideo('phaseJudge',this,get.cardInfo(card));
 					var clone=card.copy('thrown',this.parentNode).animate('judgestart');
 					var player=this;
@@ -1242,6 +1243,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					],{opacity:0.5,dashed:true},true);
 				},
 				$randomMove:function(node,length,rand){
+                    
 					if(!this.node.chessthrown){
 						this.node.chessthrown=[];
 					}
@@ -1773,7 +1775,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					// 	},300);
 					// }
 				}
-				ui.chess.appendChild(player);
+				ui.chess.appendChild(player.element);//[todo player]
 				if(_status.video||(pos&&!lib.posmap[pos])){
 					ui.placeChess(player,pos);
 				}
@@ -1847,6 +1849,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					pos=y*ui.chesswidth+x;
 				}
 				if(!lib.posmap[pos]){
+                    //[todo player] todo
 					var str = '.player.minskin.obstacle';
 					if(time==='iron')	str+='.iO1';
 					else if(time==='normal'){	str+='.hO';str+='.hO'+['1','2','3'].randomGet();}
@@ -4944,7 +4947,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						this.link.chessFocus();
 						if(this.link.classList.contains('selectable')||
 							this.link.classList.contains('selected')){
-							ui.click.target.call(this.link,e);
+							ui.click.target.call(this.link,e);//[todo player]
 							ui.click.window.call(ui.window,e);
 						}
 						e.stopPropagation();

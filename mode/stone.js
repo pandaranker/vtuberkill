@@ -934,7 +934,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									get.deck(player,_status.deck.shift());
 								}
 								game.players.push(player);
-								ui.arena.appendChild(player);
+								ui.arena.appendChild(player.element);//[todo player]
 
 								game.addVideo('stoneSwap',null,{
 									name:player.name,
@@ -994,7 +994,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 								game.players.push(player);
 								game.enemy=player;
-								ui.arena.appendChild(player);
+								ui.arena.appendChild(player.element);//[todo player]
 
 								game.addVideo('stoneSwap',null,{
 									name:player.name,
@@ -1605,7 +1605,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										currentNode=ui.create.player().init(names[0]);
 									}
 									currentNode.classList.add('stone_deck');
-									ui.arena.appendChild(currentNode);
+									ui.arena.appendChild(currentNode.element);//[todo player]
 									ui.refresh(currentNode);
 									currentNode.classList.add('shown');
 								}
