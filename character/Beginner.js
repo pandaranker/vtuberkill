@@ -167,7 +167,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return -1;
 						}
 						var players=game.filterPlayer();
-						for(let i of player){
+						for(let i of players){//[bug] player is not iterable.[fix] Use 'players' instead of 'player'.
 							if(!i.isTurnedOver()&&
 								!i.hasJudge('lebu')&&
 								get.attitude(player,i)>=3&&
@@ -5132,6 +5132,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							'step 0'
 							player.storage.shengfu.juedou = true;
 							player.syncStorage('shengfu');
+                            //[bug] target为undefined
 							event.juedouTarget = target;
 							player.chooseToCompare(event.juedouTarget);
 							'step 1'

@@ -3819,6 +3819,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ctx.beginPath();
 
 				var startx,endx,pos;
+                
 				var endy=game.me.offsetHeight/2+game.me.offsetTop+ui.arena.offsetTop;
 				var starty=ui.me.offsetTop+ui.arena.offsetTop+ui.me.offsetHeight/2;
 				if(game.me.offsetLeft+game.me.offsetWidth/2<=ui.arena.offsetWidth/2){

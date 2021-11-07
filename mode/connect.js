@@ -36,7 +36,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				node.style.whiteSpace='nowrap';
 				node.innerHTML=lib.config.last_ip||lib.hallURL;
 				node.contentEditable=true;
-				node.style.webkitUserSelect='text';
+				node.style.webkitUserSelect='text';//[deprecated]
 				node.style.textAlign='center';
 
 				var connect=function(e){

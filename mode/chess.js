@@ -227,7 +227,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				friend.identity='friend';
 				friend.node.identity.dataset.color=get.translation(side+'Color');
 				game.players.push(friend);
-				ui.chess.appendChild(friend);
+				ui.chess.appendChild(friend.element);//[todo player]
 				if(event.video){
 					ui.placeChess(friend,mylistmap.shift());
 				}
@@ -252,7 +252,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				enemy.identity='enemy';
 				enemy.node.identity.dataset.color=get.translation(!side+'Color');
 				game.players.push(enemy);
-				ui.chess.appendChild(enemy);
+				ui.chess.appendChild(enemy.element);//[todo player]
 				if(event.video){
 					ui.placeChess(enemy,enemylistmap.shift());
 				}
@@ -1081,6 +1081,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return node;
 				},
 				$phaseJudge:function(card){
+                    
 					game.addVideo('phaseJudge',this,get.cardInfo(card));
 					var clone=card.copy('thrown',this.parentNode).animate('judgestart');
 					var player=this;
@@ -1096,6 +1097,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					],{opacity:0.5,dashed:true},true);
 				},
 				$randomMove:function(node,length,rand){
+                    
 					if(!this.node.chessthrown){
 						this.node.chessthrown=[];
 					}
@@ -5770,7 +5772,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						this.link.chessFocus();
 						if(this.link.classList.contains('selectable')||
 							this.link.classList.contains('selected')){
-							ui.click.target.call(this.link,e);
+							ui.click.target.call(this.link,e);//[todo player]
 							ui.click.window.call(ui.window,e);
 						}
 						e.stopPropagation();

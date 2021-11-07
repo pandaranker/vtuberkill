@@ -260,7 +260,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				else{
 					player.dataset.position=i+1;
 				}
-				ui.arena.appendChild(player);
+				ui.arena.appendChild(player.element);//[todo player]
 			}
 			if(result.boss){
 				game.players.unshift(boss);
@@ -302,7 +302,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.dataset.position=num-3;
 						}
 					}
-					ui.arena.appendChild(player);
+					ui.arena.appendChild(player.element);//[todo player]
 					if(boss.bossinginfo){
 						var rect=player.getBoundingClientRect();
 						player.style.transform='translate('+(boss.bossinginfo[0]-rect.left-rect.width/2)+'px,'+(boss.bossinginfo[1]-rect.top-rect.height/2)+'px) scale(1.1)';
@@ -400,7 +400,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ui.single_swap.style.display='none';
 			}
 
-			ui.arena.appendChild(boss);
+			ui.arena.appendChild(boss.element);//[todo player]
 			if(boss.bossinginfo){
 				var rect=boss.getBoundingClientRect();
 				boss.style.transform='translate('+(boss.bossinginfo[0]-rect.left-rect.width/2)+'px,'+(boss.bossinginfo[1]-rect.top-rect.height/2)+'px) scale(1.1)';
@@ -1103,7 +1103,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					boss.setIdentity('zhong');
 					boss.identity='zhong';
 				}
-				ui.arena.appendChild(boss);
+				ui.arena.appendChild(boss.element);//[todo player]
 				boss.directgain(get.cards(4));
 			},
 			checkResult:function(){
