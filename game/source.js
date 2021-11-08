@@ -75,6 +75,7 @@ window.noname_source_list=[
 	'game/core/game.js',
 	'game/core/get.js',
 	'game/core/lib.js',
+    'game/core/ui.js',
 	'game/view/HTMLDivElementProxy.js',
 	'game/view/PlayerModel.js',
 	
