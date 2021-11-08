@@ -1,10 +1,11 @@
-moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
+moduleManager.define(['view/PlayerModel'], function(PlayerModel){
+
     /**
      * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
      * @namespace
      * @global
      */
-    var get = /**@lends get */ {
+     var get = /**@lends get */ {
         /**
          * 返回联机名称
          * @returns {!number} 默认为“无名玩家”
@@ -16,8 +17,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         sourceCharacter: function (str) {
             if (str) {
                 for (var i in lib.characterReplace) {
-                    if (lib.characterReplace[i].contains(str))
-                        return i;
+                    if (lib.characterReplace[i].contains(str)) return i;
                 }
             }
             return str;
@@ -29,10 +29,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {!boolean}
          */
         isLuckyStar: function (player) {
-            if (player && player.hasSkillTag('luckyStar'))
-                return true;
-            if (_status.connectMode)
-                return false;
+            if (player && player.hasSkillTag('luckyStar')) return true;
+            if (_status.connectMode) return false;
             return (!player || player == game.me || player.isUnderControl()) && lib.config.lucky_star == true;
         },
         /**
@@ -41,8 +39,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {!number}
          */
         infoHp: function (hp) {
-            if (typeof hp == 'number')
-                return hp;
+            if (typeof hp == 'number') return hp;
             else if (typeof hp == 'string' && hp.indexOf('/') != -1) {
                 return parseInt(hp.slice(0, hp.indexOf('/')));
             }
@@ -54,8 +51,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {!number}
          */
         infoMaxHp: function (hp) {
-            if (typeof hp == 'number')
-                return hp;
+            if (typeof hp == 'number') return hp;
             else if (typeof hp == 'string' && hp.indexOf('/') != -1) {
                 return parseInt(hp.slice(hp.indexOf('/') + 1));
             }
@@ -72,7 +68,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     for (var i in lib.characterPack) {
                         if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
                             if (current in lib.characterPack[i]) {
-                                return true;
+                                return true
                             }
                         }
                     }
@@ -82,15 +78,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         'Elu', 'SuzukaUtako', 'MononobeAlice', 'SakuraRitsuki', 'YagamiKaruta',
                         'Bella', 'Carol', 'Azusa', 'Yousa', 'AkiRinco', 'Lovely', 'Pudding', 'jike', 'Bacharu', 'SephiraSu', 'Reine', 'IsekaiJoucho', 'Rim', 'Harusaruhi',
                         'Bafuko', 'Hiiro', 'Eilene', 'YaotomeNoe', 'Niuniuzi', 'Zaodaoji'
-                    ].contains(current))
-                        return true;
+                    ].contains(current)) return true;
                     return false;
                 }
                 if (current in lib.card) {
                     for (var i in lib.cardPack) {
                         if (!['standard', 'extra'].contains(i)) {
                             if (lib.cardPack[i].contains(current)) {
-                                return true;
+                                return true
                             }
                         }
                     }
@@ -99,11 +94,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             },
             //检查卡牌是否符合要求的快捷方法(只要求满足至少一种条件，无条件时默认不满足)
             filterCardBy: function (card, arg) {
-                if (!card || !arg)
-                    return false;
+                if (!card || !arg) return false;
                 if (typeof arg == 'string') {
-                    if (arg == get.name(card))
-                        return true;
+                    if (arg == get.name(card)) return true;
                 }
                 else if (typeof arg == 'object') {
                     for (var x in arg) {
@@ -129,11 +122,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
              * 判断技能是否被封锁
              */
             blocked: function (skill, player) {
-                if (!player.storage.skill_blocker || !player.storage.skill_blocker.length)
-                    return false;
+                if (!player.storage.skill_blocker || !player.storage.skill_blocker.length) return false;
                 for (var i of player.storage.skill_blocker) {
-                    if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player))
-                        return true;
+                    if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player)) return true;
                 }
                 return false;
             },
@@ -141,12 +132,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
              * 判断角色是否为多势力
              */
             double: function (name, array) {
-                if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0)
-                    return false;
+                if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0) return false;
                 for (var i of lib.character[name][4]) {
                     if (i.indexOf('doublegroup:') == 0) {
-                        if (!array)
-                            return true;
+                        if (!array) return true;
                         return i.split(':').slice(1);
                     }
                 }
@@ -205,11 +194,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return false;
             },
             banWords: function (str) {
-                if (get.is.emoji(str))
-                    return true;
+                if (get.is.emoji(str)) return true;
                 for (var i of window.bannedKeyWords) {
-                    if (str.indexOf(i) != -1)
-                        return true;
+                    if (str.indexOf(i) != -1) return true;
                 }
                 return false;
             },
@@ -222,10 +209,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             },
             freePosition: function (cards) {
                 for (var i = 0; i < cards.length; i++) {
-                    if (!cards[i].hasPosition)
-                        return false;
-                    if (cards[i].hasPosition())
-                        return false;
+                    if (!cards[i].hasPosition) return false;
+                    if (cards[i].hasPosition()) return false;
                 }
                 return true;
             },
@@ -243,24 +228,18 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     phonelayout: lib.config.phonelayout
                 };
                 configs[name] = item;
-                if (!configs.phonelayout)
-                    return false;
+                if (!configs.phonelayout) return false;
                 if (configs.show_round_menu && menus.contains(configs.round_menu_func)) {
                     return false;
                 }
                 if (configs.touchscreen) {
-                    if (menus.contains(configs.swipe_up))
-                        return false;
-                    if (menus.contains(configs.swipe_down))
-                        return false;
-                    if (menus.contains(configs.swipe_left))
-                        return false;
-                    if (menus.contains(configs.swipe_right))
-                        return false;
+                    if (menus.contains(configs.swipe_up)) return false;
+                    if (menus.contains(configs.swipe_down)) return false;
+                    if (menus.contains(configs.swipe_left)) return false;
+                    if (menus.contains(configs.swipe_right)) return false;
                 }
                 else {
-                    if (configs.right_click == 'config')
-                        return false;
+                    if (configs.right_click == 'config') return false;
                 }
                 if (name) {
                     setTimeout(function () {
@@ -276,8 +255,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             },
             node: function (obj) {
                 var str = Object.prototype.toString.call(obj);
-                if (str && str.indexOf('[object HTML'))
-                    return true;
+                if (str && str.indexOf('[object HTML')) return true;
                 return false;
             },
             div: function (obj) {
@@ -293,16 +271,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return Object.prototype.toString.call(obj) === '[object Object]';
             },
             singleSelect: function (func) {
-                if (typeof func == 'function')
-                    return false;
+                if (typeof func == 'function') return false;
                 var select = get.select(func);
                 return select[0] == 1 && select[1] == 1;
             },
             jun: function (name) {
                 if (get.mode() == 'guozhan') {
                     if (name && typeof name == 'object') {
-                        if (name.isUnseen && name.isUnseen(0))
-                            return false;
+                        if (name.isUnseen && name.isUnseen(0)) return false;
                         name = name.name1;
                     }
                     if (typeof name == 'string' && name.indexOf('gz_jun_') == 0) {
@@ -324,13 +300,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return (game.layout == 'mobile' || game.layout == 'long') && !game.chess && player.dataset.position == 0;
             },
             newLayout: function () {
-                if (game.layout != 'default')
-                    return true;
+                if (game.layout != 'default') return true;
                 return false;
             },
             phoneLayout: function () {
-                if (!lib.config.phonelayout)
-                    return false;
+                if (!lib.config.phonelayout) return false;
                 return (game.layout == 'mobile' || game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova');
             },
             singleHandcard: function () {
@@ -340,21 +314,17 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return false;
             },
             linked2: function (player) {
-                if (game.chess)
-                    return true;
-                if (lib.config.link_style2 != 'rotate')
-                    return true;
+                if (game.chess) return true;
+                if (lib.config.link_style2 != 'rotate') return true;
                 // if(game.chess) return false;
-                if (game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova')
-                    return true;
+                if (game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova') return true;
                 if (player.dataset.position == '0') {
                     return ui.arena.classList.contains('oblongcard');
                 }
                 return false;
             },
             empty: function (obj) {
-                for (var i in obj)
-                    return false;
+                for (var i in obj) return false;
                 return true;
             },
             pos: function (str) {
@@ -365,16 +335,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
              */
             locked: function (skill, player) {
                 var info = lib.skill[skill];
-                if (typeof info.locked == 'function')
-                    return info.locked(skill, player);
-                if (info.locked == false)
-                    return false;
-                if (info.trigger && info.forced)
-                    return true;
-                if (info.mod)
-                    return true;
-                if (info.locked)
-                    return true;
+                if (typeof info.locked == 'function') return info.locked(skill, player);
+                if (info.locked == false) return false;
+                if (info.trigger && info.forced) return true;
+                if (info.mod) return true;
+                if (info.locked) return true;
                 return false;
             },
         },
@@ -391,14 +356,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             var list = [];
             var card = false;
-            if (typeof num != 'number')
-                num = 1;
-            if (num == 0) {
-                card = true;
-                num = 1;
-            }
-            if (num < 0)
-                num = 1;
+            if (typeof num != 'number') num = 1;
+            if (num == 0) { card = true; num = 1; }
+            if (num < 0) num = 1;
             while (num--) {
                 if (ui.cardPile.hasChildNodes() == false) {
                     if (_status.maxShuffle != undefined) {
@@ -414,8 +374,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         _status.maxShuffle--;
                     }
                     game.shuffleNumber++;
-                    if (_status.event.trigger)
-                        _status.event.trigger('washCard');
+                    if (_status.event.trigger) _status.event.trigger('washCard');
                     var cards = [], i;
                     for (var i = 0; i < lib.onwash.length; i++) {
                         if (lib.onwash[i]() == 'remove') {
@@ -448,8 +407,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 list.push(cardx);
             }
             game.updateRoundNumber();
-            if (card)
-                return list[0];
+            if (card) return list[0];
             return list;
         },
         //TODO
@@ -480,24 +438,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (str[0] == '#') {
                 var color;
                 switch (str[1]) {
-                    case 'r':
-                        color = 'fire';
-                        break;
-                    case 'p':
-                        color = 'legend';
-                        break;
-                    case 'b':
-                        color = 'blue';
-                        break;
-                    case 'g':
-                        color = 'green';
-                        break;
-                    case 'y':
-                        color = 'yellow';
-                        break;
-                    case 'i':
-                        color = 'ice';
-                        break;
+                    case 'r': color = 'fire'; break;
+                    case 'p': color = 'legend'; break;
+                    case 'b': color = 'blue'; break;
+                    case 'g': color = 'green'; break;
+                    case 'y': color = 'yellow'; break;
+                    case 'i': color = 'ice'; break;
                     default: return str.slice(2);
                 }
                 return '<span class="' + color + 'text ' + color + 'auto">' + str.slice(2) + '</span>';
@@ -511,10 +457,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             else {
                 if (str.indexOf('###') == 0) {
                     var prompts = str.slice(3).split('###');
-                    if (prompts[0])
-                        next.set('prompt', prompts[0]);
-                    if (prompts[1])
-                        next.set('prompt2', prompts[1]);
+                    if (prompts[0]) next.set('prompt', prompts[0]);
+                    if (prompts[1]) next.set('prompt2', prompts[1]);
                 }
                 else {
                     next.set('prompt', str);
@@ -571,10 +515,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         storage: card.storage,
                         cards: card.cards,
                     };
-                    if (get.itemtype(cards) == 'cards' && !card.cards)
-                        next.cards = cards.slice(0);
-                    else if (get.itemtype(card) == 'card')
-                        next.cards = [card];
+                    if (get.itemtype(cards) == 'cards' && !card.cards) next.cards = cards.slice(0);
+                    else if (get.itemtype(card) == 'card') next.cards = [card];
                     return next;
                 }
                 else if (get.is.object(card) && get.itemtype(cards) == 'cards' && !card.cards) {
@@ -590,7 +532,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 var key = func;
                 func = function (item) {
                     return item[key];
-                };
+                }
             }
             list.sort(function (a, b) {
                 return func(b) - func(a);
@@ -617,7 +559,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 var key = func;
                 func = function (item) {
                     return item[key];
-                };
+                }
             }
             list.sort(function (a, b) {
                 return func(a) - func(b);
@@ -657,8 +599,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return null;
         },
         characterIntro: function (name) {
-            if (lib.characterIntro[name])
-                return lib.characterIntro[name];
+            if (lib.characterIntro[name]) return lib.characterIntro[name];
             var tags = get.character(name, 4);
             if (tags) {
                 for (var i = 0; i < tags.length; i++) {
@@ -669,22 +610,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             if (name.indexOf('gz_') == 0) {
                 name = name.slice(3);
-                if (lib.characterIntro[name])
-                    return lib.characterIntro[name];
+                if (lib.characterIntro[name]) return lib.characterIntro[name];
             }
             if (name.indexOf('_') != -1) {
                 name = name.slice(name.indexOf('_') + 1);
             }
-            if (lib.characterIntro[name])
-                return lib.characterIntro[name];
+            if (lib.characterIntro[name]) return lib.characterIntro[name];
             // return '暂无武将介绍';
             return '';
         },
         characterTag: function (name) {
             var str = '';
             var tags = get.character(name, 4);
-            if (!tags)
-                return str;
+            if (!tags) return str;
             if (tags) {
                 for (var i = 0; i < tags.length; i++) {
                     if (tags[i].indexOf('des:') == 0) {
@@ -692,8 +630,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     }
                     var str0 = lib.translate[tags[i] + '_tag'] || lib.translate[tags[i]];
                     if (str0) {
-                        if (!str.length)
-                            str += '标签:';
+                        if (!str.length) str += '标签:';
                         str += ' ';
                         str += str0;
                     }
@@ -703,8 +640,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         groupnature: function (group, method) {
             var nature = lib.groupnature[group];
-            if (!nature)
-                return '';
+            if (!nature) return '';
             if (method == 'raw') {
                 return nature;
             }
@@ -716,10 +652,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number} (-1|0|1)
          */
         sgn: function (num) {
-            if (num > 0)
-                return 1;
-            if (num < 0)
-                return -1;
+            if (num > 0) return 1;
+            if (num < 0) return -1;
             return 0;
         },
         rand: function (num, num2) {
@@ -757,10 +691,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
         },
         delayx: function (num, max) {
-            if (typeof num != 'number')
-                num = 1;
-            if (typeof max != 'number')
-                max = Infinity;
+            if (typeof num != 'number') num = 1;
+            if (typeof max != 'number') max = Infinity;
             switch (lib.config.game_speed) {
                 case 'vslow': return Math.min(max, 2.5 * num);
                 case 'slow': return Math.min(max, 1.5 * num);
@@ -775,7 +707,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (target) {
                 var str = get.translation(target);
                 if (target == player) {
-                    str += '（你）';
+                    str += '（你）'
                 }
                 return '是否对' + str + '发动『' + get.skillTranslation(skill, player) + '』？';
             }
@@ -785,8 +717,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         prompt2: function (skill, target, player) {
             var str = get.prompt.apply(this, arguments);
-            if (!lib.translate[skill + '_info'] && !lib.dynamicTranslate[skill])
-                return str;
+            if (!lib.translate[skill + '_info'] && !lib.dynamicTranslate[skill]) return str;
             return '###' + str + '###' + get.skillInfoTranslation(skill, player);
         },
         url: function (master) {
@@ -811,7 +742,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         playerNumber: function () {
             var num;
             if (_status.brawl && _status.brawl.playerNumber) {
-                num = _status.brawl.playerNumber;
+                num = _status.brawl.playerNumber
             }
             else {
                 num = get.config('player_number');
@@ -821,8 +752,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         benchmark: function (func1, func2, iteration, arg) {
             var tic, toc;
             var key1, key2;
-            if (!arg)
-                arg = [];
+            if (!arg) arg = [];
             if (Array.isArray(func2)) {
                 key1 = func2[0];
                 key2 = func2[1];
@@ -963,8 +893,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             var list = [];
             if (filter == 'trick') {
                 for (var i = 0; i < lib.inpile.length; i++) {
-                    if (get.type(lib.inpile[i], 'trick') == type)
-                        list.push(lib.inpile[i]);
+                    if (get.type(lib.inpile[i], 'trick') == type) list.push(lib.inpile[i]);
                 }
             }
             else {
@@ -975,15 +904,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         }
                     }
                     else {
-                        if (typeof filter == 'function' && !filter(lib.inpile[i]))
-                            continue;
+                        if (typeof filter == 'function' && !filter(lib.inpile[i])) continue;
                         if (type.indexOf('equip') == 0 && type.length == 6) {
-                            if (get.subtype(lib.inpile[i]) == type)
-                                list.push(lib.inpile[i]);
+                            if (get.subtype(lib.inpile[i]) == type) list.push(lib.inpile[i]);
                         }
                         else {
-                            if (get.type(lib.inpile[i]) == type)
-                                list.push(lib.inpile[i]);
+                            if (get.type(lib.inpile[i]) == type) list.push(lib.inpile[i]);
                         }
                     }
                 }
@@ -996,26 +922,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         typeCard: function (type, filter) {
             var list = [];
             for (var i in lib.card) {
-                if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false)
-                    continue;
+                if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false) continue;
                 // if(lib.card[i].vanish||lib.card[i].destroy) continue;
-                if (lib.card[i].destroy)
-                    continue;
-                if (typeof filter == 'function' && !filter(i))
-                    continue;
-                if (lib.config.bannedcards.contains(i))
-                    continue;
-                if (!lib.translate[i + '_info'])
-                    continue;
+                if (lib.card[i].destroy) continue;
+                if (typeof filter == 'function' && !filter(i)) continue;
+                if (lib.config.bannedcards.contains(i)) continue;
+                if (!lib.translate[i + '_info']) continue;
                 if ((type.indexOf('equip') == 0 && type.length == 6) ||
                     (type.indexOf('hslingjian') == 0 && type.length == 11) ||
                     (type.indexOf('spell_') == 0)) {
-                    if (get.subtype(i) == type)
-                        list.push(i);
+                    if (get.subtype(i) == type) list.push(i);
                 }
                 else {
-                    if (get.type(i) == type)
-                        list.push(i);
+                    if (get.type(i) == type) list.push(i);
                 }
             }
             return list;
@@ -1023,15 +942,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         libCard: function (filter) {
             var list = [];
             for (var i in lib.card) {
-                if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false)
-                    continue;
+                if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false) continue;
                 // if(lib.card[i].vanish||lib.card[i].destroy) continue;
-                if (lib.card[i].destroy)
-                    continue;
-                if (lib.config.bannedcards.contains(i))
-                    continue;
-                if (!lib.translate[i + '_info'])
-                    continue;
+                if (lib.card[i].destroy) continue;
+                if (lib.config.bannedcards.contains(i)) continue;
+                if (!lib.translate[i + '_info']) continue;
                 if (filter(lib.card[i], i)) {
                     list.push(i);
                 }
@@ -1039,8 +954,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return list;
         },
         ip: function () {
-            if (!require)
-                return '';
+            if (!require) return '';
             var interfaces = require('os').networkInterfaces();
             for (var devName in interfaces) {
                 var iface = interfaces[devName];
@@ -1062,8 +976,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     default: return '休闲' + (config.double_character ? '双将' : '') + '斗地主';
                 }
             }
-            if (config.mode == 'longlaoguan')
-                return '龙牢关';
+            if (config.mode == 'longlaoguan') return '龙牢关';
             if (config.mode == 'versus') {
                 switch (config.versus_mode) {
                     case '1v1': return '单人对决';
@@ -1108,19 +1021,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             for (var i = 0; i < lib.configOL.characterPack.length; i++) {
                 var pack = lib.characterPack[lib.configOL.characterPack[i]];
                 for (var j in pack) {
-                    if (typeof func == 'function' && func(j))
-                        continue;
-                    if (lib.connectBanned.contains(j))
-                        continue;
-                    if (lib.configOL.protect_beginner && get.is.banForBeginner(i))
-                        return true;
-                    if (lib.character[j])
-                        libCharacter[j] = pack[j];
+                    if (typeof func == 'function' && func(j)) continue;
+                    if (lib.connectBanned.contains(j)) continue;
+                    if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
+                    if (lib.character[j]) libCharacter[j] = pack[j];
                 }
             }
             for (i in libCharacter) {
-                if (lib.filter.characterDisabled(i, libCharacter))
-                    continue;
+                if (lib.filter.characterDisabled(i, libCharacter)) continue;
                 list.push(i);
             }
             return list;
@@ -1182,7 +1090,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     disabledSkills: lib.playerOL[i].disabledSkills,
                     tempSkills: lib.playerOL[i].tempSkills,
                     storage: lib.playerOL[i].storage,
-                };
+                }
             }
             for (var i in lib.skill) {
                 if (lib.skill[i].chooseButton && lib.skill[i].enable) {
@@ -1210,29 +1118,21 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             var mode = get.mode();
             if (mode == 'identity') {
                 if (_status.mode == 'purple') {
-                    if (!player)
-                        return null;
+                    if (!player) return null;
                     var zhu = game[player.identity.slice(0, 1) + 'Zhu'];
-                    if (!zhu)
-                        return null;
-                    if (skill && !zhu.hasSkill(skill))
-                        return null;
+                    if (!zhu) return null;
+                    if (skill && !zhu.hasSkill(skill)) return null;
                     return zhu;
                 }
-                if (!game.zhu)
-                    return null;
-                if (skill && !game.zhu.hasSkill(skill))
-                    return null;
-                if (game.zhu.isZhu)
-                    return game.zhu;
+                if (!game.zhu) return null;
+                if (skill && !game.zhu.hasSkill(skill)) return null;
+                if (game.zhu.isZhu) return game.zhu;
             }
             else if (mode == 'versus' && (_status.mode == 'four' || _status.mode == 'guandu')) {
                 for (var i = 0; i < game.players.length; i++) {
                     if (game.players[i].isZhu) {
-                        if (skill && !(game.players[i].hasSkill(skill)))
-                            continue;
-                        if (!player)
-                            return game.players[i];
+                        if (skill && !(game.players[i].hasSkill(skill))) continue;
+                        if (!player) return game.players[i];
                         if (player.side == game.players[i].side) {
                             return game.players[i];
                         }
@@ -1242,10 +1142,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             else if (mode == 'guozhan') {
                 for (var i = 0; i < game.players.length; i++) {
                     if (get.is.jun(game.players[i]) && !game.players[i].isUnseen()) {
-                        if (skill && !game.players[i].hasSkill(skill))
-                            continue;
-                        if (!player)
-                            return game.players[i];
+                        if (skill && !game.players[i].hasSkill(skill)) continue;
+                        if (!player) return game.players[i];
                         if (player.identity == game.players[i].identity) {
                             return game.players[i];
                         }
@@ -1259,8 +1157,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         config: function (item, mode) {
             mode = mode || lib.config.mode;
-            if (!lib.config.mode_config[mode])
-                return;
+            if (!lib.config.mode_config[mode]) return;
             return lib.config.mode_config[mode][item];
         },
         coinCoeff: function (list) {
@@ -1269,33 +1166,15 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 var rank = get.rank(list[i]);
                 switch (rank) {
                     case 'sp': return 0.1;
-                    case 's':
-                        num += 0.4;
-                        break;
-                    case 'ap':
-                        num += 0.6;
-                        break;
-                    case 'a':
-                        num += 0.8;
-                        break;
-                    case 'am':
-                        num += 0.95;
-                        break;
-                    case 'bp':
-                        num += 1.05;
-                        break;
-                    case 'b':
-                        num += 1.2;
-                        break;
-                    case 'bm':
-                        num += 1.4;
-                        break;
-                    case 'c':
-                        num += 1.6;
-                        break;
-                    case 'd':
-                        num += 1.8;
-                        break;
+                    case 's': num += 0.4; break;
+                    case 'ap': num += 0.6; break;
+                    case 'a': num += 0.8; break;
+                    case 'am': num += 0.95; break;
+                    case 'bp': num += 1.05; break;
+                    case 'b': num += 1.2; break;
+                    case 'bm': num += 1.4; break;
+                    case 'c': num += 1.6; break;
+                    case 'd': num += 1.8; break;
                 }
             }
             return num / list.length;
@@ -1304,12 +1183,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (typeof name == 'object' && name.name) {
                 name = name.name;
             }
-            if (num == true)
-                num = 9;
-            if (typeof num != 'number')
-                num = false;
-            if (name == _status.lord)
-                return num ? Math.round(7 * (num - 1) / 8 + 1) : 'ap';
+            if (num == true) num = 9;
+            if (typeof num != 'number') num = false;
+            if (name == _status.lord) return num ? Math.round(7 * (num - 1) / 8 + 1) : 'ap';
             var rank = lib.rank;
             if (lib.characterPack.clubs[name] || lib.characterPack.vtuber[name] || lib.characterPack.yuzu[name] || lib.characterPack.hololive[name] || lib.characterPack.nijisanji[name]) {
                 var skills;
@@ -1327,29 +1203,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 }
                 for (var i = 0; i < skills.length; i++) {
                     if (skills[i].alter && !lib.config.vintageSkills.contains(skills[i])) {
-                        name = lib.rank.a[0];
-                        break;
+                        name = lib.rank.a[0]; break;
                     }
                 }
             }
-            if (rank.s.contains(name))
-                return num ? Math.round(8 * (num - 1) / 8 + 1) : 's';
-            if (rank.ap.contains(name))
-                return num ? Math.round(7 * (num - 1) / 8 + 1) : 'ap';
-            if (rank.a.contains(name))
-                return num ? Math.round(6 * (num - 1) / 8 + 1) : 'a';
-            if (rank.am.contains(name))
-                return num ? Math.round(5 * (num - 1) / 8 + 1) : 'am';
-            if (rank.bp.contains(name))
-                return num ? Math.round(4 * (num - 1) / 8 + 1) : 'bp';
-            if (rank.b.contains(name))
-                return num ? Math.round(3 * (num - 1) / 8 + 1) : 'b';
-            if (rank.bm.contains(name))
-                return num ? Math.round(2 * (num - 1) / 8 + 1) : 'bm';
-            if (rank.c.contains(name))
-                return num ? Math.round(1 * (num - 1) / 8 + 1) : 'c';
-            if (rank.d.contains(name))
-                return num ? Math.round(0 * (num - 1) / 8 + 1) : 'd';
+            if (rank.s.contains(name)) return num ? Math.round(8 * (num - 1) / 8 + 1) : 's';
+            if (rank.ap.contains(name)) return num ? Math.round(7 * (num - 1) / 8 + 1) : 'ap';
+            if (rank.a.contains(name)) return num ? Math.round(6 * (num - 1) / 8 + 1) : 'a';
+            if (rank.am.contains(name)) return num ? Math.round(5 * (num - 1) / 8 + 1) : 'am';
+            if (rank.bp.contains(name)) return num ? Math.round(4 * (num - 1) / 8 + 1) : 'bp';
+            if (rank.b.contains(name)) return num ? Math.round(3 * (num - 1) / 8 + 1) : 'b';
+            if (rank.bm.contains(name)) return num ? Math.round(2 * (num - 1) / 8 + 1) : 'bm';
+            if (rank.c.contains(name)) return num ? Math.round(1 * (num - 1) / 8 + 1) : 'c';
+            if (rank.d.contains(name)) return num ? Math.round(0 * (num - 1) / 8 + 1) : 'd';
             if (lib.character[name] && lib.character[name][4]) {
                 if (lib.character[name][4].contains('boss') ||
                     lib.character[name][4].contains('bossallowed') ||
@@ -1362,16 +1228,13 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         skillRank: function (skill, type, grouped) {
             var info = lib.skill[skill];
             var player = _status.event.skillRankPlayer || _status.event.player;
-            if (!info)
-                return 0;
+            if (!info) return 0;
             if (info.ai) {
-                if (info.ai.halfneg)
-                    return 0;
+                if (info.ai.halfneg) return 0;
                 if (typeof info.ai.combo == 'string' && player && !player.hasSkill(info.ai.combo)) {
                     return 0;
                 }
-                if (info.ai.neg)
-                    return -1;
+                if (info.ai.neg) return -1;
             }
             var num = 1;
             var threaten = 1;
@@ -1384,8 +1247,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 }
             }
             if (type == 'in') {
-                if (info.enable == 'phaseUse')
-                    num += 0.5;
+                if (info.enable == 'phaseUse') num += 0.5;
                 if (info.trigger && info.trigger.player) {
                     var list = Array.isArray(info.trigger.player) ? info.trigger.player : [info.trigger.player];
                     var add = false;
@@ -1397,8 +1259,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                 break;
                             }
                         }
-                        if (add)
-                            break;
+                        if (add) break;
                     }
                 }
                 if (info.trigger && ((typeof info.trigger.player == 'string' && info.trigger.player.indexOf('use') == 0) || info.trigger.source)) {
@@ -1413,8 +1274,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     num = 1 / Math.sqrt(threaten);
                 }
                 if (info.trigger && (info.trigger.global || info.trigger.target || (typeof info.trigger.player == 'string' &&
-                    (info.trigger.player.indexOf('damage') == 0 || info.trigger.player.indexOf('lose') == 0))))
-                    num += 0.1;
+                    (info.trigger.player.indexOf('damage') == 0 || info.trigger.player.indexOf('lose') == 0)))) num += 0.1;
                 if (info.ai) {
                     if (info.ai.maixie || info.ai.maixie_hp || info.ai.maixie_defend) {
                         num += 0.5;
@@ -1458,10 +1318,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return targets;
         },
         cardInfo: function (card) {
-            if (card.specialEffects)
-                return [card.suit, card.number, card.name, card.nature, card.tags, card.specialEffects];
-            else
-                return [card.suit, card.number, card.name, card.nature, card.tags];
+            if (card.specialEffects) return [card.suit, card.number, card.name, card.nature, card.tags, card.specialEffects];
+            else return [card.suit, card.number, card.name, card.nature, card.tags];
         },
         cardsInfo: function (cards) {
             var info = [];
@@ -1488,33 +1346,28 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return '_noname_card:' + JSON.stringify([card.cardid, card.suit, card.number, card.name, card.nature, card.tags, card.specialEffects]);
         },
         infoCardOL: function (info) {
-            if (!lib.cardOL)
-                return info;
+            if (!lib.cardOL) return info;
             var card;
             try {
                 var info = JSON.parse(info.slice(13));
                 var id = info.shift();
                 if (!id) {
                     card = ui.create.card();
-                    if (info && info[2])
-                        card.init(info);
+                    if (info && info[2]) card.init(info);
                 }
                 else if (lib.cardOL[id]) {
                     if (lib.cardOL[id].name != info[2]) {
-                        if (info && info[2])
-                            lib.cardOL[id].init(info);
+                        if (info && info[2]) lib.cardOL[id].init(info);
                     }
                     if (lib.cardOL[id].specialEffects != info[5]) {
-                        if (info && info[2])
-                            lib.cardOL[id].init(info);
+                        if (info && info[2]) lib.cardOL[id].init(info);
                     }
                     card = lib.cardOL[id];
                 }
                 else if (game.online) {
                     card = ui.create.card();
                     card.cardid = id;
-                    if (info && info[2])
-                        card.init(info);
+                    if (info && info[2]) card.init(info);
                     lib.cardOL[id] = card;
                 }
             }
@@ -1541,8 +1394,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return '_noname_player:' + player.playerid;
         },
         infoPlayerOL: function (info) {
-            if (!lib.playerOL)
-                return info;
+            if (!lib.playerOL) return info
             return lib.playerOL[info.slice(15)] || info;
         },
         playersInfoOL: function (players) {
@@ -1586,13 +1438,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 var item2 = {};
                 for (var i in item) {
                     if (i == '_trigger') {
-                        if (level !== false)
-                            item2[i] = get.eventInfoOL(item[i], false);
+                        if (level !== false) item2[i] = get.eventInfoOL(item[i], false);
                     }
-                    else if (lib.element.event[i] || i == 'content' || get.itemtype(item[i]) == 'event')
-                        continue;
-                    else
-                        item2[i] = get.stringifiedResult(item[i], level - 1);
+                    else if (lib.element.event[i] || i == 'content' || get.itemtype(item[i]) == 'event') continue;
+                    else item2[i] = get.stringifiedResult(item[i], level - 1);
                 }
                 return '_noname_event:' + JSON.stringify(item2);
             }
@@ -1607,8 +1456,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 for (var i in evt) {
                     evt[i] = get.parsedResult(evt[i]);
                 }
-                for (var i in lib.element.event)
-                    evt[i] = lib.element.event[i];
+                for (var i in lib.element.event) evt[i] = lib.element.event[i];
             }
             catch (e) {
                 console.log(e);
@@ -1616,8 +1464,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return evt || item;
         },
         stringifiedResult: function (item, level) {
-            if (!item)
-                return item;
+            if (!item) return item;
             if (typeof item == 'function') {
                 return get.funcInfoOL(item);
             }
@@ -1665,8 +1512,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
         },
         parsedResult: function (item) {
-            if (!item)
-                return item;
+            if (!item) return item;
             if (typeof item == 'string') {
                 if (item.indexOf('_noname_func:') == 0) {
                     return get.infoFuncOL(item);
@@ -1724,27 +1570,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * //"HEL<br>L<br>O<br> <br>S<br>P"
          */
         verticalStr: function (str, sp) {
-            if (typeof str != 'string')
-                return '';
+            if (typeof str != 'string') return '';
             str = str.toUpperCase();
             var str2 = '';
             var nobreak = false;
             for (var i = 0; i < str.length; i++) {
                 if (str[i] == '`') {
-                    nobreak = !nobreak;
-                    continue;
+                    nobreak = !nobreak; continue;
                 }
-                if (str.slice(i, i + 4) == '<BR>') {
-                    i += 3;
-                    continue;
-                }
+                if (str.slice(i, i + 4) == '<BR>') { i += 3; continue; }
                 str2 += str[i];
-                if (nobreak)
-                    continue;
-                if (sp && str[i] == 'S' && str[i + 1] == 'P')
-                    continue;
-                if (/[0-9]/.test(str[i]) && /[0-9]/.test(str[i + 1]))
-                    continue;
+                if (nobreak) continue;
+                if (sp && str[i] == 'S' && str[i + 1] == 'P') continue;
+                if (/[0-9]/.test(str[i]) && /[0-9]/.test(str[i + 1])) continue;
                 if (i < str.length - 1) {
                     str2 += '<br>';
                 }
@@ -1753,20 +1591,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         numStr: function (num, method) {
             if (num == Infinity) {
-                if (method == 'card')
-                    return get.selectableCards().length + ui.selected.cards.length;
-                if (method == 'target')
-                    return get.selectableTargets().length + ui.selected.targets.length;
+                if (method == 'card') return get.selectableCards().length + ui.selected.cards.length;
+                if (method == 'target') return get.selectableTargets().length + ui.selected.targets.length;
                 return '∞';
             }
             return num.toString();
         },
         rawName: function (str) {
-            if (lib.translate[str + '_ab'])
-                return lib.translate[str + '_ab'];
+            if (lib.translate[str + '_ab']) return lib.translate[str + '_ab'];
             var str2 = lib.translate[str];
-            if (!str2)
-                return '';
+            if (!str2) return '';
             if (str2.indexOf('SP') == 0) {
                 str2 = str2.slice(2);
             }
@@ -1800,11 +1634,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return str2;
         },
         rawName2: function (str) {
-            if (lib.translate[str + '_ab'])
-                return lib.translate[str + '_ab'];
+            if (lib.translate[str + '_ab']) return lib.translate[str + '_ab'];
             var str2 = lib.translate[str];
-            if (!str2)
-                return '';
+            if (!str2) return '';
             if (str2.indexOf('SP') == 0) {
                 str2 = str2.slice(2);
             }
@@ -1830,10 +1662,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         slimName: function (str) {
             var str2 = lib.translate[str];
-            if (lib.translate[str + '_ab'])
-                str2 = lib.translate[str + '_ab'];
-            if (!str2)
-                return '';
+            if (lib.translate[str + '_ab']) str2 = lib.translate[str + '_ab'];
+            if (!str2) return '';
             if (str2.indexOf('SP') == 0) {
                 str2 = str2.slice(2);
             }
@@ -1856,10 +1686,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 str2 = str2.slice(2);
             }
             else if (str2.indexOf('皇·') == 0 && str.indexOf('sp_') == 0) {
-                str2 = str2.replace('皇·', '皇');
+                str2 = str2.replace('皇·','皇');
             }
             else if (str2.indexOf('海·') == 0 && str.indexOf('sea_') == 0) {
-                str2 = str2.replace('海·', '海');
+                str2 = str2.replace('海·','海');
             }
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                 str2 = str2.slice(2);
@@ -1901,68 +1731,49 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     var bool = true;
                     for (i = 0; i < obj.length; i++) {
                         if (/h|e|j|s/.test(obj[i]) == false) {
-                            bool = false;
-                            break;
+                            bool = false; break;
                         }
                     }
-                    if (bool)
-                        return 'position';
+                    if (bool) return 'position';
                 }
-                if (lib.nature.contains(obj))
-                    return 'nature';
+                if (lib.nature.contains(obj)) return 'nature';
             }
             if (Array.isArray(obj) && obj.length) {
                 var isPlayers = true;
                 for (i = 0; i < obj.length; i++) {
-                    if (get.itemtype(obj[i]) != 'player') {
-                        isPlayers = false;
-                        break;
-                    }
+                    if (get.itemtype(obj[i]) != 'player') { isPlayers = false; break; }
                 }
-                if (isPlayers)
-                    return 'players';
+                if (isPlayers) return 'players';
+
                 var isCards = true;
                 for (i = 0; i < obj.length; i++) {
-                    if (get.itemtype(obj[i]) != 'card') {
-                        isCards = false;
-                        break;
-                    }
+                    if (get.itemtype(obj[i]) != 'card') { isCards = false; break; }
                 }
-                if (isCards)
-                    return 'cards';
+                if (isCards) return 'cards';
+
                 if (obj.length == 2) {
                     if (typeof obj[0] == 'number' && typeof obj[1] == 'number') {
-                        if (obj[0] <= obj[1] || obj[1] == -1)
-                            return 'select';
+                        if (obj[0] <= obj[1] || obj[1] == -1) return 'select';
                     }
                 }
+
                 if (obj.length == 4) {
                     var isPosition = true;
                     for (i = 0; i < obj.length; i++) {
-                        if (typeof obj[i] != 'number') {
-                            isPosition = false;
-                            break;
-                        }
+                        if (typeof obj[i] != 'number') { isPosition = false; break; }
                     }
-                    if (isPosition)
-                        return 'divposition';
+                    if (isPosition) return 'divposition';
                 }
             }
             if (get.objtype(obj) == 'div') {
-                if (obj.classList.contains('button'))
-                    return 'button';
-                if (obj.classList.contains('card'))
-                    return 'card';
-                if (obj.classList.contains('player'))
-                    return 'player'; //[to be deprecated]
-                if (obj.classList.contains('dialog'))
-                    return 'dialog';
+                if (obj.classList.contains('button')) return 'button';
+                if (obj.classList.contains('card')) return 'card';
+                if (obj.classList.contains('player')) return 'player';//[to be deprecated]
+                if (obj.classList.contains('dialog')) return 'dialog';
             }
-            if (obj instanceof PlayerModel)
-                return 'player';
+            if(obj instanceof PlayerModel) return 'player';
             if (get.is.object(obj)) {
-                if (obj.isMine == lib.element.event.isMine)
-                    return 'event';
+                if (obj.isMine == lib.element.event.isMine) return 'event';
             }
         },
         equipNum: function (card) {
@@ -1977,31 +1788,20 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {?string} 对象的类型
          */
         objtype: function (obj) {
-            if (Object.prototype.toString.call(obj) === '[object Array]')
-                return 'array';
-            if (Object.prototype.toString.call(obj) === '[object Object]')
-                return 'object';
-            if (Object.prototype.toString.call(obj) === '[object HTMLDivElement]')
-                return 'div';
-            if (Object.prototype.toString.call(obj) === '[object HTMLTableElement]')
-                return 'table';
-            if (Object.prototype.toString.call(obj) === '[object HTMLTableRowElement]')
-                return 'tr';
-            if (Object.prototype.toString.call(obj) === '[object HTMLTableCellElement]')
-                return 'td';
-            if (Object.prototype.toString.call(obj) === '[object HTMLBodyElement]')
-                return 'td';
+            if (Object.prototype.toString.call(obj) === '[object Array]') return 'array';
+            if (Object.prototype.toString.call(obj) === '[object Object]') return 'object';
+            if (Object.prototype.toString.call(obj) === '[object HTMLDivElement]') return 'div';
+            if (Object.prototype.toString.call(obj) === '[object HTMLTableElement]') return 'table';
+            if (Object.prototype.toString.call(obj) === '[object HTMLTableRowElement]') return 'tr';
+            if (Object.prototype.toString.call(obj) === '[object HTMLTableCellElement]') return 'td';
+            if (Object.prototype.toString.call(obj) === '[object HTMLBodyElement]') return 'td';
         },
         type: function (obj, method, player) {
-            if (typeof obj == 'string')
-                obj = { name: obj };
-            if (typeof obj != 'object')
-                return;
+            if (typeof obj == 'string') obj = { name: obj };
+            if (typeof obj != 'object') return;
             var name = get.name(obj, player);
-            if (!lib.card[name])
-                return;
-            if (method == 'trick' && lib.card[name].type == 'delay')
-                return 'trick';
+            if (!lib.card[name]) return;
+            if (method == 'trick' && lib.card[name].type == 'delay') return 'trick';
             return lib.card[name].type;
         },
         type2: function (card, player) {
@@ -2009,8 +1809,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         //新增函数
         type3: function (cards, method, player) {
-            if (get.itemtype(cards) != 'cards')
-                return;
+            if (get.itemtype(cards) != 'cards') return;
             var types = [];
             for (var i of cards) {
                 types.add(get.type(i, method, player));
@@ -2018,18 +1817,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return types;
         },
         subtype: function (obj) {
-            if (typeof obj == 'string')
-                obj = { name: obj };
-            if (typeof obj != 'object')
-                return;
-            if (!lib.card[obj.name])
-                return;
+            if (typeof obj == 'string') obj = { name: obj };
+            if (typeof obj != 'object') return;
+            if (!lib.card[obj.name]) return;
             return lib.card[obj.name].subtype;
         },
         equiptype: function (card, player) {
             var subtype = get.subtype(card, player);
-            if (subtype.indexOf('equip') == 0)
-                return parseInt(subtype[5]);
+            if (subtype.indexOf('equip') == 0) return parseInt(subtype[5]);
             return 0;
         },
         /**
@@ -2060,8 +1855,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         suit: function (card, player) {
             if (get.itemtype(card) == 'cards') {
-                if (card.length == 1)
-                    return get.suit(card[0], player);
+                if (card.length == 1) return get.suit(card[0], player);
                 return 'none';
                 //var suit=get.suit(card[0])
                 //for(var i=1;i<card.length;i++){
@@ -2081,8 +1875,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
         },
         suit3: function (cards, player) {
-            if (get.itemtype(cards) != 'cards')
-                return [];
+            if (get.itemtype(cards) != 'cards') return [];
             var suits = [];
             for (var i of cards) {
                 suits.add(get.suit(i, player));
@@ -2090,13 +1883,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return suits;
         },
         color: function (card, player) {
-            if (_status.event.name == 'judge' && card.color)
-                return card.color;
+            if (_status.event.name == 'judge' && card.color) return card.color;
             if (get.itemtype(card) == 'cards') {
-                var color = get.color(card[0], player);
+                var color = get.color(card[0], player)
                 for (var i = 1; i < card.length; i++) {
-                    if (get.color(card[i], player) != color)
-                        return 'none';
+                    if (get.color(card[i], player) != color) return 'none';
                 }
                 return color;
             }
@@ -2105,11 +1896,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             else {
                 //柚子：已修改
-                var color = 'none';
-                if (get.suit(card, player) == 'spade' || get.suit(card, player) == 'club')
-                    color = 'black';
-                if (get.suit(card, player) == 'heart' || get.suit(card, player) == 'diamond')
-                    color = 'red';
+                var color = 'none'
+                if (get.suit(card, player) == 'spade' || get.suit(card, player) == 'club') color = 'black';
+                if (get.suit(card, player) == 'heart' || get.suit(card, player) == 'diamond') color = 'red';
                 var owner = player || get.owner(card);
                 if (owner) {
                     return game.checkMod(card, owner, color, 'color', owner);
@@ -2118,8 +1907,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
         },
         color3: function (cards, player) {
-            if (get.itemtype(cards) != 'cards')
-                return;
+            if (get.itemtype(cards) != 'cards') return;
             var colors = [];
             for (var i of cards) {
                 colors.add(get.color(i, player));
@@ -2129,10 +1917,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         number: function (card, player) {
             //柚子：已修改
             var number = null;
-            if (card.number && typeof card.number == 'number')
-                number = card.number;
-            else if (card.cards && card.cards.length == 1)
-                number = get.number(card.cards[0]);
+            if (card.number && typeof card.number == 'number') number = card.number;
+            else if (card.cards && card.cards.length == 1) number = get.number(card.cards[0]);
             if (number != null && get.itemtype(player) == 'player' || (player !== false && get.position(card) == 'h')) {
                 var owner = player || get.owner(card);
                 if (owner) {
@@ -2170,14 +1956,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             var list = [];
             var card = false;
-            if (typeof num != 'number')
-                num = 1;
-            if (num == 0) {
-                card = true;
-                num = 1;
-            }
-            if (num < 0)
-                num = 1;
+            if (typeof num != 'number') num = 1;
+            if (num == 0) { card = true; num = 1; }
+            if (num < 0) num = 1;
             while (num--) {
                 if (ui.cardPile.hasChildNodes() == false) {
                     if (_status.maxShuffle != undefined) {
@@ -2225,8 +2006,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 list.push(cardx);
             }
             game.updateRoundNumber();
-            if (card)
-                return list[0];
+            if (card) return list[0];
             return list;
         },
         /**
@@ -2235,8 +2015,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {string}
          */
         judge: function (card) {
-            if (card.viewAs)
-                return lib.card[card.viewAs].judge;
+            if (card.viewAs) return lib.card[card.viewAs].judge;
             return get.info(card).judge;
         },
         /**
@@ -2245,19 +2024,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * 除此之外，根据`method`参数返回距离，详情见下表:
          * `method`参数表:
          * **Chess Mode:**
-         *
+         * 
          * |method|type|
          * |:----:|:--:|
          * |undefined|计算距离，此距离计算被动技和装备的效果|
          * |raw, pure, absolute|原距离，不计算被动技和装备的效果|
          * **Stone Mode:**
-         *
+         * 
          * |method|type|
          * |:----:|:--:|
          * |undefined|计算距离，此距离计算被动技和装备的效果|
          * |raw, pure, absolute|原距离，1|
          * **Others:**
-         *
+         * 
          * |method|type|
          * |:----:|:--:|
          * |undefined|计算距离，此距离计算[^被动技]和装备的效果|
@@ -2272,24 +2051,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number} 如果`from`或`to`不在游戏中或未指定，返回`Infinity`；如果`from==to`，返回0
          */
         distance: function (from, to, method) {
-            if (from == to)
-                return 0;
-            if (!game.players.contains(from) && !game.dead.contains(from))
-                return Infinity;
-            if (!game.players.contains(to) && !game.dead.contains(to))
-                return Infinity;
+            if (from == to) return 0;
+            if (!game.players.contains(from) && !game.dead.contains(from)) return Infinity;
+            if (!game.players.contains(to) && !game.dead.contains(to)) return Infinity;
             var player = from, m, n = 1, i;
             var fxy, txy;
             if (game.chess) {
                 fxy = from.getXY();
                 txy = to.getXY();
                 n = Math.abs(fxy[0] - txy[0]) + Math.abs(fxy[1] - txy[1]);
-                if (method == 'raw' || method == 'pure' || method == 'absolute')
-                    return n;
+                if (method == 'raw' || method == 'pure' || method == 'absolute') return n;
             }
             else if (to.isMin(true) || from.isMin(true)) {
-                if (method == 'raw' || method == 'pure' || method == 'absolute')
-                    return n;
+                if (method == 'raw' || method == 'pure' || method == 'absolute') return n;
             }
             else {
                 var length = game.players.length;
@@ -2297,32 +2071,25 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
                     if (player.nextSeat != to) {
                         player = player.nextSeat;
-                        if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true))
-                            n++;
+                        if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true)) n++;
                     }
                     else {
                         break;
                     }
                 }
                 for (i = 0; i < game.players.length; i++) {
-                    if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true))
-                        length--;
+                    if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true)) length--;
                 }
-                if (method == 'absolute')
-                    return n;
-                if (from.isDead())
-                    length++;
-                if (to.isDead())
-                    length++;
+                if (method == 'absolute') return n;
+                if (from.isDead()) length++;
+                if (to.isDead()) length++;
                 var left = from.hasSkillTag('left_hand');
                 var right = from.hasSkillTag('right_hand');
-                if (left === right)
-                    n = Math.min(n, length - n);
-                else if (left == true)
-                    n = length - n;
-                if (method == 'raw' || method == 'pure')
-                    return n;
+                if (left === right) n = Math.min(n, length - n);
+                else if (left == true) n = length - n;
+                if (method == 'raw' || method == 'pure') return n;
             }
+
             n = game.checkMod(from, to, n, 'globalFrom', from);
             n = game.checkMod(from, to, n, 'globalTo', to);
             m = n;
@@ -2335,8 +2102,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             });
             for (i = 0; i < equips1.length; i++) {
                 var info = get.info(equips1[i]).distance;
-                if (!info)
-                    continue;
+                if (!info) continue;
                 if (info.globalFrom) {
                     m += info.globalFrom;
                     n += info.globalFrom;
@@ -2347,18 +2113,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             for (i = 0; i < equips2.length; i++) {
                 var info = get.info(equips2[i]).distance;
-                if (!info)
-                    continue;
+                if (!info) continue;
                 if (info.globalTo) {
                     m += info.globalTo;
                     n += info.globalTo;
                 }
-                if (info.attaclTo) { //[recommend][bug] use attackTo instead of attaclTo
+                if (info.attaclTo) {//[recommend][bug] use attackTo instead of attaclTo
                     m += info.attaclTo;
                 }
             }
-            if (method == 'attack')
-                return m;
+            if (method == 'attack') return m;
             return n;
         },
         /**
@@ -2383,8 +2147,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             if (typeof item == 'object') {
                 var name = item.name;
-                if (player !== false)
-                    name = get.name(item, player);
+                if (player !== false) name = get.name(item, player);
                 return lib.card[name];
             }
         },
@@ -2394,13 +2157,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {Array<number>} 一个`[(number), (number)]`形式的数组
          */
         select: function (select) {
-            if (typeof select == 'number')
-                return [select, select];
-            if (get.itemtype(select) == 'select')
-                return select;
-            if (typeof select == 'function')
-                return get.select(select());
-            return [1, 1];
+            if (typeof select == 'number') return [select, select];
+            if (get.itemtype(select) == 'select') return select;
+            if (typeof select == 'function') return get.select(select());
+            return [1, 1]
         },
         /**
          * 返回本机角色当前选择的一张牌，或将本机角色当前选择的牌视为一张牌返回；
@@ -2412,8 +2172,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         card: function (original) {
             if (_status.event.skill) {
                 var card = get.info(_status.event.skill).viewAs;
-                if (typeof card == 'function')
-                    card = card(ui.selected.cards, _status.event.player);
+                if (typeof card == 'function') card = card(ui.selected.cards, _status.event.player);
                 if (card) {
                     return get.autoViewAs(card, ui.selected.cards, _status.event.player);
                 }
@@ -2422,8 +2181,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return _status.event._get_card;
             }
             var card = ui.selected.cards[0];
-            if (original)
-                return card;
+            if (original) return card;
             if (card) {
                 card = get.autoViewAs(card, ui.selected.cards, _status.event.player);
             }
@@ -2438,9 +2196,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         /**
          * 返回一个角色数组
-         * @param {*} sort
-         * @param {*} dead
-         * @param {*} out
+         * @param {*} sort 
+         * @param {*} dead 
+         * @param {*} out 
          * @returns {Array<GameCores.GameObjects.Player>}
          */
         //TODO
@@ -2451,67 +2209,47 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     players.sort(sort);
                 }
                 else {
-                    if (get.itemtype(sort) != 'player')
-                        lib.tempSortSeat = _status.event.player;
-                    else
-                        lib.tempSortSeat = sort;
+                    if (get.itemtype(sort) != 'player') lib.tempSortSeat = _status.event.player;
+                    else lib.tempSortSeat = sort;
                     players.sort(lib.sort.seat);
                     delete lib.tempSortSeat;
                 }
             }
-            if (dead)
-                players = players.concat(game.dead);
+            if (dead) players = players.concat(game.dead);
             if (!out) {
                 for (var i = 0; i < players.length; i++) {
-                    if (players[i].isOut())
-                        players.splice(i--, 1);
+                    if (players[i].isOut()) players.splice(i--, 1);
                 }
             }
             return players;
         },
         /**
          * 返回(角色座次|游戏牌所在区域)
-         * @param {*} card
-         * @param {*} ordering
+         * @param {*} card 
+         * @param {*} ordering 
          * @returns {(number|'h'|'e'|'j'|'o'|'s'|'c'|'d'|null)}
          */
         //TODO
         position: function (card, ordering) {
-            if (get.itemtype(card) == 'player')
-                return parseInt(card.dataset.position);
+            if (get.itemtype(card) == 'player') return parseInt(card.dataset.position);
             if (card.timeout && card.destiny) {
-                if (card.destiny.classList.contains('equips'))
-                    return 'e';
-                if (card.destiny.classList.contains('judges'))
-                    return 'j';
-                if (card.destiny.classList.contains('handcards'))
-                    return card.classList.contains('glows') ? 's' : 'h';
-                if (card.destiny.id == 'cardPile')
-                    return 'c';
-                if (card.destiny.id == 'discardPile')
-                    return 'd';
-                if (card.destiny.id == 'special')
-                    return 's';
-                if (card.destiny.id == 'ordering')
-                    return ordering ? 'o' : 'd';
+                if (card.destiny.classList.contains('equips')) return 'e';
+                if (card.destiny.classList.contains('judges')) return 'j';
+                if (card.destiny.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
+                if (card.destiny.id == 'cardPile') return 'c';
+                if (card.destiny.id == 'discardPile') return 'd';
+                if (card.destiny.id == 'special') return 's';
+                if (card.destiny.id == 'ordering') return ordering ? 'o' : 'd';
                 return null;
             }
-            if (!card.parentNode)
-                return;
-            if (card.parentNode.classList.contains('equips'))
-                return 'e';
-            if (card.parentNode.classList.contains('judges'))
-                return 'j';
-            if (card.parentNode.classList.contains('handcards'))
-                return card.classList.contains('glows') ? 's' : 'h';
-            if (card.parentNode.id == 'cardPile')
-                return 'c';
-            if (card.parentNode.id == 'discardPile')
-                return 'd';
-            if (card.parentNode.id == 'special')
-                return 's';
-            if (card.parentNode.id == 'ordering')
-                return ordering ? 'o' : 'd';
+            if (!card.parentNode) return;
+            if (card.parentNode.classList.contains('equips')) return 'e';
+            if (card.parentNode.classList.contains('judges')) return 'j';
+            if (card.parentNode.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
+            if (card.parentNode.id == 'cardPile') return 'c';
+            if (card.parentNode.id == 'discardPile') return 'd';
+            if (card.parentNode.id == 'special') return 's';
+            if (card.parentNode.id == 'ordering') return ordering ? 'o' : 'd';
             return null;
         },
         skillTranslation: function (str, player) {
@@ -2529,6 +2267,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         if (player.hasSkill(str3)) {
                             return '新·' + lib.translate[str];
                         }
+
                     }
                 }
             }
@@ -2556,10 +2295,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         skillInfoTranslation: function (name, player) {
             var str = lib.translate[name + '_info'];
-            if (player && lib.dynamicTranslate[name])
-                str = lib.dynamicTranslate[name](player, name);
-            if (!str)
-                return '';
+            if (player && lib.dynamicTranslate[name]) str = lib.dynamicTranslate[name](player, name);
+            if (!str) return '';
             str = str
                 .replace(/(?<!\/)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$1</font>，')
                 .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
@@ -2569,15 +2306,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 .replace(/(限定技) /g, '<font color=#baf>$1 </font>')
                 .replace(/(使命技) /g, '<font color=#bf9>$1 </font>')
                 .replace(/(觉醒技) /g, '<font color=#fcd>$1 </font>')
-                .replace(/(主公技) /g, '<font color=#ff4>$1 </font>');
+                .replace(/(主公技) /g, '<font color=#ff4>$1 </font>')
             return str;
             // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
             // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
         },
         translation: function (str, arg) {
             if (str && typeof str == 'object' && (str.name || str._tempTranslate)) {
-                if (str._tempTranslate)
-                    return str._tempTranslate;
+                if (str._tempTranslate) return str._tempTranslate;
                 var str2;
                 if (arg == 'viewAs' && str.viewAs) {
                     str2 = get.translation(str.viewAs);
@@ -2604,8 +2340,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     else if (str.nature == 'yami') {
                         str2 = '暗' + str2;
                     }
-                }
-                else if (str.nature && str.nature.length) {
+                } else if (str.nature && str.nature.length) {
                     if (str.nature == 'fire') {
                         str2 = str2.replace(str2.charAt(0), '火');
                     }
@@ -2640,7 +2375,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     if (str.suit && str.number) {
                         var cardnum = str.number || '';
                         if ([1, 11, 12, 13, 14].contains(cardnum)) {
-                            cardnum = { '1': 'A', '11': 'J', '12': 'Q', '13': 'K', '14': '★' }[cardnum];
+                            cardnum = { '1': 'A', '11': 'J', '12': 'Q', '13': 'K', '14': '★' }[cardnum]
                         }
                         if (arg == 'viewAs' && str.viewAs != str.name && str.viewAs) {
                             str2 += '（' + get.translation(str) + '）';
@@ -2662,28 +2397,21 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return str2;
             }
             if (arg == 'skill') {
-                if (lib.translate[str + '_ab'])
-                    return lib.translate[str + '_ab'];
-                if (lib.translate[str])
-                    return lib.translate[str].slice(0, 2);
+                if (lib.translate[str + '_ab']) return lib.translate[str + '_ab'];
+                if (lib.translate[str]) return lib.translate[str].slice(0, 2);
                 return str;
             }
             else if (arg == 'info') {
-                if (lib.translate[str + '_info'])
-                    return lib.translate[str + '_info'];
+                if (lib.translate[str + '_info']) return lib.translate[str + '_info'];
                 var str2 = str.slice(0, str.length - 1);
-                if (lib.translate[str2 + '_info'])
-                    return lib.translate[str2 + '_info'];
+                if (lib.translate[str2 + '_info']) return lib.translate[str2 + '_info'];
                 if (str.lastIndexOf('_') > 0) {
                     str2 = str.slice(0, str.lastIndexOf('_'));
-                    if (lib.translate[str2 + '_info'])
-                        return lib.translate[str2 + '_info'];
+                    if (lib.translate[str2 + '_info']) return lib.translate[str2 + '_info'];
                 }
                 str2 = str.slice(0, str.length - 2);
-                if (lib.translate[str2 + '_info'])
-                    return lib.translate[str2 + '_info'];
-                if (lib.skill[str] && lib.skill[str].prompt)
-                    return lib.skill[str].prompt;
+                if (lib.translate[str2 + '_info']) return lib.translate[str2 + '_info'];
+                if (lib.skill[str] && lib.skill[str].prompt) return lib.skill[str].prompt;
             }
             if (lib.translate[str]) {
                 return lib.translate[str];
@@ -2710,14 +2438,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
         },
         cnNumber: function (num, two) {
-            if (num == Infinity)
-                return '∞';
-            if (isNaN(num))
-                return '';
-            if (typeof num != 'number')
-                return num;
-            if (num < 0 || num > 99)
-                return num;
+            if (num == Infinity) return '∞';
+            if (isNaN(num)) return '';
+            if (typeof num != 'number') return num;
+            if (num < 0 || num > 99) return num;
             if (num <= 10) {
                 switch (num) {
                     case 0: return '〇';
@@ -2740,8 +2464,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return get.cnNumber(x, true) + '十' + (num > 10 * x ? get.cnNumber(num - 10 * x, true) : '');
         },
         selectableButtons: function (sort) {
-            if (!_status.event.player)
-                return [];
+            if (!_status.event.player) return [];
             var buttons = _status.event.dialog.buttons;
             var selectable = [];
             for (var i = 0; i < buttons.length; i++) {
@@ -2756,8 +2479,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             return selectable;
         },
         selectableCards: function (sort) {
-            if (!_status.event.player)
-                return [];
+            if (!_status.event.player) return [];
             var cards = _status.event.player.getCards('hes');
             var selectable = [];
             for (var i = 0; i < cards.length; i++) {
@@ -2793,29 +2515,20 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         gainableSkills: function (func, player) {
             var list = [];
             for (var i in lib.character) {
-                if (lib.filter.characterDisabled(i))
-                    continue;
-                if (lib.filter.characterDisabled2(i))
-                    continue;
+                if (lib.filter.characterDisabled(i)) continue;
+                if (lib.filter.characterDisabled2(i)) continue;
                 if (lib.character[i][4]) {
-                    if (lib.character[i][4].contains('boss'))
-                        continue;
-                    if (lib.character[i][4].contains('hiddenboss'))
-                        continue;
-                    if (lib.character[i][4].contains('minskin'))
-                        continue;
-                    if (lib.character[i][4].contains('unseen'))
-                        continue;
+                    if (lib.character[i][4].contains('boss')) continue;
+                    if (lib.character[i][4].contains('hiddenboss')) continue;
+                    if (lib.character[i][4].contains('minskin')) continue;
+                    if (lib.character[i][4].contains('unseen')) continue;
                 }
                 for (var j = 0; j < lib.character[i][3].length; j++) {
                     var skill = lib.character[i][3][j];
                     var info = lib.skill[skill];
-                    if (lib.filter.skillDisabled(skill))
-                        continue;
-                    if (func && !func(info, skill, i))
-                        continue;
-                    if (player && player.hasSkill && info.ai && info.ai.combo && !player.hasSkill(info.ai.combo))
-                        continue;
+                    if (lib.filter.skillDisabled(skill)) continue;
+                    if (func && !func(info, skill, i)) continue;
+                    if (player && player.hasSkill && info.ai && info.ai.combo && !player.hasSkill(info.ai.combo)) continue;
                     list.add(skill);
                 }
             }
@@ -2831,22 +2544,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             var list = [];
             if (name && lib.character[name]) {
                 if (lib.character[name][4]) {
-                    if (lib.character[name][4].contains('boss'))
-                        return list;
-                    if (lib.character[name][4].contains('hiddenboss'))
-                        return list;
-                    if (lib.character[name][4].contains('minskin'))
-                        return list;
-                    if (lib.character[name][4].contains('unseen'))
-                        return list;
+                    if (lib.character[name][4].contains('boss')) return list;
+                    if (lib.character[name][4].contains('hiddenboss')) return list;
+                    if (lib.character[name][4].contains('minskin')) return list;
+                    if (lib.character[name][4].contains('unseen')) return list;
                 }
                 for (var j = 0; j < lib.character[name][3].length; j++) {
                     var skill = lib.character[name][3][j];
                     var info = lib.skill[skill];
-                    if (lib.filter.skillDisabled(skill))
-                        continue;
-                    if (func && !func(info, skill, name))
-                        continue;
+                    if (lib.filter.skillDisabled(skill)) continue;
+                    if (func && !func(info, skill, name)) continue;
                     list.add(skill);
                 }
             }
@@ -2861,14 +2568,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             var list = [];
             for (var i in lib.character) {
                 var info = lib.character[i];
-                if (!info)
-                    continue;
-                if (typeof func == 'function' && !func(info, i))
-                    continue;
-                if (lib.filter.characterDisabled(i))
-                    continue;
-                if (lib.filter.characterDisabled2(i))
-                    continue;
+                if (!info) continue;
+                if (typeof func == 'function' && !func(info, i)) continue;
+                if (lib.filter.characterDisabled(i)) continue;
+                if (lib.filter.characterDisabled2(i)) continue;
                 list.push(i);
             }
             if (func === true) {
@@ -2884,8 +2587,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         selectableTargets: function (sort) {
             var selectable = [];
             var players = game.players.slice(0);
-            if (_status.event.deadTarget)
-                players.addArray(game.dead);
+            if (_status.event.deadTarget) players.addArray(game.dead);
             for (var i = 0; i < players.length; i++) {
                 if (players[i].classList.contains('selectable') &&
                     players[i].classList.contains('selected') == false) {
@@ -2900,77 +2602,62 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
         //检查卡牌是否符合要求的快捷方法(要求满足全部条件，无条件时默认满足)
         filter: function (filter, i) {
-            if (typeof filter == 'function')
-                return filter;
-            if (i == undefined)
-                i = 0;
+            if (typeof filter == 'function') return filter;
+            if (i == undefined) i = 0;
             var result = function () {
-                if (filter == arguments[i])
-                    return true;
+                if (filter == arguments[i]) return true;
                 for (var j in filter) {
                     if (filter.hasOwnProperty(j)) {
                         if (get.itemtype(arguments[i]) == 'card') {
                             if (j == 'name') {
                                 if (typeof filter[j] == 'object') {
-                                    if (filter[j].contains(get.name(arguments[i])) == false)
-                                        return false;
+                                    if (filter[j].contains(get.name(arguments[i])) == false) return false;
                                 }
                                 else if (typeof filter[j] == 'string') {
-                                    if (get.name(arguments[i]) != filter[j])
-                                        return false;
+                                    if (get.name(arguments[i]) != filter[j]) return false;
                                 }
                             }
                             else if (j == 'type') {
                                 if (typeof filter[j] == 'object') {
-                                    if (filter[j].contains(get.type(arguments[i])) == false)
-                                        return false;
+                                    if (filter[j].contains(get.type(arguments[i])) == false) return false;
                                 }
                                 else if (typeof filter[j] == 'string') {
-                                    if (get.type(arguments[i]) != filter[j])
-                                        return false;
+                                    if (get.type(arguments[i]) != filter[j]) return false;
                                 }
                             }
                             else if (j == 'subtype') {
                                 if (typeof filter[j] == 'object') {
-                                    if (filter[j].contains(get.subtype(arguments[i])) == false)
-                                        return false;
+                                    if (filter[j].contains(get.subtype(arguments[i])) == false) return false;
                                 }
                                 else if (typeof filter[j] == 'string') {
-                                    if (get.subtype(arguments[i]) != filter[j])
-                                        return false;
+                                    if (get.subtype(arguments[i]) != filter[j]) return false;
                                 }
                             }
                             else if (['color', 'suit', 'number'].contains(j)) {
                                 if (typeof filter[j] == 'object') {
-                                    if (filter[j].contains(get[j](arguments[i])) == false)
-                                        return false;
+                                    if (filter[j].contains(get[j](arguments[i])) == false) return false;
                                 }
                                 else if (typeof filter[j] == 'string') {
-                                    if (get[j](arguments[i]) != filter[j])
-                                        return false;
+                                    if (get[j](arguments[i]) != filter[j]) return false;
                                 }
                             }
                             else if (typeof filter[j] == 'object') {
-                                if (filter[j].contains(arguments[i][j]) == false)
-                                    return false;
+                                if (filter[j].contains(arguments[i][j]) == false) return false;
                             }
                             else if (typeof filter[j] == 'string') {
                                 if (typeof get[j] == 'function') {
-                                    if (get[j](arguments[i]) != filter[j])
-                                        return false;
+                                    if (get[j](arguments[i]) != filter[j]) return false;
                                 }
-                                else if (arguments[i][j] != filter[j])
-                                    return false;
+                                else if (arguments[i][j] != filter[j]) return false;
                             }
                         }
                         else {
-                            if (arguments[i][j] != filter[j])
-                                return false;
+                            if (arguments[i][j] != filter[j]) return false;
                         }
                     }
                 }
                 return true;
-            };
+            }
             result._filter_args = [filter, i];
             return result;
         },
@@ -2980,63 +2667,52 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 num = 0;
                 var stat = player.getStat('card');
                 for (var i in stat) {
-                    if (typeof stat[i] == 'number')
-                        num += stat[i];
+                    if (typeof stat[i] == 'number') num += stat[i];
                 }
                 return num;
             }
-            if (player == undefined)
-                player = _status.event.player;
+            if (player == undefined) player = _status.event.player;
             if (typeof card == 'object') {
                 card = card.name;
             }
             num = player.getStat('card')[card];
-            if (num == undefined)
-                return 0;
+            if (num == undefined) return 0;
             return num;
         },
         skillCount: function (skill, player) {
-            if (player == undefined)
-                player = _status.event.player;
+            if (player == undefined) player = _status.event.player;
             var num = player.getStat('skill')[skill];
-            if (num == undefined)
-                return 0;
+            if (num == undefined) return 0;
             return num;
         },
         owner: function (card, method) {
             var list = game.players.concat(game.dead);
             for (var i = 0; i < list.length; i++) {
-                if (list[i].getCards('hej').contains(card))
-                    return list[i];
-                if (list[i].judging[0] == card && method != 'judge')
-                    return list[i];
+                if (list[i].getCards('hej').contains(card)) return list[i];
+                if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
             //for(var i=0;i<game.players.length;i++){
             //    if(game.players[i].using&&game.players[i].using.contains(card)) return game.players[i];
             //}
         },
         noSelected: function () {
-            return (ui.selected.buttons.length + ui.selected.cards.length + ui.selected.targets.length == 0);
+            return (ui.selected.buttons.length + ui.selected.cards.length + ui.selected.targets.length == 0)
         },
         population: function (identity) {
-            if (identity == undefined)
-                return game.players.length + game.dead.length;
+            if (identity == undefined) return game.players.length + game.dead.length;
             var i;
             var num = 0;
             for (i = 0; i < game.players.length; i++) {
-                if (game.players[i].identity == identity)
-                    num++;
+                if (game.players[i].identity == identity) num++;
             }
             return num;
         },
         totalPopulation: function (identity) {
-            if (identity == undefined)
-                return game.players.length + game.dead.length;
+            if (identity == undefined) return game.players.length + game.dead.length;
             var i, players = game.players.concat(game.dead);
             var num = 0;
             for (i = 0; i < players.length; i++) {
-                if (players[i].identity == identity)
-                    num++;
+                if (players[i].identity == identity) num++;
             }
             return num;
         },
@@ -3045,8 +2721,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (item.cardid && (get.itemtype(item) == 'card' || !item.cards || !item.cards.length || item.name == item.cards[0].name) && _status.cardtag && _status.cardtag[tag] && _status.cardtag[tag].contains(item.cardid)) {
                 return true;
             }
-            if (item.cardtags && item.cardtags.contains(tag))
-                return true;
+            if (item.cardtags && item.cardtags.contains(tag)) return true;
             return false;
         },
         tag: function (item, tag, item2) {
@@ -3054,8 +2729,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (get.info(item) && get.info(item).ai && get.info(item).ai.tag) {
                 result = get.info(item).ai.tag[tag];
             }
-            if (typeof result == 'function')
-                return result(item, item2);
+            if (typeof result == 'function') return result(item, item2);
             return result;
         },
         sortCard: function (sort) {
@@ -3078,24 +2752,20 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         case 'equip': return -3;
                         default: return -4;
                     }
-                };
+                }
             }
             else if (sort == 'suit_sort') {
                 func = function (card) {
-                    if (get.suit(card) == 'heart')
-                        return 2;
-                    if (get.suit(card) == 'diamond')
-                        return 1;
-                    if (get.suit(card) == 'spade')
-                        return -1;
-                    if (get.suit(card) == 'club')
-                        return -2;
-                };
+                    if (get.suit(card) == 'heart') return 2;
+                    if (get.suit(card) == 'diamond') return 1;
+                    if (get.suit(card) == 'spade') return -1;
+                    if (get.suit(card) == 'club') return -2;
+                }
             }
             else if (sort == 'number_sort') {
                 func = function (card) {
                     return get.number(card) - 7 + 0.5;
-                };
+                }
             }
             return func;
         },
@@ -3176,8 +2846,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (!infoitem) {
                 for (var itemx in lib.characterPack) {
                     if (lib.characterPack[itemx][name]) {
-                        infoitem = lib.characterPack[itemx][name];
-                        break;
+                        infoitem = lib.characterPack[itemx][name]; break;
                     }
                 }
             }
@@ -3248,8 +2917,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     }
                     return false;
                 }
-                case 'card':
-                case 'cards': {
+                case 'card': case 'cards': {
                     if (get.itemtype(content) == 'card') {
                         content = [content];
                     }
@@ -3266,8 +2934,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     }
                     return false;
                 }
-                case 'player':
-                case 'players': {
+                case 'player': case 'players': {
                     if (get.itemtype(content) == 'player') {
                         content = [content];
                     }
@@ -3282,8 +2949,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         return false;
                     }
                 }
-                case 'character':
-                case 'characters': {
+                case 'character': case 'characters': {
                     if (typeof content == 'string') {
                         content = [content];
                     }
@@ -3326,11 +2992,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return uiintro;
             }
             var i, translation, intro, str;
-            if (node._nointro)
-                return;
+            if (node._nointro) return;
             if (typeof node._customintro == 'function') {
-                if (node._customintro(uiintro) === false)
-                    return;
+                if (node._customintro(uiintro) === false) return;
             }
             else if (Array.isArray(node._customintro)) {
                 var caption = node._customintro[0];
@@ -3347,18 +3011,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             else if (node.classList.contains('player') || node.linkplayer) {
                 if (node.linkplayer) {
                     node = node.link;
-                }
-                else {
-                    node = node.getModel(); //get player model
+                }else{
+                    node = node.getModel();//get player model
                 }
                 var capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
                     capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? (lib.translate[node.group + '2'] ? get.translation(node.group + '2') : get.translation(node.group)) : lib.translate[lib.character[node.name][1]]);
                 }
                 uiintro.add(capt);
+
                 if (lib.characterTitle[node.name]) {
                     uiintro.addText(get.colorspan(lib.characterTitle[node.name]));
                 }
+
                 if (true) {
                     var hs = node.getCards('h');
                     if (hs.length) {
@@ -3367,10 +3032,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             ms.addArray(hs);
                         }
                         for (var i = 0; i < hs.length; i++) {
-                            if (hs[i].hasGaintag('ming_'))
-                                ms.add(hs[i]);
-                            if (hs[i].hasGaintag('an_'))
-                                ms.remove(ms[i]);
+                            if (hs[i].hasGaintag('ming_')) ms.add(hs[i]);
+                            if (hs[i].hasGaintag('an_')) ms.remove(ms[i]);
                         }
                         if (ms.length) {
                             uiintro.add('<div class="text center">手牌</div>');
@@ -3378,6 +3041,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         }
                     }
                 }
+
                 var skills = node.getSkills(null, null, false).slice(0);
                 var skills2 = game.filterSkills(skills, node);
                 if (node == game.me && node.hiddenSkills.length) {
@@ -3391,8 +3055,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     }
                 }
                 for (i = 0; i < skills.length; i++) {
-                    if (lib.skill[skills[i]] && (lib.skill[skills[i]].nopop || lib.skill[skills[i]].equipSkill))
-                        continue;
+                    if (lib.skill[skills[i]] && (lib.skill[skills[i]].nopop || lib.skill[skills[i]].equipSkill)) continue;
                     if (lib.translate[skills[i] + '_info']) {
                         translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
                         if (node.forbiddenSkills[skills[i]]) {
@@ -3403,7 +3066,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             else {
                                 forbidstr += '（双将禁用）<br>';
                             }
-                            forbidstr += get.skillInfoTranslation(skills[i], node) + '</div></div>';
+                            forbidstr += get.skillInfoTranslation(skills[i], node) + '</div></div>'
                             uiintro.add(forbidstr);
                         }
                         else if (!skills2.contains(skills[i])) {
@@ -3490,7 +3153,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i], node) + '</div></div>');
                         }
                         if (lib.translate[skills[i] + '_append']) {
-                            uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>');
+                            uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                         }
                     }
                 }
@@ -3513,6 +3176,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 //                  }
                 //     }
                 // }
+
                 if (lib.config.right_range && _status.gameStarted) {
                     uiintro.add(ui.create.div('.placeholder'));
                     var table, tr, td;
@@ -3531,6 +3195,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     td = document.createElement('td');
                     td.innerHTML = game.chess ? '职业' : '伤害';
                     tr.appendChild(td);
+
                     tr = document.createElement('tr');
                     table.appendChild(tr);
                     td = document.createElement('td');
@@ -3556,17 +3221,13 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     tr.appendChild(td);
                     td = document.createElement('td');
                     if (game.chess) {
-                        if (node.storage.curClass)
-                            td.innerHTML = get.translation(node.storage.curClass);
-                        else
-                            td.innerHTML = '-';
-                    }
-                    else {
+                        if (node.storage.curClass) td.innerHTML = get.translation(node.storage.curClass);
+                        else td.innerHTML = '-';
+                    } else {
                         (function () {
                             num = 0;
                             for (var j = 0; j < node.stat.length; j++) {
-                                if (typeof node.stat[j].damage == 'number')
-                                    num += node.stat[j].damage;
+                                if (typeof node.stat[j].damage == 'number') num += node.stat[j].damage;
                             }
                             td.innerHTML = num;
                         }());
@@ -3574,9 +3235,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     tr.appendChild(td);
                     table.style.width = 'calc(100% - 20px)';
                     table.style.marginLeft = '10px';
+
                     uiintro.content.appendChild(table);
                     if (!lib.config.show_favourite) {
-                        table.style.paddingBottom = '5px';
+                        table.style.paddingBottom = '5px'
                     }
                 }
                 if (!simple || get.is.phoneLayout()) {
@@ -3630,27 +3292,22 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     ui.throwEmotion = [];
                     uiintro.addText('发送交互表情');
                     var click = function () {
-                        if (_status.dragged)
-                            return;
-                        if (_status.justdragged)
-                            return;
-                        if (_status.throwEmotionWait)
-                            return;
+                        if (_status.dragged) return;
+                        if (_status.justdragged) return;
+                        if (_status.throwEmotionWait) return;
                         var emotion = this.link;
                         if (game.online) {
                             game.send('throwEmotion', node, emotion);
                         }
-                        else
-                            game.me.throwEmotion(node, emotion);
+                        else game.me.throwEmotion(node, emotion);
                         uiintro._close();
                         _status.throwEmotionWait = true;
                         setTimeout(function () {
                             _status.throwEmotionWait = false;
                             if (ui.throwEmotion) {
-                                for (var i of ui.throwEmotion)
-                                    i.classList.remove('exclude');
+                                for (var i of ui.throwEmotion) i.classList.remove('exclude');
                             }
-                        }, (emotion == 'flower' || emotion == 'egg') ? 5000 : 10000);
+                        }, (emotion == 'flower' || emotion == 'egg') ? 5000 : 10000)
                     };
                     var td;
                     var table = document.createElement('div');
@@ -3662,8 +3319,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     for (var i = 0; i < listi.length; i++) {
                         td = ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
                         ui.throwEmotion.add(td);
-                        if (_status.throwEmotionWait)
-                            td.classList.add('exclude');
+                        if (_status.throwEmotionWait) td.classList.add('exclude');
                         td.link = listi[i];
                         table.appendChild(td);
                         td.innerHTML = '<span>' + get.translation(listi[i]) + '</span>';
@@ -3679,8 +3335,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     for (var i = 0; i < listi.length; i++) {
                         td = ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
                         ui.throwEmotion.add(td);
-                        if (_status.throwEmotionWait)
-                            td.classList.add('exclude');
+                        if (_status.throwEmotionWait) td.classList.add('exclude');
                         td.link = listi[i];
                         table.appendChild(td);
                         td.innerHTML = '<span>' + get.translation(listi[i]) + '</span>';
@@ -3699,7 +3354,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     else {
                         addFavourite.innerHTML = '添加收藏';
                     }
-                    addFavourite.listen(ui.click.favouriteCharacter);
+                    addFavourite.listen(ui.click.favouriteCharacter)
                     uiintro.add(addFavourite);
                 }
                 if (!simple || get.is.phoneLayout()) {
@@ -3738,16 +3393,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                     else {
                                         delete lib.config.skin[nameskin];
                                         if (avatar2) {
-                                            if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin)
-                                                node.node.avatar2.setBackground(nameskin2, 'character');
-                                            else
-                                                node.node.avatar2.setBackground(nameskin, 'character');
+                                            if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin) node.node.avatar2.setBackground(nameskin2, 'character');
+                                            else node.node.avatar2.setBackground(nameskin, 'character');
                                         }
                                         else {
-                                            if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin)
-                                                node.node.avatar.setBackground(nameskin2, 'character');
-                                            else
-                                                node.node.avatar.setBackground(nameskin, 'character');
+                                            if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin) node.node.avatar.setBackground(nameskin2, 'character');
+                                            else node.node.avatar.setBackground(nameskin, 'character');
                                         }
                                     }
                                     game.saveConfig('skin', lib.config.skin);
@@ -3757,10 +3408,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                     button.setBackgroundImage('image/skin/' + nameskin + '/' + i + '.jpg');
                                 }
                                 else {
-                                    if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin)
-                                        button.setBackground(nameskin2, 'character', 'noskin');
-                                    else
-                                        button.setBackground(nameskin, 'character', 'noskin');
+                                    if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, 'character', 'noskin');
+                                    else button.setBackground(nameskin, 'character', 'noskin');
                                 }
                             }
                             uiintro.add(buttons);
@@ -3770,7 +3419,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             img.onload = function () {
                                 num++;
                                 loadImage(avatar2);
-                            };
+                            }
                             img.onerror = function () {
                                 num--;
                                 if (num) {
@@ -3782,7 +3431,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                         loadImage(true);
                                     }
                                 }
-                            };
+                            }
                             var nameskin = (avatar2 ? node.name2 : node.name1);
                             var nameskin2 = nameskin;
                             var gzbool = false;
@@ -3794,7 +3443,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                 gzbool = true;
                             }
                             img.src = lib.assetURL + 'image/skin/' + nameskin + '/' + num + '.jpg';
-                        };
+                        }
                         if (lib.config.change_skin) {
                             if (!node.isUnseen(0)) {
                                 loadImage();
@@ -3823,12 +3472,13 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         }
                     }
                 }
+
                 uiintro.add(ui.create.div('.placeholder.slim'));
             }
             else if (node.classList.contains('mark') && node.info &&
                 node.parentNode && node.parentNode.parentNode && node.parentNode.parentNode.classList.contains('player')) {
                 var info = node.info;
-                var player = node.parentNode.parentNode.getModel(); //get player model
+                var player = node.parentNode.parentNode.getModel();//get player model
                 if (info.name) {
                     if (typeof info.name == 'function') {
                         var named = info.name(player.storage[node.skill], player);
@@ -3872,6 +3522,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     }
                 }
                 else {
+                    
                     var stint = get.storageintro(info.content, player.storage[node.skill], player, uiintro, node.skill);
                     if (stint) {
                         if (stint[0] == '@') {
@@ -3909,15 +3560,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             uiintro._place_text = uiintro.add('<div class="text" style="display:inline">' + item[1] + '</div>');
                         }
                     }
-                    if (moded)
-                        return uiintro;
+                    if (moded) return uiintro;
                 }
                 if (node.link && node.link.name && lib.card[node.link.name]) {
                     name = node.link.name;
                 }
                 if ((get.position(node) == 'j' || get.position(node) == 'e') && node.viewAs && (node.viewAs != name || node.originalName != name)) {
                     uiintro.add(get.translation(node.viewAs));
-                    console.log(node.originalName);
+                    console.log(node.originalName)
                     uiintro.add('<div class="text center">（' + get.translation(get.translation(node.originalName || node)) + '）</div>');
                     // uiintro.add(get.translation(node.viewAs)+'<br><div class="text center" style="padding-top:5px;">（'+get.translation(node)+'）</div>');
                     uiintro.nosub = true;
@@ -3952,8 +3602,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     });
                     for (var i = 0; i < modeorder.length; i++) {
                         if (node._banning == 'online') {
-                            if (!lib.mode[modeorder[i]].connect)
-                                continue;
+                            if (!lib.mode[modeorder[i]].connect) continue;
                         }
                         else if (modeorder[i] == 'connect' || modeorder[i] == 'brawl') {
                             continue;
@@ -4036,8 +3685,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                     uiintro.add('<div class="text center">特殊' + get.translation(lib.card[name].type) + '牌</div>');
                                 }
                                 else {
-                                    if (lib.card[name].type && lib.translate[lib.card[name].type])
-                                        uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
+                                    if (lib.card[name].type && lib.translate[lib.card[name].type]) uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
                                 }
                             }
                             if (lib.card[name].unique && lib.card[name].type == 'equip') {
@@ -4056,20 +3704,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             }
                         }
                         if (lib.card[name].materials) {
-                            if (lib.card[name].materials_prompt)
-                                uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + lib.card[name].materials_prompt + '</div>');
-                            else if (typeof lib.card[name].materials == 'function')
-                                uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + lib.card[name].materials_prompt(node.link || node) + '</div>');
-                            else if (Array.isArray(lib.card[name].materials))
-                                uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + get.translation(lib.card[name].materials) + '</div>');
-                            else
-                                uiintro.add('<div class="text" style="font-family: yuanli">★升阶卡牌</div>');
+                            if (lib.card[name].materials_prompt) uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + lib.card[name].materials_prompt + '</div>');
+                            else if (typeof lib.card[name].materials == 'function') uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + lib.card[name].materials_prompt(node.link || node) + '</div>');
+                            else if (Array.isArray(lib.card[name].materials)) uiintro.add('<div class="text" style="font-family: yuanli">★升阶：' + get.translation(lib.card[name].materials) + '</div>');
+                            else uiintro.add('<div class="text" style="font-family: yuanli">★升阶卡牌</div>');
                         }
                         if (lib.card[name].yingbian_prompt && get.is.yingbian(node.link || node)) {
-                            if (typeof lib.card[name].yingbian_prompt == 'function')
-                                uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt(node.link || node) + '</div>');
-                            else
-                                uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt + '</div>');
+                            if (typeof lib.card[name].yingbian_prompt == 'function') uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt(node.link || node) + '</div>');
+                            else uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt + '</div>');
                         }
                         if (node.nature == 'ocean') {
                             uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' + '<span class="bluetext">海洋</span>' + '：海洋属性的牌被使用时，若此牌没有「伤害」标签且目标没有护甲，则令目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' + '</div>');
@@ -4092,20 +3734,20 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         var str = get.translation(character) + '&nbsp;&nbsp;';
                         for (var i = 0; i < group.length; i++) {
                             str += get.translation(group[i]);
-                            if (i < group.length - 1)
-                                str += '/';
+                            if (i < group.length - 1) str += '/';
                         }
                         uiintro.add(str);
                     }
-                    else
-                        uiintro.add(get.translation(character) + '&nbsp;&nbsp;' + lib.translate[lib.character[node.link][1]] || lib.character[node.link][1]);
+                    else uiintro.add(get.translation(character) + '&nbsp;&nbsp;' + lib.translate[lib.character[node.link][1]] || lib.character[node.link][1]);
                 }
                 else {
                     uiintro.add(get.translation(character));
                 }
+
                 if (lib.characterTitle[node.link]) {
                     uiintro.addText(get.colorspan(lib.characterTitle[node.link]));
                 }
+
                 if (node._banning) {
                     var clickBanned = function () {
                         var banned = lib.config[this.bannedname] || [];
@@ -4132,8 +3774,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     });
                     for (var i = 0; i < modeorder.length; i++) {
                         if (node._banning == 'online') {
-                            if (!lib.mode[modeorder[i]].connect)
-                                continue;
+                            if (!lib.mode[modeorder[i]].connect) continue;
                             if (!lib.config['connect_' + modeorder[i] + '_banned']) {
                                 lib.config['connect_' + modeorder[i] + '_banned'] = [];
                             }
@@ -4207,8 +3848,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     if (!infoitem) {
                         for (var itemx in lib.characterPack) {
                             if (lib.characterPack[itemx][character]) {
-                                infoitem = lib.characterPack[itemx][character];
-                                break;
+                                infoitem = lib.characterPack[itemx][character]; break;
                             }
                         }
                     }
@@ -4223,7 +3863,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                 uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i]) + '</div></div>');
                             }
                             if (lib.translate[skills[i] + '_append']) {
-                                uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>');
+                                uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                             }
                         }
                     }
@@ -4239,7 +3879,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         else {
                             addFavourite.innerHTML = '添加收藏';
                         }
-                        addFavourite.listen(ui.click.favouriteCharacter);
+                        addFavourite.listen(ui.click.favouriteCharacter)
                         uiintro.add(addFavourite);
                     }
                     else {
@@ -4266,8 +3906,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             gzbool = true;
                         }
                         var createButtons = function (num) {
-                            if (!num)
-                                return;
+                            if (!num) return;
                             if (!introadded) {
                                 introadded = true;
                                 uiintro.add('<div class="text center">更改皮肤</div>');
@@ -4283,10 +3922,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                     }
                                     else {
                                         delete lib.config.skin[nameskin];
-                                        if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin)
-                                            node.setBackground(nameskin2, 'character');
-                                        else
-                                            node.setBackground(nameskin, 'character');
+                                        if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin) node.setBackground(nameskin2, 'character');
+                                        else node.setBackground(nameskin, 'character');
                                         game.saveConfig('skin', lib.config.skin);
                                     }
                                 });
@@ -4295,10 +3932,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                                     button.setBackgroundImage('image/skin/' + nameskin + '/' + i + '.jpg');
                                 }
                                 else {
-                                    if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin)
-                                        button.setBackground(nameskin2, 'character', 'noskin');
-                                    else
-                                        button.setBackground(nameskin, 'character', 'noskin');
+                                    if (gzbool && lib.character[nameskin2][4].contains('gzskin') && lib.config.mode_config.guozhan.guozhanSkin) button.setBackground(nameskin2, 'character', 'noskin');
+                                    else button.setBackground(nameskin, 'character', 'noskin');
                                 }
                             }
                             uiintro.add(buttons);
@@ -4308,13 +3943,13 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             img.onload = function () {
                                 num++;
                                 loadImage();
-                            };
+                            }
                             img.onerror = function () {
                                 num--;
                                 createButtons(num);
-                            };
+                            }
                             img.src = lib.assetURL + 'image/skin/' + nameskin + '/' + num + '.jpg';
-                        };
+                        }
                         if (lib.config.change_skin) {
                             loadImage();
                         }
@@ -4334,7 +3969,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     ui.control.hide();
                     uiintro._onclose = function () {
                         ui.control.show();
-                    };
+                    }
                     var confirmbutton;
                     for (var i = 0; i < uiintro.buttons.length; i++) {
                         var button = uiintro.buttons[i];
@@ -4460,15 +4095,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         types: function () {
             var types = [];
             for (var i in lib.card) {
-                if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false)
-                    continue;
-                if (lib.card[i].forbid && lib.card[i].forbid.contains(lib.config.mode))
-                    continue;
+                if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false) continue;
+                if (lib.card[i].forbid && lib.card[i].forbid.contains(lib.config.mode)) continue;
                 if (lib.card[i].type) {
-                    if (lib.card[i].type == 'delay')
-                        types.add('trick');
-                    else
-                        types.add(lib.card[i].type);
+                    if (lib.card[i].type == 'delay') types.add('trick');
+                    else types.add(lib.card[i].type);
                 }
             }
             return types;
@@ -4476,8 +4107,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         links: function (buttons) {
             var links = [];
             for (var i = 0; i < buttons.length; i++) {
-                if (buttons[i].link != undefined)
-                    links.push(buttons[i].link);
+                if (buttons[i].link != undefined) links.push(buttons[i].link);
             }
             return links;
         },
@@ -4528,20 +4158,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             if (hp) {
                 switch (target.hp) {
-                    case 0:
-                        threaten *= 1.5;
-                        break;
-                    case 1:
-                        threaten *= 1.2;
-                        break;
+                    case 0: threaten *= 1.5; break;
+                    case 1: threaten *= 1.2; break;
                 }
                 switch (target.countCards('h')) {
-                    case 0:
-                        threaten *= 1.5;
-                        break;
-                    case 1:
-                        threaten *= 1.2;
-                        break;
+                    case 0: threaten *= 1.5; break;
+                    case 1: threaten *= 1.2; break;
                 }
             }
             return threaten;
@@ -4587,12 +4209,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             var es = player.getCards('e');
             for (var i = 0; i < es.length; i++) {
                 var val = get.equipValueNumber(es[i]);
-                if (val >= 7)
-                    num += 0.8;
-                if (val >= 5)
-                    num += 0.5;
-                if (val >= 3)
-                    num += 0.2;
+                if (val >= 7) num += 0.8;
+                if (val >= 5) num += 0.5;
+                if (val >= 3) num += 0.2;
             }
             return num;
         },
@@ -4606,13 +4225,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number}
          */
         attitude: function (from, to) {
-            if (!from || !to)
-                return 0;
+            if (!from || !to) return 0;
             from = from._trueMe || from;
             arguments[0] = from;
             var att = get.rawAttitude.apply(this, arguments);
-            if (from.isMad())
-                att = -att;
+            if (from.isMad()) att = -att;
             if (to.isMad() && att > 0) {
                 if (to.identity == 'zhu') {
                     att = 1;
@@ -4649,10 +4266,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number} 如果是判定区的牌，返回-1；如果 `useful`未定义，此函数返回-1(`useful`默认为-1)
          */
         useful: function (card, player) {
-            if (get.position(card) == 'j')
-                return -1;
-            if (get.position(card) == 'e')
-                return get.equipValue(card);
+            if (get.position(card) == 'j') return -1;
+            if (get.position(card) == 'e') return get.equipValue(card);
             if (card._modUseful) {
                 return card._modUseful();
             }
@@ -4660,28 +4275,22 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             player = player || _status.event.player;
             if (player) {
                 i = player.getCards('h', card.name).indexOf(card);
-                if (i < 0)
-                    i = 0;
+                if (i < 0) i = 0;
             }
             var aii = get.info(card).ai;
             var useful;
-            if (aii && aii.useful)
-                useful = aii.useful;
-            else if (aii && aii.basic)
-                useful = aii.basic.useful;
+            if (aii && aii.useful) useful = aii.useful;
+            else if (aii && aii.basic) useful = aii.basic.useful;
             var result;
-            if (useful == undefined)
-                result = -1;
+            if (useful == undefined) result = -1;
             else if (typeof useful == 'function') {
                 result = useful(card, i);
             }
-            else if (typeof useful == 'number')
-                result = useful;
+            else if (typeof useful == 'number') result = useful;
             else if (i < useful.length) {
                 result = useful[i];
             }
-            else
-                result = useful[useful.length - 1];
+            else result = useful[useful.length - 1];
             result = game.checkMod(player, card, result, 'aiUseful', player);
             return result;
         },
@@ -4708,8 +4317,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {!number}
          */
         unuseful3: function (card) {
-            if (card.name == 'du')
-                return 20;
+            if (card.name == 'du') return 20;
             return 10 - get.useful(card);
         },
         /**
@@ -4755,12 +4363,9 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 return card._modValue(player, method);
             }
             var aii = get.info(card).ai;
-            if (aii && aii.value)
-                value = aii.value;
-            else if (aii && aii.basic)
-                value = aii.basic.value;
-            if (player == undefined || get.itemtype(player) != 'player')
-                player = _status.event.player;
+            if (aii && aii.value) value = aii.value;
+            else if (aii && aii.basic) value = aii.basic.value;
+            if (player == undefined || get.itemtype(player) != 'player') player = _status.event.player;
             var geti = function () {
                 var num = 0, i;
                 var cards = player.getCards('hs', card.name);
@@ -4772,16 +4377,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (typeof value == 'function') {
                 result = value(card, player, geti(), method);
             }
-            if (typeof value == 'number')
-                result = value;
+            if (typeof value == 'number') result = value;
             if (Array.isArray(value)) {
-                if (method == 'raw')
-                    result = value[0]; //??
+                if (method == 'raw') result = value[0];//??
                 var num = geti();
-                if (num < value.length)
-                    result = value[num];
-                else
-                    result = value[value.length - 1];
+                if (num < value.length) result = value[num];
+                else result = value[value.length - 1];
             }
             result = game.checkMod(player, card, result, 'aiValue', player);
             return result;
@@ -4821,25 +4422,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {!number}
          */
         equipValue: function (card, player) {
-            if (player == undefined || get.itemtype(player) != 'player')
-                player = get.owner(card);
-            if (player == undefined || get.itemtype(player) != 'player')
-                player = _status.event.player;
+            if (player == undefined || get.itemtype(player) != 'player') player = get.owner(card);
+            if (player == undefined || get.itemtype(player) != 'player') player = _status.event.player;
             var info = get.info(card);
-            if (!info.ai)
-                return 0;
+            if (!info.ai) return 0;
             var value = info.ai.equipValue;
             if (value == undefined) {
                 if (info.ai.basic && info.ai.basic.equipValue != undefined) {
                     value = info.ai.basic.equipValue;
                 }
-                else
-                    return 0;
+                else return 0;
             }
-            if (typeof value == 'number')
-                return value;
-            if (typeof value == 'function')
-                return value(card, player, null, 'raw2');
+            if (typeof value == 'number') return value;
+            if (typeof value == 'function') return value(card, player, null, 'raw2');
             return 0;
         },
         /**
@@ -4851,10 +4446,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         equipValueNumber: function (card) {
             var info = get.info(card);
             if (info.ai) {
-                if (typeof info.ai.equipValue == 'number')
-                    return info.ai.equipValue;
-                if (info.ai.basic && typeof info.ai.basic.equipValue == 'number')
-                    return info.ai.basic.equipValue;
+                if (typeof info.ai.equipValue == 'number') return info.ai.equipValue;
+                if (info.ai.basic && typeof info.ai.basic.equipValue == 'number') return info.ai.basic.equipValue;
             }
             return 0;
         },
@@ -4886,13 +4479,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number} 如果没有找到技能，返回1；如果 `info.ai.threaten`未定义，此函数返回1(`threaten`默认为1)
          */
         skillthreaten: function (skill, player, target) {
-            if (!lib.skill[skill])
-                return 1;
-            if (!lib.skill[skill].ai)
-                return 1;
+            if (!lib.skill[skill]) return 1;
+            if (!lib.skill[skill].ai) return 1;
             var threaten = lib.skill[skill].ai.threaten;
-            if (typeof threaten == 'number')
-                return threaten;
+            if (typeof threaten == 'number') return threaten;
             if (typeof threaten == 'function') {
                 player = player || _status.event.player;
                 target = target || player;
@@ -4910,16 +4500,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          */
         order: function (item) {
             var info = get.info(item);
-            if (!info)
-                return -1;
+            if (!info) return -1;
             var aii = info.ai;
             var order;
-            if (aii && aii.order)
-                order = aii.order;
-            else if (aii && aii.basic)
-                order = aii.basic.order;
-            if (order == undefined)
-                return -1;
+            if (aii && aii.order) order = aii.order;
+            else if (aii && aii.basic) order = aii.basic.order;
+            if (order == undefined) return -1;
             var num = order;
             if (typeof (order) == 'function') {
                 num = order(item, _status.event.player);
@@ -4933,19 +4519,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         /**
          * 返回`get.info(item).ai.result`的浅拷贝对象，如果`ai.result`是函数，返回`get.info(item).ai.result(item)`
          * @private
-         * @param {GameCores.GameObjects.Card} item
-         * @param {?} skill
+         * @param {GameCores.GameObjects.Card} item 
+         * @param {?} skill 
          * @returns {!Object}
          */
         result: function (item, skill) {
             var result;
             var info = get.info(item);
-            if (info.ai)
-                result = get.copy(info.ai.result);
-            if (typeof (result) == 'function')
-                result = result(item);
-            if (!result)
-                result = {};
+            if (info.ai) result = get.copy(info.ai.result);
+            if (typeof (result) == 'function') result = result(item);
+            if (!result) result = {};
             if (skill) {
                 var info2 = get.info(skill);
                 if (info2.ai) {
@@ -4960,21 +4543,19 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         /**
          * 返回源对目标使用一张游戏牌的效果值
          * @param {GameCores.GameObjects.Player} target 目标
-         * @param {*} card
+         * @param {*} card 
          * @param {?GameCores.GameObjects.Player} [player] 源，如果未指定，使用当前事件角色
          * @param {?GameCores.GameObjects.Player} player2 观察者
-         * @param {?boolean} [isLink]
+         * @param {?boolean} [isLink] 
          * @returns {number}
          */
         effect_use: function (target, card, player, player2, isLink) {
             var event = _status.event;
             var eventskill = null;
-            if (player == undefined)
-                player = _status.event.player;
+            if (player == undefined) player = _status.event.player;
             if (typeof card != 'string' && (typeof card != 'object' || !card.name)) {
                 var skillinfo = get.info(event.skill);
-                if (event.skill && skillinfo.viewAs == undefined)
-                    card = _status.event.skill;
+                if (event.skill && skillinfo.viewAs == undefined) card = _status.event.skill;
                 else {
                     card = get.card();
                     if (skillinfo && skillinfo.viewAs && card.name === skillinfo.viewAs.name) {
@@ -4994,14 +4575,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             var result = get.result(card, eventskill);
             var result1 = result.player_use || result.player, result2 = result.target_use || result.target;
-            if (typeof result1 == 'function')
-                result1 = result1(player, target, card, isLink);
-            if (typeof result2 == 'function')
-                result2 = result2(player, target, card, isLink);
-            if (typeof result1 != 'number')
-                result1 = 0;
-            if (typeof result2 != 'number')
-                result2 = 0;
+            if (typeof result1 == 'function') result1 = result1(player, target, card, isLink);
+            if (typeof result2 == 'function') result2 = result2(player, target, card, isLink);
+
+            if (typeof result1 != 'number') result1 = 0;
+            if (typeof result2 != 'number') result2 = 0;
             var temp1, temp2, temp3, temp01 = 0, temp02 = 0, threaten = 1;
             var skills1 = player.getSkills().concat(lib.skill.global);
             game.expandSkills(skills1);
@@ -5014,8 +4592,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 else if (temp1 && typeof temp1.effect == 'object' && typeof temp1.effect.player == 'function') {
                     temp1 = temp1.effect.player(card, player, target, result1, isLink);
                 }
-                else
-                    temp1 = undefined;
+                else temp1 = undefined;
                 if (typeof temp1 == 'object') {
                     if (temp1.length == 2 || temp1.length == 4) {
                         result1 *= temp1[0];
@@ -5045,20 +4622,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 game.expandSkills(skills2);
                 for (var i = 0; i < skills2.length; i++) {
                     temp2 = get.info(skills2[i]).ai;
-                    if (temp2 && temp2.threaten)
-                        temp3 = temp2.threaten;
-                    else
-                        temp3 = undefined;
+                    if (temp2 && temp2.threaten) temp3 = temp2.threaten;
+                    else temp3 = undefined;
                     if (temp2 && typeof temp2.effect == 'function') {
                         if (!player.hasSkillTag('ignoreSkill', true, {
                             card: card,
                             target: target,
                             skill: skills2[i],
                             isLink: isLink,
-                        }))
-                            temp2 = temp2.effect(card, player, target, result2, isLink);
-                        else
-                            temp2 = undefined;
+                        })) temp2 = temp2.effect(card, player, target, result2, isLink);
+                        else temp2 = undefined;
                     }
                     else if (temp2 && typeof temp2.effect == 'object' && typeof temp2.effect.target_use == 'function') {
                         if (!player.hasSkillTag('ignoreSkill', true, {
@@ -5066,10 +4639,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             target: target,
                             skill: skills2[i],
                             isLink: isLink,
-                        }))
-                            temp2 = temp2.effect.target_use(card, player, target, result2, isLink);
-                        else
-                            temp2 = undefined;
+                        })) temp2 = temp2.effect.target_use(card, player, target, result2, isLink);
+                        else temp2 = undefined;
                     }
                     else if (temp2 && typeof temp2.effect == 'object' && typeof temp2.effect.target == 'function') {
                         if (!player.hasSkillTag('ignoreSkill', true, {
@@ -5077,13 +4648,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             target: target,
                             skill: skills2[i],
                             isLink: isLink,
-                        }))
-                            temp2 = temp2.effect.target(card, player, target, result2, isLink);
-                        else
-                            temp2 = undefined;
+                        })) temp2 = temp2.effect.target(card, player, target, result2, isLink);
+                        else temp2 = undefined;
                     }
-                    else
-                        temp2 = undefined;
+                    else temp2 = undefined;
                     if (typeof temp2 == 'object') {
                         if (temp2.length == 2 || temp2.length == 4) {
                             result2 *= temp2[0];
@@ -5130,10 +4698,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 else {
                     result2 *= Math.sqrt(Math.sqrt(threaten));
                 }
-                if (target.hp == 1)
-                    result2 *= 2.5;
-                if (target.hp == 2)
-                    result2 *= 1.8;
+                if (target.hp == 1) result2 *= 2.5;
+                if (target.hp == 2) result2 *= 1.8;
                 if (target.countCards('h') == 0) {
                     if (get.tag(card, 'respondSha') || get.tag(card, 'respondShan')) {
                         result2 *= 1.7;
@@ -5142,46 +4708,34 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         result2 *= 1.5;
                     }
                 }
-                if (target.countCards('h') == 1)
-                    result2 *= 1.3;
-                if (target.countCards('h') == 2)
-                    result2 *= 1.1;
-                if (target.countCards('h') > 3)
-                    result2 *= 0.5;
-                if (target.hp == 4)
-                    result2 *= 0.9;
-                if (target.hp == 5)
-                    result2 *= 0.8;
-                if (target.hp > 5)
-                    result2 *= 0.6;
+                if (target.countCards('h') == 1) result2 *= 1.3;
+                if (target.countCards('h') == 2) result2 *= 1.1;
+                if (target.countCards('h') > 3) result2 *= 0.5;
+                if (target.hp == 4) result2 *= 0.9;
+                if (target.hp == 5) result2 *= 0.8;
+                if (target.hp > 5) result2 *= 0.6;
             }
             else {
                 result2 += temp02;
                 result1 += temp01;
             }
-            if (zeroplayer)
-                result1 = 0;
-            if (zerotarget)
-                result2 = 0;
+            if (zeroplayer) result1 = 0;
+            if (zerotarget) result2 = 0;
             var final = 0;
             if (player2) {
                 final = (result1 * get.attitude(player2, player) + (target ? result2 * get.attitude(player2, target) : 0));
             }
-            else
-                final = (result1 * get.attitude(player, player) + (target ? result2 * get.attitude(player, target) : 0));
+            else final = (result1 * get.attitude(player, player) + (target ? result2 * get.attitude(player, target) : 0));
             if (!isLink && get.tag(card, 'natureDamage') && !zerotarget) {
                 var info = get.info(card);
                 if (!info || !info.ai || !info.ai.canLink) {
-                    if (target.isLinked())
-                        game.countPlayer(function (current) {
-                            if (current != target && current.isLinked())
-                                final += get.effect(current, card, player, player2, true);
-                        });
+                    if (target.isLinked()) game.countPlayer(function (current) {
+                        if (current != target && current.isLinked()) final += get.effect(current, card, player, player2, true);
+                    });
                 }
                 else if (info.ai.canLink(player, target, card)) {
                     game.countPlayer(function (current) {
-                        if (current != target && current.isLinked())
-                            final += get.effect(current, card, player, player2, true);
+                        if (current != target && current.isLinked()) final += get.effect(current, card, player, player2, true);
                     });
                 }
             }
@@ -5200,12 +4754,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         effect: function (target, card, player, player2, isLink) {
             var event = _status.event;
             var eventskill = null;
-            if (player == undefined)
-                player = _status.event.player;
+            if (player == undefined) player = _status.event.player;
             if (typeof card != 'string' && (typeof card != 'object' || !card.name)) {
                 var skillinfo = get.info(event.skill);
-                if (event.skill && skillinfo.viewAs == undefined)
-                    card = _status.event.skill;
+                if (event.skill && skillinfo.viewAs == undefined) card = _status.event.skill;
                 else {
                     card = get.card();
                     if (skillinfo && skillinfo.viewAs && card.name === skillinfo.viewAs.name) {
@@ -5215,14 +4767,11 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             var result = get.result(card, eventskill);
             var result1 = result.player, result2 = result.target;
-            if (typeof result1 == 'function')
-                result1 = result1(player, target, card, isLink);
-            if (typeof result2 == 'function')
-                result2 = result2(player, target, card, isLink);
-            if (typeof result1 != 'number')
-                result1 = 0;
-            if (typeof result2 != 'number')
-                result2 = 0;
+            if (typeof result1 == 'function') result1 = result1(player, target, card, isLink);
+            if (typeof result2 == 'function') result2 = result2(player, target, card, isLink);
+
+            if (typeof result1 != 'number') result1 = 0;
+            if (typeof result2 != 'number') result2 = 0;
             var temp1, temp2, temp3, temp01 = 0, temp02 = 0, threaten = 1;
             var skills1 = player.getSkills().concat(lib.skill.global);
             game.expandSkills(skills1);
@@ -5232,8 +4781,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 if (temp1 && typeof temp1.effect == 'object' && typeof temp1.effect.player == 'function') {
                     temp1 = temp1.effect.player(card, player, target, result1, isLink);
                 }
-                else
-                    temp1 = undefined;
+                else temp1 = undefined;
                 if (typeof temp1 == 'object') {
                     if (temp1.length == 2 || temp1.length == 4) {
                         result1 *= temp1[0];
@@ -5263,20 +4811,16 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 game.expandSkills(skills2);
                 for (var i = 0; i < skills2.length; i++) {
                     temp2 = get.info(skills2[i]).ai;
-                    if (temp2 && temp2.threaten)
-                        temp3 = temp2.threaten;
-                    else
-                        temp3 = undefined;
+                    if (temp2 && temp2.threaten) temp3 = temp2.threaten;
+                    else temp3 = undefined;
                     if (temp2 && typeof temp2.effect == 'function') {
                         if (!player.hasSkillTag('ignoreSkill', true, {
                             card: card,
                             target: target,
                             skill: skills2[i],
                             isLink: isLink,
-                        }))
-                            temp2 = temp2.effect(card, player, target, result2, isLink);
-                        else
-                            temp2 = undefined;
+                        })) temp2 = temp2.effect(card, player, target, result2, isLink);
+                        else temp2 = undefined;
                     }
                     else if (temp2 && typeof temp2.effect == 'object' && typeof temp2.effect.target == 'function') {
                         if (!player.hasSkillTag('ignoreSkill', true, {
@@ -5284,13 +4828,10 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                             target: target,
                             skill: skills2[i],
                             isLink: isLink,
-                        }))
-                            temp2 = temp2.effect.target(card, player, target, result2, isLink);
-                        else
-                            temp2 = undefined;
+                        })) temp2 = temp2.effect.target(card, player, target, result2, isLink);
+                        else temp2 = undefined;
                     }
-                    else
-                        temp2 = undefined;
+                    else temp2 = undefined;
                     if (typeof temp2 == 'object') {
                         if (temp2.length == 2 || temp2.length == 4) {
                             result2 *= temp2[0];
@@ -5338,10 +4879,8 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                     result2 *= Math.sqrt(Math.sqrt(threaten));
                 }
                 // *** continue here ***
-                if (target.hp == 1)
-                    result2 *= 2.5;
-                if (target.hp == 2)
-                    result2 *= 1.8;
+                if (target.hp == 1) result2 *= 2.5;
+                if (target.hp == 2) result2 *= 1.8;
                 if (target.countCards('h') == 0) {
                     if (get.tag(card, 'respondSha') || get.tag(card, 'respondShan')) {
                         result2 *= 1.7;
@@ -5350,18 +4889,12 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                         result2 *= 1.5;
                     }
                 }
-                if (target.countCards('h') == 1)
-                    result2 *= 1.3;
-                if (target.countCards('h') == 2)
-                    result2 *= 1.1;
-                if (target.countCards('h') > 3)
-                    result2 *= 0.5;
-                if (target.hp == 4)
-                    result2 *= 0.9;
-                if (target.hp == 5)
-                    result2 *= 0.8;
-                if (target.hp > 5)
-                    result2 *= 0.6;
+                if (target.countCards('h') == 1) result2 *= 1.3;
+                if (target.countCards('h') == 2) result2 *= 1.1;
+                if (target.countCards('h') > 3) result2 *= 0.5;
+                if (target.hp == 4) result2 *= 0.9;
+                if (target.hp == 5) result2 *= 0.8;
+                if (target.hp > 5) result2 *= 0.6;
                 // if(get.attitude(player,target)<0){
                 //     result2*=threaten;
                 // }
@@ -5385,29 +4918,23 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 result2 += temp02;
                 result1 += temp01;
             }
-            if (zeroplayer)
-                result1 = 0;
-            if (zerotarget)
-                result2 = 0;
+            if (zeroplayer) result1 = 0;
+            if (zerotarget) result2 = 0;
             var final = 0;
             if (player2) {
                 final = (result1 * get.attitude(player2, player) + (target ? result2 * get.attitude(player2, target) : 0));
             }
-            else
-                final = (result1 * get.attitude(player, player) + (target ? result2 * get.attitude(player, target) : 0));
+            else final = (result1 * get.attitude(player, player) + (target ? result2 * get.attitude(player, target) : 0));
             if (!isLink && get.tag(card, 'natureDamage') && !zerotarget) {
                 var info = get.info(card);
                 if (!info || !info.ai || !info.ai.canLink) {
-                    if (target.isLinked())
-                        game.countPlayer(function (current) {
-                            if (current != target && current.isLinked())
-                                final += get.effect(current, card, player, player2, true);
-                        });
+                    if (target.isLinked()) game.countPlayer(function (current) {
+                        if (current != target && current.isLinked()) final += get.effect(current, card, player, player2, true);
+                    });
                 }
                 else if (info.ai.canLink(player, target, card)) {
                     game.countPlayer(function (current) {
-                        if (current != target && current.isLinked())
-                            final += get.effect(current, card, player, player2, true);
+                        if (current != target && current.isLinked()) final += get.effect(current, card, player, player2, true);
                     });
                 }
             }
@@ -5445,8 +4972,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 name = 'yamidamage';
             }
             var eff = get.effect(target, { name: name }, player, viewer);
-            if (eff > 0 && target.hujia > 0)
-                return 0;
+            if (eff > 0 && target.hujia > 0) return 0;
             return eff;
         },
         /**
@@ -5457,8 +4983,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
          * @returns {number}
          */
         recoverEffect: function (target, player, viewer) {
-            if (target.hp == target.maxHp)
-                return 0;
+            if (target.hp == target.maxHp) return 0;
             if (!player) {
                 player = target;
             }
@@ -5476,17 +5001,14 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         buttonValue: function (button) {
             var card = button.link;
             var player = get.owner(card);
-            if (!player)
-                player = _status.event.player;
+            if (!player) player = _status.event.player;
             if (player.getCards('j').contains(card)) {
                 var efff = get.effect(player, {
                     name: card.viewAs || card.name,
                     cards: [card],
                 }, player, player);
-                if (efff > 0)
-                    return 0.5;
-                if (efff == 0)
-                    return 0;
+                if (efff > 0) return 0.5;
+                if (efff == 0) return 0;
                 return -1.5;
             }
             if (player.getCards('e').contains(card)) {
@@ -5499,8 +5021,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 }
                 return evalue / 3;
             }
-            if (player.hasSkillTag('noh'))
-                return 0.1;
+            if (player.hasSkillTag('noh')) return 0.1;
             var nh = player.countCards('h');
             switch (nh) {
                 case 1: return 2;
@@ -5521,4 +5042,4 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         },
     };
     return get;
-});
+})

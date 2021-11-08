@@ -140,7 +140,6 @@ window.noname_source_list=[
 	'theme/style/card/image/ol.png',
 	'theme/style/cardback/custom.css',
 	'theme/style/cardback/default.css',
-	'theme/style/cardback/feicheng.css',
 	'theme/style/cardback/liusha.css',
 	'theme/style/cardback/music.css',
 	'theme/style/cardback/new.css',
@@ -152,8 +151,6 @@ window.noname_source_list=[
 	'theme/style/cardback/image/vk.png',
 	'theme/style/cardback/image/vk2.png',
 	//
-	// 'theme/style/cardback/image/feicheng.png',
-	// 'theme/style/cardback/image/feicheng2.png',
 	'theme/style/cardback/image/liusha.png',
 	'theme/style/cardback/image/liusha2.png',
 	'theme/style/cardback/image/new.png',

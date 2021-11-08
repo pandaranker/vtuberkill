@@ -1,10 +1,10 @@
-moduleManager.define([], function () {
+moduleManager.define([], function(){
     /**
      * 其中的变量是游戏中的全局变量，因为是在IIFE中声明而不是实际上的全局范围，从而对外部实现了隐藏
      * @namespace
      * @global
      */
-    var _status = /**@lends _status */ {
+     var _status = /**@lends _status */ {
         paused: false,
         paused2: false,
         paused3: false,
@@ -39,16 +39,16 @@ moduleManager.define([], function () {
         dragline: [],
         dying: [],
         globalHistory: [{
-                cardMove: [],
-                custom: [],
-            }],
+            cardMove: [],
+            custom: [],
+        }],
         cardtag: {
             yingbian_zhuzhan: [],
             yingbian_kongchao: [],
             yingbian_fujia: [],
             yingbian_canqu: [],
         },
-        prehidden_skills: [],
+		prehidden_skills:[],
     };
     return _status;
 });

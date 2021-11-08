@@ -2341,8 +2341,6 @@ window.noname_asset_list=[
 	'theme/style/cardback/image/vk.png',
 	'theme/style/cardback/image/vk2.png',
 	//
-	'theme/style/cardback/image/feicheng.png',
-	'theme/style/cardback/image/feicheng2.png',
 	'theme/style/cardback/image/liusha.png',
 	'theme/style/cardback/image/liusha2.png',
 	'theme/style/cardback/image/new.png',

@@ -1,10 +1,10 @@
-moduleManager.define(['core/get'], function (get) {
+moduleManager.define(['core/get'], function(get){
     /**
      * 游戏AI模块
      * @namespace
      * @global
      */
-    var ai = /**@lends ai */ {
+     var ai = /**@lends ai */ {
         basic: {
             chooseButton: function (check) {
                 var event = _status.event;
@@ -55,8 +55,7 @@ moduleManager.define(['core/get'], function (get) {
             },
             chooseCard: function (check) {
                 var event = _status.event;
-                if (event.filterCard == undefined)
-                    return (check() > 0);
+                if (event.filterCard == undefined) return (check() > 0);
                 var i, j, range, cards, cards2, skills, check, effect;
                 var ok = false, forced = event.forced;
                 var iwhile = 100;
@@ -66,15 +65,12 @@ moduleManager.define(['core/get'], function (get) {
                         ok = true;
                     }
                     if (range[1] == -1) {
-                        if (ui.selected.cards.length == 0)
-                            return true;
+                        if (ui.selected.cards.length == 0) return true;
                         j = 0;
                         for (i = 0; i < ui.selected.cards.length; i++) {
                             effect = check(ui.selected.cards[i]);
-                            if (effect < 0)
-                                j -= Math.sqrt(-effect);
-                            else
-                                j += Math.sqrt(effect);
+                            if (effect < 0) j -= Math.sqrt(-effect);
+                            else j += Math.sqrt(effect);
                         }
                         return (j > 0);
                     }
@@ -129,8 +125,7 @@ moduleManager.define(['core/get'], function (get) {
             },
             chooseTarget: function (check) {
                 var event = _status.event;
-                if (event.filterTarget == undefined)
-                    return (check() > 0);
+                if (event.filterTarget == undefined) return (check() > 0);
                 var i, j, range, targets, targets2, effect;
                 var ok = false, forced = event.forced;
                 var iwhile = 100;
@@ -140,15 +135,13 @@ moduleManager.define(['core/get'], function (get) {
                         j = 0;
                         for (i = 0; i < ui.selected.targets.length; i++) {
                             effect = check(ui.selected.targets[i]);
-                            if (effect < 0)
-                                j -= Math.sqrt(-effect);
-                            else
-                                j += Math.sqrt(effect);
+                            if (effect < 0) j -= Math.sqrt(-effect);
+                            else j += Math.sqrt(effect);
                         }
                         return (j > 0);
                     }
                     else if (range[1] == 0) {
-                        return check() > 0;
+                        return check() > 0
                     }
                     targets = get.selectableTargets();
                     if (targets.length == 0) {
