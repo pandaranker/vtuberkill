@@ -1789,7 +1789,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.chooseButton(['请选择神武将的势力',[list,'vcard']],true);
 					}
 					"step 2"
-					if(result.links?.length)	event.group=result.links[0][2].slice(6)||false;
+					if(result.links.length)	event.group=result.links[0][2].slice(6)||false;
 					if(event.choosed.length==2){
 						game.me.init(event.choosed[0],event.choosed[1]);
 					}

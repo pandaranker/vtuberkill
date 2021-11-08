@@ -1,26 +1,25 @@
 moduleManager.define([], function() {
     /**
-     * HTMLDivElement代理类
-     * @class HTMLDivElementProxy
+     * HTMLDivElementProxy代理类
+     * @class HTMLDivElementProxyProxy
      * @global
      */
-    class HTMLDivElementProxy {
-        #element;
+    class HTMLDivElementProxyProxy {
         get element() {
-            return this.#element;
+            return this._element;
         }
         
         constructor(element) {
-            this.#element = element;
+            this._element = element;
         }
         //vtuberkill part
 
         /**
          * 本元素播放动画
-         * @function HTMLDivElement#animate
+         * @function animate
          * @param {string} name - 动画名称
          * @param {number} [time=1000] - 动画持续时间（ms）
-         * @returns {HTMLDivElement} this self
+         * @returns {HTMLDivElementProxy} this self
          */
         animate(name, time) {
             var that;
@@ -38,8 +37,8 @@ moduleManager.define([], function() {
         };
         /**
          * 隐藏本元素及其子元素
-         * @function HTMLDivElement#hide
-         * @returns {HTMLDivElement} this self
+         * @function hide
+         * @returns {HTMLDivElementProxy} this self
          */
         hide() {
             this.classList.add('hidden');
@@ -47,8 +46,8 @@ moduleManager.define([], function() {
         }
         /**
          * 本元素取消焦点
-         * @function HTMLDivElement#unfocus
-         * @returns {HTMLDivElement} this self
+         * @function unfocus
+         * @returns {HTMLDivElementProxy} this self
          */
         unfocus() {
             if (lib.config.transparent_dialog) this.classList.add('transparent');
@@ -56,8 +55,8 @@ moduleManager.define([], function() {
         }
         /**
          * 本元素重获焦点
-         * @function HTMLDivElement#refocus
-         * @returns {HTMLDivElement} this self
+         * @function refocus
+         * @returns {HTMLDivElementProxy} this self
          */
         refocus() {
             this.classList.remove('transparent');
@@ -65,23 +64,23 @@ moduleManager.define([], function() {
         }
         /**
          * 本元素取消隐藏
-         * @function HTMLDivElement#show
-         * @returns {HTMLDivElement} this self
+         * @function show
+         * @returns {HTMLDivElementProxy} this self
          */
         show() {
             this.classList.remove('hidden');
             return this;
         }
         /**
-         * @callback HTMLDivElement~deleteCallback
-         * @see {@link HTMLDivElement#delete}
+         * @callback HTMLDivElementProxy~deleteCallback
+         * @see {@link delete}
          */
         /**
          * 延时从所属DOM树移除本元素
-         * @function HTMLDivElement#delete
+         * @function delete
          * @param {number} time - 延迟时间（ms）
-         * @param {HTMLDivElement~deleteCallback} callback - 移除后回调函数
-         * @returns {HTMLDivElement} this self
+         * @param {HTMLDivElementProxy~deleteCallback} callback - 移除后回调函数
+         * @returns {HTMLDivElementProxy} this self
          */
         delete(time, callback) {
             if (this.timeout) {
@@ -107,10 +106,10 @@ moduleManager.define([], function() {
         }
         /**
          * 移动本元素(牌)
-         * @function HTMLDivElement#goto
+         * @function goto
          * @param {*} position - 位置
          * @param {number} time - 持续时间
-         * @returns {HTMLDivElement} this self
+         * @returns {HTMLDivElementProxy} this self
          */
         goto(position, time) {
             if (this.timeout) {
@@ -134,8 +133,8 @@ moduleManager.define([], function() {
         }
         /**
          * 强制取消移动，固定在当前位置
-         * @function HTMLDivElement#fix
-         * @returns {HTMLDivElement} this self
+         * @function fix
+         * @returns {HTMLDivElementProxy} this self
          */
         fix() {
             clearTimeout(this.timeout);
@@ -147,12 +146,12 @@ moduleManager.define([], function() {
         /**
          * 设置背景图片，当name为虚值或为空白字符串时，使用原背景。
          * 对应路径：`image/${type?type+'/':''}${type?subfolder+'/':''}${name}${ext}`
-         * @function HTMLDivElement#setBackground
+         * @function setBackground
          * @param {string} [name] - 图片名（无后缀）
          * @param {string} [type] - 类型对应路径
          * @param {string} [ext='.jpg'] - 图片后缀
          * @param {string} [subfolder='default'] - 类型文件夹下的子路径，仅在参数`type`指定值时有效
-         * @returns {?HTMLDivElement} this self
+         * @returns {?HTMLDivElementProxy} this self
          */
         setBackground(name, type, ext, subfolder) {
             if (!name) return;
@@ -239,7 +238,7 @@ moduleManager.define([], function() {
         }
         /**
          * 设置本元素的背景图片为数据库中的图片
-         * @function HTMLDivElement#setBackgroundDB
+         * @function setBackgroundDB
          * @param {string} img - 图片对应的键值
          */
         setBackgroundDB(img) {
@@ -251,22 +250,22 @@ moduleManager.define([], function() {
         }
         /**
          * 设置本元素的背景图片
-         * @function HTMLDivElement#setBackgroundImage
+         * @function setBackgroundImage
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
          */
         setBackgroundImage(img) {
             this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
         }
         /**
-         * {@link HTMLDivElement#listen|listen}（click）的回调函数
-         * @callback HTMLDivElement#listen~listenCallback
+         * {@link listen|listen}（click）的回调函数
+         * @callback listen~listenCallback
          * @param {(MouseEvent|TouchEvent)} e - 触发事件
          */
         /**
          * 监听点击事件
-         * @function HTMLDivElement#listen
-         * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
-         * @returns {HTMLDivElement} this self
+         * @function listen
+         * @param {listen~listenCallback} func - 点击回调函数
+         * @returns {HTMLDivElementProxy} this self
          */
         listen(func) {
             if (lib.config.touchscreen) {
@@ -291,13 +290,13 @@ moduleManager.define([], function() {
             return this;
         }
         /**
-         * @callback HTMLDivElement#listenTransition~callback
-         * @see {@link HTMLDivElement#listenTransition}
+         * @callback listenTransition~callback
+         * @see {@link listenTransition}
          */
         /**
          * 延时触发回调函数，同时监听本元素变换动画，如果变换结束则立即触发回调函数
-         * @function HTMLDivElement#listenTransition
-         * @param {HTMLDivElement#listenTransition~callback} func - 回调函数
+         * @function listenTransition
+         * @param {listenTransition~callback} func - 回调函数
          * @param {number} [time=1000] - 延迟时间
          * @returns {!number} timeoutID 
          */
@@ -319,9 +318,9 @@ moduleManager.define([], function() {
          * top = calc(`offsets[0]`%+`offsets[1]`px)
          * left = calc(`offsets[2]`%+`offsets[3]`px)
          * ```
-         * @function HTMLDivElement#setPosition
+         * @function setPosition
          * @param {!number[]} offsets - 偏移量数组（长度必须为4）。
-         * @returns {HTMLDivElement} this self
+         * @returns {HTMLDivElementProxy} this self
          */
         /**
          * 设置本元素位置
@@ -329,13 +328,13 @@ moduleManager.define([], function() {
          * top  = calc(`top_pc`%+`top_px`px)
          * left = calc(`lft_pc`%+`lft_px`px)
          * ```
-         * @function HTMLDivElement#setPosition
+         * @function setPosition
          * @variation 2
          * @param {number} top_pc
          * @param {number} top_px
          * @param {number} lft_pc
          * @param {number} lft_px
-         * @returns {HTMLDivElement} this self
+         * @returns {HTMLDivElementProxy} this self
          */
         setPosition() {
             var position;
@@ -361,11 +360,11 @@ moduleManager.define([], function() {
         }
         /**
          * 设置本元素css样式
-         * @function HTMLDivElement#css
+         * @function css
          * @param {Object} style - style
          * @param {string} [style.innerHTML] - 设置本元素内部HTML
          * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
-         * @returns {HTMLDivElement} this self
+         * @returns {HTMLDivElementProxy} this self
          */
         css(style) {
             for (var i in style) {
@@ -383,564 +382,564 @@ moduleManager.define([], function() {
         //Node part
 
         appendChild() {
-            return this.#element.appendChild(...arguments);
+            return this._element.appendChild(...arguments);
         }
         cloneNode() {
-            return this.#element.cloneNode(...arguments);
+            return this._element.cloneNode(...arguments);
         }
         compareDocumentPosition() {
-            return this.#element.compareDocumentPosition(...arguments);
+            return this._element.compareDocumentPosition(...arguments);
         }
         getBoxQuads() {
-            return this.#element.getBoxQuads(...arguments);
+            return this._element.getBoxQuads(...arguments);
         }
         getRootNode() {
-            return this.#element.getRootNode(...arguments);
+            return this._element.getRootNode(...arguments);
         }
         hasChildNodes() {
-            return this.#element.hasChildNodes(...arguments);
+            return this._element.hasChildNodes(...arguments);
         }
         insertBefore() {
-            return this.#element.insertBefore(...arguments);
+            return this._element.insertBefore(...arguments);
         }
         isDefaultNamespace() {
-            return this.#element.isDefaultNamespace(...arguments);
+            return this._element.isDefaultNamespace(...arguments);
         }
         isEqualNode() {
-            return this.#element.isEqualNode(...arguments);
+            return this._element.isEqualNode(...arguments);
         }
         isSameNode() {
-            return this.#element.isSameNode(...arguments);
+            return this._element.isSameNode(...arguments);
         }
         lookupPrefix() {
-            return this.#element.lookupPrefix(...arguments);
+            return this._element.lookupPrefix(...arguments);
         }
         lookupNamespaceURI() {
-            return this.#element.lookupNamespaceURI(...arguments);
+            return this._element.lookupNamespaceURI(...arguments);
         }
         normalize() {
-            return this.#element.normalize(...arguments);
+            return this._element.normalize(...arguments);
         }
         removeChild() {
-            return this.#element.removeChild(...arguments);
+            return this._element.removeChild(...arguments);
         }
         replaceChild() {
-            return this.#element.replaceChild(...arguments);
+            return this._element.replaceChild(...arguments);
         }
         // contains(){
-        //     return this.#element.contains(...arguments);
+        //     return this._element.contains(...arguments);
         // }
 
         get baseURI() {
-            return this.#element.baseURI;
+            return this._element.baseURI;
         }
         get childNodes() {
-            return this.#element.childNodes;
+            return this._element.childNodes;
         }
         get firstChild() {
-            return this.#element.firstChild;
+            return this._element.firstChild;
         }
         get isConnected() {
-            return this.#element.isConnected;
+            return this._element.isConnected;
         }
         get lastChild() {
-            return this.#element.lastChild;
+            return this._element.lastChild;
         }
         get nextSibling() {
-            return this.#element.nextSibling;
+            return this._element.nextSibling;
         }
         get nodeName() {
-            return this.#element.nodeName;
+            return this._element.nodeName;
         }
         get nodeType() {
-            return this.#element.nodeType;
+            return this._element.nodeType;
         }
         get nodeValue() {
-            return this.#element.nodeValue;
+            return this._element.nodeValue;
         }
         set nodeValue(arg) {
-            this.#element.nodeValue = arg;
+            this._element.nodeValue = arg;
         }
         get ownerDocument() {
-            return this.#element.ownerDocument;
+            return this._element.ownerDocument;
         }
         get parentNode() {
-            return this.#element.parentNode;
+            return this._element.parentNode;
         }
         get parentElement() {
-            return this.#element.parentElement;
+            return this._element.parentElement;
         }
         get previousSibling() {
-            return this.#element.previousSibling;
+            return this._element.previousSibling;
         }
         get textContent() {
-            return this.#element.textContent;
+            return this._element.textContent;
         }
         set textContent(arg) {
-            this.#element.textContent = arg;
+            this._element.textContent = arg;
         }
         //Element part
 
         addEventListener() {
-            this.#element.addEventListener(...arguments);
+            this._element.addEventListener(...arguments);
         }
         after() {
-            this.#element.after(...arguments);
+            this._element.after(...arguments);
         }
         attachShadow() {
-            return this.#element.attachShadow(...arguments);
+            return this._element.attachShadow(...arguments);
         }
         // animate(){
-        //     return this.#element.animate(...arguments);
+        //     return this._element.animate(...arguments);
         // }
         append() {
-            this.#element.append(...arguments);
+            this._element.append(...arguments);
         }
         before() {
-            this.#element.before(...arguments);
+            this._element.before(...arguments);
         }
         closest() {
-            this.#element.closest(...arguments);
+            this._element.closest(...arguments);
         }
         createShadowRoot() {
-            return this.#element.createShadowRoot(...arguments);
+            return this._element.createShadowRoot(...arguments);
         }
         computedStyleMap() {
-            return this.#element.computedStyleMap(...arguments);
+            return this._element.computedStyleMap(...arguments);
         }
         dispatchEvent() {
-            return this.#element.dispatchEvent(...arguments);
+            return this._element.dispatchEvent(...arguments);
         }
         getAnimations() {
-            return this.#element.getAnimations(...arguments);
+            return this._element.getAnimations(...arguments);
         }
         getAttribute() {
-            return this.#element.getAttribute(...arguments);
+            return this._element.getAttribute(...arguments);
         }
         getAttributeNames() {
-            return this.#element.getAttributeNames(...arguments);
+            return this._element.getAttributeNames(...arguments);
         }
         getAttributeNode() {
-            return this.#element.getAttributeNode(...arguments);
+            return this._element.getAttributeNode(...arguments);
         }
         getAttributeNodeNS() {
-            return this.#element.getAttributeNodeNS(...arguments);
+            return this._element.getAttributeNodeNS(...arguments);
         }
         getAttributeNS() {
-            return this.#element.getAttributeNS(...arguments);
+            return this._element.getAttributeNS(...arguments);
         }
         getBoundingClientRect() {
-            return this.#element.getBoundingClientRect(...arguments);
+            return this._element.getBoundingClientRect(...arguments);
         }
         // getBoxQuads(){
-        //     return this.#element.getBoxQuads(...arguments);
+        //     return this._element.getBoxQuads(...arguments);
         // }
         getClientRects() {
-            return this.#element.getClientRects(...arguments);
+            return this._element.getClientRects(...arguments);
         }
         getElementsByClassName() {
-            return this.#element.getElementsByClassName(...arguments);
+            return this._element.getElementsByClassName(...arguments);
         }
         getElementsByTagName() {
-            return this.#element.getElementsByTagName(...arguments);
+            return this._element.getElementsByTagName(...arguments);
         }
         getElementsByTagNameNS() {
-            return this.#element.getElementsByTagNameNS(...arguments);
+            return this._element.getElementsByTagNameNS(...arguments);
         }
         hasAttribute() {
-            return this.#element.hasAttribute(...arguments);
+            return this._element.hasAttribute(...arguments);
         }
         hasAttributeNS() {
-            return this.#element.hasAttributeNS(...arguments);
+            return this._element.hasAttributeNS(...arguments);
         }
         hasAttributes() {
-            return this.#element.hasAttributes(...arguments);
+            return this._element.hasAttributes(...arguments);
         }
         hasPointerCapture() {
-            return this.#element.hasPointerCapture(...arguments);
+            return this._element.hasPointerCapture(...arguments);
         }
         insertAdjacentElement() {
-            return this.#element.insertAdjacentElement(...arguments);
+            return this._element.insertAdjacentElement(...arguments);
         }
         insertAdjacentHTML() {
-            return this.#element.insertAdjacentHTML(...arguments);
+            return this._element.insertAdjacentHTML(...arguments);
         }
         matches() {
-            return this.#element.matches(...arguments);
+            return this._element.matches(...arguments);
         }
         prepend() {
-            return this.#element.prepend(...arguments);
+            return this._element.prepend(...arguments);
         }
         querySelector() {
-            return this.#element.querySelector(...arguments);
+            return this._element.querySelector(...arguments);
         }
         querySelectorAll() {
-            return this.#element.querySelectorAll(...arguments);
+            return this._element.querySelectorAll(...arguments);
         }
         releasePointerCapture() {
-            return this.#element.releasePointerCapture(...arguments);
+            return this._element.releasePointerCapture(...arguments);
         }
         remove() {
-            return this.#element.remove(...arguments);
+            return this._element.remove(...arguments);
         }
         removeAttribute() {
-            return this.#element.removeAttribute(...arguments);
+            return this._element.removeAttribute(...arguments);
         }
         removeAttributeNode() {
-            return this.#element.removeAttributeNode(...arguments);
+            return this._element.removeAttributeNode(...arguments);
         }
         removeAttributeNS() {
-            return this.#element.removeAttributeNS(...arguments);
+            return this._element.removeAttributeNS(...arguments);
         }
         removeEventListener() {
-            return this.#element.removeEventListener(...arguments);
+            return this._element.removeEventListener(...arguments);
         }
         replaceChildren() {
-            return this.#element.replaceChildren(...arguments);
+            return this._element.replaceChildren(...arguments);
         }
         replaceWith() {
-            return this.#element.replaceWith(...arguments);
+            return this._element.replaceWith(...arguments);
         }
         requestFullscreen() {
-            return this.#element.requestFullscreen(...arguments);
+            return this._element.requestFullscreen(...arguments);
         }
         requestPointerLock() {
-            return this.#element.requestPointerLock(...arguments);
+            return this._element.requestPointerLock(...arguments);
         }
         scroll() {
-            return this.#element.scroll(...arguments);
+            return this._element.scroll(...arguments);
         }
         scrollBy() {
-            return this.#element.scrollBy(...arguments);
+            return this._element.scrollBy(...arguments);
         }
         scrollIntoView() {
-            return this.#element.scrollIntoView(...arguments);
+            return this._element.scrollIntoView(...arguments);
         }
         scrollTo() {
-            return this.#element.scrollTo(...arguments);
+            return this._element.scrollTo(...arguments);
         }
         setAttribute() {
-            return this.#element.setAttribute(...arguments);
+            return this._element.setAttribute(...arguments);
         }
         setAttributeNode() {
-            return this.#element.setAttributeNode(...arguments);
+            return this._element.setAttributeNode(...arguments);
         }
         setAttributeNS() {
-            return this.#element.setAttributeNS(...arguments);
+            return this._element.setAttributeNS(...arguments);
         }
         setCapture() {
-            return this.#element.setCapture(...arguments);
+            return this._element.setCapture(...arguments);
         }
         setPointerCapture() {
-            return this.#element.setPointerCapture(...arguments);
+            return this._element.setPointerCapture(...arguments);
         }
         toggleAttribute() {
-            return this.#element.toggleAttribute(...arguments);
+            return this._element.toggleAttribute(...arguments);
         }
         get assignedSlot() {
-            return this.#element.assignedSlot;
+            return this._element.assignedSlot;
         }
         get attributes() {
-            return this.#element.attributes;
+            return this._element.attributes;
         }
         get childElementCount() {
-            return this.#element.childElementCount;
+            return this._element.childElementCount;
         }
         get children() {
-            return this.#element.children;
+            return this._element.children;
         }
         get classList() {
-            return this.#element.classList;
+            return this._element.classList;
         }
         get className() {
-            return this.#element.className;
+            return this._element.className;
         }
         set className(arg) {
-            this.#element.className = arg;
+            this._element.className = arg;
         }
         get clientHeight() {
-            return this.#element.clientHeight;
+            return this._element.clientHeight;
         }
         get clientLeft() {
-            return this.#element.clientLeft;
+            return this._element.clientLeft;
         }
         get clientTop() {
-            return this.#element.clientTop;
+            return this._element.clientTop;
         }
         get clientWidth() {
-            return this.#element.clientWidth;
+            return this._element.clientWidth;
         }
         get firstElementChild() {
-            return this.#element.firstElementChild;
+            return this._element.firstElementChild;
         }
         get id() {
-            return this.#element.id;
+            return this._element.id;
         }
         set id(arg) {
-            this.#element.id = arg;
+            this._element.id = arg;
         }
         get innerHTML() {
-            return this.#element.innerHTML;
+            return this._element.innerHTML;
         }
         set innerHTML(arg) {
-            return this.#element.innerHTML = arg;
+            return this._element.innerHTML = arg;
         }
         get lastElementChild() {
-            return this.#element.lastElementChild;
+            return this._element.lastElementChild;
         }
         get localName() {
-            return this.#element.localName;
+            return this._element.localName;
         }
         get namespaceURI() {
-            return this.#element.namespaceURI;
+            return this._element.namespaceURI;
         }
         get nextElementSibling() {
-            return this.#element.nextElementSibling;
+            return this._element.nextElementSibling;
         }
         get outerHTML() {
-            return this.#element.outerHTML;
+            return this._element.outerHTML;
         }
         set outerHTML(arg) {
-            this.#element.outerHTML = arg;
+            this._element.outerHTML = arg;
         }
         get part() {
-            return this.#element.part;
+            return this._element.part;
         }
         set part(arg) {
-            this.#element.part = arg;
+            this._element.part = arg;
         }
         get prefix() {
-            return this.#element.prefix;
+            return this._element.prefix;
         }
         get previousElementSibling() {
-            return this.#element.previousElementSibling;
+            return this._element.previousElementSibling;
         }
         get scrollHeight() {
-            return this.#element.scrollHeight;
+            return this._element.scrollHeight;
         }
         get scrollLeft() {
-            return this.#element.scrollLeft;
+            return this._element.scrollLeft;
         }
         set scrollLeft(arg) {
-            this.#element.scrollLeft = arg;
+            this._element.scrollLeft = arg;
         }
         get scrollLeftMax() {
-            return this.#element.scrollLeftMax;
+            return this._element.scrollLeftMax;
         }
         get scrollTop() {
-            return this.#element.scrollTop;
+            return this._element.scrollTop;
         }
         set scrollTop(arg) {
-            this.#element.scrollTop = arg;
+            this._element.scrollTop = arg;
         }
         get scrollTopMax() {
-            return this.#element.scrollTopMax;
+            return this._element.scrollTopMax;
         }
         get scrollWidth() {
-            return this.#element.scrollWidth;
+            return this._element.scrollWidth;
         }
         get shadowRoot() {
-            return this.#element.shadowRoot;
+            return this._element.shadowRoot;
         }
         get openOrClosedShadowRoot() {
-            return this.#element.openOrClosedShadowRoot;
+            return this._element.openOrClosedShadowRoot;
         }
         get setHTML() {
-            return this.#element.setHTML;
+            return this._element.setHTML;
         }
         set setHTML(arg) {
-            this.#element.setHTML = arg;
+            this._element.setHTML = arg;
         }
         get slot() {
-            return this.#element.slot;
+            return this._element.slot;
         }
         set slot(arg) {
-            this.#element.slot = arg;
+            this._element.slot = arg;
         }
         get tagName() {
-            return this.#element.tagName;
+            return this._element.tagName;
         }
         //HTMLElement part
 
         attachInternals() {
-            return this.#element.attachInternals(...arguments);
+            return this._element.attachInternals(...arguments);
         }
         blur() {
-            return this.#element.blur(...arguments);
+            return this._element.blur(...arguments);
         }
         click() {
-            return this.#element.click(...arguments);
+            return this._element.click(...arguments);
         }
         focus() {
-            return this.#element.focus(...arguments);
+            return this._element.focus(...arguments);
         }
         get accessKey() {
-            return this.#element.accessKey;
+            return this._element.accessKey;
         }
         set accessKey(arg) {
-            this.#element.accessKey = arg;
+            this._element.accessKey = arg;
         }
         get accessKeyLabel() {
-            return this.#element.accessKeyLabel;
+            return this._element.accessKeyLabel;
         }
         get attributeStyleMap() {
-            return this.#element.attributeStyleMap;
+            return this._element.attributeStyleMap;
         }
         get contentEditable() {
-            return this.#element.contentEditable;
+            return this._element.contentEditable;
         }
         set contentEditable(arg) {
-            this.#element.contentEditable = arg;
+            this._element.contentEditable = arg;
         }
         get isContentEditable() {
-            return this.#element.isContentEditable;
+            return this._element.isContentEditable;
         }
         get contextMenu() {
-            return this.#element.contextMenu;
+            return this._element.contextMenu;
         }
         set contextMenu(arg) {
-            this.#element.contextMenu = arg;
+            this._element.contextMenu = arg;
         }
         get dataset() {
-            return this.#element.dataset;
+            return this._element.dataset;
         }
         get dir() {
-            return this.#element.dir;
+            return this._element.dir;
         }
         set dir(arg) {
-            this.#element.dir = arg;
+            this._element.dir = arg;
         }
         get draggable() {
-            return this.#element.draggable;
+            return this._element.draggable;
         }
         set draggable(arg) {
-            this.#element.draggable = arg;
+            this._element.draggable = arg;
         }
         get enterkeyhint() {
-            return this.#element.enterkeyhint;
+            return this._element.enterkeyhint;
         }
         set enterkeyhint(arg) {
-            this.#element.enterkeyhint = arg;
+            this._element.enterkeyhint = arg;
         }
         get hidden() {
-            return this.#element.hidden;
+            return this._element.hidden;
         }
         set hidden(arg) {
-            this.#element.hidden = arg;
+            this._element.hidden = arg;
         }
         get inert() {
-            return this.#element.inert;
+            return this._element.inert;
         }
         set inert(arg) {
-            this.#element.inert = arg;
+            this._element.inert = arg;
         }
         get innerText() {
-            return this.#element.innerText;
+            return this._element.innerText;
         }
         set innerText(arg) {
-            this.#element.innerText = arg;
+            this._element.innerText = arg;
         }
         get itemScope() {
-            return this.#element.itemScope;
+            return this._element.itemScope;
         }
         set itemScope(arg) {
-            this.#element.itemScope = arg;
+            this._element.itemScope = arg;
         }
         get itemType() {
-            return this.#element.itemType;
+            return this._element.itemType;
         }
         get itemId() {
-            return this.#element.itemId;
+            return this._element.itemId;
         }
         set itemId(arg) {
-            this.#element.itemId = arg;
+            this._element.itemId = arg;
         }
         get itemRef() {
-            return this.#element.itemRef;
+            return this._element.itemRef;
         }
         get itemProp() {
-            return this.#element.itemProp;
+            return this._element.itemProp;
         }
         get itemValue() {
-            return this.#element.itemValue;
+            return this._element.itemValue;
         }
         set itemValue(arg) {
-            this.#element.itemValue = arg;
+            this._element.itemValue = arg;
         }
         get lang() {
-            return this.#element.lang;
+            return this._element.lang;
         }
         set lang(arg) {
-            this.#element.lang = arg;
+            this._element.lang = arg;
         }
         get noModule() {
-            return this.#element.noModule;
+            return this._element.noModule;
         }
         set noModule(arg) {
-            this.#element.noModule = arg;
+            this._element.noModule = arg;
         }
         get nonce() {
-            return this.#element.nonce;
+            return this._element.nonce;
         }
         set nonce(arg) {
-            this.#element.nonce = arg;
+            this._element.nonce = arg;
         }
         get offsetHeight() {
-            return this.#element.offsetHeight;
+            return this._element.offsetHeight;
         }
         get offsetLeft() {
-            return this.#element.offsetLeft;
+            return this._element.offsetLeft;
         }
         get offsetParent() {
-            return this.#element.offsetParent;
+            return this._element.offsetParent;
         }
         get offsetTop() {
-            return this.#element.offsetTop;
+            return this._element.offsetTop;
         }
         get offsetWidth() {
-            return this.#element.offsetWidth;
+            return this._element.offsetWidth;
         }
         get properties() {
-            return this.#element.properties;
+            return this._element.properties;
         }
         get spellcheck() {
-            return this.#element.spellcheck;
+            return this._element.spellcheck;
         }
         set spellcheck(arg) {
-            this.#element.spellcheck = arg;
+            this._element.spellcheck = arg;
         }
         get style() {
-            return this.#element.style;
+            return this._element.style;
         }
         set style(arg) {
-            this.#element.style = arg;
+            this._element.style = arg;
         }
         get tabIndex() {
-            return this.#element.tabIndex;
+            return this._element.tabIndex;
         }
         set tabIndex(arg) {
-            this.#element.tabIndex = arg;
+            this._element.tabIndex = arg;
         }
         get title() {
-            return this.#element.title;
+            return this._element.title;
         }
         set title(arg) {
-            this.#element.title = arg;
+            this._element.title = arg;
         }
         get translate() {
-            return this.#element.translate;
+            return this._element.translate;
         }
         set translate(arg) {
-            this.#element.translate = arg;
+            this._element.translate = arg;
         }
-        //HTMLDivElement part
+        //HTMLDivElementProxy part
 
         get align() {
-            return this.#element.align;
+            return this._element.align;
         }
         set align(arg) {
-            this.#element.align = arg;
+            this._element.align = arg;
         }
     }
-    return HTMLDivElementProxy;
+    return HTMLDivElementProxyProxy;
 })

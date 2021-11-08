@@ -14,12 +14,11 @@
  * @class
  */
  class Subject {
-    #observers;
     get observers(){
-        return this.#observers;
+        return this._observers;
     }
     constructor(){
-        this.#observers = new Map();
+        this._observers = new Map();
     }
     /**
      * 
@@ -49,14 +48,14 @@
     set(observer, callback){
         if(observer){
             assert(callback && typeof callback === 'function', "Observer's callback is undefined or is not a function.");
-            this.#observers.set(observer, callback);
+            this._observers.set(observer, callback);
         }
     }
     delete(observer){
-        if(observer) this.#observers.delete(observer);
+        if(observer) this._observers.delete(observer);
     }
     notify(){
-        for(var [observer, callback] of this.#observers.entries()){
+        for(var [observer, callback] of this._observers.entries()){
             callback.apply(observer, arguments);
         }
     }
@@ -102,28 +101,27 @@ var moduleManager = (function Manager()/** @lends module:moduleManager*/{
      * @class Module
      */
     class Module {
-        dep;
-        script;
-        #module;
-        #onInited = new Subject();
-        #isInited = false;
-        #lastCallbackId = 0;
         /**
          * 是否初始化
          */
         get isInited(){
-            return this.#isInited;
+            return this._isInited;
         }
         constructor(dep){
             this.dep = dep;
+            this.script = null;
+            this._module = null;
+            this._onInited = new Subject();
+            this._isInited = false;
+            this._lastCallbackId = 0;
         }
         /**
          * 返回模块
          * @returns {any} 模块
          */
         get(){
-            assert(this.#isInited, `A module[${this.dep}] is not inited.`);
-            return this.#module;
+            assert(this._isInited, `A module[${this.dep}] is not inited.`);
+            return this._module;
         }
         /**
          * 模块初始化/延迟初始化函数
@@ -132,7 +130,7 @@ var moduleManager = (function Manager()/** @lends module:moduleManager*/{
          */
         init(deps, impl){
             invokeOnReady(deps, (...args)=>{
-                this.#setModule(impl.apply(impl, args));
+                this._setModule(impl.apply(impl, args));
             });
         }
         /**
@@ -143,17 +141,17 @@ var moduleManager = (function Manager()/** @lends module:moduleManager*/{
             if(this.isInited){
                 callback();
             }else{
-                this.#onInited.set(++this.#lastCallbackId, callback);
+                this._onInited.set(++this._lastCallbackId, callback);
             }
         }
-        #setModule(module){
-            this.#module = module;
-            this.#isInited = true;
-            while(this.#lastCallbackId){
-                var callback = this.#onInited.observers.get(this.#lastCallbackId);
-                callback.apply(this.#lastCallbackId);
-                this.#onInited.delete(this.#lastCallbackId);
-                --this.#lastCallbackId;
+        _setModule(module){
+            this._module = module;
+            this._isInited = true;
+            while(this._lastCallbackId){
+                var callback = this._onInited.observers.get(this._lastCallbackId);
+                callback.apply(this._lastCallbackId);
+                this._onInited.delete(this._lastCallbackId);
+                --this._lastCallbackId;
             }
         }
     }
