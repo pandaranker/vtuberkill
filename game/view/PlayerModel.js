@@ -1,257 +1,5 @@
 moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy) {
     /**
-    * 点击(主)头像时
-    */
-    var onClickAvatar = () => {
-        if (!lib.config.doubleclick_intro) return;
-        if (this.isUnseen(0)) return;
-        if (!lib.character[this.name]) return;
-        if (!ui.menuContainer) return;
-        // var avatar = this.node.avatar;
-        var player = this;
-        if (!game.players.contains(player) && !game.dead.contains(player)) return;
-        if (!this._doubleClicking) {
-            this._doubleClicking = true;
-            setTimeout(() => {
-                this._doubleClicking = false;//[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
-            }, 500);
-            return;
-        }
-        // ui.click.skin(this,player.name);
-        game.pause2();
-        ui.click.charactercard(player.name, null, null, true, this);
-    }
-    /**
-     * 点击(副)头像时
-     */
-    var onClickAvatar2 = () => {
-        if (!lib.config.doubleclick_intro) return;
-        if (this.classList.contains('unseen2')) return;
-        if (!lib.character[this.name2]) return;
-        if (!ui.menuContainer) return;
-        var avatar = this.node.avatar;
-        var player = this;
-        if (!game.players.contains(player) && !game.dead.contains(player)) return;
-        if (!this._doubleClicking) {
-            this._doubleClicking = true;
-            setTimeout(function () {
-                avatar._doubleClicking = false;
-            }, 500);
-            return;
-        }
-        // ui.click.skin(this,player.name2);
-        game.pause2();
-        ui.click.charactercard(player.name2, null, null, true, this);
-    }
-    /**
-     * 点击角色牌时
-     * @param {MouseEvent} e 点击事件
-     */
-    var onClickCharacter = (e) => {
-        if (_status.dragged) return;
-        if (_status.clicked) return;
-        if (ui.intro) return;
-        if (this.classList.contains('connect')) {
-            if (game.online) {
-                if (game.onlinezhu) {
-                    if (!this.playerid && game.connectPlayers) {
-                        if (['versus', 'doudizhu', 'longlaoguan'].contains(lib.configOL.mode)) return;
-                        if (lib.configOL.mode == 'identity' && lib.configOL.identity_mode == 'zhong') return;
-                        if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
-                        this.classList.toggle('unselectable2')
-                        if (this.classList.contains('unselectable2')) {
-                            lib.configOL.number--;
-                        }
-                        else {
-                            lib.configOL.number++;
-                        }
-                        game.send('changeNumConfig', lib.configOL.number,
-                            game.connectPlayers.indexOf(this), this.classList.contains('unselectable2'));
-                    }
-                }
-                return;
-            }
-            if (this.playerid) {
-                if (this.ws) {
-                    if (confirm('是否踢出' + this.nickname + '？')) {
-                        var id = get.id();
-                        this.ws.send(function (id) {
-                            if (game.ws) {
-                                game.ws.close();
-                                game.saveConfig('reconnect_info');
-                                game.saveConfig('banned_info', id);
-                            }
-                        }, id);
-                        lib.node.banned.push(id);
-                    }
-                }
-            }
-            else {
-                if (['versus', 'doudizhu', 'longlaoguan', 'single'].contains(lib.configOL.mode)) return;
-                if (lib.configOL.mode == 'identity' && (lib.configOL.identity_mode == 'zhong' || lib.configOL.identity_mode == 'purple')) return;
-                if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
-                this.classList.toggle('unselectable2')
-                if (this.classList.contains('unselectable2')) {
-                    lib.configOL.number--;
-                }
-                else {
-                    lib.configOL.number++;
-                }
-                game.send('server', 'config', lib.configOL);
-                game.updateWaiting();
-            }
-            return;
-        }
-        _status.clicked = true;
-        var custom = _status.event.custom;
-        if (custom.replace.target) {
-            custom.replace.target(this, e);
-            return;
-        }
-        if (this.classList.contains('selectable') == false) return;
-        this.unprompt();
-        if (this.classList.contains('selected')) {
-            ui.selected.targets.remove(this);
-            if (_status.multitarget || _status.event.complexSelect) {
-                game.uncheck();
-                game.check();
-            }
-            else {
-                this.classList.remove('selected');
-            }
-        }
-        else {
-            ui.selected.targets.add(this);
-            if (_status.event.name == 'chooseTarget' || _status.event.name == 'chooseToUse' || _status.event.name == 'chooseCardTarget') {
-                var targetprompt = null;
-                if (_status.event.targetprompt) {
-                    targetprompt = _status.event.targetprompt;
-                }
-                else if (_status.event.skill && !get.info(_status.event.skill).viewAs) {
-                    targetprompt = get.info(_status.event.skill).targetprompt;
-                }
-                else if (_status.event.name == 'chooseToUse') {
-                    var currentcard = get.card();
-                    if (currentcard) {
-                        targetprompt = get.info(currentcard).targetprompt;
-                    }
-                }
-                if (targetprompt) {
-                    if (Array.isArray(targetprompt)) {
-                        targetprompt = targetprompt[Math.min(targetprompt.length - 1, ui.selected.targets.indexOf(this))];
-                    }
-                    else if (typeof targetprompt == 'function') {
-                        targetprompt = targetprompt(this);
-                    }
-                    if (targetprompt && typeof targetprompt == 'string') {
-                        this.prompt(targetprompt);
-                    }
-                }
-            }
-            this.classList.add('selected');
-        }
-        if (custom.add.target) {
-            custom.add.target();
-        }
-        game.check();
-    }
-    var onClickIdentity = (e) => {
-        if (_status.dragged) return;
-        _status.clicked = true;
-        if (!game.getIdentityList) return;
-        if (_status.video) return;
-        if (this.forceShown) return;
-        if (_status.clickingidentity) {
-            for (var i = 0; i < _status.clickingidentity[1].length; i++) {
-                _status.clickingidentity[1][i].delete();
-                _status.clickingidentity[1][i].style.transform = '';
-            }
-            if (_status.clickingidentity[0] == this) {
-                delete _status.clickingidentity;
-                return;
-            }
-        }
-        var list = game.getIdentityList(this);
-        if (!list) return;
-        if (lib.config.mark_identity_style == 'click') {
-            var list2 = [];
-            for (var i in list) {
-                list2.push(i);
-            }
-            list2.push(list2[0]);
-            for (var i = 0; i < list2.length; i++) {
-                if (this.node.identity.firstChild.innerHTML == list[list2[i]]) {
-                    this.node.identity.firstChild.innerHTML = list[list2[i + 1]];
-                    this.node.identity.dataset.color = list2[i + 1];
-                    break;
-                }
-            }
-        }
-        else {
-            if (get.mode() == 'guozhan') {
-                list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
-            }
-            var list2 = get.copy(list);
-            if (game.getIdentityList2) {
-                game.getIdentityList2(list2);
-            }
-            var rect = this.getBoundingClientRect();
-            this._customintro = (uiintro) => {
-                if (get.mode() == 'guozhan') {
-                    uiintro.clickintro = true;
-                }
-                else {
-                    uiintro.touchclose = true;
-                }
-                // if(lib.config.theme!='woodden'){
-                uiintro.classList.add('woodbg');
-                // }
-                if (get.is.phoneLayout()) {
-                    uiintro.style.width = '100px';
-                }
-                else {
-                    uiintro.style.width = '85px';
-                }
-                var source = this;
-                for (var i in list) {
-                    var node = ui.create.div();
-                    node.classList.add('guessidentity');
-                    node.classList.add('pointerdiv');
-                    ui.create.div('.menubutton.large', list2[i], node);
-                    if (!get.is.phoneLayout()) {
-                        node.firstChild.style.fontSize = '24px';
-                        node.firstChild.style.lineHeight = '24px';
-                    }
-                    if (get.mode() == 'guozhan') {
-                        if (source._guozhanguess) {
-                            if (!source._guozhanguess.contains(i)) {
-                                node.classList.add('transparent');
-                            }
-                        }
-                        node._source = source;
-                        node.listen(ui.click.identitycircle);
-                    }
-                    else {
-                        node.listen(function () {
-                            var info = this.link;
-                            info[0].firstChild.innerHTML = info[1];
-                            info[0].dataset.color = info[2];
-                            _status.clicked = false;
-                        });
-                    }
-
-                    node.link = [this.node.identity, list[i], i];
-                    uiintro.add(node);
-                }
-            };
-            ui.click.touchpop();
-            ui.click.intro.call(this, {
-                clientX: (rect.left + rect.width) * game.documentZoom,
-                clientY: (rect.top) * game.documentZoom
-            });
-        }
-    }
-    /**
      * Player类
      * @class PlayerModel
      * @extends HTMLDivElementProxy
@@ -392,14 +140,269 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
                 }
             }
             else node.noclick = true;
+            this.initEventListeners();
+            this.element.getModel = () => {
+                return this;
+            };
+        }
+        initEventListeners() {
+            /**
+            * 点击(主)头像时
+            */
+            var onClickAvatar = () => {
+                if (!lib.config.doubleclick_intro) return;
+                if (this.isUnseen(0)) return;
+                if (!lib.character[this.name]) return;
+                if (!ui.menuContainer) return;
+                // var avatar = this.node.avatar;
+                var player = this;
+                if (!game.players.contains(player) && !game.dead.contains(player)) return;
+                if (!this._doubleClicking) {
+                    this._doubleClicking = true;
+                    setTimeout(() => {
+                        this._doubleClicking = false;//[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
+                    }, 500);
+                    return;
+                }
+                // ui.click.skin(this,player.name);
+                game.pause2();
+                ui.click.charactercard(player.name, null, null, true, this);
+            }
+            /**
+             * 点击(副)头像时
+             */
+            var onClickAvatar2 = () => {
+                if (!lib.config.doubleclick_intro) return;
+                if (this.classList.contains('unseen2')) return;
+                if (!lib.character[this.name2]) return;
+                if (!ui.menuContainer) return;
+                var avatar = this.node.avatar;
+                var player = this;
+                if (!game.players.contains(player) && !game.dead.contains(player)) return;
+                if (!this._doubleClicking) {
+                    this._doubleClicking = true;
+                    setTimeout(function () {
+                        avatar._doubleClicking = false;
+                    }, 500);
+                    return;
+                }
+                // ui.click.skin(this,player.name2);
+                game.pause2();
+                ui.click.charactercard(player.name2, null, null, true, this);
+            }
+            /**
+             * 点击角色牌时
+             * @param {MouseEvent} e 点击事件
+             */
+            var onClickCharacter = (e) => {
+                if (_status.dragged) return;
+                if (_status.clicked) return;
+                if (ui.intro) return;
+                if (this.classList.contains('connect')) {
+                    if (game.online) {
+                        if (game.onlinezhu) {
+                            if (!this.playerid && game.connectPlayers) {
+                                if (['versus', 'doudizhu', 'longlaoguan'].contains(lib.configOL.mode)) return;
+                                if (lib.configOL.mode == 'identity' && lib.configOL.identity_mode == 'zhong') return;
+                                if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
+                                this.classList.toggle('unselectable2')
+                                if (this.classList.contains('unselectable2')) {
+                                    lib.configOL.number--;
+                                }
+                                else {
+                                    lib.configOL.number++;
+                                }
+                                game.send('changeNumConfig', lib.configOL.number,
+                                    game.connectPlayers.indexOf(this), this.classList.contains('unselectable2'));
+                            }
+                        }
+                        return;
+                    }
+                    if (this.playerid) {
+                        if (this.ws) {
+                            if (confirm('是否踢出' + this.nickname + '？')) {
+                                var id = get.id();
+                                this.ws.send(function (id) {
+                                    if (game.ws) {
+                                        game.ws.close();
+                                        game.saveConfig('reconnect_info');
+                                        game.saveConfig('banned_info', id);
+                                    }
+                                }, id);
+                                lib.node.banned.push(id);
+                            }
+                        }
+                    }
+                    else {
+                        if (['versus', 'doudizhu', 'longlaoguan', 'single'].contains(lib.configOL.mode)) return;
+                        if (lib.configOL.mode == 'identity' && (lib.configOL.identity_mode == 'zhong' || lib.configOL.identity_mode == 'purple')) return;
+                        if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
+                        this.classList.toggle('unselectable2')
+                        if (this.classList.contains('unselectable2')) {
+                            lib.configOL.number--;
+                        }
+                        else {
+                            lib.configOL.number++;
+                        }
+                        game.send('server', 'config', lib.configOL);
+                        game.updateWaiting();
+                    }
+                    return;
+                }
+                _status.clicked = true;
+                var custom = _status.event.custom;
+                if (custom.replace.target) {
+                    custom.replace.target(this, e);
+                    return;
+                }
+                if (this.classList.contains('selectable') == false) return;
+                this.unprompt();
+                if (this.classList.contains('selected')) {
+                    ui.selected.targets.remove(this);
+                    if (_status.multitarget || _status.event.complexSelect) {
+                        game.uncheck();
+                        game.check();
+                    }
+                    else {
+                        this.classList.remove('selected');
+                    }
+                }
+                else {
+                    ui.selected.targets.add(this);
+                    if (_status.event.name == 'chooseTarget' || _status.event.name == 'chooseToUse' || _status.event.name == 'chooseCardTarget') {
+                        var targetprompt = null;
+                        if (_status.event.targetprompt) {
+                            targetprompt = _status.event.targetprompt;
+                        }
+                        else if (_status.event.skill && !get.info(_status.event.skill).viewAs) {
+                            targetprompt = get.info(_status.event.skill).targetprompt;
+                        }
+                        else if (_status.event.name == 'chooseToUse') {
+                            var currentcard = get.card();
+                            if (currentcard) {
+                                targetprompt = get.info(currentcard).targetprompt;
+                            }
+                        }
+                        if (targetprompt) {
+                            if (Array.isArray(targetprompt)) {
+                                targetprompt = targetprompt[Math.min(targetprompt.length - 1, ui.selected.targets.indexOf(this))];
+                            }
+                            else if (typeof targetprompt == 'function') {
+                                targetprompt = targetprompt(this);
+                            }
+                            if (targetprompt && typeof targetprompt == 'string') {
+                                this.prompt(targetprompt);
+                            }
+                        }
+                    }
+                    this.classList.add('selected');
+                }
+                if (custom.add.target) {
+                    custom.add.target();
+                }
+                game.check();
+            }
+            var onClickIdentity = (e) => {
+                if (_status.dragged) return;
+                _status.clicked = true;
+                if (!game.getIdentityList) return;
+                if (_status.video) return;
+                if (this.forceShown) return;
+                if (_status.clickingidentity) {
+                    for (var i = 0; i < _status.clickingidentity[1].length; i++) {
+                        _status.clickingidentity[1][i].delete();
+                        _status.clickingidentity[1][i].style.transform = '';
+                    }
+                    if (_status.clickingidentity[0] == this) {
+                        delete _status.clickingidentity;
+                        return;
+                    }
+                }
+                var list = game.getIdentityList(this);
+                if (!list) return;
+                if (lib.config.mark_identity_style == 'click') {
+                    var list2 = [];
+                    for (var i in list) {
+                        list2.push(i);
+                    }
+                    list2.push(list2[0]);
+                    for (var i = 0; i < list2.length; i++) {
+                        if (this.node.identity.firstChild.innerHTML == list[list2[i]]) {
+                            this.node.identity.firstChild.innerHTML = list[list2[i + 1]];
+                            this.node.identity.dataset.color = list2[i + 1];
+                            break;
+                        }
+                    }
+                }
+                else {
+                    if (get.mode() == 'guozhan') {
+                        list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
+                    }
+                    var list2 = get.copy(list);
+                    if (game.getIdentityList2) {
+                        game.getIdentityList2(list2);
+                    }
+                    var rect = this.getBoundingClientRect();
+                    this._customintro = (uiintro) => {
+                        if (get.mode() == 'guozhan') {
+                            uiintro.clickintro = true;
+                        }
+                        else {
+                            uiintro.touchclose = true;
+                        }
+                        // if(lib.config.theme!='woodden'){
+                        uiintro.classList.add('woodbg');
+                        // }
+                        if (get.is.phoneLayout()) {
+                            uiintro.style.width = '100px';
+                        }
+                        else {
+                            uiintro.style.width = '85px';
+                        }
+                        var source = this;
+                        for (var i in list) {
+                            var node = ui.create.div();
+                            node.classList.add('guessidentity');
+                            node.classList.add('pointerdiv');
+                            ui.create.div('.menubutton.large', list2[i], node);
+                            if (!get.is.phoneLayout()) {
+                                node.firstChild.style.fontSize = '24px';
+                                node.firstChild.style.lineHeight = '24px';
+                            }
+                            if (get.mode() == 'guozhan') {
+                                if (source._guozhanguess) {
+                                    if (!source._guozhanguess.contains(i)) {
+                                        node.classList.add('transparent');
+                                    }
+                                }
+                                node._source = source;
+                                node.listen(ui.click.identitycircle);
+                            }
+                            else {
+                                node.listen(function () {
+                                    var info = this.link;
+                                    info[0].firstChild.innerHTML = info[1];
+                                    info[0].dataset.color = info[2];
+                                    _status.clicked = false;
+                                });
+                            }
+
+                            node.link = [this.node.identity, list[i], i];
+                            uiintro.add(node);
+                        }
+                    };
+                    ui.click.touchpop();
+                    ui.click.intro.call(this, {
+                        clientX: (rect.left + rect.width) * game.documentZoom,
+                        clientY: (rect.top) * game.documentZoom
+                    });
+                }
+            }
             this.onClickAvatar = this.element.onClickAvatar = onClickAvatar;
             this.onClickAvatar2 = this.element.onClickAvatar2 = onClickAvatar2;
             this.onClickCharacter = this.element.onClickCharacter = onClickCharacter;
             this.onClickIdentity = this.element.onClickIdentity = onClickIdentity;
 
-            this.element.getModel = () => {
-                return this;
-            };
         }
 
         /**
