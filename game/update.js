@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'1.9.103.14',
+	version:'1.9.103.15',
 	update:'1.9.101.1.1',
 	changeLog:[
 		`1.9.103.15小更新：新增势力：网易；新增角色：栗子酱(网易)、海·星宫汐(个人势/群:化鲸包)`,
@@ -56,7 +56,17 @@ window.noname_update={
 		'mode/longlaoguan.js',
 		'mode/versus.js',
 		'mode/boss.js',
+
 		'game/game.js',
+		'game/module.js',
+		'game/core/_status.js',
+		'game/core/ai.js',
+		'game/core/game.js',
+		'game/core/get.js',
+		'game/core/lib.js',
+		'game/view/HTMLDivElementProxy.js',
+		'game/view/PlayerModel.js',
+		
 		//'game/NoSleep.js',
 		//'game/config.js',
 		'game/package.js',

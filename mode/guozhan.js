@@ -1545,7 +1545,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					player.judge(func);
 					'step 1'
 					if(result.bool){
-						event.num = (player.maxHp-player.hp)||1;
+						event.num = (player.getDamagedHp())||1;
 						if(result.suit=='spade'){
 							if([player.name,player.name1].contains('Yousa')) game.playAudio('skill','niaoji_spade'+Math.ceil(3*Math.random()));
 							player.discardPlayerCard('###『鸟肌』###弃置'+get.translation(event.target)+get.cnNumber(event.num)+'张牌',event.target,event.num,true,'he');
