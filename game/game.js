@@ -34,9 +34,16 @@ new Promise((resolve, reject)=>{
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.async = true;
-        script.src = 'game/module.js';
+        const rootDir = localStorage.getItem('noname_inited');
+        var baseUrl = '';//根路径
+        if(rootDir && rootDir !== 'nodejs'){
+            baseUrl = rootDir;
+        }
+        baseUrl += 'game/';
+        script.src = baseUrl + 'module.js';
         function onScriptLoaded(evt){
             const script = getScript(evt);
+            moduleManager.config.baseUrl = baseUrl;
             resolve(script);
         }
         function onScriptError(evt){
