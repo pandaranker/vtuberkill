@@ -6225,8 +6225,8 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
         dynamicTranslate: {
             re_longdan(player) {
                 let str = lib.translate.re_longdan_info;
-                let groups = /(?<Yang>阳：.*?)[；。].*(?<Yin>阴：.*?)[；。]/g.exec(str).groups;
-                let yang = groups.Yang, yin = groups.Yin;
+                let result = /(阳：.*?)[；。].*(阴：.*?)[；。]/g.exec(str);
+                let yang = result[1], yin = result[2];
                 if (player.storage.re_longdan === true)
                     return str.replace(yang, lib.spanClass(yang, 'changetext'));
                 return str.replace(yin, lib.spanClass(yin, 'changetext'));
