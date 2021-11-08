@@ -2561,7 +2561,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             if (!str)
                 return '';
             str = str
-                .replace(/(?<!\/)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$1</font>，')
+                .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$2</font>，')
                 .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
                 .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
                 .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')
