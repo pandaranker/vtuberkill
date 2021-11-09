@@ -1,11 +1,11 @@
-moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
+moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏内核
      * 游戏循环{@link game.loop}
-     * @namespace
+     * @namespace game
      * @global
      */
-    var game = /**@lends game */ {
+    mixin(game, /**@lends game */ {
         /**
          * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
          * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
@@ -6134,7 +6134,7 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
                 for (i in mode[lib.config.mode].element) {
                     if (!lib.element[i])
                         lib.element[i] = [];
-                    mixin(PlayerModel, mode[lib.config.mode].element.player);
+                    mixin(PlayerModel.prototype, mode[lib.config.mode].element.player);
                     for (j in mode[lib.config.mode].element[i]) {
                         if (j == 'init') {
                             if (!lib.element[i].inits)
@@ -8513,6 +8513,6 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
         phaseNumber: 0,
         roundNumber: 0,
         shuffleNumber: 0,
-    };
+    });
     return game;
 });

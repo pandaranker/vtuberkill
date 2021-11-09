@@ -1,4 +1,4 @@
-moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy) {
+moduleManager.define(['core/core','view/HTMLDivElementProxy'], function ({_status, lib, game, ui, get, ai}, HTMLDivElementProxy) {
     /**
      * Player类
      * @class PlayerModel

@@ -1,10 +1,10 @@
-moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
+moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏UI库
-     * @namespace
+     * @namespace ui
      * @global
      */
-    var ui = /**@lends ui */ {
+    mixin(ui, /**@lends ui */ {
         updates: [],
         thrown: [],
         touchlines: [],
@@ -14246,6 +14246,6 @@ moduleManager.define(['view/PlayerModel'], function (PlayerModel) {
             }
             ui._recycle[key] = node;
         },
-    };
+    });
     return ui;
 });

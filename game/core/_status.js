@@ -1,10 +1,10 @@
-moduleManager.define([], function () {
+moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai}) {
     /**
      * 其中的变量是游戏中的全局变量，因为是在IIFE中声明而不是实际上的全局范围，从而对外部实现了隐藏
-     * @namespace
+     * @namespace _status
      * @global
      */
-    var _status = /**@lends _status */ {
+    mixin(_status, /**@lends _status */ {
         paused: false,
         paused2: false,
         paused3: false,
@@ -49,6 +49,6 @@ moduleManager.define([], function () {
             yingbian_canqu: [],
         },
         prehidden_skills: [],
-    };
+    });
     return _status;
 });

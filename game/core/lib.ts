@@ -8959,7 +8959,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
-                        mixin(PlayerModel, mode[lib.config.mode].element.player);
+                        mixin(PlayerModel.prototype, mode[lib.config.mode].element.player);
                         for (j in mode[lib.config.mode].element[i]) {
                             if (j == 'init') {
                                 if (!lib.element[i].inits) lib.element[i].inits = [];

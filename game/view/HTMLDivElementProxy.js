@@ -1,4 +1,4 @@
-moduleManager.define([], function() {
+moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) {
     /**
      * HTMLDivElementProxy代理类
      * @class HTMLDivElementProxyProxy

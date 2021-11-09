@@ -8,23 +8,23 @@ var globalThis = function(){
 }();
 /**
  * 混入函数
- * @param {class} ori 原类
+ * @param {(object|prototype)} ori 被混入的对象[原型]
  * @param {Object} mix 混入的对象
  * @returns {undefined}
  */
 function mixin(ori, mix){
     if(!mix||!ori) return;
     for(const [key, val] of Object.entries(mix)){
-        if(!ori.prototype[key]){
-            ori.prototype[key] = val;
+        if(!ori[key]){
+            ori[key] = val;
         }else if(typeof val === 'function'){
-            let oriFunc = ori.prototype[key];
-            ori.prototype[key] = function(){
+            let oriFunc = ori[key];
+            ori[key] = function(){
                 oriFunc.apply(this, arguments);
                 val.apply(this, arguments);
             }
         }else{
-            ori.prototype[key] = val;
+            ori[key] = val;
         }
     }
 }
@@ -62,16 +62,7 @@ new Promise((resolve, reject)=>{
         console.log('Game begin to run.');
     }
 }).then(()=>{//初始化游戏
-    const config = {
-        '_status': 'core/_status',
-        'lib': 'core/lib',
-        'game': 'core/game',
-        'get': 'core/get',
-        'ui': 'core/ui',
-        'ai': 'core/ai'
-    };
-    moduleManager.require(Object.values(config), function(...args){
-        Object.keys(config).forEach((key, index)=> void ( globalThis[key] || (globalThis[key] = args[index]) ) );
+    moduleManager.require(['core/_status', 'core/lib', 'core/game', 'core/ui', 'core/get', 'core/ai'], function(_status, lib, game, ui, get, ai){
         lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
         lib.figurer = text => ` ${lib.figure}${text}</span> `
         lib.spanClass = (str,classes)=>{
