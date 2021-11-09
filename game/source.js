@@ -69,7 +69,8 @@ window.noname_source_list=[
 	'game/source.js',
 	'game/update.js',
 	'game/module.js',
-
+    
+    'game/core/core.js',
 	'game/core/_status.js',
 	'game/core/ai.js',
 	'game/core/game.js',
