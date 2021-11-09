@@ -127,11 +127,8 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
             node.node.action = ui.create.div('.action', node.node.avatar);
             //小身份div
             ui.create.div(node.node.identity);
-
-            // for (var i in lib.element.player) {
-            //     node[i] = lib.element.player[i];
-            // }
             //点击事件
+            this.initEventListeners();
             if (!noclick) {
                 node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickCharacter);
                 node.node.identity.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickIdentity);
@@ -140,7 +137,6 @@ moduleManager.define(['view/HTMLDivElementProxy'], function (HTMLDivElementProxy
                 }
             }
             else node.noclick = true;
-            this.initEventListeners();
             this.element.getModel = () => {
                 return this;
             };
