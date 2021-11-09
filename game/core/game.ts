@@ -1,11 +1,11 @@
-moduleManager.define(['view/PlayerModel'], function(PlayerModel){
+moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏内核
      * 游戏循环{@link game.loop}
-     * @namespace
-     * @global
+     * @namespace game
+     * @memberof module:core
      */
-     var game = /**@lends game */ {
+    mixin(game, /**@lends module:core.game */ {
         /**
          * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
          * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
@@ -5918,6 +5918,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
         loadModeAsync: function (name, callback) {
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                if (!lib.config.dev) delete window.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -5940,6 +5941,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
             }
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                if (!lib.config.dev) delete window.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -8201,6 +8203,6 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
         phaseNumber: 0,
         roundNumber: 0,
         shuffleNumber: 0,
-    };
+    });
     return game;
 });

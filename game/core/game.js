@@ -1,11 +1,12 @@
-moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
+    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
     /**
      * 游戏内核
      * 游戏循环{@link game.loop}
      * @namespace game
-     * @global
+     * @memberof module:core
      */
-    mixin(game, /**@lends game */ {
+    mixin(game, /**@lends module:core.game */ {
         /**
          * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
          * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
@@ -17,10 +18,10 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         showPlayerCard: function (event, target, directh, type, callback) {
             if (!event.dialog)
                 return;
-            let player = event.player || _status.event.player, position = event.position || 'h';
-            for (let i = 0; i < event.position.length; i++) {
+            var player = event.player || _status.event.player, position = event.position || 'h';
+            var _loop_1 = function (i) {
                 if (event.position[i] == 'h') {
-                    let ms = target.getCards('h', function (card) {
+                    var ms_1 = target.getCards('h', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         if (target.isUnderControl(true))
@@ -32,27 +33,27 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         }
                         return card.hasGaintag('ming_');
                     });
-                    if (ms.length > 0) {
+                    if (ms_1.length > 0) {
                         event.dialog.addText('明置区');
-                        ms.randomSort();
-                        event.dialog.add(ms);
+                        ms_1.randomSort();
+                        event.dialog.add(ms_1);
                         directh = false;
                     }
-                    let ans = target.getCards('h', function (card) {
+                    var ans = target.getCards('h', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
-                        if (ms.contains(card))
+                        if (ms_1.contains(card))
                             return false;
                         return true;
                     });
                     if (ans.length > 0) {
-                        event.dialog.addText((ms.length ? '暗置区' : '手牌区'));
+                        event.dialog.addText((ms_1.length ? '暗置区' : '手牌区'));
                         ans.randomSort();
                         event.dialog.add([ans, 'blank']);
                     }
                 }
                 else if (event.position[i] == 'e') {
-                    let es = target.getCards('e', function (card) {
+                    var es = target.getCards('e', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         return true;
@@ -64,7 +65,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     }
                 }
                 else if (event.position[i] == 'j') {
-                    let js = target.getCards('j', function (card) {
+                    var js = target.getCards('j', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         return true;
@@ -75,6 +76,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         directh = false;
                     }
                 }
+            };
+            for (var i = 0; i < event.position.length; i++) {
+                _loop_1(i);
             }
             callback && callback(event);
             return directh;
@@ -238,7 +242,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 var sele = ui.create.div('.sele', choose);
                                 sele.onclick = function () {
                                     _status.event.result = {
-                                        bool: this.innerText,
+                                        bool: this.innerText
                                     };
                                     ui.window.removeChild(beijing);
                                     ui.backgroundMusic.play();
@@ -360,9 +364,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     setTimeout(show, 200);
                                 }
                                 else {
-                                    let t = setTimeout(show, 1000);
+                                    var t_1 = setTimeout(show, 1000);
                                     drive.onclick = function () {
-                                        clearTimeout(t);
+                                        clearTimeout(t_1);
                                         show();
                                     };
                                 }
@@ -425,7 +429,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     js: [],
                     ss: [],
                     cards: [],
-                    cards2: [],
+                    cards2: []
                 };
                 player.getHistory('lose', function (evt) {
                     if (evt.parent == that) {
@@ -521,7 +525,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         createBackground: function (src, blur) {
             var current = document.body.querySelector('.background.upper');
             if (current) {
-                current.delete();
+                current["delete"]();
             }
             var node = ui.create.div('.background.blurbg', document.body);
             node.setBackgroundImage(src);
@@ -756,7 +760,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         closePopped: function () {
             if (ui.currentpopped) {
                 if (ui.currentpopped._uiintro) {
-                    ui.currentpopped._uiintro.delete();
+                    ui.currentpopped._uiintro["delete"]();
                     delete ui.currentpopped._uiintro;
                 }
                 delete ui.currentpopped;
@@ -899,8 +903,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 else if (typeof info[_status.event.name] == 'number') {
                     num = info[_status.event.name];
                 }
-                else if (info.default) {
-                    num = info.default;
+                else if (info["default"]) {
+                    num = info["default"];
                 }
                 else
                     return;
@@ -1243,7 +1247,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
          * @param {!string} type 类型
          * @param {!function} content 载入内容的回调函数
          */
-        import: function (type, content) {
+        "import": function (type, content) {
             if (type == 'extension') {
                 game.loadExtension(content);
             }
@@ -1274,14 +1278,14 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 lib.extensionMenu['extension_' + obj.name].author = {
                     name: '作者：' + obj.package.author,
                     clear: true,
-                    nopointer: true,
+                    nopointer: true
                 };
             }
             if (obj.package && obj.package.intro) {
                 lib.extensionMenu['extension_' + obj.name].intro = {
                     name: obj.package.intro,
                     clear: true,
-                    nopointer: true,
+                    nopointer: true
                 };
             }
             for (var i in obj.config) {
@@ -1304,7 +1308,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     }
                 };
             }
-            lib.extensionMenu['extension_' + obj.name].delete = {
+            lib.extensionMenu['extension_' + obj.name]["delete"] = {
                 name: '删除此扩展',
                 clear: true,
                 onclick: function () {
@@ -1690,7 +1694,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 }
             }
         },
-        export: function (textToWrite, name) {
+        "export": function (textToWrite, name) {
             var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
             var fileNameToSaveAs = name || 'noname';
             fileNameToSaveAs = fileNameToSaveAs.replace(/\\|\/|\:|\?|\"|\*|<|>|\|/g, '.');
@@ -1852,8 +1856,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 }
                 else {
                     if (player.node.jiu) {
-                        player.node.jiu.delete();
-                        player.node.jiu2.delete();
+                        player.node.jiu["delete"]();
+                        player.node.jiu2["delete"]();
                         delete player.node.jiu;
                         delete player.node.jiu2;
                     }
@@ -2105,7 +2109,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             },
             removeTreasure: function (pos) {
                 if (game.playerMap[pos]) {
-                    game.playerMap[pos].delete();
+                    game.playerMap[pos]["delete"]();
                     delete game.playerMap[pos];
                 }
                 else {
@@ -2135,7 +2139,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             },
             bossSwap: function (player, name) {
                 if (player && name) {
-                    player.delete();
+                    player["delete"]();
                     var noboss = false;
                     if (name[0] == '_') {
                         name = name.slice(1);
@@ -2361,8 +2365,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             },
             deleteHandcards: function (player) {
                 if (player) {
-                    player.node.handcards1.delete();
-                    player.node.handcards2.delete();
+                    player.node.handcards1["delete"]();
+                    player.node.handcards2["delete"]();
                 }
             },
             hideCharacter: function (player, num) {
@@ -2411,7 +2415,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     console.log(player);
                 }
             },
-            throw: function (player, info) {
+            "throw": function (player, info) {
                 if (player && info) {
                     player.$throw(get.infoCards(info[0]), info[1], null, info[2]);
                 }
@@ -2502,7 +2506,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     for (var i = 0; i < cards.length; i++) {
                         for (var j = 0; j < nodes.length; j++) {
                             if (cards[i][2] == nodes[j].name && cards[i][0] == nodes[j].suit && cards[i][1] == nodes[j].number) {
-                                nodes[j].delete();
+                                nodes[j]["delete"]();
                                 if (method == 'zoom') {
                                     nodes[j].style.transform = 'scale(0)';
                                 }
@@ -2575,7 +2579,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             },
             unmark: function (player, name) {
                 if (player && player.marks && player.marks[name]) {
-                    player.marks[name].delete();
+                    player.marks[name]["delete"]();
                     player.marks[name].style.transform += ' scale(0.2)';
                     delete player.marks[name];
                     ui.updatem(this);
@@ -2681,7 +2685,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 game.dead.push(player);
                 if (lib.config.mode == 'stone') {
                     setTimeout(function () {
-                        player.delete();
+                        player["delete"]();
                     }, 500);
                 }
             },
@@ -2700,7 +2704,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             },
             deleteChessPlayer: function (player) {
                 if (player) {
-                    player.delete();
+                    player["delete"]();
                     delete game.playerMap[player.dataset.position];
                     game.players.remove(player);
                     for (var i = 0; i < ui.phasequeue.length; i++) {
@@ -2724,7 +2728,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 if (game.chess) {
                     delete lib.posmap[player.dataset.position];
                     setTimeout(function () {
-                        player.delete();
+                        player["delete"]();
                     }, 500);
                     for (var i = 0; i < ui.phasequeue.length; i++) {
                         if (ui.phasequeue[i].link == player) {
@@ -3749,7 +3753,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     setTimeout(function () {
                         if (node.classList.contains('removing'))
                             return;
-                        node.delete();
+                        node["delete"]();
                     }, total / 3);
                 });
             }
@@ -3912,7 +3916,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                  * @type {?Object}
                  */
                 _result: {},
-                _set: [],
+                _set: []
             };
             if (trigger !== false && !game.online)
                 next._triggered = 0;
@@ -4142,7 +4146,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 fromextension: true
             };
             lib.init['setMode_' + name] = function () {
-                game.import('mode', function (lib, game, ui, get, ai, _status) {
+                game["import"]('mode', function (lib, game, ui, get, ai, _status) {
                     info.name = name;
                     return info;
                 });
@@ -4216,7 +4220,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         game.players[i].removeSkill(skills[j]);
                     }
                 }
-                game.players[i].in(true);
+                game.players[i]["in"](true);
             }
             ui.clear();
         },
@@ -4867,7 +4871,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     var xhr = new XMLHttpRequest();
                     var sendForm = new FormData();
                     sendForm.append('data', JSON.stringify(uploadData));
-                    xhr.open('post', 'https://data.vtuberkill.com/game-records/', (e) => { console.log(e); });
+                    xhr.open('post', 'https://data.vtuberkill.com/game-records/', function (e) { console.log(e); });
                     xhr.send(sendForm);
                 }
                 catch (e) {
@@ -4970,7 +4974,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     if (videos.length >= vinum) {
                         var toremove = videos.pop();
                         lib.videos.remove(toremove);
-                        store.delete(toremove.time);
+                        store["delete"](toremove.time);
                     }
                     else {
                         break;
@@ -5866,7 +5870,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     cards[j].classList.remove('selected');
                     cards[j].classList.remove('selectable');
                     if (cards[j]._tempName) {
-                        cards[j]._tempName.delete();
+                        cards[j]._tempName["delete"]();
                         delete cards[j]._tempName;
                     }
                     cards[j].updateTransform();
@@ -5903,7 +5907,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 _status.mousedragging = null;
                 _status.mousedragorigin = null;
                 while (ui.touchlines.length) {
-                    ui.touchlines.shift().delete();
+                    ui.touchlines.shift()["delete"]();
                 }
             }
             ui.canvas.width = ui.arena.offsetWidth;
@@ -6104,6 +6108,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         loadModeAsync: function (name, callback) {
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                if (!lib.config.dev)
+                    delete window.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -6126,6 +6132,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                if (!lib.config.dev)
+                    delete window.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -6652,7 +6660,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 return;
                             }
                             ui.window.classList.remove('modepaused');
-                            this.delete();
+                            this["delete"]();
                             e.stopPropagation();
                             event.freechoosedialog.style.transform = 'scale(0.8)';
                             if (event.replacing) {
@@ -6823,13 +6831,13 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 if (event.checkredo())
                     return;
                 if (event.skipnode)
-                    event.skipnode.delete();
+                    event.skipnode["delete"]();
                 if (event.replacenode)
-                    event.replacenode.delete();
+                    event.replacenode["delete"]();
                 if (event.reselectnode)
-                    event.reselectnode.delete();
+                    event.reselectnode["delete"]();
                 if (event.freechoosenode)
-                    event.freechoosenode.delete();
+                    event.freechoosenode["delete"]();
                 for (var i = 0; i < event.avatars.length; i++) {
                     if (!event.avatars[i].classList.contains('moved')) {
                         if (event.side < 2) {
@@ -6875,17 +6883,17 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 }
                 game.pause();
                 'step 6';
-                event.promptbar.delete();
+                event.promptbar["delete"]();
                 if (ui.cardPileButton)
                     ui.cardPileButton.style.display = '';
                 lib.onresize.remove(event.resize);
                 ui.wuxie.show();
                 ui.auto.show();
                 for (var i = 0; i < event.avatars.length; i++) {
-                    event.avatars[i].delete();
+                    event.avatars[i]["delete"]();
                 }
                 for (var i = 0; i < event.nodes.length; i++) {
-                    event.nodes[i].delete();
+                    event.nodes[i]["delete"]();
                 }
                 event.result = { friend: [], enemy: [] };
                 for (var i = 0; i < event.config.num; i++) {
@@ -7472,7 +7480,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 }
                 if (lib.config.clear_log) {
                     nodeentry.timeout = setTimeout(function () {
-                        nodeentry.delete();
+                        nodeentry["delete"]();
                     }, 1000);
                     for (var i = 0; i < ui.arenalog.childElementCount; i++) {
                         if (!ui.arenalog.childNodes[i].timeout) {
@@ -7734,7 +7742,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     var cursor = e.target.result;
                     if (cursor) {
                         obj[cursor.key] = cursor.value;
-                        cursor.continue();
+                        cursor["continue"]();
                     }
                     else {
                         _status.dburgent = true;
@@ -7767,7 +7775,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         lib.status.reload++;
                     }
                     for (var id in obj) {
-                        store.delete(id).onsuccess = game.reload2;
+                        store["delete"](id).onsuccess = game.reload2;
                     }
                     game.reload2();
                 });
@@ -7775,7 +7783,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             else {
                 lib.status.reload++;
                 var store = lib.db.transaction([type], 'readwrite').objectStore(type);
-                store.delete(id).onsuccess = function () {
+                store["delete"](id).onsuccess = function () {
                     if (callback) {
                         callback.apply(this, arguments);
                     }
@@ -8164,7 +8172,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
             player.nextSeat.previousSeat = player.previousSeat;
             player.previousSeat.nextSeat = player.nextSeat;
-            player.delete();
+            player["delete"]();
             game.players.remove(player);
             game.dead.remove(player);
             ui.arena.setNumber(players.length - 1);
@@ -8184,7 +8192,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             var position = parseInt(player.dataset.position);
             game.players.remove(player);
             game.dead.remove(player);
-            player.delete();
+            player["delete"]();
             var player2 = ui.create.player(ui.arena).animate('start');
             if (character)
                 player2.init(character, character2);
@@ -8303,12 +8311,12 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
          * @returns {Array<string>} 排除失效技能的数组
          */
         filterSkills: function (skills, player, exclude) {
-            let out = skills.slice(0);
-            for (let i in player.disabledSkills) {
+            var out = skills.slice(0);
+            for (var i in player.disabledSkills) {
                 out.remove(i);
             }
             if (player.storage.skill_blocker && player.storage.skill_blocker.length) {
-                for (let i = 0; i < out.length; i++) {
+                for (var i = 0; i < out.length; i++) {
                     if ((!exclude || !exclude.contains(out[i])) && get.is.blocked(out[i], player))
                         out.splice(i--, 1);
                 }
@@ -8512,7 +8520,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         playerMap: {},
         phaseNumber: 0,
         roundNumber: 0,
-        shuffleNumber: 0,
+        shuffleNumber: 0
     });
     return game;
 });

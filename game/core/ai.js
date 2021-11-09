@@ -1,10 +1,11 @@
-moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai}) {
+moduleManager.define(['core/core'], function (_a) {
+    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
     /**
      * 游戏AI模块
      * @namespace ai
-     * @global
+     * @memberof module:core
      */
-    mixin(ai, /**@lends ai */ {
+    mixin(ai, /**@lends module:core.ai */ {
         basic: {
             chooseButton: function (check) {
                 var event = _status.event;

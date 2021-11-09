@@ -1,10 +1,11 @@
-moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
+    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
     /**
      * 游戏UI库
      * @namespace ui
-     * @global
+     * @memberof module:core
      */
-    mixin(ui, /**@lends ui */ {
+    mixin(ui, /**@lends module:core.ui */ {
         updates: [],
         thrown: [],
         touchlines: [],
@@ -314,7 +315,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 if (bool) {
                     ui.window.classList.remove('connecting');
                     if (ui.connecting) {
-                        ui.connecting.delete();
+                        ui.connecting["delete"]();
                         delete ui.connecting;
                     }
                 }
@@ -953,7 +954,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                         '15': '15秒',
                                         '30': '30秒',
                                         '60': '60秒',
-                                        '90': '90秒',
+                                        '90': '90秒'
                                     },
                                     connect: true,
                                     frequent: true
@@ -2409,7 +2410,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     }
                                 }
                                 game.saveConfig('forbidai_user', lib.config.forbidai_user);
-                            },
+                            }
                         });
                         if (mode.indexOf('mode_') != 0) {
                             cfgnodeAI.style.marginTop = '0px';
@@ -2541,7 +2542,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                             }
                                             game.saveConfig(connectMenu ? ('connect_' + modex.mode + '_banned') : (get.mode() + '_banned'), banned);
                                             updateActive();
-                                        },
+                                        }
                                     };
                                     if (mode.indexOf('mode_') == 0 && mode.indexOf('mode_extension_') != 0 && mode.indexOf('mode_guozhan') != 0) {
                                         cfgnodeY.clear = true;
@@ -2566,7 +2567,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 var cfgnodeX = createConfig({
                                     name: '其他',
                                     _name: 'others',
-                                    clear: true,
+                                    clear: true
                                 });
                                 page.appendChild(cfgnodeX);
                                 var buttons = ui.create.buttons(list2, 'character', page);
@@ -3591,7 +3592,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     author: authorExtLine.querySelector('input').value || '',
                                     diskURL: diskExtLine.querySelector('input').value || '',
                                     forumURL: forumExtLine.querySelector('input').value || '',
-                                    version: versionExtLine.querySelector('input').value || '',
+                                    version: versionExtLine.querySelector('input').value || ''
                                 });
                                 var files = { character: [], card: [], skill: [] };
                                 for (var i in dash1.content.image) {
@@ -3619,7 +3620,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                             author: authorExtLine.querySelector('input').value || '',
                                             netdisk: diskExtLine.querySelector('input').value || '',
                                             forum: forumExtLine.querySelector('input').value || '',
-                                            version: versionExtLine.querySelector('input').value || '',
+                                            version: versionExtLine.querySelector('input').value || ''
                                         });
                                     };
                                     if (game.getFileList) {
@@ -4626,7 +4627,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             var discardConfig = ui.create.div('.editbutton', '取消', editorpage, function () {
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container.delete(null);
+                                container["delete"](null);
                                 delete window.saveNonameInput;
                             });
                             var saveInput = function () {
@@ -4656,7 +4657,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 dash2.link.classList.add('active');
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container.delete();
+                                container["delete"]();
                                 container.code = code;
                                 delete window.saveNonameInput;
                             };
@@ -5070,7 +5071,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             var discardConfig = ui.create.div('.editbutton', '取消', editorpage, function () {
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container.delete(null);
+                                container["delete"](null);
                                 delete window.saveNonameInput;
                             });
                             var saveInput = function () {
@@ -5100,7 +5101,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 dash3.link.classList.add('active');
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container.delete();
+                                container["delete"]();
                                 container.code = code;
                                 delete window.saveNonameInput;
                             };
@@ -5355,7 +5356,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 var discardConfig = ui.create.div('.editbutton', '取消', editorpage, function () {
                                     ui.window.classList.remove('shortcutpaused');
                                     ui.window.classList.remove('systempaused');
-                                    container.delete(null);
+                                    container["delete"](null);
                                     delete window.saveNonameInput;
                                 });
                                 var saveInput = function () {
@@ -5401,7 +5402,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     dash4.link.classList.add('active');
                                     ui.window.classList.remove('shortcutpaused');
                                     ui.window.classList.remove('systempaused');
-                                    container.delete();
+                                    container["delete"]();
                                     container.code = code;
                                     page.content[link] = code;
                                     delete window.saveNonameInput;
@@ -5605,6 +5606,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     _status.importingExtension = true;
                                     window.game = game;
                                     lib.init.js(lib.assetURL + 'extension/' + that.info.name, 'extension', function () {
+                                        if (!lib.config.dev)
+                                            delete window.game;
                                         if (game.importedPack) {
                                             var extname = game.importedPack.name;
                                             if (lib.config.extensions.contains(extname)) {
@@ -6979,7 +6982,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             var cursor = e.target.result;
                             if (cursor) {
                                 lib.videos.push(cursor.value);
-                                cursor.continue();
+                                cursor["continue"]();
                             }
                             else {
                                 lib.videos.sort(function (a, b) {
@@ -7087,7 +7090,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                             if (videos.length >= parseInt(lib.config.video) && videos.length) {
                                                 var toremove = videos.pop();
                                                 lib.videos.remove(toremove);
-                                                store.delete(toremove.time);
+                                                store["delete"](toremove.time);
                                                 for (var i = 0; i < page.childNodes.length; i++) {
                                                     if (page.childNodes[i].link == toremove) {
                                                         page.childNodes[i].remove();
@@ -7122,14 +7125,14 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     if (current) {
                                         lib.videos.remove(current.link);
                                         var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
-                                        store.delete(current.link.time);
+                                        store["delete"](current.link.time);
                                         current.remove();
                                     }
                                 });
                                 saveButton.listen(function () {
                                     var current = this.parentNode.querySelector('.videonode.active');
                                     if (current) {
-                                        game.export(lib.init.encode(JSON.stringify(current.link)), '无名杀 - 录像 - ' + current.link.name[0] + ' - ' + current.link.name[1]);
+                                        game["export"](lib.init.encode(JSON.stringify(current.link)), '无名杀 - 录像 - ' + current.link.name[0] + ' - ' + current.link.name[1]);
                                     }
                                 });
                                 ui.updateVideoMenu = function () {
@@ -7886,7 +7889,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     var clickCaptNode = function (e) {
                         delete _status.filterCharacter;
                         ui.window.classList.remove('shortcutpaused');
-                        filternode.delete();
+                        filternode["delete"]();
                         filternode.classList.remove('shown');
                         clickCapt.call(this.link, e);
                     };
@@ -7900,7 +7903,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 return;
                             delete _status.filterCharacter;
                             ui.window.classList.remove('shortcutpaused');
-                            this.delete();
+                            this["delete"]();
                             this.classList.remove('shown');
                             e.stopPropagation();
                         });
@@ -8769,7 +8772,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         _status.draggingroundmenu = true;
                         ui.roundmenu._dragorigin = {
                             clientX: e.touches[0].clientX,
-                            clientY: e.touches[0].clientY,
+                            clientY: e.touches[0].clientY
                         };
                         if (!ui.roundmenu._dragtransform) {
                             ui.roundmenu._dragtransform = [0, 0];
@@ -9331,7 +9334,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     name: ui.create.div('.name', node),
                                     hp: ui.create.div('.hp', node),
                                     group: ui.create.div('.identity', node),
-                                    intro: ui.create.div('.intro', node),
+                                    intro: ui.create.div('.intro', node)
                                 };
                                 var infoitem = lib.character[item];
                                 if (!infoitem) {
@@ -9402,7 +9405,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     if (double) {
                                         var str = '<div>';
                                         if (double.length == 2) {
-                                            for (var i of double) {
+                                            for (var _i = 0, double_1 = double; _i < double_1.length; _i++) {
+                                                var i = double_1[_i];
                                                 str += get.translation(i);
                                             }
                                         }
@@ -9570,7 +9574,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     }
                     else {
                         var num = 0;
-                        for (var i of game.connectPlayers) {
+                        for (var _i = 0, _a = game.connectPlayers; _i < _a.length; _i++) {
+                            var i = _a[_i];
                             if (!i.nickname && !i.classList.contains('unselectable2'))
                                 num++;
                         }
@@ -9580,8 +9585,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         // }
                         game.resume();
                     }
-                    button.delete();
-                    bar.delete();
+                    button["delete"]();
+                    bar["delete"]();
                     delete ui.connectStartButton;
                     delete ui.connectStartBar;
                     button.clicked = true;
@@ -9703,7 +9708,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     background: ui.create.div('.background', node),
                     intro: ui.create.div('.intro', node),
                     range: ui.create.div('.range', node),
-                    gaintag: ui.create.div('.gaintag', node),
+                    gaintag: ui.create.div('.gaintag', node)
                 };
                 for (var i in lib.element.card) {
                     node[i] = lib.element.card[i];
@@ -9786,7 +9791,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     _status.pileTop = top;
                     _status.cardtag = cardtag;
                 }, ui.cardPile.childNodes.length, lib.inpile, ui.cardPile.firstChild, _status.cardtag);
-            },
+            }
         },
         /**
          * HTML 事件
@@ -9833,8 +9838,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             return;
                         }
                         button.classList.remove('active');
-                        uiintro.delete();
-                        this.delete();
+                        uiintro["delete"]();
+                        this["delete"]();
                     });
                     uiintro.listen(function () {
                         _status.clicked = true;
@@ -9951,7 +9956,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                     avatar: lib.config.connect_avatar,
                                     content: button.input.value,
                                     create: game.onlineKey,
-                                    members: [game.onlineKey],
+                                    members: [game.onlineKey]
                                 };
                                 eventnode.info = fakeinfo;
                                 ui.create.div('.title', fakeinfo.content, eventnode);
@@ -10117,8 +10122,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             return;
                         }
                         button.classList.remove('active');
-                        uiintro.delete();
-                        this.delete();
+                        uiintro["delete"]();
+                        this["delete"]();
                     });
                     uiintro.listen(function () {
                         _status.clicked = true;
@@ -10284,7 +10289,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         fakeavatar.style.boxShadow = 'none';
                         player.insertBefore(fakeavatar, avatar.nextSibling);
                         setTimeout(function () {
-                            fakeavatar.delete();
+                            fakeavatar["delete"]();
                         }, 100);
                     }
                     if (bool && lib.config.animation && !lib.config.low_performance) {
@@ -10487,7 +10492,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     _status.draggingtouchdialog = this;
                     this._dragorigin = {
                         clientX: e.touches[0].clientX,
-                        clientY: e.touches[0].clientY,
+                        clientY: e.touches[0].clientY
                     };
                     if (!this._dragtransform) {
                         this._dragtransform = [0, 0];
@@ -10510,7 +10515,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     return;
                 if (_status.clickingidentity) {
                     for (var i = 0; i < _status.clickingidentity[1].length; i++) {
-                        _status.clickingidentity[1][i].delete();
+                        _status.clickingidentity[1][i]["delete"]();
                         _status.clickingidentity[1][i].style.transform = '';
                     }
                     if (_status.clickingidentity[0] == this.parentNode) {
@@ -10631,7 +10636,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     player.node.identity.dataset.color = this.dataset.color;
                     player.node.identity.firstChild.innerHTML = this.firstChild.innerHTML;
                     for (var i = 0; i < nodes.length; i++) {
-                        nodes[i].delete();
+                        nodes[i]["delete"]();
                         nodes[i].style.transform = '';
                     }
                     delete _status.clickingidentity;
@@ -11050,7 +11055,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 if (!uiintro)
                     return;
                 if (ui.currentpopped && ui.currentpopped._uiintro) {
-                    ui.currentpopped._uiintro.delete();
+                    ui.currentpopped._uiintro["delete"]();
                     delete ui.currentpopped._uiintro;
                 }
                 ui.currentpopped = this;
@@ -11102,7 +11107,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     uiintro.classList.add('static');
                     var layer = ui.create.div('.poplayer', ui.window);
                     var clicklayer = function (e) {
-                        uiintro.delete();
+                        uiintro["delete"]();
                         layer.remove();
                         game.resume2();
                         e.stopPropagation();
@@ -11123,7 +11128,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     return;
                 if (this.classList.contains('noleave'))
                     return;
-                this.delete();
+                this["delete"]();
                 var button = this._poppedorigin;
                 var uiintro = this;
                 setTimeout(function () {
@@ -11383,7 +11388,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                         _status.lastdragchange.remove(item);
                                         for (var i = 0; i < ui.touchlines.length; i++) {
                                             if (ui.touchlines[i]._origin == item) {
-                                                ui.touchlines[i].delete();
+                                                ui.touchlines[i]["delete"]();
                                                 ui.touchlines.splice(i--, 1);
                                             }
                                         }
@@ -11551,7 +11556,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 _status.mousedragorigin = null;
                 _status.dragstatuschanged = false;
                 while (ui.touchlines.length) {
-                    ui.touchlines.shift().delete();
+                    ui.touchlines.shift()["delete"]();
                 }
                 if (tmpflag) {
                     game.check();
@@ -11598,7 +11603,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     return;
                 var dialogs = document.querySelectorAll('#window>.dialog.popped:not(.static)');
                 for (var i = 0; i < dialogs.length; i++) {
-                    dialogs[i].delete();
+                    dialogs[i]["delete"]();
                 }
                 var node = _status.currentmouseenter;
                 var sourceitem = document.elementFromPoint(e.clientX, e.clientY);
@@ -11827,7 +11832,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 _status.mousedown = true;
                 var dialogs = ui.window.querySelectorAll('#window>.dialog.popped:not(.static)');
                 for (var i = 0; i < dialogs.length; i++) {
-                    dialogs[i].delete();
+                    dialogs[i]["delete"]();
                 }
                 var sourceitem = document.elementFromPoint(e.clientX, e.clientY);
                 var item = sourceitem;
@@ -12137,7 +12142,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 else {
                     if (_status.clickingidentity) {
                         for (var i = 0; i < _status.clickingidentity[1].length; i++) {
-                            _status.clickingidentity[1][i].delete();
+                            _status.clickingidentity[1][i]["delete"]();
                             _status.clickingidentity[1][i].style.transform = '';
                         }
                         delete _status.clickingidentity;
@@ -12157,7 +12162,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     else if (_status.choosing) {
                         if (!_status.choosing.expand) {
                             _status.choosing.parentNode.style.height = '';
-                            _status.choosing.nextSibling.delete();
+                            _status.choosing.nextSibling["delete"]();
                             _status.choosing.previousSibling.show();
                             delete _status.choosing;
                         }
@@ -12274,7 +12279,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 _status.choosing.link = this.link;
                 _status.choosing.innerHTML = get.translation(this.link);
                 this.parentNode.parentNode.style.height = '';
-                this.parentNode.delete();
+                this.parentNode["delete"]();
                 _status.choosing.previousSibling.show();
                 delete _status.choosing;
                 if (this.parentNode.parentNode.querySelector('.toggle').additionalCommand) {
@@ -12882,7 +12887,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     ui.arena.classList.remove('blur');
                     ui.system.classList.remove('blur');
                     ui.menuContainer.classList.remove('blur');
-                    this.delete();
+                    this["delete"]();
                     e.stopPropagation();
                     if (resume)
                         game.resume2();
@@ -13242,7 +13247,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         return;
                     delete ui.throwEmotion;
                     delete _status.removePop;
-                    uiintro.delete();
+                    uiintro["delete"]();
                     this.remove();
                     ui.historybar.style.zIndex = '';
                     delete _status.currentlogv;
@@ -13277,7 +13282,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         return;
                     delete _status.removePop;
                     layer.remove();
-                    this.delete();
+                    this["delete"]();
                     ui.historybar.style.zIndex = '';
                     delete _status.currentlogv;
                     if (!ui.arena.classList.contains('menupaused') && !uiintro.noresume)
@@ -13291,7 +13296,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     if (node == currentpop)
                         return false;
                     layer.remove();
-                    uiintro.delete();
+                    uiintro["delete"]();
                     delete _status.removePop;
                     return true;
                 };
@@ -13448,7 +13453,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     return;
                 if (_status.clicked)
                     return;
-                this.delete();
+                this["delete"]();
                 ui.system.show();
                 ui.time.show();
                 ui.historybar.classList.remove('paused');
@@ -13691,7 +13696,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     return false;
                 }
                 if (this._mouseenterdialog && this._mouseenterdialog.parentNode) {
-                    this._mouseenterdialog.delete();
+                    this._mouseenterdialog["delete"]();
                 }
                 else {
                     ui.click.intro.call(this, e);
@@ -13757,7 +13762,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
             for (i = 0; i < nodes.length; i++) {
                 if (!nodes[i].fixed)
-                    nodes[i].delete();
+                    nodes[i]["delete"]();
             }
         },
         updatec: function () {
@@ -14245,7 +14250,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 return ui._recycle[node];
             }
             ui._recycle[key] = node;
-        },
+        }
     });
     return ui;
 });

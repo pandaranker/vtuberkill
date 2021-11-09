@@ -1,11 +1,10 @@
-moduleManager.define(['view/PlayerModel'], function(PlayerModel){
-
+moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
-     * @namespace
-     * @global
+     * @namespace get
+     * @memberof module:core
      */
-     var get = /**@lends get */ {
+    mixin(get, /**@lends module:core.get */ {
         /**
          * 返回联机名称
          * @returns {!number} 默认为“无名玩家”
@@ -5041,6 +5040,6 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
         attitude2: function (to) {
             return get.attitude(_status.event.player, to);
         },
-    };
+    });
     return get;
-})
+});

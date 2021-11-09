@@ -1,10 +1,10 @@
-moduleManager.define(['view/PlayerModel'], function(PlayerModel){
+moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏UI库
-     * @namespace
-     * @global
+     * @namespace ui
+     * @memberof module:core
      */
-     var ui = /**@lends ui */ {
+    mixin(ui, /**@lends module:core.ui */ {
         updates: [],
         thrown: [],
         touchlines: [],
@@ -5589,6 +5589,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                                     _status.importingExtension = true;
                                     window.game = game;
                                     lib.init.js(lib.assetURL + 'extension/' + that.info.name, 'extension', function () {
+                                        if (!lib.config.dev) delete window.game;
                                         if (game.importedPack) {
                                             var extname = game.importedPack.name;
                                             if (lib.config.extensions.contains(extname)) {
@@ -14038,6 +14039,6 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
             }
             ui._recycle[key] = node;
         },
-    };
+    });
     return ui;
-})
+});

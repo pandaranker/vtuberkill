@@ -1,11 +1,11 @@
-moduleManager.define(['view/PlayerModel'], function(PlayerModel){
+moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 包(游戏牌, 武将牌, 拓展)管理相关
      * 游戏入口{@link lib.init.init}
-     * @namespace
-     * @global
+     * @namespace lib
+     * @memberof module:core
      */
-     var lib = /**@lends lib */ {
+    mixin(lib, /**@lends module:core.lib */ {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
 
         configprefix: 'vtuberkill_1.9_',
@@ -515,13 +515,13 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                                 lib.cheat.i();
                             }
                             else {
-                                // delete window.cheat;
-                                // delete window.game;
-                                // delete window.ui;
-                                // delete window.get;
-                                // delete window.ai;
-                                // delete window.lib;
-                                // delete window._status;
+                                delete window.cheat;
+                                delete window.game;
+                                delete window.ui;
+                                delete window.get;
+                                delete window.ai;
+                                delete window.lib;
+                                delete window._status;
                             }
                         },
                         unfrequent: true,
@@ -8956,6 +8956,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                     var card = lib.imported.card;
                     var character = lib.imported.character;
                     var play = lib.imported.play;
+                    delete window.game;
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
@@ -12049,6 +12050,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                         event.finish();
                     }
                     'step 1'
+                    if (!lib.config.dev) delete window.game;
                     var character = lib.imported.character;
                     var card = lib.imported.card;
                     var i, j, k;
@@ -12140,6 +12142,7 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
                     lib.init.js(lib.assetURL + 'mode', event.mode, game.resume);
                     game.pause();
                     'step 1'
+                    if (!lib.config.dev) delete window.game;
                     event.result = lib.imported.mode[event.mode];
                     delete lib.imported.mode[event.mode];
                 },
@@ -31404,6 +31407,6 @@ moduleManager.define(['view/PlayerModel'], function(PlayerModel){
             '妹子，交个朋友吧',
         ],
 
-    };
+    });
     return lib;
 })

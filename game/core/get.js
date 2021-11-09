@@ -1,10 +1,11 @@
-moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
+    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
     /**
      * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
      * @namespace get
-     * @global
+     * @memberof module:core
      */
-    mixin(get, /**@lends get */ {
+    mixin(get, /**@lends module:core.get */ {
         /**
          * 返回联机名称
          * @returns {!number} 默认为“无名玩家”
@@ -131,7 +132,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             blocked: function (skill, player) {
                 if (!player.storage.skill_blocker || !player.storage.skill_blocker.length)
                     return false;
-                for (var i of player.storage.skill_blocker) {
+                for (var _i = 0, _a = player.storage.skill_blocker; _i < _a.length; _i++) {
+                    var i = _a[_i];
                     if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player))
                         return true;
                 }
@@ -143,7 +145,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             double: function (name, array) {
                 if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0)
                     return false;
-                for (var i of lib.character[name][4]) {
+                for (var _i = 0, _a = lib.character[name][4]; _i < _a.length; _i++) {
+                    var i = _a[_i];
                     if (i.indexOf('doublegroup:') == 0) {
                         if (!array)
                             return true;
@@ -207,7 +210,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             banWords: function (str) {
                 if (get.is.emoji(str))
                     return true;
-                for (var i of window.bannedKeyWords) {
+                for (var _i = 0, _a = window.bannedKeyWords; _i < _a.length; _i++) {
+                    var i = _a[_i];
                     if (str.indexOf(i) != -1)
                         return true;
                 }
@@ -376,7 +380,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                 if (info.locked)
                     return true;
                 return false;
-            },
+            }
         },
         /**
          * 从牌堆底抽取指定数量的游戏牌
@@ -554,7 +558,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                         name: info.autoViewAs,
                         suit: card.suit,
                         number: card.number,
-                        nature: card.nature,
+                        nature: card.nature
                     };
                 }
             }
@@ -569,7 +573,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                         cardid: card.cardid,
                         wunature: card.wunature,
                         storage: card.storage,
-                        cards: card.cards,
+                        cards: card.cards
                     };
                     if (get.itemtype(cards) == 'cards' && !card.cards)
                         next.cards = cards.slice(0);
@@ -1162,7 +1166,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                 roomId: game.roomId,
                 over: _status.over,
                 inpile: lib.inpile,
-                cardtag: _status.cardtag,
+                cardtag: _status.cardtag
             };
             for (var i in lib.playerOL) {
                 state.players[i] = lib.playerOL[i].getState();
@@ -1181,7 +1185,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                     additionalSkills: lib.playerOL[i].additionalSkills,
                     disabledSkills: lib.playerOL[i].disabledSkills,
                     tempSkills: lib.playerOL[i].tempSkills,
-                    storage: lib.playerOL[i].storage,
+                    storage: lib.playerOL[i].storage
                 };
             }
             for (var i in lib.skill) {
@@ -1389,8 +1393,10 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                 if (info.trigger && info.trigger.player) {
                     var list = Array.isArray(info.trigger.player) ? info.trigger.player : [info.trigger.player];
                     var add = false;
-                    for (var i of list) {
-                        for (var j of lib.phaseName) {
+                    for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+                        var i = list_1[_i];
+                        for (var _a = 0, _b = lib.phaseName; _a < _b.length; _a++) {
+                            var j = _b[_a];
                             if (i.indexOf[j] == 0) {
                                 num += 0.5;
                                 add = true;
@@ -2012,7 +2018,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             if (get.itemtype(cards) != 'cards')
                 return;
             var types = [];
-            for (var i of cards) {
+            for (var _i = 0, cards_1 = cards; _i < cards_1.length; _i++) {
+                var i = cards_1[_i];
                 types.add(get.type(i, method, player));
             }
             return types;
@@ -2084,7 +2091,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             if (get.itemtype(cards) != 'cards')
                 return [];
             var suits = [];
-            for (var i of cards) {
+            for (var _i = 0, cards_2 = cards; _i < cards_2.length; _i++) {
+                var i = cards_2[_i];
                 suits.add(get.suit(i, player));
             }
             return suits;
@@ -2121,7 +2129,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             if (get.itemtype(cards) != 'cards')
                 return;
             var colors = [];
-            for (var i of cards) {
+            for (var _i = 0, cards_3 = cards; _i < cards_3.length; _i++) {
+                var i = cards_3[_i];
                 colors.add(get.color(i, player));
             }
             return colors;
@@ -3614,7 +3623,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                                 var rect = this.link.getBoundingClientRect();
                                 ui.click.intro.call(this.link, {
                                     clientX: rect.left + rect.width,
-                                    clientY: rect.top + rect.height / 2,
+                                    clientY: rect.top + rect.height / 2
                                 });
                                 if (lib.config.touchscreen) {
                                     uiintro._close();
@@ -3648,8 +3657,10 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                         setTimeout(function () {
                             _status.throwEmotionWait = false;
                             if (ui.throwEmotion) {
-                                for (var i of ui.throwEmotion)
+                                for (var _i = 0, _a = ui.throwEmotion; _i < _a.length; _i++) {
+                                    var i = _a[_i];
                                     i.classList.remove('exclude');
+                                }
                             }
                         }, (emotion == 'flower' || emotion == 'egg') ? 5000 : 10000);
                     };
@@ -4988,7 +4999,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                 var targets = [target];
                 info.changeTarget(player, targets);
                 var eff = 0;
-                for (var i of targets) {
+                for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
+                    var i = targets_1[_i];
                     eff += get.effect(i, card, player, player2, isLink);
                 }
                 return eff;
@@ -5055,7 +5067,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink,
+                            isLink: isLink
                         }))
                             temp2 = temp2.effect(card, player, target, result2, isLink);
                         else
@@ -5066,7 +5078,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink,
+                            isLink: isLink
                         }))
                             temp2 = temp2.effect.target_use(card, player, target, result2, isLink);
                         else
@@ -5077,7 +5089,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink,
+                            isLink: isLink
                         }))
                             temp2 = temp2.effect.target(card, player, target, result2, isLink);
                         else
@@ -5273,7 +5285,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink,
+                            isLink: isLink
                         }))
                             temp2 = temp2.effect(card, player, target, result2, isLink);
                         else
@@ -5284,7 +5296,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink,
+                            isLink: isLink
                         }))
                             temp2 = temp2.effect.target(card, player, target, result2, isLink);
                         else
@@ -5482,7 +5494,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
             if (player.getCards('j').contains(card)) {
                 var efff = get.effect(player, {
                     name: card.viewAs || card.name,
-                    cards: [card],
+                    cards: [card]
                 }, player, player);
                 if (efff > 0)
                     return 0.5;
@@ -5519,7 +5531,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib,
          */
         attitude2: function (to) {
             return get.attitude(_status.event.player, to);
-        },
+        }
     });
     return get;
 });

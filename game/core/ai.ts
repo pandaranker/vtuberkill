@@ -1,10 +1,10 @@
-moduleManager.define(['core/get'], function(get){
+moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai}) {
     /**
      * 游戏AI模块
-     * @namespace
-     * @global
+     * @namespace ai
+     * @memberof module:core
      */
-     var ai = /**@lends ai */ {
+    mixin(ai, /**@lends module:core.ai */ {
         basic: {
             chooseButton: function (check) {
                 var event = _status.event;
@@ -182,6 +182,6 @@ moduleManager.define(['core/get'], function(get){
          * @see {@link get}
          */
         get: get
-    };
+    });
     return ai;
 });

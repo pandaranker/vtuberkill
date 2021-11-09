@@ -1,10 +1,11 @@
-moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai}) {
+moduleManager.define(['core/core'], function (_a) {
+    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
     /**
      * 其中的变量是游戏中的全局变量，因为是在IIFE中声明而不是实际上的全局范围，从而对外部实现了隐藏
      * @namespace _status
-     * @global
+     * @memberof module:core
      */
-    mixin(_status, /**@lends _status */ {
+    mixin(_status, /**@lends module:core._status */ {
         paused: false,
         paused2: false,
         paused3: false,
@@ -40,15 +41,15 @@ moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai})
         dying: [],
         globalHistory: [{
                 cardMove: [],
-                custom: [],
+                custom: []
             }],
         cardtag: {
             yingbian_zhuzhan: [],
             yingbian_kongchao: [],
             yingbian_fujia: [],
-            yingbian_canqu: [],
+            yingbian_canqu: []
         },
-        prehidden_skills: [],
+        prehidden_skills: []
     });
     return _status;
 });
