@@ -1,10 +1,10 @@
-moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏UI库
      * @namespace ui
      * @memberof module:core
      */
-    mixin(ui, /**@lends module:core.ui */ {
+     globalThis.mixin(ui, /**@lends module:core.ui */ {
         updates: [],
         thrown: [],
         touchlines: [],

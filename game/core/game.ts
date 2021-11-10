@@ -1,11 +1,11 @@
-moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏内核
      * 游戏循环{@link game.loop}
      * @namespace game
      * @memberof module:core
      */
-    mixin(game, /**@lends module:core.game */ {
+    globalThis.mixin(game, /**@lends module:core.game */ {
         /**
          * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
          * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
@@ -73,32 +73,29 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
         },
         //galgame相关功能
         galgameMod: function () {
-            var galgame = { text: {}, game: game };
-            var gal0 = function () {
-                /**
-                * @description :
-                * @author 看破一切 date 2021/2/12
-                */
-                galgame.sce = function (shijian) {
+            /**
+            * @description :
+            * @author 看破一切 date 2021/2/12
+            */
+            var galgame = {
+                text: {},
+                game: game,
+                sce(shijian) {
                     var game = galgame.game;
                     var next = game.createEvent('sce', false);
                     next.shijian = shijian;
                     next.setContent(galgame.sces);
                     return next;
-                }
-                galgame.backgroundMusic = document.createElement("audio");
-                galgame.backgroundMusic.addEventListener("ended", function () {
-                    galgame.backgroundMusic.currentTime = 0;
-                    galgame.backgroundMusic.play();
-                });
-                galgame.audio = document.createElement("audio");
-                galgame.end = function () {
+                },
+                audio: document.createElement("audio"),
+                backgroundMusic: document.createElement("audio"),
+                end() {
                     var game = galgame.game;
                     galgame.audio.pause();
                     galgame.backgroundMusic.pause();
                     game.resume();
-                }
-                galgame.cg = function (src, callback) {
+                },
+                cg(src, callback) {
                     var cg = document.createElement("video");
                     cg.setAttribute("width", "100%");
                     cg.setAttribute("height", "100%");
@@ -106,19 +103,18 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     cg.setAttribute("autoplay", "autoplay");
                     cg.addEventListener("ended", callback);
                     cg.addEventListener("loadedmetadata", function () {
-                        this.onclick = function () {
+                        (this as any).onclick = function () {
                             this.play();
                             this.currentTime = this.duration;
                         }
                     });
                     return cg;
-                }
-                galgame.sces = function () {
+                },
+                sces() {
                     var game = galgame.game;
-                    var color = {};
+                    var color:{[propName:string]: any} = {};
                     var beijing = ui.create.div('.scedi', ui.window);
-                    var booth = {};
-                    booth.node = ui.create.div(".scetu", beijing);
+                    var booth = {node: ui.create.div(".scetu", beijing)};
                     var node = ui.create.div('.sce', beijing);
                     var drive = ui.create.div('.drive', beijing);
                     var tou = ui.create.div('.tou', node);
@@ -149,7 +145,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 if (arr[1] == "none") {
                                     booth[arr[2]].hide();
                                 } else {
-                                    if (booth[arr[6]].classList.contains("hidden")) booth.show();
+                                    if (booth[arr[6]].classList.contains("hidden")) booth.node.show();
                                     booth[arr[6]].style.width = parseInt(arr[2]) + "px";
                                     booth[arr[6]].style.height = parseInt(arr[3]) + "px";
                                     booth[arr[6]].style.left = parseInt(arr[4]) + "%";
@@ -160,7 +156,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 if (arr[1] == "none") {
                                     booth.node.hide();
                                 } else {
-                                    if (booth.node.classList.contains("hidden")) booth.show();
+                                    if (booth.node.classList.contains("hidden")) booth.node.show();
                                     booth.node.style.width = parseInt(arr[2]) + "px";
                                     booth.node.style.height = parseInt(arr[3]) + "px";
                                     booth.node.style.left = parseInt(arr[4]) + "%";
@@ -294,12 +290,12 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         }
                         function skip0(e) {
                             if (e.ctrlKey) {
-                                window.status = 'skip';
+                                globalThis.status = 'skip';
                             }
                         }
                         function skip1(e) {
                             if (e.keyCode=='17') {
-                                window.status = '';
+                                globalThis.status = '';
                             }
                         }
                         var skipfun0 = function(e){
@@ -325,9 +321,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             txt.innerHTML = str;
                             i++;
                             if (i <= link.length) {
-                                window.addEventListener('keydown',skipfun0);
-                                window.addEventListener('keyup',skipfun1);
-                                if (window.status == 'skip') {
+                                globalThis.addEventListener('keydown',skipfun0);
+                                globalThis.addEventListener('keyup',skipfun1);
+                                if (globalThis.status == 'skip') {
                                     setTimeout(show, 200);
                                 }
                                 else {
@@ -339,11 +335,11 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                 }
                             } else {
                                 if (num < galgame.text[event.shijian].length) {
-                                    if (window.status == 'skip') {
+                                    if (globalThis.status == 'skip') {
                                         i = 0;
                                         galgame.audio.pause();
                                         bofang();
-                                        window.status = '';
+                                        globalThis.status = '';
                                     }
                                     drive.onclick = function () {
                                         this.onclick = false;
@@ -352,13 +348,13 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                                         bofang();
                                     }
                                 } else {
-                                    window.removeEventListener('keydown',skipfun0);
-                                    window.removeEventListener('keyup',skipfun1);
-                                    if (window.status == 'skip') {
+                                    globalThis.removeEventListener('keydown',skipfun0);
+                                    globalThis.removeEventListener('keyup',skipfun1);
+                                    if (globalThis.status == 'skip') {
                                         ui.backgroundMusic.play();
                                         ui.window.removeChild(beijing);
                                         galgame.end();
-                                        window.status = '';
+                                        globalThis.status = '';
                                     }
                                     drive.onclick = function () {
                                         ui.backgroundMusic.play();
@@ -374,7 +370,11 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     bofang();
                     game.pause();
                 }
-            }();
+            };
+            galgame.backgroundMusic.addEventListener("ended", function () {
+                galgame.backgroundMusic.currentTime = 0;
+                galgame.backgroundMusic.play();
+            });
             lib.init.json(lib.assetURL + 'galgame/galgame.json', function (text) {
                 for (var i in text) {
                     galgame.text[i] = text[i];
@@ -556,10 +556,10 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
             for (var i = 0; i < updates.length; i++) {
                 if (lib.node && lib.node.fs) {
-                    lib.node.fs.access(__dirname + '/' + updates[i], (function (entry) {
+                    lib.node.fs.access(`${__dirname}/${updates[i]}`, (function (entry) {
                         return function (err) {
                             if (!err) {
-                                var stat = lib.node.fs.statSync(__dirname + '/' + entry);
+                                var stat = lib.node.fs.statSync(`${__dirname}/${entry}`);
                                 if (stat.size == 0) {
                                     err = true;
                                 }
@@ -639,7 +639,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 ui.arena.classList.add('playerhidden');
             }
             game.prepareArena();
-            if (window.isNonameServer) {
+            if (globalThis.isNonameServer) {
                 game.me = ui.create.player();
             }
             var list = [];
@@ -658,7 +658,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 current.nickname = current.ws.nickname;
                 current.setNickname();
             }
-            if (!window.isNonameServer) {
+            if (!globalThis.isNonameServer) {
                 game.me.playerid = get.id();
                 game.me.nickname = get.connectNickname();
                 game.me.setNickname();
@@ -1341,8 +1341,8 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             success = success || nullFC;
             error = error || nullFC;
             dir = dir.split("/");
-            if (window.resolveLocalFileSystemURL) {
-                window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+            if (globalThis.resolveLocalFileSystemURL) {
+                globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                     (function redo(entry) {
                         var i = dir.shift();
                         entry.getDirectory(i, { create: true }, function (dirEntry) {
@@ -1375,7 +1375,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
         },
         importExtension: function (data, finishLoad, exportext, pkg) {
-            if (!window.JSZip) {
+            if (!globalThis.JSZip) {
                 lib.init.js(lib.assetURL + 'game', 'jszip', function () {
                     game.importExtension(data, finishLoad, exportext, pkg);
                 });
@@ -1446,7 +1446,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         else {
                             directory = cordova.file.documentsDirectory;
                         }
-                        window.resolveLocalFileSystemURL(directory, function (entry) {
+                        globalThis.resolveLocalFileSystemURL(directory, function (entry) {
                             entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                                 fileEntry.createWriter(function (fileWriter) {
                                     fileWriter.onwriteend = function () {
@@ -1461,7 +1461,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         var downloadLink = document.createElement("a");
                         downloadLink.download = fileNameToSaveAs;
                         downloadLink.innerHTML = "Download File";
-                        downloadLink.href = window.URL.createObjectURL(blob);
+                        downloadLink.href = globalThis.URL.createObjectURL(blob);
                         downloadLink.click();
                     }
 
@@ -1545,7 +1545,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                             });
                         }
                         else {
-                            window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+                            globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                                 entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
                                     //扩展文件夹
                                     writeFile();
@@ -1633,7 +1633,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 else {
                     directory = cordova.file.documentsDirectory;
                 }
-                window.resolveLocalFileSystemURL(directory, function (entry) {
+                globalThis.resolveLocalFileSystemURL(directory, function (entry) {
                     entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                         fileEntry.createWriter(function (fileWriter) {
                             fileWriter.onwriteend = function () {
@@ -1648,7 +1648,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 var downloadLink = document.createElement("a");
                 downloadLink.download = fileNameToSaveAs;
                 downloadLink.innerHTML = "Download File";
-                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                downloadLink.href = globalThis.URL.createObjectURL(textFileAsBlob);
                 downloadLink.click();
             }
         },
@@ -3081,7 +3081,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 _status.waitingToReload = true;
             }
             else {
-                window.location.reload();
+                globalThis.location.reload();
             }
         },
         reload2: function () {
@@ -3096,7 +3096,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             }
             if (lib.status.reload == 0) {
                 if (_status.waitingToReload) {
-                    window.location.reload();
+                    globalThis.location.reload();
                     delete _status.waitingToReload;
                 }
             }
@@ -3111,7 +3111,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 if (_status.video && !_status.replayvideo) {
                     localStorage.removeItem(lib.configprefix + 'playbackmode');
                 }
-                window.location.reload();
+                globalThis.location.reload();
             }
             else {
                 if (navigator.app && navigator.app.exitApp) {
@@ -3129,7 +3129,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                 }
             }
             else {
-                window.open(url);
+                globalThis.open(url);
             }
         },
         reloadCurrent: function () {
@@ -3313,7 +3313,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             _status.toprint.push(Array.from(arguments));
         },
         animate: {
-            window: function (num) {
+            globalThis: function (num) {
                 switch (num) {
                     case 1: {
                         ui.window.style.transition = 'all 0.5s';
@@ -4175,7 +4175,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     catch (e) { }
                 }
                 else {
-                    window.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
+                    globalThis.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
                         entry.removeRecursively();
                     });
                 }
@@ -4839,7 +4839,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             dialog.add(ui.create.div('.placeholder.slim'));
             game.addVideo('over', null, dialog.content.innerHTML);
             var vinum = parseInt(lib.config.video);
-            if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
+            if (!_status.video && vinum && game.getVideoName && globalThis.indexedDB && _status.videoInited) {
                 var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
                 var videos = lib.videos.slice(0);
                 for (var i = 0; i < videos.length; i++) {
@@ -5008,9 +5008,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             if (game.addRecord) {
                 game.addRecord(resultbool);
             }
-            if (window.isNonameServer) {
+            if (globalThis.isNonameServer) {
                 lib.configOL.gameStarted = false;
-                game.saveConfig('pagecfg' + window.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
+                game.saveConfig('pagecfg' + globalThis.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
                 game.reload();
             }
             else if (_status.connectMode && !game.online) {
@@ -5312,7 +5312,7 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                         firstCheck = true;
                     }
                     if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
-                        !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
+                        !event._targetChoice && !firstCheck && globalThis.Map && !lib.config.compatiblemode) {
                         event._targetChoice = new Map();
                         for (var i = 0; i < event._cardChoice.length; i++) {
                             if (!lib.card[event._cardChoice[i].name].complexTarget) {
@@ -5916,9 +5916,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
             return players[0];
         },
         loadModeAsync: function (name, callback) {
-            window.game = game;
+            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete window.game;
+                if (!lib.config.dev) delete globalThis.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -5939,9 +5939,9 @@ moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, 
                     }
                 }
             }
-            window.game = game;
+            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete window.game;
+                if (!lib.config.dev) delete globalThis.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;

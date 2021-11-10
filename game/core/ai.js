@@ -1,11 +1,6 @@
-moduleManager.define(['core/core'], function (_a) {
-    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
-    /**
-     * 游戏AI模块
-     * @namespace ai
-     * @memberof module:core
-     */
-    mixin(ai, /**@lends module:core.ai */ {
+"use strict";
+globalThis.moduleManager.define(['core/core'], function ({ _status, lib, game, ui, get, ai }) {
+    globalThis.mixin(ai, {
         basic: {
             chooseButton: function (check) {
                 var event = _status.event;
@@ -35,9 +30,6 @@ moduleManager.define(['core/core'], function (_a) {
                             checkix = checkixtmp;
                         }
                     }
-                    // buttons.sort(function(a,b){
-                    //     return check(b,buttons2)-check(a,buttons2);
-                    // });
                     if (check(buttons[ix]) <= 0) {
                         if (!forced || ok) {
                             return ok;
@@ -87,9 +79,6 @@ moduleManager.define(['core/core'], function (_a) {
                         return ok;
                     }
                     cards2 = cards.slice(0);
-                    // cards.sort(function(a,b){
-                    //     return (check(b,cards2)-check(a,cards2));
-                    // });
                     var ix = 0;
                     var checkix = check(cards[0], cards2);
                     for (i = 1; i < cards.length; i++) {
@@ -156,9 +145,6 @@ moduleManager.define(['core/core'], function (_a) {
                         return range[0] == 0 || ok;
                     }
                     targets2 = targets.slice(0);
-                    // targets.sort(function(a,b){
-                    //     return check(b)-check(a);
-                    // });
                     var ix = 0;
                     var checkix = check(targets[0], targets2);
                     for (i = 1; i < targets.length; i++) {
@@ -185,10 +171,6 @@ moduleManager.define(['core/core'], function (_a) {
                 }
             }
         },
-        /**
-         * AI用取值
-         * @see {@link get}
-         */
         get: get
     });
     return ai;

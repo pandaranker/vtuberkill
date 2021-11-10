@@ -1,9 +1,6 @@
-/**
- * 游戏内核模块
- * @module core
- */
-moduleManager.define([], function () {
-    return /**@lends module:core */ {
+"use strict";
+globalThis.moduleManager.define([], function () {
+    return {
         _status: {},
         lib: {},
         game: {},

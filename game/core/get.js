@@ -1,19 +1,9 @@
-moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
-    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
-    /**
-     * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
-     * @namespace get
-     * @memberof module:core
-     */
-    mixin(get, /**@lends module:core.get */ {
-        /**
-         * 返回联机名称
-         * @returns {!number} 默认为“无名玩家”
-         */
+"use strict";
+globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _status, lib, game, ui, get, ai }, PlayerModel) {
+    globalThis.mixin(get, {
         connectNickname: function () {
             return typeof lib.config.connect_nickname == 'string' ? (lib.config.connect_nickname.slice(0, 12)) : '无名玩家';
         },
-        //TODO
         sourceCharacter: function (str) {
             if (str) {
                 for (var i in lib.characterReplace) {
@@ -23,12 +13,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return str;
         },
-        /**
-         * 返回一个角色是否是幸运星；
-         * 此函数仅单机模式有效，联机模式总返回false
-         * @param {GameCores.GameObjects.Player} player 一个角色
-         * @returns {!boolean}
-         */
         isLuckyStar: function (player) {
             if (player && player.hasSkillTag('luckyStar'))
                 return true;
@@ -36,11 +20,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return false;
             return (!player || player == game.me || player.isUnderControl()) && lib.config.lucky_star == true;
         },
-        /**
-         * 返回模板的hp
-         * @param {(number|string)} hp 如果是数值，返回`hp`；如果是字符串，且为`hp/maxHp`的形式，返回那个**hp**的值；其他情况返回0
-         * @returns {!number}
-         */
         infoHp: function (hp) {
             if (typeof hp == 'number')
                 return hp;
@@ -49,11 +28,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return 0;
         },
-        /**
-         * 返回模板的maxHp
-         * @param {(number|string)} hp 如果是数值，返回`hp`；如果是字符串，且为`hp/maxHp`的形式，返回那个**maxHp**的值；其他情况返回0
-         * @returns {!number}
-         */
         infoMaxHp: function (hp) {
             if (typeof hp == 'number')
                 return hp;
@@ -62,12 +36,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return 0;
         },
-        /**
-         * 布尔判断封装
-         * @namespace
-         */
         is: {
-            //“保护新手”模式的ban将
             banForBeginner: function (current) {
                 if (current in lib.character) {
                     for (var i in lib.characterPack) {
@@ -98,7 +67,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     return false;
                 }
             },
-            //检查卡牌是否符合要求的快捷方法(只要求满足至少一种条件，无条件时默认不满足)
             filterCardBy: function (card, arg) {
                 if (!card || !arg)
                     return false;
@@ -126,27 +94,19 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 return false;
             },
-            /**
-             * 判断技能是否被封锁
-             */
             blocked: function (skill, player) {
                 if (!player.storage.skill_blocker || !player.storage.skill_blocker.length)
                     return false;
-                for (var _i = 0, _a = player.storage.skill_blocker; _i < _a.length; _i++) {
-                    var i = _a[_i];
+                for (var i of player.storage.skill_blocker) {
                     if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player))
                         return true;
                 }
                 return false;
             },
-            /**
-             * 判断角色是否为多势力
-             */
             double: function (name, array) {
                 if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0)
                     return false;
-                for (var _i = 0, _a = lib.character[name][4]; _i < _a.length; _i++) {
-                    var i = _a[_i];
+                for (var i of lib.character[name][4]) {
                     if (i.indexOf('doublegroup:') == 0) {
                         if (!array)
                             return true;
@@ -155,9 +115,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 return false;
             },
-            /**
-             * 判断卡牌是否携带应变标签
-             */
             yingbian: function (node) {
                 return get.cardtag(node, 'yingbian_zhuzhan') || get.cardtag(node, 'yingbian_fujia') || get.cardtag(node, 'yingbian_canqu') || get.cardtag(node, 'yingbian_kongchao');
             },
@@ -210,8 +167,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             banWords: function (str) {
                 if (get.is.emoji(str))
                     return true;
-                for (var _i = 0, _a = window.bannedKeyWords; _i < _a.length; _i++) {
-                    var i = _a[_i];
+                for (var i of window.bannedKeyWords) {
                     if (str.indexOf(i) != -1)
                         return true;
                 }
@@ -275,8 +231,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             altered: function (skill) {
                 return false;
-                // if(_status.connectMode) return true;
-                // return !lib.config.vintageSkills.contains(skill);
             },
             node: function (obj) {
                 var str = Object.prototype.toString.call(obj);
@@ -348,7 +302,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     return true;
                 if (lib.config.link_style2 != 'rotate')
                     return true;
-                // if(game.chess) return false;
                 if (game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova')
                     return true;
                 if (player.dataset.position == '0') {
@@ -364,9 +317,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             pos: function (str) {
                 return (str == 'h' || str == 'e' || str == 'j' || str == 'he' || str == 'hj' || str == 'ej' || str == 'hej');
             },
-            /**
-             * 判断技能是否为锁定技
-             */
             locked: function (skill, player) {
                 var info = lib.skill[skill];
                 if (typeof info.locked == 'function')
@@ -380,14 +330,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (info.locked)
                     return true;
                 return false;
-            }
+            },
         },
-        /**
-         * 从牌堆底抽取指定数量的游戏牌
-         * 如果牌堆没有牌，游戏直接平局
-         * @param {number} num 要抽的牌数
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
         bottomCards: function (num) {
             if (_status.waitingForCards) {
                 ui.create.cards.apply(ui.create, _status.waitingForCards);
@@ -456,7 +400,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return list[0];
             return list;
         },
-        //TODO
         discarded: function () {
             var list = _status.discarded.slice(0);
             for (var i = 0; i < list.length; i++) {
@@ -466,20 +409,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return list;
         },
-        /**
-         * 返回横坐标上的一个偏移量
-         * #window <- #arena
-         * @returns {number}
-         */
         cardOffset: function () {
             var x = ui.arena.getBoundingClientRect();
             var y = ui.window.getBoundingClientRect();
             return -y.width / 2 + (x.left + x.width / 2);
         },
-        /**
-         * @param {string} str color
-         * @returns {string} '#r'
-         */
         colorspan: function (str) {
             if (str[0] == '#') {
                 var color;
@@ -525,14 +459,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 将游戏牌(数组)`cards`视为一张给定牌名的游戏牌`card`；
-         * 如果游戏牌`card`有属性`autoViewAs`，游戏牌(数组)`cards`视为一张牌名为`autoViewAs`的游戏牌
-         * @param {GameCores.GameObjects.Card} card  一个至少有牌名的临时"游戏牌"对象，除了牌名，其他属性、函数可以不指定
-         * @param {!string} card.name 牌名
-         * @param {(GameCores.GameObjects.Card|Array<GameCores.GameObjects.Card>)} cards 游戏牌(数组)
-         * @returns {({name:string, cards:?Array<GameCores.GameObjects.Card>}|{name:string, suit: string, number: (string|number), nature: string}|{name:string, suit: string, number: (string|number), nature: string, isCard: true, cardid: (string|number), wunature: boolean, storage: Object, cards: Array<GameCores.GameObjects.Card>}|GameCores.GameObjects.Card)}
-         */
         autoViewAs: function (card, cards) {
             var info = get.info(card);
             if (info.autoViewAs) {
@@ -558,7 +484,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         name: info.autoViewAs,
                         suit: card.suit,
                         number: card.number,
-                        nature: card.nature
+                        nature: card.nature,
                     };
                 }
             }
@@ -573,7 +499,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         cardid: card.cardid,
                         wunature: card.wunature,
                         storage: card.storage,
-                        cards: card.cards
+                        cards: card.cards,
                     };
                     if (get.itemtype(cards) == 'cards' && !card.cards)
                         next.cards = cards.slice(0);
@@ -681,7 +607,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             if (lib.characterIntro[name])
                 return lib.characterIntro[name];
-            // return '暂无武将介绍';
             return '';
         },
         characterTag: function (name) {
@@ -714,11 +639,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return nature + 'mm';
         },
-        /**
-         * 符号函数，提取数值的符号
-         * @param {number} 数值
-         * @returns {number} (-1|0|1)
-         */
         sgn: function (num) {
             if (num > 0)
                 return 1;
@@ -922,11 +842,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return str;
             }
         },
-        /**
-         * 浅拷贝(对象|数组)，要拷贝的对象如果是HTML元素，不做任何操作，返回原对象
-         * @param {any} obj 要拷贝的对象
-         * @returns {any}
-         */
         copy: function (obj) {
             if (get.objtype(obj) == 'object') {
                 var copy = {};
@@ -1002,7 +917,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             for (var i in lib.card) {
                 if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false)
                     continue;
-                // if(lib.card[i].vanish||lib.card[i].destroy) continue;
                 if (lib.card[i].destroy)
                     continue;
                 if (typeof filter == 'function' && !filter(i))
@@ -1029,7 +943,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             for (var i in lib.card) {
                 if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false)
                     continue;
-                // if(lib.card[i].vanish||lib.card[i].destroy) continue;
                 if (lib.card[i].destroy)
                     continue;
                 if (lib.config.bannedcards.contains(i))
@@ -1136,10 +1049,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return str;
         },
-        /**
-         * 返回游戏的当前模式
-         * @returns {!string}
-         */
         mode: function () {
             if (_status.connectMode) {
                 return lib.configOL.mode;
@@ -1166,7 +1075,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 roomId: game.roomId,
                 over: _status.over,
                 inpile: lib.inpile,
-                cardtag: _status.cardtag
+                cardtag: _status.cardtag,
             };
             for (var i in lib.playerOL) {
                 state.players[i] = lib.playerOL[i].getState();
@@ -1185,7 +1094,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     additionalSkills: lib.playerOL[i].additionalSkills,
                     disabledSkills: lib.playerOL[i].disabledSkills,
                     tempSkills: lib.playerOL[i].tempSkills,
-                    storage: lib.playerOL[i].storage
+                    storage: lib.playerOL[i].storage,
                 };
             }
             for (var i in lib.skill) {
@@ -1199,10 +1108,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return skills;
         },
-        /**
-         * 通过随机数生成Id
-         * @returns {!number} ID
-         */
         id: function () {
             return (Math.floor(1000000 + 9000000 * Math.random())).toString() + (10 + lib.status.globalId++);
         },
@@ -1393,10 +1298,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (info.trigger && info.trigger.player) {
                     var list = Array.isArray(info.trigger.player) ? info.trigger.player : [info.trigger.player];
                     var add = false;
-                    for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-                        var i = list_1[_i];
-                        for (var _a = 0, _b = lib.phaseName; _a < _b.length; _a++) {
-                            var j = _b[_a];
+                    for (var i of list) {
+                        for (var j of lib.phaseName) {
                             if (i.indexOf[j] == 0) {
                                 num += 0.5;
                                 add = true;
@@ -1711,24 +1614,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return item;
             }
         },
-        /**
-         * 字符串垂直化
-         * 实际是通过加`<br>`标签实现垂直化
-         * @function
-         * @param {?string} 原字符串
-         * @param {?boolean} sp 'SP'字符是否连接，如果为true，表示'S'和'P'在同一行，否则分割
-         * @returns {!string} 垂直化后的字符串
-         * @example
-         * get.verticalStr('Hello sP')
-         * //result:
-         * //"H<br>E<br>L<br>L<br>O<br> <br>S<br>P"
-         * get.verticalStr('Hello sP', true)
-         * //result:
-         * //"H<br>E<br>L<br>L<br>O<br> <br>SP"
-         * get.verticalStr('`He`llo sP')
-         * //result:
-         * //"HEL<br>L<br>O<br> <br>S<br>P"
-         */
         verticalStr: function (str, sp) {
             if (typeof str != 'string')
                 return '';
@@ -1880,10 +1765,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return lib.getUTC(new Date()) - lib.getUTC(lib.status.date) - lib.status.dateDelayed;
             }
         },
-        /**
-         * 返回当前的datetime(`new Date().getTime()`)
-         * @returns {number} datetime
-         */
         utc: function () {
             return (new Date()).getTime();
         },
@@ -1895,11 +1776,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
         xyDistance: function (from, to) {
             return Math.sqrt((from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]));
         },
-        /**
-         * 判断对象物品类型(字符串(区域名|属性名)，玩家及玩家组，卡牌及卡牌组，选择范围，元素坐标，按钮，弹窗，事件)
-         * @param {Object} obj 要判断物品类型的对象
-         * @returns {?string} 对象的物品类型
-         */
         itemtype: function (obj) {
             var i, j;
             if (typeof obj == 'string') {
@@ -1960,7 +1836,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (obj.classList.contains('card'))
                     return 'card';
                 if (obj.classList.contains('player'))
-                    return 'player'; //[to be deprecated]
+                    return 'player';
                 if (obj.classList.contains('dialog'))
                     return 'dialog';
             }
@@ -1977,11 +1853,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return 0;
         },
-        /**
-         * 判断对象类型(数组，Object对象，Div元素，Table元素，TableRow元素，TableCell元素，Body元素)
-         * @param {Object} obj 要判断类型的对象
-         * @returns {?string} 对象的类型
-         */
         objtype: function (obj) {
             if (Object.prototype.toString.call(obj) === '[object Array]')
                 return 'array';
@@ -2013,13 +1884,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
         type2: function (card, player) {
             return get.type(card, 'trick', player);
         },
-        //新增函数
         type3: function (cards, method, player) {
             if (get.itemtype(cards) != 'cards')
                 return;
             var types = [];
-            for (var _i = 0, cards_1 = cards; _i < cards_1.length; _i++) {
-                var i = cards_1[_i];
+            for (var i of cards) {
                 types.add(get.type(i, method, player));
             }
             return types;
@@ -2039,23 +1908,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return parseInt(subtype[5]);
             return 0;
         },
-        /**
-         * 返回手牌牌名
-         * @name get.name
-         * @function
-         * @param {!GameCores.GameObjects.Card} card 卡牌对象
-         * @param {boolean} [isCheckMod=true] 是否检测被动技，如果为true，手牌持有者有被动技**cardname**改变牌名，则返回改变后的牌名；如果为false，直接返回牌名
-         * @returns {?string} 牌名
-         */
-        /**
-         * 返回游戏牌对象的牌名
-         * @name get.name
-         * @function
-         * @variation 2
-         * @param {!GameCores.GameObjects.Card} card 卡牌对象
-         * @param {(GameCores.GameObjects.Player|false)} player 如果为角色对象，当角色有被动技**cardname**改变牌名，返回改变后的牌名；如果为false，直接返回牌名
-         * @returns {string} 牌名
-         */
         name: function (card, player) {
             if (get.itemtype(player) == 'player' || (player !== false && get.position(card) == 'h')) {
                 var owner = player || get.owner(card);
@@ -2070,11 +1922,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (card.length == 1)
                     return get.suit(card[0], player);
                 return 'none';
-                //var suit=get.suit(card[0])
-                //for(var i=1;i<card.length;i++){
-                //    if(get.suit(card[i])!=suit) return 'none';
-                //}
-                //return suit;
             }
             else if (get.itemtype(card.cards) == 'cards' && card.suit != 'none' && !lib.suit.contains(card.suit)) {
                 return get.suit(card.cards, player);
@@ -2091,8 +1938,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (get.itemtype(cards) != 'cards')
                 return [];
             var suits = [];
-            for (var _i = 0, cards_2 = cards; _i < cards_2.length; _i++) {
-                var i = cards_2[_i];
+            for (var i of cards) {
                 suits.add(get.suit(i, player));
             }
             return suits;
@@ -2112,7 +1958,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return get.color(card.cards, player);
             }
             else {
-                //柚子：已修改
                 var color = 'none';
                 if (get.suit(card, player) == 'spade' || get.suit(card, player) == 'club')
                     color = 'black';
@@ -2129,14 +1974,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (get.itemtype(cards) != 'cards')
                 return;
             var colors = [];
-            for (var _i = 0, cards_3 = cards; _i < cards_3.length; _i++) {
-                var i = cards_3[_i];
+            for (var i of cards) {
                 colors.add(get.color(i, player));
             }
             return colors;
         },
         number: function (card, player) {
-            //柚子：已修改
             var number = null;
             if (card.number && typeof card.number == 'number')
                 number = card.number;
@@ -2150,13 +1993,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return number;
         },
-        /**
-         * 一个角色查看一张牌的属性，并返回结果；
-         * 如果角色有被动技`cardnature`，属性为改变后的值
-         * @param {!GameCores.GameObjects.Card} card 被查看的牌
-         * @param {(GameCores.GameObjects.Player|false|undefined)} [player] 要查看的角色，如果未指定，使用被查看牌的所属角色，如果所属角色未定义或这个参数为false，直接返回牌的属性；
-         * @returns {string}
-         */
         nature: function (card, player) {
             if (get.itemtype(player) == 'player' || player !== false) {
                 var owner = get.owner(card);
@@ -2166,12 +2002,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return card.nature;
         },
-        /**
-         * 从牌堆顶抽取指定数量的游戏牌
-         * 如果牌堆没有牌，游戏直接平局
-         * @param {number} num 要抽的牌数
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
         cards: function (num) {
             if (_status.waitingForCards) {
                 ui.create.cards.apply(ui.create, _status.waitingForCards);
@@ -2238,48 +2068,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return list[0];
             return list;
         },
-        /**
-         * 返回`info.judge`，如果这张牌可视为其他牌(`viewAs`)，返回视为牌的`info.judge`
-         * @param {GameCores.GameObjects.Card} card 游戏牌，除牌名外其他属性和函数可以为空
-         * @returns {string}
-         */
         judge: function (card) {
             if (card.viewAs)
                 return lib.card[card.viewAs].judge;
             return get.info(card).judge;
         },
-        /**
-         * 返回两个角色之间的距离；
-         * 如果目标角色就是参考角色，即这个角色到自己的距离，不计算任何技能和装备效果，直接返回0；
-         * 除此之外，根据`method`参数返回距离，详情见下表:
-         * `method`参数表:
-         * **Chess Mode:**
-         *
-         * |method|type|
-         * |:----:|:--:|
-         * |undefined|计算距离，此距离计算被动技和装备的效果|
-         * |raw, pure, absolute|原距离，不计算被动技和装备的效果|
-         * **Stone Mode:**
-         *
-         * |method|type|
-         * |:----:|:--:|
-         * |undefined|计算距离，此距离计算被动技和装备的效果|
-         * |raw, pure, absolute|原距离，1|
-         * **Others:**
-         *
-         * |method|type|
-         * |:----:|:--:|
-         * |undefined|计算距离，此距离计算[^被动技]和装备的效果|
-         * |raw, pure|原距离，不计算被动技和装备的效果|
-         * |absolute|右手(逆时针)距离，不计算被动技和装备的效果|
-         * |attack|攻击距离，此距离计算被动技和装备的效果|
-         * **原距离** 一名角色与其他角色的距离最小为1；如果是到自己的距离，为0
-         * **被动技** 如果参考角色`from`有被动技**globalFrom**，计算被动技效果，然后如果目标角色`to`有被动技**globalTo**，计算被动技效果，结果作为计算距离；之后如果参考角色`from`有被动技**attackFrom**, 目标角色`to`有被动技**attackTo**，同理，继续依次计算`from`和`to`的被动技效果，结果作为攻击距离；不计算被动技时，攻击距离等于计算距离；被动技效果计算完成后，继续计算角色的装备效果(如果有装备)
-         * @param {!GameCores.GameObjects.Player} from 参考角色
-         * @param {!GameCores.GameObjects.Player} to 目标角色
-         * @param {?string} method 见method参数表
-         * @returns {number} 如果`from`或`to`不在游戏中或未指定，返回`Infinity`；如果`from==to`，返回0
-         */
         distance: function (from, to, method) {
             if (from == to)
                 return 0;
@@ -2362,7 +2155,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     m += info.globalTo;
                     n += info.globalTo;
                 }
-                if (info.attaclTo) { //[recommend][bug] use attackTo instead of attaclTo
+                if (info.attaclTo) {
                     m += info.attaclTo;
                 }
             }
@@ -2370,22 +2163,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return m;
             return n;
         },
-        /**
-         * 返回技能模板
-         * @name get.info
-         * @function
-         * @param {?string} item 技能ID，如果未定义，返回undefined
-         * @returns {?GameCores.GameObjects.SkillInfo} 技能模板
-         */
-        /**
-         * 获取游戏牌模板
-         * @name get.info
-         * @function
-         * @variation 2
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象，除了牌名(`card.name`)外，其他属性或函数可以为空
-         * @param {(GameCores.GameObjects.Player|boolean|undefined)} option 将根据`option`获取游戏牌牌名，然后根据牌名获取模板。详见{@link game.name}，{@link game.name(2)}
-         * @returns {?GameCores.GameObjects.CardInfo} 游戏牌模板
-         */
         info: function (item, player) {
             if (typeof item == 'string') {
                 return lib.skill[item];
@@ -2397,11 +2174,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return lib.card[name];
             }
         },
-        /**
-         * 将选择范围格式化为`[(number), (number)]`再返回
-         * @param {(number|Array<number>|function():Array<number>)} select 如果为数值，返回`[select, select]`；如果为数组且为`[(number), (number)]`的形式，返回`select`；如果为函数，将函数的返回值作为此函数的参数迭代，然后将结果返回；其他情况，返回`[1, 1]`
-         * @returns {Array<number>} 一个`[(number), (number)]`形式的数组
-         */
         select: function (select) {
             if (typeof select == 'number')
                 return [select, select];
@@ -2411,13 +2183,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return get.select(select());
             return [1, 1];
         },
-        /**
-         * 返回本机角色当前选择的一张牌，或将本机角色当前选择的牌视为一张牌返回；
-         * 如果`get.info(_status.event.skill).viewAs`存在，然后将当前选择的牌视为一张`viewAs8`返回；如果`viewAs`为函数，且`viewAs(ui.selected.cards, _status.event.player)`有返回值(`card`)，将当前选择的牌视为一张`card`返回；
-         * 除此之外，如果`_status.event._get_card`存在，返回`_status.event._get_card`
-         * @param {?boolean} [original] 如果为true，返回`ui.selected.cards[0]`；如果为false或未指定，将当前选择的牌视为一张`ui.selected.cards[0]`返回
-         * @returns {?GameCores.GameObjects.Card} 如果当前没有选择的牌，返回undefined
-         */
         card: function (original) {
             if (_status.event.skill) {
                 var card = get.info(_status.event.skill).viewAs;
@@ -2438,21 +2203,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return card;
         },
-        /**
-         * 返回当前事件角色
-         * @returns {GameCores.GameObjects.Player}
-         */
         player: function () {
             return _status.event.player;
         },
-        /**
-         * 返回一个角色数组
-         * @param {*} sort
-         * @param {*} dead
-         * @param {*} out
-         * @returns {Array<GameCores.GameObjects.Player>}
-         */
-        //TODO
         players: function (sort, dead, out) {
             var players = game.players.slice(0);
             if (sort != false) {
@@ -2478,13 +2231,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return players;
         },
-        /**
-         * 返回(角色座次|游戏牌所在区域)
-         * @param {*} card
-         * @param {*} ordering
-         * @returns {(number|'h'|'e'|'j'|'o'|'s'|'c'|'d'|null)}
-         */
-        //TODO
         position: function (card, ordering) {
             if (get.itemtype(card) == 'player')
                 return parseInt(card.dataset.position);
@@ -2570,7 +2316,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (!str)
                 return '';
             str = str
-                // .replace(/(?<!\/)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$1</font>，')
                 .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '<font style="color:#ccc;font-weight: bold">$2</font>，')
                 .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
                 .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
@@ -2581,8 +2326,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 .replace(/(觉醒技) /g, '<font color=#fcd>$1 </font>')
                 .replace(/(主公技) /g, '<font color=#ff4>$1 </font>');
             return str;
-            // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
-            // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
         },
         translation: function (str, arg) {
             if (str && typeof str == 'object' && (str.name || str._tempTranslate)) {
@@ -2657,8 +2400,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                         else {
                             str2 += '【' + get.translation(str.suit) + cardnum + '】';
-                            // var len=str2.length-1;
-                            // str2=str2.slice(0,len)+'<span style="letter-spacing: -2px">'+str2[len]+'·</span>'+get.translation(str.suit)+str.number;
                         }
                     }
                 }
@@ -2794,12 +2535,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return skills;
         },
-        /**
-         * 返回本角色可获得的技能；
-         * @param {?Function} func 筛选条件
-         * @param {?HTMLDivElement} player 可选
-         * @returns {!Array<string>}
-         */
         gainableSkills: function (func, player) {
             var list = [];
             for (var i in lib.character) {
@@ -2831,12 +2566,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return list;
         },
-        /**
-         * 返回目标角色可被获得的技能；
-         * @param {!string} name 角色名
-         * @param {?Function} func 筛选条件
-         * @returns {!Array<string>}
-         */
         gainableSkillsName: function (name, func) {
             var list = [];
             if (name && lib.character[name]) {
@@ -2862,11 +2591,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return list;
         },
-        /**
-         * 返回可获得的武将牌；
-         * @param {?Function} func 筛选条件
-         * @returns {!Array<string>}
-         */
         gainableCharacters: function (func) {
             var list = [];
             for (var i in lib.character) {
@@ -2908,7 +2632,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return selectable;
         },
-        //检查卡牌是否符合要求的快捷方法(要求满足全部条件，无条件时默认满足)
         filter: function (filter, i) {
             if (typeof filter == 'function')
                 return filter;
@@ -3021,9 +2744,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (list[i].judging[0] == card && method != 'judge')
                     return list[i];
             }
-            //for(var i=0;i<game.players.length;i++){
-            //    if(game.players[i].using&&game.players[i].using.contains(card)) return game.players[i];
-            //}
         },
         noSelected: function () {
             return (ui.selected.buttons.length + ui.selected.cards.length + ui.selected.targets.length == 0);
@@ -3050,7 +2770,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return num;
         },
-        //标记
         cardtag: function (item, tag) {
             if (item.cardid && (get.itemtype(item) == 'card' || !item.cards || !item.cards.length || item.name == item.cards[0].name) && _status.cardtag && _status.cardtag[tag] && _status.cardtag[tag].contains(item.cardid)) {
                 return true;
@@ -3322,14 +3041,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 生成(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
-         * @name get.nodeintro
-         * @function
-         * @param {!HTMLDivElement} node 要弹窗的节点
-         * @returns {!HTMLDivElement} 返回生成的弹窗
-         * @see {@link lib.setIntro}
-         */
         nodeintro: function (node, simple, evt) {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
             if (node.classList.contains('player') && (!node.getModel || !node.getModel().name)) {
@@ -3359,7 +3070,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     node = node.link;
                 }
                 else {
-                    node = node.getModel(); //get player model
+                    node = node.getModel();
                 }
                 var capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
@@ -3504,25 +3215,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                     }
                 }
-                // if(get.is.phoneLayout()){
-                //     var storage=node.storage;
-                //     for(i in storage){
-                //                  if(get.info(i)&&get.info(i).intro){
-                //                               intro=get.info(i).intro;
-                //                               if(node.getSkills().concat(lib.skill.global).contains(i)==false&&!intro.show) continue;
-                //                               var name=intro.name?intro.name:get.translation(i);
-                //                               if(typeof name=='function'){
-                //                                            name=name(storage[i],node);
-                //                               }
-                //                               translation='<div><div class="skill">『'+name.slice(0,2)+'』</div><div>';
-                //                               var stint=get.storageintro(intro.content,storage[i],node,null,i);
-                //                               if(stint){
-                //                                            translation+=stint+'</div></div>';
-                //                                            uiintro.add(translation);
-                //                               }
-                //                  }
-                //     }
-                // }
                 if (lib.config.right_range && _status.gameStarted) {
                     uiintro.add(ui.create.div('.placeholder'));
                     var table, tr, td;
@@ -3623,7 +3315,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 var rect = this.link.getBoundingClientRect();
                                 ui.click.intro.call(this.link, {
                                     clientX: rect.left + rect.width,
-                                    clientY: rect.top + rect.height / 2
+                                    clientY: rect.top + rect.height / 2,
                                 });
                                 if (lib.config.touchscreen) {
                                     uiintro._close();
@@ -3657,10 +3349,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         setTimeout(function () {
                             _status.throwEmotionWait = false;
                             if (ui.throwEmotion) {
-                                for (var _i = 0, _a = ui.throwEmotion; _i < _a.length; _i++) {
-                                    var i = _a[_i];
+                                for (var i of ui.throwEmotion)
                                     i.classList.remove('exclude');
-                                }
                             }
                         }, (emotion == 'flower' || emotion == 'egg') ? 5000 : 10000);
                     };
@@ -3840,7 +3530,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             else if (node.classList.contains('mark') && node.info &&
                 node.parentNode && node.parentNode.parentNode && node.parentNode.parentNode.classList.contains('player')) {
                 var info = node.info;
-                var player = node.parentNode.parentNode.getModel(); //get player model
+                var player = node.parentNode.parentNode.getModel();
                 if (info.name) {
                     if (typeof info.name == 'function') {
                         var named = info.name(player.storage[node.skill], player);
@@ -3875,12 +3565,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         if (stint.indexOf('<div class="equip"') != 0) {
                             uiintro._place_text = placetext;
                         }
-                        // if(stint.length<=100){
-                        //     uiintro.add('<div class="text center">'+stint+'</div>');
-                        // }
-                        // else{
-                        //     uiintro.add('<div class="text">'+stint+'</div>');
-                        // }
                     }
                 }
                 else {
@@ -3895,18 +3579,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 uiintro._place_text = placetext;
                             }
                         }
-                        // else if(stint.length<=100){
-                        //     uiintro.add('<div class="text center">'+stint+'</div>');
-                        // }
-                        // else{
-                        //     uiintro.add('<div class="text">'+stint+'</div>');
-                        // }
                     }
                 }
                 uiintro.add(ui.create.div('.placeholder.slim'));
             }
             else if (node.classList.contains('card')) {
-                //卡牌长按介绍
                 if (ui.arena.classList.contains('observe') && node.parentNode.classList.contains('handcards')) {
                     return;
                 }
@@ -3931,7 +3608,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     uiintro.add(get.translation(node.viewAs));
                     console.log(node.originalName);
                     uiintro.add('<div class="text center">（' + get.translation(get.translation(node.originalName || node)) + '）</div>');
-                    // uiintro.add(get.translation(node.viewAs)+'<br><div class="text center" style="padding-top:5px;">（'+get.translation(node)+'）</div>');
                     uiintro.nosub = true;
                     name = node.viewAs;
                 }
@@ -4493,31 +4169,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return links;
         },
-        /**
-         * 返回目标对一个角色$P$的嘲讽值$threaten$，即这个角色对目标的仇恨度，该值越高越容易被攻击，这个值与目标角色$T$有嘲讽值`info.ai.threaten`的技能$S_n$，以及目标角色的血量$h$和手牌数量$c$有关，计算公式如下:
-         * <p>
-         * \begin{align*}
-         * {threaten} & = \alpha{F(h,c)}\\
-         * \alpha & = \left\{\begin{aligned}&1,\,n = 0\\
-         * &\prod_{i=1}^{n-1}{f(S_i)},\,n \geq 1\\
-         * \end{aligned}\right.\\
-         * {f(x)} & = \left\{\begin{aligned}{S_i.ai.threaten},\,\textrm{threaten是number类型}\\
-         * S_i.ai.threaten(P, T),\,\textrm{threaten为function类型}
-         * \end{aligned}\right.\\
-         * {F(x, y)} & = \left\{\begin{aligned}&1,\,\textrm{不计算血量和手牌的影响}\\
-         * &g(x)g(y),\,\textrm{计算血量和手牌的影响}\\
-         * \end{aligned}\right.\\
-         * {g(x)} & = \left\{\begin{aligned}&1.5,\,x = 0\\
-         * &1.2,\,x = 1\\
-         * &1,\,x \not = 0 \land x \not = 1
-         * \end{aligned}\right.
-         * \end{align*}
-         * </p>
-         * @param {?GameCores.GameObjects.Player} [player] 角色，如果未指定，使用当前事件角色；如果为false，角色为空，忽略此参数
-         * @param {GameCores.GameObjects.Player} [target] 目标，如果未指定，使用`player`
-         * @param {?boolean} [hp] 目标角色的血量和手牌数量是否影响嘲讽值，如果为true，会返回计算影响后的嘲讽值；如果为false或未指定，不影响结果
-         * @returns {number}
-         */
         threaten: function (target, player, hp) {
             var threaten = 1;
             var skills = target.getSkills();
@@ -4558,28 +4209,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return threaten;
         },
-        /**
-         * 返回一个角色状态值$condition$，这个值受角色血量$h$、手牌数量$H$、装备收益$E_n$影响，计算公式如下:
-         * <p>
-         * \begin{align*}
-         * {condition} & = \left\{\begin{aligned}
-         * & {h}+\frac{H}{2},\,n=0 \\
-         * & {h}+\frac{H}{2}+\sum_{i=0}^{n-1}{M(E_i)},\,n\geq1
-         * \end{aligned}\right.\\
-         * {M(x)} & = \left\{\begin{aligned}
-         * & 0.8,\,x\geq7\\
-         * & 0.5,\,x\geq5\\
-         * & 0.2,\,x\geq3\\
-         * & 0,\,x<3
-         * \end{aligned}\right.\\
-         * E_n & = {get.equipValueNumber(equips[n])}\\
-         * {equips} & = {player.getCards('e')}
-         * \end{align*}
-         * </p>
-         * @param {GameCores.GameObjects.Player} player 要计算的角色
-         * @returns {number}
-         * @see {@link get.equipValueNumber}
-         */
         condition: function (player) {
             var num = player.hp;
             if (num > 4) {
@@ -4608,15 +4237,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return num;
         },
-        /**
-         * 返回一个角色对目标角色的态度值，正值为友方，负值为敌方；
-         * 如果这个角色处于混乱状态，则对友方的态度变负、对敌方的态度变正，态度值为原来的相反数；
-         * 此后，
-         * 如果目标角色处于混乱状态，当态度值为正值时，返回0；当态度值为正值，目标角色的身份为主公时返回1
-         * @param {!GameCores.GameObjects.Player} from 参考角色，如果未指定，会返回0
-         * @param {!GameCores.GameObjects.Player} to 目标角色，如果未指定，会返回0
-         * @returns {number}
-         */
         attitude: function (from, to) {
             if (!from || !to)
                 return 0;
@@ -4645,21 +4265,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return att;
         },
-        /**
-         * 返回态度值的符号
-         * @param {...any} args 此函数的参数会作为{@link get.attitude}的参数调用
-         * @returns {number} (-1|0|1)
-         */
         sgnAttitude: function () {
             return get.sgn(get.attitude.apply(this, arguments));
         },
-        /**
-         * 返回牌的留牌收益(`info.ai.useful`|`info.ai.basic.useful`)，留牌收益低的牌，在弃牌时会被丢弃，而留牌收益高的则会保留；
-         * 如果`card._modUseful`存在，则返回`card._modUseful()`；
-         * 如果`useful`是函数，则留牌收益值为`useful(card, cardIndex)`，`cardIndex`为`card`在当前事件角色`player`手牌中同名(`card.name`)牌数组中的索引，如果(当前事件没有角色|没有找到此牌)，`cardIndex`为0
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-         * @returns {number} 如果是判定区的牌，返回-1；如果 `useful`未定义，此函数返回-1(`useful`默认为-1)
-         */
         useful: function (card, player) {
             if (get.position(card) == 'j')
                 return -1;
@@ -4697,62 +4305,17 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             result = game.checkMod(player, card, result, 'aiUseful', player);
             return result;
         },
-        /**
-         * 返回牌的留牌收益，但是此函数返回的留牌收益为原留牌收益的相反数
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-         * @returns {!number}
-         */
         unuseful: function (card) {
             return -get.useful(card);
         },
-        /**
-         * 返回牌的留牌收益，但是此函数返回的留牌收益为`10 - oriUseful`，oriUseful为原留牌收益
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-         * @returns {!number}
-         */
         unuseful2: function (card) {
             return 10 - get.useful(card);
         },
-        /**
-         * 返回牌的留牌收益，但是此函数返回的留牌收益为`10 - oriUseful`，oriUseful为原留牌收益；
-         * 一种特别的情况是，游戏牌的牌名(card.name)为'du'，此时返回20
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-         * @returns {!number}
-         */
         unuseful3: function (card) {
             if (card.name == 'du')
                 return 20;
             return 10 - get.useful(card);
         },
-        /**
-         * 返回一个角色$P$当前使用一组游戏牌$C_n$的收益值$value$，受`method`$m$影响，计算公式:
-         * <p>
-         * \begin{align*}
-         * {value} & = \frac{\sum_{i=0}^{n-1}F(C_i)}{\sqrt{n}}\\
-         * {F(x)} & = {get.value(x, P, m)}
-         * \end{align*}
-         * </p>
-         * @name get.value
-         * @function
-         * @param {!Array<GameCores.GameObjects.Card>} cards 游戏牌数组。**注意**：一种特别的情况是，此数组为空数组，此时收益值为`0/0`，即`NaN`值
-         * @param {?GameCores.GameObjects.Player} [player] 角色，如果未指定，使用当前事件角色
-         * @param {?string} [method] 'raw'
-         * @returns {number}
-         */
-        /**
-         * 返回一个角色当前使用一张游戏牌的收益值(`info.ai.value`|`info.ai.basic.value`)；
-         * 如果`card._modValue`存在，则返回`card._modValue(player, method)`；
-         * 除此之外：
-         * 如果`value`是函数，则收益值为`value(card, player, cardIndex, method)`，`cardIndex`为`card`在角色`player`手牌中同名(`card.name`)牌数组中的索引，如果`card`不在其中，返回同名牌数组的长度
-         * 如果此角色有被动技**aiValue**，则返回改变后的收益值
-         * @name get.value
-         * @function
-         * @variation 2
-         * @param {(!GameCores.GameObjects.Card)} card 游戏牌对象
-         * @param {?GameCores.GameObjects.Player} [player] 角色，如果未指定，使用当前事件角色
-         * @param {?string} [method] 'raw'
-         * @returns {number}
-         */
         value: function (card, player, method) {
             var result = 0;
             var value;
@@ -4788,7 +4351,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 result = value;
             if (Array.isArray(value)) {
                 if (method == 'raw')
-                    result = value[0]; //??
+                    result = value[0];
                 var num = geti();
                 if (num < value.length)
                     result = value[num];
@@ -4798,16 +4361,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             result = game.checkMod(player, card, result, 'aiValue', player);
             return result;
         },
-        /**
-         * 返回装备收益，如果**原装备收益大于0而且不需要弃牌**的时候，就不用装备(除非装备牌有tag`valueswap`)，返回0值；
-         * 此函数返回的装备收益$equipValue$正比于新装备的装备收益$v$与原装备$v_{0}$的差值，
-         * 其计算公式如下:
-         * $${equipValue}=\frac{max(0, {v}-{v_{0}})}{5}$$
-         * @param {GameCores.GameObjects.Player} player [never used]牌的使用者
-         * @param {GameCores.GameOjbects.Player} target 装备牌的角色
-         * @param {!string} name 装备牌牌名，如果当前没有选择的牌或那个牌的牌名与此牌名不同，使用`{name:name}`
-         * @returns {number}
-         */
         equipResult: function (player, target, name) {
             var card = get.card();
             if (!card || card.name != name) {
@@ -4824,14 +4377,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return Math.max(0, value1 - value2) / 5;
         },
-        /**
-         * 返回游戏牌的装备收益(`info.ai.equipValue`|`info.ai.basic.equipValue`)；
-         * 如果装备收益未定义，返回0值；
-         * 如果`equipValue`是函数，则装备收益为`equipValue(card, player, null, 'raw2')`，其中`player`为装备的目标角色，`card`与`player`不会为空值
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象，除了牌名外其他属性或函数可以为空
-         * @param {?GameCores.GameObjects.Player} [player] 装备的目标角色，如果未指定，使用游戏牌`card`的所属角色，如果`card`没有所属角色，使用当前事件角色
-         * @returns {!number}
-         */
         equipValue: function (card, player) {
             if (player == undefined || get.itemtype(player) != 'player')
                 player = get.owner(card);
@@ -4854,12 +4399,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return value(card, player, null, 'raw2');
             return 0;
         },
-        /**
-         * 返回游戏牌的装备收益(`info.ai.equipValue`|`info.ai.basic.equipValue`)；
-         * 如果装备收益未定义或者`equipValue`不是'number'类型，返回0值
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象，除了牌名外其他属性或函数可以为空
-         * @returns {number}
-         */
         equipValueNumber: function (card) {
             var info = get.info(card);
             if (info.ai) {
@@ -4870,33 +4409,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return 0;
         },
-        /**
-         * 返回一个角色使用一张游戏牌的收益值，但是此函数返回的收益值是计算收益值的相反数
-         * @param {GameCores.GameObjects.Card} card 游戏牌对象
-         * @param {GameCores.GameObjects.Player} player 角色
-         * @returns {number}
-         */
         disvalue: function (card, player) {
             return -get.value(card, player);
         },
-        /**
-         * 返回一个角色使用一张游戏牌的收益值，但是此函数返回的收益值是原收益值的相反数
-         * @param {GameCores.GameObjects.Card} card 游戏牌对象
-         * @param {GameCores.GameObjects.Player} player 角色
-         * @returns {number}
-         */
         disvalue2: function (card, player) {
             return -get.value(card, player, 'raw');
         },
-        /**
-         * 返回目标对一个角色的使用某个技能的嘲讽值(对应技能的`info.ai.threaten`)，即这个角色对目标的仇恨度，该值越高越容易被攻击；
-         * 如果`threaten`是函数，则嘲讽值为函数的返回值；
-         * 该函数会以`order(player, target)`调用`threaten`
-         * @param {!string} skill 技能名
-         * @param {?GameCores.GameObjects.Player} [player] 角色，如果未指定，使用当前事件角色
-         * @param {GameCores.GameObjects.Player} [target] 目标，如果未指定，使用`player`
-         * @returns {number} 如果没有找到技能，返回1；如果 `info.ai.threaten`未定义，此函数返回1(`threaten`默认为1)
-         */
         skillthreaten: function (skill, player, target) {
             if (!lib.skill[skill])
                 return 1;
@@ -4912,14 +4430,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return 1;
         },
-        /**
-         * 返回(技能使用|游戏牌发动)的优先级(`info.ai.order`|`info.ai.basic.order`)；
-         * 如果`order`是函数，则优先级为函数的返回值；
-         * 该函数会以`order(item, _status.event.player)`调用`order`，`_status.event.player`为当前事件角色；
-         * 如果当前事件角色有被动技**aiOrder**，则返回改变后的优先级
-         * @param {(string|GameCores.GameObjects.Card)} item 技能名或游戏牌对象，游戏牌对象除牌名外其他属性或函数可以为空
-         * @returns {!number} 如果`{@link get.info() get.info(item)}`返回undefined，此函数返回-1；如果`info.ai.order`或`info.ai.basic.order`未定义，此函数返回-1
-         */
         order: function (item) {
             var info = get.info(item);
             if (!info)
@@ -4942,13 +4452,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return num;
         },
-        /**
-         * 返回`get.info(item).ai.result`的浅拷贝对象，如果`ai.result`是函数，返回`get.info(item).ai.result(item)`
-         * @private
-         * @param {GameCores.GameObjects.Card} item
-         * @param {?} skill
-         * @returns {!Object}
-         */
         result: function (item, skill) {
             var result;
             var info = get.info(item);
@@ -4969,15 +4472,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return result;
         },
-        /**
-         * 返回源对目标使用一张游戏牌的效果值
-         * @param {GameCores.GameObjects.Player} target 目标
-         * @param {*} card
-         * @param {?GameCores.GameObjects.Player} [player] 源，如果未指定，使用当前事件角色
-         * @param {?GameCores.GameObjects.Player} player2 观察者
-         * @param {?boolean} [isLink]
-         * @returns {number}
-         */
         effect_use: function (target, card, player, player2, isLink) {
             var event = _status.event;
             var eventskill = null;
@@ -4999,8 +4493,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 var targets = [target];
                 info.changeTarget(player, targets);
                 var eff = 0;
-                for (var _i = 0, targets_1 = targets; _i < targets_1.length; _i++) {
-                    var i = targets_1[_i];
+                for (var i of targets) {
                     eff += get.effect(i, card, player, player2, isLink);
                 }
                 return eff;
@@ -5067,7 +4560,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink
+                            isLink: isLink,
                         }))
                             temp2 = temp2.effect(card, player, target, result2, isLink);
                         else
@@ -5078,7 +4571,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink
+                            isLink: isLink,
                         }))
                             temp2 = temp2.effect.target_use(card, player, target, result2, isLink);
                         else
@@ -5089,7 +4582,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink
+                            isLink: isLink,
                         }))
                             temp2 = temp2.effect.target(card, player, target, result2, isLink);
                         else
@@ -5200,16 +4693,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return final;
         },
-        /**
-         * 返回一个角色对目标(使用一张游戏牌|造成伤害|回复血量)的效果值
-         * @param {?GameCores.GameObjects.Player} target 目标
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象，除了牌名，其他属性或函数可以为空
-         * @param {?string} [card.name] 牌名，如果未指定，`card`使用`_status.event.skill`
-         * @param {?GameCores.GameObjects.Player} [player] 角色，如果未指定，使用当前事件角色
-         * @param {?GameCores.GameObjects.Player} player2 观察者
-         * @param {?boolean} [isLink] 是否计算被链接的角色，如果为true，不计算；如果为false或未指定，对效果值$effect$，被链接的角色$P_n$(包括`target`)，游戏牌$C$，角色$P2$，观察者$O$，计算公式：${effect}=\sum_{i=0}^{n-1}{get.effect(P_i, C, P2, O, true)})$。
-         * @returns {number}
-         */
         effect: function (target, card, player, player2, isLink) {
             var event = _status.event;
             var eventskill = null;
@@ -5285,7 +4768,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink
+                            isLink: isLink,
                         }))
                             temp2 = temp2.effect(card, player, target, result2, isLink);
                         else
@@ -5296,7 +4779,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             card: card,
                             target: target,
                             skill: skills2[i],
-                            isLink: isLink
+                            isLink: isLink,
                         }))
                             temp2 = temp2.effect.target(card, player, target, result2, isLink);
                         else
@@ -5350,7 +4833,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 else {
                     result2 *= Math.sqrt(Math.sqrt(threaten));
                 }
-                // *** continue here ***
                 if (target.hp == 1)
                     result2 *= 2.5;
                 if (target.hp == 2)
@@ -5375,24 +4857,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     result2 *= 0.8;
                 if (target.hp > 5)
                     result2 *= 0.6;
-                // if(get.attitude(player,target)<0){
-                //     result2*=threaten;
-                // }
-                // else{
-                //     result2*=Math.sqrt(threaten);
-                // }
-                // if(target.hp<=1) result2*=2;
-                // if(target.hp==2) result2*=1.1;
-                // if(target.countCards('h')==0){
-                //     result2*=1.1;
-                //     if(get.tag(card,'respondSha')||get.tag(card,'respondShan')) result2*=1.4;
-                // }
-                // if(target.countCards('h')==1) result2*=1.05;
-                // if(target.countCards('h')==2) result2*=1.02;
-                // if(target.countCards('h')>3) result2*=0.9;
-                // if(target.hp==4) result2*=0.9;
-                // if(target.hp==5) result2*=0.8;
-                // if(target.hp>5) result2*=0.6;
             }
             else {
                 result2 += temp02;
@@ -5426,14 +4890,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return final;
         },
-        /**
-         * 返回源对目标进行伤害的效果值
-         * @param {GameCores.GameObjects.Player} target 目标
-         * @param {?GameCores.GameObjects.Player} [player] 源，如果未指定，使用`target`
-         * @param {?GameCores.GameObjects.Player} [viewer] 观察者，用于判断最后的效果是正效果(对观察者或其方有益)还是负效果(对观察者敌方有益)；如果未指定，使用`target`
-         * @param {?string} [nature] 伤害属性，如果未指定，则非属性伤害
-         * @returns {number}
-         */
         damageEffect: function (target, player, viewer, nature) {
             if (!player) {
                 player = target;
@@ -5462,13 +4918,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 return 0;
             return eff;
         },
-        /**
-         * 返回源对目标回复血量的效果值，如果目标当前没有损失血量，返回0值(无效果)
-         * @param {GameCores.GameObjects.Player} target 目标
-         * @param {?GameCores.GameObjects.Player} [player] 源，如果未指定，使用`target`
-         * @param {?GameCores.GameObjects.Player} [viewer] 观察者，用于判断最后的效果是正效果(对观察者或其方有益)还是负效果(对观察者敌方有益)；如果未指定，使用`target`
-         * @returns {number}
-         */
         recoverEffect: function (target, player, viewer) {
             if (target.hp == target.maxHp)
                 return 0;
@@ -5480,12 +4929,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return get.effect(target, { name: 'recover' }, player, viewer);
         },
-        /**
-         * 返回按钮绑定(手牌|装备区|判定区|正在判定的)卡牌所属的角色使用此牌的收益
-         * 如果是其他区域的牌，返回当前事件的角色使用此牌的收益，**这个时候**，此函数假定当前事件的角色(`_status.event.player`)存在，所以如果当前事件的角色未定义或者为空，此函数会报错
-         * @param {HTMLDivElement} button 按钮，返回此按钮的收益
-         * @returns {number}
-         */
         buttonValue: function (button) {
             var card = button.link;
             var player = get.owner(card);
@@ -5494,7 +4937,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (player.getCards('j').contains(card)) {
                 var efff = get.effect(player, {
                     name: card.viewAs || card.name,
-                    cards: [card]
+                    cards: [card],
                 }, player, player);
                 if (efff > 0)
                     return 0.5;
@@ -5524,14 +4967,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 default: return 0.4;
             }
         },
-        /**
-         * 返回当前事件角色对一个角色的态度值
-         * @param {GameCores.GameObjects.Player} to 一个角色，返回对该角色的态度值
-         * @param {number}
-         */
         attitude2: function (to) {
             return get.attitude(_status.event.player, to);
-        }
+        },
     });
     return get;
 });

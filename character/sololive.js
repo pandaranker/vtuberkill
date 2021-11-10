@@ -1,42 +1,25 @@
 'use strict';
-game.import('character', function (lib, game, ui, get, ai, _status) {
+globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: "sololive",
         connect: true,
         character: {
-            /**妮娅 */
             His_HoshinoNiya: ['female', 'qun', 3, ['shushi', 'zengzhi'], ['guoV']],
-            /**茜科塞尔 */
             Qiankesaier: ['male', 'qun', 4, ['shuangshoujiaoying', 'anyingxuemai'], ['guoV']],
-            /*黑川*/
             heichuan: ['male', 'qun', 3, ['zhengtibuming', 'lunhuizuzhou'], ['guoV']],
-            /**雪团 */
             YukiTuan: ['female', 'qun', 4, ['chentu', 'sishu'], ['guoV']],
-            /**三三 */
             Mikawa: ['male', 'qun', 4, ['zhezhuan', 'setu'], ['guoV']],
-            /**樱井 */
             Sakurai: ['male', 'qun', 4, ['junxu', 'jingniang'], ['guoV']],
-            /**旧艾琳 */
             old_Eilene: ['female', 'eilene', '4/6', ['duanfu', 'daichang', 'hongtu'], ['zhu']],
-            /**旧因幡 */
             old_InabaHaneru: ['female', 'nanashi', 1, ['huangtu', 'wudao', 'yinyuan'], ['zhu']],
-            /**旧花园猫 */
             old_HanazonoSerena: ['female', 'paryi', 3, ['old_jiumao', 'old_enfan', 'old_shiqi']],
-            /**兔田佩克拉 */
             old_UsadaPekora: ['female', 'holo', 3, ['pekoyu', 'hongshaoturou']],
-            /**gz莉泽 */
             gz_LizeHelesta: ['female', 'nijisanji', 3, ['tongchen', 'wangxuan']],
-            /**gz安洁 */
             gz_AngeKatrina: ['female', 'nijisanji', 4, ['gz_lianjin']],
-            /**向晚 */
             gz_Ava: ['female', 'vtuber', 4, ['baitai', 'gz_yiqu'], ['guoV']],
-            /**兔妈妈 */
             gz_InabaHaneru: ['female', 'upd8', 3, ['gz_jiance', 'yingqi']],
-            /**心萪 */
             gz_xinke: ['female', 'qun', 3, ['zuigao', 'xinhuochuancheng']],
-            /**雪花菈米 */
             gz_YukihanaLamy: ['female', 'holo', 4, ['hanling']],
-            /**语部纺 */
             gz_KataribeTsumugu: ['female', 'nijisanji', 3, ['lingli', 'chengfo']],
         },
         characterSort: {
@@ -46,7 +29,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
             },
         },
         skill: {
-            //旧艾琳
             duanfu: {
                 trigger: { player: 'useCardToPlayer', target: 'useCardToPlayer' },
                 priority: 100,
@@ -169,7 +151,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
-            //旧黄兔
             huangtu: {
                 trigger: {
                     global: 'gameDrawAfter',
@@ -307,7 +288,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 delay: 0.5,
                 content() {
                     player.draw();
-                    //					console.log(player.storage.wudao);
                     player.storage.wudao.remove(get.name(event.cards[0]));
                 },
                 ai: {
@@ -401,7 +381,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            /**旧花园猫 */
             old_maoliang: {
                 mark: true,
                 locked: true,
@@ -452,7 +431,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                                 else {
                                     player.storage.old_maoliang = result.cards;
                                 }
-                                // game.addVideo('storage', player, ['old_maoliang',get.cardsInfo(player.storage.old_maoliang),'cards']);
                                 player.addSkill('old_maoliang');
                                 player.markSkill('old_maoliang');
                                 player.showCards(player.storage.old_maoliang, "猫粮");
@@ -631,7 +609,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //旧兔宝
             pekoyu: {
                 audio: 'tuquan',
                 init(player) {
@@ -785,7 +762,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 }
             },
-            //向晚
             baitai: {
                 audio: 'liuxuan_keai',
                 trigger: { player: 'phaseBegin' },
@@ -931,7 +907,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
-            //皇女
             tongchen: {
                 enable: 'phaseUse',
                 usable: 1,
@@ -1008,7 +983,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
-            //gz安洁
             gz_lianjin: {
                 trigger: { player: 'useCardAfter' },
                 filter(event, player) {
@@ -1167,8 +1141,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     else if (event.useWuzhong) {
                         player.chooseUseTarget({ name: 'wuzhong' }, '是否使用第二张【无中生有】？', false);
                     }
-                    // if(){
-                    // }
                 },
                 group: ['gz_lianjin_mark'],
                 subSkill: {
@@ -1190,7 +1162,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //黄兔
             gz_jiance: {
                 trigger: { player: 'zhibiAfter' },
                 filter(event, player) {
@@ -1314,7 +1285,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //心萪
             zuigao: {
                 intro: {
                     content: 'cards',
@@ -1467,7 +1437,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 },
             },
-            //雪花菈米
             hanling: {
                 trigger: { player: 'damageBegin3' },
                 filter(event, player) {
@@ -1526,7 +1495,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //语部纺
             lingli: {
                 trigger: { global: 'useCard' },
                 clickChange: '休眠',
@@ -1677,7 +1645,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         direct: true,
                         content() {
                             'step 0';
-                            //window.prompt("sometext","defaultvalue");
                             player.chooseCardButton('『闭目成佛』：使用其中一张装备牌', trigger.discards).set('filterButton', function (button) {
                                 return get.type(button.link) == 'equip';
                             });

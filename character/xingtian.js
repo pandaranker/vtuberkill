@@ -1,5 +1,5 @@
 'use strict';
-game.import('character', function (lib, game, ui, get, ai, _status) {
+globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'xingtian',
         connect: true,
@@ -14,7 +14,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 materials_prompt: '【杀】+【杀】',
                 derivation: true,
                 derivationpack: 'xingtian',
-                // autoViewAs:'sha',
                 addinfo: '杀'
             },
             peng: {
@@ -153,7 +152,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 enable: true,
                 type: 'trick',
                 vanish: true,
-                // wuxieable:true,
                 materials: [{ color: 'red' }, { color: 'black' }],
                 materials_prompt: '红色牌+黑色牌',
                 derivation: true,
@@ -278,12 +276,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
             },
         },
         characterReplace: {},
-        // dynamicTranslate:{
-        // 	tulong:function(player){
-        // 		if(player.storage.qiming_saycards&&player.storage.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【'+get.translation(player.storage.qiming_saycards)+'】</font>使用。';
-        // 		return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。';
-        // 	},
-        // },
         translate: {
             ci: '刺',
             g_ci: '刺',

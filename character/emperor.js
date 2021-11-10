@@ -1,5 +1,5 @@
 'use strict';
-game.import('character', function (lib, game, ui, get, ai, _status) {
+globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'emperor',
         connect: true,
@@ -16,7 +16,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
             sp_MinatoAqua: '杏社终末之时的救世主，V始二十四年，姑苏城破，事态危急，华夏之人皆念圣皇爱人亲民，不忍坐视，有义士曰字幕组，以《taking over》、《for the win》两利器夜刺霓虹上将，霓虹上将中刃即死，义士亦为左右斩之，杏军大乱，姑苏周围城郡crew往来助之，大破杏军，圣皇既此知杏高层为人，自立为皇，护一方百姓。',
         },
         skill: {
-            //欧皇咩
             zhigao: {
                 skillAnimation: true,
                 animationColor: 'thunder',
@@ -63,8 +62,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 init(player, skill) {
                     player.storage[skill] = [];
                 },
-                //	skillAnimation:true,
-                //	animationColor:'thunder',
                 trigger: { global: 'roundStart' },
                 content() {
                     'step 0';
@@ -102,7 +99,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         game.delay(0.5);
                         game.log(player, '声明了', result.links[0][2]);
                         player.chat(get.translation(result.links[0][2]));
-                        // player.popup(result.links[0][2],'thunder');
                         player.storage.tiangou.add(result.links[0][2]);
                     }
                     else {
@@ -161,7 +157,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
-            //圣皇夸
             shenghuang: {
                 locked: true,
                 init(player) {
@@ -468,7 +463,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //SP爱丽丝
             xianjing: {
                 init(player) {
                     player.storage.xianjing = [];
@@ -802,7 +796,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     combo: 'xianjing',
                 },
             },
-            //SP向晚
             shuimu: {
                 trigger: { player: 'damageBegin' },
                 filter(event, player) {
@@ -1255,7 +1248,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 }
             },
-            //SP嘉然
             tangyan: {
                 audio: 10,
                 init(player, skill) {
@@ -1299,7 +1291,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     var list = [];
                     for (var i of lib.inpile) {
                         var type = get.type(i);
-                        // if(i==get.name(card))		continue;
                         if (type != 'basic')
                             continue;
                         if (player.storage.tangyan.contains(i))
@@ -1395,10 +1386,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         player.storage.tangyan.add(card[2]);
                         player.chooseUseTarget({ name: card[2], nature: card[3] }, true, 'noTargetDelay', 'nodelayx');
                     }
-                    // if(event.xinjia&&event.allBy<=2){ 
-                    // 	event.allBy++;
-                    // 	event.goto(3);
-                    // }
                     'step 6';
                     if (event.cards.length) {
                         event.goto(1);
@@ -1538,7 +1525,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 skillList: ['ai_xu', 'ai_po', 'ai_ji', 'ai_zhong'],
                 content() {
                     'step 0';
-                    //对点数最少的一名角色造成1点伤害，清空所有点数
                     var players = game.players.slice(0);
                     event.players = players;
                     var minPoint = Infinity;
@@ -1578,7 +1564,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (result.targets)
                         result.targets[0].damage();
                     for (var i = 0; i < event.players.length; ++i) {
-                        //清空所有点数
                         event.players[i].storage.ai_point.point = 0;
                         event.players[i].syncStorage('ai_point');
                         event.players[i].markSkill('ai_point');
@@ -1619,9 +1604,7 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 3';
                     if (typeof event.videoId != 'undefined')
                         game.broadcastAll('closeDialog', event.videoId);
-                    //添加为全局效果
                     var players = game.players.slice(0);
-                    //效果，终，初始化
                     if (result.control == 'ai_zhong') {
                         var zhongMark = {
                             x: players.length + 1,
@@ -1652,12 +1635,10 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         if (skills[i])
                             game.addGlobalSkill(skills[i]);
                     }
-                    //记录已使用的技能
                     for (var i = 0; i < players.length; ++i) {
                         players[i].storage.ai_point.skillList.push(result.control);
                     }
                     if (result.control == 'ai_zhong') {
-                        //生成dialog
                         event.firstNum = game.countPlayer() + 1;
                         var firstNum = event.firstNum;
                         var cards = [];
@@ -1691,7 +1672,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                     }
                     'step 4';
-                    //生成十个数字牌
                     var firstNum = event.firstNum;
                     if (firstNum <= game.countPlayer())
                         firstNum = game.countPlayer() + 1;
@@ -1745,7 +1725,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             if (dialog)
                                 dialog.close();
                         }
-                        //为技能 终 设置X
                         player.storage.ai_zhongMark.x = x;
                         var players = game.players.slice(0);
                         for (var i = 0; i < players.length; ++i) {
@@ -1839,11 +1818,9 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
             },
             ai_xu: {
                 init(player) {
-                    // player.addSkill('ai_point');//test
                 },
                 group: ['ai_xu_ongain', 'ai_xu_ondiscard', 'ai_xu_onPhaseEnd', 'ai_xu_onblacksha'],
                 subSkill: {
-                    //一个阶段内首次获得牌的角色
                     ongain: {
                         trigger: {
                             player: ['gainBegin']
@@ -1859,7 +1836,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.storage.ai_xu_ongain = true;
                         }
                     },
-                    //一个阶段内首次失去牌的角色
                     ondiscard: {
                         trigger: {
                             player: 'discardBegin'
@@ -1875,7 +1851,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.storage.ai_xu_ondiscard = true;
                         }
                     },
-                    //一个阶段内首次获得牌的角色+❶，失去牌的–❶。
                     onPhaseEnd: {
                         trigger: {
                             player: ['phaseZhunbeiEnd', 'phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd', 'phaseJieshuEnd']
@@ -1903,7 +1878,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             }
                         }
                     },
-                    //你可以–❷以抵消黑色【杀】。
                     onblacksha: {
                         trigger: {
                             target: 'shaBefore'
@@ -1953,7 +1927,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.storage.ai_point.point -= 4;
                             player.syncStorage('ai_point');
                             player.markSkill('ai_point');
-                            //移动场上的一张牌
                             player.moveCard(true);
                         },
                         check(event, player) {
@@ -1994,7 +1967,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
             ai_ji: {
                 group: ['ai_ji_ondiscard', 'ai_ji_onusecard'],
                 subSkill: {
-                    //准备阶段，弃置任意牌以获得两倍的●
                     ondiscard: {
                         trigger: {
                             player: 'phaseZhunbei'
@@ -2016,7 +1988,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             }
                         }
                     },
-                    //你可以–❷为你使用的牌增加或减少一名目标。
                     onusecard: {
                         trigger: {
                             player: 'useCard2'
@@ -2040,11 +2011,9 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         },
                         content() {
                             'step 0';
-                            //–❷
                             player.storage.ai_point.point -= 2;
                             player.syncStorage('ai_point');
                             player.markSkill('ai_point');
-                            //为你使用的牌增加或减少一名目标
                             var prompt2 = '为' + get.translation(trigger.card) + '增加或减少一个目标';
                             player.chooseTarget(get.prompt('ai_ji'), function (card, player, target) {
                                 var player = _status.event.player;
@@ -2184,10 +2153,8 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                     return true;
                 },
                 syncDeadPlayer(diePlayer) {
-                    //filter character
                     if (!lib.skill.ai_zhong.characterFilter(diePlayer.name))
                         return;
-                    //获取 ai_deadMark
                     var storage;
                     var players = game.players.slice(0);
                     var storagePlayer;
@@ -2198,14 +2165,12 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                             break;
                         }
                     }
-                    //获取lastDeadList
                     var lastDeadList = storage.lastDeadList;
                     var addPlayer = function (player) {
                         lastDeadList.add(player);
                         var skills = lib.character[player.name][3];
                         for (var i = 0; i < skills.length; ++i) {
                             var skill = skills[i];
-                            //filter skill
                             if (!lib.skill.ai_zhong.skillFilter(skill))
                                 continue;
                             var info = lib.skill[skill];
@@ -2245,11 +2210,9 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                         lastDeadList.remove(player);
                     };
-                    //添加死亡角色
                     if (diePlayer.isDead() && !lastDeadList.contains(diePlayer)) {
                         addPlayer(diePlayer);
                     }
-                    //删除复活角色
                     for (var i = 0; i < lastDeadList.length; ++i) {
                         if (!lastDeadList[i].isDead()) {
                             removePlayer(lastDeadList[i]);
@@ -2295,7 +2258,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                 },
                 content() {
                     'step 0';
-                    //你可以令与你同阵营的角色亮出身份牌
                     var friends = player.getFriends(true);
                     event.friends = friends;
                     for (var i = 0; i < friends.length; i++) {
@@ -2321,7 +2283,6 @@ game.import('character', function (lib, game, ui, get, ai, _status) {
                                 othersCount += players[i].storage.ai_point.point;
                         }
                     }
-                    //若你们●的合计值大于其他阵营●的两倍，获得胜利。
                     if (sameGroupCount > 0 && sameGroupCount > othersCount * 2) {
                         var func = game.checkOnlineResult;
                         game.checkOnlineResult = function (player) {

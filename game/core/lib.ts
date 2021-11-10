@@ -1,11 +1,11 @@
-moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
+globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 包(游戏牌, 武将牌, 拓展)管理相关
      * 游戏入口{@link lib.init.init}
      * @namespace lib
      * @memberof module:core
      */
-    mixin(lib, /**@lends module:core.lib */ {
+    globalThis.mixin(lib, /**@lends module:core.lib */ {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
 
         configprefix: 'vtuberkill_1.9_',

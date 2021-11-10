@@ -1,27 +1,13 @@
-moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
-    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
-    /**
-     * 游戏内核
-     * 游戏循环{@link game.loop}
-     * @namespace game
-     * @memberof module:core
-     */
-    mixin(game, /**@lends module:core.game */ {
-        /**
-         * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
-         * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
-         * @param {!Player} target 获取牌的目标角色
-         * @param {boolean} [directh] 当添加的牌均为不可见（'blank'）的手牌时，directh为true
-         * @param {?string} [type] 获取牌的条件，可能为'canBeDiscarded' | 'canBeGained'
-         * @param {?function} [callback] 添加动作完成后执行的回调函数
-         */
+"use strict";
+globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _status, lib, game, ui, get, ai }, PlayerModel) {
+    globalThis.mixin(game, {
         showPlayerCard: function (event, target, directh, type, callback) {
             if (!event.dialog)
                 return;
-            var player = event.player || _status.event.player, position = event.position || 'h';
-            var _loop_1 = function (i) {
+            let player = event.player || _status.event.player, position = event.position || 'h';
+            for (let i = 0; i < event.position.length; i++) {
                 if (event.position[i] == 'h') {
-                    var ms_1 = target.getCards('h', function (card) {
+                    let ms = target.getCards('h', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         if (target.isUnderControl(true))
@@ -33,27 +19,27 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                         return card.hasGaintag('ming_');
                     });
-                    if (ms_1.length > 0) {
+                    if (ms.length > 0) {
                         event.dialog.addText('明置区');
-                        ms_1.randomSort();
-                        event.dialog.add(ms_1);
+                        ms.randomSort();
+                        event.dialog.add(ms);
                         directh = false;
                     }
-                    var ans = target.getCards('h', function (card) {
+                    let ans = target.getCards('h', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
-                        if (ms_1.contains(card))
+                        if (ms.contains(card))
                             return false;
                         return true;
                     });
                     if (ans.length > 0) {
-                        event.dialog.addText((ms_1.length ? '暗置区' : '手牌区'));
+                        event.dialog.addText((ms.length ? '暗置区' : '手牌区'));
                         ans.randomSort();
                         event.dialog.add([ans, 'blank']);
                     }
                 }
                 else if (event.position[i] == 'e') {
-                    var es = target.getCards('e', function (card) {
+                    let es = target.getCards('e', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         return true;
@@ -65,7 +51,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     }
                 }
                 else if (event.position[i] == 'j') {
-                    var js = target.getCards('j', function (card) {
+                    let js = target.getCards('j', function (card) {
                         if (type && !lib.filter[type](card, player, target))
                             return false;
                         return true;
@@ -76,41 +62,30 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         directh = false;
                     }
                 }
-            };
-            for (var i = 0; i < event.position.length; i++) {
-                _loop_1(i);
             }
             callback && callback(event);
             return directh;
         },
-        //galgame相关功能
         galgameMod: function () {
-            var galgame = { text: {}, game: game };
-            var gal0 = function () {
-                /**
-                * @description :
-                * @author 看破一切 date 2021/2/12
-                */
-                galgame.sce = function (shijian) {
+            var galgame = {
+                text: {},
+                game: game,
+                sce(shijian) {
                     var game = galgame.game;
                     var next = game.createEvent('sce', false);
                     next.shijian = shijian;
                     next.setContent(galgame.sces);
                     return next;
-                };
-                galgame.backgroundMusic = document.createElement("audio");
-                galgame.backgroundMusic.addEventListener("ended", function () {
-                    galgame.backgroundMusic.currentTime = 0;
-                    galgame.backgroundMusic.play();
-                });
-                galgame.audio = document.createElement("audio");
-                galgame.end = function () {
+                },
+                audio: document.createElement("audio"),
+                backgroundMusic: document.createElement("audio"),
+                end() {
                     var game = galgame.game;
                     galgame.audio.pause();
                     galgame.backgroundMusic.pause();
                     game.resume();
-                };
-                galgame.cg = function (src, callback) {
+                },
+                cg(src, callback) {
                     var cg = document.createElement("video");
                     cg.setAttribute("width", "100%");
                     cg.setAttribute("height", "100%");
@@ -124,13 +99,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         };
                     });
                     return cg;
-                };
-                galgame.sces = function () {
+                },
+                sces() {
                     var game = galgame.game;
                     var color = {};
                     var beijing = ui.create.div('.scedi', ui.window);
-                    var booth = {};
-                    booth.node = ui.create.div(".scetu", beijing);
+                    var booth = { node: ui.create.div(".scetu", beijing) };
                     var node = ui.create.div('.sce', beijing);
                     var drive = ui.create.div('.drive', beijing);
                     var tou = ui.create.div('.tou', node);
@@ -165,7 +139,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 }
                                 else {
                                     if (booth[arr[6]].classList.contains("hidden"))
-                                        booth.show();
+                                        booth.node.show();
                                     booth[arr[6]].style.width = parseInt(arr[2]) + "px";
                                     booth[arr[6]].style.height = parseInt(arr[3]) + "px";
                                     booth[arr[6]].style.left = parseInt(arr[4]) + "%";
@@ -179,7 +153,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 }
                                 else {
                                     if (booth.node.classList.contains("hidden"))
-                                        booth.show();
+                                        booth.node.show();
                                     booth.node.style.width = parseInt(arr[2]) + "px";
                                     booth.node.style.height = parseInt(arr[3]) + "px";
                                     booth.node.style.left = parseInt(arr[4]) + "%";
@@ -242,7 +216,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 var sele = ui.create.div('.sele', choose);
                                 sele.onclick = function () {
                                     _status.event.result = {
-                                        bool: this.innerText
+                                        bool: this.innerText,
                                     };
                                     ui.window.removeChild(beijing);
                                     ui.backgroundMusic.play();
@@ -327,12 +301,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                         function skip0(e) {
                             if (e.ctrlKey) {
-                                window.status = 'skip';
+                                globalThis.status = 'skip';
                             }
                         }
                         function skip1(e) {
                             if (e.keyCode == '17') {
-                                window.status = '';
+                                globalThis.status = '';
                             }
                         }
                         var skipfun0 = function (e) {
@@ -358,26 +332,26 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             txt.innerHTML = str;
                             i++;
                             if (i <= link.length) {
-                                window.addEventListener('keydown', skipfun0);
-                                window.addEventListener('keyup', skipfun1);
-                                if (window.status == 'skip') {
+                                globalThis.addEventListener('keydown', skipfun0);
+                                globalThis.addEventListener('keyup', skipfun1);
+                                if (globalThis.status == 'skip') {
                                     setTimeout(show, 200);
                                 }
                                 else {
-                                    var t_1 = setTimeout(show, 1000);
+                                    let t = setTimeout(show, 1000);
                                     drive.onclick = function () {
-                                        clearTimeout(t_1);
+                                        clearTimeout(t);
                                         show();
                                     };
                                 }
                             }
                             else {
                                 if (num < galgame.text[event.shijian].length) {
-                                    if (window.status == 'skip') {
+                                    if (globalThis.status == 'skip') {
                                         i = 0;
                                         galgame.audio.pause();
                                         bofang();
-                                        window.status = '';
+                                        globalThis.status = '';
                                     }
                                     drive.onclick = function () {
                                         this.onclick = false;
@@ -387,13 +361,13 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                     };
                                 }
                                 else {
-                                    window.removeEventListener('keydown', skipfun0);
-                                    window.removeEventListener('keyup', skipfun1);
-                                    if (window.status == 'skip') {
+                                    globalThis.removeEventListener('keydown', skipfun0);
+                                    globalThis.removeEventListener('keyup', skipfun1);
+                                    if (globalThis.status == 'skip') {
                                         ui.backgroundMusic.play();
                                         ui.window.removeChild(beijing);
                                         galgame.end();
-                                        window.status = '';
+                                        globalThis.status = '';
                                     }
                                     drive.onclick = function () {
                                         ui.backgroundMusic.play();
@@ -408,8 +382,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     };
                     bofang();
                     game.pause();
-                };
-            }();
+                }
+            };
+            galgame.backgroundMusic.addEventListener("ended", function () {
+                galgame.backgroundMusic.currentTime = 0;
+                galgame.backgroundMusic.play();
+            });
             lib.init.json(lib.assetURL + 'galgame/galgame.json', function (text) {
                 for (var i in text) {
                     galgame.text[i] = text[i];
@@ -429,7 +407,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     js: [],
                     ss: [],
                     cards: [],
-                    cards2: []
+                    cards2: [],
                 };
                 player.getHistory('lose', function (evt) {
                     if (evt.parent == that) {
@@ -450,7 +428,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return next;
         },
-        //获取（角色名）的评级
         getRarity: function (name) {
             var rank = lib.rank.rarity;
             if (rank.beginner.contains(name))
@@ -525,7 +502,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
         createBackground: function (src, blur) {
             var current = document.body.querySelector('.background.upper');
             if (current) {
-                current["delete"]();
+                current.delete();
             }
             var node = ui.create.div('.background.blurbg', document.body);
             node.setBackgroundImage(src);
@@ -604,10 +581,10 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             for (var i = 0; i < updates.length; i++) {
                 if (lib.node && lib.node.fs) {
-                    lib.node.fs.access(__dirname + '/' + updates[i], (function (entry) {
+                    lib.node.fs.access(`${__dirname}/${updates[i]}`, (function (entry) {
                         return function (err) {
                             if (!err) {
-                                var stat = lib.node.fs.statSync(__dirname + '/' + entry);
+                                var stat = lib.node.fs.statSync(`${__dirname}/${entry}`);
                                 if (stat.size == 0) {
                                     err = true;
                                 }
@@ -687,7 +664,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 ui.arena.classList.add('playerhidden');
             }
             game.prepareArena();
-            if (window.isNonameServer) {
+            if (globalThis.isNonameServer) {
                 game.me = ui.create.player();
             }
             var list = [];
@@ -709,7 +686,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 current.nickname = current.ws.nickname;
                 current.setNickname();
             }
-            if (!window.isNonameServer) {
+            if (!globalThis.isNonameServer) {
                 game.me.playerid = get.id();
                 game.me.nickname = get.connectNickname();
                 game.me.setNickname();
@@ -760,7 +737,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
         closePopped: function () {
             if (ui.currentpopped) {
                 if (ui.currentpopped._uiintro) {
-                    ui.currentpopped._uiintro["delete"]();
+                    ui.currentpopped._uiintro.delete();
                     delete ui.currentpopped._uiintro;
                 }
                 delete ui.currentpopped;
@@ -863,7 +840,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (_status.connectMode && !_status.countDown) {
                 ui.timer.show();
                 var num;
-                //这么一大行都是为了祢衡
                 if (_status.event && _status.event.name == 'chooseToUse' && _status.event.type == 'phase' &&
                     _status.event.player && _status.event.player.forceCountChoose &&
                     typeof _status.event.player.forceCountChoose.phaseUse == 'number') {
@@ -903,8 +879,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 else if (typeof info[_status.event.name] == 'number') {
                     num = info[_status.event.name];
                 }
-                else if (info["default"]) {
-                    num = info["default"];
+                else if (info.default) {
+                    num = info.default;
                 }
                 else
                     return;
@@ -978,7 +954,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
             if (!withport) {
-                //ip=ip+':8080';
                 if ('https:' != document.location.protocol)
                     ip = ip + ':8080';
             }
@@ -991,14 +966,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 var ishttps = 'https:' == document.location.protocol ? true : false;
                 if (ishttps) {
-                    //alert("这是一个https请求");
                     game.ws = new WebSocket('wss://' + ip + '/wss/');
                 }
                 else {
-                    //alert("这是一个http请求");
                     game.ws = new WebSocket('ws://' + ip + '');
                 }
-                //game.ws=new WebSocket('ws://'+ip+'');
             }
             catch (e) {
                 alert('错误：无效联机地址');
@@ -1242,12 +1214,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 导入包(卡牌|角色|拓展)
-         * @param {!string} type 类型
-         * @param {!function} content 载入内容的回调函数
-         */
-        "import": function (type, content) {
+        import: function (type, content) {
             if (type == 'extension') {
                 game.loadExtension(content);
             }
@@ -1278,14 +1245,14 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 lib.extensionMenu['extension_' + obj.name].author = {
                     name: '作者：' + obj.package.author,
                     clear: true,
-                    nopointer: true
+                    nopointer: true,
                 };
             }
             if (obj.package && obj.package.intro) {
                 lib.extensionMenu['extension_' + obj.name].intro = {
                     name: obj.package.intro,
                     clear: true,
-                    nopointer: true
+                    nopointer: true,
                 };
             }
             for (var i in obj.config) {
@@ -1308,7 +1275,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     }
                 };
             }
-            lib.extensionMenu['extension_' + obj.name]["delete"] = {
+            lib.extensionMenu['extension_' + obj.name].delete = {
                 name: '删除此扩展',
                 clear: true,
                 onclick: function () {
@@ -1404,8 +1371,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             success = success || nullFC;
             error = error || nullFC;
             dir = dir.split("/");
-            if (window.resolveLocalFileSystemURL) {
-                window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+            if (globalThis.resolveLocalFileSystemURL) {
+                globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                     (function redo(entry) {
                         var i = dir.shift();
                         entry.getDirectory(i, { create: true }, function (dirEntry) {
@@ -1425,7 +1392,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     str += dir.shift();
                     fs.exists(str, function (exists) {
                         if (exists) {
-                            //已存在此目录
                             if (dir.length)
                                 redo();
                             else
@@ -1444,13 +1410,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
         },
         importExtension: function (data, finishLoad, exportext, pkg) {
-            if (!window.JSZip) {
+            if (!globalThis.JSZip) {
                 lib.init.js(lib.assetURL + 'game', 'jszip', function () {
                     game.importExtension(data, finishLoad, exportext, pkg);
                 });
             }
             else if (get.objtype(data) == 'object') {
-                //导出
                 var zip = new JSZip();
                 var filelist = [];
                 var filelist2 = [];
@@ -1514,7 +1479,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         else {
                             directory = cordova.file.documentsDirectory;
                         }
-                        window.resolveLocalFileSystemURL(directory, function (entry) {
+                        globalThis.resolveLocalFileSystemURL(directory, function (entry) {
                             entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                                 fileEntry.createWriter(function (fileWriter) {
                                     fileWriter.onwriteend = function () {
@@ -1529,7 +1494,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         var downloadLink = document.createElement("a");
                         downloadLink.download = fileNameToSaveAs;
                         downloadLink.innerHTML = "Download File";
-                        downloadLink.href = window.URL.createObjectURL(blob);
+                        downloadLink.href = globalThis.URL.createObjectURL(blob);
                         downloadLink.click();
                     }
                     if (typeof finishLoad == 'function') {
@@ -1541,7 +1506,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
             else {
-                //导入
                 function UHP() {
                     alert("导入失败");
                 }
@@ -1549,7 +1513,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 var zip = new JSZip();
                 try {
                     zip.load(data);
-                    // alert(zip.file('文件夹/加扩展.js').asText())
                     var str = zip.file('extension.js').asText();
                     if (str === "" || undefined)
                         throw ('你导入的不是扩展！请选择正确的文件');
@@ -1576,15 +1539,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     if (game.download) {
                         var filelist = [];
                         for (var i in zip.files) {
-                            //alert(zip.files[i].dir+i)
                             if (!zip.files[i].dir && i[0] != '.' && i[0] != '_') {
                                 filelist.push(i);
                             }
                         }
-                        //alert(filelist)
                         if (lib.node && lib.node.fs) {
-                            //电脑端
-                            //具备nodeJS环境
                             game.ensureDirectory('extension/' + extname, function () {
                                 var writeFile = function (e) {
                                     if (e) {
@@ -1594,13 +1553,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                     }
                                     if (filelist.length) {
                                         var filename = filelist.shift();
-                                        //filename 数组 ...dir+/+file
                                         var zipdir = filename;
                                         filename = filename.split("/");
                                         var name = filename.pop();
                                         if (filename.length)
                                             game.createDir('extension/' + extname + "/" + filename.join("/"), function () {
-                                                //这里需要个创文件夹的函数
                                                 Letgo(filename.join("/") + "/" + name);
                                             }, UHP);
                                         else
@@ -1617,14 +1574,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             });
                         }
                         else {
-                            window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+                            globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                                 entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
-                                    //扩展文件夹
                                     writeFile();
                                     function writeFile() {
                                         if (filelist.length) {
                                             var filename = filelist.shift();
-                                            //filename 数组 ...dir+/+file
                                             var zipdir = filename;
                                             filename = filename.split("/");
                                             var name = filename.pop();
@@ -1694,7 +1649,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        "export": function (textToWrite, name) {
+        export: function (textToWrite, name) {
             var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
             var fileNameToSaveAs = name || 'noname';
             fileNameToSaveAs = fileNameToSaveAs.replace(/\\|\/|\:|\?|\"|\*|<|>|\|/g, '.');
@@ -1706,7 +1661,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 else {
                     directory = cordova.file.documentsDirectory;
                 }
-                window.resolveLocalFileSystemURL(directory, function (entry) {
+                globalThis.resolveLocalFileSystemURL(directory, function (entry) {
                     entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                         fileEntry.createWriter(function (fileWriter) {
                             fileWriter.onwriteend = function () {
@@ -1721,7 +1676,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 var downloadLink = document.createElement("a");
                 downloadLink.download = fileNameToSaveAs;
                 downloadLink.innerHTML = "Download File";
-                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                downloadLink.href = globalThis.URL.createObjectURL(textFileAsBlob);
                 downloadLink.click();
             }
         },
@@ -1834,10 +1789,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             next.setContent('playVideoContent');
             game.loop();
         },
-        /**
-         * 一些函数的回放实现(录像功能)
-         * @type {!Object}
-         */
         videoContent: {
             arrangeLib: function (content) {
                 for (var i in content) {
@@ -1847,7 +1798,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             },
             jiuNode: function (player, bool) {
-                //Powered by 升麻
                 if (bool) {
                     if (!player.node.jiu && lib.config.jiu_effect) {
                         player.node.jiu = ui.create.div('.playerjiu', player.node.avatar);
@@ -1856,8 +1806,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 else {
                     if (player.node.jiu) {
-                        player.node.jiu["delete"]();
-                        player.node.jiu2["delete"]();
+                        player.node.jiu.delete();
+                        player.node.jiu2.delete();
                         delete player.node.jiu;
                         delete player.node.jiu2;
                     }
@@ -2009,7 +1959,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     }
                     if (lib.config.glow_phase) {
                         player.classList.add('glow_phase');
-                        // player.dataset.glow_phase=lib.config.glow_phase;
                     }
                 }
                 else {
@@ -2109,7 +2058,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             removeTreasure: function (pos) {
                 if (game.playerMap[pos]) {
-                    game.playerMap[pos]["delete"]();
+                    game.playerMap[pos].delete();
                     delete game.playerMap[pos];
                 }
                 else {
@@ -2139,7 +2088,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             bossSwap: function (player, name) {
                 if (player && name) {
-                    player["delete"]();
+                    player.delete();
                     var noboss = false;
                     if (name[0] == '_') {
                         name = name.slice(1);
@@ -2162,7 +2111,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         boss.setIdentity('zhong');
                         boss.identity = 'zhong';
                     }
-                    ui.arena.appendChild(boss.animate('zoominanim').element); //[todo player]
+                    ui.arena.appendChild(boss.animate('zoominanim').element);
                 }
             },
             stoneSwap: function (info) {
@@ -2174,7 +2123,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 player.init(info.name, info.name2);
                 game.players.push(player);
                 player.updateActCount(null, info.actcount, 0);
-                ui.arena.appendChild(player.element); //[todo player]
+                ui.arena.appendChild(player.element);
                 game.playerMap[player.dataset.position] = player;
                 game.arrangePlayers();
             },
@@ -2365,8 +2314,8 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             deleteHandcards: function (player) {
                 if (player) {
-                    player.node.handcards1["delete"]();
-                    player.node.handcards2["delete"]();
+                    player.node.handcards1.delete();
+                    player.node.handcards2.delete();
                 }
             },
             hideCharacter: function (player, num) {
@@ -2415,7 +2364,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     console.log(player);
                 }
             },
-            "throw": function (player, info) {
+            throw: function (player, info) {
                 if (player && info) {
                     player.$throw(get.infoCards(info[0]), info[1], null, info[2]);
                 }
@@ -2506,7 +2455,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     for (var i = 0; i < cards.length; i++) {
                         for (var j = 0; j < nodes.length; j++) {
                             if (cards[i][2] == nodes[j].name && cards[i][0] == nodes[j].suit && cards[i][1] == nodes[j].number) {
-                                nodes[j]["delete"]();
+                                nodes[j].delete();
                                 if (method == 'zoom') {
                                     nodes[j].style.transform = 'scale(0)';
                                 }
@@ -2579,7 +2528,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             unmark: function (player, name) {
                 if (player && player.marks && player.marks[name]) {
-                    player.marks[name]["delete"]();
+                    player.marks[name].delete();
                     player.marks[name].style.transform += ' scale(0.2)';
                     delete player.marks[name];
                     ui.updatem(this);
@@ -2685,7 +2634,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.dead.push(player);
                 if (lib.config.mode == 'stone') {
                     setTimeout(function () {
-                        player["delete"]();
+                        player.delete();
                     }, 500);
                 }
             },
@@ -2704,7 +2653,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             deleteChessPlayer: function (player) {
                 if (player) {
-                    player["delete"]();
+                    player.delete();
                     delete game.playerMap[player.dataset.position];
                     game.players.remove(player);
                     for (var i = 0; i < ui.phasequeue.length; i++) {
@@ -2728,7 +2677,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (game.chess) {
                     delete lib.posmap[player.dataset.position];
                     setTimeout(function () {
-                        player["delete"]();
+                        player.delete();
                     }, 500);
                     for (var i = 0; i < ui.phasequeue.length; i++) {
                         if (ui.phasequeue[i].link == player) {
@@ -2765,7 +2714,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             },
             phaseJudge: function (player, card) {
                 if (player && card) {
-                    // player.$phaseJudge(get.infoCard(card));
                 }
                 else {
                     console.log(player);
@@ -3163,7 +3111,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 _status.waitingToReload = true;
             }
             else {
-                window.location.reload();
+                globalThis.location.reload();
             }
         },
         reload2: function () {
@@ -3178,7 +3126,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             if (lib.status.reload == 0) {
                 if (_status.waitingToReload) {
-                    window.location.reload();
+                    globalThis.location.reload();
                     delete _status.waitingToReload;
                 }
             }
@@ -3194,7 +3142,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (_status.video && !_status.replayvideo) {
                     localStorage.removeItem(lib.configprefix + 'playbackmode');
                 }
-                window.location.reload();
+                globalThis.location.reload();
             }
             else {
                 if (navigator.app && navigator.app.exitApp) {
@@ -3212,7 +3160,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
             else {
-                window.open(url);
+                globalThis.open(url);
             }
         },
         reloadCurrent: function () {
@@ -3318,14 +3266,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (!callback) {
                 return;
             }
-            //try{
-            //    if(noinput){
-            //        throw('e');
-            //    }
-            //    var result=prompt(str);
-            //    callback(result);
-            //}
-            //catch(e){
             var promptContainer = ui.create.div('.popup-container', ui.window, function () {
                 if (this.clicked) {
                     this.clicked = false;
@@ -3386,7 +3326,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 };
                 input.focus();
             }
-            //}
         },
         alert: function (str) {
             game.prompt(str, 'alert');
@@ -3398,7 +3337,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             _status.toprint.push(Array.from(arguments));
         },
         animate: {
-            window: function (num) {
+            globalThis: function (num) {
                 switch (num) {
                     case 1: {
                         ui.window.style.transition = 'all 0.5s';
@@ -3753,7 +3692,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     setTimeout(function () {
                         if (node.classList.contains('removing'))
                             return;
-                        node["delete"]();
+                        node.delete();
                     }, total / 3);
                 });
             }
@@ -3837,13 +3776,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.draw(drawfunc);
             }
         },
-        /**
-         * 创建trigger事件；`trigger`本身也是事件，但是`trigger`事件不可触发
-         * @param {string} name trigger name
-         * @param {*} skill 技能ID
-         * @param {GameCores.GameObjects.Player} player 事件所属的角色
-         * @param {GameCores.Bases.Event} event trigger事件的触发事件
-         */
         createTrigger: function (name, skill, player, event) {
             if (player.isOut() || player.removed)
                 return;
@@ -3857,66 +3789,21 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             next._trigger = event;
             next.setContent('createTrigger');
         },
-        /**
-         * 创建事件
-         * @function
-         * @param {string} name 事件名称
-         * @param {?boolean} [canTriggered] 是否可以触发，如果是true或未指定，可以触发；如果是false，不会触发
-         * @param {?GameCores.Bases.Event} [triggerevent] 前置事件，如果未指定，使用当前事件{@link _status.event}
-         */
         createEvent: function (name, trigger, triggerevent) {
-            /**
-             * 事件对象
-             * 创建事件，见{@link game.createEvent}
-             * @namespace GameCores.Bases.Event
-             */
-            var next = 
-            /**@lends GameCores.Bases.Event */
-            {
-                /**
-                 * 事件名称
-                 * @type {string}
-                 */
+            var next = {
                 name: name,
-                /**
-                 * 事件状态，用于记录状态机状态
-                 * @type {string}
-                 * @default 0
-                 */
                 step: 0,
-                /**
-                 * 事件是否结束，如果结束则为true；默认为false
-                 * @type {boolean}
-                 * @default false
-                 */
                 finished: false,
-                /**
-                 * 事件的子事件数组
-                 * @type {!GameCores.Bases.Event[]}
-                 */
                 next: [],
-                /**
-                 * 事件的追加事件数组，在After后如果有事件就执行
-                 * 受`skipList`影响
-                 * @type {GameCores.Bases.Event[]}
-                 */
                 after: [],
                 custom: {
                     add: {},
                     replace: {}
                 },
                 _aiexclude: [],
-                /**
-                 * 禁止触发对象数组，该事件无法被其中的角色对象触发
-                 * @type {GameCores.GameObjects.Player[]}
-                 */
                 _notrigger: [],
-                /**
-                 * 子事件返回值
-                 * @type {?Object}
-                 */
                 _result: {},
-                _set: []
+                _set: [],
             };
             if (trigger !== false && !game.online)
                 next._triggered = 0;
@@ -3926,12 +3813,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             (triggerevent || _status.event).next.push(next);
             return next;
         },
-        /**
-         * 添加角色
-         * @param {*} name
-         * @param {*} info
-         */
-        //TODO
         addCharacter: function (name, info) {
             var extname = (_status.extension || info.extension);
             var imgsrc;
@@ -3954,12 +3835,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             lib.characterPack[packname][name] = character;
             lib.translate[packname + '_character_config'] = extname;
         },
-        /**
-         * 添加角色包
-         * @param {*} pack
-         * @param {*} packagename
-         */
-        //TODO
         addCharacterPack: function (pack, packagename) {
             var extname = _status.extension || '扩展';
             packagename = packagename || extname;
@@ -4004,10 +3879,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             lib.characterPack[packname] = pack.character;
             lib.translate[packname + '_character_config'] = packagename;
         },
-        /**
-         * 添加卡牌
-         */
-        //TODO
         addCard: function (name, info, info2) {
             var extname = (_status.extension || info2.extension);
             if (info.audio == true) {
@@ -4051,12 +3922,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             lib.cardPack[packname].push(name);
         },
-        /**
-         * 添加卡包
-         * @param {Object} pack 包
-         * @param {string} packagename 包名
-         */
-        //TODO
         addCardPack: function (pack, packagename) {
             var extname = _status.extension || '扩展';
             packagename = packagename || extname;
@@ -4105,10 +3970,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 添加技能
-         */
-        //TODO
         addSkill: function (name, info, translate, description) {
             if (lib.skill[name]) {
                 return false;
@@ -4121,13 +3982,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             lib.translate[name + '_info'] = description;
             return true;
         },
-        /**
-         * 添加游戏模式（Mode）
-         * @param {string} name
-         * @param {string} info
-         * @param {string} info2
-         * @deprecated [never used]
-         */
         addMode: function (name, info, info2) {
             lib.config.all.mode.push(name);
             lib.translate[name] = info2.translate;
@@ -4146,7 +4000,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 fromextension: true
             };
             lib.init['setMode_' + name] = function () {
-                game["import"]('mode', function (lib, game, ui, get, ai, _status) {
+                game.import('mode', function (lib, game, ui, get, ai, _status) {
                     info.name = name;
                     return info;
                 });
@@ -4162,12 +4016,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             game.saveConfig('extensionMode', lib.config.extensionInfo);
         },
-        /**
-         * 添加全局技能
-         * @param {string} skill 技能名
-         * @param {?string} player 可以为该技能绑定一名角色
-         * @deprecated [never used]
-         */
         addGlobalSkill: function (skill, player) {
             var info = lib.skill[skill];
             if (!info)
@@ -4208,7 +4056,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 lib.hook.globalskill[i].remove(skill);
             }
         },
-        //将清除武将牌上的临时技能
         resetSkills: function () {
             for (var i = 0; i < game.players.length; i++) {
                 for (var j in game.players[i].tempSkills) {
@@ -4220,7 +4067,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         game.players[i].removeSkill(skills[j]);
                     }
                 }
-                game.players[i]["in"](true);
+                game.players[i].in(true);
             }
             ui.clear();
         },
@@ -4275,7 +4122,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     catch (e) { }
                 }
                 else {
-                    window.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
+                    globalThis.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
                         entry.removeRecursively();
                     });
                 }
@@ -4606,7 +4453,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     ui.ladder.innerHTML = game.getLadderName(lib.storage.ladder.current);
                 }
             }
-            // if(true){
             var tableData = [];
             if (game.players.length) {
                 table = document.createElement('table');
@@ -4633,9 +4479,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     tr = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerHTML = get.translation(game.players[i]);
-                    uploadDataRow.name = game.players[i].name; //名字拼音
-                    uploadDataRow.transName = td.innerHTML; //名字
-                    uploadDataRow.nickname = game.players[i].nickname; //昵称
+                    uploadDataRow.name = game.players[i].name;
+                    uploadDataRow.transName = td.innerHTML;
+                    uploadDataRow.nickname = game.players[i].nickname;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4644,7 +4490,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.players[i].stat[j].damage;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damage = num; //伤害
+                    uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4653,7 +4499,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.players[i].stat[j].damaged;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damaged = num; //受伤
+                    uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4662,7 +4508,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.players[i].stat[j].gain;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.gain = num; //摸牌
+                    uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4672,7 +4518,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                     }
                     td.innerHTML = num;
-                    uploadDataRow.card = num; //出牌
+                    uploadDataRow.card = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4681,12 +4527,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.players[i].stat[j].kill;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.kill = num; //杀敌
+                    uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.players[i].identity); //身份
-                    uploadDataRow.alive = true; //存活
-                    if (get.mode() == 'identity') { //胜利或失败
+                    uploadDataRow.identity = get.translation(game.players[i].identity);
+                    uploadDataRow.alive = true;
+                    if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
                             if (game.players[i].identity == 'fan' || game.players[i].identity == 'nei') {
                                 uploadDataRow.winner = false;
@@ -4750,9 +4596,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     tr = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerHTML = get.translation(game.dead[i]);
-                    uploadDataRow.name = game.dead[i].name; //名字拼音
-                    uploadDataRow.transName = td.innerHTML; //名字
-                    uploadDataRow.nickname = game.dead[i].nickname; //昵称
+                    uploadDataRow.name = game.dead[i].name;
+                    uploadDataRow.transName = td.innerHTML;
+                    uploadDataRow.nickname = game.dead[i].nickname;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4761,7 +4607,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.dead[i].stat[j].damage;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damage = num; //伤害
+                    uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4770,7 +4616,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.dead[i].stat[j].damaged;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damaged = num; //受伤
+                    uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4779,7 +4625,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.dead[i].stat[j].gain;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.gain = num; //摸牌
+                    uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4789,7 +4635,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         }
                     }
                     td.innerHTML = num;
-                    uploadDataRow.card = num; //出牌
+                    uploadDataRow.card = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4798,12 +4644,12 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             num += game.dead[i].stat[j].kill;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.kill = num; //杀敌
+                    uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.dead[i].identity); //身份
-                    uploadDataRow.alive = false; //存活
-                    if (get.mode() == 'identity') { //胜利或失败
+                    uploadDataRow.identity = get.translation(game.dead[i].identity);
+                    uploadDataRow.alive = false;
+                    if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
                             if (game.dead[i].identity == 'fan' || game.dead[i].identity == 'nei') {
                                 uploadDataRow.winner = false;
@@ -4871,7 +4717,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     var xhr = new XMLHttpRequest();
                     var sendForm = new FormData();
                     sendForm.append('data', JSON.stringify(uploadData));
-                    xhr.open('post', 'https://data.vtuberkill.com/game-records/', function (e) { console.log(e); });
+                    xhr.open('post', 'https://data.vtuberkill.com/game-records/', (e) => { console.log(e); });
                     xhr.send(sendForm);
                 }
                 catch (e) {
@@ -4932,7 +4778,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 dialog.add(ui.create.div('.placeholder'));
                 dialog.content.appendChild(table);
             }
-            // }
             dialog.add(ui.create.div('.placeholder'));
             var clients = game.players.concat(game.dead);
             for (var i = 0; i < clients.length; i++) {
@@ -4962,7 +4807,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             dialog.add(ui.create.div('.placeholder.slim'));
             game.addVideo('over', null, dialog.content.innerHTML);
             var vinum = parseInt(lib.config.video);
-            if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
+            if (!_status.video && vinum && game.getVideoName && globalThis.indexedDB && _status.videoInited) {
                 var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
                 var videos = lib.videos.slice(0);
                 for (var i = 0; i < videos.length; i++) {
@@ -4974,7 +4819,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     if (videos.length >= vinum) {
                         var toremove = videos.pop();
                         lib.videos.remove(toremove);
-                        store["delete"](toremove.time);
+                        store.delete(toremove.time);
                     }
                     else {
                         break;
@@ -5031,9 +4876,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 store.put(newvid);
                 ui.create.videoNode(newvid, true);
             }
-            // _status.auto=false;
             if (ui.auto) {
-                // ui.auto.classList.remove('glow');
                 ui.auto.hide();
             }
             if (ui.wuxie)
@@ -5144,19 +4987,15 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             if (game.addRecord) {
                 game.addRecord(resultbool);
             }
-            if (window.isNonameServer) {
+            if (globalThis.isNonameServer) {
                 lib.configOL.gameStarted = false;
-                game.saveConfig('pagecfg' + window.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
+                game.saveConfig('pagecfg' + globalThis.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
                 game.reload();
             }
             else if (_status.connectMode && !game.online) {
                 setTimeout(game.reload, 15000);
             }
         },
-        /**
-         * 游戏事件循环
-         * @function
-         */
         loop: function () {
             var event = _status.event;
             var step = event.step;
@@ -5196,23 +5035,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         next.player.getHistory('skipped').add(next.name);
                 }
                 else {
-                    /**
-                     * _status.event.parent(即event.parent)：当前正在执行事件的父事件
-                     * 当_status.event.next或_status.event.after内的事件被执行时，当前事件会成为被执行事件的父事件
-                     * @name _status.event_parent
-                     * @type {!Object}
-                     */
                     next.parent = event;
-                    /**
-                     * _status.event.player(即event.player)：当前正在执行事件的角色
-                     * @name _status.event_player
-                     * @type {!HTMLDivElement}
-                     */
-                    /**
-                     * _status.event.target(即event.target)：当前正在执行事件的目标
-                     * @name _status.event_target
-                     * @type {!HTMLDivElement}
-                     */
                     _status.event = next;
                 }
             }
@@ -5385,11 +5208,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return game.delay(time, time2);
         },
-        /**
-         * 检测玩家是否选择完毕(选择按钮`event.filterButton`，选择卡牌`event.filterCard`，选择对象`event.filterTarget`)
-         * @param {?GameCores.Bases.Event} event 要处理的事件，如果为null，使用当前事件
-         * @returns {(undefined|boolean)} 如果事件不需要等待玩家选择，返回undefined；如果事件选择完毕，返回true；否则返回false
-         */
         check: function (event) {
             var i, j, range;
             if (event == undefined)
@@ -5403,12 +5221,11 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 players.addArray(game.dead);
             if (!event.filterButton && !event.filterCard && !event.filterTarget && (!event.skill || !event._backup)) {
                 if (event.choosing) {
-                    _status.imchoosing = true; //??
+                    _status.imchoosing = true;
                 }
                 return;
             }
             player.node.equips.classList.remove('popequip');
-            //button
             if (event.filterButton) {
                 var dialog = event.dialog;
                 range = get.select(event.selectButton);
@@ -5458,7 +5275,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     custom.add.button();
                 }
             }
-            //card
             if (event.filterCard) {
                 if (ok == false) {
                     game.uncheck('card');
@@ -5473,7 +5289,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         firstCheck = true;
                     }
                     if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
-                        !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
+                        !event._targetChoice && !firstCheck && globalThis.Map && !lib.config.compatiblemode) {
                         event._targetChoice = new Map();
                         for (var i = 0; i < event._cardChoice.length; i++) {
                             if (!lib.card[event._cardChoice[i].name].complexTarget) {
@@ -5580,7 +5396,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     custom.add.card();
                 }
             }
-            //player
             if (event.filterTarget) {
                 if (ok == false) {
                     game.uncheck('target');
@@ -5665,7 +5480,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     custom.add.target();
                 }
             }
-            //skill
             if (!event.skill && get.noSelected() && !_status.noconfirm) {
                 var skills = [], enable, info;
                 var skills2;
@@ -5771,7 +5585,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     ui.skills3.close();
                 }
             }
-            //is multipled targets
             _status.multitarget = false;
             var skillinfo = get.info(_status.event.skill);
             if (_status.event.name == 'chooseToUse') {
@@ -5870,7 +5683,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     cards[j].classList.remove('selected');
                     cards[j].classList.remove('selectable');
                     if (cards[j]._tempName) {
-                        cards[j]._tempName["delete"]();
+                        cards[j]._tempName.delete();
                         delete cards[j]._tempName;
                     }
                     cards[j].updateTransform();
@@ -5907,7 +5720,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 _status.mousedragging = null;
                 _status.mousedragorigin = null;
                 while (ui.touchlines.length) {
-                    ui.touchlines.shift()["delete"]();
+                    ui.touchlines.shift().delete();
                 }
             }
             ui.canvas.width = ui.arena.offsetWidth;
@@ -6106,10 +5919,10 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             return players[0];
         },
         loadModeAsync: function (name, callback) {
-            window.game = game;
+            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
                 if (!lib.config.dev)
-                    delete window.game;
+                    delete globalThis.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -6130,10 +5943,10 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     }
                 }
             }
-            window.game = game;
+            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
                 if (!lib.config.dev)
-                    delete window.game;
+                    delete globalThis.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -6217,11 +6030,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         lib[i][j] = mode[lib.config.mode][i][j];
                     }
                 }
-                // var pilecfg=lib.config.customcardpile[get.config('cardpilename')];
-                // if(pilecfg){
-                //     lib.config.bannedpile=pilecfg[0]||{};
-                //     lib.config.addedpile=pilecfg[1]||{};
-                // }
                 _status.event = {
                     finished: true,
                     next: [],
@@ -6660,7 +6468,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                                 return;
                             }
                             ui.window.classList.remove('modepaused');
-                            this["delete"]();
+                            this.delete();
                             e.stopPropagation();
                             event.freechoosedialog.style.transform = 'scale(0.8)';
                             if (event.replacing) {
@@ -6723,7 +6531,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         return true;
                     }
                 };
-                // if(ui.cardPileButton) ui.cardPileButton.style.display='none';
                 ui.auto.hide();
                 ui.wuxie.hide();
                 event.resize();
@@ -6831,13 +6638,13 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 if (event.checkredo())
                     return;
                 if (event.skipnode)
-                    event.skipnode["delete"]();
+                    event.skipnode.delete();
                 if (event.replacenode)
-                    event.replacenode["delete"]();
+                    event.replacenode.delete();
                 if (event.reselectnode)
-                    event.reselectnode["delete"]();
+                    event.reselectnode.delete();
                 if (event.freechoosenode)
-                    event.freechoosenode["delete"]();
+                    event.freechoosenode.delete();
                 for (var i = 0; i < event.avatars.length; i++) {
                     if (!event.avatars[i].classList.contains('moved')) {
                         if (event.side < 2) {
@@ -6883,17 +6690,17 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 game.pause();
                 'step 6';
-                event.promptbar["delete"]();
+                event.promptbar.delete();
                 if (ui.cardPileButton)
                     ui.cardPileButton.style.display = '';
                 lib.onresize.remove(event.resize);
                 ui.wuxie.show();
                 ui.auto.show();
                 for (var i = 0; i < event.avatars.length; i++) {
-                    event.avatars[i]["delete"]();
+                    event.avatars[i].delete();
                 }
                 for (var i = 0; i < event.nodes.length; i++) {
-                    event.nodes[i]["delete"]();
+                    event.nodes[i].delete();
                 }
                 event.result = { friend: [], enemy: [] };
                 for (var i = 0; i < event.config.num; i++) {
@@ -6955,13 +6762,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.asyncDraw.apply(this, arguments);
             }
         },
-        /**
-         * 为角色技能添加`translate`文本，设置默认ai，进行预处理
-         * 同时将下划线(_)开头的技能添加到{@link lib.skill.global}
-         * @param {string} i 技能名
-         * @param {*} [sub]
-         * @see{@link game.finishCards}
-         */
         finishSkill: function (i, sub) {
             var j;
             var mode = get.mode();
@@ -7142,10 +6942,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.addGlobalSkill(i);
             }
         },
-        /**
-         * 为(游戏牌|角色技能)添加`translate`文本，设置默认ai，进行预处理
-         * @see {@link game.finishSkill}
-         */
         finishCards: function () {
             _status.cardsFinished = true;
             var i, j, k;
@@ -7237,9 +7033,9 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                             }
                             if (typeof equipValue == 'function') {
                                 if (method == 'raw')
-                                    return equipValue(card, player); //原装备价值
+                                    return equipValue(card, player);
                                 if (method == 'raw2')
-                                    return equipValue(card, player) - value; //装备牌`card`的相对装备价值(相对当前相同位置的装备。如果没有装备，则为原装备价值)
+                                    return equipValue(card, player) - value;
                                 return Math.max(0.1, equipValue(card, player) - value);
                             }
                             if (typeof equipValue != 'number')
@@ -7270,7 +7066,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.finishSkill(i);
             }
         },
-        //Mod类技能的相关检测
         checkMod: function () {
             var name = arguments[arguments.length - 2];
             var skills = arguments[arguments.length - 1];
@@ -7462,7 +7257,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     game.logv(logvid, '<div class="text center">' + lib.config.log_highlight ? str : str2 + '</div>');
                 }
             }
-            // if(lib.config.title) document.title=lib.config.log_highlight?str:str2;
             if (lib.config.show_log != 'off' && !game.chess) {
                 var nodeentry = node.cloneNode(true);
                 ui.arenalog.insertBefore(nodeentry, ui.arenalog.firstChild);
@@ -7480,7 +7274,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
                 if (lib.config.clear_log) {
                     nodeentry.timeout = setTimeout(function () {
-                        nodeentry["delete"]();
+                        nodeentry.delete();
                     }, 1000);
                     for (var i = 0; i < ui.arenalog.childElementCount; i++) {
                         if (!ui.arenalog.childNodes[i].timeout) {
@@ -7672,7 +7466,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 node.addEventListener('touchstart', ui.click.intro);
             }
             else {
-                // node.addEventListener('mouseenter',ui.click.intro);
                 node.addEventListener(lib.config.pop_logv ? 'mousemove' : 'click', ui.click.logv);
                 node.addEventListener('mouseleave', ui.click.logvleave);
             }
@@ -7684,13 +7477,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return node;
         },
-        /**
-         * 从IndexedDB中获取对象仓库(object store)，并更新对象
-         * @param {string} type - 仓库名称
-         * @param {string} id - 键路径的值
-         * @param {any} item - 要插入/更新的对象
-         * @param {function} callback - 成功时回调函数
-         */
         putDB: function (type, id, item, callback) {
             if (!lib.db)
                 return item;
@@ -7709,12 +7495,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 game.reload2();
             };
         },
-        /**
-         * 从IndexedDB中获取对象仓库(object store)，并获取对象
-         * @param {string} type - 仓库名称
-         * @param {string} id - 键路径的值
-         * @param {!function} callback - 成功时回调函数
-         */
         getDB: function (type, id, callback) {
             if (!lib.db) {
                 callback(null);
@@ -7742,7 +7522,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                     var cursor = e.target.result;
                     if (cursor) {
                         obj[cursor.key] = cursor.value;
-                        cursor["continue"]();
+                        cursor.continue();
                     }
                     else {
                         _status.dburgent = true;
@@ -7753,12 +7533,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 };
             }
         },
-        /**
-         * 从IndexedDB中获取对象仓库(object store)，并删除对象
-         * @param {string} type - 仓库名称
-         * @param {string} id - 键路径的值
-         * @param {function} callback - 成功时回调函数
-         */
         deleteDB: function (type, id, callback) {
             if (!lib.db) {
                 callback(false);
@@ -7775,7 +7549,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                         lib.status.reload++;
                     }
                     for (var id in obj) {
-                        store["delete"](id).onsuccess = game.reload2;
+                        store.delete(id).onsuccess = game.reload2;
                     }
                     game.reload2();
                 });
@@ -7783,7 +7557,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             else {
                 lib.status.reload++;
                 var store = lib.db.transaction([type], 'readwrite').objectStore(type);
-                store["delete"](id).onsuccess = function () {
+                store.delete(id).onsuccess = function () {
                     if (callback) {
                         callback.apply(this, arguments);
                     }
@@ -7957,15 +7731,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 保存配置
-         * 如果有IndexedDB，使用IndexedDB；否则以`{key:lib.configprefix + 'config', value:{key:value}}`的形式存入localStorage
-         * @function
-         * @param {!string} key 对应的键名
-         * @param {?Object} value 值，如果为虚值表示删除数据，否则添加/更新数据
-         * @param {?string} local 模组名，如果指定字符串，更新模组配置(`lib.config.mode_config[local]`)，否则更新全局配置(`lib.config`)
-         * @param {function():void} callback 更新完成的回调函数
-         */
         saveConfig: function (key, value, local, callback) {
             if (_status.reloading)
                 return;
@@ -8026,41 +7791,15 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 持久化配置，`lib.config[key]`
-         * @function
-         * @param {!string} key 键名
-         * @see {@link game.saveConfig}
-         */
         saveConfigValue: function (key) {
             game.saveConfig(key, lib.config[key]);
         },
-        /**
-         * 持久化拓展的配置
-         * @function
-         * @param {!string} extension 拓展名
-         * @param {!string} key 键名，自动拓展为`extension_${extension}_${key}`
-         * @param {?Object} value
-         * @see {@link game.saveConfig}
-         */
         saveExtensionConfig: function (extension, key, value) {
             return game.saveConfig('extension_' + extension + '_' + key, value);
         },
-        /**
-         * 获取拓展的配置
-         * @function
-         * @param {!string} extension 拓展名
-         * @param {!string} key 键名
-         * @returns {?Object}
-         */
         getExtensionConfig: function (extension, key) {
             return lib.config['extension_' + extension + '_' + key];
         },
-        /**
-         * 于IndexedDB/localStorage中清空某个mode的配置
-         * @function
-         * @param {!string} mode mode名
-         */
         clearModeConfig: function (mode) {
             if (_status.reloading)
                 return;
@@ -8172,7 +7911,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             player.nextSeat.previousSeat = player.previousSeat;
             player.previousSeat.nextSeat = player.nextSeat;
-            player["delete"]();
+            player.delete();
             game.players.remove(player);
             game.dead.remove(player);
             ui.arena.setNumber(players.length - 1);
@@ -8192,7 +7931,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             var position = parseInt(player.dataset.position);
             game.players.remove(player);
             game.dead.remove(player);
-            player["delete"]();
+            player.delete();
             var player2 = ui.create.player(ui.arena).animate('start');
             if (character)
                 player2.init(character, character2);
@@ -8303,31 +8042,19 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 检测一组技能，返回其中未失效的技能
-         * @param {!Array<string>} skills 技能名数组
-         * @param {!HTMLDivElement} player 检测角色
-         * @param {?Function} exclude 用于筛选的函数
-         * @returns {Array<string>} 排除失效技能的数组
-         */
         filterSkills: function (skills, player, exclude) {
-            var out = skills.slice(0);
-            for (var i in player.disabledSkills) {
+            let out = skills.slice(0);
+            for (let i in player.disabledSkills) {
                 out.remove(i);
             }
             if (player.storage.skill_blocker && player.storage.skill_blocker.length) {
-                for (var i = 0; i < out.length; i++) {
+                for (let i = 0; i < out.length; i++) {
                     if ((!exclude || !exclude.contains(out[i])) && get.is.blocked(out[i], player))
                         out.splice(i--, 1);
                 }
             }
             return out;
         },
-        /**
-         * 对一组技能进行展开，得到由其中每个技能和其子技能组成的数组，返回展开后的技能名数组
-         * @param {!Array<string>} skills 技能名数组
-         * @returns {Array<string>} 包含子技能的技能名数组
-         */
         expandSkills: function (skills) {
             var skills2 = [];
             for (var i = 0; i < skills.length; i++) {
@@ -8356,11 +8083,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
                 }
             }
         },
-        /**
-         * 判定是否存在满足条件的角色
-         * @param {?Function} func 用于筛选的函数
-         * @returns {!boolean} 是否存在
-         */
         hasPlayer: function (func) {
             for (var i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut())
@@ -8370,11 +8092,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return false;
         },
-        /**
-         * 判定是否存在满足条件的角色（包括已死亡角色）
-         * @param {?Function} func 用于筛选的函数
-         * @returns {!boolean} 是否存在
-         */
         hasPlayer2: function (func) {
             var players = game.players.slice(0).concat(game.dead);
             for (var i = 0; i < players.length; i++) {
@@ -8385,11 +8102,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return false;
         },
-        /**
-         * 获取满足条件的角色
-         * @param {?Function} func 用于筛选的函数
-         * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
-         */
         countPlayer: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -8408,11 +8120,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return num;
         },
-        /**
-         * 获取满足条件的角色（包括已死亡角色）
-         * @param {?Function} func 用于筛选的函数
-         * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
-         */
         countPlayer2: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -8501,10 +8208,6 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
             }
             return cards;
         },
-        /**
-         * 用 countPlayer 计算场上存在的势力数
-         * @returns {!number} 势力数
-         */
         countGroup: function () {
             var list = lib.group.slice(0);
             return game.countPlayer(function (current) {
@@ -8520,7 +8223,7 @@ moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerMode
         playerMap: {},
         phaseNumber: 0,
         roundNumber: 0,
-        shuffleNumber: 0
+        shuffleNumber: 0,
     });
     return game;
 });
