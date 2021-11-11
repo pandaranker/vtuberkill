@@ -36,7 +36,7 @@ declare global {
          * @param {...any} elements - 要添加的任意数量的元素
          * @returns {Array} this self
          */
-        add(arguments: any[]): Array<T> | false;
+        add(...args: any[]): Array<T> | false;
         /**
          * 将数组中的元素不重复地添加（{@link Array#add}）到原数组中
          * @deprecated [since ES 2015] 使用ES2015 Spread语法（详见{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax|Spread syntax}）
@@ -74,7 +74,7 @@ declare global {
          * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
          * @returns {any} 取出的元素
          */
-        randomGet(arguments: any[]): number;
+        randomGet(...args: any[]): number;
         /**
          * 返回一个新的数组，随机删除指定数量的元素
          * @function Array#randomRemove
