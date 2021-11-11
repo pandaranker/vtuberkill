@@ -74,7 +74,7 @@ declare global {
          * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
          * @returns {any} 取出的元素
          */
-        randomGet(...args: any[]): number;
+        randomGet(...args: any[]): T;
         /**
          * 返回一个新的数组，随机删除指定数量的元素
          * @function Array#randomRemove
@@ -82,7 +82,8 @@ declare global {
          * @param {number} [num=undefined] - 要删除的元素数量；默认移除一个
          * @returns {(Array|any)} 被删除元素的数组；当无参调用该函数时，返回被删除的元素而非数组
          */
-        randomRemove(num?: number): Array<T>;
+        randomRemove(num: number): Array<T>;
+        randomRemove(): T;
         /**
          * 对原数组随机排序
          * @function Array#randomSort
@@ -111,7 +112,7 @@ declare global {
          * @param {...any} args - 参数数组
          * @returns {!Array} 生成的数组；如果`args`为虚值或为空则返回空数组
          */
-        from(args: any[]): any[];
+        from<F>(args: F[]): F[];
     }
 }
 export { }
