@@ -517,7 +517,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                             }
                             else {
                                 delete window.cheat;
-                                delete window.game;
+                                // delete window.game;//[todo delete]
                                 delete window.ui;
                                 delete window.get;
                                 delete window.ai;
@@ -7879,7 +7879,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     delete _status.htmlbg;
                     //part: game to window.game
-                    window.game = game;
+                    // window.game = game;//[todo delete]
                     //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
                     var styleToLoad = 6;
                     var styleLoaded = function () {
@@ -8739,7 +8739,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     var card = lib.imported.card;
                     var character = lib.imported.character;
                     var play = lib.imported.play;
-                    delete window.game;
+                    // delete window.game;//[todo delete]
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
@@ -9865,7 +9865,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
         cheat: {
             i: function () {
                 window.cheat = lib.cheat;
-                window.game = game;
+                // window.game = game;//[todo delete]
                 window.ui = ui;
                 window.get = get;
                 window.ai = ai;
@@ -11824,7 +11824,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                 loadPackage: function () {
                     'step 0'
                     if (event.packages.length) {
-                        window.game = game;
+                        // window.game = game;//[todo delete]
                         var pack = event.packages.shift().split('/');
                         lib.init.js(lib.assetURL + pack[0], pack[1], game.resume);
                         game.pause();
@@ -11833,7 +11833,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         event.finish();
                     }
                     'step 1'
-                    if (!lib.config.dev) delete window.game;
+                    // if (!lib.config.dev) delete window.game;//[todo delete]
                     var character = lib.imported.character;
                     var card = lib.imported.card;
                     var i, j, k;
@@ -11921,11 +11921,11 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                  */
                 loadMode: function () {
                     'step 0'
-                    window.game = game;
+                    // window.game = game;//[todo delete]
                     lib.init.js(lib.assetURL + 'mode', event.mode, game.resume);
                     game.pause();
                     'step 1'
-                    if (!lib.config.dev) delete window.game;
+                    // if (!lib.config.dev) delete window.game;//[todo delete]
                     event.result = lib.imported.mode[event.mode];
                     delete lib.imported.mode[event.mode];
                 },

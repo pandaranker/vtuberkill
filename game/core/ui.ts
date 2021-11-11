@@ -5588,9 +5588,9 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                                 }, function () {
                                     onprogress(-1);
                                     _status.importingExtension = true;
-                                    window.game = game;
+                                    // window.game = game;//[todo delete]
                                     lib.init.js(lib.assetURL + 'extension/' + that.info.name, 'extension', function () {
-                                        if (!lib.config.dev) delete window.game;
+                                        // if (!lib.config.dev) delete window.game;//[todo delete]
                                         if (game.importedPack) {
                                             var extname = game.importedPack.name;
                                             if (lib.config.extensions.contains(extname)) {
