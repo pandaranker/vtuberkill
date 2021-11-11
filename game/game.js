@@ -63,12 +63,12 @@ new Promise((resolve, reject)=>{
     }
 }).then(()=>{//初始化游戏
     moduleManager.require(['core/_status', 'core/lib', 'core/game', 'core/ui', 'core/get', 'core/ai'], function(_status, lib, game, ui, get, ai){
+        globalThis.game = game;
         lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
         lib.figurer = text => ` ${lib.figure}${text}</span> `
         lib.spanClass = (str,classes)=>{
             return `<span class="${classes}">${str}</span>`
         }
-        
         game.galgameMod();
         lib.init.init();
         console.log('Game initialized.');
