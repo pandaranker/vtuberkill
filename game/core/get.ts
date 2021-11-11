@@ -1,3 +1,4 @@
+/// <reference path = "../built-in.d.ts" />
 globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装

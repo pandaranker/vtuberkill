@@ -1,3 +1,4 @@
+/// <reference path = "../built-in.d.ts" />
 globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏UI库
@@ -553,7 +554,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         pages: pages
                     };
                 };
-                var createConfig = function (config, position) {
+                var createConfig = function (config, position?) {
                     var node = ui.create.div('.config', config.name);
                     node._link = { config: config };
                     if (!config.clear) {
@@ -2273,7 +2274,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         updateNodes();
                     };
 
-                    var createModeConfig = function (mode, position, position2) {
+                    var createModeConfig = function (mode, position, position2?) {
                         var info = lib.characterPack[mode];
                         var page = ui.create.div('');
                         var node = ui.create.div('.menubutton.large', lib.translate[mode + '_character_config'], position, clickMode);

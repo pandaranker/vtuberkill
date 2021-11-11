@@ -1,3 +1,4 @@
+/// <reference path = "../built-in.d.ts" />
 globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 游戏内核

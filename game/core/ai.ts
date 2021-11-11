@@ -1,3 +1,4 @@
+/// <reference path = "../built-in.d.ts" />
 globalThis.moduleManager.define(['core/core'], function ({_status, lib, game, ui, get, ai}) {
     /**
      * 游戏AI模块

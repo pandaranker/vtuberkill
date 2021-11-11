@@ -1,3 +1,4 @@
+/// <reference path = "../built-in.d.ts" />
 globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_status, lib, game, ui, get, ai}, PlayerModel) {
     /**
      * 包(游戏牌, 武将牌, 拓展)管理相关
@@ -6991,13 +6992,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                 lib.ai = ai;
                 lib.game = game;
                 //part: 拓展 HTMLDivElement.
-                /**
-                 * 本元素播放动画
-                 * @function HTMLDivElement#animate
-                 * @param {string} name - 动画名称
-                 * @param {number} [time=1000] - 动画持续时间（ms）
-                 * @returns {HTMLDivElement} this self
-                 */
+//#region 
                 HTMLDivElement.prototype.animate = function (name, time) {
                     var that;
                     if (get.is.mobileMe(this) && name == 'target') {
@@ -7012,53 +7007,22 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }, time || 1000);
                     return this;
                 };
-                /**
-                 * 隐藏本元素及其子元素
-                 * @function HTMLDivElement#hide
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.hide = function () {
                     this.classList.add('hidden');
                     return this;
                 };
-                /**
-                 * 本元素取消焦点
-                 * @function HTMLDivElement#unfocus
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.unfocus = function () {
                     if (lib.config.transparent_dialog) this.classList.add('transparent');
                     return this;
                 };
-                /**
-                 * 本元素重获焦点
-                 * @function HTMLDivElement#refocus
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.refocus = function () {
                     this.classList.remove('transparent');
                     return this;
                 };
-                /**
-                 * 本元素取消隐藏
-                 * @function HTMLDivElement#show
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.show = function () {
                     this.classList.remove('hidden');
                     return this;
                 };
-                /**
-                 * @callback HTMLDivElement~deleteCallback
-                 * @see {@link HTMLDivElement#delete}
-                 */
-                /**
-                 * 延时从所属DOM树移除本元素
-                 * @function HTMLDivElement#delete
-                 * @param {number} time - 延迟时间（ms）
-                 * @param {HTMLDivElement~deleteCallback} callback - 移除后回调函数
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.delete = function (time, callback) {
                     if (this.timeout) {
                         clearTimeout(this.timeout);
@@ -7081,13 +7045,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return this;
                 };
-                /**
-                 * 移动本元素(牌)
-                 * @function HTMLDivElement#goto
-                 * @param {*} position - 位置
-                 * @param {number} time - 持续时间
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.goto = function (position, time) {
                     if (this.timeout) {
                         clearTimeout(this.timeout);
@@ -7108,11 +7065,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.destiny = position;
                     return this;
                 };
-                /**
-                 * 强制取消移动，固定在当前位置
-                 * @function HTMLDivElement#fix
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.fix = function () {
                     clearTimeout(this.timeout);
                     delete this.timeout;
@@ -7120,16 +7072,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.classList.remove('removing');
                     return this;
                 };
-                /**
-                 * 设置背景图片，当name为虚值或为空白字符串时，使用原背景。
-                 * 对应路径：`image/${type?type+'/':''}${type?subfolder+'/':''}${name}${ext}`
-                 * @function HTMLDivElement#setBackground
-                 * @param {string} [name] - 图片名（无后缀）
-                 * @param {string} [type] - 类型对应路径
-                 * @param {string} [ext='.jpg'] - 图片后缀
-                 * @param {string} [subfolder='default'] - 类型文件夹下的子路径，仅在参数`type`指定值时有效
-                 * @returns {?HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.setBackground = function (name, type, ext, subfolder) {
                     if (!name) return;
                     var src;
@@ -7213,11 +7155,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.style.backgroundSize = "cover";
                     return this;
                 };
-                /**
-                 * 设置本元素的背景图片为数据库中的图片
-                 * @function HTMLDivElement#setBackgroundDB
-                 * @param {string} img - 图片对应的键值
-                 */
                 HTMLDivElement.prototype.setBackgroundDB = function (img) {
                     var node = this;
                     game.getDB('image', img, function (src) {
@@ -7225,25 +7162,9 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         node.style.backgroundSize = "cover";
                     });
                 };
-                /**
-                 * 设置本元素的背景图片
-                 * @function HTMLDivElement#setBackgroundImage
-                 * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
-                 */
                 HTMLDivElement.prototype.setBackgroundImage = function (img) {
                     this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
                 },
-                /**
-                 * {@link HTMLDivElement#listen|listen}（click）的回调函数
-                 * @callback HTMLDivElement#listen~listenCallback
-                 * @param {(MouseEvent|TouchEvent)} e - 触发事件
-                 */
-                /**
-                 * 监听点击事件
-                 * @function HTMLDivElement#listen
-                 * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.listen = function (func) {
                     if (lib.config.touchscreen) {
                         this.addEventListener('touchend', function (e) {
@@ -7266,17 +7187,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return this;
                 };
-                /**
-                 * @callback HTMLDivElement#listenTransition~callback
-                 * @see {@link HTMLDivElement#listenTransition}
-                 */
-                /**
-                 * 延时触发回调函数，同时监听本元素变换动画，如果变换结束则立即触发回调函数
-                 * @function HTMLDivElement#listenTransition
-                 * @param {HTMLDivElement#listenTransition~callback} func - 回调函数
-                 * @param {number} [time=1000] - 延迟时间
-                 * @returns {!number} timeoutID 
-                 */
                 HTMLDivElement.prototype.listenTransition = function (func, time) {
                     var that = this;
                     var done = false;
@@ -7289,30 +7199,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.addEventListener('webkitTransitionEnd', callback);
                     return setTimeout(callback, time || 1000);
                 };
-                /**
-                 * 设置本元素位置
-                 * ```JavaScript
-                 * top = calc(`offsets[0]`%+`offsets[1]`px)
-                 * left = calc(`offsets[2]`%+`offsets[3]`px)
-                 * ```
-                 * @function HTMLDivElement#setPosition
-                 * @param {!number[]} offsets - 偏移量数组（长度必须为4）。
-                 * @returns {HTMLDivElement} this self
-                 */
-                /**
-                 * 设置本元素位置
-                 * ```JavaScript
-                 * top  = calc(`top_pc`%+`top_px`px)
-                 * left = calc(`lft_pc`%+`lft_px`px)
-                 * ```
-                 * @function HTMLDivElement#setPosition
-                 * @variation 2
-                 * @param {number} top_pc
-                 * @param {number} top_px
-                 * @param {number} lft_pc
-                 * @param {number} lft_px
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.setPosition = function () {
                     var position;
                     if (arguments.length == 4) {
@@ -7335,14 +7221,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.style.left = left;
                     return this;
                 };
-                /**
-                 * 设置本元素css样式
-                 * @function HTMLDivElement#css
-                 * @param {Object} style - style
-                 * @param {string} [style.innerHTML] - 设置本元素内部HTML
-                 * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
-                 * @returns {HTMLDivElement} this self
-                 */
                 HTMLDivElement.prototype.css = function (style) {
                     for (var i in style) {
                         if (i == 'innerHTML') {
@@ -7354,26 +7232,17 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return this;
                 };
-                /**
-                 * 获取Table[row][col]对应的元素
-                 * @deprecated <span style="color:red;">[never use]</span> 实现有问题
-                 * @function HTMLTableElement#get
-                 * @param {!number} row - 行元素数组索引
-                 * @param {!number} col - 列元素数组索引
-                 * @returns {HTMLTableCellElement} 要索引的标题/单元格元素
-                 */
+//#endregion
+                //part: 拓展 HTMLTableElement
+//#region
                 HTMLTableElement.prototype.get = function (row, col) {
                     if (row < this.childNodes.length) {
                         return this.childNodes[row].childNodes[col];
                     }
                 };
+//#endregion
                 //part: 拓展数组
-                /**
-                 * 统计数组中元素`item`出现的数量
-                 * @function Array#numOf
-                 * @param {*} item - 要统计的元素
-                 * @returns {!number} 统计结果（非负）
-                 */
+//#region
                 Array.prototype.numOf = function (item) {
                     var num = 0;
                     for (var i = 0; i < this.length; i++) {
@@ -7381,12 +7250,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return num;
                 };
-                /**
-                 * 创建一个新的数组（浅复制），包含原数组中匹配卡牌位置的卡牌对象
-                 * @function Array#filterInD
-                 * @param {CardPosition[]} [pos='o'] - 卡牌位置字符串，匹配其中任意位置
-                 * @returns {!Array} 新的数组，如果没有匹配位置的卡牌，返回空数组
-                 */
                 Array.prototype.filterInD = function (pos) {
                     if (!pos) pos = 'o';
                     var list = [];
@@ -7395,30 +7258,12 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return list;
                 };
-                /**
-                 * 定位元素，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf()}
-                 * @function Array#find
-                 * @param {*} item - 要在数组中定位的元素
-                 * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
-                 */
                 Array.prototype.find = function (item) {
                     return this.indexOf(item);
                 };
-                /**
-                 * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
-                 * @function Array#contains
-                 * @param {any} item - 要在数组中查找的元素
-                 * @returns {boolean} 存在返回`true`，不存在返回`false`
-                 */
                 Array.prototype.contains = function (item) {
                     return this.indexOf(item) != -1;
                 };
-                /**
-                 * 向原数组不重复地添加任意数量的元素；但是不保证，添加前，原数组中的元素是否唯一
-                 * @function Array#add
-                 * @param {...any} elements - 要添加的任意数量的元素
-                 * @returns {Array} this self
-                 */
                 Array.prototype.add = function () {
                     for (var i = 0; i < arguments.length; i++) {
                         if (this.contains(arguments[i])) {
@@ -7428,29 +7273,12 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return this;
                 };
-                /**
-                 * 将数组中的元素不重复地添加（{@link Array#add}）到原数组中
-                 * @deprecated [since ES 2015] 使用ES2015 Spread语法（详见{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax|Spread syntax}）
-                 * @function Array#addArray
-                 * @param {!Array} arr - 要添加的数组
-                 * @returns {Array} this self
-                 */
                 Array.prototype.addArray = function (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         this.add(arr[i]);
                     }
                     return this;
                 };
-                /**
-                 * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
-                 * <ul>
-                 *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
-                 * </ul>
-                 * @function Array#remove
-                 * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
-                 * @param {(*|Array)} item - 要删除的元素；要删除元素的（一维|二维|多维）数组
-                 * @returns {?Array} this self；如果`item`是数组，返回undefined
-                 */
                 Array.prototype.remove = function (item) {
                     if (Array.isArray(item)) {
                         for (var i = 0; i < item.length; i++) this.remove(item[i]);
@@ -7463,41 +7291,17 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     this.splice(pos, 1);
                     return this;
                 };
-                /**
-                 * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
-                 * <ul>
-                 *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
-                 *   <li>对`arr`中的每个元素会调用{@link Array#remove|Array.prototype.remove}</li>
-                 * </ul>
-                 * @function Array#removeArray
-                 * @deprecated [performance warning] {@link Array#remove}
-                 * @param {!Array} arr - 要删除元素的数组
-                 * @returns {Array} this self
-                 */
                 Array.prototype.removeArray = function (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         this.remove(arr[i]);
                     }
                     return this;
                 };
-                /**
-                 * 从原数组中随机取出一个元素
-                 * @function Array#randomGet
-                 * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
-                 * @returns {any} 取出的元素
-                 */
                 Array.prototype.randomGet = function () {
                     var arr = this.slice(0);
                     for (var i = 0; i < arguments.length; i++) arr.remove(arguments[i]);
                     return arr[Math.floor(Math.random() * arr.length)];
                 };
-                /**
-                 * 返回一个新的数组，随机删除指定数量的元素
-                 * @function Array#randomRemove
-                 * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
-                 * @param {number} [num=undefined] - 要删除的元素数量；默认移除一个
-                 * @returns {(Array|any)} 被删除元素的数组；当无参调用该函数时，返回被删除的元素而非数组
-                 */
                 Array.prototype.randomRemove = function (num) {
                     if (typeof num == 'number') {
                         var list = [];
@@ -7515,11 +7319,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         return this.splice(Math.floor(Math.random() * this.length), 1)[0];
                     }
                 };
-                /**
-                 * 对原数组随机排序
-                 * @function Array#randomSort
-                 * @returns {Array} this self
-                 */
                 Array.prototype.randomSort = function () {
                     var list = [];
                     while (this.length) {
@@ -7530,12 +7329,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return this;
                 };
-                /**
-                 * 从原数组中随机取出指定数量的元素
-                 * @function Array#randomGet
-                 * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
-                 * @returns {!Array<any>} 随机取出的元素数组
-                 */
                 Array.prototype.randomGets = function (num) {
                     if (num > this.length) {
                         num = this.length;
@@ -7547,12 +7340,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     return list;
                 };
-                /**
-                 * 角色数组排序；以给定角色/当前事件角色为参考，对角色数组排序。- TODO
-                 * @function Array#sortBySeat
-                 * @param {GameCores.GameObjects.Player} target 给定的参考角色
-                 * @returns {Array} this self
-                 */
                 Array.prototype.sortBySeat = function (target) {
                     lib.tempSortSeat = target;
                     this.sort(lib.sort.seat);
@@ -7560,12 +7347,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     return this;
                 };
                 if (!Array.from) {
-                    /**
-                     * 由参数数组生成新的数组（浅复制）
-                     * @function Array#from
-                     * @param {...any} args - 参数数组
-                     * @returns {!Array} 生成的数组；如果`args`为虚值或为空则返回空数组
-                     */
+
                     Array.from = function (args) {
                         var list = [];
                         if (args && args.length) {
@@ -7576,6 +7358,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         return list;
                     }
                 }
+//#endregion
                 //part: 设置全局window.onkeydown, window.onload, window.onerror，直到关闭网页（退出游戏）
                 /**
                  * 监听键盘按下事件
