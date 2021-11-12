@@ -1253,8 +1253,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							listi=['random','zhu','zhong','nei','fan'];
 						}
 
-						for(var i=0;i<listi.length;i++){
-							var td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
+						for(let i=0;i<listi.length;i++){
+							let td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
 							td.link=listi[i];
 							if(td.link===game.me.identity){
 								td.classList.add('bluebg');
@@ -1323,7 +1323,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										}
 									}
 								}
-								_status.event=_status.event.parent;
+								_status.event = new Status_Event(_status.event.parent);
 								_status.event.step=0;
 								_status.event.identity=link;
 								if(link!=(event.zhongmode?'mingzhong':'zhu')){
@@ -1345,8 +1345,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						seats.style.margin='0';
 						seats.style.width='100%';
 						seats.style.position='relative';
-						for(var i=2;i<=game.players.length;i++){
-							var td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
+						for(let i=2;i<=game.players.length;i++){
+							let td=ui.create.div('.shadowed.reduce_radius.pointerdiv.tdnode');
 							td.innerHTML=get.cnNumber(i,true);
 							td.link=i-1;
 							seats.appendChild(td);

@@ -9751,7 +9751,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     str = str.replace(/'step 0'|"step 0"/, 'if(event.step==' + k + ') {event.finish();return;}switch(step){case 0:');
                 }
                 return (new Function('event', 'step', 'source', 'player', 'target', 'targets',
-                    'card', 'cards', 'skill', 'forced', 'num', 'trigger', 'result',
+                    'card', 'cards', 'skill', 'num', 'trigger', 'result',
                     '_status', 'lib', 'game', 'ui', 'get', 'ai', str));
             },
             /**
@@ -11473,7 +11473,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         custom: [],
                     });
                     game.countPlayer2(function (current) {
-                        current.actionHistory.push({ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], changeHujia: [], custom: [] });
+                        current.actionHistory.push({...lib.historyRecorder});
                         current.stat.push({ card: {}, skill: {} });
                         if (event.parent._roundStart) {
                             current.getHistory().isRound = true;
@@ -13253,7 +13253,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseCard(event.ai) || forced) {
+                        if (ai.basic.chooseCard(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else if (event.skill) {
@@ -13952,7 +13952,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         }
                         else {
                             game.check();
-                            if (ai.basic.chooseButton(event.ai) || forced) ui.click.ok();
+                            if (ai.basic.chooseButton(event.ai) || event.forced) ui.click.ok();
                             else ui.click.cancel();
                         }
                     }
@@ -14189,7 +14189,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseCard(event.ai) || forced) {
+                        if (ai.basic.chooseCard(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else if (event.skill) {
@@ -14267,7 +14267,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseTarget(event.ai) || forced) {
+                        if (ai.basic.chooseTarget(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else {
@@ -14730,7 +14730,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced) ui.click.ok();
+                        if (ai.basic.chooseButton(event.ai) || event.forced) ui.click.ok();
                         else ui.click.cancel();
                     }
                     event.dialog.close();
@@ -14824,7 +14824,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced) ui.click.ok();
+                        if (ai.basic.chooseButton(event.ai) || event.forced) ui.click.ok();
                         else ui.click.cancel();
                     }
                     event.dialog.close();
@@ -14946,7 +14946,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     "step 1"
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced) ui.click.ok();
+                        if (ai.basic.chooseButton(event.ai) || event.forced) ui.click.ok();
                         else ui.click.cancel();
                     }
                     event.dialog.close();
@@ -16758,6 +16758,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         game.log(player, '回复了' + get.cnNumber(num) + '点' + get.translation('hp'));
                         event.result = num;
                     }
+                    player.getHistory('recover').push(event);
                 },
                 /**
                  * 令角色失去血量
@@ -30624,11 +30625,11 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                                     lib.characterPack[i] = mode.characterPack[i];
                                 }
                             }
-                            _status.event = {
+                            _status.event = new Status_Event({
                                 finished: true,
                                 next: [],
                                 after: []
-                            };
+                            });
                             _status.paused = false;
                             game.createEvent('game', false).setContent(lib.init.startOnline);
                             game.loop();
@@ -30864,11 +30865,11 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         game.arrangePlayers();
                         ui.create.me(true);
 
-                        _status.event = {
+                        _status.event = new Status_Event({
                             finished: true,
                             next: [],
                             after: []
-                        };
+                        });
                         _status.paused = false;
                         _status.dying = get.parsedResult(state.dying) || [];
 
@@ -31160,6 +31161,12 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
          * @type {string}
          */
         phaseName: ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'],
+        /**
+         * 游戏阶段
+         * 
+         * @type {string}
+         */
+        historyRecorder: { useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], recover: [], changeHujia: [], custom: [] },
         /**
          * 快捷语音 - TODO
          * @type {string}

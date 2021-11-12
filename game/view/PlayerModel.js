@@ -59,7 +59,7 @@ globalThis.moduleManager.define(['core/core','view/HTMLDivElementProxy'], functi
             node.damagepopups = [];
             node.judging = [];
             node.stat = [{ card: {}, skill: {} }];
-            node.actionHistory = [{ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], changeHujia: [], custom: [] }];
+            node.actionHistory = [{...lib.historyRecorder}];
             node.tempSkills = {};
             node.storage = {};
             node.marks = {};

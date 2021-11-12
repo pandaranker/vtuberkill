@@ -1,28 +1,12 @@
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-/// <reference path = "../built-in.d.ts" />
-globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a, PlayerModel) {
-    var _status = _a._status, lib = _a.lib, game = _a.game, ui = _a.ui, get = _a.get, ai = _a.ai;
-    /**
-     * 包(游戏牌, 武将牌, 拓展)管理相关
-     * 游戏入口{@link lib.init.init}
-     * @namespace lib
-     * @memberof module:core
-     */
-    globalThis.mixin(lib, /**@lends module:core.lib */ {
+"use strict";
+globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _status, lib, game, ui, get, ai }, PlayerModel) {
+    globalThis.mixin(lib, {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
         configprefix: 'vtuberkill_1.9_',
         versionOL: 27,
         updateURLS: {
             coding: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/',
-            github: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/'
+            github: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/',
         },
         updateURL: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/',
         mirrorURL: 'https://v8gamemaker.coding.net/p/vtuberkill/d/vtuberkill_github/git/raw/',
@@ -57,11 +41,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             xiaosha_emotion: 20,
             xiaotao_emotion: 20,
             xiaojiu_emotion: 20,
-            Diana_emotion: 6
+            Diana_emotion: 6,
         },
         animate: {
             skill: {},
-            card: {}
+            card: {},
         },
         arenaReady: [],
         onfree: [],
@@ -73,12 +57,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
         hookmap: {},
         imported: {},
         layoutfixed: ['chess', 'tafang', 'stone'],
-        /**
-         * 角色选择弹窗中的特殊选项
-         * ['收藏', '最近']
-         * @name lib.characterDialogGroup
-         * @see {@link ui.create.characterDialog}
-         */
         characterDialogGroup: {
             '收藏': function (name, capt) {
                 return lib.config.favouriteCharacter.contains(name) ? capt : null;
@@ -88,10 +66,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 return list.contains(name) ? capt : null;
             }
         },
-        /**
-         * 监听节点动画结束
-         * @param {HTMLDivELement} node 节点
-         */
         listenEnd: function (node) {
             if (!node._listeningEnd) {
                 node._listeningEnd = true;
@@ -101,24 +75,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         node.moveDelete(node._onEndMoveDelete);
                     }
                     else if (node._onEndDelete) {
-                        node["delete"]();
+                        node.delete();
                     }
                     node._transitionEnded = true;
                 });
             }
         },
-        /**
-         * 游戏菜单
-         * @name configMenu
-         * @namespace
-         * @type {!Object}
-         */
         configMenu: {
-            /**
-             * 通用设置
-             * @name configMenu.general
-             * @type {!Object}
-             */
             general: {
                 name: '通用',
                 config: {
@@ -154,7 +117,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '确认退出',
                         init: false,
                         unfrequent: true,
-                        intro: '离开游戏前弹出确认对话框'
+                        intro: '离开游戏前弹出确认对话框',
                     },
                     keep_awake: {
                         name: '屏幕常亮',
@@ -185,73 +148,50 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '自动确认',
                         init: true,
                         unfrequent: true,
-                        intro: '当候选目标只有1个时，点击目标后无需再点击确认'
+                        intro: '当候选目标只有1个时，点击目标后无需再点击确认',
                     },
                     skip_shan: {
                         name: '无闪自动取消',
                         init: false,
                         unfrequent: true,
-                        intro: '当自己需要使用或打出【闪】时，若自己没有【闪】，则跳过该步骤'
+                        intro: '当自己需要使用或打出【闪】时，若自己没有【闪】，则跳过该步骤',
                     },
                     unauto_choose: {
                         name: '拆顺手牌选择',
                         init: false,
                         unfrequent: true,
-                        intro: '拆牌或者顺牌时，就算只能选择对方的手牌依然手动选择'
+                        intro: '拆牌或者顺牌时，就算只能选择对方的手牌依然手动选择',
                     },
                     wuxie_self: {
                         name: '不无懈自己',
                         init: true,
                         unfrequent: true,
-                        intro: '自己使用的单目标普通锦囊即将生效时，不询问无懈'
+                        intro: '自己使用的单目标普通锦囊即将生效时，不询问无懈',
                     },
                     tao_enemy: {
                         name: '不对敌方出桃',
                         init: false,
                         intro: '双方阵营明确的模式中（如对决），敌方角色濒死时不询问出桃',
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     enable_drag: {
                         name: '启用拖拽',
                         init: true,
                         intro: '按住卡牌后可将卡牌拖至目标',
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     enable_dragline: {
                         name: '拖拽指示线',
                         init: true,
                         unfrequent: true,
-                        intro: '拖拽时显示虚线，可能降低游戏速度'
+                        intro: '拖拽时显示虚线，可能降低游戏速度',
                     },
                     enable_touchdragline: {
                         name: '拖拽指示线',
                         init: false,
                         unfrequent: true,
-                        intro: '拖拽时显示虚线，可能降低游戏速度'
+                        intro: '拖拽时显示虚线，可能降低游戏速度',
                     },
-                    // enable_pressure:{
-                    //     name:'启用压感',
-                    //     init:false,
-                    //     intro:'开启后可通过按压执行操作',
-                    //     unfrequent:true,
-                    // },
-                    // pressure_taptic:{
-                    //     name:'触觉反馈',
-                    //     init:false,
-                    //     intro:'开启后按压操作执行时将产生震动',
-                    //     unfrequent:true,
-                    // },
-                    // pressure_click:{
-                    //     name:'按压操作',
-                    //     init:'pause',
-                    //     intro:'在空白区域按压时的操作',
-                    //     unfrequent:true,
-                    //     item:{
-                    //         pause:'暂停',
-                    //         config:'选项',
-                    //         auto:'托管',
-                    //     }
-                    // },
                     touchscreen: {
                         name: '触屏模式',
                         init: false,
@@ -268,7 +208,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '滑动手势',
                         init: true,
                         unfrequent: true,
-                        intro: '在非滚动区域向四个方向滑动可执行对应操作'
+                        intro: '在非滚动区域向四个方向滑动可执行对应操作',
                     },
                     swipe_down: {
                         name: '下划操作',
@@ -281,7 +221,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pause: '切换暂停',
                             auto: '切换托管',
                             chat: '显示聊天',
-                            off: '关闭'
+                            off: '关闭',
                         },
                         onclick: function (item) {
                             if (get.is.nomenu('swipe_down', item))
@@ -300,7 +240,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pause: '切换暂停',
                             auto: '切换托管',
                             chat: '显示聊天',
-                            off: '关闭'
+                            off: '关闭',
                         },
                         onclick: function (item) {
                             if (get.is.nomenu('swipe_up', item))
@@ -319,7 +259,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pause: '切换暂停',
                             auto: '切换托管',
                             chat: '显示聊天',
-                            off: '关闭'
+                            off: '关闭',
                         },
                         onclick: function (item) {
                             if (get.is.nomenu('swipe_left', item))
@@ -338,7 +278,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pause: '切换暂停',
                             auto: '切换托管',
                             chat: '显示聊天',
-                            off: '关闭'
+                            off: '关闭',
                         },
                         onclick: function (item) {
                             if (get.is.nomenu('swipe_right', item))
@@ -361,7 +301,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             if (get.is.nomenu('round_menu_func', item))
                                 return false;
                             game.saveConfig('round_menu_func', item);
-                        }
+                        },
                     },
                     show_splash: {
                         name: '显示开始界面',
@@ -370,7 +310,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             off: '关闭',
                             init: '首次启动',
-                            always: '保持开启'
+                            always: '保持开启',
                         }
                     },
                     game_speed: {
@@ -382,7 +322,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             mid: '中',
                             fast: '较快',
                             vfast: '快',
-                            vvfast: '很快'
+                            vvfast: '很快',
                         },
                         intro: '设置不同游戏操作间的时间间隔'
                     },
@@ -405,7 +345,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pause: '暂停',
                             shortcut: '工具',
                             config: '选项',
-                            auto: '托管'
+                            auto: '托管',
                         },
                         onclick: function (item) {
                             if (get.is.nomenu('right_click', item))
@@ -418,27 +358,27 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: true,
                         unfrequent: true,
                         restart: true,
-                        intro: '长按后弹出菜单'
+                        intro: '长按后弹出菜单',
                     },
                     right_info: {
                         name: '右键显示信息',
                         init: true,
                         unfrequent: true,
                         restart: true,
-                        intro: '右键点击后弹出菜单'
+                        intro: '右键点击后弹出菜单',
                     },
                     hover_all: {
                         name: '悬停显示信息',
                         init: true,
                         unfrequent: true,
                         restart: true,
-                        intro: '悬停后弹出菜单'
+                        intro: '悬停后弹出菜单',
                     },
                     hover_handcard: {
                         name: '悬停手牌显示信息',
                         init: true,
                         unfrequent: true,
-                        intro: '悬停手牌后弹出菜单'
+                        intro: '悬停手牌后弹出菜单',
                     },
                     hoveration: {
                         name: '悬停菜单弹出时间',
@@ -450,14 +390,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '700': '0.7秒',
                             '1000': '1秒',
                             '1500': '1.5秒',
-                            '2500': '2.5秒'
+                            '2500': '2.5秒',
                         }
                     },
                     doubleclick_intro: {
                         name: '双击显示武将资料',
                         init: true,
                         unfrequent: true,
-                        intro: '双击武将头像后显示其资料卡'
+                        intro: '双击武将头像后显示其资料卡',
                     },
                     video: {
                         name: '保存录像',
@@ -469,9 +409,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '10': '十局',
                             '20': '二十局',
                             '50': '五十局',
-                            '10000': '无限'
+                            '10000': '无限',
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     max_loadtime: {
                         name: '最长载入时间',
@@ -538,7 +478,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                             else {
                                 delete window.cheat;
-                                // delete window.game;//[todo delete]
                                 delete window.ui;
                                 delete window.get;
                                 delete window.ai;
@@ -546,7 +485,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 delete window._status;
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     errstop: {
                         name: '出错时停止游戏',
@@ -559,14 +498,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         unfrequent: true,
                         item: {
                             coding: 'Coding',
-                            github: 'GitHub'
+                            github: 'GitHub',
                         },
                         onclick: function (item) {
                             game.saveConfig('update_link', item);
                             lib.updateURL = lib.updateURLS[item] || lib.updateURLS.coding;
-                        }
+                        },
                     },
-                    //https://raw.githubusercontent.com/libccy/noname-extension/master/
                     extension_source: {
                         name: '获取扩展地址',
                         init: 'Coding',
@@ -577,7 +515,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         },
                         onclick: function (item) {
                             game.saveConfig('extension_source', item);
-                        }
+                        },
                     },
                     extension_create: {
                         name: '添加获取扩展地址',
@@ -625,7 +563,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     });
                                 }
                             });
-                        }
+                        },
                     },
                     extension_delete: {
                         name: '删除当前扩展地址',
@@ -659,7 +597,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                             delete nodezz.item[name];
                             alert('已删除扩展地址：' + name);
-                        }
+                        },
                     },
                     update: function (config, map) {
                         if ('ontouchstart' in document) {
@@ -682,19 +620,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             map.enable_vibrate.hide();
                             map.keep_awake.hide();
                         }
-                        // if(config.enable_pressure){
-                        //     map.pressure_click.show();
-                        //     if(lib.device){
-                        //         map.pressure_taptic.show();
-                        //     }
-                        //     else{
-                        //         map.pressure_taptic.hide();
-                        //     }
-                        // }
-                        // else{
-                        //     map.pressure_click.hide();
-                        //     map.pressure_taptic.hide();
-                        // }
                         if (lib.config.touchscreen) {
                             map.mousewheel.hide();
                             map.hover_all.hide();
@@ -772,11 +697,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 外观设置
-             * @name configMenu.appearence
-             * @type {!Object}
-             */
             appearence: {
                 name: '外观',
                 config: {
@@ -810,15 +730,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }, 500);
                         }
                     },
-                    /**
-                     * 游戏布局
-                     * @name configMenu.appearence.layout
-                     */
                     layout: {
                         name: '布局',
                         init: 'mobile',
                         item: {
-                            "default": '旧版',
+                            default: '旧版',
                             newlayout: '对称',
                             mobile: '默认',
                             long: '宽屏',
@@ -831,11 +747,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 node.created = true;
                                 node.style.overflow = 'hidden';
                                 node.firstChild.style.display = 'none';
-                                // node.firstChild.classList.add('shadowed');
-                                // node.firstChild.style.width='16px';
-                                // node.firstChild.style.height='auto';
-                                // node.firstChild.style.padding='2px';
-                                // node.firstChild.style.textAlign='center';
                                 var me = ui.create.div(node);
                                 me.style.top = 'auto';
                                 if (link == 'default' || link == 'newlayout') {
@@ -976,33 +887,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                     },
-                    // fewplayer:{
-                    //     name:'启用人数',
-                    //     intro:'设置启用新版布局的最小人数（不足时切换至默认布局）',
-                    //     init:'3',
-                    //     // unfrequent:true,
-                    //     item:{
-                    //                  '2':'两人',
-                    //                  '3':'三人',
-                    //                  '4':'四人',
-                    //                  '5':'五人',
-                    //                  '6':'六人',
-                    //                  '7':'七人',
-                    //                  '8':'八人',
-                    //     },
-                    //     onclick:function(item){
-                    //                  game.saveConfig('fewplayer',item);
-                    //                  if(ui.arena) ui.arena.setNumber(ui.arena.dataset.number);
-                    //     }
-                    // },
                     player_height: {
                         name: '角色高度',
                         init: 'long',
-                        // unfrequent:true,
                         item: {
                             short: '矮',
-                            "default": '中',
-                            long: '高'
+                            default: '中',
+                            long: '高',
                         },
                         onclick: function (item) {
                             game.saveConfig('player_height', item);
@@ -1013,62 +904,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '角色高度',
                         init: 'short',
                         item: {
-                            // auto:'自动',
                             short: '矮',
-                            "default": '中',
-                            long: '高'
+                            default: '中',
+                            long: '高',
                         },
                         onclick: function (item) {
                             game.saveConfig('player_height_nova', item);
-                            // if(item=='auto'){
-                            //     if(parseInt(ui.arena.dataset.number)>=7){
-                            //         ui.arena.dataset.player_height_nova='short';
-                            //     }
-                            //     else{
-                            //         ui.arena.dataset.player_height_nova='default';
-                            //     }
-                            // }
-                            // else{
                             ui.arena.dataset.player_height_nova = item;
-                            // }
                         }
                     },
-                    // background_color_music:{
-                    //     name:'背景色',
-                    //     init:'black',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('background_color_music',color);
-                    //         document.body.dataset.background_color_music=color;
-                    //     }
-                    // },
-                    // background_color_wood:{
-                    //     name:'背景色',
-                    //     init:'blue',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('background_color_wood',color);
-                    //         document.body.dataset.background_color_wood=color;
-                    //     }
-                    // },
-                    // theme_color_music:{
-                    //     name:'主题色',
-                    //     init:'black',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('theme_color_music',color);
-                    //         document.body.dataset.theme_color_music=color;
-                    //     }
-                    // },
                     ui_zoom: {
                         name: '界面缩放',
                         unfrequent: true,
@@ -1080,7 +924,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             normal: '100%',
                             big: '105%',
                             vbig: '110%',
-                            ebig: '120%'
+                            ebig: '120%',
                         },
                         onclick: function (zoom) {
                             game.saveConfig('ui_zoom', zoom);
@@ -1267,7 +1111,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var animate = lib.config.image_background == 'default';
                             game.saveConfig('image_background', background);
                             lib.init.background();
-                            ui.background["delete"]();
+                            ui.background.delete();
                             ui.background = ui.create.div('.background');
                             if (lib.config.image_background_blur) {
                                 ui.background.style.filter = 'blur(8px)';
@@ -1311,7 +1155,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                             ui.background.style.backgroundSize = 'cover';
                             ui.background.style.backgroundPosition = '50% 50%';
-                        }
+                        },
                     },
                     image_background_random: {
                         name: '随机背景',
@@ -1336,7 +1180,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 ui.background.style.webkitFilter = '';
                                 ui.background.style.transform = '';
                             }
-                        }
+                        },
                     },
                     phonelayout: {
                         name: '触屏布局',
@@ -1368,7 +1212,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '30000': '半分钟',
                             '60000': '一分钟',
                             '120000': '两分钟',
-                            '300000': '五分钟'
+                            '300000': '五分钟',
                         },
                         intro: '游戏每进行一段时间自动为一个随机角色更换皮肤',
                         onclick: function (item) {
@@ -1388,9 +1232,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             music: '音乐',
                             simple: '原版',
                             ol: '手杀',
-                            // new:'新版',
                             custom: '自定',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -1512,22 +1355,19 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 });
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     cardback_style: {
                         name: '卡背样式',
                         intro: '设置背面朝上的卡牌的样式',
                         init: 'default',
                         item: {
-                            // wood:'木纹',
-                            // music:'音乐',
                             vk: 'V杀',
                             official: '原版',
-                            // new:'新版',
                             liusha: '流沙',
                             ol: '手杀',
                             custom: '自定',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -1685,21 +1525,20 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 });
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     hp_style: {
                         name: '体力条样式',
                         init: 'ol',
                         item: {
-                            "default": '默认',
-                            // official:'勾玉',
+                            default: '默认',
                             emotion: '表情',
                             glass: '勾玉',
                             round: '国战',
                             ol: '手杀',
                             xinglass: '双鱼',
                             xinround: 'OL',
-                            custom: '自定'
+                            custom: '自定',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -1876,7 +1715,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 });
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     player_style: {
                         name: '角色背景',
@@ -1887,7 +1726,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             music: '音乐',
                             simple: '简约',
                             custom: '自定',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -2011,7 +1850,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:' + str + '}');
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     border_style: {
                         name: '角色边框',
@@ -2026,7 +1865,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             dragon_bronze: '玉龙',
                             custom: '自定',
                             auto: '自动',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -2146,7 +1985,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     autoborder_count: {
                         name: '边框升级方式',
@@ -2155,9 +1994,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             kill: '击杀',
                             damage: '伤害',
-                            mix: '混合'
+                            mix: '混合',
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     autoborder_start: {
                         name: '基础边框颜色',
@@ -2217,7 +2056,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             music: '音乐',
                             simple: '简约',
                             custom: '自定',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -2341,7 +2180,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     control_style: {
                         name: '按钮背景',
@@ -2351,7 +2190,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             music: '音乐',
                             simple: '简约',
                             custom: '自定',
-                            "default": '默认'
+                            default: '默认',
                         },
                         visualBar: function (node, item, create, switcher) {
                             if (node.created) {
@@ -2477,7 +2316,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }
                             }
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     custom_button: {
                         name: '自定义按钮高度',
@@ -2523,7 +2362,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2x': '2px',
                             '3x': '3px',
                             '4x': '4px',
-                            '5x': '5px'
+                            '5x': '5px',
                         },
                         unfrequent: true,
                         onclick: function (item) {
@@ -2545,7 +2384,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2x': '2px',
                             '3x': '3px',
                             '4x': '4px',
-                            '5x': '5px'
+                            '5x': '5px',
                         },
                         unfrequent: true,
                         onclick: function (item) {
@@ -2567,7 +2406,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2x': '2px',
                             '3x': '3px',
                             '4x': '4px',
-                            '5x': '5px'
+                            '5x': '5px',
                         },
                         unfrequent: true,
                         onclick: function (item) {
@@ -2589,7 +2428,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2x': '2px',
                             '3x': '3px',
                             '4x': '4px',
-                            '5x': '5px'
+                            '5x': '5px',
                         },
                         unfrequent: true,
                         onclick: function (item) {
@@ -2603,8 +2442,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             off: '关闭',
                             reduce: '减小',
-                            "default": '默认',
-                            increase: '增大'
+                            default: '默认',
+                            increase: '增大',
                         },
                         unfrequent: true,
                         onclick: function (item) {
@@ -2621,7 +2460,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             none: '无',
                             yellow: '黄色',
                             green: '绿色',
-                            purple: '紫色'
+                            purple: '紫色',
                         },
                         onclick: function (bool) {
                             game.saveConfig('glow_phase', bool);
@@ -2631,19 +2470,19 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     fold_card: {
                         name: '折叠手牌',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     fold_mode: {
                         name: '折叠模式菜单',
                         intro: '关闭后模式菜单中“更多”内的项目将直接展开',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     seperate_control: {
                         name: '分离选项条',
                         init: true,
                         unfrequent: true,
-                        intro: '开启后玩家在进行选择时不同的选项将分开，而不是连在一起'
+                        intro: '开启后玩家在进行选择时不同的选项将分开，而不是连在一起',
                     },
                     blur_ui: {
                         name: '模糊效果',
@@ -2679,24 +2518,24 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '伤害抖动',
                         intro: '角色受到伤害时的抖动效果',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     button_press: {
                         name: '按钮效果',
                         intro: '选项条被按下时将有按下效果',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     jiu_effect: {
                         name: '喝酒效果',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     animation: {
                         name: '游戏特效',
                         intro: '开启后出现属性伤害、回复体力等情况时会显示动画',
                         init: false,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     skill_animation_type: {
                         name: '技能特效',
@@ -2704,7 +2543,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: 'default',
                         unfrequent: true,
                         item: {
-                            "default": '默认',
+                            default: '默认',
                             old: '旧版',
                             off: '关闭'
                         }
@@ -2717,7 +2556,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             off: '关闭',
                             move: '移动',
-                            flip: '翻面'
+                            flip: '翻面',
                         }
                     },
                     target_shake: {
@@ -2727,7 +2566,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             off: '关闭',
                             zoom: '缩放',
-                            shake: '抖动'
+                            shake: '抖动',
                         },
                         unfrequent: true,
                         onclick: function (bool) {
@@ -2793,8 +2632,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: 'default',
                         unfrequent: true,
                         item: {
-                            "default": '默认',
-                            oblong: '长方'
+                            default: '默认',
+                            oblong: '长方',
                         },
                         onclick: function (item) {
                             var linked = false;
@@ -2828,9 +2667,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: 'default',
                         unfrequent: true,
                         item: {
-                            "default": '纵向',
+                            default: '纵向',
                             horizon: '横向',
-                            off: '禁用'
+                            off: '禁用',
                         },
                         onclick: function (item) {
                             game.saveConfig('cardtempname', item);
@@ -2849,7 +2688,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                             node.innerHTML = node.tempname;
                                             break;
                                         default:
-                                            hs[i]._tempName["delete"]();
+                                            hs[i]._tempName.delete();
                                             delete hs[i]._tempName;
                                     }
                                 }
@@ -2862,7 +2701,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         unfrequent: true,
                         item: {
                             image: '图片',
-                            text: '文字'
+                            text: '文字',
                         },
                         onclick: function (item) {
                             game.saveConfig('textequip', item);
@@ -2878,11 +2717,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '选将样式',
                         init: 'default',
                         item: {
-                            "default": '默认',
+                            default: '默认',
                             simple: '精简',
                             old: '旧版'
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     cursor_style: {
                         name: '鼠标指针',
@@ -2992,7 +2831,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         if (lib.config.image_background_random) {
                             map.image_background_blur.show();
                             map.image_background.hide();
-                            // map.import_background.hide();
                         }
                         else {
                             map.image_background.show();
@@ -3002,12 +2840,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             else {
                                 map.image_background_blur.show();
                             }
-                            // if(lib.config.image_background=='custom'&&lib.db){
-                            //     map.import_background.show();
-                            // }
-                            // else{
-                            //     map.import_background.hide();
-                            // }
                         }
                         if (lib.config.layout == 'long' || lib.config.layout == 'mobile') {
                             map.textequip.show();
@@ -3026,11 +2858,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                         if (lib.config.layout == 'long') {
-                            // map.fewplayer.show();
                             map.player_height.show();
                         }
                         else {
-                            // map.fewplayer.hide();
                             if (lib.config.layout == 'long2') {
                                 map.player_height.show();
                             }
@@ -3058,14 +2888,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             map.autoborder_count.hide();
                             map.autoborder_start.hide();
                         }
-                    }
+                    },
                 }
             },
-            /**
-             * 显示设置
-             * @name configMenu.view
-             * @type {!Object}
-             */
             view: {
                 name: '显示',
                 config: {
@@ -3165,7 +2990,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             off: '关闭',
                             left: '靠左',
-                            right: '靠右'
+                            right: '靠右',
                         },
                         onclick: function (bool) {
                             if (lib.config.show_history == 'right')
@@ -3201,7 +3026,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             off: '关闭',
                             left: '靠左',
                             center: '居中',
-                            right: '靠右'
+                            right: '靠右',
                         },
                         onclick: function (bool) {
                             game.saveConfig('show_log', bool);
@@ -3225,7 +3050,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '历史记录高亮',
                         init: true,
                         unfrequent: true,
-                        intro: '开启后历史记录不同类别的信息将以不同颜色显示'
+                        intro: '开启后历史记录不同类别的信息将以不同颜色显示',
                     },
                     show_time: {
                         name: '显示时间',
@@ -3263,7 +3088,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         unfrequent: true,
                         item: {
                             none: '默认',
-                            simple: '简约'
+                            simple: '简约',
                         },
                         onclick: function (item) {
                             game.saveConfig('watchface', item);
@@ -3298,7 +3123,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: 'off',
                         unfrequent: true,
                         item: {
-                            "default": '默认',
+                            default: '默认',
                             overlay: '嵌入',
                             auto: '自动',
                             off: '关闭'
@@ -3329,43 +3154,43 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '显示出牌信息',
                         intro: '出牌时在使用者上显示卡牌名称',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     hide_card_prompt_basic: {
                         name: '隐藏基本牌信息',
                         intro: '不显示基本牌名称',
                         init: false,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     hide_card_prompt_equip: {
                         name: '隐藏装备牌信息',
                         intro: '不显示装备牌名称',
                         init: false,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_phase_prompt: {
                         name: '显示阶段信息',
                         intro: '在当前回合不同阶段开始时显示阶段名称',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_phaseuse_prompt: {
                         name: '出牌阶段提示',
                         intro: '在你出牌时显示提示文字',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     auto_popped_config: {
                         name: '自动弹出选项',
                         intro: '鼠标移至选项按钮时弹出模式选择菜单',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     auto_popped_history: {
                         name: '自动弹出历史',
                         intro: '鼠标移至暂停按钮时弹出历史记录菜单',
                         init: false,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_round_menu: {
                         name: '显示触屏按钮',
@@ -3458,8 +3283,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: 'menu',
                         item: {
                             menu: '菜单',
-                            click: '单击'
-                        }
+                            click: '单击',
+                        },
                     },
                     character_dialog_tool: {
                         name: '自由选将显示',
@@ -3470,7 +3295,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '最近': '最近',
                             'all': '全部'
                         },
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     recent_character_number: {
                         name: '最近使用武将',
@@ -3480,7 +3305,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '6': '6',
                             '12': '12',
                             '20': '24',
-                            '30': '36'
+                            '30': '36',
                         },
                         unfrequent: true
                     },
@@ -3488,13 +3313,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '触屏装备选择',
                         intro: '设置触屏布局中选择装备的方式',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     filternode_button: {
                         name: '触屏筛选按钮',
                         intro: '设置自由选将对话框中筛选按钮的样式',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_charactercard: {
                         name: '显示武将资料',
@@ -3545,14 +3370,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             else {
                                 ui.arena.classList.add('replace_image');
                             }
-                        }
+                        },
                     },
                     hide_card_image: {
                         name: '隐藏卡牌背景',
                         intro: '所有卡牌将使用文字作为背景',
                         init: false,
                         unfrequent: true,
-                        restart: true
+                        restart: true,
                     },
                     show_name: {
                         name: '显示角色名称',
@@ -3714,30 +3539,25 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     wuxie_right: {
                         name: '无懈按钮靠左',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_discardpile: {
                         name: '暂停时显示弃牌堆',
                         init: false,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_extensionmaker: {
                         name: '显示制作扩展',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     show_extensionshare: {
                         name: '显示分享扩展',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     }
                 }
             },
-            /**
-             * 音效设置
-             * @name configMenu.audio
-             * @type {!Object}
-             */
             audio: {
                 name: '音效',
                 config: {
@@ -3758,13 +3578,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var menu = this._link.menu;
                             for (var i = 0; i < menu.childElementCount; i++) {
                                 if (!['music_off', 'music_custom', 'music_random'].concat(lib.config.all.background_music).contains(menu.childNodes[i]._link))
-                                    menu.childNodes[i]["delete"]();
+                                    menu.childNodes[i].delete();
                             }
                         },
                         name: '背景音乐',
                         init: true,
                         item: {
-                            music_default: '默认'
+                            music_default: '默认',
                         },
                         onclick: function (item) {
                             game.saveConfig('background_music', item);
@@ -3775,23 +3595,23 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '<div style="white-space:nowrap;width:calc(100% - 5px)">' +
                             '<input type="file" style="width:calc(100% - 40px)" accept="audio/*">' +
                             '<button style="width:40px">确定</button></div>',
-                        clear: true
+                        clear: true,
                     },
                     background_audio: {
                         name: '游戏音效',
-                        init: true
+                        init: true,
                     },
                     background_speak: {
                         name: '人物配音',
-                        init: true
+                        init: true,
                     },
                     equip_audio: {
                         name: '装备配音',
-                        init: false
+                        init: false,
                     },
                     repeat_audio: {
                         name: '播放重复语音',
-                        init: false
+                        init: false,
                     },
                     volumn_audio: {
                         name: '音效音量',
@@ -3805,7 +3625,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '7': '七',
-                            '8': '八'
+                            '8': '八',
                         },
                         onclick: function (volume) {
                             game.saveConfig('volumn_audio', parseInt(volume));
@@ -3823,7 +3643,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '7': '七',
-                            '8': '八'
+                            '8': '八',
                         },
                         onclick: function (volume) {
                             game.saveConfig('volumn_background', parseInt(volume));
@@ -3850,15 +3670,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 if (!_status._aozhan)
                                     game.playBackgroundMusic();
                             }
-                        }
-                    }
+                        },
+                    },
                 }
             },
-            /**
-             * (自动, 禁用)技能设置
-             * @name configMenu.skill
-             * @type {!Object}
-             */
             skill: {
                 name: '技能',
                 config: {
@@ -3884,38 +3699,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 其他菜单项
-             * @name configMenu.others
-             * @type {!Object}
-             */
             others: {
                 name: '其它',
                 config: {
-                    // reset_database:{
-                    //     name:'重置游戏',
-                    //     onclick:function(){
-                    //         var node=this;
-                    //         if(node._clearing){
-                    //             if(indexedDB) indexedDB.deleteDatabase(lib.configprefix+'data');
-                    //             game.reload();
-                    //             return;
-                    //         }
-                    //         node._clearing=true;
-                    //         node.innerHTML='单击以确认 (3)';
-                    //         setTimeout(function(){
-                    //             node.innerHTML='单击以确认 (2)';
-                    //             setTimeout(function(){
-                    //                 node.innerHTML='单击以确认 (1)';
-                    //                 setTimeout(function(){
-                    //                     node.innerHTML='重置游戏录像';
-                    //                     delete node._clearing;
-                    //                 },1000);
-                    //             },1000);
-                    //         },1000);
-                    //     },
-                    //     clear:true
-                    // },
                     reset_game: {
                         name: '重置游戏设置',
                         onclick: function () {
@@ -4000,14 +3786,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '<div style="white-space:nowrap;width:calc(100% - 10px)">' +
                             '<input type="file" style="width:calc(100% - 40px)">' +
                             '<button style="width:40px">确定</button></div>',
-                        clear: true
+                        clear: true,
                     },
                     export_data: {
                         name: '导出游戏设置',
                         onclick: function () {
                             var data;
                             var export_data = function (data) {
-                                game["export"](lib.init.encode(JSON.stringify(data)), '无名杀 - 数据 - ' + (new Date()).toLocaleString());
+                                game.export(lib.init.encode(JSON.stringify(data)), '无名杀 - 数据 - ' + (new Date()).toLocaleString());
                             };
                             if (!lib.db) {
                                 data = {};
@@ -4063,76 +3849,20 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             map.redownload_game.hide();
                         }
                     }
-                    // trim_game:{
-                    //     name:'隐藏非官方扩展包',
-                    //     onclick:function(){
-                    //         if(this.innerHTML!='已隐藏'){
-                    //             this.innerHTML='已隐藏';
-                    //                               var pack=lib.config.all.cards.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenCardPack)){
-                    //                                            for(var i=0;i<lib.config.hiddenCardPack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenCardPack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgscards.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenCardPack',pack);
-                    //
-                    //                               var pack=lib.config.all.characters.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenCharacterPack)){
-                    //                                            for(var i=0;i<lib.config.hiddenCharacterPack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenCharacterPack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgscharacters.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenCharacterPack',pack);
-                    //
-                    //                               var pack=lib.config.all.mode.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenModePack)){
-                    //                                            for(var i=0;i<lib.config.hiddenModePack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenModePack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgsmodes.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenModePack',pack);
-                    //
-                    //             var that=this;
-                    //             setTimeout(function(){
-                    //                 that.innerHTML='隐藏非官方扩展包';
-                    //             },500);
-                    //         }
-                    //     },
-                    //     clear:true
-                    // }
                 }
             }
         },
-        /**
-         * 拓展菜单
-         * @name configMenu.extensionMenu
-         */
         extensionMenu: {
             cardpile: {
                 enable: {
                     name: '开启',
                     init: false,
-                    restart: true
+                    restart: true,
                 },
                 intro: {
                     name: '将杀闪等牌在牌堆中的比例维持在与军争牌堆相同，防止开启扩展包后被过多地稀释',
                     clear: true,
-                    nopointer: true
+                    nopointer: true,
                 },
                 sha: {
                     name: '杀',
@@ -4260,85 +3990,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         game.saveConfig('hiddenPlayPack', lib.config.hiddenPlayPack);
                     }
-                }
+                },
             },
-            // boss: {
-            //     enable: {
-            //         name: '开启',
-            //         init: false,
-            //         restart: true,
-            //         onswitch: function (bool) {
-            //             if (bool) {
-            //                 var storage = { boss: {}, versus: {}, translate: {} };
-            //                 var loadversus = function () {
-            //                     game.loadModeAsync('versus', function (mode) {
-            //                         for (var i in mode.translate) {
-            //                             storage.translate[i] = mode.translate[i];
-            //                         }
-            //                         for (var i in mode.jiangeboss) {
-            //                             if (mode.jiangeboss[i][4].contains('bossallowed')) {
-            //                                 storage.versus[i] = mode.jiangeboss[i];
-            //                             }
-            //                         }
-            //                         localStorage.setItem('boss_storage_playpackconfig', JSON.stringify(storage));
-            //                     });
-            //                 };
-            //                 game.loadModeAsync('boss', function (mode) {
-            //                     for (var i in mode.translate) {
-            //                         storage.translate[i] = mode.translate[i];
-            //                     }
-            //                     for (var i in mode.characterPack.mode_boss) {
-            //                         if (mode.characterPack.mode_boss[i][4].contains('bossallowed')) {
-            //                             storage.boss[i] = mode.characterPack.mode_boss[i];
-            //                         }
-            //                     }
-            //                     loadversus();
-            //                 });
-            //             }
-            //             else {
-            //                 localStorage.removeItem('boss_storage_playpackconfig');
-            //             }
-            //         }
-            //     },
-            //     intro: {
-            //         name: '将剑阁和挑战模式的武将添加到其它模式',
-            //         clear: true,
-            //         nopointer: true,
-            //     },
-            //     enableai: {
-            //         name: '随机选将可用',
-            //         init: false
-            //     },
-            //     hide: {
-            //         name: '隐藏此扩展',
-            //         clear: true,
-            //         onclick: function () {
-            //             if (this.firstChild.innerHTML == '隐藏此扩展') {
-            //                 this.firstChild.innerHTML = '此扩展将在重启后隐藏';
-            //                 lib.config.hiddenPlayPack.add('boss');
-            //                 if (!lib.config.prompt_hidepack) {
-            //                     alert('隐藏的扩展包可通过选项-其它-重置隐藏内容恢复');
-            //                     game.saveConfig('prompt_hidepack', true);
-            //                 }
-            //             }
-            //             else {
-            //                 this.firstChild.innerHTML = '隐藏此扩展';
-            //                 lib.config.hiddenPlayPack.remove('boss');
-            //             }
-            //             game.saveConfig('hiddenPlayPack', lib.config.hiddenPlayPack);
-            //         }
-            //     },
-            // },
             wuxing: {
                 enable: {
                     name: '开启',
                     init: false,
-                    restart: true
+                    restart: true,
                 },
                 intro: {
                     name: '每名角色和部分卡牌在游戏开始时随机获得一个属性',
                     clear: true,
-                    nopointer: true
+                    nopointer: true,
                 },
                 num: {
                     name: '带属性卡牌',
@@ -4347,7 +4010,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         '0.1': '10%',
                         '0.2': '20%',
                         '0.3': '30%',
-                        '0.5': '50%'
+                        '0.5': '50%',
                     }
                 },
                 hide: {
@@ -4368,7 +4031,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         game.saveConfig('hiddenPlayPack', lib.config.hiddenPlayPack);
                     }
-                }
+                },
             },
             coin: {
                 enable: {
@@ -4388,7 +4051,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 intro: {
                     name: '每完成一次对局，可获得一定数量的金币；金币可用于购买游戏特效',
                     clear: true,
-                    nopointer: true
+                    nopointer: true,
                 },
                 display: {
                     name: '金币显示',
@@ -4434,115 +4097,17 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         game.saveConfig('hiddenPlayPack', lib.config.hiddenPlayPack);
                     }
-                }
-            }
+                },
+            },
         },
-        /**
-         * 游戏模式菜单
-         * @name configMenu.mode
-         * @type {!Object}
-         */
         mode: {
-            //引导
             yindao: {
                 name: '引导',
                 config: {
                     update: function (config, map) {
-                    }
+                    },
                 }
             },
-            // richer: {
-            //     name: '大富翁',
-            //     connect: {
-            //         connect_player_number: {
-            //             name: '游戏人数',
-            //             init: '6',
-            //             item: {
-            //                 '2': '两人',
-            //                 '3': '三人',
-            //                 '4': '四人',
-            //                 '5': '五人',
-            //                 '6': '六人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         update: function (config, map) {
-            //         },
-            //         connect_show_range: {
-            //             name: '显示卡牌范围',
-            //             init: true,
-            //         },
-            //         // connect_show_distance:{
-            //         // 	name:'显示距离',
-            //         // 	init:true,
-            //         // },
-            //         connect_chessscroll_speed: {
-            //             name: '边缘滚动速度',
-            //             init: '20',
-            //             intro: '鼠标移至屏幕边缘时自动滚屏',
-            //             item: {
-            //                 '0': '不滚动',
-            //                 '10': '10格/秒',
-            //                 '20': '20格/秒',
-            //                 '30': '30格/秒',
-            //             }
-            //         },
-            //     },
-            //     config: {
-            //         player_number: {
-            //             name: '游戏人数',
-            //             init: '6',
-            //             item: {
-            //                 '2': '两人',
-            //                 '3': '三人',
-            //                 '4': '四人',
-            //                 '5': '五人',
-            //                 '6': '六人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         update: function (config, map) {
-            //             switch (config.player_number) {
-            //                 case 4:
-            //                 case 6: {
-            //                     map.team_number.show();
-            //                     break;
-            //                 }
-            //                 default: {
-            //                     map.team_number.hide();
-            //                     break;
-            //                 }
-            //             }
-            //         },
-            //         show_range: {
-            //             name: '显示卡牌范围',
-            //             init: true,
-            //         },
-            //         team_number: {
-            //             name: '每队人数',
-            //             init: '1',
-            //             item: {
-            //                 '1': '单人',
-            //                 '2': '两人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         chessscroll_speed: {
-            //             name: '边缘滚动速度',
-            //             init: '20',
-            //             intro: '鼠标移至屏幕边缘时自动滚屏',
-            //             item: {
-            //                 '0': '不滚动',
-            //                 '10': '10格/秒',
-            //                 '20': '20格/秒',
-            //                 '30': '30格/秒',
-            //             }
-            //         },
-            //     }
-            // },
             identity: {
                 name: '身份',
                 connect: {
@@ -4594,7 +4159,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             normal: '标准',
                             zhong: '明忠',
-                            purple: '3v3v2'
+                            purple: '3v3v2',
                         },
                         restart: true,
                         frequent: true,
@@ -4613,7 +4178,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '8': '八人'
                         },
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_zhong_card: {
                         name: '明忠卡牌替换',
@@ -4625,26 +4190,25 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '双内奸',
                         init: false,
                         restart: true,
-                        // frequent:true,
                         intro: '开启后游戏中将有两个内奸（内奸胜利条件仍为主内1v1时击杀主公）'
                     },
                     connect_double_character: {
                         name: '双将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_change_card: {
                         name: '启用手气卡',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_change_choice: {
                         name: '点将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_special_identity: {
                         name: '特殊身份',
@@ -4653,16 +4217,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         frequent: true,
                         intro: '开启后游戏中将增加军师、大将、贼首三个身份'
                     },
-                    // connect_ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // connect_ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     connect_enhance_zhu: {
                         name: '加强主公',
                         init: false,
@@ -4679,7 +4233,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '3': '三',
                             '5': '五',
                             '7': '七',
-                            '9': '九'
+                            '9': '九',
                         },
                         intro: '为所有玩家分配额外选将框'
                     },
@@ -4802,7 +4356,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             normal: '标准',
                             zhong: '明忠',
-                            purple: '3v3v2'
+                            purple: '3v3v2',
                         },
                         restart: true,
                         frequent: true,
@@ -4821,7 +4375,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '8': '八人'
                         },
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     double_nei: {
                         name: '双内奸',
@@ -4841,13 +4395,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '主内单挑特效',
                         intro: '在进入主内单挑时，弹出全屏文字特效',
                         init: true,
-                        unfrequent: true
+                        unfrequent: true,
                     },
                     double_character: {
                         name: '双将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     special_identity: {
                         name: '特殊身份',
@@ -4870,9 +4424,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pingjun: '平均值',
                             zuidazhi: '最大值',
                             zuixiaozhi: '最小值',
-                            zonghe: '相加'
+                            zonghe: '相加',
                         },
-                        restart: true
+                        restart: true,
                     },
                     auto_identity: {
                         name: '自动显示身份',
@@ -4908,23 +4462,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 game.showIdentity(false);
                             }
                         },
-                        intro: '游戏进行若干轮将自动显示所有角色的身份'
+                        intro: '游戏进行若干轮将自动显示所有角色的身份',
                     },
                     auto_mark_identity: {
                         name: '自动标记身份',
                         init: true,
-                        intro: '根据角色的出牌行为自动标记可能的身份'
+                        intro: '根据角色的出牌行为自动标记可能的身份',
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     enhance_zhu: {
                         name: '加强主公',
                         init: false,
@@ -4989,8 +4533,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             disabled: '禁用',
                             once: '一次',
                             twice: '两次',
-                            unlimited: '无限'
-                        }
+                            unlimited: '无限',
+                        },
                     },
                     continue_game: {
                         name: '显示再战',
@@ -5049,8 +4593,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             zhu: '主公',
                             zhong: '忠臣',
                             nei: '内奸',
-                            fan: '反贼'
-                        }
+                            fan: '反贼',
+                        },
                     },
                     ban_identity2: {
                         name: '屏蔽身份2',
@@ -5060,8 +4604,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             zhu: '主公',
                             zhong: '忠臣',
                             nei: '内奸',
-                            fan: '反贼'
-                        }
+                            fan: '反贼',
+                        },
                     },
                     ban_identity3: {
                         name: '屏蔽身份3',
@@ -5071,8 +4615,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             zhu: '主公',
                             zhong: '忠臣',
                             nei: '内奸',
-                            fan: '反贼'
-                        }
+                            fan: '反贼',
+                        },
                     },
                     ai_strategy: {
                         name: '内奸策略',
@@ -5083,7 +4627,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             ai_strategy_3: '偏忠',
                             ai_strategy_4: '酱油',
                             ai_strategy_5: '天使',
-                            ai_strategy_6: '仇主'
+                            ai_strategy_6: '仇主',
                         },
                         intro: '设置内奸对主忠反的态度'
                     },
@@ -5093,8 +4637,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             easy: '友好',
                             normal: '一般',
-                            hard: '仇视'
-                        }
+                            hard: '仇视',
+                        },
                     },
                     choice_ex: {
                         name: '额外选将框',
@@ -5106,7 +4650,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2': '二',
                             '4': '四',
                             '6': '六',
-                            '8': '八'
+                            '8': '八',
                         },
                         intro: '为所有玩家分配额外选将框'
                     },
@@ -5120,8 +4664,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     choice_zhong: {
                         name: '忠臣候选武将数',
@@ -5133,8 +4677,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     choice_nei: {
                         name: '内奸候选武将数',
@@ -5146,8 +4690,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     choice_fan: {
                         name: '反贼候选武将数',
@@ -5159,8 +4703,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     card_remark: {
                         name: '装备回调',
@@ -5188,11 +4732,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             normal: '势备',
                             yingbian: '应变',
-                            old: '怀旧'
+                            old: '怀旧',
                         },
                         frequent: true,
                         restart: true,
-                        intro: '<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。'
+                        intro: '<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。',
                     },
                     connect_player_number: {
                         name: '游戏人数',
@@ -5206,14 +4750,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '8': '八人'
                         },
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_initshow_draw: {
                         name: '首亮奖励',
                         item: {
                             'off': '关闭',
                             'draw': '摸牌',
-                            'mark': '标记'
+                            'mark': '标记',
                         },
                         init: 'mark',
                         frequent: true,
@@ -5224,23 +4768,21 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: true,
                         intro: '若开启此选项，则将在游戏中引入“鏖战模式”的规则：<br>当游戏中仅剩四名或更少角色时（七人以下游戏时改为三名或更少），若此时全场没有超过一名势力相同的角色，则从一个新的回合开始，游戏进入鏖战模式直至游戏结束。<br>◇在鏖战模式下，【桃】只能当做【杀】或【闪】使用或打出，不能用来回复体力。<br>注：进入鏖战模式后，即使之后有两名或者更多势力相同的角色出现，仍然不会取消鏖战模式。',
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_viewnext: {
                         name: '观看下家副将',
                         init: false,
-                        intro: '若开启此选项，所有的玩家将在挑选武将后，分发起始手牌之前，分别观看自己下家的副将。'
+                        intro: '若开启此选项，所有的玩家将在挑选武将后，分发起始手牌之前，分别观看自己下家的副将。',
                     },
                     connect_zhulian: {
                         name: '珠联璧合',
                         init: true,
-                        // frequent:true,
                         intro: '主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
                     },
                     connect_junzhu: {
                         name: '替换君主',
                         init: true,
-                        // frequent:true,
                         restart: true,
                         intro: '若开启此选项，玩家的第一个回合开始时，若其主武将牌有对应的君主武将牌，则其可以将此武将牌替换为对应的君主武将牌，然后重新调整体力上限。若玩家的体力上限因此增大，则玩家回复等量的体力。'
                     },
@@ -5248,7 +4790,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '启用手气卡',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     card_remark: {
                         name: '装备回调',
@@ -5257,16 +4799,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         restart: true,
                         intro: '将军争和基础包的装备牌回调至《三国杀》原版'
                     }
-                    // connect_ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
-                    // connect_ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                 },
                 config: {
                     update: function (config, map) {
@@ -5284,11 +4816,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             normal: '势备',
                             yingbian: '应变',
                             old: '怀旧',
-                            free: '自由'
+                            free: '自由',
                         },
                         frequent: true,
                         restart: true,
-                        intro: '<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。<br><li>自由：使用玩家的自定义牌堆进行游戏。'
+                        intro: '<li>势备：默认模式，使用线下《君临天下·势备篇》的牌堆进行游戏。<br><li>应变：使用OL的应变国战牌堆进行游戏。<br><li>怀旧：使用传统国战的牌堆进行游戏。<br><li>自由：使用玩家的自定义牌堆进行游戏。',
                     },
                     player_number: {
                         name: '游戏人数',
@@ -5302,14 +4834,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '8': '八人'
                         },
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     initshow_draw: {
                         name: '首亮奖励',
                         item: {
                             'off': '关闭',
                             'draw': '摸牌',
-                            'mark': '标记'
+                            'mark': '标记',
                         },
                         init: 'mark',
                         frequent: true,
@@ -5320,12 +4852,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: true,
                         frequent: true,
                         restart: true,
-                        intro: '若开启此选项，则将在游戏中引入“鏖战模式”的规则：<br>当游戏中仅剩四名或更少角色时（七人以下游戏时改为三名或更少），若此时全场没有超过一名势力相同的角色，则从一个新的回合开始，游戏进入鏖战模式直至游戏结束。<br>◇在鏖战模式下，【桃】只能当做【杀】或【闪】使用或打出，不能用来回复体力。<br>注：进入鏖战模式后，即使之后有两名或者更多势力相同的角色出现，仍然不会取消鏖战模式。'
+                        intro: '若开启此选项，则将在游戏中引入“鏖战模式”的规则：<br>当游戏中仅剩四名或更少角色时（七人以下游戏时改为三名或更少），若此时全场没有超过一名势力相同的角色，则从一个新的回合开始，游戏进入鏖战模式直至游戏结束。<br>◇在鏖战模式下，【桃】只能当做【杀】或【闪】使用或打出，不能用来回复体力。<br>注：进入鏖战模式后，即使之后有两名或者更多势力相同的角色出现，仍然不会取消鏖战模式。',
                     },
                     viewnext: {
                         name: '观看下家副将',
                         init: false,
-                        intro: '若开启此选项，所有的玩家将在挑选武将后，分发起始手牌之前，分别观看自己下家的副将。'
+                        intro: '若开启此选项，所有的玩家将在挑选武将后，分发起始手牌之前，分别观看自己下家的副将。',
                     },
                     aozhan_bgm: {
                         name: '鏖战背景音乐',
@@ -5333,30 +4865,29 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             disabled: '不启用',
                             online: 'Online',
                             rewrite: 'Rewrite',
-                            chaoming: '潮鸣'
+                            chaoming: '潮鸣',
                         },
                         init: 'rewrite',
                         onclick: function (item) {
                             game.saveConfig('aozhan_bgm', item, this._link.config.mode);
                             if (_status._aozhan == true)
                                 game.playBackgroundMusic();
-                        }
+                        },
                     },
                     zhulian: {
                         name: '珠联璧合',
                         init: true,
-                        // frequent:true,
                         intro: '主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
                     },
                     changeViceType: {
                         name: '副将变更方式',
                         init: 'default',
                         item: {
-                            "default": '发现式',
-                            online: '随机式'
+                            default: '发现式',
+                            online: '随机式',
                         },
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     onlyguozhan: {
                         name: '使用国战武将',
@@ -5375,7 +4906,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     junzhu: {
                         name: '替换君主',
                         init: true,
-                        // frequent:true,
                         restart: true,
                         intro: '若开启此选项，玩家的第一个回合开始时，若其主武将牌有对应的君主武将牌，则其可以将此武将牌替换为对应的君主武将牌，然后重新调整体力上限。若玩家的体力上限因此增大，则玩家回复等量的体力。'
                     },
@@ -5387,20 +4917,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pingjun: '平均值',
                             zuidazhi: '最大值',
                             zuixiaozhi: '最小值',
-                            zonghe: '相加'
+                            zonghe: '相加',
                         },
-                        restart: true
+                        restart: true,
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     free_choose: {
                         name: '自由选将',
                         init: true,
@@ -5465,7 +4985,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             disabled: '禁用',
                             once: '一次',
                             twice: '两次',
-                            unlimited: '无限'
+                            unlimited: '无限',
                         }
                     },
                     continue_game: {
@@ -5523,7 +5043,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             easy: '友好',
                             normal: '一般',
-                            hard: '仇视'
+                            hard: '仇视',
                         }
                     },
                     choice_num: {
@@ -5536,7 +5056,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '7': '七',
                             '8': '八',
                             '9': '九',
-                            '10': '十'
+                            '10': '十',
                         }
                     },
                     card_remark: {
@@ -5574,7 +5094,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '1v1': '1v1',
                             '2v2': '2v2',
                             '3v3': '3v3',
-                            '4v4': '4v4'
+                            '4v4': '4v4',
                         },
                         frequent: true
                     },
@@ -5593,7 +5113,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '16': '16人',
                             '20': '20人',
                             '24': '24人',
-                            '40': '40人'
+                            '40': '40人',
                         }
                     },
                     connect_replace_number: {
@@ -5606,9 +5126,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '2': '2人',
                             '3': '3人',
                             '4': '4人',
-                            '5': '5人'
+                            '5': '5人',
                         }
-                    }
+                    },
                 },
                 config: {
                     update: function (config, map) {
@@ -5706,16 +5226,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             four: '对抗',
                             three: '统率',
                             two: '欢乐',
-                            //guandu:'官渡',
                             jiange: '战场',
                             siguo: '四国',
                             standard: '自由'
-                            // endless:'无尽',
-                            // triple:'血战',
-                            // one:'<span style="display:inline-block;width:100%;text-align:center">1v1</span>',
                         },
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     ladder: {
                         name: '天梯模式',
@@ -5726,51 +5242,51 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     ladder_monthly: {
                         name: '每月重置天梯',
                         init: true,
-                        frequent: true
+                        frequent: true,
                     },
                     enable_all: {
                         name: '启用全部武将',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     enable_all_cards_four: {
                         name: '启用全部卡牌',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     enable_all_three: {
                         name: '启用全部武将',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     enable_all_cards: {
                         name: '启用全部卡牌',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     four_assign: {
                         name: '代替队友选将',
                         init: false,
-                        restart: true
+                        restart: true,
                     },
                     four_phaseswap: {
                         name: '代替队友行动',
                         init: false,
-                        restart: true
+                        restart: true,
                     },
                     two_assign: {
                         name: '代替队友选将',
                         init: false,
-                        restart: true
+                        restart: true,
                     },
                     two_phaseswap: {
                         name: '代替队友行动',
                         init: false,
-                        restart: true
+                        restart: true,
                     },
                     free_choose: {
                         name: '自由选将',
@@ -5849,12 +5365,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 delete ui.cheat;
                             }
                         },
-                        frequent: true
+                        frequent: true,
                     },
                     double_character_jiange: {
                         name: '双将模式',
                         init: false,
-                        frequent: true
+                        frequent: true,
                     },
                     replace_handcard_two: {
                         name: '四号位保护',
@@ -5871,7 +5387,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     expand_dialog: {
                         name: '默认展开选将框',
                         intro: '选将框打开时直接显示全部武将（可能使游戏在开始时卡顿）',
-                        init: false
+                        init: false,
                     },
                     siguo_character: {
                         name: '专属武将出场率',
@@ -5879,20 +5395,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         item: {
                             increase: '大概率',
                             normal: '默认概率',
-                            off: '不出现'
+                            off: '不出现',
                         },
                         frequent: true
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true
-                    // },
                     ladder_reset: {
                         name: '重置天梯数据',
                         onclick: function () {
@@ -5921,7 +5427,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }, 1000);
                             }, 1000);
                         },
-                        clear: true
+                        clear: true,
                     },
                     edit_character_three: {
                         name: '编辑统率将池',
@@ -5936,7 +5442,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var discardConfig = ui.create.div('.editbutton', '取消', editorpage, function () {
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container["delete"](null);
+                                container.delete(null);
                                 delete window.saveNonameInput;
                             });
                             var node = container;
@@ -5973,7 +5479,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 game.saveConfig('character_three', character, 'versus');
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container["delete"]();
+                                container.delete();
                                 container.code = code;
                                 delete window.saveNonameInput;
                             };
@@ -6019,7 +5525,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }
                             }
                             ;
-                        }
+                        },
                     },
                     reset_character_three: {
                         name: '重置将池',
@@ -6030,8 +5536,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 game.saveConfig('character_three', null, 'versus');
                                 alert('将池已重置');
                             }
-                        }
-                    }
+                        },
+                    },
                 }
             },
             connect: {
@@ -6040,7 +5546,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     connect_nickname: {
                         name: '联机昵称',
                         input: true,
-                        frequent: true
+                        frequent: true,
                     },
                     connect_avatar: {
                         name: '联机头像',
@@ -6055,7 +5561,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     hall_ip: {
                         name: '联机大厅',
                         input: true,
-                        frequent: true
+                        frequent: true,
                     },
                     hall_button: {
                         name: '联机大厅按钮',
@@ -6072,7 +5578,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }
                             }
                         }
-                    }
+                    },
                 }
             },
             boss: {
@@ -6108,7 +5614,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 delete ui.cheat;
                             }
                         },
-                        frequent: true
+                        frequent: true,
                     },
                     single_control: {
                         name: '单人控制',
@@ -6126,7 +5632,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         },
                         intro: '只控制一名角色，其他角色由AI控制'
-                    }
+                    },
                 }
             },
             doudizhu: {
@@ -6154,23 +5660,23 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             kaihei: '开黑',
                             huanle: '欢乐',
                             binglin: '兵临',
-                            online: '智斗'
+                            online: '智斗',
                         },
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     connect_double_character: {
                         name: '双将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     connect_change_card: {
                         name: '启用手气卡',
                         init: false,
                         frequent: true,
-                        restart: true
-                    }
+                        restart: true,
+                    },
                 },
                 config: {
                     update: function (config, map) {
@@ -6221,16 +5727,16 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             kaihei: '开黑',
                             huanle: '欢乐',
                             binglin: '兵临',
-                            online: '智斗'
+                            online: '智斗',
                         },
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     double_character: {
                         name: '双将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     double_hp: {
                         name: '双将体力上限',
@@ -6240,9 +5746,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pingjun: '平均值',
                             zuidazhi: '最大值',
                             zuixiaozhi: '最小值',
-                            zonghe: '相加'
+                            zonghe: '相加',
                         },
-                        restart: true
+                        restart: true,
                     },
                     free_choose: {
                         name: '自由选将',
@@ -6302,8 +5808,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             disabled: '禁用',
                             once: '一次',
                             twice: '两次',
-                            unlimited: '无限'
-                        }
+                            unlimited: '无限',
+                        },
                     },
                     continue_game: {
                         name: '显示再战',
@@ -6364,8 +5870,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     choice_fan: {
                         name: '农民候选武将数',
@@ -6377,8 +5883,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
+                            '10': '十',
+                        },
                     },
                     edit_character: {
                         name: '编辑将池',
@@ -6393,7 +5899,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var discardConfig = ui.create.div('.editbutton', '取消', editorpage, function () {
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container["delete"](null);
+                                container.delete(null);
                                 delete window.saveNonameInput;
                             });
                             var node = container;
@@ -6443,7 +5949,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 game.saveConfig('character_online', character, 'doudizhu');
                                 ui.window.classList.remove('shortcutpaused');
                                 ui.window.classList.remove('systempaused');
-                                container["delete"]();
+                                container.delete();
                                 container.code = code;
                                 delete window.saveNonameInput;
                             };
@@ -6489,7 +5995,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }
                             }
                             ;
-                        }
+                        },
                     },
                     reset_character: {
                         name: '重置将池',
@@ -6500,8 +6006,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 game.saveConfig('character_online', null, 'doudizhu');
                                 alert('将池已重置');
                             }
-                        }
-                    }
+                        },
+                    },
                 }
             },
             longlaoguan: {
@@ -6512,8 +6018,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '启用手气卡',
                         init: false,
                         frequent: true,
-                        restart: true
-                    }
+                        restart: true,
+                    },
                 },
                 config: {
                     update: function (config, map) {
@@ -6528,7 +6034,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '双将模式',
                         init: false,
                         frequent: true,
-                        restart: true
+                        restart: true,
                     },
                     double_hp: {
                         name: '双将体力上限',
@@ -6538,9 +6044,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             pingjun: '平均值',
                             zuidazhi: '最大值',
                             zuixiaozhi: '最小值',
-                            zonghe: '相加'
+                            zonghe: '相加',
                         },
-                        restart: true
+                        restart: true,
                     },
                     free_choose: {
                         name: '自由选将',
@@ -6600,8 +6106,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             disabled: '禁用',
                             once: '一次',
                             twice: '两次',
-                            unlimited: '无限'
-                        }
+                            unlimited: '无限',
+                        },
                     },
                     continue_game: {
                         name: '显示再战',
@@ -6657,8 +6163,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: '1',
                         restart: true,
                         item: {
-                            '1': '一'
-                        }
+                            '1': '一',
+                        },
                     },
                     choice_fan: {
                         name: '反抗军候选武将数',
@@ -6670,9 +6176,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             '5': '五',
                             '6': '六',
                             '8': '八',
-                            '10': '十'
-                        }
-                    }
+                            '10': '十',
+                        },
+                    },
                 }
             },
             single: {
@@ -6682,16 +6188,16 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         name: '游戏模式',
                         init: 'dianjiang',
                         item: {
-                            dianjiang: '点将单挑'
+                            dianjiang: '点将单挑',
                         },
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     connect_enable_jin: {
                         name: '启用晋势力武将',
                         init: false,
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     update: function (config, map) {
                         if (config.connect_single_mode != 'normal') {
@@ -6700,23 +6206,23 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else {
                             map.connect_enable_jin.show();
                         }
-                    }
+                    },
                 },
                 config: {
                     single_mode: {
                         name: '游戏模式',
                         init: 'dianjiang',
                         item: {
-                            dianjiang: '点将单挑'
+                            dianjiang: '点将单挑',
                         },
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     enable_jin: {
                         name: '启用晋势力武将',
                         init: false,
                         restart: true,
-                        frequent: true
+                        frequent: true,
                     },
                     update: function (config, map) {
                         if (config.single_mode != 'normal') {
@@ -6725,7 +6231,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else {
                             map.enable_jin.show();
                         }
-                    }
+                    },
                 }
             },
             brawl: {
@@ -6766,43 +6272,24 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         init: true,
                         frequent: true
                     },
-                    // tongqueduopao:{
-                    // 	name:'铜雀夺袍',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     tongjiangmoshi: {
                         name: '同将模式',
                         init: true,
                         frequent: true
                     },
-                    // baiyidujiang:{
-                    // 	name:'白衣渡江',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     qianlidanji: {
                         name: '千里单骑',
                         init: true,
                         frequent: true
                     },
-                    // liangjunduilei:{
-                    // 	name:'两军对垒',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     scene: {
                         name: '创建场景',
                         init: true,
                         frequent: true
                     }
                 }
-            }
+            },
         },
-        /**
-         * lib状态，储存如delayed、videoId等动态数据
-         * @type {!Object}
-         */
         status: {
             running: false,
             canvas: false,
@@ -6811,30 +6298,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             delayed: 0,
             frameId: 0,
             videoId: 0,
-            globalId: 0
+            globalId: 0,
         },
-        /**
-         * 帮助菜单
-         * @type {!Object}
-         */
         help: {
             'FAQ': '<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>' +
                 '<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>' +
                 '<li>Q：夜雾和lulu的技能改变出牌效果时，影响牌的使用次数吗？<li>A：不影响，牌的使用次数始终在牌使用或打出时计入。特别的，lulu的技能可以改变牌名，有可能影响牌的后续结算；而夜雾的技能不改变牌名，（虽然效果已经变化）与原牌名关联的效果不会受影响（如【初始服】之于【杀】【万箭】【南蛮】）<br>',
             '游戏操作': '<ul><li>长按/鼠标悬停/右键单击显示信息<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管<li>键盘快捷键<br>' +
                 '<table><tr><td>A<td>切换托管<tr><td>W<td>切换不询问无懈<tr><td>空格<td>暂停</table><li>编辑牌堆<br>在卡牌包中修改牌堆后，将自动创建一个临时牌堆，在所有模式中共用，当保存当前牌堆后，临时牌堆被清除。每个模式可设置不同的已保存牌堆，设置的牌堆优先级大于临时牌堆</ul>',
-            // '游戏命令':'<div style="margin:10px">变量名</div><ul style="margin-top:0"><li>场上角色<br>game.players<li>阵亡角色<br>game.dead'+
-            // '<li>玩家<br>game.me<li>玩家的上/下家<br>game.me.previous/next'+
-            // '<li>玩家的上/下家（含阵亡）<br>game.me.previousSeat/<br>nextSeat'+
-            // '<li>牌堆<br>ui.cardPile<li>弃牌堆<br>ui.discardPile</ul>'+
-            // '<div style="margin:10px">角色属性</div><ul style="margin-top:0"><li>体力值<br>player.hp'+
-            // '<li>体力上限<br>player.maxHp<li>身份<br>player.identity<li>手牌<br>player.getCards("h")<li>装备牌<br>player.getCards("e")<li>判定牌<br>player.getCards("j")'+
-            // '<li>是否存活/横置/翻面<br>player.isAlive()/<br>isLinked()/<br>isTurnedOver()</ul>'+
-            // '<div style="margin:10px">角色操作</div><ul style="margin-top:0"><li>受到伤害<br>player.damage(source,<br>num)'+
-            // '<li>回复体力<br>player.recover(num)<li>摸牌<br>player.draw(num)<li>获得牌<br>player.gain(cards)<li>弃牌<br>player.discard(cards)'+
-            // '<li>使用卡牌<br>player.useCard(card,<br>targets)<li>死亡<br>player.die()<li>复活<br>player.revive(hp)</ul>'+
-            // '<div style="margin:10px">游戏操作</div><ul style="margin-top:0"><li>在命令框中输出结果<br>game.print(str)<li>清除命令框中的内容<br>cls<li>上一条/下一条输入的内容<br>up/down<li>游戏结束<br>game.over(bool)'+
-            // '<li>角色资料<br>lib.character<li>卡牌资料<br>lib.card</ul>',
             '游戏名词': '<ul><li>智囊：无名杀默认为过河拆桥/无懈可击/无中生有/洞烛先机。牌堆中没有的智囊牌会被过滤。可在卡牌设置中自行增减。若没有可用的智囊，则改为随机选取的三种锦囊牌的牌名。' +
                 '<li>仁库：部分武将使用的游戏外共通区域。至多包含六张牌。当有新牌注入后，若牌数超过上限，则将最早进入仁库的溢出牌置入弃牌堆。' +
                 '<li>护甲：和体力类似，每点护甲可抵挡一点伤害，但不影响手牌上限。' +
@@ -6842,14 +6313,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 '<li>发现：从三张随机亮出的牌中选择一张，若无特殊说明，则获得此牌。' +
                 '<li>蓄力技：发动时可以增大黄色的数字。若如此做，红色数字于技能的结算过程中改为原来的两倍。'
         },
-        /**
-         * 设置(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
-         * @name lib.setIntro
-         * @param {(HTMLDivElement|PlayerModel)} node 要弹窗的节点
-         * @param {?function} func 用于自定义弹窗的回调函数
-         * @param {?boolean} left 如果为true，点击事件也能触发弹窗
-         * @see {@link get.nodeintro}
-         */
         setIntro: function (node, func, left) {
             if (node instanceof PlayerModel) {
                 node = node.element;
@@ -6873,18 +6336,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     node.oncontextmenu = ui.click.rightplayer;
                 }
             }
-            // if(!left){
-            //     lib.setPressure(node,ui.click.rightpressure);
-            // }
             if (func) {
                 node._customintro = func;
             }
         },
-        // setPressure:function(node,func){
-        //     if(window.Pressure){
-        //         window.Pressure.set(node,{change: func}, {polyfill: false});
-        //     }
-        // },
         setPopped: function (node, func, width, height, forceclick, paused2) {
             node._poppedfunc = func;
             node._poppedwidth = width;
@@ -6897,7 +6352,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             }
             else {
                 node.addEventListener('mouseenter', ui.click.hoverpopped);
-                // node.addEventListener('mouseleave',ui.click.hoverpopped_leave);
             }
             if (paused2) {
                 node._paused2 = true;
@@ -6934,21 +6388,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             }
             dialog.style.top = idealtop + 'px';
         },
-        /**
-         * @callback lib.setHover~callback
-         * @param {MouseEvent} e MouseEvent on mouse move
-         * @returns {*}TODO
-         */
-        /**
-         * 设置悬浮
-         * 监听悬停事件
-         * @function
-         * @param {!HTMLElement} node
-         * @param {?lib.setHover~callback} func 回调函数
-         * @param {?number} hoveration 悬停的时间，如果为null，使用默认悬停事件 {@link GameConfig}
-         * @param {?number} width 弹窗宽度，为null时不设置
-         * @returns {!HTMLElement}
-         */
         setHover: function (node, func, hoveration, width) {
             node._hoverfunc = func;
             if (typeof hoveration == 'number') {
@@ -6963,48 +6402,22 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             node.addEventListener('mousemove', ui.click.mousemove);
             return node;
         },
-        /**
-         * 设置滚轮
-         * 为节点监听滚动事件
-         * @function
-         * @param {!HTMLElement} node 要监听滚动事件的节点
-         * @returns {!HTMLElement}
-         */
         setScroll: function (node) {
             node.ontouchstart = ui.click.touchStart;
             node.ontouchmove = ui.click.touchScroll;
             node.style.WebkitOverflowScrolling = 'touch';
             return node;
         },
-        /**
-         * 设置鼠标滚轮（用于切换皮肤菜单）
-         * 为节点监听鼠标滚轮事件
-         * @function
-         * @param {!HTMLElement} node 要监听鼠标滚轮事件的节点
-         * @returns {!HTMLElement}
-         */
         setMousewheel: function (node) {
             if (lib.config.mousewheel)
                 node.onmousewheel = ui.click.mousewheel;
         },
-        /**
-         * 设置长按
-         * 监听长按事件
-         * @param {!HTMLElement} node 要监听长按事件的节点
-         * @param {?function} func 回调事件
-         * @returns {!HTMLElement}
-         */
         setLongPress: function (node, func) {
             node.addEventListener('touchstart', ui.click.longpressdown);
             node.addEventListener('touchend', ui.click.longpresscancel);
             node._longpresscallback = func;
             return node;
         },
-        /**
-         * 更新`ui.canvas`
-         * @param {!number} time 当前时间
-         * @returns {(undefined|false)} 如果没有需要更新的`<canvas>`返回false
-         */
         updateCanvas: function (time) {
             if (lib.canvasUpdates.length === 0) {
                 lib.status.canvas = false;
@@ -7016,7 +6429,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             ctx.shadowBlur = 5;
             ctx.shadowColor = 'rgba(0,0,0,0.3)';
             ctx.strokeStyle = 'white';
-            // ctx.lineCap='round';
             ctx.lineWidth = 3;
             ctx.save();
             for (var i = 0; i < lib.canvasUpdates.length; i++) {
@@ -7031,10 +6443,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             }
         },
-        /**
-         * 一个启动函数，其中循环更新`lib.updates`直至没有需要更新的函数
-         * @param {!number} time 当前时间
-         */
         run: function (time) {
             lib.status.time = time;
             for (var i = 0; i < lib.updates.length; i++) {
@@ -7053,40 +6461,16 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 lib.status.delayed = 0;
             }
         },
-        /**
-         * 将date转化为对应的datetime并返回转化后的datetime
-         * [recommend] 移到{@link get}中
-         * @function
-         * @param {Date} date
-         * @returns {number} datetime
-         * @see {@link get.utc}
-         */
         getUTC: function (date) {
             return date.getTime();
         },
-        /**
-         * 保存录像
-         */
         saveVideo: function () {
             if (_status.videoToSave) {
-                game["export"](lib.init.encode(JSON.stringify(_status.videoToSave)), '无名杀 - 录像 - ' + _status.videoToSave.name[0] + ' - ' + _status.videoToSave.name[1]);
+                game.export(lib.init.encode(JSON.stringify(_status.videoToSave)), '无名杀 - 录像 - ' + _status.videoToSave.name[0] + ' - ' + _status.videoToSave.name[1]);
             }
         },
-        /**
-         * 初始化
-         * @namespace
-         */
         init: {
-            /**
-             * 初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
-             * 入口函数
-             * @function
-             */
             init: function () {
-                //part: `lib.configprefix` 初始化
-                //如果是从PC端（node.js）载入，额外需要`__dirname`的各级文件夹首字母来拼接
-                //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'|'vtuberkill_1.9_Fvts_'`
-                //BUG: [PC win10] 路径使用`\`时，只获取了盘符
                 if (typeof __dirname === 'string' && __dirname.length) {
                     var dirsplit = __dirname.split('/');
                     for (var i = 0; i < dirsplit.length; i++) {
@@ -7098,12 +6482,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     lib.configprefix += '_';
                 }
                 window.resetGameTimeout = setTimeout(lib.init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 5000);
-                //part: `cordovaLoadTimeout`的创建，在 ../app/redirect.js
                 if (window.cordovaLoadTimeout) {
                     clearTimeout(window.cordovaLoadTimeout);
                     delete window.cordovaLoadTimeout;
                 }
-                //part: 从html中，删除首次启动使用的样式（css）
                 var links = document.head.querySelectorAll('link');
                 for (var i = 0; i < links.length; i++) {
                     if (links[i].href.indexOf('app/color.css') != -1) {
@@ -7111,31 +6493,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         break;
                     }
                 }
-                //part: 如果是phantom，则禁用indexedDB
                 var index = window.location.href.indexOf('index.html?server=');
                 if (index != -1) {
-                    /**
-                     * 服务器ID
-                     * @type {string}
-                     * @global
-                     */
                     window.isNonameServer = window.location.href.slice(index + 18);
-                    /**
-                     * 禁用indexedDB，为真值时禁用
-                     * @type {boolean}
-                     * @global
-                     */
                     window.nodb = true;
                 }
                 else {
-                    //??
                     index = localStorage.getItem(lib.configprefix + 'asserver');
                     if (index) {
                         window.isNonameServer = index;
                         window.isNonameServerIp = lib.hallURL;
                     }
                 }
-                //part: 设置背景图
                 var htmlbg = localStorage.getItem(lib.configprefix + 'background');
                 if (htmlbg) {
                     if (htmlbg[0] == '[') {
@@ -7162,13 +6531,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 }
-                //part: get, ui, ai, game 引用到 lib对象
                 lib.get = get;
                 lib.ui = ui;
                 lib.ai = ai;
                 lib.game = game;
-                //part: 拓展 HTMLDivElement.
-                //#region 
                 HTMLDivElement.prototype.animate = function (name, time) {
                     var that;
                     if (get.is.mobileMe(this) && name == 'target') {
@@ -7200,7 +6566,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.classList.remove('hidden');
                     return this;
                 };
-                HTMLDivElement.prototype["delete"] = function (time, callback) {
+                HTMLDivElement.prototype.delete = function (time, callback) {
                     if (this.timeout) {
                         clearTimeout(this.timeout);
                         delete this.timeout;
@@ -7420,17 +6786,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 };
-                //#endregion
-                //part: 拓展 HTMLTableElement
-                //#region
                 HTMLTableElement.prototype.get = function (row, col) {
                     if (row < this.childNodes.length) {
                         return this.childNodes[row].childNodes[col];
                     }
                 };
-                //#endregion
-                //part: 拓展数组
-                //#region
                 Array.prototype.numOf = function (item) {
                     var num = 0;
                     for (var i = 0; i < this.length; i++) {
@@ -7550,15 +6910,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return list;
                     };
                 }
-                //#endregion
-                //part: 设置全局window.onkeydown, window.onload, window.onerror，直到关闭网页（退出游戏）
-                /**
-                 * 监听键盘按下事件
-                 * @function
-                 * @global
-                 * @param {KeyboardEvent} e - 键盘事件
-                 * @listens KeyboardEvent
-                 */
                 window.onkeydown = function (e) {
                     if (!ui.menuContainer || !ui.menuContainer.classList.contains('hidden')) {
                         if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
@@ -7599,7 +6950,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.closePopped();
                         var dialogs = document.querySelectorAll('#window>.dialog.popped:not(.static)');
                         for (var i = 0; i < dialogs.length; i++) {
-                            dialogs[i]["delete"]();
+                            dialogs[i].delete();
                         }
                         if (e.keyCode == 32) {
                             var node = ui.window.querySelector('pausedbg');
@@ -7652,16 +7003,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
                             lib.node.debug();
                         }
-                        // else if(e.keyCode==27){
-                        //     if(!ui.arena.classList.contains('paused')) ui.click.config();
-                        // }
                     }
                 };
-                /**
-                 * window加载结束时调用
-                 * @function
-                 * @global
-                 */
                 window.onload = function () {
                     if (lib.device) {
                         var script = document.createElement('script');
@@ -7679,24 +7022,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         lib.init.onload();
                     }
                     else {
-                        /**
-                         * 当onload调用先于包的加载时，标志onload已经运行完毕，直至包全部加载完毕则删除该标志
-                         * @private
-                         * @default
-                         */
                         _status.windowLoaded = true;
                     }
                 };
-                /**
-                 * 触发错误时调用
-                 * @function
-                 * @global
-                 * @param {string} msg - 错误信息
-                 * @param {string} src - 引发错误的脚本URL
-                 * @param {string} line - 引发错误的行号
-                 * @param {string} column - 发生错误的行的列号
-                 * @param {Error} err - 错误对象
-                 */
                 window.onerror = function (msg, src, line, column, err) {
                     var str = msg;
                     if (window._status && _status.event) {
@@ -7745,7 +7073,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.loop();
                     }
                 };
-                //part: 更新内容，window.nogame_update，创建于config.js
                 if (window.noname_update) {
                     lib.version = window.noname_update.version;
                     lib.changeLog = window.noname_update.changeLog;
@@ -7757,7 +7084,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     delete window.noname_update;
                 }
-                //part: 如果是移动端，设置移动设备信息lib.device, 资源根路径lib.assetURL
                 var noname_inited = localStorage.getItem('noname_inited');
                 if (noname_inited && noname_inited !== 'nodejs') {
                     var ua = navigator.userAgent.toLowerCase();
@@ -7769,15 +7095,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     lib.assetURL = noname_inited;
                 }
-                //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
                 var config3 = null;
                 var proceed = function (config2) {
-                    //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
                     if (config3 === null) {
                         config3 = config2;
                         return;
                     }
-                    //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
                     if (config2.mode)
                         lib.config.mode = config2.mode;
                     if (lib.config.mode_config[lib.config.mode] == undefined)
@@ -7787,15 +7110,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
                         }
                     }
-                    //part: defaultcharacters
                     if (lib.config.characters) {
                         lib.config.defaultcharacters = lib.config.characters.slice(0);
                     }
-                    //part: defaultcards
                     if (lib.config.cards) {
                         lib.config.defaultcards = lib.config.cards.slice(0);
                     }
-                    //part: 从`config2`加载`lib.config`和`lib.mode_config`的数据
                     for (var i in config2) {
                         if (i.indexOf('_mode_config') != -1) {
                             var thismode = i.substr(i.indexOf('_mode_config') + 13);
@@ -7808,7 +7128,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             lib.config[i] = config2[i];
                         }
                     }
-                    //part: 从`lib.config.translate`拷贝到`lib.translate`
                     for (var i in lib.config.translate) {
                         lib.translate[i] = lib.config.translate[i];
                     }
@@ -7816,7 +7135,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     lib.config.all.cards = [];
                     lib.config.all.plays = [];
                     lib.config.all.mode = [];
-                    //part: 如果测试模式已开启，重置资源列表
                     if (lib.config.debug) {
                         lib.init.js(lib.assetURL + 'game', 'asset', function () {
                             lib.skin = window.noname_skin_list;
@@ -7827,7 +7145,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (window.isNonameServer) {
                         lib.config.mode = 'connect';
                     }
-                    //part: `window.noname_package`，创建于package.js
                     var pack = window.noname_package;
                     delete window.noname_package;
                     for (i in pack.character) {
@@ -7863,7 +7180,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                     }
-                    //??
                     if (lib.config.all.mode.length == 0) {
                         lib.config.all.mode.push('identity');
                         lib.translate.identity = '身份';
@@ -7881,7 +7197,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var link = lib.config.customBackgroundPack[i];
                             lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
                         }
-                        lib.configMenu.appearence.config.image_background.item["default"] = '默认';
+                        lib.configMenu.appearence.config.image_background.item.default = '默认';
                     }
                     if (pack.music) {
                         if (lib.device || typeof window.require == 'function') {
@@ -7920,17 +7236,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
                             ui.css.fontsheet.sheet.insertRule("@font-face {font-family: '" + i + "';src: url('" + lib.assetURL + "font/" + i + ".ttf');}", 0);
                         }
-                        lib.configMenu.appearence.config.cardtext_font.item["default"] = '默认';
-                        lib.configMenu.appearence.config.global_font.item["default"] = '默认';
+                        lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
+                        lib.configMenu.appearence.config.global_font.item.default = '默认';
                     }
-                    //part: touch, layout, scroll config
                     var ua = navigator.userAgent.toLowerCase();
                     if ('ontouchstart' in document) {
-                        //移动端
                         if (!lib.config.totouched) {
                             game.saveConfig('totouched', true);
                             if (lib.device) {
-                                //移动端通过客户端访问
                                 game.saveConfig('low_performance', true);
                                 game.saveConfig('confirm_exit', true);
                                 game.saveConfig('touchscreen', true);
@@ -7943,7 +7256,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 }
                             }
                             else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
-                                //移动端通过网页访问
                                 game.saveConfig('touchscreen', true);
                                 if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
                                     game.saveConfig('phonelayout', true);
@@ -7952,14 +7264,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                     }
-                    else if (lib.config.touchscreen) { //非移动端，如果触屏模式开启，就设置关闭
+                    else if (lib.config.touchscreen) {
                         game.saveConfig('touchscreen', false);
                     }
                     if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
                         game.saveConfig('toscrolled', true);
                         game.saveConfig('mousewheel', false);
                     }
-                    //part: 是否打开开始界面
                     var show_splash = lib.config.show_splash;
                     if (show_splash == 'off') {
                         show_splash = false;
@@ -7970,9 +7281,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                     localStorage.removeItem('show_splash_off');
-                    //part: extension list
-                    //??
-                    //[never executed]
                     var extensionlist = [];
                     if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
                         if (lib.config.extensions && lib.config.extensions.length) {
@@ -8008,11 +7316,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else {
                         if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
                             for (var i = 0; i < lib.config.extensions.length; i++) {
-                                game["import"]('extension', { name: lib.config.extensions[i] });
+                                game.import('extension', { name: lib.config.extensions[i] });
                             }
                         }
                     }
-                    //用于加载包的函数
                     var loadPack = function () {
                         var toLoad = lib.config.all.cards.length + lib.config.all.characters.length + 1;
                         var packLoaded = function () {
@@ -8023,11 +7330,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     lib.init.onload();
                                 }
                                 else {
-                                    /**
-                                     * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
-                                     * @private
-                                     * @default
-                                     */
                                     _status.packLoaded = true;
                                 }
                             }
@@ -8044,9 +7346,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         lib.init.js(lib.assetURL + 'card', lib.config.all.cards, packLoaded, packLoaded);
                         lib.init.js(lib.assetURL + 'character', lib.config.all.characters, packLoaded, packLoaded);
                         lib.init.js(lib.assetURL + 'character', 'rank', packLoaded, packLoaded);
-                        // if(lib.device!='ios'&&lib.config.enable_pressure) lib.init.js(lib.assetURL+'game','pressure');
                     };
-                    //part: 检查layout并设置`game.layout = layout`
                     var layout = lib.config.layout;
                     if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
                         layout = 'mobile';
@@ -8057,7 +7357,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.saveConfig('phonelayout', true);
                     }
                     game.layout = layout;
-                    //part: 随机选取背景或选择_status.htmlbg作为背景图像
                     if (lib.config.image_background_random) {
                         if (_status.htmlbg) {
                             game.saveConfig('image_background', _status.htmlbg);
@@ -8074,9 +7373,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         lib.init.background();
                     }
                     delete _status.htmlbg;
-                    //part: game to window.game
-                    // window.game = game;//[todo delete]
-                    //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
                     var styleToLoad = 6;
                     var styleLoaded = function () {
                         styleToLoad--;
@@ -8106,7 +7402,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                     };
-                    //css.layout
                     if (lib.config.layout != 'default') {
                         ui.css.layout = lib.init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
                     }
@@ -8114,7 +7409,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         ui.css.layout = lib.init.css();
                         styleToLoad--;
                     }
-                    //css.phone
                     if (get.is.phoneLayout()) {
                         ui.css.phone = lib.init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
                     }
@@ -8122,15 +7416,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         ui.css.phone = lib.init.css();
                         styleToLoad--;
                     }
-                    //css.theme
                     ui.css.theme = lib.init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
-                    //css.card_style
                     ui.css.card_style = lib.init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
-                    //css_cardpack_style
                     ui.css.cardback_style = lib.init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
-                    //css.hp_style
                     ui.css.hp_style = lib.init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
-                    //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
                     if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
                         var str = '';
                         switch (lib.config.player_style) {
@@ -8191,9 +7480,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
                     }
-                    //part: ??
                     lib.config.duration = 500;
-                    //part: add mouse/touch event listeners to document.
                     if (!lib.config.touchscreen) {
                         document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
                         document.addEventListener('mousemove', ui.click.windowmousemove);
@@ -8216,16 +7503,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         config3 = true;
                     }
                 };
-                //part: 初始化ui.css.menu和ui.css.default样式
                 ui.css = {
                     menu: lib.init.css(lib.assetURL + 'layout/default', 'menu', function () {
-                        ui.css["default"] = lib.init.css(lib.assetURL + 'layout/default', 'layout');
+                        ui.css.default = lib.init.css(lib.assetURL + 'layout/default', 'layout');
                         proceed2();
                     })
                 };
-                //part: config for different type of devices(PC, mobile devices).
                 if (lib.device) {
-                    //移动端，window加载完成时被调用
                     lib.init.cordovaReady = function () {
                         if (lib.device == 'android') {
                             document.addEventListener("pause", function () {
@@ -8434,7 +7718,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     };
                 }
                 else if (typeof window.require == 'function') {
-                    //part: PC端
                     lib.node = {
                         fs: require('fs'),
                         debug: function () {
@@ -8579,7 +7862,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
                 else {
-                    //part: 网页端
                     window.onbeforeunload = function () {
                         if (lib.config.confirm_exit && !_status.reloading) {
                             return '是否离开游戏？';
@@ -8589,20 +7871,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     };
                 }
-                //part: 游戏设置信息，window.config，创建于config.js
                 lib.config = window.config;
-                //part: 联机部分的设置
                 lib.configOL = {};
                 delete window.config;
                 var config2;
                 if (localStorage.getItem(lib.configprefix + 'nodb')) {
                     window.nodb = true;
                 }
-                //part: 持久化数据
-                //`config2` 在这里从indexedDB/localStorage加载config数据，存入`config2`；`config2`，可能是`{}`，`false`或者读取到的config对象
-                //如果config加载完成时，`ui.css`未加载完成，则暂存`config2`于`config3`中，等到完成再调用`proceed`
                 if (window.indexedDB && !window.nodb) {
-                    //part: indexedDB
                     var request = window.indexedDB.open(lib.configprefix + 'data', 4);
                     request.onupgradeneeded = function (e) {
                         var db = e.target.result;
@@ -8624,7 +7900,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     };
                     request.onsuccess = function (e) {
                         lib.db = e.target.result;
-                        //part: indexedDB 读取config对象
                         game.getDB('config', null, function (obj) {
                             if (!obj.storageImported) {
                                 try {
@@ -8653,7 +7928,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     }
                                 }
                                 game.saveConfig('storageImported', true);
-                                //init background
                                 lib.init.background();
                                 localStorage.removeItem(lib.configprefix + 'config');
                             }
@@ -8665,7 +7939,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     };
                 }
                 else {
-                    //part: localStorage
                     try {
                         config2 = JSON.parse(localStorage.getItem(lib.configprefix + 'config'));
                         if (!config2 || typeof config2 != 'object')
@@ -8678,11 +7951,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     proceed(config2);
                 }
             },
-            /**
-             * 重置游戏
-             * 在游戏初始载入过程中超时的回调函数，发出弹窗询问是否重置（重启）游戏。
-             * @function
-             */
             reset: function () {
                 if (window.inSplash)
                     return;
@@ -8741,16 +8009,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 游戏初始载入成功时被调用，加载游戏样式数据，并载入开始界面。
-             * @function
-             */
             onload: function () {
                 ui.updated();
-                /**
-                 * 文档缩放比例
-                 * @type {number}
-                 */
                 game.documentZoom = game.deviceZoom;
                 if (game.documentZoom != 1) {
                     ui.updatez();
@@ -8966,7 +8226,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     var card = lib.imported.card;
                     var character = lib.imported.character;
                     var play = lib.imported.play;
-                    // delete window.game;//[todo delete]
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i])
@@ -9300,7 +8559,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     continue;
                                 for (k in play[i][j]) {
                                     if (j == 'translate' && k == i) {
-                                        // lib[j][k+'_play_config']=play[i][j][k];
                                     }
                                     else {
                                         if (lib[j][k] != undefined) {
@@ -9493,7 +8751,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
                                 }
                             }
-                            splash["delete"](1000);
+                            splash.delete(1000);
                             delete window.inSplash;
                             window.resetGameTimeout = setTimeout(lib.init.reset, 5000);
                             this.listenTransition(function () {
@@ -9552,7 +8810,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     proceed();
                 }
                 localStorage.removeItem(lib.configprefix + 'directstart');
-                delete lib.init.init; //??
+                delete lib.init.init;
             },
             startOnline: function () {
                 'step 0';
@@ -9568,10 +8826,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
                 event.goto(0);
             },
-            /**
-             * 闲时执行，一般选择角色后开始执行这个方法
-             * @function
-             */
             onfree: function () {
                 if (lib.onfree) {
                     clearTimeout(window.resetGameTimeout);
@@ -9634,12 +8888,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 });
                 client.send('opened');
             },
-            /**
-             * 创建（并插入文档）新的`<style>`
-             * @function
-             * @param {...string} rules css rules
-             * @returns {!HTMLStyleElement} 新的`<style>`
-             */
             sheet: function () {
                 var style = document.createElement('style');
                 document.head.appendChild(style);
@@ -9650,24 +8898,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
                 return style;
             },
-            /**
-             * 读取一个css文件
-             * 于文档中创建（并插入文档中）新的`<link>`，如果设置路径则先加载再返回，否则直接返回空`<link>`
-             * @function lib.init.css
-             * @param {string} [path=null] 要加载的css文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {string} file 文件名（不包括拓展名），自动添加后缀.css；如果path为null，则被忽略
-             * @param {function():void} [before] 可选，onload回调函数，在新`<link>`加载完成时被调用
-             */
-            /**
-             * 读取一个css文件
-             * 于文档中创建（并插入文档中）新的`<link>`，如果设置路径则先加载再返回，否则直接返回空`<link>`
-             * @function lib.init.css
-             * @variation 2
-             * @param {string} [path=null] 要加载的css文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {string} file 文件名（不包括拓展名），自动添加后缀.css；如果path为null，则被忽略
-             * @param {HTMLLinkElement} [before] 可选，一个{@link HTMLLinkElement}对象，新`<link>`会插入到`before`前
-             * @returns {HTMLLinkElement} 新的`<link>`
-             */
             css: function (path, file, before) {
                 var style = document.createElement("link");
                 style.rel = "stylesheet";
@@ -9686,42 +8916,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
                 return style;
             },
-            /**
-             * 读取一个js文件
-             * 于文档中创建新的`<script>`对象
-             * @function lib.init.js
-             * @param {!string} dir 要加载的js文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {!string} file 文件名（不包括拓展名），自动添加后缀.js；如果path为null，则被忽略
-             * @param {function():void} [onload] 可选，onload回调函数
-             * @param {function():void} [onerror] 可选，onerror回调函数
-             * @returns {!HTMLScriptElement} 新的`<script>`
-             */
-            /**
-             * 读取一个js文件
-             * 于文档中创建新的`<script>`对象
-             * @function lib.init.js
-             * @variation 2
-             * @param {!string} path 要加载的js文件所在路径, 如果为null，不设置生成的`<link>`的href值
-             * @param {null} file 文件名（无拓展名），自动添加后缀.js
-             * @param {function():void} [onload] 可选，onload回调函数
-             * @param {function():void} [onerror] 可选，onerror回调函数
-             * @returns {!HTMLScriptElement} 新的`<script>`
-             */
-            /**
-             * 读取一个js文件
-             * 于文档中创建一组新的`<script>`对象
-             * @function lib.init.js
-             * @variation 3
-             * @param {!string} path 要加载的js文件所在路径, 如果为null，不设置生成的`<link>`的href值
-             * @param {Array<string>} files 文件名数组
-             * @param {?function():void} [onload] 可选，onload回调函数，对每个新的`<script>`调用
-             * @param {?function():void} [onerror] 可选，onerror回调函数，对每个新的`<script>`调度
-             */
             js: function (path, file, onload, onerror) {
                 if (path[path.length - 1] == '/') {
                     path = path.slice(0, path.length - 1);
                 }
-                //??
                 if (path == lib.assetURL + 'mode' && lib.config.all.stockmode.indexOf(file) == -1) {
                     lib.init['setMode_' + file]();
                     onload();
@@ -9774,13 +8972,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 oReq.open("GET", sScriptURL);
                 oReq.send();
             },
-            /**
-             * 读取一个json文件
-             * @function
-             * @param {!string} url url路径
-             * @param {function(Object):void} onload 成功时的回调函数
-             * @param {function():void} onerror 失败时回调函数
-             */
             json: function (url, onload, onerror) {
                 var oReq = new XMLHttpRequest();
                 if (onload)
@@ -9803,10 +8994,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 oReq.open("GET", url);
                 oReq.send();
             },
-            /**
-             * 初始化角色字体样式和边缘样式
-             * @function
-             */
             cssstyles: function () {
                 if (ui.css.styles) {
                     ui.css.styles.remove();
@@ -9834,12 +9021,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         break;
                 }
             },
-            /**
-             * 初始化布局
-             * @function
-             * @param {string} layout 布局类型
-             * @param {boolean} nosave 是否保存
-             */
             layout: function (layout, nosave) {
                 if (!nosave)
                     game.saveConfig('layout', layout);
@@ -9952,10 +9133,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }, 100);
                 }, 500);
             },
-            /**
-             * 保存当前的背景图片
-             * @function
-             */
             background: function () {
                 if (lib.config.image_background_random) {
                     var list = [];
@@ -9998,7 +9175,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             },
             parse: function (func) {
                 var str = func.toString();
-                //galgame调整
                 str = str.replace(/(?!\.)galgame/g, 'game.galgame');
                 str = str.slice(str.indexOf('{') + 1);
                 if (str.indexOf('step 0') == -1) {
@@ -10013,14 +9189,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     str = str.replace(/'step 0'|"step 0"/, 'if(event.step==' + k + ') {event.finish();return;}switch(step){case 0:');
                 }
-                return (new Function('event', 'step', 'source', 'player', 'target', 'targets', 'card', 'cards', 'skill', 'forced', 'num', 'trigger', 'result', '_status', 'lib', 'game', 'ui', 'get', 'ai', str));
+                return (new Function('event', 'step', 'source', 'player', 'target', 'targets', 'card', 'cards', 'skill', 'num', 'trigger', 'result', '_status', 'lib', 'game', 'ui', 'get', 'ai', str));
             },
-            /**
-             * 执行一个，或一组无参函数，并返回结果；如果是`{a:function(){}, b:function(){}}`的形式，返回`{a: any, b: any}`作为结果
-             * @function
-             * @param {(function():any|Object<string, function():any>)} func 要执行的函数/函数组
-             * @returns {(any|Object<string, any>)}
-             */
             eval: function (func) {
                 if (typeof func == 'function') {
                     return eval('(' + func.toString() + ')');
@@ -10034,12 +9204,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
                 return func;
             },
-            /**
-             * 加密文本
-             * @function
-             * @param {string} strUni 原文本
-             * @returns 加密文本
-             */
             encode: function (strUni) {
                 var strUtf = strUni.replace(/[\u0080-\u07ff]/g, function (c) {
                     var cc = c.charCodeAt(0);
@@ -10051,12 +9215,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 });
                 return btoa(strUtf);
             },
-            /**
-             * 解密
-             * @function
-             * @param {string} str 加密文本
-             * @returns {string} 原文本
-             */
             decode: function (str) {
                 var strUtf = atob(str);
                 var strUni = strUtf.replace(/[\u00e0-\u00ef][\u0080-\u00bf][\u0080-\u00bf]/g, function (c) {
@@ -10069,11 +9227,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 });
                 return strUni;
             },
-            /**
-             * js对象转为json字符串
-             * @function
-             * @returns {!string}
-             */
             stringify: function (obj) {
                 var str = '{';
                 for (var i in obj) {
@@ -10092,11 +9245,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 str += '}';
                 return str;
             },
-            /**
-             * 技能对象转为json字符串
-             * @function
-             * @returns {!string}
-             */
             stringifySkill: function (obj) {
                 var str = '';
                 for (var i in obj) {
@@ -10115,14 +9263,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 return str;
             }
         },
-        /**
-         * 测试用作弊方法
-         * @name cheat
-         */
         cheat: {
             i: function () {
                 window.cheat = lib.cheat;
-                // window.game = game;//[todo delete]
                 window.ui = ui;
                 window.get = get;
                 window.ai = ai;
@@ -10242,8 +9385,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 game.saveConfig('animation', false);
                 game.saveConfig('hover_all', false);
                 game.saveConfig('asset_version', 'v1.9');
-                // game.saveConfig('characters',lib.config.all.characters);
-                // game.saveConfig('cards',lib.config.all.cards);
                 game.saveConfig('plays', ['cardpile']);
                 game.saveConfig('skip_shan', false);
                 game.saveConfig('tao_enemy', true);
@@ -10274,7 +9415,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             },
             q: function () {
-                // if(lib.config.layout!='mobile') lib.init.layout('mobile');
                 if (arguments.length == 0) {
                     var style = ui.css.card_style;
                     if (lib.config.card_style != 'simple') {
@@ -10359,51 +9499,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             },
             c: function () {
-                // (function () {
-                //     var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
-                //     var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
-                //     for (var i in lib.character) {
-                //         switch (lib.character[i][1]) {
-                //             case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
-                //             case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
-                //             case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
-                //             case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
-                //             case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
-                //             case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
-                //             case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
-                //             case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
-                //             case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
-                //             case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
-                //             case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
-                //             case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
-                //             case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
-                //             case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
-                //             case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
-                //             case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
-                //             case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
-                //             case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
-                //             case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
-                //             case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
-                //             case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
-                //             case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
-                //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
-                //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //             case 'chidori': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //         }
-                //     }
-                //     console.log('魏：' + (a - sa) + '/' + a);
-                //     console.log('蜀：' + (b - sb) + '/' + b);
-                //     console.log('吴：' + (c - sc) + '/' + c);
-                //     console.log('群：' + (d - sd) + '/' + d);
-                //     console.log('西：' + (e - se) + '/' + e);
-                //     console.log('键：' + (f - sf) + '/' + f);
-                //     console.log('杏：' + (g - sg) + '/' + g);
-                //     console.log('虹：' + (h - sh) + '/' + h);
-                //     console.log('U：' + (j - sj) + '/' + j);
-                //     console.log('点：' + (k - sk) + '/' + k);
-                //     console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
-                // }());
                 (function () {
                     var a = 0, b = 0, c = 0, d = 0;
                     var aa = 0, bb = 0, cc = 0, dd = 0;
@@ -10503,7 +9598,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     for (var i = 1; i <= 13; i++) {
                         arr.push(num[i]);
                     }
-                    console.log.apply(console, __spreadArray([(a + b + c + d) + '/' + (aa + bb + cc + dd)], arr, false));
+                    console.log((a + b + c + d) + '/' + (aa + bb + cc + dd), ...arr);
                 }());
             },
             id: function () {
@@ -10869,13 +9964,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 game.zhu.maxHp++;
                 game.zhu.hp++;
                 game.zhu.update();
-            }
+            },
         },
-        /**
-         * 词汇翻译
-         * 翻译文本
-         * @type {!Object}
-         */
         translate: {
             sc: '打钱',
             ship: '上舰',
@@ -10891,7 +9981,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             epic: '史诗',
             legend: '传说',
             beginner: '简单',
-            "default": "默认",
+            default: "默认",
             special: '特殊',
             zhenfa: '阵法',
             aozhan: "鏖战",
@@ -11161,24 +10251,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             group_vwp_bg: "椿",
             group_chaos_bg: "潮",
             group_xuyan_bg: "虚",
-            group_xuefeng_bg: "雪"
+            group_xuefeng_bg: "雪",
         },
-        /**
-         * 游戏基础对象和状态机
-         * @name element
-         * @namespace
-         * @see {@link content}
-         * @see {@link lib.element.player}
-         * @see {@link lib.element.card}
-         */
         element: {
-            /**
-             * 内容方法，setContent所调用的方法，即事件的具体内容
-             * 状态机
-             * @name content
-             * @namespace
-             * @global
-             */
             content: {
                 resetRound: function () {
                     var skill = event.resetSkill || event.name.slice(0, event.name.indexOf('_roundcount'));
@@ -11195,7 +10270,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.unmarkSkill(roundname);
                     }
                 },
-                //崭新出炉
                 chooseShengjie: function () {
                     'step 0';
                     var list = [];
@@ -11232,8 +10306,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     var mate = filter.slice(0);
                                     var smate = [];
                                     for (var j = 0; j < mate.length; j++) {
-                                        for (var _i = 0, scards_1 = scards; _i < scards_1.length; _i++) {
-                                            var k = scards_1[_i];
+                                        for (var k of scards) {
                                             if (!smate.contains(k)) {
                                                 if (get.is.filterCardBy(k, mate[j])) {
                                                     smate.push(k);
@@ -11268,8 +10341,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 if (filter.length == scards.length) {
                                     var mate = filter.slice(0);
                                     for (var j = 0; j < mate.length; j++) {
-                                        for (var _i = 0, scards_2 = scards; _i < scards_2.length; _i++) {
-                                            var k = scards_2[_i];
+                                        for (var k of scards) {
                                             if (get.is.filterCardBy(k, mate[j])) {
                                                 mate.splice(j--, 1);
                                             }
@@ -11291,7 +10363,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             bool: true,
                             cards: cards,
                             materials: cards,
-                            star: star
+                            star: star,
                         };
                     }
                     else
@@ -11405,7 +10477,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (result.bool) {
                         event.result = {
                             bool: true,
-                            targets: event.targets2 || result.targets
+                            targets: event.targets2 || result.targets,
                         };
                         var next = player.useCard(card, event.targets2 || result.targets);
                         next.oncard = event.oncard;
@@ -11415,8 +10487,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             next.nopopup = true;
                         if (event.animate === false)
                             next.animate = false;
-                        if (event["throw"] === false)
-                            next["throw"] = false;
+                        if (event.throw === false)
+                            next.throw = false;
                         if (event.addCount === false)
                             next.addCount = false;
                         if (event.noTargetDelay)
@@ -11448,7 +10520,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var buttons = _status.event.dialog.buttons;
                             return {
                                 bool: true,
-                                links: [buttons.randomGet().link]
+                                links: [buttons.randomGet().link],
                             };
                         });
                     }
@@ -11524,7 +10596,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var buttons = _status.event.dialog.buttons;
                             return {
                                 bool: true,
-                                links: [buttons.randomGet().link]
+                                links: [buttons.randomGet().link],
                             };
                         });
                     }
@@ -11765,7 +10837,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (js.length)
                         player.discard(js);
                     player.storage._disableJudge = true;
-                    //player.markSkill('_disableJudge');
                     'step 1';
                     game.broadcastAll(function (player, card) {
                         player.$disableJudge();
@@ -11779,7 +10850,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.$enableJudge();
                     }, player);
                 },
-                /*----分界线----*/
                 phasing: function () {
                     'step 0';
                     while (ui.dialogs.length) {
@@ -11842,10 +10912,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     player.ai.tempIgnore = [];
                     _status.globalHistory.push({
                         cardMove: [],
-                        custom: []
+                        custom: [],
                     });
                     game.countPlayer2(function (current) {
-                        current.actionHistory.push({ useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], changeHujia: [], custom: [] });
+                        current.actionHistory.push(Object.assign({}, lib.historyRecorder));
                         current.stat.push({ card: {}, skill: {} });
                         if (event.parent._roundStart) {
                             current.getHistory().isRound = true;
@@ -11864,11 +10934,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     'step 1';
                     event.trigger('phaseBeginStart');
                 },
-                /**
-                 * 更换随从
-                 * @name content.toggleSubPlayer
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 toggleSubPlayer: function () {
                     'step 0';
                     var list = event.list || player.storage.subplayer.skills.slice(0);
@@ -11925,11 +10990,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             player.directequip(cfg.es);
                     }
                 },
-                /**
-                 * 结束调遣随从
-                 * @name content.callSubPlayer
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 exitSubPlayer: function () {
                     'step 0';
                     if (player.storage.subplayer) {
@@ -11973,11 +11033,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.trigger('subPlayerDie');
                     }
                 },
-                /**
-                 * 调遣随从
-                 * @name content.callSubPlayer
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 callSubPlayer: function () {
                     'step 0';
                     var list = player.getSubPlayers(event.tag);
@@ -12037,11 +11092,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     'step 2';
                     game.delay();
                 },
-                /**
-                 * 反转结算顺序
-                 * @name content.reverseOrder
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 reverseOrder: function () {
                     "step 0";
                     game.delay();
@@ -12067,29 +11117,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 使用判定牌
-                 * @name content.addJudgeCard
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 addJudgeCard: function () {
                     if (lib.filter.judge(card, player, target) && cards.length && get.position(cards[0], true) == 'o')
                         target.addJudge(card, cards);
                 },
-                /**
-                 * 使用装备牌
-                 * @name content.equipCard
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 equipCard: function () {
                     if (cards.length && get.position(cards[0], true) == 'o')
                         target.equip(card, cards[0]);
                 },
-                /**
-                 * 游戏开始前分牌
-                 * @name content.gameDraw
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 gameDraw: function () {
                     "step 0";
                     if (_status.brawl && _status.brawl.noGameDraw) {
@@ -12172,11 +11207,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.finish();
                     }
                 },
-                /**
-                 * 阶段循环
-                 * @name content.phaseLoop
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phaseLoop: function () {
                     "step 0";
                     for (var i = 0; i < lib.onphase.length; i++) {
@@ -12192,19 +11222,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.goto(0);
                 },
-                /**
-                 * 加载包
-                 * @name content.loadPackage
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Array<Object>} event.packages 包名数组，用于加载
-                 * @property {string} event.packages[].0 包目录，相对`lib.assetURL`路径
-                 * @property {string} event.packages[].1 包名
-                 */
                 loadPackage: function () {
                     'step 0';
                     if (event.packages.length) {
-                        // window.game = game;//[todo delete]
                         var pack = event.packages.shift().split('/');
                         lib.init.js(lib.assetURL + pack[0], pack[1], game.resume);
                         game.pause();
@@ -12213,7 +11233,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.finish();
                     }
                     'step 1';
-                    // if (!lib.config.dev) delete window.game;//[todo delete]
                     var character = lib.imported.character;
                     var card = lib.imported.card;
                     var i, j, k;
@@ -12297,32 +11316,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.goto(0);
                 },
-                /**
-                 * 加载模组
-                 * @name content.loadMode
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!string} event.mode 要加载的mode名
-                 * @property {?Object} event.result 如果加载成功返回加载的模组，如果失败则返回未指定(undefined)结果
-                 */
                 loadMode: function () {
                     'step 0';
-                    // window.game = game;//[todo delete]
                     lib.init.js(lib.assetURL + 'mode', event.mode, game.resume);
                     game.pause();
                     'step 1';
-                    // if (!lib.config.dev) delete window.game;//[todo delete]
                     event.result = lib.imported.mode[event.mode];
                     delete lib.imported.mode[event.mode];
                 },
-                /**
-                 * 强制结束
-                 * @name content.forceOver
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {?string} event.bool 是否调用{@link game.over}，如果为'noover'，则不调用
-                 * @property {?function():void} [event.callback] 回调函数，在事件结束前调用
-                 */
                 forceOver: function () {
                     'step 0';
                     while (ui.controls.length) {
@@ -12339,11 +11340,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.callback();
                     }
                 },
-                /**
-                 * 事件触发调度状态机
-                 * @name content.arrangeTrigger
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 arrangeTrigger: function () {
                     'step 0';
                     event.filter1 = function (info) {
@@ -12449,12 +11445,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else
                         event.goto(event.doing.list.length ? 3 : 2);
                 },
-                /**
-                 * 检测时机并让玩家选择是否发动触发类技能
-                 * 创建触发器
-                 * @name content.createTrigger
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 createTrigger: function () {
                     "step 0";
                     if (lib.filter.filterTrigger(trigger, player, event.triggername, event.skill)) {
@@ -12654,11 +11644,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * Play video
-                 * @name content.playVideoContent
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 playVideoContent: function () {
                     'step 0';
                     game.delay(0, 500);
@@ -12745,7 +11730,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     'step 2';
                     if (event.video.length) {
                         var content = event.video.shift();
-                        // console.log(content);
                         if (content.type == 'delay') {
                             game.delay(content.content);
                         }
@@ -12790,11 +11774,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }, 500);
                     }
                 },
-                /**
-                 * wait for player
-                 * @name content.waitForPlayer
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 waitForPlayer: function () {
                     'step 0';
                     ui.auto.hide();
@@ -12835,7 +11814,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.send('server', 'config', lib.configOL);
                     }
                     for (var i = 0; i < game.connectPlayers.length; i++) {
-                        game.connectPlayers[i]["delete"]();
+                        game.connectPlayers[i].delete();
                     }
                     delete game.connectPlayers;
                     if (ui.roomInfo) {
@@ -12854,11 +11833,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         ui.cardPileButton.style.display = '';
                     }
                 },
-                /**
-                 * 置换手牌(单机)
-                 * @name content.replaceHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 replaceHandcards: function () {
                     'step 0';
                     if (event.players.contains(game.me)) {
@@ -12876,11 +11850,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.me.directgain(get.cards(hs.length));
                     }
                 },
-                /**
-                 * 置换手牌[support online]
-                 * @name content.replaceHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 replaceHandcardsOL: function () {
                     'step 0';
                     var send = function () {
@@ -12920,11 +11889,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.pause();
                     }
                 },
-                /**
-                 * 一个完整的回合
-                 * @name content.phase
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phase: function () {
                     "step 0";
                     if (!event.stageList || !event.stageList.length)
@@ -12964,11 +11928,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.goto(1);
                     }
                 },
-                /**
-                 * 判定阶段
-                 * @name content.phaseJudge
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phaseJudge: function () {
                     "step 0";
                     event.cards = player.getCards('j');
@@ -13030,11 +11989,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     ui.clear();
                     event.goto(1);
                 },
-                /**
-                 * 摸牌阶段
-                 * @name content.phaseDraw
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phaseDraw: function () {
                     "step 0";
                     event.trigger("phaseDrawBegin1");
@@ -13064,11 +12018,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.cards = result;
                     }
                 },
-                /**
-                 * 出牌阶段
-                 * @name content.phaseUse
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phaseUse: function () {
                     "step 0";
                     var next = player.chooseToUse();
@@ -13111,11 +12060,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             stat.card[i] = 0;
                     }
                 },
-                /**
-                 * 弃牌阶段
-                 * @name content.phaseDiscard
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 phaseDiscard: function () {
                     "step 0";
                     if (!event.num)
@@ -13133,13 +12077,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 2";
                     event.cards = result.cards;
                 },
-                /**
-                 * 选择以使用(牌|技能)
-                 * @name content.chooseToUse
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToUse: function () {
                     "step 0";
                     if (event.responded)
@@ -13396,13 +12333,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.result.result = event._result;
                     }
                 },
-                /**
-                 * 选择以响应(牌|技能)
-                 * @name content.chooseToUse
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToRespond: function () {
                     "step 0";
                     if (event.responded) {
@@ -13585,13 +12515,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.stopCountChoose();
                     }
                 },
-                /**
-                 * 选择以弃置牌
-                 * @name content.chooseToDiscard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToDiscard: function () {
                     "step 0";
                     if (event.autochoose()) {
@@ -13599,7 +12522,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             bool: true,
                             autochoose: true,
                             cards: player.getCards(event.position),
-                            rawcards: player.getCards(event.position)
+                            rawcards: player.getCards(event.position),
                         };
                         for (var i = 0; i < event.result.cards.length; i++) {
                             if (!lib.filter.cardDiscardable(event.result.cards[i], player, event)) {
@@ -13608,7 +12531,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                     else {
-                        // &&!lib.filter.wuxieSwap(trigger)
                         if (game.modeSwapPlayer && !_status.auto && player.isUnderControl()) {
                             game.modeSwapPlayer(player);
                         }
@@ -13691,7 +12613,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseCard(event.ai) || forced) {
+                        if (ai.basic.chooseCard(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else if (event.skill) {
@@ -13745,13 +12667,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event.dialog && event.dialog.close)
                         event.dialog.close();
                 },
-                /**
-                 * 拼点失败
-                 * @name content.chooseToCompareLose
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToCompareLose: function () {
                     for (var i = 0; i < event.lose_list.length; i++) {
                         var next = event.lose_list[i][0].lose(event.lose_list[i][1], ui.ordering);
@@ -13759,13 +12674,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.getlx = false;
                     }
                 },
-                /**
-                 * 多人拼点
-                 * @name content.chooseToCompareMultiple
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToCompareMultiple: function () {
                     "step 0";
                     if (player.countCards('h') == 0) {
@@ -13838,7 +12746,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     if (lose_list.length) {
                         game.loseAsync({
-                            lose_list: lose_list
+                            lose_list: lose_list,
                         }).setContent('chooseToCompareLose');
                     }
                     event.cardlist = cards;
@@ -13850,7 +12758,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player: event.card1,
                         targets: event.cardlist.slice(0),
                         num1: [],
-                        num2: []
+                        num2: [],
                     };
                     game.log(player, '的拼点牌为', event.card1);
                     "step 3";
@@ -13927,13 +12835,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 7";
                     event.cards.add(event.card1);
                 },
-                /**
-                 * 两人拼点
-                 * @name content.chooseToCompare
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseToCompare: function () {
                     "step 0";
                     if (player.countCards('h') == 0 || target.countCards('h') == 0) {
@@ -14046,7 +12947,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     if (event.lose_list.length) {
                         game.loseAsync({
-                            lose_list: event.lose_list
+                            lose_list: event.lose_list,
                         }).setContent('chooseToCompareLose');
                     }
                     "step 5";
@@ -14122,13 +13023,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.preserve = !event.result.bool;
                     }
                 },
-                /**
-                 * 选择以获得一项技能
-                 * @name content.discoverSkill
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 discoverSkill: function () {
                     'step 0';
                     var num = event.num || 3;
@@ -14212,13 +13106,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.result = { bool: true, skill: result };
                     }
                 },
-                /**
-                 * 选择以获得一项技能
-                 * @name content.chooseSkill
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseSkill: function () {
                     'step 0';
                     var list;
@@ -14278,13 +13165,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.result = { bool: true, skill: result };
                 },
-                /**
-                 * 选择以(获得|使用)牌
-                 * @name content.chooseSkill
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 discoverCard: function () {
                     'step 0';
                     var num = event.num || 3;
@@ -14356,13 +13236,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 选择项(按钮)
-                 * @name content.chooseButton
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseButton: function () {
                     "step 0";
                     if (typeof event.dialog == 'number') {
@@ -14406,7 +13279,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         else {
                             game.check();
-                            if (ai.basic.chooseButton(event.ai) || forced)
+                            if (ai.basic.chooseButton(event.ai) || event.forced)
                                 ui.click.ok();
                             else
                                 ui.click.cancel();
@@ -14420,13 +13293,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.resume();
                 },
-                /**
-                 * 多人选择牌
-                 * @name content.chooseCardOL
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseCardOL: function () {
                     'step 0';
                     event.targets = event.list.slice(0);
@@ -14501,13 +13367,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     event.result[event.targets.indexOf(event.target)] = result;
                     event.goto(7);
                 },
-                /**
-                 * 多人选择项(按钮)
-                 * @name content.chooseButtonOL
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseButtonOL: function () {
                     'step 0';
                     ui.arena.classList.add('markhidden');
@@ -14576,13 +13435,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     });
                     event.result = event.resultOL;
                 },
-                /**
-                 * 选择牌
-                 * @name content.chooseCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseCard: function () {
                     "step 0";
                     if (event.directresult) {
@@ -14651,7 +13503,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseCard(event.ai) || forced) {
+                        if (ai.basic.chooseCard(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else if (event.skill) {
@@ -14675,13 +13527,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event.dialog)
                         event.dialog.close();
                 },
-                /**
-                 * 选择角色对象
-                 * @name content.chooseTarget
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseTarget: function () {
                     "step 0";
                     if (event.isMine()) {
@@ -14734,14 +13579,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseTarget(event.ai) || forced) {
+                        if (ai.basic.chooseTarget(event.ai) || event.forced) {
                             ui.click.ok();
                         }
                         else {
                             ui.click.cancel();
                         }
                     }
-                    if (event.result.bool && event.animate !== false) { //play anim
+                    if (event.result.bool && event.animate !== false) {
                         for (var i = 0; i < event.result.targets.length; i++) {
                             event.result.targets[i].animate('target');
                         }
@@ -14762,13 +13607,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 选择卡牌和目标角色
-                 * @name content.chooseCardTarget
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseCardTarget: function () {
                     "step 0";
                     if (event.isMine()) {
@@ -14820,13 +13658,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event.dialog)
                         event.dialog.close();
                 },
-                /**
-                 * 选择项(列表项)
-                 * @name content.chooseControl
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseControl: function () {
                     "step 0";
                     if (event.controls.length == 0) {
@@ -14861,12 +13692,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             var hidden = player.hiddenSkills.slice(0);
                             game.expandSkills(hidden);
                             if (hidden.length) {
-                                for (var _i = 0, _a = event.controls; _i < _a.length; _i++) {
-                                    var i = _a[_i];
+                                for (var i of event.controls) {
                                     if (_status.prehidden_skills.contains(i) && hidden.contains(i)) {
                                         event.result = {
                                             bool: true,
-                                            control: i
+                                            control: i,
                                         };
                                         return;
                                     }
@@ -14876,7 +13706,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else if (event.hsskill && _status.prehidden_skills.contains(event.hsskill) && event.controls.contains('cancel2')) {
                             event.result = {
                                 bool: true,
-                                control: 'cancel2'
+                                control: 'cancel2',
                             };
                             return;
                         }
@@ -15004,13 +13834,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.resume();
                 },
-                /**
-                 * 确认项(确认|取消)
-                 * @name content.chooseBool
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseBool: function () {
                     "step 0";
                     if (event.isMine()) {
@@ -15065,13 +13888,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.dialog.close();
                     event.resume();
                 },
-                /**
-                 * 选择(摸牌|回血)
-                 * @name content.chooseDrawRecover
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 chooseDrawRecover: function () {
                     'step 0';
                     if (player.isHealthy() && event.forced) {
@@ -15137,13 +13953,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.result = result;
                 },
-                /**
-                 * 从目标角色选择牌
-                 * @name content.choosePlayerCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 choosePlayerCard: function () {
                     "step 0";
                     if (!event.dialog)
@@ -15205,7 +14014,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced)
+                        if (ai.basic.chooseButton(event.ai) || event.forced)
                             ui.click.ok();
                         else
                             ui.click.cancel();
@@ -15216,13 +14025,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.resume();
                 },
-                /**
-                 * 从目标角色选择牌弃置
-                 * @name content.discardPlayerCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 discardPlayerCard: function () {
                     "step 0";
                     if (event.directresult) {
@@ -15307,7 +14109,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced)
+                        if (ai.basic.chooseButton(event.ai) || event.forced)
                             ui.click.ok();
                         else
                             ui.click.cancel();
@@ -15346,13 +14148,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 从目标角色选择牌获得
-                 * @name content.gainPlayerCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 gainPlayerCard: function () {
                     "step 0";
                     if (event.directresult) {
@@ -15438,7 +14233,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     if (event.result == 'ai') {
                         game.check();
-                        if (ai.basic.chooseButton(event.ai) || forced)
+                        if (ai.basic.chooseButton(event.ai) || event.forced)
                             ui.click.ok();
                         else
                             ui.click.cancel();
@@ -15485,11 +14280,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else
                         target[event.visibleMove ? '$give' : '$giveAuto'](cards, player);
                 },
-                /**
-                 * 展示角色手牌
-                 * @name content.showHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 showHandcards: function () {
                     "step 0";
                     if (player.countCards('h') == 0) {
@@ -15514,11 +14304,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.broadcast('closeDialog', event.dialogid);
                     event.dialog.close();
                 },
-                /**
-                 * 展示角色的牌
-                 * @name content.showHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 showCards: function () {
                     "step 0";
                     if (get.itemtype(cards) != 'cards') {
@@ -15568,11 +14353,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.broadcast('closeDialog', event.dialogid);
                     event.dialog.close();
                 },
-                /**
-                 * 查看牌
-                 * @name content.showHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 viewCards: function () {
                     "step 0";
                     if (player == game.me) {
@@ -15605,13 +14385,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event.dialog)
                         event.dialog.close();
                 },
-                /**
-                 * 移动牌位置
-                 * @name content.moveCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Object} event.result 返回选择结果给父事件
-                 */
                 moveCard: function () {
                     'step 0';
                     if (!player.canMoveCard(null, event.nojudge, event.moveHandcard)) {
@@ -15787,13 +14560,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.delay();
                     }
                 },
-                /**
-                 * 角色使用牌
-                 * @name content.useCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {?Object} event.result 返回选择使用结果(如果有)给父事件
-                 */
                 useCard: function () {
                     "step 0";
                     if (!card) {
@@ -15812,7 +14578,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     if (directDiscard.length)
                         game.cardsGotoOrdering(directDiscard);
-                    //player.using=cards;
                     var cardaudio = true;
                     if (event.skill) {
                         if (lib.skill[event.skill].audio) {
@@ -15843,7 +14608,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     return;
                                 var sex = player.sex == 'female' ? 'female' : 'male';
                                 var audioinfo = lib.card[card.name].audio;
-                                // if(audioinfo||true){
                                 if (card.name == 'sha' && (card.nature == 'fire' || card.nature == 'thunder' || card.nature == 'ice' || card.nature == 'ocean')) {
                                     game.playAudio('card', sex, card.name + '_' + card.nature);
                                 }
@@ -15858,10 +14622,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                         game.playAudio('card', sex, card.name);
                                     }
                                 }
-                                // }
-                                // else if(get.type(card)!='equip'){
-                                //     game.playAudio('card/default');
-                                // }
                             }
                         }, player, card);
                     }
@@ -15906,7 +14666,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 player.line(targets, config);
                             }
                         }
-                        if (event["throw"] !== false)
+                        if (event.throw !== false)
                             player.$throw(cards);
                         if (lib.config.sync_speed && cards[0] && cards[0].clone) {
                             var waitingForTransition = get.time();
@@ -15922,7 +14682,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     event.id = get.id();
                     event.excluded = [];
                     event.directHit = [];
-                    event.customArgs = { "default": {} };
+                    event.customArgs = { default: {} };
                     if (typeof event.baseDamage != 'number')
                         event.baseDamage = get.info(card, false).baseDamage || 1;
                     if (event.oncard) {
@@ -16226,8 +14986,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.targetDelay = false;
                     }
                     next.target = targets[num];
-                    for (var i in event.customArgs["default"])
-                        next[i] = event.customArgs["default"][i];
+                    for (var i in event.customArgs.default)
+                        next[i] = event.customArgs.default[i];
                     if (next.target && event.customArgs[next.target.playerid]) {
                         var customArgs = event.customArgs[next.target.playerid];
                         for (var i in customArgs)
@@ -16237,8 +14997,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.directHit = true;
                     if (next.target && !info.multitarget) {
                         if (num == 0 && targets.length > 1) {
-                            // var ttt=next.target;
-                            // setTimeout(function(){ttt.animate('target');},0.5*lib.config.duration);
                         }
                         else {
                             next.target.animate('target');
@@ -16276,7 +15034,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event._result) {
                         event.result = event._result;
                     }
-                    //delete player.using;
                     if (document.getElementsByClassName('thrown').length) {
                         if (event.delayx !== false)
                             game.delayx();
@@ -16287,11 +15044,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 13";
                     event._oncancel();
                 },
-                /**
-                 * 角色使用技能
-                 * @name content.useSkill
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 useSkill: function () {
                     "step 0";
                     var info = get.info(event.skill);
@@ -16482,8 +15234,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.forceDie = true;
                     if (next.target && !info.multitarget) {
                         if (num == 0 && targets.length > 1) {
-                            // var ttt=next.target;
-                            // setTimeout(function(){ttt.animate('target');},0.5*lib.config.duration);
                         }
                         else {
                             next.target.animate('target');
@@ -16534,22 +15284,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 5";
                     ui.clear();
                 },
-                /**
-                 * 从(牌库|牌堆顶|牌堆底)摸牌
-                 * @name content.useCard
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 当前事件
-                 * @property {!Array<GameCores.GameObjects.Card>} event.result 返回摸到的牌数组
-                 */
                 draw: function () {
-                    // if(lib.config.background_audio){
-                    //     game.playAudio('effect','draw');
-                    // }
-                    // game.broadcast(function(){
-                    //     if(lib.config.background_audio){
-                    //         game.playAudio('effect','draw');
-                    //     }
-                    // });
                     if (typeof event.minnum == 'number' && num < event.minnum) {
                         num = event.minnum;
                     }
@@ -16607,11 +15342,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.gaintag.addArray(event.gaintag);
                     event.result = cards;
                 },
-                /**
-                 * 从(手牌区|装备区|武将牌上|判定区)弃置牌
-                 * @name content.discard
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 discard: function () {
                     "step 0";
                     game.log(player, '弃置了', cards);
@@ -16619,11 +15349,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 1";
                     event.trigger('discard');
                 },
-                /**
-                 * 角色打出牌
-                 * @name content.respond
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 respond: function () {
                     'step 0';
                     var cardaudio = true;
@@ -16644,17 +15369,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             if (lib.config.background_audio) {
                                 var sex = player.sex == 'female' ? 'female' : 'male';
                                 var audioinfo = lib.card[card.name].audio;
-                                // if(audioinfo||true){
                                 if (typeof audioinfo == 'string' && audioinfo.indexOf('ext:') == 0) {
                                     game.playAudio('..', 'extension', audioinfo.slice(4), card.name + '_' + sex);
                                 }
                                 else {
                                     game.playAudio('card', sex, card.name);
                                 }
-                                // }
-                                // else{
-                                //     game.playAudio('card/default');
-                                // }
                             }
                         }, player, card);
                     }
@@ -16677,7 +15397,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 next2.noOrdering = true;
                         }
                     }
-                    if (event.animate != false && event["throw"] !== false) {
+                    if (event.animate != false && event.throw !== false) {
                         for (var i = 0; i < cards.length; i++) {
                             player.$throw(cards[i]);
                             if (event.highlight) {
@@ -16699,11 +15419,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     'step 1';
                     game.delayx(0.5);
                 },
-                /**
-                 * 角色和目标交换(手)牌
-                 * @name content.swapHandcards
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 swapHandcards: function () {
                     'step 0';
                     event.cards1 = event.cards1 || player.getCards('h');
@@ -16712,7 +15427,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player: player,
                         target: target,
                         cards1: event.cards1,
-                        cards2: event.cards2
+                        cards2: event.cards2,
                     }).setContent('swapHandcardsx');
                     'step 1';
                     player.gain(event.cards2);
@@ -16746,11 +15461,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (!event.delayed)
                         game.delay();
                 },
-                /**
-                 * 角色从每个目标获得一张牌
-                 * @name content.gainMultiple
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 gainMultiple: function () {
                     'step 0';
                     event.delayed = false;
@@ -16772,17 +15482,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (!event.delayed)
                         game.delay();
                 },
-                /**
-                 * 角色获得牌
-                 * @name content.lose
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 gain: function () {
                     "step 0";
                     if (cards) {
                         var map = {};
-                        for (var _i = 0, cards_1 = cards; _i < cards_1.length; _i++) {
-                            var i = cards_1[_i];
+                        for (var i of cards) {
                             var owner = get.owner(i, 'judge');
                             if (owner && (owner != player || get.position(i) != 'h')) {
                                 var id = owner.playerid;
@@ -16818,7 +15522,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return;
                     }
                     player.getHistory('gain').push(event);
-                    //if(event.source&&event.delay!==false) game.delayx();
                     "step 2";
                     if (player.getStat().gain == undefined) {
                         player.getStat().gain = cards.length;
@@ -16846,7 +15549,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         if (_status.discarded) {
                             _status.discarded.remove(cards[num]);
                         }
-                        // cards[num].vanishtag.length=0;
                         for (var num2 = 0; num2 < cards[num].vanishtag.length; num2++) {
                             if (cards[num].vanishtag[num2][0] != '_') {
                                 cards[num].vanishtag.splice(num2--, 1);
@@ -16957,11 +15659,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     "step 4";
                     game.delayx();
                 },
-                /**
-                 * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
-                 * @name content.lose
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 lose: function () {
                     "step 0";
                     var evt = event.getParent();
@@ -17056,7 +15753,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         cards[i].recheck();
                         var info = lib.card[cards[i].name];
                         if (info.destroy || cards[i]._destroy) {
-                            cards[i]["delete"]();
+                            cards[i].delete();
                             cards[i].destroyed = info.destroy || cards[i]._destroy;
                         }
                         else if (event.position) {
@@ -17086,7 +15783,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else {
                             cards[i].remove();
                         }
-                        //if(ss.contains(cards[i])) cards.splice(i--,1);
                     }
                     if (player == game.me)
                         ui.updatehl();
@@ -17135,10 +15831,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     event.ss = ss;
                     "step 2";
                     if (num < cards.length) {
-                        var evt_1 = event.getParent();
+                        let evt = event.getParent();
                         if (event.es.contains(cards[num])) {
                             event.moveEquip = false;
-                            if ((evt_1.name == 'equip' && evt_1.cards.contains(cards[num]))
+                            if ((evt.name == 'equip' && evt.cards.contains(cards[num]))
                                 || (event.getParent() && event.getParent().name != 'swapEquip'))
                                 event.moveEquip = true;
                             event.loseEquip = true;
@@ -17198,11 +15894,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 令角色受到伤害
-                 * @name content.damage
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 damage: function () {
                     "step 0";
                     event.forceDie = true;
@@ -17363,11 +16054,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (!event.notrigger)
                         event.trigger('damageSource');
                 },
-                /**
-                 * 角色回复血量
-                 * @name content.recover
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 recover: function () {
                     if (lib.config.background_audio) {
                         game.playAudio('effect', 'recover');
@@ -17392,12 +16078,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.log(player, '回复了' + get.cnNumber(num) + '点' + get.translation('hp'));
                         event.result = num;
                     }
+                    player.getHistory('recover').push(event);
                 },
-                /**
-                 * 令角色失去血量
-                 * @name content.loseHp
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 loseHp: function () {
                     "step 0";
                     if (lib.config.background_audio) {
@@ -17416,11 +16098,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.dying(event);
                     }
                 },
-                /**
-                 * 双将模式下，如果“双将体力设置”选择为“平均值”，因此向下取整体力的角色可以摸一张牌
-                 * @name content.doubleDraw
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 doubleDraw: function () {
                     "step 0";
                     player.chooseBool('你的主副将体力上限之和是奇数，是否摸一张牌？');
@@ -17429,11 +16106,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.draw();
                     }
                 },
-                /**
-                 * 令角色减少血量上限
-                 * @name content.loseMaxHp
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 loseMaxHp: function () {
                     "step 0";
                     game.log(player, '减少了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
@@ -17445,24 +16117,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.die(event);
                     }
                 },
-                /**
-                 * 令角色增加血量上限
-                 * @name content.gainMaxHp
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 gainMaxHp: function () {
                     "step 0";
                     game.log(player, '增加了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
                     player.maxHp += num;
                     player.update();
                 },
-                /**
-                 * 令角色改变血量(不能超过上限)
-                 * @name content.changeHp
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 changeHp: function () {
-                    //柚子：这里加了一个改变体力前时机
                     'step 0';
                     event.trigger('changeHpBegin');
                     'step 1';
@@ -17475,7 +16136,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (event.popup !== false) {
                         player.$damagepop(num, 'water');
                     }
-                    //改变体力后立即刷新濒死列表
                     if (_status.dying.contains(player) && player.hp > 0) {
                         _status.dying.remove(player);
                         game.broadcast(function (list) {
@@ -17490,11 +16150,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     event.trigger('changeHp');
                 },
-                /**
-                 * 令角色获得/失去护甲
-                 * @name content.changeHujia
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 changeHujia: function () {
                     if (lib.config.background_audio) {
                         game.playAudio('effect', 'hujia');
@@ -17512,7 +16167,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else if (num < 0) {
                         if (event.type == 'damage')
                             game.log(player, '的护甲抵挡了' + get.cnNumber(-num) + '点伤害');
-                        //else if(event.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
                         else
                             game.log(player, '失去了' + get.cnNumber(-num) + '点护甲');
                     }
@@ -17522,11 +16176,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     player.getHistory('changeHujia').push(event);
                     player.update();
                 },
-                /**
-                 * 角色濒死事件
-                 * @name content.dying
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 dying: function () {
                     "step 0";
                     event.forceDie = true;
@@ -17573,11 +16222,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (player.hp <= 0 && !player.nodying)
                         player.die(event.reason);
                 },
-                /**
-                 * 角色死亡事件
-                 * @name content.die
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 die: function () {
                     "step 0";
                     event.forceDie = true;
@@ -17610,15 +16254,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else {
                         game.log(player, '阵亡');
                     }
-                    // player.removeEquipTrigger();
-                    // for(var i in lib.skill.globalmap){
-                    //     if(lib.skill.globalmap[i].contains(player)){
-                    //                  lib.skill.globalmap[i].remove(player);
-                    //                  if(lib.skill.globalmap[i].length==0&&!lib.skill[i].globalFixed){
-                    //                               game.removeGlobalSkill(i);
-                    //                  }
-                    //     }
-                    // }
                     game.broadcastAll(function (player) {
                         player.classList.add('dead');
                         player.removeLink();
@@ -17637,7 +16272,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             if (lib.character[player.name] && lib.character[player.name][4].contains('die_audio')) {
                                 game.playAudio('die', player.name);
                             }
-                            // else if(true){
                             else {
                                 game.playAudio('die', player.name, function () {
                                     game.playAudio('die', player.name.slice(player.name.indexOf('_') + 1));
@@ -17692,7 +16326,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         event.cards = player.getCards('hejs');
                         if (event.cards.length) {
                             player.discard(event.cards).forceDie = true;
-                            //player.$throw(event.cards,1000);
                         }
                     }
                     "step 4";
@@ -17719,9 +16352,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                     if (!_status.connectMode && player == game.me && !game.modeSwapPlayer) {
-                        // _status.auto=false;
                         if (ui.auto) {
-                            // ui.auto.classList.remove('glow');
                             ui.auto.hide();
                         }
                         if (ui.wuxie)
@@ -17771,11 +16402,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         source.classList.add('topcount');
                     }
                 },
-                /**
-                 * 角色使用装备牌
-                 * @name content.equip
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 equip: function () {
                     "step 0";
                     console.log(card, cards);
@@ -17903,11 +16529,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.delayx();
                     }
                 },
-                /**
-                 * 角色添加判定牌
-                 * @name content.addJudge
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 addJudge: function () {
                     "step 0";
                     if (cards) {
@@ -17965,7 +16586,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             cards[0].clone.moveDelete(player);
                             game.addVideo('gain2', player, get.cardsInfo(cards));
                         }
-                        // player.$gain2(cards);
                         if (get.itemtype(card) != 'card') {
                             if (typeof card == 'string')
                                 cards[0].viewAs = card;
@@ -17980,7 +16600,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 cards[0].classList.add('fakejudge');
                                 cards[0].node.background.innerHTML = lib.translate[cards[0].viewAs + '_bg'] || get.translation(cards[0].viewAs)[0];
                             }
-                            //姑且改成了取单牌的形式，以后需要叠多张牌的时候再改回来
                             game.log(player, '被贴上了<span class="yellowtext">' + get.translation(cards[0].viewAs) + '</span>（', cards[0], '）');
                         }
                         else {
@@ -17990,13 +16609,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.addVideo('addJudge', player, [get.cardInfo(cards[0]), cards[0].viewAs]);
                     }
                 },
-                /**
-                 * 角色进行判定
-                 * @name content.judge
-                 * @type {GameCores.Bases.StateMachine}
-                 * @property {!Object} event 本事件
-                 * @property {!Object} event.result 将判定牌信息返回给父事件
-                 */
                 judge: function () {
                     "step 0";
                     var judgestr = get.translation(player) + '的' + event.judgestr + '判定';
@@ -18047,7 +16659,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         number: get.number(player.judging[0]),
                         suit: get.suit(player.judging[0]),
                         color: get.color(player.judging[0]),
-                        node: event.node
+                        node: event.node,
                     };
                     if (event.fixedResult) {
                         for (var i in event.fixedResult) {
@@ -18097,11 +16709,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 角色武将牌翻面
-                 * @name content.turnOver
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 turnOver: function () {
                     game.log(player, '翻面');
                     player.classList.toggle('turnedover');
@@ -18110,11 +16717,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }, player);
                     game.addVideo('turnOver', player, player.classList.contains('turnedover'));
                 },
-                /**
-                 * 角色连环/解除连环
-                 * @name content.link
-                 * @type {GameCores.Bases.StateMachine}
-                 */
                 link: function () {
                     if (player.isLinked()) {
                         game.log(player, '解除连环');
@@ -18310,33 +16912,21 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.updateRoundNumber();
                         game.delay(2);
                     }
-                }
+                },
             },
-            /**
-             * 玩家方法，.player节点共用的方法（比如展示牌【showCard】）
-             * 角色
-             * @namespace
-             * @mixin
-             */
             player: {
-                /**
-                 * 检测本角色武将牌周围是否有牌
-                 */
                 hasCardAround: function () {
-                    var cards = [];
-                    var skills = this.getSkills(true, false, false);
+                    let cards = [];
+                    let skills = this.getSkills(true, false, false);
                     game.expandSkills(skills);
-                    for (var _i = 0, skills_1 = skills; _i < skills_1.length; _i++) {
-                        var i = skills_1[_i];
+                    for (let i of skills) {
                         if (lib.skill[i] && lib.skill[i].cardAround) {
-                            var key = [];
-                            var storage = this.getStorage(i);
-                            var method = lib.skill[i].cardAround;
+                            let key = [];
+                            let storage = this.getStorage(i);
+                            let method = lib.skill[i].cardAround;
                             if (Array.isArray(method)) {
-                                for (var _a = 0, method_1 = method; _a < method_1.length; _a++) {
-                                    var j = method_1[_a];
+                                for (let j of method)
                                     key = key.concat(storage[j]);
-                                }
                             }
                             else if (typeof method == 'function') {
                                 key = key.concat(method(this));
@@ -18367,11 +16957,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             return true;
                     }
                 },
-                /**
-                 * 将一张牌置入本角色的判定区
-                 */
                 addToJudge: function (card, source) {
-                    var cards = (get.itemtype(card) == 'card') ? [card] : card;
+                    let cards = (get.itemtype(card) == 'card') ? [card] : card;
                     if (source)
                         source.$give(cards, this, false);
                     if (get.type(cards[0]) == 'delay')
@@ -18381,9 +16968,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else if (get.color(cards[0]) == 'black' && this.canAddJudge('bingliang'))
                         this.addJudge({ name: 'bingliang' }, cards);
                 },
-                /**
-                 * 判断一张牌能否本角色的判定区
-                 */
                 canAddToJudge: function (card) {
                     if (get.type(card) == 'delay')
                         return this.canAddJudge(card);
@@ -18393,9 +16977,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return true;
                     return false;
                 },
-                //自创函数(升阶相关)
                 chooseShengjie: function () {
-                    var next = game.createEvent('chooseShengjie');
+                    let next = game.createEvent('chooseShengjie');
                     next.player = this;
                     for (var i = 0; i < arguments.length; i++) {
                         if (get.itemtype(arguments[i]) == 'cards')
@@ -18423,7 +17006,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 canShengjie: function () {
                     if (lib.configOL.protect_beginner)
                         return false;
-                    var list = [];
+                    let list = [];
                     if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length)
                         return false;
                     for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
@@ -18460,16 +17043,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             || (typeof select == 'number' && array.length == select))
                             materialList.push(array);
                     }
-                    for (var _i = 0, materialList_1 = materialList; _i < materialList_1.length; _i++) {
-                        var j = materialList_1[_i];
-                        for (var _a = 0, list_1 = list; _a < list_1.length; _a++) {
-                            var k = list_1[_a];
+                    for (var j of materialList) {
+                        for (var k of list) {
                             var filter = get.info({ name: k }).materials;
                             if (Array.isArray(filter) && filter.length == j.length) {
                                 var mate = filter.slice(0);
                                 for (var l = 0; l < mate.length; l++) {
-                                    for (var _b = 0, j_1 = j; _b < j_1.length; _b++) {
-                                        var card = j_1[_b];
+                                    for (var card of j) {
                                         if (get.is.filterCardBy(card, mate[l])) {
                                             mate.splice(l--, 1);
                                         }
@@ -18486,18 +17066,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return bool;
                 },
-                //新函数
-                /**
-                 * 将技能移入本角色的封锁列表
-                 */
                 addSkillBlocker: function (skill) {
                     if (!this.storage.skill_blocker)
                         this.storage.skill_blocker = [];
                     this.storage.skill_blocker.push(skill);
                 },
-                /**
-                 * 将技能移出本角色的封锁列表
-                 */
                 removeSkillBlocker: function (skill) {
                     if (this.storage.skill_blocker) {
                         this.storage.skill_blocker.remove(skill);
@@ -18505,16 +17078,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             delete this.storage.skill_blocker;
                     }
                 },
-                /**
-                 * 将本角色的卡牌移入(目标角色)特殊区
-                 */
                 loseToSpecial: function (cards, tag, target) {
                     var next = game.loseAsync({
                         player: this,
                         cards: cards,
                         tag: tag,
                         toStorage: true,
-                        target: target || this
+                        target: target || this,
                     });
                     next.setContent(function () {
                         "step 0";
@@ -18524,49 +17094,33 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     });
                     return next;
                 },
-                /**
-                 * 为本角色的手牌添加标签
-                 */
                 addGaintag: function (cards, tag) {
                     if (get.itemtype(cards) == 'card')
                         cards = [cards];
                     game.addVideo('addGaintag', this, [get.cardsInfo(cards), tag]);
                     game.broadcastAll(function (player, cards, tag) {
                         var hs = player.getCards('h');
-                        for (var _i = 0, cards_2 = cards; _i < cards_2.length; _i++) {
-                            var i = cards_2[_i];
+                        for (var i of cards) {
                             if (hs.contains(i))
                                 i.addGaintag(tag);
                         }
                     }, this, cards, tag);
                 },
-                /**
-                 * 为本角色手牌移除标签
-                 */
                 removeGaintag: function (tag, cards) {
                     game.addVideo('removeGaintag', this, tag);
                     game.broadcastAll(function (player, tag, cards) {
                         cards = cards || player.getCards('h');
-                        for (var _i = 0, cards_3 = cards; _i < cards_3.length; _i++) {
-                            var i = cards_3[_i];
+                        for (var i of cards)
                             i.removeGaintag(tag);
-                        }
                     }, this, tag, cards);
                 },
-                /**
-                 * 判断本角色能否在濒死求桃事件中救治目标角色
-                 * @param {string} target 目标角色
-                 * @returns {!boolean} 可以救治返回`true`，不可以返回`false`
-                 */
                 canSave: function (target) {
                     var player = this;
                     if (player.hasSkillTag('save', true, target, true))
                         return true;
                     var name = {}, hs = player.getCards('hs');
-                    for (var _i = 0, hs_1 = hs; _i < hs_1.length; _i++) {
-                        var i = hs_1[_i];
+                    for (var i of hs)
                         name[get.name(i)] = true;
-                    }
                     for (var i in lib.card) {
                         if (lib.card[i].savable && (lib.inpile.contains(i) || name[i])) {
                             if (lib.filter.cardSavable({ name: i }, player, target) && (_status.connectMode || player.hasUsableCard(i)))
@@ -18575,12 +17129,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 展示本角色
-                 * @param {(0|1|2)} num 0:展示主将; 1: 展示副将; 2: 全部展示
-                 * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
-                 * @returns {GameCores.Bases.Event}
-                 */
                 showCharacter: function (num, log) {
                     var toShow = [];
                     if ((num == 0 || num == 2) && this.isUnseen(0))
@@ -18598,11 +17146,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('showCharacter');
                     return next;
                 },
-                /**
-                 * 展示本角色(无事件)
-                 * @param {(0|1|2)} num 0:展示主将; 1: 展示副将; 2: 全部展示
-                 * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
-                 */
                 $showCharacter: function (num, log) {
                     if (num == 0 && !this.isUnseen(0)) {
                         return;
@@ -18691,12 +17234,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     this.checkConflict();
                 },
-                /**
-                 * 观星
-                 * 本角色观看牌堆顶的`num`张牌并将其以任意顺序置于牌堆顶或牌堆底
-                 * @param {number} num
-                 * @returns {GameCores.Bases.Event}
-                 */
                 chooseToGuanxing: function (num) {
                     var next = game.createEvent('chooseToGuanxing');
                     next.num = num || 1;
@@ -18704,11 +17241,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('chooseToGuanxing');
                     return next;
                 },
-                /**
-                 * 向其他角色发送互动表情(本机)
-                 * @param {!GameCores.GameObjects.Player} 互动的对象
-                 * @param {!string} emotion 表情
-                 */
                 $throwEmotion: function (target, name) {
                     game.addVideo('throwEmotion', this, [target.dataset.position, name]);
                     var getLeft = function (player) {
@@ -18737,16 +17269,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     setTimeout(function () {
                         emotion.innerHTML = ('<div style="text-align:center"> <img src="' + lib.assetURL + 'image/emotion/throw_emotion/' + name + '2.png"> </div>');
                         setTimeout(function () {
-                            emotion["delete"]();
+                            emotion.delete();
                         }, 1200);
                     }, 600);
                 },
-                /**
-                 * 本角色尝试播放一个技能动画[support online]
-                 * @param {string} name 技能名
-                 * @param {string} popname 弹出的名称，如果`popname`等于`name`，使用`get.skillTranslation(name, this)`作为弹出的名称
-                 * @param {?boolean} [checkShow]
-                 */
                 trySkillAnimate: function (name, popname, checkShow) {
                     if (!game.online && lib.config.skill_animation_type != 'off' && lib.skill[name] && lib.skill[name].skillAnimation) {
                         if (lib.config.skill_animation_type == 'default') {
@@ -18774,13 +17300,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             this.popup(get.skillTranslation(name, this), 'water', false);
                     }
                 },
-                /**
-                 * 本角色尝试播放一个游戏牌动画[support online]
-                 * @param {!GameCores.GameObjects.Card} card
-                 * @param {string} name 游戏牌名
-                 * @param {string} nature 属性
-                 * @param {?string} [popname] 弹出的名称，如果未指定，使用`name`作为弹出的名称
-                 */
                 tryCardAnimate: function (card, name, nature, popname) {
                     var player = this;
                     game.broadcast(function (player, card, name, nature, popname) {
@@ -18822,11 +17341,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 判断目标角色是否在本角色的攻击范围内
-                 * @param {string} to 目标角色
-                 * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
-                 */
                 inRange: function (to) {
                     var from = this;
                     if (from == to || from.hasSkill('undist') || to.hasSkill('undist'))
@@ -18915,18 +17429,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return m <= 1;
                 },
-                /**
-                 * 判断本角色是否在目标角色的攻击范围内
-                 * @param {string} source 目标角色
-                 * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
-                 */
                 inRangeOf: function (source) {
                     return source.inRange(this);
                 },
-                /**
-                 * 获得本角色已损失的体力值
-                 * @returns {!number} this.maxHp - Math.max(0, this.hp)
-                 */
                 getDamagedHp: function () {
                     return this.maxHp - Math.max(0, this.hp);
                 },
@@ -19123,14 +17628,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('enableJudge');
                     return next;
                 },
-                //原有函数
-                /**
-                 * 角色初始化
-                 * @param {?string} character 角色名，如果未指定，函数直接返回undefined
-                 * @param {(string|false)} character2 如果为角色名，创建双将角色；如果为false，创建单将
-                 * @param {!boolean} skill 如果为true，添加技能；如果为false，不添加角色技能；该参数在`character2`参数为false时无效
-                 * @returns {GameCores.GameObjects.Card} 角色对象
-                 */
                 init: function (character, character2, skill) {
                     if (typeof character == 'string' && !lib.character[character]) {
                         lib.character[character] = get.character(character);
@@ -19206,7 +17703,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             this.node.name_seat.dataset.nature = get.groupnature(this.group);
                         }
                         this.sex = 'male';
-                        //this.group='unknown';
                         this.storage.nohp = true;
                         skills.add('g_hidden_ai');
                     }
@@ -19300,11 +17796,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.update();
                     return this;
                 },
-                /**
-                 * 角色初始化[support online]
-                 * @param {string} name 玩家名
-                 * @param {string} character 角色名
-                 */
                 initOL: function (name, character) {
                     this.node.avatar.setBackground(character, 'character');
                     this.node.avatar.show();
@@ -19315,9 +17806,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (lib.character[character])
                         this.sex = lib.character[character][0];
                 },
-                /**
-                 * 在角色销毁时调用[support online]
-                 */
                 uninitOL: function () {
                     this.node.avatar.hide();
                     this.node.name.innerHTML = '';
@@ -19326,11 +17814,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     delete this.avatar;
                     delete this.sex;
                 },
-                /**
-                 * 初始化房间
-                 * @returns {GameCores.GameObjects.Player} this self
-                 * @param {Array} info 房间信息
-                 */
                 initRoom: function (info, info2) {
                     var str = '';
                     this.serving = false;
@@ -19395,14 +17878,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.firstChild.innerHTML = str;
                     return this;
                 },
-                /**
-                 * TODO - 重新初始化
-                 * @param {*} from
-                 * @param {*} to
-                 * @param {*} maxHp
-                 * @param {*} online
-                 * @returns {(undefined|GameCores.GameObjects.Player)}
-                 */
                 reinit: function (from, to, maxHp, online) {
                     var info1 = lib.character[from];
                     var info2 = lib.character[to];
@@ -19499,10 +17974,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     });
                     this.update();
                 },
-                /**
-                 * 在角色销毁时调用
-                 * @returns {!GameCores.GameObjects.Player} this self
-                 */
                 uninit: function () {
                     for (var i = 1; i < 6; i++) {
                         if (this.isDisabled(i))
@@ -19573,24 +18044,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.ai = { friend: [], enemy: [], neutral: [] };
                     return this;
                 },
-                /**
-                 * 返回`this.offsetLeft`
-                 * @returns {!number}
-                 */
                 getLeft: function () {
                     return this.offsetLeft;
                 },
-                /**
-                 * 返回`this.offsetTop`
-                 * @returns {!number}
-                 */
                 getTop: function () {
                     return this.offsetTop;
                 },
-                /**
-                 * @param {?boolean} [vice] 是否使用副将头像，如果为true则使用副将头像；如果为false或未指定，使用(主将)头像
-                 * @param {?boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-                 */
                 smoothAvatar: function (vice, video) {
                     var div = ui.create.div('.fullsize');
                     if (vice) {
@@ -19613,11 +18072,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.addVideo('smoothAvatar', this, vice);
                     }
                 },
-                /**
-                 * 强制改变本角色座次，即使目标座次已经有角色存在
-                 * @param {number} position
-                 * @param {boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-                 */
                 changeSeat: function (position, video) {
                     var player = this;
                     if (video !== false)
@@ -19641,20 +18095,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.style.transform = '';
                     }, 100);
                 },
-                /**
-                 * 将数据(参数)传输至服务器
-                 * @returns {!GameCores.GameObjects.Player} this self
-                 */
                 send: function () {
                     if (!this.ws || this.ws.closed)
                         return this;
                     this.ws.send.apply(this.ws, arguments);
                     return this;
                 },
-                /**
-                 * 为本角色生成并注册ID，如果本角色的ID已经存在就重新生成；如果是在(联机|播放录播)的情况下，该函数不做操作
-                 * @returns {!GameCores.GameObjects.Player} this self
-                 */
                 getId: function () {
                     if (_status.video || _status.connectMode)
                         return this;
@@ -19665,21 +18111,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.playerMap[this.playerid] = this;
                     return this;
                 },
-                /**
-                 * 向其他角色发送互动表情[support online]
-                 * @param {!GameCores.GameObjects.Player} 互动的对象
-                 * @param {!string} emotion 表情
-                 */
                 throwEmotion: function (target, emotion) {
                     game.broadcastAll(function (player, target, emotion) {
                         player.$throwEmotion(target, emotion);
                     }, this, target, emotion);
                 },
-                /**
-                 * 本角色发送聊天表情
-                 * @param {string} emotionPack 表情包
-                 * @param {number} emotionID 表情ID
-                 */
                 emotion: function (pack, id) {
                     var str = '<img src="##assetURL##image/emotion/' + pack + '/' + id + '.gif" width="50" height="50">';
                     lib.element.player.say.call(this, str);
@@ -19697,10 +18133,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }, this.playerid, str);
                 },
-                /**
-                 * 本角色发送聊天消息[support online]
-                 * @param {!string} str 聊天消息
-                 */
                 chat: function (str) {
                     if (get.is.banWords(str))
                         return;
@@ -19719,10 +18151,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }, this.playerid, str);
                 },
-                /**
-                 * 本角色发送聊天消息(单机)
-                 * @param {!string} str 聊天消息
-                 */
                 say: function (str) {
                     str = str.replace(/##assetURL##/g, lib.assetURL);
                     var dialog = ui.create.dialog('hidden');
@@ -19758,7 +18186,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         dialog.content.firstChild.style.padding = 0;
                     }
                     setTimeout(function () {
-                        dialog["delete"]();
+                        dialog.delete();
                     }, lib.quickVoice.indexOf(str) != -1 ? 3800 : 2000);
                     var name = get.translation(this.name);
                     var info = [name ? (name + '[' + this.nickname + ']') : this.nickname, str];
@@ -19775,9 +18203,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.playAudio('voice', (this.sex == 'female' ? 'female' : 'male'), lib.quickVoice.indexOf(str));
                     }
                 },
-                /**
-                 * 显示投降按钮
-                 */
                 showGiveup: function () {
                     this._giveUp = true;
                     if (this == game.me) {
@@ -19787,14 +18212,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.send(ui.create.giveup);
                     }
                 },
-                /**
-                 * 同步技能信息[support online]
-                 * @param {Object} skills 要同步的技能信息
-                 * @param {?Array<string>} skills.global 全局技能的信息
-                 * @param {?Object} skills.skillinfo 技能模板信息
-                 * @param {?Object} skills.stat 本角色的技能状态信息
-                 * @param {?Object} skills."['playerid']" 角色的技能信息
-                 */
                 applySkills: function (skills) {
                     for (var i in skills) {
                         if (i == 'global') {
@@ -19818,43 +18235,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 返回本角色状态信息
-                 * @returns {GameCores.GameObjects.Player~State}
-                 */
                 getState: function () {
-                    /**
-                     * @name GameCores.GameObjects.Player~State
-                     * @property {number} hp 当前血量
-                     * @property {number} maxHp 最大血量
-                     * @property {string} nickname 玩家昵称
-                     * @property {string} sex 角色性别
-                     * @property {string} group 角色势力
-                     * @property {string} name 角色姓名
-                     * @property {string} name1 角色(主将)姓名
-                     * @property {string} name2 角色(副将)姓名
-                     * @property {Array<GameCores.GameObjects.Card>} handcards 角色手牌
-                     * @property {Array<string>} gaintag gaintag标签数组
-                     * @property {Array<GameCores.GameObjects.Card>} equips 角色装备区的牌
-                     * @property {Array<GameCores.GameObjects.Card>} judges 角色判定区的牌
-                     * @property {Array<GameCores.GameObjects.Card>} specials 角色武将牌上的牌
-                     * @property {Array<string>} disableJudge 对角色无效的判定数组
-                     * @property {Array<(string|number)>} disableEquip 角色废除的装备(类型)数组
-                     * @property {Array<(string|undefined)>} views 角色判定区牌的视为名数组，即使判定牌的视为名为空也会添加到该数组中，`views`与`judges`一一对应
-                     * @property {number} position 角色位置(座次)
-                     * @property {number} hujia 角色护甲
-                     * @property {(boolean|undefined)} side 角色所属的一侧，如果`p1.side == p2.side`则认为p1与p2为同侧(友方)，否则为异侧(敌方)；该值仅在部分模式(vs等)中使用，在其他模式中默认为undefined
-                     * @property {boolean} identityShown 是否显示身份
-                     * @property {Array} identityNode [this.node.identity.innerHTML, this.node.identity.dataset.color]
-                     * @property {string} identity 角色身份
-                     * @property {boolean} dead 角色是否已死亡
-                     * @property {boolean} linked 角色是否被链接
-                     * @property {boolean} turnedover 角色是否翻面
-                     * @property {number} phaseNumber 此时的回合计数
-                     * @property {boolean} unseen
-                     * @property {boolean} unseen2
-                     * @property {string} mode 当前的模式
-                     */
                     var state = {
                         hp: this.hp,
                         maxHp: this.maxHp,
@@ -19883,7 +18264,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         turnedover: this.isTurnedOver(),
                         phaseNumber: this.phaseNumber,
                         unseen: this.isUnseen(0),
-                        unseen2: this.isUnseen(1)
+                        unseen2: this.isUnseen(1),
                     };
                     for (var i = 0; i < state.judges.length; i++) {
                         state.views[i] = state.judges[i].viewAs;
@@ -19896,22 +18277,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return state;
                 },
-                /**
-                 * 设置玩家昵称
-                 * @param {string} [str] 玩家昵称，如果未指定或为空字符串，使用`this.nickname`。如果`this.nickname`的值也未指定，使用空字符串
-                 * @returns {GameCores.GameObjects.Player} this self
-                 */
                 setNickname: function (str) {
                     this.node.nameol.innerHTML = (str || this.nickname || '').slice(0, 12);
                     return this;
                 },
-                /**
-                 * 设置头像[support online]
-                 * @param {!string} name 武将名，如果是角色副将，则设置副将的头像；如果是主将，则设置主将的头像
-                 * @param {!string} name2 新图片名(角色名)，用于设置背景；{@link HTMLDivElement#setBackground}
-                 * @param {?boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-                 * @param {?boolean} [fakeme] 如果为true或未指定，设置{@link ui.fakeme}的背景图为头像图；如果为false，不设置
-                 */
                 setAvatar: function (name, name2, video, fakeme) {
                     var node;
                     if (this.name2 == name) {
@@ -19935,12 +18304,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         player.setAvatar(name, name2, false);
                     }, this, name, name2);
                 },
-                /**
-                 * 设置头像更新数组，每张头像更新后停留1s，全部更新完成后，还原头像
-                 * @param {!string} name 武将名，如果是角色副将，则设置副将的头像；如果是主将，则设置主将的头像
-                 * @param {Array<string>} list 头像名(角色名)数组
-                 * @see {@link lib.element.player.setAvatar}
-                 */
                 setAvatarQueue: function (name, list) {
                     var node;
                     var player = this;
@@ -19973,11 +18336,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     game.addVideo('setAvatarQueue', this, [name, list]);
                 },
-                /**
-                 * 本角色闪烁头像
-                 * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-                 * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
-                 */
                 flashAvatar: function (skill, name) {
                     if (lib.skill[name] && !lib.character[name]) {
                         var stop = false;
@@ -20005,12 +18363,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.setAvatarQueue(this.name, [name]);
                     }
                 },
-                /**
-                 * 本角色头像下绘制图像
-                 * @param {!string} buff 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-                 * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-                 * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
-                 */
                 buffAvatar: function (buff, skill, name) {
                     if (lib.skill[name] && !lib.character[name]) {
                         var stop = false;
@@ -20038,10 +18390,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.setAvatarQueue(this.name, [name]);
                     }
                 },
-                /**
-                 * 同步本角色数据(联网)
-                 * @returns {?GameCores.GameObjects.Player} this self；如果是回放模式且该函数被无参调用，返回空值(undefined)
-                 */
                 update: function () {
                     if (_status.video && arguments.length == 0)
                         return;
@@ -20085,7 +18433,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 hp.lastChild.classList.add('lost');
                             }
                             hp.classList.add('textstyle');
-                            // hp.classList.remove('long');
                         }
                         else {
                             hp.innerHTML = '';
@@ -20109,12 +18456,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     hp.childNodes[index].classList.add('lost');
                                 }
                             }
-                            // if(this.maxHp==9){
-                            //     hp.classList.add('long');
-                            // }
-                            // else{
-                            //     hp.classList.remove('long');
-                            // }
                         }
                         if (hp.classList.contains('room')) {
                             hp.dataset.condition = 'high';
@@ -20170,14 +18511,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.updateMarks();
                     return this;
                 },
-                /**
-                 * 本角色的一个技能标记移除指定数量，如果这个技能当前(没有标记|标记数为0)，返回`undefined`；
-                 * 此函数仅支持数值类型的标记，如果是非数值类型的标记，不做任何移除操作，返回`undefined`；
-                 * 数值类型仅支持整数
-                 * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-                 * @param {?number} [num] 正整数，标记要移除的数量；如果值为0或未指定，则使用数量 **1** 作为要移除的数量
-                 * @param {?boolean} [log] 是否输出日志，如果为true或未指定，输出日志；如果为false，不输出日志
-                 */
                 removeMark: function (i, num, log) {
                     if (typeof num != 'number' || !num)
                         num = 1;
@@ -20199,14 +18532,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.syncStorage(i);
                     this[this.storage[i] ? 'markSkill' : 'unmarkSkill'](i);
                 },
-                /**
-                 * 本角色的一个技能标记添加指定数量；
-                 * 此函数支持任意类型的标记，但不建议使用非数值类型的标记，因为对非数值类型的标记，会首先使用 0 值覆盖原值；
-                 * 数值类型不支持浮点数
-                 * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-                 * @param {?number} [num] 正整数，标记要添加的数量；如果值为0或未指定，则使用数量 **1** 作为要添加的数量
-                 * @param {?boolean} [log] 是否输出日志，如果为true或未指定，输出日志；如果为false，不输出日志
-                 */
                 addMark: function (i, num, log) {
                     if (typeof num != 'number' || !num)
                         num = 1;
@@ -20226,11 +18551,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.syncStorage(i);
                     this.markSkill(i);
                 },
-                /**
-                 * 返回本角色一个技能的标记数
-                 * @param {?string} [i] 技能名，如果是数值型标记，返回此技能的标记数；如果是数组型标记，返回数组的长度值；否则，返回0值
-                 * @returns {!number}
-                 */
                 countMark: function (i) {
                     if (this.storage[i] == undefined)
                         return 0;
@@ -20240,20 +18560,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return this.storage[i].length;
                     return 0;
                 },
-                /**
-                 * 返回此角色是否有一个技能的标记
-                 * 此函数仅支持数值型标记，对于非数值型标记，此函数总返回false
-                 * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-                 * @returns {!boolean}
-                 */
                 hasMark: function (i) {
                     return this.countMark(i) > 0;
                 },
-                /**
-                 * 同步本角色一个技能标记的显示数值，如果是非数值类型的标记，不做同步操作，返回`this`
-                 * @param {!string} i 技能名
-                 * @param {?boolean} [storage] 是否同步标记数据，如果为true，同步标记(联网)；如果为false或未指定，不同步
-                 */
                 updateMark: function (i, storage) {
                     if (!this.marks[i]) {
                         if (lib.skill[i] && lib.skill[i].intro && (this.storage[i] || lib.skill[i].intro.markcount)) {
@@ -20295,13 +18604,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             this.marks[i].markcount.innerHTML = num;
                         }
                         else if (this.marks[i].markcount) {
-                            this.marks[i].markcount["delete"]();
+                            this.marks[i].markcount.delete();
                             delete this.marks[i].markcount;
                         }
                     }
                     else {
                         if (this.marks[i].markcount) {
-                            this.marks[i].markcount["delete"]();
+                            this.marks[i].markcount.delete();
                             delete this.marks[i].markcount;
                         }
                         if (lib.skill[i].mark == 'auto') {
@@ -20310,10 +18619,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 * 更新本角色全部数值型技能标记信息，不处理非数值标记
-                 * @param {?string} [skillname] 技能名，同步本角色的一个技能标记数据然后同步更新(联网)；如果未指定，则不进行同步，仅在本机更新
-                 */
                 updateMarks: function (connect) {
                     if (typeof connect == 'string' && _status.connectMode && !game.online) {
                         game.broadcast(function (player, storage, skill) {
@@ -20462,44 +18767,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return list;
                 },
-                /**
-                 * 返回本角色(手牌|装备区|判定区|武将牌上)或任意位置组合的游戏牌
-                 * @function lib.element.player.getCards
-                 * @param {string} [position='h'] 游戏牌位置组合: [hesj]+
-                 * @returns {!Array<GameCores.GameObjects.Card>}
-                 */
-                /**
-                 * 返回本角色所有牌中等于指定名称或手牌轴被视为指定名称的游戏牌
-                 * @function lib.element.player.getCards
-                 * @variation 2
-                 * @param {string} [position='h'] 游戏牌位置: [hesj]+
-                 * @param {!string} [name] 游戏牌名，返回所有名称等于该牌名，或者手牌中被视为此牌名的牌
-                 * @returns {!Array<GameCores.GameObjects.Card>}
-                 */
-                /**
-                 * 返回本角色所有牌中满足特定条件的游戏牌
-                 * @function lib.element.player.getCards
-                 * @variation 3
-                 * @param {string} [position='h'] 游戏牌位置: [hesj]+
-                 * @param {?Object} [cond] 条件对象，每个属性对应一个匹配条件(游戏牌对象必须有该属性，否则该条件会被跳过，不会生效)，只要有一次匹配失败就将牌从结果数组中移除；如果未指定则跳过匹配过程
-                 * @param {...(Array<(Object|string)>|string)} cond.'[keyname]' 匹配条件，如果`cond[keyname] == card[keyname] || cond[keyname].contains(card[keyname])`成立，则匹配成功
-                 * @returns {!Array<GameCores.GameObjects.Card>}
-                 */
-                /**
-                 * getCards筛选函数
-                 * @callback lib.element.player.getCards~filterCard
-                 * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-                 * @returns {?boolean} true表示保留此游戏牌，false或未指定表示不保留
-                 * @see {@link lib.element.player.getCards(4)}
-                 */
-                /**
-                 * 返回本角色所有牌中通过筛选函数的游戏牌
-                 * @function lib.element.player.getCards
-                 * @variation 4
-                 * @param {string} [position='h'] 游戏牌位置: [hesj]+
-                 * @param {?lib.element.player.getCards~filterCard} [filter] 筛选函数，如果未指定则跳过筛选过程
-                 * @returns {!Array<GameCores.GameObjects.Card>}
-                 */
                 getCards: function (arg1, arg2) {
                     if (typeof arg1 != 'string') {
                         arg1 = 'h';
@@ -20614,15 +18881,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return skills;
                 },
-                /**
-                 * 返回本角色的技能组；
-                 * 该技能组不包括子技能；
-                 * @param {!string} skill 技能名
-                 * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-                 * @param {*} arg3 为false时表示不计入装备技能
-                 * @param {*} arg4 为false时表示计入失效的技能
-                 * @returns {!Array<string>}
-                 */
                 getSkills: function (arg2, arg3, arg4) {
                     var skills = this.skills.slice(0);
                     var es = [];
@@ -20667,25 +18925,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return skills;
                 },
-                /**
-                 * 角色的游戏牌区域(手牌|装备区|判定区)组合
-                 * Regex: [hej]|he|hj|ej|hej
-                 * @typedef {string} GameCores.PlayerCardPosition
-                 * @see {@link GameCores.CardPosition}
-                 */
-                /**
-                 * 返回本角色(武将牌上|手牌|装备区|判定区)的游戏牌 TODO
-                 * @param {('s'|GameCores.PlayerCardPosition)} position 角色的游戏牌区域或者角色的武将牌上区域
-                 * @param {*} arg2
-                 * @param {*} arg3
-                 * @param {*} arg4
-                 * @returns {Array<GameCores.GameObjects.Card>}
-                 * @see {@link GameCores.PlayerCardPosition}
-                 * @example
-                 * let cards = player.get('he')//手牌和装备区所有未被移除、废除、的牌
-                 *
-                 *
-                 */
                 get: function (arg1, arg2, arg3, arg4) {
                     var i, j;
                     if (arg1 == 's') {
@@ -20924,10 +19163,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return cards;
                     }
                 },
-                /**
-                 * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link lib.element.player.updateMarks})
-                 * @param {!string} skill 技能名
-                 */
                 syncStorage: function (skill) {
                     switch (get.itemtype(this.storage[skill])) {
                         case 'cards':
@@ -20965,10 +19200,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }, this, time);
                     return this;
                 },
-                /**
-                 * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link lib.element.player.updateMarks})
-                 * @param {!string} skill 技能名
-                 */
                 setIdentity: function (identity) {
                     if (!identity)
                         identity = this.identity;
@@ -21175,7 +19406,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.ai = get.unuseful2;
                     if (next.prompt != false) {
                         if (typeof next.prompt == 'string') {
-                            //next.dialog=next.prompt;
                         }
                         else {
                             var str = '请打出' + get.cnNumber(next.selectCard[0]) + '张';
@@ -21581,7 +19811,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 next.animate = false;
                             }
                             else if (arguments[i] == 'nothrow') {
-                                next["throw"] = false;
+                                next.throw = false;
                             }
                             else if (arguments[i] == 'nodistance') {
                                 next.nodistance = true;
@@ -21622,7 +19852,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('chooseUseTarget');
                     next._args = Array.from(arguments);
                     return next;
-                    // Fully Online-Ready! Enjoy It!
                 },
                 chooseTarget: function () {
                     var next = game.createEvent('chooseTarget');
@@ -22091,12 +20320,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next._args = Array.from(arguments);
                     return next;
                 },
-                /**
-                 * 本角色使用牌或技能；`chooseToUse`时调用
-                 * @function
-                 * @param {*} result `chooseToUse`的结果
-                 * @param {?GameCores.Bases.Event} [event] 父事件，如果不指定，使用当前事件作为父事件
-                 */
                 useResult: function (result, event) {
                     event = event || _status.event;
                     if (result._sendskill) {
@@ -22515,12 +20738,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }, this, cards);
                     return this;
                 },
-                /**
-                 * 本角色获取游戏牌到武将牌上，从除本角色武将牌上、手牌外的区域
-                 * @param {Array<GameCores.GameObjects.Card>} cards 要获取的游戏牌数组，如果一张游戏牌在本角色(手牌|武将牌上)，就从数组中移除它
-                 * @param {?boolean} [broadcast] 如果为trueh或未指定，通过{@link game.broadcast}同步获取游戏牌；如果为false，本机更新
-                 * @param {string} [gaintag] 为此次通过此函数移动到武将牌上的每张游戏牌设置`card.gaintag=`
-                 */
                 directgains: function (cards, broadcast, gaintag) {
                     var hs = this.getCards('hs');
                     for (var i = 0; i < cards.length; i++) {
@@ -22566,7 +20783,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     if (broadcast !== false)
                         game.broadcast(function (player, cards, gaintag) {
-                            player.directgains(cards, null, gaintag); //[recommend] use false instead of null
+                            player.directgains(cards, null, gaintag);
                         }, this, cards, gaintag);
                     return this;
                 },
@@ -22622,7 +20839,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             js: [],
                             ss: [],
                             cards: [],
-                            cards2: []
+                            cards2: [],
                         };
                         player.getHistory('lose', function (evt) {
                             if (evt.parent == that) {
@@ -22696,7 +20913,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 damage: function () {
                     var next = game.createEvent('damage');
-                    //next.forceDie=true;
                     next.player = this;
                     var nocard, nosource;
                     var event = _status.event;
@@ -23085,18 +21301,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 返回本角色是否处于混乱状态
-                 * @returns {!boolean}
-                 */
                 isMad: function () {
                     return this.hasSkill('mad');
                 },
-                /**
-                 * 令本角色进入混乱状态；
-                 * 此函数会输出日志
-                 * @param {(string|Object)} [end] 结束时点，下一次触发该时点时结束本角色结束混乱状态；如果未指定，默认为'phaseAfter'
-                 */
                 goMad: function (end) {
                     if (end) {
                         this.addTempSkill('mad', end);
@@ -23106,9 +21313,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     game.log(this, '进入混乱状态');
                 },
-                /**
-                 * 令本角色移除混乱状态
-                 */
                 unMad: function () {
                     this.removeSkill('mad');
                 },
@@ -23154,7 +21358,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             js: [],
                             ss: [],
                             cards: [],
-                            cards2: []
+                            cards2: [],
                         };
                         player.getHistory('lose', function (evt) {
                             if (evt.parent == that) {
@@ -23190,7 +21394,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             js: [],
                             ss: [],
                             cards: [],
-                            cards2: []
+                            cards2: [],
                         };
                         player.getHistory('lose', function (evt) {
                             if (evt.parent == that) {
@@ -23255,10 +21459,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         card.expired = false;
                     }
                 },
-                /**
-                 * 判定事件
-                 * @returns {!boolean}
-                 */
                 judge: function () {
                     var next = game.createEvent('judge');
                     next.player = this;
@@ -23299,10 +21499,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('judge');
                     return next;
                 },
-                /**
-                 * 翻面事件
-                 * @returns {!boolean}
-                 */
                 turnOver: function (bool) {
                     if (typeof bool == 'boolean') {
                         if (bool) {
@@ -23352,7 +21548,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.over();
                     }
                 },
-                "in": function (skill) {
+                in: function (skill) {
                     if (this.isOut()) {
                         if (typeof skill == 'string') {
                             if (this.outSkills) {
@@ -23378,10 +21574,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 横置事件
-                 * @returns {!boolean}
-                 */
                 link: function (bool) {
                     if (typeof bool == 'boolean') {
                         if (bool) {
@@ -23485,10 +21677,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else if (_status.paused && !noresume)
                         game.resume();
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 logSkill: function (name, targets, nature, logv, audio) {
                     if (get.itemtype(targets) == 'player')
                         targets = [targets];
@@ -23558,7 +21746,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 unprompt: function () {
                     if (this.node.prompt) {
-                        this.node.prompt["delete"]();
+                        this.node.prompt.delete();
                         delete this.node.prompt;
                     }
                 },
@@ -23603,13 +21791,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         node.classList.add(className);
                     }
                 },
-                /**
-                 * 文字弹出动画效果
-                 * [recommend] 令人迷惑的是，此函数实质调用了{@link lib.element.player.$damagepop}，而不是{@link lib.element.player.$damagepop}调用此函数
-                 * @param {!string} name (技能|角色|游戏牌)名或其他任意非空字符串
-                 * @param {string} [classname='water'] 效果色
-                 * @param {?boolean} [nobroadcast] 如果为true，则
-                 */
                 popup: function (name, className, nobroadcast) {
                     var name2 = get.translation(name);
                     if (!name2)
@@ -23649,7 +21830,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 _popup: function () {
                     if (this.popups.length) {
-                        this.popups.shift()["delete"]();
+                        this.popups.shift().delete();
                         if (this.popups.length) {
                             this.popups[0].show();
                             var that = this;
@@ -23661,9 +21842,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (!time && lib.configOL) {
                         time = parseInt(lib.configOL.choose_timeout) * 1000;
                     }
-                    // if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
-                    // 	time *= 5;
-                    // }
                     if (_status.connectMode && !game.online) {
                         game.broadcast(function (player, time) {
                             player.showTimer(time);
@@ -23690,7 +21868,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }, this);
                     }
                     if (this.node.timer) {
-                        this.node.timer["delete"]();
+                        this.node.timer.delete();
                         delete this.node.timer;
                     }
                 },
@@ -23767,14 +21945,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.addVideo('unmarkSkill', this, name);
                     game.broadcast(function (player, name) {
                         if (player.marks[name]) {
-                            player.marks[name]["delete"]();
+                            player.marks[name].delete();
                             player.marks[name].style.transform += ' scale(0.2)';
                             delete player.marks[name];
                             ui.updatem(player);
                         }
                     }, this, name);
                     if (this.marks[name]) {
-                        this.marks[name]["delete"]();
+                        this.marks[name].delete();
                         this.marks[name].style.transform += ' scale(0.2)';
                         delete this.marks[name];
                         ui.updatem(this);
@@ -23871,14 +22049,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     ui.updatem(this);
                     return node;
                 },
-                /**
-                 * 标记
-                 * @function
-                 * @param {(Array<Card>|Card|string)} name
-                 * @param {*} info mark info
-                 * @param {*} skill
-                 * @returns {*}
-                 */
                 mark: function (name, info, skill) {
                     if (get.itemtype(name) == 'cards') {
                         var marks = [];
@@ -23895,9 +22065,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             this.node.marks.insertBefore(node, this.node.marks.childNodes[1]);
                             node.suit = name.suit;
                             node.number = name.number;
-                            // if(name.name&&lib.card[name.name]&&lib.card[name.name].markimage){
-                            //     node.node.image.style.left=lib.card[name.name].markimage;
-                            // }
                             if (name.classList.contains('fullborder')) {
                                 node.classList.add('fakejudge');
                                 node.classList.add('fakemark');
@@ -23913,7 +22080,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 str = get.translation(name)[0];
                             }
                             ui.create.div('.background.skillmark', node).innerHTML = str;
-                            // node.style.fontFamily=lib.config.card_font;
                         }
                         node.name = name;
                         node.skill = skill || name;
@@ -23937,12 +22103,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return node;
                     }
                 },
-                /**
-                 * 取消标记
-                 * @function
-                 * @param {*} name
-                 * @param {*} info
-                 */
                 unmark: function (name, info) {
                     game.addVideo('unmarkname', this, name);
                     if (get.itemtype(name) == 'card') {
@@ -23957,7 +22117,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         for (var i = 0; i < this.node.marks.childNodes.length; i++) {
                             if (this.node.marks.childNodes[i].name == name &&
                                 (!info || this.node.marks.childNodes[i].markidentifer == info)) {
-                                this.node.marks.childNodes[i]["delete"]();
+                                this.node.marks.childNodes[i].delete();
                                 this.node.marks.childNodes[i].style.transform += ' scale(0.2)';
                                 ui.updatem(this);
                                 return;
@@ -23981,10 +22141,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.classList.remove('linked');
                     }
                 },
-                /**
-                 * 返回一张牌当前本角色是否可以(对目标角色)使用
-                 * @returns {!boolean}
-                 */
                 canUse: function (card, target, distance, includecard) {
                     if (typeof card == 'string')
                         card = { name: card, isCard: true };
@@ -23997,27 +22153,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return false;
                     return lib.filter[includecard ? 'targetEnabledx' : 'targetEnabled'](card, this, target);
                 },
-                /**
-                 * 返回一张牌当前本角色是否可以使用
-                 * @returns {!boolean}
-                 */
                 hasUseTarget: function (card, distance, includecard) {
                     var player = this;
                     return game.hasPlayer(function (current) {
                         return player.canUse(card, current, distance, includecard);
                     });
                 },
-                /**
-                 * 返回一张牌当前本角色使用的收益为正收益，当前可以使用，且有使用对象
-                 * @returns {!boolean}
-                 */
                 hasValueTarget: function () {
                     return this.getUseValue.apply(this, arguments) > 0;
                 },
-                /**
-                 * 返回一张牌当前本角色使用的收益
-                 * @returns {!boolean}
-                 */
                 getUseValue: function (card, distance, includecard) {
                     if (typeof (card) == 'string') {
                         card = { name: card, isCard: true };
@@ -24063,10 +22207,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return min;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 addSubPlayer: function (cfg) {
                     var skill = 'subplayer_' + cfg.name + '_' + get.id();
                     game.log(this, '获得了随从', '#g' + get.translation(cfg.name));
@@ -24106,10 +22246,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.addSkill(skill);
                     return skill;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 removeSubPlayer: function (name) {
                     if (this.hasSkill('subplayer') && this.name == name) {
                         this.exitSubPlayer(true);
@@ -24124,10 +22260,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         _status.event.trigger('removeSubPlayer');
                     }
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 callSubPlayer: function () {
                     if (this.hasSkill('subplayer'))
                         return;
@@ -24141,10 +22273,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('callSubPlayer');
                     return next;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 toggleSubPlayer: function () {
                     if (!this.hasSkill('subplayer'))
                         return;
@@ -24158,10 +22286,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('toggleSubPlayer');
                     return next;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 exitSubPlayer: function (remove) {
                     if (!this.hasSkill('subplayer'))
                         return;
@@ -24171,10 +22295,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     next.setContent('exitSubPlayer');
                     return next;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 getSubPlayers: function (tag) {
                     var skills = this.getSkills();
                     var list = [];
@@ -24189,10 +22309,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return list;
                 },
-                /**
-                 * 同时将info.global内的技能添加到{@link lib.skill.global}
-                 * @returns {!boolean}
-                 */
                 addSkillTrigger: function (skill, hidden, triggeronly) {
                     var info = lib.skill[skill];
                     if (!info)
@@ -24265,35 +22381,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         _status.event.addTrigger(skill, this);
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 addSkillLog: function (skill) {
                     this.addSkill(skill);
                     this.popup(skill);
                     game.log(this, '获得了技能', '#g『' + get.translation(skill) + '』');
                 },
-                /**
-                 * 添加一组技能
-                 * @name lib.element.player.addSkill
-                 * @function
-                 * @param {Array<string>} skills 技能名数组
-                 * @param {?boolean} [checkConflict] 是否检测冲突，如果为true，添加技能完成后检测；如果为false或未指定，不检测
-                 * @param {?boolean} [nobroadcast] 如果为true，直接添加技能；如果为false或未指定，调用{@link game.broadcast}为本角色添加技能
-                 * @returns {string} 如果添加技能成功，返回技能名`skill`；如果失败，返回undefined
-                 * @see {@link lib.element.player.addSkill(2)}
-                 */
-                /**
-                 * 本角色添加技能
-                 * @name lib.element.player.addSkill
-                 * @function
-                 * @variation 2
-                 * @param {!string} skill 技能名
-                 * @param {?boolean} [checkConflict] 是否检测冲突，如果为true，添加技能完成后检测；如果为false或未指定，不检测
-                 * @param {?boolean} [nobroadcast] 如果为true，直接添加技能；如果为false或未指定，调用{@link game.broadcast}为本角色添加技能
-                 * @returns {string} 如果添加技能成功，返回技能名`skill`；如果失败，返回undefined
-                 */
                 addSkill: function (skill, checkConflict, nobroadcast) {
                     if (Array.isArray(skill)) {
                         for (var i = 0; i < skill.length; i++) {
@@ -24363,10 +22455,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.checkConflict();
                     return skill;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 addAdditionalSkill: function (skill, skills, keep) {
                     if (this.additionalSkills[skill]) {
                         if (keep) {
@@ -24393,10 +22481,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.checkConflict();
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 removeAdditionalSkill: function (skill, target) {
                     if (this.additionalSkills[skill]) {
                         var additionalSkills = this.additionalSkills[skill];
@@ -24420,10 +22504,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 awakenSkill: function (skill, nounmark) {
                     if (!nounmark)
                         this.unmarkSkill(skill);
@@ -24433,10 +22513,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.storage[skill] = true;
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 restoreSkill: function (skill, nomark) {
                     if (this.storage[skill] === true)
                         this.storage[skill] = false;
@@ -24446,10 +22522,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.markSkill(skill);
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 disableSkill: function (skill, skills) {
                     if (typeof skills == 'string') {
                         if (!this.disabledSkills[skills]) {
@@ -24472,10 +22544,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 enableSkill: function (skill) {
                     for (var i in this.disabledSkills) {
                         this.disabledSkills[i].remove(skill);
@@ -24485,10 +22553,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 checkMarks: function () {
                     var skills = this.getSkills();
                     game.expandSkills(skills);
@@ -24499,10 +22563,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 addEquipTrigger: function (card) {
                     if (card) {
                         var info = get.info(card);
@@ -24520,10 +22580,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 removeEquipTrigger: function (card, move) {
                     if (card) {
                         var info = get.info(card);
@@ -24543,9 +22599,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                         }
                         else {
-                            //	if(card.viewAs&&card.originalName&&card.originalName){
-                            //		card.name = card.originalName
-                            //	}
                         }
                         var skills = this.getSkills(null, false);
                         if (info.skills) {
@@ -24570,10 +22623,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 removeSkillTrigger: function (skill, triggeronly) {
                     var info = lib.skill[skill];
                     if (!info)
@@ -24635,10 +22684,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 removeSkill: function (skill) {
                     if (!skill)
                         return;
@@ -24701,13 +22746,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return skill;
                 },
-                /**
-                 * 本角色添加一个临时技能
-                 * @param {!string} skill 技能名
-                 * @param {(string|Object|undefined)} [expire='phaseAfter'] 过期时间，`expire`实际上对应一个触发器，本角色在下一次触发器被触发的时候移除此技能；如果未指定，使用'phaseAfter'
-                 * @param {?boolean} [checkConflict] 如果为true，添加技能完成后检测冲突；如果为false或未指定，不检测
-                 * @returns {string} 如果添加成功，返回技能名`skill`；否则，返回undefined
-                 */
                 addTempSkill: function (skill, expire, checkConflict) {
                     if (this.hasSkill(skill) && this.tempSkills[skill] == undefined)
                         return;
@@ -24762,19 +22800,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return skill;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 attitudeTo: function (target) {
                     if (typeof get.attitude == 'function')
                         return get.attitude(this, target);
                     return 0;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 clearSkills: function (all) {
                     var list = [];
                     var exclude = [];
@@ -24800,10 +22830,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.checkMarks();
                     return list;
                 },
-                /**
-                 *
-                 * @returns {!boolean}
-                 */
                 checkConflict: function (skill) {
                     if (skill) {
                         if (this.forbiddenSkills[skill]) {
@@ -24853,10 +22879,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 返回本角色的一个记录数据
-                 * @returns {!boolean}
-                 */
                 getHistory: function (key, filter, last) {
                     if (!key)
                         return this.actionHistory[this.actionHistory.length - 1];
@@ -24883,10 +22905,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 返回本角色最近(当前)的记录数据
-                 * @returns {Array}
-                 */
                 getLastHistory: function (key, filter, last) {
                     var history = false;
                     for (var i = this.actionHistory.length - 1; i >= 0; i--) {
@@ -24912,10 +22930,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return history;
                     }
                 },
-                /**
-                 * 返回本角色的记录数据 TODO
-                 * @returns {Array}
-                 */
                 getAllHistory: function (key, filter, last) {
                     var list = [];
                     var all = this.actionHistory;
@@ -24953,11 +22967,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 返回一张本角色使用过的牌
-                 * @param {number} [idx=0] 索引，从最近到最远，为0表示最近使用的牌，如果未索引到(e.g. `idx >= length`)，返回null
-                 * @returns {(GameCores.GameObjects.Card|null)}
-                 */
                 getLastUsed: function (num) {
                     if (typeof num != 'number')
                         num = 0;
@@ -24966,21 +22975,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return null;
                     return history[history.length - num - 1];
                 },
-                /**
-                 * 返回最后的`stat`的指定键名的值
-                 * @param {string} [key] 键名；如果未指定或者为空字符串，返回最后`stat`
-                 * @returns {?Object}
-                 */
                 getStat: function (key) {
                     if (!key)
                         return this.stat[this.stat.length - 1];
                     return this.stat[this.stat.length - 1][key];
                 },
-                /**
-                 * 返回最后的`stat`的指定键名的值 TODO
-                 * @param {string} [key] 键名；如果未指定或者为空字符串，返回最后`stat`
-                 * @returns {?Object}
-                 */
                 getLastStat: function (key) {
                     var stat = false;
                     for (var i = this.stat.length - 1; i >= 0; i--) {
@@ -24995,10 +22994,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return stat;
                     return stat[key];
                 },
-                /**
-                 * 设置本角色的Timeout队列，Timeout延迟一定时长，然后重置角色位置
-                 * @param {(number|false)} [time=500] 等待时长(ms)；如果为false，表示终止最近添加的Timeout并重置本角色Timeout队列计数
-                 */
                 queue: function (time) {
                     if (time == false) {
                         clearTimeout(this.queueTimeout);
@@ -25023,12 +23018,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }, time);
                 },
-                /**
-                 * 返回一张游戏牌可以被本角色使用的次数，如果本角色有被动技**cardUsable**改变游戏牌的使用次数，采用改变后的值
-                 * @param {!string} cardname 牌名
-                 * @param {boolean} [ignoreUsed] 是否忽略使用过的次数，如果为true，忽略使用过的次数；如果为false或者未指定，结果会减去使用过的次数
-                 * @returns {!number}
-                 */
                 getCardUsable: function (card, pure) {
                     var player = this;
                     if (typeof card == 'string') {
@@ -25046,10 +23035,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return num;
                 },
-                /**
-                 * 返回攻击范围
-                 * @returns {!number}
-                 */
                 getAttackRange: function (raw) {
                     var player = this;
                     var range = 0;
@@ -25072,10 +23057,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return (1 - range);
                 },
-                /**
-                 * TODO
-                 * @returns {!boolean}
-                 */
                 getGlobalFrom: function () {
                     var player = this;
                     var range = 0;
@@ -25093,10 +23074,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return (-range);
                 },
-                /**
-                 * TODO
-                 * @returns {!boolean}
-                 */
                 getGlobalTo: function () {
                     var player = this;
                     var range = 0;
@@ -25114,10 +23091,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return (range);
                 },
-                /**
-                 * 返回本角色的最大手牌数**num**；如果本角色有被动技**maxHandcardBase maxHandcard maxHandcardFinal**，依次改变**num**，返回改变后的**num**；**num**不会小于0
-                 * @returns {!number} 非负整数
-                 */
                 getHandcardLimit: function () {
                     var num = Math.max(this.hp, 0);
                     num = game.checkMod(this, num, 'maxHandcardBase', this);
@@ -25125,18 +23098,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     num = game.checkMod(this, num, 'maxHandcardFinal', this);
                     return Math.max(0, num);
                 },
-                /**
-                 * @callback lib.element.player~playerFilterPredicate
-                 * @param {!GameCores.GameObjects.Player} player
-                 * @returns {!boolean}
-                 */
-                /**
-                 * 返回本角色的敌方角色
-                 * @name lib.element.player.getEnemies
-                 * @function
-                 * @param {lib.element.player~playerFilterPredicate} [predicate] 筛选函数
-                 * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-                 */
                 getEnemies: function (func) {
                     var player = this;
                     var targets;
@@ -25241,20 +23202,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     targets.remove(player);
                     return targets;
                 },
-                /**
-                 * 返回本角色的友方角色
-                 * @name lib.element.player.getFriends
-                 * @function
-                 * @param {lib.element.player~playerFilterPredicate} predicate 筛选函数
-                 * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-                 */
-                /**
-                 * 返回本角色的友方角色
-                 * @name lib.element.player.getFriends
-                 * @function
-                 * @param {?boolean} hasSelf 结果是否包含本角色，如果为true，则包括；如果为false或未指定，则不包括
-                 * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-                 */
                 getFriends: function (func) {
                     var player = this;
                     var targets;
@@ -25354,19 +23301,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return targets;
                 },
-                /**
-                 * 返回本角色是否是目标的敌方
-                 * @param {!GameCores.GameObjects.Player} player 目标角色
-                 * @returns {!boolean}
-                 */
                 isEnemyOf: function () {
                     return !this.isFriendOf.apply(this, arguments);
                 },
-                /**
-                 * 返回本角色是否是目标的友方
-                 * @param {!GameCores.GameObjects.Player} player 目标角色
-                 * @returns {!boolean}
-                 */
                 isFriendOf: function (player) {
                     if (get.mode() == 'guozhan') {
                         if (this == player)
@@ -25387,62 +23324,27 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this == player;
                 },
-                /**
-                 * 返回本角色是否是目标的友方
-                 * @param {!GameCores.GameObjects.Player} player 目标角色
-                 * @returns {!boolean}
-                 */
                 isFriendsOf: function (player) {
                     return player.getFriends(true).contains(this);
                 },
-                /**
-                 * 返回本角色是否是目标的敌方
-                 * @param {!GameCores.GameObjects.Player} player 目标角色
-                 * @returns {!boolean}
-                 */
                 isEnemiesOf: function (player) {
                     return player.getEnemies().contains(this);
                 },
-                /**
-                 * 返回本角色是否未死亡
-                 * @returns {!boolean} true表示未死亡，false表示已死亡
-                 */
                 isAlive: function () {
                     return this.classList.contains('dead') == false;
                 },
-                /**
-                 * 返回本角色是否死亡
-                 * @returns {!boolean}
-                 */
                 isDead: function () {
                     return this.classList.contains('dead');
                 },
-                /**
-                 * 返回本角色是否处于濒死状态
-                 * @returns {!boolean}
-                 */
                 isDying: function () {
                     return _status.dying.contains(this) && this.hp <= 0 && this.isAlive();
                 },
-                /**
-                 * 返回本角色是否当前血量小于最大血量，如果本角色处于**无HP状态**，返回false
-                 * @returns {!boolean}
-                 */
                 isDamaged: function () {
                     return this.hp < this.maxHp && !this.storage.nohp;
                 },
-                /**
-                 * 返回本角色是否当前血量等于最大血量，如果本角色处于**无HP状态**，返回true
-                 * @returns {!boolean}
-                 */
                 isHealthy: function () {
                     return this.hp == this.maxHp || this.storage.nohp;
                 },
-                /**
-                 * 返回本角色的血量是否是局中最多
-                 * @param {boolean} [isUnique] 如果为true，只在血量最多且唯一时返回true；如果为false或未指定，只要血量最多就返回true
-                 * @returns {!boolean}
-                 */
                 isMaxHp: function (equal) {
                     for (var i = 0; i < game.players.length; i++) {
                         if (game.players[i].isOut() || game.players[i] == this)
@@ -25458,11 +23360,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的血量是否是局中最少
-                 * @param {boolean} [isUnique] 如果为true，只在血量最少且唯一时返回true；如果为false或未指定，只要血量最少就返回true
-                 * @returns {!boolean}
-                 */
                 isMinHp: function (equal) {
                     for (var i = 0; i < game.players.length; i++) {
                         if (game.players[i].isOut() || game.players[i] == this)
@@ -25478,11 +23375,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的手牌和装备总数是否是局中最多
-                 * @param {boolean} [isUnique] 如果为true，只在数量最多且唯一时返回true；如果为false或未指定，只要数量是最多就返回true
-                 * @returns {!boolean}
-                 */
                 isMaxCard: function (equal) {
                     var nh = this.countCards('he');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25499,11 +23391,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的手牌和装备总数是否是局中最少
-                 * @param {boolean} [isUnique] 如果为true，只在数量最少且唯一时返回true；如果为false或未指定，只要数量是最少就返回true
-                 * @returns {!boolean}
-                 */
                 isMinCard: function (equal) {
                     var nh = this.countCards('he');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25520,11 +23407,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的手牌数量是否是局中最多
-                 * @param {boolean} [isUnique] 如果为true，只在手牌数量最多且唯一时返回true；如果为false或未指定，只要装备数量是最多就返回true
-                 * @returns {!boolean}
-                 */
                 isMaxHandcard: function (equal) {
                     var nh = this.countCards('h');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25541,11 +23423,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的手牌数量是否是局中最少
-                 * @param {boolean} [isUnique] 如果为true，只在手牌数量最少且唯一时返回true；如果为false或未指定，只要手牌数量是最少就返回true
-                 * @returns {!boolean}
-                 */
                 isMinHandcard: function (equal) {
                     var nh = this.countCards('h');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25562,11 +23439,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的装备数量是否是局中最多
-                 * @param {boolean} [isUnique] 如果为true，只在装备数量最多且唯一时返回true；如果为false或未指定，只要装备数量是最多就返回true
-                 * @returns {!boolean}
-                 */
                 isMaxEquip: function (equal) {
                     var nh = this.countCards('e');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25583,11 +23455,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色的装备数量是否是局中最少
-                 * @param {boolean} [isUnique] 如果为true，只在装备数量最少且唯一时返回true；如果为false或未指定，只要装备数量是最少就返回true
-                 * @returns {!boolean}
-                 */
                 isMinEquip: function (equal) {
                     var nh = this.countCards('e');
                     for (var i = 0; i < game.players.length; i++) {
@@ -25604,36 +23471,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return true;
                 },
-                /**
-                 * 返回本角色是否被链接
-                 * @returns {!boolean} true表示被链接，false表示未被链接
-                 */
                 isLinked: function () {
                     if (get.is.linked2(this)) {
                         return this.classList.contains('linked2');
                     }
                     return this.classList.contains('linked');
                 },
-                /**
-                 * 返回本角色是否翻面
-                 * @returns {!boolean} true表示翻面，false表示未翻面
-                 */
                 isTurnedOver: function () {
                     return this.classList.contains('turnedover');
                 },
-                /**
-                 * 返回本角色的玩家是否离开
-                 * @returns {!boolean} true表示离开，false表示未离开
-                 */
                 isOut: function () {
                     return this.classList.contains('out');
                 },
-                /**
-                 * 本角色是否不计入距离的计算
-                 * @param {?boolean} [distance]
-                 * @returns {!boolean}
-                 */
-                //TODO
                 isMin: function (distance) {
                     if (distance && lib.config.mode != 'stone')
                         return false;
@@ -25641,18 +23490,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return true;
                     return this.classList.contains('minskin') && !game.chess;
                 },
-                /**
-                 * 表示本角色是否在局中(未死亡&未离开&未移出房间)
-                 * @returns {!boolean} true表示在局中，false表示不在局中
-                 */
                 isIn: function () {
                     return this.classList.contains('dead') == false && this.classList.contains('out') == false && !this.removed;
                 },
-                /**
-                 * 返回本角色是否可见，如果可见返回true
-                 * @param {number} num **0**: unseen; **1**: unseen2; **2**: unseen && unseen2; **default**: unseen && !unseen2
-                 * @returns {!boolean}
-                 */
                 isUnseen: function (num) {
                     switch (num) {
                         case 0: return this.classList.contains('unseen');
@@ -25661,12 +23501,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         default: return this.classList.contains('unseen') && (!this.name2 || this.classList.contains('unseen2'));
                     }
                 },
-                /**
-                 * 判断本角色是否可以被某角色的玩家控制
-                 * @param {?boolean} self 如果为true，当是两个角色是同一个角色时返回true；如果为false或未指定，返回false
-                 * @param {GameCores.GameObjects.Player} [me] 某角色，用于判断本角色是否被`me`的玩家控制，如果未指定，默认使用`game.me`
-                 * @returns {!boolean}
-                 */
                 isUnderControl: function (self, me) {
                     me = (me || game.me);
                     var that = this._trueMe || this;
@@ -25706,31 +23540,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 角色是否处于联机状态
-                 * 注意，该函数如果角色处于托管状态，返回false
-                 * @returns {!boolean}
-                 */
                 isOnline: function () {
                     if (this.ws && lib.node && !this.ws.closed && this.ws.inited && !this.isAuto) {
                         return true;
                     }
                     return false;
                 },
-                /**
-                 * 角色是否处于联机状态
-                 * @returns {!boolean}
-                 */
                 isOnline2: function () {
                     if (this.ws && lib.node && !this.ws.closed) {
                         return true;
                     }
                     return false;
                 },
-                /**
-                 * 角色是否处于脱机状态
-                 * @returns {!boolean}
-                 */
                 isOffline: function () {
                     if (this.ws && lib.node && this.ws.closed) {
                         return true;
@@ -25775,12 +23596,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 返回本角色当前超出手牌上限多少张牌，如果没有超出上限，返回0；
-                 * 如果角色有被动技**ignoredHandcard**，令被动技返回`true`的牌不计入手牌上限
-                 * @param {?number} [num]
-                 * @returns {!number} 非负整数
-                 */
                 needsToDiscard: function (num) {
                     if (typeof num != 'number')
                         num = 0;
@@ -25799,16 +23614,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 distanceFrom: function (target, method) {
                     return get.distance(target, this, method);
                 },
-                /**
-                 * 返回本角色是否拥有一个技能；
-                 * 此技能会在角色拥有(技能|子技能)中查找技能名；
-                 * 实际调用了{@link lib.element.player.getSkills this.getSkills(arg2, arg3, arg4)}，并用{@link game.expandSkills}展开
-                 * @param {!string} skill 技能名
-                 * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-                 * @param {*} arg3 为false时表示不计入装备技能
-                 * @param {*} arg4 为false时表示计入失效的技能
-                 * @returns {!boolean}
-                 */
                 hasSkill: function (skill, arg2, arg3, arg4) {
                     return game.expandSkills(this.getSkills(arg2, arg3, arg4)).contains(skill);
                 },
@@ -25930,7 +23735,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                //暗属性
                 hasYami: function () {
                     if (this.countCards('h', { nature: 'yami' }))
                         return true;
@@ -25995,7 +23799,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 mayHaveShan: function () {
                     return this.hasShan();
-                    // modify: After AngelBeats! -2nd Beat-
                 },
                 hasCard: function (name, position) {
                     if (typeof name == 'function') {
@@ -26024,24 +23827,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return false;
                     return true;
                 },
-                /**
-                 * 装备类型
-                 * |string|number|equip|
-                 * |:----:|:----:|:---:|
-                 * |equip1|1|武器|
-                 * |equip2|2|防具|
-                 * |equip3|3|防御载具|
-                 * |equip4|4|攻击载具|
-                 * |equip5|5|宝物|
-                 * |equip6|6|坐骑|
-                 *
-                 * @typedef {('equip[1-6]'|number)} GameCores.EquipType
-                 */
-                /**
-                 * 返回角色装备区的一张牌
-                 * @param {(GameCores.GameObjects.Card|'equip[0-9]'|number)} name 如果为游戏牌对象，使用其装备类型(如果有)；如果不是可装备类型或者`name`未指定，此函数返回null；可以取值为数值[0-9]或字符串'equip[0-9]'，但是通常只在[1-6]范围内({@link GameCores.EquipType})
-                 * @returns {(null|GameCores.GameObjects.Card)}
-                 */
                 getEquip: function (name) {
                     var es = this.getCards('e');
                     if (typeof name == 'object' && get.info(name)) {
@@ -26073,12 +23858,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return null;
                 },
-                /**
-                 * 返回角色判定区一张(指定牌|视为指定牌)
-                 * @function
-                 * @param {?string} name 指定牌的牌名
-                 * @returns {(GameCores.GameObjects.Card|null)} 如果没找到，返回null
-                 */
                 getJudge: function (name) {
                     var judges = this.node.judges.childNodes;
                     for (var i = 0; i < judges.length; i++) {
@@ -26230,7 +24009,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     node.listenTransition(function () {
                         node.style.transitionDuration = '0.5s';
                         ui.refresh(node);
-                        node["delete"]();
+                        node.delete();
                     });
                     var that = this;
                     if (num && num > 1) {
@@ -26458,7 +24237,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         node = this.$throwordered(card.copy('thrown'), nosource);
                         if (time != undefined) {
                             node.fixed = true;
-                            setTimeout(function () { node["delete"](); }, time);
+                            setTimeout(function () { node.delete(); }, time);
                         }
                         lib.listenEnd(node);
                         return node;
@@ -26466,12 +24245,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 $throwordered: function () {
                     return this.$throwordered2.apply(this, arguments);
-                    // if(lib.config.low_performance){
-                    //     return this.$throwordered2.apply(this,arguments);
-                    // }
-                    // else{
-                    //     return this.$throwordered1.apply(this,arguments);
-                    // }
                 },
                 $throwordered1: function (node, nosource) {
                     node.classList.add('thrown');
@@ -26606,7 +24379,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     node.hide();
                     node.style.transitionProperty = 'left,top,opacity,transform';
                     if (nosource) {
-                        // node.style.transform='scale(0)';
                     }
                     else {
                         var nx = [50, -52];
@@ -26722,7 +24494,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     node.style.left = left;
                     node.style.top = top;
                     node.hide();
-                    // node.style.transitionProperty='left,top,opacity,transform';
                     var parseCalc = function (str) {
                         var per = str.slice(str.indexOf('calc(') + 5, str.indexOf('%'));
                         var add = str.slice(str.indexOf('%') + 1, str.indexOf('px')).replace(/\s/g, '');
@@ -26747,7 +24518,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     ui.arena.appendChild(node);
                     ui.refresh(node);
                     node.show();
-                    // node.style.transform=trans||'';
                     lib.listenEnd(node);
                     return node;
                 },
@@ -26829,7 +24599,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                             else if (!dice.resumed) {
                                 setTimeout(function () {
-                                    diceContainer["delete"]();
+                                    diceContainer.delete();
                                     ui.window.classList.remove('dicepaused');
                                 }, 300);
                                 if (!game.online) {
@@ -26917,20 +24687,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             else {
                                 node = ui.create.div('.card.thrown');
                             }
-                            // node.dataset.position=this.dataset.position;
                             node.fixed = true;
                             this.$throwordered(node);
-                            // lib.listenEnd(node);
-                            // node.hide();
-                            // node.style.transitionProperty='left,top,opacity';
-                            //
-                            // node.style.transform='rotate('+(Math.random()*16-8)+'deg)';
-                            //
-                            // ui.arena.appendChild(node);
-                            // ui.refresh(node);
-                            // node.show();
-                            // node.style.left='calc(50% - 52px '+((Math.random()-0.5<0)?'+':'-')+' '+Math.random()*100+'px)';
-                            // node.style.top='calc(50% - 52px '+((Math.random()-0.5<0)?'+':'-')+' '+Math.random()*80+'px)';
                             node.listenTransition(function () {
                                 var dx = player.getLeft() + player.offsetWidth / 2 - 52 - node.offsetLeft;
                                 var dy = player.getTop() + player.offsetHeight / 2 - 52 - node.offsetTop;
@@ -26940,22 +24698,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 else {
                                     node.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
                                 }
-                                node["delete"]();
+                                node.delete();
                             });
-                            // setTimeout(function(){
-                            //     // node.removeAttribute('style');
-                            //     // node.dataset.position=player.dataset.position;
-                            //     var dx=player.offsetLeft+player.offsetWidth/2-52-node.offsetLeft;
-                            //     var dy=player.offsetTop+player.offsetHeight/2-52-node.offsetTop;
-                            //     if(node.style.transform&&node.style.transform!='none'&&node.style.transform.indexOf('translate')==-1){
-                            //         node.style.transform+=' translate('+dx+'px,'+dy+'px)';
-                            //     }
-                            //     else{
-                            //         node.style.transform='translate('+dx+'px,'+dy+'px)';
-                            //     }
-                            //
-                            //     node.delete();
-                            // },700);
                         }
                     }
                 },
@@ -26978,7 +24722,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         card.style.transform = '';
                         card.classList.remove('drawinghidden');
                         delete card._transform;
-                        //已修改
                         card.originalName = originalName;
                         card.viewAs = viewAs;
                         if (viewAs && viewAs != card.name) {
@@ -26997,7 +24740,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             card.classList.remove('fakejudge');
                             delete card.viewAs;
                         }
-                        //console.log(card.viewAs);
                         if (card.viewAs && card.name != card.viewAs) {
                             if (!card.originalName)
                                 card.originalName = card.name;
@@ -27085,11 +24827,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         else {
                             var node;
                             if (get.itemtype(card) == 'card') {
-                                // node=this.$throwordered(card.copy(),true);
                                 node = card.copy('thrown', false);
                             }
                             else {
-                                // node=this.$throwordered(ui.create.div('.card.thrown'),true);
                                 node = ui.create.div('.card.thrown');
                                 node.moveTo = lib.element.card.moveTo;
                                 node.moveDelete = lib.element.card.moveDelete;
@@ -27143,10 +24883,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return true;
                     }
                 },
-                /**
-                 * 本角色播放技能动画
-                 */
-                //TODO
                 $skill: function (name, type, color, avatar) {
                     if (typeof type != 'string')
                         type = 'legend';
@@ -27353,7 +25089,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (avatar) {
                         node.classList.add('fullscreenavatar');
                         ui.create.div('', ui.create.div(node));
-                        // ui.create.div('',str.split('').join('<br>'),ui.create.div('.text.textbg',node));
                         ui.create.div('', '<div>' + str.split('').join('</div><br><div>') + '</div>', ui.create.div('.text', node));
                         node.firstChild.firstChild.style.backgroundImage = avatar.style.backgroundImage;
                         node.dataset.nature = nature || 'unknown';
@@ -27391,17 +25126,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         node.classList.add('damageadded');
                     }
                     setTimeout(function () {
-                        node["delete"]();
+                        node.delete();
                         node.style.transform = 'scale(1.5)';
                     }, avatar ? 1600 : 1000);
                 },
-                /**
-                 * 伤害效果
-                 * @param {(string|number)} num 伤害数值或者任意字符串
-                 * @param {string} [nature='soil'] 伤害属性
-                 * @param {?boolean} font 如果为true，`damage div`添加类`normal-font`；如果为false或未指定，使用伤害默认字体大小
-                 * @param {?boolean} nobroadcast 如果为true或未指定，调用`game.broadcast`广播；如果为false，仅在本机
-                 */
                 $damagepop: function (num, nature, font, nobroadcast) {
                     if (typeof num == 'number' || typeof num == 'string') {
                         game.addVideo('damagepop', this, [num, nature, font]);
@@ -27435,12 +25163,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         node.classList.add('damageadded');
                         node.listenTransition(function () {
                             setTimeout(function () {
-                                node["delete"]();
+                                node.delete();
                             }, 200);
                         });
-                        // setTimeout(function(){
-                        //     node.delete();
-                        // },500);
                         var that = this;
                         setTimeout(function () {
                             that.damagepopups.shift();
@@ -27592,17 +25317,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 卡牌方法，.card节点共用的方法（比如检测卡牌是否在区域内【hasPosition】和添加去除标签【add/removeGaintag】）
-             * 卡牌
-             * @namespace
-             * @mixin
-             */
             card: {
-                /**
-                 * 为本游戏牌添加gain标签名；本游戏牌`this.node.gaintag`也会更新
-                 * @param {(string|Array<string>)} gaintag gain标签名，如果是一个数组，会**覆盖**本游戏牌的原gain标签数组为此数组，而不是向原数组中添加gain标签
-                 */
                 addGaintag: function (gaintag) {
                     if (Array.isArray(gaintag))
                         this.gaintag = gaintag.slice(0);
@@ -27616,10 +25331,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     this.node.gaintag.innerHTML = str;
                 },
-                /**
-                 * 为本游戏牌移除gain标签，或置空gain标签数组；本游戏牌`this.node.gaintag`也会更新
-                 * @param {(string|true)} tag 要移除的gain标签名，如果此gain标签不在其中则不做任何处理；如果此值为true，置空gain标签数组
-                 */
                 removeGaintag: function (tag) {
                     if (tag === true) {
                         if (this.gaintag && this.gaintag.length || this.node.gaintag.innerHTML.length)
@@ -27630,11 +25341,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.addGaintag(this.gaintag);
                     }
                 },
-                /**
-                 * 返回本游戏牌是否含有某一个gain标签
-                 * @param {!string} tag 要搜索的gain标签
-                 * @returns {!boolean}
-                 */
                 hasGaintag: function (tag) {
                     if (['ming_', 'an_'].contains(tag)) {
                         return this.gaintag && this.gaintag.filter(function (gain) {
@@ -27644,15 +25350,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     else
                         return this.gaintag && this.gaintag.contains(tag);
                 },
-                /**
-                 * 初始化
-                 * 同时将info.global内的技能添加到{@link lib.skill.global}
-                 * @function
-                 * @param {(Array|Object)} card TODO
-                 * @returns {!GameCores.GameObjects.Card} this self
-                 */
                 init: function (card) {
-                    var _this = this;
                     if (Array.isArray(card)) {
                         if (card[2] == 'huosha') {
                             card[2] = 'sha';
@@ -27886,7 +25584,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     else {
                         this.node.background.innerHTML = lib.translate[bg + '_cbg'] || lib.translate[bg + '_bg'] || get.translation(bg)[0];
-                        // this.node.background.style.fontFamily=lib.config.card_font;
                         if (this.node.background.innerHTML.length > 1)
                             this.node.background.classList.add('tight');
                         else
@@ -28046,9 +25743,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         specialEffects.addArray(card[5]);
                     }
                     if (this.node.image.parentNode.classList.length > 0)
-                        this.node.image.parentNode.classList.forEach(function (element) {
+                        this.node.image.parentNode.classList.forEach(element => {
                             if (element.indexOf("card_") != -1) {
-                                _this.node.image.parentNode.classList.remove(element);
+                                this.node.image.parentNode.classList.remove(element);
                             }
                         });
                     if (specialEffects.length) {
@@ -28093,11 +25790,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 * 选中状态，更新本游戏牌的位置；仅供`ui.me`中的手牌使用的函数(本机)
-                 * @param {?boolean} [bool] 如果为true，translate`translateY(-20px)`
-                 * @param {?number} [delay] 延迟`delay`(ms)时长，再更新本游戏牌位置；如果未指定或为0，不调用延迟函数，立即更新
-                 */
                 updateTransform: function (bool, delay) {
                     if (delay) {
                         var that = this;
@@ -28139,7 +25831,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.moveTo(player);
                         var that = this;
                         setTimeout(function () {
-                            that["delete"]();
+                            that.delete();
                         }, 200);
                     }
                     else {
@@ -28197,7 +25889,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         intro: node.querySelector('.intro'),
                         background: node.querySelector('.background'),
                         image: node.querySelector('.image'),
-                        gaintag: node.querySelector('.gaintag')
+                        gaintag: node.querySelector('.gaintag'),
                     };
                     node.node.gaintag.innerHTML = '';
                     var clone = true;
@@ -28252,26 +25944,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return false;
                 },
-                /**
-                 * 判断本卡牌是否在某角色的区域中
-                 * @returns {!boolean}
-                 */
                 hasPosition: function () {
                     return ['h', 'e', 'j'].contains(get.position(this));
                 },
-                /**
-                 * 判断本卡牌是否在牌堆或弃牌堆中
-                 * @returns {!boolean}
-                 */
                 isInPile: function () {
                     return ['c', 'd'].contains(get.position(this));
                 }
             },
-            /**
-             * 按钮方法
-             * @name element.button
-             * @type {!Object}
-             */
             button: {
                 exclude: function () {
                     if (_status.event.excludeButton == undefined) {
@@ -28280,34 +25959,16 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     _status.event.excludeButton.add(this);
                 }
             },
-            /**
-             * 事件方法，游戏进行过程中每一个事件所具有的方法（比如设置事件内容【setContent】和停止事件【finish】）
-             * 事件
-             * @namespace
-             * @mixin
-             */
             event: {
                 changeToZero: function () {
                     this.num = 0;
                     this.numFixed = true;
                 },
-                /**
-                 * 结束事件
-                 * @function
-                 */
                 finish: function () {
                     this.finished = true;
                 },
-                /**
-                 * 取消事件
-                 * 直接结束事件，也跳过子事件的触发和执行
-                 * @function
-                 * @param {?boolean} all 见{@link lib.element.event.untrigger}
-                 * @param {?GameCores.GameObjects.Player} player 见{@link lib.element.event.untrigger}
-                 * @param {?string} notrigger 如果为'notrigger'则**不尝试触发**`${this.name}Cancelled`
-                 */
                 cancel: function (arg1, arg2, notrigger) {
-                    this.untrigger.call(this, arguments); //??
+                    this.untrigger.call(this, arguments);
                     this.finish();
                     if (notrigger != 'notrigger') {
                         this.trigger(this.name + 'Cancelled');
@@ -28315,18 +25976,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             this.player.getHistory('skipped').add(this.name);
                     }
                 },
-                /**
-                 * 转移状态
-                 * @function
-                 * @param {!number} step 新状态
-                 */
                 goto: function (step) {
                     this.step = step - 1;
                 },
-                /**
-                 * 自环(循环)
-                 * @function
-                 */
                 redo: function () {
                     this.step--;
                 },
@@ -28339,23 +25991,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this.set('hsskill', skill);
                     return this;
                 },
-                /**
-                 * 链式函数，为Event的属性赋值
-                 * 赋值`this[key] = value`，同时绑定`this._set.push([key, value])`
-                 * @function lib.element.event.set
-                 * @param {!string} key 键名
-                 * @param {?Object} value 键值
-                 * @returns {GameCores.GameObjects.Event} this self
-                 */
-                /**
-                 * 为Event的属性赋值
-                 * 对每个键值对，调用{@link lib.element.event.set}绑定到Event上
-                 * @function lib.element.event.set
-                 * @variation 2
-                 * @param {!Array<Array>} pairs 要设置键值对数组
-                 * @param {!string} pairs[].'[0]' 键名
-                 * @param {?Object} pairs[].'[1]' 键值
-                 */
                 set: function (key, value) {
                     if (arguments.length == 1 && Array.isArray(arguments[0])) {
                         for (var i = 0; i < arguments[0].length; i++) {
@@ -28375,17 +26010,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return this;
                 },
-                /**
-                 * 设置事件的状态机
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机，如果未指定则不设置
-                 * @returns {GameCores.Bases.Event} this self
-                 */
-                /**
-                 * 设置事件的状态机
-                 * @param {?string} name 状态机名，使用`lib.element.content[name]`作为事件的状态机，见{@link lib.element.content}
-                 * @returns {GameCores.Bases.Event} this self
-                 */
                 setContent: function (name) {
                     if (typeof name == 'function') {
                         this.content = lib.init.parse(name);
@@ -28423,21 +26047,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     this.player.wait();
                     game.pause();
                 },
-                /**
-                 * 选择结束，清空事件的选择(card，target, skill)
-                 */
                 resume: function () {
                     delete this._cardChoice;
                     delete this._targetChoice;
                     delete this._skillChoice;
                 },
-                /**
-                 * 获取本事件的指定父事件
-                 * @function
-                 * @param {(string|number)} [level] 指定父事件的名称 | 为number值时表示重复取level次_parent
-                 * @param {?boolean} [forced] 为true表示强制返回：获取不到指定父事件时返回{null}
-                 * @returns {?GameCores.Bases.Event} 通过_parent（_modparent）属性获取本事件的父事件，若父事件不满足要求或重复次数少于level，则取父事件的_parent，依此类推直至获取到满足条件的父事件
-                 */
                 getParent: function (level, forced) {
                     var parent;
                     if (this._modparent && game.online) {
@@ -28475,18 +26089,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return parent;
                 },
-                /**
-                 * 获取本事件的触发事件
-                 * @function
-                 * @returns {?GameCores.Bases.Event} 本事件的触发事件，如果本事件没有触发事件，返回undefined/null
-                 */
                 getTrigger: function () {
                     return this.getParent()._trigger;
                 },
-                /**
-                 * 返回本事件的随机值，如果已经有随机值就返回之前的随机值；未调用该函数时，随机值`this._rand`默认未指定(undefined)
-                 * @returns {!number} this._rand
-                 */
                 getRand: function (name) {
                     if (name) {
                         if (!this._rand_map)
@@ -28499,13 +26104,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         this._rand = Math.random();
                     return this._rand;
                 },
-                /**
-                 * 创建不可触发的`${this.name}Inserted`事件，立即执行
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机
-                 * @param {?Object<string, Object>} map 键值对对象
-                 * @returns {!GameCores.Bases.Event} 创建的事件
-                 */
                 insert: function (func, map) {
                     var next = game.createEvent(this.name + 'Inserted', false, this);
                     next.setContent(func);
@@ -28514,13 +26112,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return next;
                 },
-                /**
-                 * 创建不可触发的`${this.name}Inserted`事件，于本事件结算后执行
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机
-                 * @param {?Object<string, Object>} map 键值对对象
-                 * @returns {!GameCores.Bases.Event} 创建的事件
-                 */
                 insertAfter: function (func, map) {
                     var next = game.createEvent(this.name + 'Inserted', false, { next: [] });
                     this.after.push(next);
@@ -28530,11 +26121,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     return next;
                 },
-                /**
-                 * 备份
-                 * @function
-                 * @param {?string} skill 技能ID
-                 */
                 backup: function (skill) {
                     this._backup = {
                         filterButton: this.filterButton,
@@ -28554,7 +26140,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         _targetChoice: this._targetChoice,
                         _skillChoice: this._skillChoice,
                         ai1: this.ai1,
-                        ai2: this.ai2
+                        ai2: this.ai2,
                     };
                     if (skill) {
                         var info = get.info(skill);
@@ -28794,23 +26380,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                 },
-                /**
-                 * 尝试触发子事件
-                 * @param {!string} name trigger name
-                 */
                 trigger: function (name) {
-                    //??
                     if (_status.video)
                         return;
-                    //如果是游戏开始前，分发手牌时，一切因获得/失去牌而触发的技能不会触发
                     if ((this.name === 'gain' || this.name === 'lose') && !_status.gameDrawed)
                         return;
-                    //分发手牌结束 [recommend] why here//??
-                    /**
-                     * 如果为true，表示游戏开始前分发手牌结束；如果未指定，则游戏未开始且手牌没有分发完成
-                     * @name _status.gameDrawed
-                     * @type {?true}
-                     */
                     if (name === 'gameDrawEnd')
                         _status.gameDrawed = true;
                     if (name === 'gameStart') {
@@ -28820,23 +26394,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         if (lib.config.show_cardpile) {
                             ui.cardPileButton.style.display = '';
                         }
-                        /**
-                         * 如果为true，表示游戏已经开始；如果未指定，则游戏还在分发武将和手牌，尚未开始
-                         * @name _status.gameStarted
-                         * @type {?true}
-                         */
                         _status.gameStarted = true;
                         game.showHistory();
                     }
-                    //通过hookmap优化性能，但是hookmap不向下兼容；如果处于兼容模式，则忽略hookmap优化
                     if (!lib.hookmap[name] && !lib.config.compatiblemode)
                         return;
-                    //?? 是否需要判空?
                     if (!game.players || !game.players.length)
                         return;
                     var event = this;
-                    //?? 是否可以简化?
-                    //??
                     var start = false;
                     var starts = [_status.currentPhase, event.source, event.player, game.me, game.players[0]];
                     for (var i = 0; i < starts.length; i++) {
@@ -28847,7 +26412,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                     if (!start)
                         return;
-                    //确保start角色在游戏之中
                     if (!game.players.contains(start)) {
                         start = game.findNext(start);
                     }
@@ -28909,7 +26473,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         var mapxx = {
                             player: player,
                             list: [],
-                            list2: []
+                            list2: [],
                         };
                         listAdded = {};
                         var notemp = player.skills.slice(0);
@@ -29027,16 +26591,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         next.map = mapx;
                         next._trigger = event;
                         next.triggername = name;
-                        //next.starter=start;
                         event._triggering = next;
                     }
                 },
-                /**
-                 * 取消将要触发的子事件；如果无参调用，不进行任何处理
-                 * @function
-                 * @param {?boolean} all 如果为true，取消全部要触发的子事件；如果未指定或为false，忽略该值
-                 * @param {?GameCores.GameObjects.Player} player 一个角色，取消所有将要对该角色触发的子事件，如果未指定，忽略该值
-                 */
                 untrigger: function (all, player) {
                     var evt = this._triggering;
                     if (all) {
@@ -29064,12 +26621,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 弹窗方法，.dialog节点共用的方法（比如开启和关闭弹窗【open/close】）
-             * 对话框(弹窗)
-             * @name element.dialog
-             * @type {!Object}
-             */
             dialog: {
                 add: function (item, noclick, zoom) {
                     if (typeof item == 'string') {
@@ -29189,16 +26740,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 close: function () {
                     ui.dialogs.remove(this);
-                    this["delete"]();
+                    this.delete();
                     if (ui.dialogs.length > 0) {
                         ui.dialog = ui.dialogs[0];
                         ui.dialog.show();
                         ui.dialog.refocus();
                         ui.update();
                     }
-                    // if(ui.arenalog){
-                    //     ui.arenalog.classList.remove('withdialog');
-                    // }
                     return this;
                 },
                 setCaption: function (str) {
@@ -29206,12 +26754,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     return this;
                 }
             },
-            /**
-             * 选项方法，参考弹窗方法，在创建.control节点时依次为其添加
-             * 选择项
-             * @name element.control
-             * @type {!Object}
-             */
             control: {
                 open: function () {
                     ui.control.insertBefore(this, _status.createControl || ui.confirm);
@@ -29240,7 +26782,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 close: function () {
                     this.animate('controlpressdownx', 500);
                     ui.controls.remove(this);
-                    this["delete"]();
+                    this.delete();
                     setTimeout(ui.updatec, 100);
                     if (ui.confirm == this)
                         delete ui.confirm;
@@ -29252,7 +26794,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         delete ui.skills3;
                 },
                 replace: function () {
-                    // this.animate('controlpressdownx',500);
                     if (this.replaceTransition === false) {
                         this.style.transitionProperty = 'none';
                         ui.refresh(this);
@@ -29290,11 +26831,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     return this;
                 }
             },
-            /**
-             * 客户端
-             * @name element.client
-             * @type {!Object}
-             */
             client: {
                 send: function () {
                     if (this.closed)
@@ -29348,11 +26884,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     return this;
                 }
             },
-            /**
-             * Node Web Server listeners and callbacks
-             * @name element.nodews
-             * @type {!Object}
-             */
             nodews: {
                 send: function (message) {
                     game.send('server', 'send', this.wsid, message);
@@ -29364,11 +26895,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.send('server', 'close', this.wsid);
                 }
             },
-            /**
-             * Web Server
-             * @name element.ws
-             * @type {!Object}
-             */
             ws: {
                 onopen: function () {
                     if (_status.connectCallback) {
@@ -29426,77 +26952,68 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     }
                     else {
-                        // game.saveConfig('reconnect_info');
                     }
                     game.online = false;
                     game.ws = null;
                 }
             }
         },
-        //全局卡牌
         card: {
             list: [],
-            //石头剪刀布
             pss_paper: {
                 type: 'pss',
-                fullskin: true
+                fullskin: true,
             },
             pss_scissor: {
                 type: 'pss',
-                fullskin: true
+                fullskin: true,
             },
             pss_stone: {
                 type: 'pss',
-                fullskin: true
+                fullskin: true,
             },
-            //区域废弃标志
             feichu_equip1: {
                 type: "equip",
-                subtype: "equip1"
+                subtype: "equip1",
             },
             feichu_equip2: {
                 type: "equip",
-                subtype: "equip2"
+                subtype: "equip2",
             },
             feichu_equip3: {
                 type: "equip",
-                subtype: "equip3"
+                subtype: "equip3",
             },
             feichu_equip4: {
                 type: "equip",
-                subtype: "equip4"
+                subtype: "equip4",
             },
             feichu_equip5: {
                 type: "equip",
-                subtype: "equip5"
+                subtype: "equip5",
             },
             disable_judge: {},
-            //势力卡牌
             group_wei: { fullskin: true },
             group_shu: { fullskin: true },
             group_wu: { fullskin: true },
             group_qun: { fullskin: true },
             group_key: { fullskin: true },
             group_jin: { fullskin: true },
-            group_holo: { fullskin: true },
-            group_nijisanji: { fullskin: true },
-            group_VirtuaReal: { fullskin: true },
-            group_upd8: { fullskin: true },
-            group_paryi: { fullskin: true },
-            group_kagura: { fullskin: true },
-            group_nanashi: { fullskin: true },
-            group_psp: { fullskin: true },
-            group_asoul: { fullskin: true },
-            group_nori: { fullskin: true },
-            group_vwp: { fullskin: true },
-            group_chaos: { fullskin: true },
-            group_xuyan: { fullskin: true },
-            group_xuefeng: { fullskin: true }
+            group_holo: { fullskin: true, },
+            group_nijisanji: { fullskin: true, },
+            group_VirtuaReal: { fullskin: true, },
+            group_upd8: { fullskin: true, },
+            group_paryi: { fullskin: true, },
+            group_kagura: { fullskin: true, },
+            group_nanashi: { fullskin: true, },
+            group_psp: { fullskin: true, },
+            group_asoul: { fullskin: true, },
+            group_nori: { fullskin: true, },
+            group_vwp: { fullskin: true, },
+            group_chaos: { fullskin: true, },
+            group_xuyan: { fullskin: true, },
+            group_xuefeng: { fullskin: true, },
         },
-        /**
-         * 用于简单筛选的回调函数组
-         * @namespace
-         */
         filter: {
             all: function () {
                 return true;
@@ -29507,14 +27024,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             filterButton: function (button) {
                 return true;
             },
-            /**
-             * 检测角色A能否使用某卡牌救治角色B
-             * @function
-             * @param {!GameCores.GameObjects.Card} card 检测卡牌
-             * @param {!GameCores.GameObjects.Player} player 卡牌使用者(角色A)
-             * @param {!GameCores.GameObjects.Player} target 卡牌目标(角色B)
-             * @returns {!boolean} 如果可触发，返回true；否则返回false
-             */
             cardSavable: function (card, player, target) {
                 var mod2 = game.checkMod(card, player, 'unchanged', 'cardEnabled2', player);
                 if (mod2 != 'unchanged')
@@ -29527,15 +27036,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     savable = savable(card, player, target);
                 return savable;
             },
-            /**
-             * 检测技能的trigger事件是否可触发
-             * @function
-             * @param {!GameCores.Bases.Event} event 父事件
-             * @param {!GameCores.GameObjects.Player} player 触发对象(角色)
-             * @param {!string} name 触发器名/触发条件，即triggername
-             * @param {!string} skill 技能ID
-             * @returns {!boolean} 如果可触发，返回true；否则返回false
-             */
             filterTrigger: function (event, player, name, skill) {
                 if (player._hookTrigger) {
                     for (var i = 0; i < player._hookTrigger.length; i++) {
@@ -29562,7 +27062,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         return true;
                     return false;
                 };
-                for (var i in info.trigger) { //check trigger
+                for (var i in info.trigger) {
                     if ((i == 'global' || player == event[i]) && has(info.trigger[i])) {
                         bool = true;
                         break;
@@ -29612,16 +27112,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (double_character && lib.config.forbiddouble.contains(i)) {
                         return true;
                     }
-                    // if(lib.configOL.ban_weak){
-                    //     if(lib.config.replacecharacter[i]&&libCharacter&&libCharacter[lib.config.replacecharacter[i]]) return true;
-                    //     if(lib.config.forbidall.contains(i)) return true;
-                    //     if(!double_character&&get.rank(i,true)<=2){
-                    //         return true;
-                    //     }
-                    // }
-                    // if(lib.configOL.ban_strong&&get.rank(i,true)>=8){
-                    //     return true;
-                    // }
                 }
                 else {
                     if (lib.config.banned.contains(i))
@@ -29639,16 +27129,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (double_character && lib.config.forbiddouble.contains(i)) {
                         return true;
                     }
-                    // if(get.config('ban_weak')){
-                    //     if(lib.config.replacecharacter[i]&&lib.character[lib.config.replacecharacter[i]]) return true;
-                    //     if(lib.config.forbidall.contains(i)) return true;
-                    //     if(!double_character&&get.rank(i,true)<=2){
-                    //         return true;
-                    //     }
-                    // }
-                    // if(get.config('ban_strong')&&get.rank(i,true)>=8){
-                    //     return true;
-                    // }
                 }
             },
             characterDisabled2: function (i) {
@@ -29811,7 +27291,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             },
             filterCard: function (card, player, event) {
                 var info = get.info(card);
-                //if(info.toself&&!lib.filter.targetEnabled(card,player,player)) return false;
                 if (player == undefined)
                     player = _status.event.player;
                 if (!lib.filter.cardEnabled(card, player, event) || !lib.filter.cardUsable(card, player, event))
@@ -30027,17 +27506,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             }
         },
-        /**
-         * 用于简单排序的回调函数组
-         * @name sort
-         * @namespace
-         */
         sort: {
-            /**
-             * 将角色按照势力排列
-             * @name sort.character
-             * @function
-             */
             character: function (a, b) {
                 var getGroup = function (name) {
                     var group = get.is.double(name, true);
@@ -30074,11 +27543,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
                 return aa > bb ? 1 : -1;
             },
-            /**
-             * 将卡牌按照类型排列
-             * @name sort.card
-             * @function
-             */
             card: function (a, b) {
                 var typeSort = function (name) {
                     var type = get.type(name);
@@ -30116,11 +27580,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             random: function () {
                 return (Math.random() - 0.5);
             },
-            /**
-             * 将角色按照距离排列
-             * @name sort.seat
-             * @function
-             */
             seat: function (a, b) {
                 var player = lib.tempSortSeat || _status.event.player;
                 var delta = get.distance(player, a, 'absolute') - get.distance(player, b, 'absolute');
@@ -30179,12 +27638,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 return 0;
             }
         },
-        /**
-         * {@link GameCores}的公共技能组
-         * @namespace
-         */
         skill: {
-            //升阶
             _shengjie: {
                 enable: 'phaseUse',
                 usable: 1,
@@ -30230,7 +27684,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            //搬过来的应变
             _yingbian: {
                 trigger: { player: 'useCard1' },
                 forced: true,
@@ -30311,7 +27764,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                 else if (get.attitude(player, source) <= 0)
                                     return 0;
                                 return 5 - get.value(cardx);
-                            }
+                            },
                         });
                         if (game.online) {
                             _status.event._resultid = id;
@@ -30440,7 +27893,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     if (info && info.yingbian)
                         info.yingbian(trigger);
                     player.addTempSkill('yingbian_changeTarget');
-                }
+                },
             },
             yingbian_changeTarget: {
                 trigger: { player: 'useCard2' },
@@ -30503,9 +27956,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         game.log(player, '发动应变效果，将', target, '从', trigger.card, '的目标中移除了');
                         trigger.targets.remove(target);
                     }
-                }
+                },
             },
-            //
             _showHiddenCharacter: {
                 trigger: { player: ['changeHp', 'phaseBeginStart', 'loseMaxHpBegin'] },
                 firstDo: true,
@@ -30518,11 +27970,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 content: function () {
                     player.showCharacter(2);
                     player.removeSkill('g_hidden_ai');
-                }
+                },
             },
             _kamisha: {
                 trigger: { source: 'damageBegin2' },
-                //forced:true,
                 popup: false,
                 prompt: function (event, player) {
                     return '是否防止即将对' + get.translation(event.player) + '造成的伤害，改为令其减少' + get.cnNumber(event.num) + '点体力上限？';
@@ -30543,9 +27994,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 content: function () {
                     trigger.cancel();
                     trigger.player.loseMaxHp(trigger.num).source = player;
-                }
+                },
             },
-            //海洋伤害特性
             _oceansha: {
                 trigger: { source: 'damageBegin4' },
                 forced: true,
@@ -30560,9 +28010,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 content: function () {
                     trigger.num++;
                     trigger.oceanAddDam = true;
-                }
+                },
             },
-            //暗影伤害特性
             _yamisha: {
                 trigger: { player: 'useCardToPlayered' },
                 forced: true,
@@ -30577,7 +28026,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 content: function () {
                     trigger.getParent().directHit.add(trigger.target);
                     trigger.getParent().yamiDirect = true;
-                }
+                },
             },
             _yamisha2: {
                 trigger: { player: 'phaseJieshu' },
@@ -30640,7 +28089,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     return 0;
                                 }
                             },
-                            id: id
+                            id: id,
                         });
                         if (event.stateplayer && event.statecard)
                             next.set('respondTo', [event.stateplayer]);
@@ -30653,10 +28102,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                     };
                     event.settle = function () {
-                        /*if(!event.state){
-                            trigger.cancel();
-                            trigger.result = {yamied: true};
-                        }*/
                         event.finish();
                     };
                     'step 1';
@@ -30768,15 +28213,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     'step 9';
                     if (event.yamiresult) {
                         if (result) {
-                            // event.noyami=result.noyami;
-                            // event.directHit=result.directHit;
-                            // event.stateplayer=event.yamiresult;
-                            // if(event.yamiresult2&&event.yamiresult2.used){
-                            // 	event.statecard=event.yamiresult2.used;
-                            // }
-                            // else{
-                            // 	event.statecard=true;
-                            // }
                             event.goto(1);
                         }
                         else
@@ -30803,18 +28239,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     cardSavable: function (card) {
                         if (card.name == 'tao' && (card.isCard && card.cardid || get.itemtype(card) == 'card'))
                             return false;
-                    }
+                    },
                 },
                 group: ["aozhan_sha", "aozhan_shan"],
                 subSkill: {
                     sha: {
                         enable: ["chooseToUse", "chooseToRespond"],
                         filterCard: {
-                            name: "tao"
+                            name: "tao",
                         },
                         viewAs: {
                             name: "sha",
-                            isCard: true
+                            isCard: true,
                         },
                         viewAsFilter: function (player) {
                             if (!player.countCards('hs', 'tao'))
@@ -30831,18 +28267,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             },
                             order: function () {
                                 return get.order({ name: 'sha' }) - 0.1;
-                            }
+                            },
                         },
-                        sub: true
+                        sub: true,
                     },
                     shan: {
                         enable: ["chooseToRespond", "chooseToUse"],
                         filterCard: {
-                            name: "tao"
+                            name: "tao",
                         },
                         viewAs: {
                             name: "shan",
-                            isCard: true
+                            isCard: true,
                         },
                         prompt: "将一张桃当闪打出",
                         check: function () { return 1; },
@@ -30856,18 +28292,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             skillTagFilter: function (player) {
                                 if (!player.countCards('hs', 'tao'))
                                     return false;
-                            }
+                            },
                         },
-                        sub: true
-                    }
-                }
+                        sub: true,
+                    },
+                },
             },
-            /**
-             * 特殊_全局技能
-             * 将全局技能的技能名储存于此数组中
-             * @type {!Array<string>}
-             * @see {@link game.addGlobalSkill}
-             */
             global: [],
             globalmap: {},
             storage: {},
@@ -30929,7 +28359,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 content: function () {
                     game.swapPlayerAuto(player);
-                }
+                },
             },
             dualside: {
                 subSkill: {
@@ -31009,14 +28439,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             _disableJudge: {
                 marktext: "废",
                 intro: {
-                    content: "已经废除了判定区"
+                    content: "已经废除了判定区",
                 },
                 mod: {
                     targetEnabled: function (card, player, target) {
                         if (target.storage._disableJudge && get.type(card) == 'delay')
                             return false;
-                    }
-                }
+                    },
+                },
             },
             "_disableEquip": {
                 marktext: "废",
@@ -31030,17 +28460,17 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         str = str.slice(1, str.length);
                         str = '已经废除了' + str;
                         return str;
-                    }
+                    },
                 },
                 mod: {
                     targetEnabled: function (card, player, target) {
                         if (target.isDisabled(get.subtype(card)))
                             return false;
-                    }
+                    },
                 },
                 trigger: {
                     player: ['disableEquipBefore', 'enableEquipBefore', 'enterGame'],
-                    global: 'gameStart'
+                    global: 'gameStart',
                 },
                 forced: true,
                 popup: false,
@@ -31049,12 +28479,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 content: function () {
                     player.storage.disableEquip = [];
-                }
+                },
             },
-            /**
-             * 技能_封印
-             * 使非锁定技失效
-             */
             fengyin: {
                 init: function (player, skill) {
                     player.addSkillBlocker(skill);
@@ -31078,10 +28504,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 技能_白板
-             * 使全部技能失效
-             */
             baiban: {
                 init: function (player, skill) {
                     player.addSkillBlocker(skill);
@@ -31121,10 +28543,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 技能_免疫
-             * 防止受到的伤害
-             */
             mianyi: {
                 trigger: { player: 'damageBefore' },
                 mark: true,
@@ -31146,7 +28564,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             if (get.tag(card, 'damage'))
                                 return [0, 0];
                         }
-                    }
+                    },
                 },
                 intro: {
                     content: '防止一切伤害'
@@ -31191,12 +28609,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 content: function () {
                     trigger.cancel();
-                }
+                },
             },
-            /**
-             * 规则技能_翻面
-             * 被翻面的角色跳过回合
-             */
             _turnover: {
                 trigger: { player: 'phaseBefore' },
                 forced: true,
@@ -31227,18 +28641,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             if (game.players[i].isOut() && game.players[i].outCount > 0) {
                                 game.players[i].outCount--;
                                 if (game.players[i].outCount == 0 && !game.players[i].outSkills) {
-                                    game.players[i]["in"]();
+                                    game.players[i].in();
                                 }
                             }
                         }
                         event.trigger('roundStart');
                     }
-                }
+                },
             },
-            /**
-             * 规则技能_使用
-             * 使用一张牌结算后，通过{@link ui.clear}清除残留ui
-             */
             _usecard: {
                 trigger: { global: 'useCardAfter' },
                 forced: true,
@@ -31255,10 +28665,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     event._cleared = true;
                 }
             },
-            /**
-             * 规则技能_弃牌
-             * 弃牌结算后，延时一段时间清除残留弃牌效果
-             */
             _discard: {
                 trigger: { global: 'discardAfter' },
                 forced: true,
@@ -31282,7 +28688,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             }
                             setTimeout(function () {
                                 for (var i = 0; i < todiscard.length; i++) {
-                                    todiscard[i]["delete"]();
+                                    todiscard[i].delete();
                                 }
                             }, time);
                         }
@@ -31290,14 +28696,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             },
             _save: {
-                //trigger:{source:'dying2',player:'dying2'},
                 priority: 5,
                 forced: true,
                 popup: false,
                 filter: function (event, player) {
-                    //if(!event.player.isDying()) return false;
-                    //if(event.source&&event.source.isIn()&&event.source!=player) return false;
-                    //return true;
                     return false;
                 },
                 content: function () {
@@ -31381,10 +28783,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 }
             },
-            /**
-             * 规则技能_重铸
-             * 令角色可以重铸特定的牌
-             */
             _chongzhu: {
                 enable: 'phaseUse',
                 logv: false,
@@ -31410,9 +28808,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     game.log(player, '将', cards, '置入了弃牌堆');
                 },
                 check: function (card) {
-                    // if(get.type(card)=='stonecharacter'&&_status.event.player.countCards('h',{type:'stonecharacter'})<=1){
-                    //     return 0;
-                    // }
                     return 1;
                 },
                 discard: false,
@@ -31461,14 +28856,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         order: 6
                     },
                     result: {
-                        player: 1
-                    }
+                        player: 1,
+                    },
                 }
             },
-            /**
-             * 规则技能_连环
-             * 被横置的角色传递属性伤害
-             */
             _lianhuan: {
                 trigger: { player: 'damageAfter' },
                 filter: function (event, player) {
@@ -31478,7 +28869,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 popup: false,
                 logv: false,
                 forceDie: true,
-                //priority:-5,
                 content: function () {
                     "step 0";
                     event.logvid = trigger.getLogv();
@@ -31501,7 +28891,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             target.damage.apply(target, event._args.slice(0));
                         event.redo();
                     }
-                }
+                },
             },
             _lianhuan4: {
                 trigger: { player: 'changeHp' },
@@ -31526,16 +28916,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             }
         },
         character: {},
-        /**
-         * 珠联璧合映射
-         * @type {!Object}
-         */
         perfectPair: {},
         cardPile: {},
-        /**
-         * 网络部分的消息处理（回调）函数
-         * @type {!Object}
-         */
         message: {
             server: {
                 init: function (version, config, banned_info) {
@@ -31766,11 +29148,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                     }
                 },
                 exec: function (func) {
-                    // if(typeof func=='function'){
-                    //     var args=Array.from(arguments);
-                    //     args.shift();
-                    //     func.apply(this,args);
-                    // }
                 },
                 log: function () {
                     var items = [];
@@ -31825,7 +29202,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 selfclose: function () {
                     if (game.online || game.onlineroom) {
                         if ((game.servermode || game.onlinehall) && _status.over) {
-                            // later
                         }
                         else {
                             game.saveConfig('tmp_user_roomId');
@@ -31916,8 +29292,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             game.reload();
                         }, true);
                         var findRoom = function (id) {
-                            for (var _i = 0, _a = ui.rooms; _i < _a.length; _i++) {
-                                var room = _a[_i];
+                            for (var room of ui.rooms) {
                                 if (room.key == id)
                                     return room;
                             }
@@ -32002,12 +29377,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 updaterooms: function (list, clients) {
                     if (ui.rooms) {
                         var map = {}, map2 = {};
-                        for (var _i = 0, _a = ui.rooms; _i < _a.length; _i++) {
-                            var i = _a[_i];
+                        for (var i of ui.rooms)
                             map2[i.key] = true;
-                        }
-                        for (var _b = 0, list_2 = list; _b < list_2.length; _b++) {
-                            var i = list_2[_b];
+                        for (var i of list) {
                             if (!i)
                                 continue;
                             map[i[4]] = i;
@@ -32021,8 +29393,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                             else
                                 ui.rooms[i].initRoom(list[i]);
                         }
-                        for (var _c = 0, list_3 = list; _c < list_3.length; _c++) {
-                            var i = list_3[_c];
+                        for (var i of list) {
                             if (!i)
                                 continue;
                             map[i[4]] = i;
@@ -32168,11 +29539,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                                     lib.characterPack[i] = mode.characterPack[i];
                                 }
                             }
-                            _status.event = {
+                            _status.event = new Status_Event({
                                 finished: true,
                                 next: [],
                                 after: []
-                            };
+                            });
                             _status.paused = false;
                             game.createEvent('game', false).setContent(lib.init.startOnline);
                             game.loop();
@@ -32409,11 +29780,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                         }
                         game.arrangePlayers();
                         ui.create.me(true);
-                        _status.event = {
+                        _status.event = new Status_Event({
                             finished: true,
                             next: [],
                             after: []
-                        };
+                        });
                         _status.paused = false;
                         _status.dying = get.parsedResult(state.dying) || [];
                         if (game.updateState) {
@@ -32527,15 +29898,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 },
                 gameStart: function () {
                     for (var i = 0; i < game.connectPlayers.length; i++) {
-                        game.connectPlayers[i]["delete"]();
+                        game.connectPlayers[i].delete();
                     }
                     delete game.connectPlayers;
                     if (ui.connectStartButton) {
-                        ui.connectStartButton["delete"]();
+                        ui.connectStartButton.delete();
                         delete ui.connectStartButton;
                     }
                     if (ui.connectStartBar) {
-                        ui.connectStartBar["delete"]();
+                        ui.connectStartBar.delete();
                         delete ui.connectStartBar;
                     }
                     if (ui.roomInfo) {
@@ -32596,51 +29967,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
                 }
             }
         },
-        /**
-         * 游戏牌颜色
-         * @type {('red'|'black'|'none')}
-         */
         color: ['red', 'black', 'none'],
-        /**
-         * 游戏牌花色
-         * @type {('club'|'spade'|'diamond'|'heart')}
-         */
         suit: ['club', 'spade', 'diamond', 'heart'],
-        /**
-         * 游戏牌点数
-         * @type {('A'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'X'|'J'|'Q'|'K')}
-         */
         number: ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'],
-        /**
-         * 武将牌势力
-         * |string|Group Name|
-         * |:----:|:--------:|
-         * |vtuber|企业|
-         * |clubs|社团|
-         * |wei|魏|
-         * |shu|蜀|
-         * |wu|吴|
-         * |qun|群|
-         * |jin|晋|
-         * |shen|神、特典|
-         * |holo|Hololive|
-         * |nijisanji|虹|
-         * |dotlive|点|
-         * |upd8|U|
-         * |eilene|艾琳|
-         * |paryi|帕里|
-         * |kagura|神楽|
-         * |nori|苔|
-         * |vwp|神椿|
-         * |nanashi|774 inc.|
-         * |VirtuaReal|VirtuaReal|
-         * |psp|psplive|
-         * |asoul|A-SOUL|
-         * |chaos|Chaos Live|
-         * |xuefeng|雪风军团|
-         * |vshojo|Vshojo|
-         * @type {string}
-         */
         group: [
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'jin', 'shen',
@@ -32648,26 +29977,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
             'vshojo'
         ],
-        /**
-         * shen势力可选的武将牌势力
-         * 较group去除了企业、社团、三国势力
-         * @type {string}
-         */
         group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi', 'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng'],
-        /**
-         * 卡牌属性
-         * @type {('fire'|'thunder'|'poison'|'ocean'|'ice'|'kami'|'yami')}
-         */
         nature: ['fire', 'thunder', 'poison', 'ocean', 'ice', 'kami', 'yami'],
-        /**
-         * 铁索属性 - TODO
-         * @type {string}
-         */
         linked: ['fire', 'thunder', 'ocean', 'ice', 'kami', 'yami'],
-        /**
-         * 势力对应属性
-         * @constant
-         */
         groupnature: {
             shen: 'thunder',
             wei: 'water',
@@ -32702,18 +30014,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             chidori: 'wood',
             lucca: 'wood',
             vtuber: 'metal',
-            clubs: 'ice'
+            clubs: 'ice',
         },
-        /**
-         * 游戏阶段
-         *
-         * @type {string}
-         */
         phaseName: ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'],
-        /**
-         * 快捷语音 - TODO
-         * @type {string}
-         */
+        historyRecorder: { useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], recover: [], changeHujia: [], custom: [] },
         quickVoice: [
             '我从未见过如此厚颜无耻之人！',
             '这波不亏',
@@ -32738,7 +30042,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function (_a,
             '哥们，给力点儿行嘛',
             '哥哥，交个朋友吧',
             '妹子，交个朋友吧',
-        ]
+        ],
     });
     return lib;
 });

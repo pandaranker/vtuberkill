@@ -1741,7 +1741,8 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
             ui.window.classList.remove('leftbar');
             ui.window.classList.remove('rightbar');
             ui.historybar.style.display = 'none';
-            _status.event = next;
+            // _status.event.renew(next);
+            _status.event = _status.event.LinkAfter(next)
             _status.paused = false;
             _status.paused2 = false;
             _status.over = false;
@@ -2256,7 +2257,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     player.setIdentity(identity);
                 }
                 else {
-                    console.log(num);
+                    console.log(event);
                 }
             },
             showCharacter: function (player, num) {
@@ -3776,7 +3777,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
              * 创建事件，见{@link game.createEvent}
              * @namespace GameCores.Bases.Event
              */
-            var next =
+            var next:{[propName:string]: any} =
             /**@lends GameCores.Bases.Event */
             {
                 /**
@@ -5003,7 +5004,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                 ui.swap.close();
                 delete ui.swap;
             }
-            for (var i = 0; i < lib.onover.length; i++) {
+            for (let i = 0; i < lib.onover.length; i++) {
                 lib.onover[i](resultbool);
             }
             if (game.addRecord) {
@@ -5024,7 +5025,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
          */
         loop: function () {
             var event = _status.event;
-            var step = event.step;
+            var step = event.step; //很重要，在替换switch-step体系之前，不可删除
             var source = event.source;
             var player = event.player;
             var target = event.target;
@@ -5032,7 +5033,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
             var card = event.card;
             var cards = event.cards;
             var skill = event.skill;
-            var forced = event.forced;
+            // var forced = event.forced; //使用过少，故删除
             var num = event.num;
             var trigger = event._trigger;
             var result = event._result;
@@ -5066,7 +5067,6 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                      * @name _status.event_parent
                      * @type {!Object}
                      */
-                    next.parent = event;
                     /**
                      * _status.event.player(即event.player)：当前正在执行事件的角色
                      * @name _status.event_player
@@ -5077,7 +5077,8 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                      * @name _status.event_target
                      * @type {!HTMLDivElement}
                      */
-                    _status.event = next;
+                    // _status.event.renew(next);
+                    _status.event = _status.event.LinkChild(next)
                 }
             }
             else if (event.finished) {
@@ -5105,7 +5106,8 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                     else {
                         next.parent = event;
-                        _status.event = next;
+                        // _status.event.renew(next);
+                        _status.event = _status.event.LinkAfter(next)
                     }
                 }
                 else {
@@ -5113,7 +5115,8 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         if (event.result) {
                             event.parent._result = event.result;
                         }
-                        _status.event = event.parent;
+                        // _status.event.renew(event.parent);
+                        _status.event = _status.event.LinkParent(next)
                     }
                     else {
                         return;
@@ -5164,8 +5167,8 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     else {
                         if (_status.withError || lib.config.compatiblemode || (_status.connectMode && !lib.config.debug)) {
                             try {
-                                event.content(event, step, source, player, target, targets,
-                                    card, cards, skill, forced, num, trigger, result,
+                                event.content(event, step,source, player, target, targets,
+                                    card, cards, skill, num, trigger, result,
                                     _status, lib, game, ui, get, ai);
                             }
                             catch (e) {
@@ -5176,7 +5179,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         }
                         else {
                             event.content(event, step, source, player, target, targets,
-                                card, cards, skill, forced, num, trigger, result,
+                                card, cards, skill, num, trigger, result,
                                 _status, lib, game, ui, get, ai);
                         }
                     }
@@ -5917,9 +5920,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
             return players[0];
         },
         loadModeAsync: function (name, callback) {
-            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete globalThis.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -5940,9 +5941,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                     }
                 }
             }
-            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete globalThis.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -6022,11 +6021,11 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                 //     lib.config.addedpile=pilecfg[1]||{};
                 // }
 
-                _status.event = {
+                _status.event = new Status_Event({
                     finished: true,
                     next: [],
                     after: []
-                };
+                });
                 _status.paused = false;
 
                 if (_status.connectMode && lib.mode[name].connect) {

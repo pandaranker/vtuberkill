@@ -1332,12 +1332,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 4';
                     switch (result.index) {
                         case 0: {
-                            if (player.storage.haoren === true) {
-                                let next = player.choosePlayerCard('『天扉』：重铸一张声明花色的牌', event.target, 'he').set('visible', true).set('complexSelect', true);
-                            }
-                            else {
-                                let next = player.discardPlayerCard('『天扉』：弃置一张声明花色的牌', event.target, 'he').set('visible', true).set('complexSelect', true);
-                            }
+                            let next = player[player.storage.haoren === true ? 'choosePlayerCard' : 'discardPlayerCard'](`『天扉』：${player.storage.haoren === true ? '重铸' : '弃置'}一张声明花色的牌`, event.target, 'he').set('visible', true).set('complexSelect', true);
                             next.set('filterButton', function (button) {
                                 return get.suit(button.link) == _status.event.suit;
                             });
@@ -9667,17 +9662,19 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
             daimao: {
                 mod: {
                     cardUsable(card, player, num) {
-                        if (player.getStorage('daimao_mark').filter(function (daimao) {
-                            return get.suit(daimao) == get.suit(card);
-                        }).length)
-                            return Infinity;
-                    },
-                    targetInRange(card, player, target) {
-                        if (player.getStorage('daimao_mark').filter(function (daimao) {
-                            return get.suit(daimao) == get.suit(card);
-                        }).length > 0)
+                        if (!get.suit(card))
+                            return;
+                        let suits = get.suit3(player.getStorage('daimao_mark'));
+                        if (suits.includes(suits))
                             return true;
                     },
+                    targetInRange(card, player, target) {
+                        if (!get.suit(card))
+                            return;
+                        let suits = get.suit3(player.getStorage('daimao_mark'));
+                        if (suits.includes(suits))
+                            return true;
+                    }
                 },
                 enable: 'chooseToUse',
                 skillAnimation: 'epic',
@@ -10704,7 +10701,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.cards = [];
                     if (event.d10 == undefined)
                         event.d10 = [];
-                    next = player.judge(card => {
+                    let next = player.judge(card => {
                         if (get.number(card) > 10)
                             return 1.5;
                         return 0;
@@ -17512,7 +17509,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
             pianchao: `片超`,
             pianchao_phaseUseBy: `片超`,
             pianchao_info: `你体力流失后，可以亮出两张手牌并获得1点护甲；当你弃置亮出的手牌时，可以使用其中一张，并于此额定阶段结束后进行一个额外的出牌阶段。`,
-            shenxiaoya: `兰若Ruo`,
+            shenxiaoya: `申䒕雅`,
             xyshixi: `实习`,
             xyshixi_info: `出牌阶段限一次，你可以对一名角色造成一点伤害，然后令其回复一点体力。`,
             wenxin: `闻新`,

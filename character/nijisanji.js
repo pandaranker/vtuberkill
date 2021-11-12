@@ -654,7 +654,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         trigger: { player: 'damageBegin4', source: 'damageBegin4' },
                         priority: 99,
                         filter(event, player) {
-                            return event.num && !_status.event.getParent('phase').skill;
+                            return event.num && !event.getParent('phase').skill;
                         },
                         direct: true,
                         content() {
@@ -850,7 +850,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         trigger: { player: 'damageBegin4', global: 'dying' },
                         priority: 99,
                         filter(event, player) {
-                            if (_status.event.getParent('phase').skill)
+                            if (event.getParent('phase').skill)
                                 return false;
                             if (event.name == 'damage' && player == event.player)
                                 return true;
@@ -1643,10 +1643,13 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 0';
                     player.draw();
                     'step 1';
-                    var evt = _status.event.getParent('phase');
-                    if (evt) {
-                        _status.event = evt;
-                        _status.event.finish();
+                    let evt = _status.event.getParent('phaseUse');
+                    if ((evt === null || evt === void 0 ? void 0 : evt.name) == 'phaseUse') {
+                        evt.skipped = true;
+                    }
+                    let phase = _status.event.getParent('phase');
+                    if ((phase === null || phase === void 0 ? void 0 : phase.name) == 'phase') {
+                        phase.finish();
                     }
                 },
                 ai: {

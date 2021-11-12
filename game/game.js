@@ -1,11 +1,216 @@
 "use strict";
 //Check global object.
-var globalThis = function(){
+const globalThis = function(){
     if (typeof self !== 'undefined') { return self; }
     if (typeof window !== 'undefined') { return window; }
     if (typeof global !== 'undefined') { return global; }
     throw new Error('unable to locate global object');
 }();
+
+// var event = _status.event;
+// var step = event.step; //很重要，在替换switch-step体系之前，不可删除
+// var source = event.source;
+// var player = event.player;
+// var target = event.target;
+// var targets = event.targets;
+// var card = event.card;
+// var cards = event.cards;
+// var skill = event.skill;
+// var forced = event.forced; //使用过少，故删除
+// var num = event.num;
+// var trigger = event._trigger;
+// var result = event._result;
+
+// var keys = ['step','player','source','target','targets','card','cards','_trigger','_result','num','skill']
+var event = null
+// var step = null
+// var player = null
+// var source = null
+// var target = null
+// var targets = []
+// var card = null
+// var cards = []
+// var trigger = null
+// var result = null
+// var num = null
+// var skill = null
+// /**父子事件变量映射表*/
+// var mapKeys = ['step','player','source','card','skill'], allMap = {}
+// for(let i of mapKeys){
+//     // allRecord[i+'Record'] = [undefined]
+//     allMap[i+'Map'] = new Map()
+// }
+/**从映射表更新全局变量 */
+// function update_record(v, evt, method){
+//     if(method){
+//         if(mapKeys.includes(method)){
+//             allMap[method+'Map'].set(evt,v)
+//         }
+//         else{
+//             switch(method){
+//                 case 'Parent':
+//                     for(let i of mapKeys){
+//                         allMap[i+'Map'].delete(evt)
+//                         allMap[i+'Map'].delete(evt.parent)
+//                     }
+//                     break;
+//                 case 'After':
+//                     for(let i of mapKeys){
+//                         allMap[i+'Map'].delete(evt)
+//                     }
+//                     break;
+//             }
+//         }
+//     }
+//     //累了，毁灭了
+//     // }else if(v){
+//     // }
+//     // else{
+//     //     let stepMap = new Map(allMap.stepMap)
+//     //     let playerMap = new Map(allMap.playerMap)
+//     //     let sourceMap = new Map(allMap.sourceMap)
+//     //     let cardMap = new Map(allMap.cardMap)
+//     //     let skillMap = new Map(allMap.skillMap)
+//     //     step = stepMap.flat().pop()
+//     //     player = stepMap.flat().pop()
+//     //     source = sourceMap.flat().pop()
+//     //     card = cardMap.flat().pop()
+//     //     skill = skillMap.flat().pop()
+//     // }
+//     else{
+//         if(event!=null){
+//             step = event.step;
+//             source = event.source;
+//             player = event.player;
+//             target = event.target;
+//             targets = event.targets;
+//             card = event.card;
+//             cards = event.cards;
+//             skill = event.skill;
+//             num = event.num;
+//             trigger = event._trigger;
+//             result = event._result;
+//         }
+//     }
+// }
+class Status_Event {
+    _LinkChild = []
+    _LinkAfter = []
+    //从子状态事件转到父状态事件
+    LinkParent(evt = this.parent){
+        if(!evt)    throw(event)
+        // this.forget('Parent',evt)
+        event = evt
+        // update_record()
+        return evt
+    }
+    //创建子状态事件
+    LinkChild(evt){
+        // this.forget('Child')
+        let child = new Status_Event(evt)
+        this._LinkChild.push(child)
+        child.parent = this
+        event = child
+        // update_record()
+        return child
+    }
+    //创建妹妹状态事件
+    LinkAfter(evt){
+        // this.forget('After')
+        let after = new Status_Event(evt)
+        this._linkAfter.push(after)
+        after._before = this
+        event = after
+        // update_record()
+        return after
+    }
+    //赋初始值
+    constructor(evt){
+        event = this
+        for(let v in evt){
+            this[v] = evt[v];
+        }
+    }
+    // //切换状态事件时，遗忘原事件产生的全局变量
+    // forget(method,evt){
+    //     event = null
+    //     step = null
+    //     player = null
+    //     source = null
+    //     target = null
+    //     targets = null
+    //     trigger = null
+    //     update_record(null,this,method)
+    //     if(method === 'Parent'){
+    //         for(let k of keys){
+    //             evt[k] = evt[k]
+    //         }
+    //     }
+    //     update_record()
+    //     // console.log(method,player,playerRecord)
+    // }
+    // get step() {return this.__step}
+    // set step(v) {
+    //     update_record(v, this, 'step')
+    //     this.__step = v
+    //     update_record('step')
+    // }
+    // get player() {return this.__player}
+    // set player(v) {
+    //     update_record(v, this, 'player')
+    //     this.__player = v
+    //     update_record('player')
+    // }
+    // get source() {return this.__source}
+    // set source(v) {
+    //     update_record(v, this, 'source')
+    //     this.__source = v
+    //     update_record('source')
+    // }
+    // get target() {return this.__target}
+    // set target(v) {
+    //     this.__target = v
+    //     target = v
+    // }
+    // get targets() {return this.__targets}
+    // set targets(v) {
+    //     this.__targets = v
+    //     targets = v
+    // }
+    // get card() {return this.__card}
+    // set card(v) {
+    //     update_record(v, this, 'card')
+    //     this.__card = v
+    //     update_record('card')
+    // }
+    // get cards() {return this.__cards}
+    // set cards(v) {
+    //     this.__cards = v
+    //     cards = v
+    // }
+    // get _trigger() {return this.___trigger}
+    // set _trigger(v) {
+    //     this.___trigger = v
+    //     update_record('trigger')
+    // }
+    // get _result() {return this.___result}
+    // set _result(v) {
+    //     this.___result = v
+    //     update_record('result')
+    // }
+    // get num() {return this.__num}
+    // set num(v) {
+    //     // console.log(num)
+    //     this.__num = v
+    //     num = v
+    // }
+    // get skill() {return this.__skill}
+    // set skill(v) {
+    //     update_record(v, this, 'skill')
+    //     this.__skill = v
+    //     update_record('skill')
+    // }
+}
 /**
  * 混入函数
  * @param {(object|prototype)} ori 被混入的对象[原型]
@@ -43,7 +248,7 @@ new Promise((resolve, reject)=>{
         script.src = baseUrl + 'module.js';
         function onScriptLoaded(evt){
             const script = getScript(evt);
-            moduleManager.config.baseUrl = baseUrl;
+            globalThis.moduleManager.config.baseUrl = baseUrl;
             resolve(script);
         }
         function onScriptError(evt){
@@ -62,8 +267,10 @@ new Promise((resolve, reject)=>{
         console.log('Game begin to run.');
     }
 }).then(()=>{//初始化游戏
-    moduleManager.require(['core/_status', 'core/lib', 'core/game', 'core/ui', 'core/get', 'core/ai'], function(_status, lib, game, ui, get, ai){
-        globalThis.game = game;
+    globalThis.moduleManager.require(['core/_status', 'core/lib', 'core/game', 'core/ui', 'core/get', 'core/ai'], function(_status, lib, game, ui, get, ai){
+        globalThis.game = game
+        globalThis.event = _status.event
+        globalThis.player = _status.event.player
         lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">'
         lib.figurer = text => ` ${lib.figure}${text}</span> `
         lib.spanClass = (str,classes)=>{

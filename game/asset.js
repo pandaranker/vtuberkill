@@ -1366,6 +1366,7 @@ window.noname_asset_list=[
 	'image/character/shanguangpika.jpg',
 	'image/character/Shaun.jpg',
 	'image/character/shengge.jpg',
+	'image/character/shenxiaoya.jpg',
 	'image/character/ShikaiYue.jpg',
 	'image/character/ShirakamiFubuki.jpg',
 	'image/character/Shiranekoyuki.jpg',

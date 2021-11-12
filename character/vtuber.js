@@ -96,7 +96,6 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     return player.countCards('h') > 0;
                 },
                 content() {
-                    var trigger = _status.event;
                     'step 0';
                     if (!player.storage.targets)
                         player.storage.targets = [];
@@ -131,13 +130,13 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         if (result.targets) {
                             if (!player.storage.targets)
                                 player.storage.targets = [];
-                            if (!trigger.targets.contains(result.targets[0])) {
-                                trigger.targets.addArray(result.targets);
+                            if (!event.targets.contains(result.targets[0])) {
+                                event.targets.addArray(result.targets);
                                 player.storage.targets.addArray(result.targets);
                             }
-                            trigger.target = result.targets[0];
+                            event.target = result.targets[0];
                         }
-                        player.chooseCard(true, 'h', '选择要交给' + get.translation(trigger.target) + '的牌', [1, Infinity]).set('ai', card => {
+                        player.chooseCard(true, 'h', '选择要交给' + get.translation(event.target) + '的牌', [1, Infinity]).set('ai', card => {
                             if (player.isZhu)
                                 return 6 - get.useful(card);
                             return 7 - get.useful(card);
@@ -148,23 +147,23 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     'step 2';
                     if (result.bool == true) {
-                        trigger.cards.addArray(result.cards);
-                        trigger.target.gain(result.cards, event.player, 'give');
+                        event.cards.addArray(result.cards);
+                        event.target.gain(result.cards, event.player, 'give');
                         if (player.countCards('h')) {
                             event.goto(0);
                         }
                     }
                     else {
-                        trigger.targets.pop();
+                        event.targets.pop();
                         player.storage.targets.pop();
                     }
                     'step 3';
                     var difType = true;
                     var TypeList = [];
-                    if (trigger.targets && trigger.targets.length > 0) {
-                        for (var i = 0; i < trigger.cards.length; i++) {
-                            TypeList.add(get.type(trigger.cards[i]));
-                            if (TypeList.indexOf(get.type(trigger.cards[i])) != i) {
+                    if (event.targets && event.targets.length > 0) {
+                        for (var i = 0; i < event.cards.length; i++) {
+                            TypeList.add(get.type(event.cards[i]));
+                            if (TypeList.indexOf(get.type(event.cards[i])) != i) {
                                 difType = false;
                                 break;
                             }
@@ -177,7 +176,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.goto(6);
                     }
                     'step 4';
-                    player.chooseTarget('是否令' + trigger.cards.length.toString() + '名角色横置？', trigger.cards.length, function (card, player, target) {
+                    player.chooseTarget('是否令' + event.cards.length.toString() + '名角色横置？', event.cards.length, function (card, player, target) {
                         return true;
                     }).set('ai', function (target) {
                         var player = _status.event.player;
@@ -189,9 +188,9 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     'step 6';
                     var distanceGroup = false;
-                    for (var i = 0; i < trigger.targets.length; i++) {
+                    for (var i = 0; i < event.targets.length; i++) {
                         distanceGroup = false;
-                        for (var j = 0; j < trigger.targets.length; j++) {
+                        for (var j = 0; j < event.targets.length; j++) {
                             if (i == j) {
                                 continue;
                             }
@@ -208,8 +207,8 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.goto(10);
                     }
                     'step 7';
-                    if (trigger.targets.length > 1) {
-                        trigger.num = trigger.targets.length;
+                    if (event.targets.length > 1) {
+                        event.num = event.targets.length;
                         let list = [];
                         for (let i of get.inpile('basic')) {
                             if (lib.filter.cardUsable({ name: i }, player, event.getParent('chooseToUse')) && player.hasUseTarget(i)) {
@@ -261,26 +260,26 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 8';
                     if (result.control != 'cancel2') {
                         let usecard = { name: result.links[0][2], nature: result.links[0][3] };
-                        trigger.usecard = usecard;
-                        player.chooseTarget('选择至多' + trigger.targets.length.toString() + '个目标', [1, trigger.num], function (card, player, target) {
+                        event.usecard = usecard;
+                        player.chooseTarget('选择至多' + event.targets.length.toString() + '个目标', [1, event.num], function (card, player, target) {
                             return lib.filter.targetEnabled(_status.event.card, player, target);
                         }).set('ai', function (target) {
                             var player = _status.event.player;
                             var card = _status.event.card;
                             return get.effect(target, card, player, player);
-                        }).set('card', trigger.usecard);
+                        }).set('card', event.usecard);
                     }
                     else {
                         event.goto(10);
                     }
                     'step 9';
                     if (result.targets)
-                        trigger.targets = result.targets;
+                        event.targets = result.targets;
                     else
-                        trigger.targets = [];
-                    player.useCard(trigger.usecard, trigger.targets, true);
+                        event.targets = [];
+                    player.useCard(event.usecard, event.targets, true);
                     'step 10';
-                    if (trigger.targets && trigger.targets.length == 0 && trigger.cards.length == 0) {
+                    if (event.targets && event.targets.length == 0 && event.cards.length == 0) {
                         if (player.hasSkill('ailianUsable'))
                             player.removeSkill('ailianUsable');
                     }

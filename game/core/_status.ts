@@ -16,7 +16,7 @@ globalThis.moduleManager.define(['core/core'], function ({_status, lib, game, ui
          * @name _status.event
          * @type {!Object}
          */
-        event: {
+        event: new Status_Event({
             finished: true,
             /**
              * _status.event.next：插入事件列表，当前step结束后，该列表内的事件会被执行
@@ -31,7 +31,7 @@ globalThis.moduleManager.define(['core/core'], function ({_status, lib, game, ui
              * @type {!Array}
              */
             after: []
-        },
+        }),
         ai: {},
         lastdragchange: [],
         skillaudio: [],
@@ -50,5 +50,6 @@ globalThis.moduleManager.define(['core/core'], function ({_status, lib, game, ui
         },
 		prehidden_skills:[],
     });
+    console.log(_status.event)
     return _status;
 });

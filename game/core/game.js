@@ -1775,7 +1775,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
             ui.window.classList.remove('leftbar');
             ui.window.classList.remove('rightbar');
             ui.historybar.style.display = 'none';
-            _status.event = next;
+            _status.event = _status.event.LinkAfter(next);
             _status.paused = false;
             _status.paused2 = false;
             _status.over = false;
@@ -2280,7 +2280,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                     player.setIdentity(identity);
                 }
                 else {
-                    console.log(num);
+                    console.log(event);
                 }
             },
             showCharacter: function (player, num) {
@@ -4981,7 +4981,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                 ui.swap.close();
                 delete ui.swap;
             }
-            for (var i = 0; i < lib.onover.length; i++) {
+            for (let i = 0; i < lib.onover.length; i++) {
                 lib.onover[i](resultbool);
             }
             if (game.addRecord) {
@@ -4997,19 +4997,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
             }
         },
         loop: function () {
-            var event = _status.event;
             var step = event.step;
-            var source = event.source;
-            var player = event.player;
-            var target = event.target;
-            var targets = event.targets;
-            var card = event.card;
-            var cards = event.cards;
-            var skill = event.skill;
-            var forced = event.forced;
-            var num = event.num;
-            var trigger = event._trigger;
-            var result = event._result;
             if (_status.paused2 || _status.imchoosing) {
                 if (!lib.status.dateDelaying) {
                     lib.status.dateDelaying = new Date();
@@ -5035,8 +5023,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                         next.player.getHistory('skipped').add(next.name);
                 }
                 else {
-                    next.parent = event;
-                    _status.event = next;
+                    _status.event = _status.event.LinkChild(next);
                 }
             }
             else if (event.finished) {
@@ -5068,7 +5055,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                     }
                     else {
                         next.parent = event;
-                        _status.event = next;
+                        _status.event = _status.event.LinkAfter(next);
                     }
                 }
                 else {
@@ -5076,7 +5063,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                         if (event.result) {
                             event.parent._result = event.result;
                         }
-                        _status.event = event.parent;
+                        _status.event = _status.event.LinkParent(next);
                     }
                     else {
                         return;
@@ -5129,7 +5116,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                     else {
                         if (_status.withError || lib.config.compatiblemode || (_status.connectMode && !lib.config.debug)) {
                             try {
-                                event.content(event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result, _status, lib, game, ui, get, ai);
+                                event.content(event, step, source, player, target, targets, card, cards, skill, num, trigger, result, _status, lib, game, ui, get, ai);
                             }
                             catch (e) {
                                 game.print('游戏出错：' + event.name);
@@ -5138,7 +5125,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                             }
                         }
                         else {
-                            event.content(event, step, source, player, target, targets, card, cards, skill, forced, num, trigger, result, _status, lib, game, ui, get, ai);
+                            event.content(event, step, source, player, target, targets, card, cards, skill, num, trigger, result, _status, lib, game, ui, get, ai);
                         }
                     }
                     event.step++;
@@ -5919,10 +5906,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
             return players[0];
         },
         loadModeAsync: function (name, callback) {
-            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev)
-                    delete globalThis.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -5943,10 +5927,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                     }
                 }
             }
-            globalThis.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev)
-                    delete globalThis.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -6030,11 +6011,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                         lib[i][j] = mode[lib.config.mode][i][j];
                     }
                 }
-                _status.event = {
+                _status.event = new Status_Event({
                     finished: true,
                     next: [],
                     after: []
-                };
+                });
                 _status.paused = false;
                 if (_status.connectMode && lib.mode[name].connect) {
                     game.saveConfig('connect_mode', name);

@@ -7,11 +7,11 @@ globalThis.moduleManager.define(['core/core'], function ({ _status, lib, game, u
         over: false,
         clicked: false,
         auto: false,
-        event: {
+        event: new Status_Event({
             finished: true,
             next: [],
             after: []
-        },
+        }),
         ai: {},
         lastdragchange: [],
         skillaudio: [],
@@ -30,5 +30,6 @@ globalThis.moduleManager.define(['core/core'], function ({ _status, lib, game, u
         },
         prehidden_skills: [],
     });
+    console.log(_status.event);
     return _status;
 });
