@@ -16,7 +16,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         //TODO
         sourceCharacter: function (str) {
             if (str) {
-                for (var i in lib.characterReplace) {
+                for (let i in lib.characterReplace) {
                     if (lib.characterReplace[i].contains(str)) return i;
                 }
             }
@@ -65,7 +65,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             //“保护新手”模式的ban将
             banForBeginner: function (current) {
                 if (current in lib.character) {
-                    for (var i in lib.characterPack) {
+                    for (let i in lib.characterPack) {
                         if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
                             if (current in lib.characterPack[i]) {
                                 return true
@@ -82,7 +82,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     return false;
                 }
                 if (current in lib.card) {
-                    for (var i in lib.cardPack) {
+                    for (let i in lib.cardPack) {
                         if (!['standard', 'extra'].contains(i)) {
                             if (lib.cardPack[i].contains(current)) {
                                 return true
@@ -123,7 +123,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
              */
             blocked: function (skill, player) {
                 if (!player.storage.skill_blocker || !player.storage.skill_blocker.length) return false;
-                for (var i of player.storage.skill_blocker) {
+                for (let i of player.storage.skill_blocker) {
                     if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player)) return true;
                 }
                 return false;
@@ -133,7 +133,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
              */
             double: function (name, array) {
                 if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0) return false;
-                for (var i of lib.character[name][4]) {
+                for (let i of lib.character[name][4]) {
                     if (i.indexOf('doublegroup:') == 0) {
                         if (!array) return true;
                         return i.split(':').slice(1);
@@ -153,7 +153,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     if (substring.match(reg)) {
                         return true;
                     }
-                    for (var i = 0; i < substring.length; i++) {
+                    for (let i = 0; i < substring.length; i++) {
                         var hs = substring.charCodeAt(i);
                         if (0xd800 <= hs && hs <= 0xdbff) {
                             if (substring.length > 1) {
@@ -195,7 +195,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             },
             banWords: function (str) {
                 if (get.is.emoji(str)) return true;
-                for (var i of window.bannedKeyWords) {
+                for (let i of (window as any).bannedKeyWords) {
                     if (str.indexOf(i) != -1) return true;
                 }
                 return false;
@@ -205,10 +205,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             },
             safari: function () {
                 var ua = navigator.userAgent.toLowerCase();
-                return ua.indexOf('safari' != -1) && ua.indexOf('chrome') == -1;
+                return ua.indexOf('safari') != -1 && ua.indexOf('chrome') == -1;
             },
             freePosition: function (cards) {
-                for (var i = 0; i < cards.length; i++) {
+                for (let i = 0; i < cards.length; i++) {
                     if (!cards[i].hasPosition) return false;
                     if (cards[i].hasPosition()) return false;
                 }
@@ -324,7 +324,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 return false;
             },
             empty: function (obj) {
-                for (var i in obj) return false;
+                for (let i in obj) return false;
                 return true;
             },
             pos: function (str) {
@@ -375,8 +375,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     game.shuffleNumber++;
                     if (_status.event.trigger) _status.event.trigger('washCard');
-                    var cards = [], i;
-                    for (var i = 0; i < lib.onwash.length; i++) {
+                    let cards = [];
+                    for (let i = 0; i < lib.onwash.length; i++) {
                         if (lib.onwash[i]() == 'remove') {
                             lib.onwash.splice(i--, 1);
                         }
@@ -384,8 +384,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     if (_status.discarded) {
                         _status.discarded.length = 0;
                     }
-                    for (i = 0; i < ui.discardPile.childNodes.length; i++) {
-                        var currentcard = ui.discardPile.childNodes[i];
+                    for (let i = 0; i < ui.discardPile.childNodes.length; i++) {
+                        let currentcard = ui.discardPile.childNodes[i];
                         currentcard.vanishtag.length = 0;
                         if (get.info(currentcard).vanish || currentcard.storage.vanish) {
                             currentcard.remove();
@@ -394,7 +394,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         cards.push(currentcard);
                     }
                     cards.randomSort();
-                    for (var i = 0; i < cards.length; i++) {
+                    for (let i = 0; i < cards.length; i++) {
                         ui.cardPile.appendChild(cards[i]);
                     }
                 }
@@ -402,7 +402,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     game.over('平局');
                     return [];
                 }
-                var cardx = ui.cardPile.removeChild(ui.cardPile.lastChild);
+                let cardx = ui.cardPile.removeChild(ui.cardPile.lastChild);
                 cardx.original = 'c';
                 list.push(cardx);
             }
@@ -413,7 +413,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         //TODO
         discarded: function () {
             var list = _status.discarded.slice(0);
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 if (list[i].parentNode != ui.discardPile) {
                     list.splice(i--, 1);
                 }
@@ -539,7 +539,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             });
             if (type == 'list') {
                 var list2 = [];
-                for (var i = 0; i < list.length; i++) {
+                for (let i = 0; i < list.length; i++) {
                     if (func(list[i]) == func(list[0])) {
                         list2.push(list[i]);
                     }
@@ -566,7 +566,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             });
             if (type == 'list') {
                 var list2 = [];
-                for (var i = 0; i < list.length; i++) {
+                for (let i = 0; i < list.length; i++) {
                     if (func(list[i]) == func(list[0])) {
                         list2.push(list[i]);
                     }
@@ -583,7 +583,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         character: function (name, num) {
             var info = lib.character[name];
             if (!info) {
-                for (var i in lib.characterPack) {
+                for (let i in lib.characterPack) {
                     if (lib.characterPack[i][name]) {
                         info = lib.characterPack[i][name];
                         break;
@@ -602,7 +602,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (lib.characterIntro[name]) return lib.characterIntro[name];
             var tags = get.character(name, 4);
             if (tags) {
-                for (var i = 0; i < tags.length; i++) {
+                for (let i = 0; i < tags.length; i++) {
                     if (tags[i].indexOf('des:') == 0) {
                         return tags[i].slice(4);
                     }
@@ -624,7 +624,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var tags = get.character(name, 4);
             if (!tags) return str;
             if (tags) {
-                for (var i = 0; i < tags.length; i++) {
+                for (let i = 0; i < tags.length; i++) {
                     if (tags[i].indexOf('des:') == 0) {
                         continue;
                     }
@@ -681,7 +681,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             return arr;
         },
         zip: function (callback) {
-            if (!window.JSZip) {
+            if (!(window as any).JSZip) {
                 lib.init.js(lib.assetURL + 'game', 'jszip', function () {
                     callback(new JSZip());
                 });
@@ -734,7 +734,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         round: function (num, f) {
             var round = 1;
-            for (var i = 0; i < f; i++) {
+            for (let i = 0; i < f; i++) {
                 round *= 10;
             }
             return Math.round(num * round) / round;
@@ -766,7 +766,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 iteration = func2;
             }
             tic = get.utc();
-            for (var i = 0; i < iteration; i++) {
+            for (let i = 0; i < iteration; i++) {
                 if (key1) {
                     func1[key1](arg.randomGet());
                 }
@@ -780,7 +780,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             console.log('time1: ' + (toc - tic));
             tic = get.utc();
-            for (var i = 0; i < iteration; i++) {
+            for (let i = 0; i < iteration; i++) {
                 if (key2) {
                     func1[key2](arg.randomGet());
                 }
@@ -793,14 +793,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         stringify: function (obj, level) {
             level = level || 0;
-            var indent = '';
-            var str;
-            for (var i = 0; i < level; i++) {
+            let indent = '';
+            let str;
+            for (let i = 0; i < level; i++) {
                 indent += '    ';
             }
             if (get.objtype(obj) == 'object') {
                 str = '{\n';
-                for (var i in obj) {
+                for (let i in obj) {
                     if (/[^a-zA-Z]/.test(i)) {
                         str += indent + '    "' + i + '":' + get.stringify(obj[i], level + 1) + ',\n';
                     }
@@ -821,7 +821,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         num++;
                     }
                     num = Math.floor(num / 4);
-                    for (i = 0; i < num - level; i++) {
+                    for (let i = 0; i < num - level; i++) {
                         str = str.replace(/\n    /g, '\n');
                     }
                 }
@@ -829,8 +829,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     try {
                         if (Array.isArray(obj) && obj.contains(Infinity)) {
                             obj = obj.slice(0);
-                            var rand = get.id();
-                            for (var i = 0; i < obj.length; i++) {
+                            let rand = get.id();
+                            for (let i = 0; i < obj.length; i++) {
                                 if (obj[i] === Infinity) {
                                     obj[i] = parseInt(rand);
                                 }
@@ -855,15 +855,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          */
         copy: function (obj) {
             if (get.objtype(obj) == 'object') {
-                var copy = {};
-                for (var i in obj) {
+                let copy = {};
+                for (let i in obj) {
                     copy[i] = get.copy(obj[i]);
                 }
                 return copy;
             }
             else if (Array.isArray(obj)) {
-                var copy = [];
-                for (var i = 0; i < obj.length; i++) {
+                let copy = [];
+                for (let i = 0; i < obj.length; i++) {
                     copy.push(get.copy(obj[i]));
                 }
                 return copy;
@@ -874,7 +874,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         inpilefull: function (type) {
             var list = [];
-            for (var i in lib.cardPile) {
+            for (let i in lib.cardPile) {
                 for (var j = 0; j < lib.cardPile[i].length; j++) {
                     var info = lib.cardPile[i][j];
                     if (lib.inpile.contains(info[2]) && get.type(info[2]) == type) {
@@ -892,12 +892,12 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         inpile: function (type, filter) {
             var list = [];
             if (filter == 'trick') {
-                for (var i = 0; i < lib.inpile.length; i++) {
+                for (let i = 0; i < lib.inpile.length; i++) {
                     if (get.type(lib.inpile[i], 'trick') == type) list.push(lib.inpile[i]);
                 }
             }
             else {
-                for (var i = 0; i < lib.inpile.length; i++) {
+                for (let i = 0; i < lib.inpile.length; i++) {
                     if (typeof type == 'function') {
                         if (type(lib.inpile[i])) {
                             list.push(lib.inpile[i]);
@@ -921,7 +921,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         typeCard: function (type, filter) {
             var list = [];
-            for (var i in lib.card) {
+            for (let i in lib.card) {
                 if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false) continue;
                 // if(lib.card[i].vanish||lib.card[i].destroy) continue;
                 if (lib.card[i].destroy) continue;
@@ -941,7 +941,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         libCard: function (filter) {
             var list = [];
-            for (var i in lib.card) {
+            for (let i in lib.card) {
                 if (lib.card[i].mode && lib.card[i].mode.contains(get.mode()) == false) continue;
                 // if(lib.card[i].vanish||lib.card[i].destroy) continue;
                 if (lib.card[i].destroy) continue;
@@ -958,7 +958,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var interfaces = require('os').networkInterfaces();
             for (var devName in interfaces) {
                 var iface = interfaces[devName];
-                for (var i = 0; i < iface.length; i++) {
+                for (let i = 0; i < iface.length; i++) {
                     var alias = iface[i];
                     if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
                         return alias.address;
@@ -1018,16 +1018,16 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         charactersOL: function (func) {
             var list = [];
             var libCharacter = {};
-            for (var i = 0; i < lib.configOL.characterPack.length; i++) {
+            for (let i = 0; i < lib.configOL.characterPack.length; i++) {
                 var pack = lib.characterPack[lib.configOL.characterPack[i]];
-                for (var j in pack) {
+                for (let j in pack) {
                     if (typeof func == 'function' && func(j)) continue;
                     if (lib.connectBanned.contains(j)) continue;
                     if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
                     if (lib.character[j]) libCharacter[j] = pack[j];
                 }
             }
-            for (i in libCharacter) {
+            for (let i in libCharacter) {
                 if (lib.filter.characterDisabled(i, libCharacter)) continue;
                 list.push(i);
             }
@@ -1053,7 +1053,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
         },
         idDialog: function (id) {
-            for (var i = 0; i < ui.dialogs.length; i++) {
+            for (let i = 0; i < ui.dialogs.length; i++) {
                 if (ui.dialogs[i].videoId == id) {
                     return ui.dialogs[i];
                 }
@@ -1072,17 +1072,19 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 inpile: lib.inpile,
                 cardtag: _status.cardtag,
             };
-            for (var i in lib.playerOL) {
+            for (let i in lib.playerOL) {
                 state.players[i] = lib.playerOL[i].getState();
             }
             return state;
         },
-        skillState: function (player) {
-            var skills = {
+        skillState: function (player:PlayerModel) {
+            let skills = {
+                stat:{},
+                skillinfo:{},
                 global: lib.skill.global
             };
-            var skillinfo = {};
-            for (var i in lib.playerOL) {
+            let skillinfo = {};
+            for (let i in lib.playerOL) {
                 skills[i] = {
                     skills: lib.playerOL[i].skills,
                     hiddenSkills: lib.playerOL[i].hiddenSkills,
@@ -1092,7 +1094,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     storage: lib.playerOL[i].storage,
                 }
             }
-            for (var i in lib.skill) {
+            for (let i in lib.skill) {
                 if (lib.skill[i].chooseButton && lib.skill[i].enable) {
                     skillinfo[i] = lib.skill[i].chooseButton;
                 }
@@ -1129,7 +1131,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 if (game.zhu.isZhu) return game.zhu;
             }
             else if (mode == 'versus' && (_status.mode == 'four' || _status.mode == 'guandu')) {
-                for (var i = 0; i < game.players.length; i++) {
+                for (let i = 0; i < game.players.length; i++) {
                     if (game.players[i].isZhu) {
                         if (skill && !(game.players[i].hasSkill(skill))) continue;
                         if (!player) return game.players[i];
@@ -1140,7 +1142,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 }
             }
             else if (mode == 'guozhan') {
-                for (var i = 0; i < game.players.length; i++) {
+                for (let i = 0; i < game.players.length; i++) {
                     if (get.is.jun(game.players[i]) && !game.players[i].isUnseen()) {
                         if (skill && !game.players[i].hasSkill(skill)) continue;
                         if (!player) return game.players[i];
@@ -1162,7 +1164,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         coinCoeff: function (list) {
             var num = 0;
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 var rank = get.rank(list[i]);
                 switch (rank) {
                     case 'sp': return 0.1;
@@ -1201,7 +1203,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         skills = [];
                     }
                 }
-                for (var i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     if (skills[i].alter && !lib.config.vintageSkills.contains(skills[i])) {
                         name = lib.rank.a[0]; break;
                     }
@@ -1251,7 +1253,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 if (info.trigger && info.trigger.player) {
                     var list = Array.isArray(info.trigger.player) ? info.trigger.player : [info.trigger.player];
                     var add = false;
-                    for (var i of list) {
+                    for (let i of list) {
                         for (var j of lib.phaseName) {
                             if (i.indexOf[j] == 0) {
                                 num += 0.5;
@@ -1288,7 +1290,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 var groups = game.expandSkills([skill]);
                 groups.remove(skill);
                 var ggt = [];
-                for (var i = 0; i < groups.length; i++) {
+                for (let i = 0; i < groups.length; i++) {
                     var gi = get.skillRank(groups[i], type, true);
                     if (gi < 0) {
                         num -= 0.5;
@@ -1305,14 +1307,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         targetsInfo: function (targets) {
             var info = [];
-            for (var i = 0; i < targets.length; i++) {
+            for (let i = 0; i < targets.length; i++) {
                 info.push(targets[i].dataset.position);
             }
             return info;
         },
         infoTargets: function (info) {
             var targets = [];
-            for (var i = 0; i < info.length; i++) {
+            for (let i = 0; i < info.length; i++) {
                 targets.push(game.playerMap[info[i]]);
             }
             return targets;
@@ -1323,7 +1325,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         cardsInfo: function (cards) {
             var info = [];
-            for (var i = 0; i < cards.length; i++) {
+            for (let i = 0; i < cards.length; i++) {
                 info.push(get.cardInfo(cards[i]));
             }
             return info;
@@ -1337,7 +1339,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         infoCards: function (info) {
             var cards = [];
-            for (var i = 0; i < info.length; i++) {
+            for (let i = 0; i < info.length; i++) {
                 cards.push(get.infoCard(info[i]));
             }
             return cards;
@@ -1378,14 +1380,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         cardsInfoOL: function (cards) {
             var info = [];
-            for (var i = 0; i < cards.length; i++) {
+            for (let i = 0; i < cards.length; i++) {
                 info.push(get.cardInfoOL(cards[i]));
             }
             return info;
         },
         infoCardsOL: function (info) {
             var cards = [];
-            for (var i = 0; i < info.length; i++) {
+            for (let i = 0; i < info.length; i++) {
                 cards.push(get.infoCardOL(info[i]));
             }
             return cards;
@@ -1399,14 +1401,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         playersInfoOL: function (players) {
             var info = [];
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 info.push(get.playerInfoOL(players[i]));
             }
             return info;
         },
         infoPlayersOL: function (info) {
             var players = [];
-            for (var i = 0; i < info.length; i++) {
+            for (let i = 0; i < info.length; i++) {
                 players.push(get.infoPlayerOL(info[i]));
             }
             return players;
@@ -1436,7 +1438,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         eventInfoOL: function (item, level) {
             if (Object.prototype.toString.call(item) == '[object Object]') {
                 var item2 = {};
-                for (var i in item) {
+                for (let i in item) {
                     if (i == '_trigger') {
                         if (level !== false) item2[i] = get.eventInfoOL(item[i], false);
                     }
@@ -1453,10 +1455,10 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var evt;
             try {
                 evt = JSON.parse(item.slice(14));
-                for (var i in evt) {
+                for (let i in evt) {
                     evt[i] = get.parsedResult(evt[i]);
                 }
-                for (var i in lib.element.event) evt[i] = lib.element.event[i];
+                for (let i in lib.element.event) evt[i] = lib.element.event[i];
             }
             catch (e) {
                 console.log(e);
@@ -1483,8 +1485,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             if (level == 0) {
                                 return [];
                             }
-                            var item2 = [];
-                            for (var i = 0; i < item.length; i++) {
+                            let item2 = [];
+                            for (let i = 0; i < item.length; i++) {
                                 item2.push(get.stringifiedResult(item[i], level - 1));
                             }
                             return item2;
@@ -1493,8 +1495,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             if (level == 0) {
                                 return {};
                             }
-                            var item2 = {};
-                            for (var i in item) {
+                            let item2 = {};
+                            for (let i in item) {
                                 item2[i] = get.stringifiedResult(item[i], level - 1);
                             }
                             return item2;
@@ -1534,15 +1536,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 }
             }
             else if (Array.isArray(item)) {
-                var item2 = [];
-                for (var i = 0; i < item.length; i++) {
+                let item2 = [];
+                for (let i = 0; i < item.length; i++) {
                     item2.push(get.parsedResult(item[i]));
                 }
                 return item2;
             }
             else if (typeof item == 'object') {
-                var item2 = {};
-                for (var i in item) {
+                let item2 = {};
+                for (let i in item) {
                     item2[i] = get.parsedResult(item[i]);
                 }
                 return item2;
@@ -1574,7 +1576,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             str = str.toUpperCase();
             var str2 = '';
             var nobreak = false;
-            for (var i = 0; i < str.length; i++) {
+            for (let i = 0; i < str.length; i++) {
                 if (str[i] == '`') {
                     nobreak = !nobreak; continue;
                 }
@@ -1811,7 +1813,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         type3: function (cards, method, player) {
             if (get.itemtype(cards) != 'cards') return;
             var types = [];
-            for (var i of cards) {
+            for (let i of cards) {
                 types.add(get.type(i, method, player));
             }
             return types;
@@ -1822,7 +1824,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (!lib.card[obj.name]) return;
             return lib.card[obj.name].subtype;
         },
-        equiptype: function (card, player) {
+        equiptype: function (card, player:PlayerModel) {
             var subtype = get.subtype(card, player);
             if (subtype.indexOf('equip') == 0) return parseInt(subtype[5]);
             return 0;
@@ -1844,7 +1846,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {(GameCores.GameObjects.Player|false)} player 如果为角色对象，当角色有被动技**cardname**改变牌名，返回改变后的牌名；如果为false，直接返回牌名
          * @returns {string} 牌名
          */
-        name: function (card, player) {
+        name(card, player:PlayerModel):string {
             if (get.itemtype(player) == 'player' || (player !== false && get.position(card) == 'h')) {
                 var owner = player || get.owner(card);
                 if (owner) {
@@ -1853,7 +1855,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             return card.name;
         },
-        suit: function (card, player) {
+        suit(card, player:PlayerModel):string {
             if (get.itemtype(card) == 'cards') {
                 if (card.length == 1) return get.suit(card[0], player);
                 return 'none';
@@ -1874,19 +1876,19 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 return card.suit;
             }
         },
-        suit3: function (cards, player) {
+        suit3(cards, player:PlayerModel):string[] {
             if (get.itemtype(cards) != 'cards') return [];
             var suits = [];
-            for (var i of cards) {
+            for (let i of cards) {
                 suits.add(get.suit(i, player));
             }
             return suits;
         },
-        color: function (card, player) {
+        color(card, player:PlayerModel):string {
             if (_status.event.name == 'judge' && card.color) return card.color;
             if (get.itemtype(card) == 'cards') {
-                var color = get.color(card[0], player)
-                for (var i = 1; i < card.length; i++) {
+                let color = get.color(card[0], player)
+                for (let i = 1; i < card.length; i++) {
                     if (get.color(card[i], player) != color) return 'none';
                 }
                 return color;
@@ -1896,7 +1898,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             else {
                 //柚子：已修改
-                var color = 'none'
+                let color = 'none'
                 if (get.suit(card, player) == 'spade' || get.suit(card, player) == 'club') color = 'black';
                 if (get.suit(card, player) == 'heart' || get.suit(card, player) == 'diamond') color = 'red';
                 var owner = player || get.owner(card);
@@ -1906,15 +1908,15 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 return color;
             }
         },
-        color3: function (cards, player) {
+        color3(cards, player:PlayerModel):string[] {
             if (get.itemtype(cards) != 'cards') return;
             var colors = [];
-            for (var i of cards) {
+            for (let i of cards) {
                 colors.add(get.color(i, player));
             }
             return colors;
         },
-        number: function (card, player) {
+        number(card, player:PlayerModel):string {
             //柚子：已修改
             var number = null;
             if (card.number && typeof card.number == 'number') number = card.number;
@@ -1934,7 +1936,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {(GameCores.GameObjects.Player|false|undefined)} [player] 要查看的角色，如果未指定，使用被查看牌的所属角色，如果所属角色未定义或这个参数为false，直接返回牌的属性；
          * @returns {string}
          */
-        nature: function (card, player) {
+        nature(card, player:PlayerModel):string {
             if (get.itemtype(player) == 'player' || player !== false) {
                 var owner = get.owner(card);
                 if (owner) {
@@ -1949,7 +1951,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {number} num 要抽的牌数
          * @returns {!Array<GameCores.GameObjects.Card>}
          */
-        cards: function (num) {
+        cards(num) {
             if (_status.waitingForCards) {
                 ui.create.cards.apply(ui.create, _status.waitingForCards);
                 delete _status.waitingForCards;
@@ -1974,8 +1976,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         _status.maxShuffle--;
                     }
                     game.shuffleNumber++;
-                    var cards = [], i;
-                    for (var i = 0; i < lib.onwash.length; i++) {
+                    var cards = [];
+                    for (let i = 0; i < lib.onwash.length; i++) {
                         if (lib.onwash[i]() == 'remove') {
                             lib.onwash.splice(i--, 1);
                         }
@@ -1983,7 +1985,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     if (_status.discarded) {
                         _status.discarded.length = 0;
                     }
-                    for (i = 0; i < ui.discardPile.childNodes.length; i++) {
+                    for (let i = 0; i < ui.discardPile.childNodes.length; i++) {
                         var currentcard = ui.discardPile.childNodes[i];
                         currentcard.vanishtag.length = 0;
                         if (get.info(currentcard).vanish || currentcard.storage.vanish) {
@@ -1993,7 +1995,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         cards.push(currentcard);
                     }
                     cards.randomSort();
-                    for (var i = 0; i < cards.length; i++) {
+                    for (let i = 0; i < cards.length; i++) {
                         ui.cardPile.appendChild(cards[i]);
                     }
                 }
@@ -2014,7 +2016,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {GameCores.GameObjects.Card} card 游戏牌，除牌名外其他属性和函数可以为空
          * @returns {string}
          */
-        judge: function (card) {
+        judge(card) {
             if (card.viewAs) return lib.card[card.viewAs].judge;
             return get.info(card).judge;
         },
@@ -2050,7 +2052,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {?string} method 见method参数表
          * @returns {number} 如果`from`或`to`不在游戏中或未指定，返回`Infinity`；如果`from==to`，返回0
          */
-        distance: function (from, to, method) {
+        distance(from:PlayerModel, to:PlayerModel, method) {
             if (from == to) return 0;
             if (!game.players.contains(from) && !game.dead.contains(from)) return Infinity;
             if (!game.players.contains(to) && !game.dead.contains(to)) return Infinity;
@@ -2068,7 +2070,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             else {
                 var length = game.players.length;
                 var totalPopulation = game.players.length + game.dead.length + 1;
-                for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
+                for (let iwhile = 0; iwhile < totalPopulation; iwhile++) {
                     if (player.nextSeat != to) {
                         player = player.nextSeat;
                         if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true)) n++;
@@ -2141,7 +2143,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {(GameCores.GameObjects.Player|boolean|undefined)} option 将根据`option`获取游戏牌牌名，然后根据牌名获取模板。详见{@link game.name}，{@link game.name(2)}
          * @returns {?GameCores.GameObjects.CardInfo} 游戏牌模板
          */
-        info: function (item, player) {
+        info(item, player:PlayerModel) {
             if (typeof item == 'string') {
                 return lib.skill[item];
             }
@@ -2156,7 +2158,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {(number|Array<number>|function():Array<number>)} select 如果为数值，返回`[select, select]`；如果为数组且为`[(number), (number)]`的形式，返回`select`；如果为函数，将函数的返回值作为此函数的参数迭代，然后将结果返回；其他情况，返回`[1, 1]`
          * @returns {Array<number>} 一个`[(number), (number)]`形式的数组
          */
-        select: function (select) {
+        select(select) {
             if (typeof select == 'number') return [select, select];
             if (get.itemtype(select) == 'select') return select;
             if (typeof select == 'function') return get.select(select());
@@ -2169,7 +2171,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @param {?boolean} [original] 如果为true，返回`ui.selected.cards[0]`；如果为false或未指定，将当前选择的牌视为一张`ui.selected.cards[0]`返回
          * @returns {?GameCores.GameObjects.Card} 如果当前没有选择的牌，返回undefined
          */
-        card: function (original) {
+        card(original) {
             if (_status.event.skill) {
                 var card = get.info(_status.event.skill).viewAs;
                 if (typeof card == 'function') card = card(ui.selected.cards, _status.event.player);
@@ -2191,7 +2193,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * 返回当前事件角色
          * @returns {GameCores.GameObjects.Player}
          */
-        player: function () {
+        player() {
             return _status.event.player;
         },
         /**
@@ -2202,7 +2204,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @returns {Array<GameCores.GameObjects.Player>}
          */
         //TODO
-        players: function (sort, dead, out) {
+        players(sort, dead, out) {
             var players = game.players.slice(0);
             if (sort != false) {
                 if (typeof sort == 'function') {
@@ -2217,7 +2219,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             if (dead) players = players.concat(game.dead);
             if (!out) {
-                for (var i = 0; i < players.length; i++) {
+                for (let i = 0; i < players.length; i++) {
                     if (players[i].isOut()) players.splice(i--, 1);
                 }
             }
@@ -2230,7 +2232,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @returns {(number|'h'|'e'|'j'|'o'|'s'|'c'|'d'|null)}
          */
         //TODO
-        position: function (card, ordering) {
+        position(card, ordering?:boolean):string|number {
             if (get.itemtype(card) == 'player') return parseInt(card.dataset.position);
             if (card.timeout && card.destiny) {
                 if (card.destiny.classList.contains('equips')) return 'e';
@@ -2252,7 +2254,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (card.parentNode.id == 'ordering') return ordering ? 'o' : 'd';
             return null;
         },
-        skillTranslation: function (str, player) {
+        skillTranslation: function (str, player:PlayerModel):string {
             var str2, str3;
             if (str.indexOf('re_') == 0) {
                 str2 = str.slice(3);
@@ -2293,7 +2295,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             return get.translation(str);
         },
-        skillInfoTranslation: function (name, player) {
+        skillInfoTranslation(name, player:PlayerModel):string {
             var str = lib.translate[name + '_info'];
             if (player && lib.dynamicTranslate[name]) str = lib.dynamicTranslate[name](player, name);
             if (!str) return '';
@@ -2312,7 +2314,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
             // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
         },
-        translation: function (str, arg) {
+        translation(str, arg):string {
             if (str && typeof str == 'object' && (str.name || str._tempTranslate)) {
                 if (str._tempTranslate) return str._tempTranslate;
                 var str2;
@@ -2364,7 +2366,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 if (get.itemtype(str) == 'card' || str.isCard) {
                     if (_status.cardtag && str.cardid) {
                         var tagstr = '';
-                        for (var i in _status.cardtag) {
+                        for (let i in _status.cardtag) {
                             if (_status.cardtag[i].contains(str.cardid)) {
                                 tagstr += lib.translate[i + '_tag'];
                             }
@@ -2391,8 +2393,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 return str2;
             }
             if (Array.isArray(str)) {
-                var str2 = get.translation(str[0], arg);
-                for (var i = 1; i < str.length; i++) {
+                let str2 = get.translation(str[0], arg);
+                for (let i = 1; i < str.length; i++) {
                     str2 += '、' + get.translation(str[i], arg);
                 }
                 return str2;
@@ -2404,7 +2406,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             else if (arg == 'info') {
                 if (lib.translate[str + '_info']) return lib.translate[str + '_info'];
-                var str2 = str.slice(0, str.length - 1);
+                let str2 = str.slice(0, str.length - 1);
                 if (lib.translate[str2 + '_info']) return lib.translate[str2 + '_info'];
                 if (str.lastIndexOf('_') > 0) {
                     str2 = str.slice(0, str.lastIndexOf('_'));
@@ -2428,7 +2430,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             return '';
         },
-        strNumber: function (num) {
+        strNumber(num:number):string {
             switch (num) {
                 case 1: return 'A';
                 case 11: return 'J';
@@ -2438,7 +2440,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 default: return num.toString();
             }
         },
-        cnNumber: function (num, two) {
+        cnNumber(num, two):string|number {
             if (num == Infinity) return '∞';
             if (isNaN(num)) return '';
             if (typeof num != 'number') return num;
@@ -2464,11 +2466,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var x = Math.floor(num / 10);
             return get.cnNumber(x, true) + '十' + (num > 10 * x ? get.cnNumber(num - 10 * x, true) : '');
         },
-        selectableButtons: function (sort) {
+        selectableButtons(sort) {
             if (!_status.event.player) return [];
             var buttons = _status.event.dialog.buttons;
             var selectable = [];
-            for (var i = 0; i < buttons.length; i++) {
+            for (let i = 0; i < buttons.length; i++) {
                 if (buttons[i].classList.contains('selectable') &&
                     buttons[i].classList.contains('selected') == false) {
                     selectable.push(buttons[i]);
@@ -2479,11 +2481,11 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             return selectable;
         },
-        selectableCards: function (sort) {
+        selectableCards(sort) {
             if (!_status.event.player) return [];
             var cards = _status.event.player.getCards('hes');
             var selectable = [];
-            for (var i = 0; i < cards.length; i++) {
+            for (let i = 0; i < cards.length; i++) {
                 if (cards[i].classList.contains('selectable') &&
                     cards[i].classList.contains('selected') == false) {
                     selectable.push(cards[i]);
@@ -2494,7 +2496,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             return selectable;
         },
-        skills: function () {
+        skills() {
             var skills = [];
             if (ui.skills) {
                 skills = skills.concat(ui.skills.skills);
@@ -2515,7 +2517,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          */
         gainableSkills: function (func, player) {
             var list = [];
-            for (var i in lib.character) {
+            for (let i in lib.character) {
                 if (lib.filter.characterDisabled(i)) continue;
                 if (lib.filter.characterDisabled2(i)) continue;
                 if (lib.character[i][4]) {
@@ -2566,9 +2568,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @returns {!Array<string>}
          */
         gainableCharacters: function (func) {
-            var list = [];
-            for (var i in lib.character) {
-                var info = lib.character[i];
+            let list = [];
+            for (let i in lib.character) {
+                let info = lib.character[i];
                 if (!info) continue;
                 if (typeof func == 'function' && !func(info, i)) continue;
                 if (lib.filter.characterDisabled(i)) continue;
@@ -2576,8 +2578,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 list.push(i);
             }
             if (func === true) {
-                var players = game.players.concat(game.dead);
-                for (var i = 0; i < players.length; i++) {
+                let players = game.players.concat(game.dead);
+                for (let i = 0; i < players.length; i++) {
                     list.remove(players[i].name);
                     list.remove(players[i].name1);
                     list.remove(players[i].name2);
@@ -2589,7 +2591,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var selectable = [];
             var players = game.players.slice(0);
             if (_status.event.deadTarget) players.addArray(game.dead);
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 if (players[i].classList.contains('selectable') &&
                     players[i].classList.contains('selected') == false) {
                     selectable.push(players[i]);
@@ -2667,7 +2669,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (card == true) {
                 num = 0;
                 var stat = player.getStat('card');
-                for (var i in stat) {
+                for (let i in stat) {
                     if (typeof stat[i] == 'number') num += stat[i];
                 }
                 return num;
@@ -2688,7 +2690,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         owner: function (card, method) {
             var list = game.players.concat(game.dead);
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 if (list[i].getCards('hej').contains(card)) return list[i];
                 if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
@@ -2793,14 +2795,14 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 return false;
             };
             if (create != 'discardPile') {
-                for (var i = 0; i < ui.cardPile.childNodes.length; i++) {
+                for (let i = 0; i < ui.cardPile.childNodes.length; i++) {
                     if (filter(ui.cardPile.childNodes[i])) {
                         return ui.cardPile.childNodes[i];
                     }
                 }
             }
             if (create != 'cardPile') {
-                for (var i = 0; i < ui.discardPile.childNodes.length; i++) {
+                for (let i = 0; i < ui.discardPile.childNodes.length; i++) {
                     if (filter(ui.discardPile.childNodes[i])) {
                         return ui.discardPile.childNodes[i];
                     }
@@ -2810,7 +2812,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 var found = null;
                 game.findPlayer(function (current) {
                     var ej = current.getCards('ej');
-                    for (var i = 0; i < ej.length; i++) {
+                    for (let i = 0; i < ej.length; i++) {
                         if (filter(ej[i])) {
                             found = ej[i];
                             return true;
@@ -2845,7 +2847,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var str = '';
             var infoitem = lib.character[name];
             if (!infoitem) {
-                for (var itemx in lib.characterPack) {
+                for (let itemx in lib.characterPack) {
                     if (lib.characterPack[itemx][name]) {
                         infoitem = lib.characterPack[itemx][name]; break;
                     }
@@ -2853,7 +2855,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             var skills = infoitem[3];
             var opacity;
-            for (var i = 0; i < skills.length; i++) {
+            for (let i = 0; i < skills.length; i++) {
                 if (lib.translate[skills[i]] && lib.translate[skills[i] + '_info'] && lib.skill[skills[i]]) {
                     if (learn && lib.skill[skills[i]].unique && (learn2 || !lib.skill[skills[i]].gainable)) {
                         opacity = 'opacity:0.5';
@@ -2877,7 +2879,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             str += '技能：';
             if (info[3].length) {
                 str += get.translation(info[3][0]);
-                for (var i = 1; i < info[3].length; i++) {
+                for (let i = 1; i < info[3].length; i++) {
                     str += '、' + get.translation(info[3][i]);
                 }
             }
@@ -2987,7 +2989,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
          * @returns {!HTMLDivElement} 返回生成的弹窗
          * @see {@link lib.setIntro}
          */
-        nodeintro: function (node, simple, evt) {
+        nodeintro: function (node, simple, evt):HTMLDivElement {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
             if (node.classList.contains('player') && (!node.getModel || !node.getModel().name)) {
                 return uiintro;
@@ -3015,7 +3017,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 }else{
                     node = node.getModel();//get player model
                 }
-                var capt = get.translation(node.name);
+                let capt = get.translation(node.name);
                 if ((lib.character[node.name] && lib.character[node.name][1]) || lib.group.contains(node.group)) {
                     capt += '&nbsp;&nbsp;' + (lib.group.contains(node.group) ? (lib.translate[node.group + '2'] ? get.translation(node.group + '2') : get.translation(node.group)) : lib.translate[lib.character[node.name][1]]);
                 }
@@ -3026,13 +3028,13 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 }
 
                 if (true) {
-                    var hs = node.getCards('h');
+                    let hs = node.getCards('h');
                     if (hs.length) {
-                        var ms = [];
+                        let ms = [];
                         if (node.isUnderControl() || (!game.observe && game.me && game.me.hasSkillTag('viewHandcard', null, node, true))) {
                             ms.addArray(hs);
                         }
-                        for (var i = 0; i < hs.length; i++) {
+                        for (let i = 0; i < hs.length; i++) {
                             if (hs[i].hasGaintag('ming_')) ms.add(hs[i]);
                             if (hs[i].hasGaintag('an_')) ms.remove(ms[i]);
                         }
@@ -3043,19 +3045,19 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                 }
 
-                var skills = node.getSkills(null, null, false).slice(0);
-                var skills2 = game.filterSkills(skills, node);
+                let skills = node.getSkills(null, null, false).slice(0);
+                let skills2 = game.filterSkills(skills, node);
                 if (node == game.me && node.hiddenSkills.length) {
                     skills.addArray(node.hiddenSkills);
                 }
-                for (var i in node.disabledSkills) {
+                for (let i in node.disabledSkills) {
                     if (node.disabledSkills[i].length == 1 &&
                         node.disabledSkills[i][0] == i + '_awake' &&
                         !node.hiddenSkills.contains(i)) {
                         skills.add(i);
                     }
                 }
-                for (i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     if (lib.skill[skills[i]] && (lib.skill[skills[i]].nopop || lib.skill[skills[i]].equipSkill)) continue;
                     if (lib.translate[skills[i] + '_info']) {
                         translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
@@ -3180,7 +3182,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
 
                 if (lib.config.right_range && _status.gameStarted) {
                     uiintro.add(ui.create.div('.placeholder'));
-                    var table, tr, td;
+                    let table, tr, td;
                     table = document.createElement('table');
                     tr = document.createElement('tr');
                     table.appendChild(tr);
@@ -3243,8 +3245,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                 }
                 if (!simple || get.is.phoneLayout()) {
-                    var es = node.getCards('e');
-                    for (var i = 0; i < es.length; i++) {
+                    let es = node.getCards('e');
+                    for (let i = 0; i < es.length; i++) {
                         if (es[i].viewAs && es[i].originalName && es[i].originalName != es[i].name) {
                             uiintro.add('<div><div class="equip">' + es[i].outerHTML + '</div><div>' + lib.translate[es[i].viewAs] + '：' + lib.translate[es[i].viewAs + '_info'] + '</div></div>');
                         }
@@ -3253,8 +3255,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         }
                         uiintro.content.lastChild.querySelector('.equip>.card').style.transform = '';
                     }
-                    var js = node.getCards('j');
-                    for (var i = 0; i < js.length; i++) {
+                    let js = node.getCards('j');
+                    for (let i = 0; i < js.length; i++) {
                         if (js[i].viewAs && js[i].viewAs != js[i].name) {
                             uiintro.add('<div><div class="equip">' + js[i].outerHTML + '</div><div>' + lib.translate[js[i].viewAs] + '：' + lib.translate[js[i].viewAs + '_info'] + '</div></div>');
                         }
@@ -3265,7 +3267,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     if (get.is.phoneLayout()) {
                         var markCoutainer = ui.create.div('.mark-container.marks');
-                        for (var i in node.marks) {
+                        for (let i in node.marks) {
                             var nodemark = node.marks[i].cloneNode(true);
                             nodemark.classList.add('pointerdiv');
                             nodemark.link = node.marks[i];
@@ -3306,18 +3308,18 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         setTimeout(function () {
                             _status.throwEmotionWait = false;
                             if (ui.throwEmotion) {
-                                for (var i of ui.throwEmotion) i.classList.remove('exclude');
+                                for (let i of ui.throwEmotion) i.classList.remove('exclude');
                             }
                         }, (emotion == 'flower' || emotion == 'egg') ? 5000 : 10000)
                     };
                     var td;
-                    var table = document.createElement('div');
+                    let table = document.createElement('div');
                     table.classList.add('add-setting');
                     table.style.margin = '0';
                     table.style.width = '100%';
                     table.style.position = 'relative';
                     var listi = ['flower', 'egg', 'wine', 'shoe'];
-                    for (var i = 0; i < listi.length; i++) {
+                    for (let i = 0; i < listi.length; i++) {
                         td = ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
                         ui.throwEmotion.add(td);
                         if (_status.throwEmotionWait) td.classList.add('exclude');
@@ -3333,7 +3335,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     table.style.width = '100%';
                     table.style.position = 'relative';
                     var listi = ['yuxisx', 'shoukao', 'sc', 'ship'];
-                    for (var i = 0; i < listi.length; i++) {
+                    for (let i = 0; i < listi.length; i++) {
                         td = ui.create.div('.menubutton.reduce_radius.pointerdiv.tdnode');
                         ui.throwEmotion.add(td);
                         if (_status.throwEmotionWait) td.classList.add('exclude');
@@ -3360,9 +3362,9 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 }
                 if (!simple || get.is.phoneLayout()) {
                     if ((lib.config.change_skin || lib.skin) && !node.isUnseen()) {
-                        var num = 1;
-                        var introadded = false;
-                        var createButtons = function (num, avatar2) {
+                        let num = 1;
+                        let introadded = false;
+                        let createButtons = function (num, avatar2?) {
                             if (!introadded) {
                                 introadded = true;
                                 uiintro.add('<div class="text center">更改皮肤</div>');
@@ -3379,7 +3381,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                                 nameskin = nameskin.slice(3);
                                 gzbool = true;
                             }
-                            for (var i = 0; i <= num; i++) {
+                            for (let i = 0; i <= num; i++) {
                                 var button = ui.create.div('.button.character.pointerdiv', buttons, function () {
                                     if (this._link) {
                                         if (avatar2) {
@@ -3415,8 +3417,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             }
                             uiintro.add(buttons);
                         };
-                        var loadImage = function (avatar2) {
-                            var img = new Image();
+                        let loadImage = function (avatar2?) {
+                            let img = new Image();
                             img.onload = function () {
                                 num++;
                                 loadImage(avatar2);
@@ -3553,7 +3555,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 var name = node.name;
                 if (node.parentNode.cardMod) {
                     var moded = false;
-                    for (var i in node.parentNode.cardMod) {
+                    for (let i in node.parentNode.cardMod) {
                         var item = node.parentNode.cardMod[i](node);
                         if (Array.isArray(item)) {
                             moded = true;
@@ -3593,7 +3595,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         }
                     };
                     var modeorder = lib.config.modeorder || [];
-                    for (var i in lib.mode) {
+                    for (let i in lib.mode) {
                         modeorder.add(i);
                     }
                     var list = [];
@@ -3601,7 +3603,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         ui.click.touchpop();
                         e.stopPropagation();
                     });
-                    for (var i = 0; i < modeorder.length; i++) {
+                    for (let i = 0; i < modeorder.length; i++) {
                         if (node._banning == 'online') {
                             if (!lib.mode[modeorder[i]].connect) continue;
                         }
@@ -3614,8 +3616,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     var page = ui.create.div('.menu-buttons.configpopped', uiintro.content);
                     var banall = false;
-                    for (var i = 0; i < list.length; i++) {
-                        var cfg = ui.create.div('.config', lib.translate[list[i]] + '模式', page);
+                    for (let i = 0; i < list.length; i++) {
+                        let cfg = ui.create.div('.config', lib.translate[list[i]] + '模式', page);
                         cfg.classList.add('toggle');
                         if (node._banning == 'offline') {
                             cfg.bannedname = list[i] + '_bannedcards';
@@ -3633,7 +3635,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     ui.create.div('.menubutton.pointerdiv', banall ? '全部禁用' : '全部启用', uiintro.content, function () {
                         if (this.innerHTML == '全部禁用') {
-                            for (var i = 0; i < page.childElementCount; i++) {
+                            for (let i = 0; i < page.childElementCount; i++) {
                                 if (page.childNodes[i].bannedname && page.childNodes[i].classList.contains('on')) {
                                     clickBanned.call(page.childNodes[i]);
                                 }
@@ -3641,7 +3643,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             this.innerHTML = '全部启用';
                         }
                         else {
-                            for (var i = 0; i < page.childElementCount; i++) {
+                            for (let i = 0; i < page.childElementCount; i++) {
                                 if (page.childNodes[i].bannedname && !page.childNodes[i].classList.contains('on')) {
                                     clickBanned.call(page.childNodes[i]);
                                 }
@@ -3732,8 +3734,8 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 if (lib.character[node.link] && lib.character[node.link][1]) {
                     var group = get.is.double(node.link, true);
                     if (group) {
-                        var str = get.translation(character) + '&nbsp;&nbsp;';
-                        for (var i = 0; i < group.length; i++) {
+                        let str = get.translation(character) + '&nbsp;&nbsp;';
+                        for (let i = 0; i < group.length; i++) {
                             str += get.translation(group[i]);
                             if (i < group.length - 1) str += '/';
                         }
@@ -3765,7 +3767,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         }
                     };
                     var modeorder = lib.config.modeorder || [];
-                    for (var i in lib.mode) {
+                    for (let i in lib.mode) {
                         modeorder.add(i);
                     }
                     var list = [];
@@ -3773,7 +3775,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         ui.click.touchpop();
                         e.stopPropagation();
                     });
-                    for (var i = 0; i < modeorder.length; i++) {
+                    for (let i = 0; i < modeorder.length; i++) {
                         if (node._banning == 'online') {
                             if (!lib.mode[modeorder[i]].connect) continue;
                             if (!lib.config['connect_' + modeorder[i] + '_banned']) {
@@ -3789,7 +3791,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     var page = ui.create.div('.menu-buttons.configpopped', uiintro.content);
                     var banall = false;
-                    for (var i = 0; i < list.length; i++) {
+                    for (let i = 0; i < list.length; i++) {
                         var cfg = ui.create.div('.config', lib.translate[list[i]] + '模式', page);
                         cfg.classList.add('toggle');
                         if (node._banning == 'offline') {
@@ -3826,7 +3828,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     }
                     ui.create.div('.menubutton.pointerdiv', banall ? '全部禁用' : '全部启用', uiintro.content, function () {
                         if (this.innerHTML == '全部禁用') {
-                            for (var i = 0; i < page.childElementCount; i++) {
+                            for (let i = 0; i < page.childElementCount; i++) {
                                 if (page.childNodes[i].bannedname && page.childNodes[i].classList.contains('on')) {
                                     clickBanned.call(page.childNodes[i]);
                                 }
@@ -3834,7 +3836,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             this.innerHTML = '全部启用';
                         }
                         else {
-                            for (var i = 0; i < page.childElementCount; i++) {
+                            for (let i = 0; i < page.childElementCount; i++) {
                                 if (page.childNodes[i].bannedname && !page.childNodes[i].classList.contains('on')) {
                                     clickBanned.call(page.childNodes[i]);
                                 }
@@ -3847,7 +3849,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 else {
                     var infoitem = lib.character[character];
                     if (!infoitem) {
-                        for (var itemx in lib.characterPack) {
+                        for (let itemx in lib.characterPack) {
                             if (lib.characterPack[itemx][character]) {
                                 infoitem = lib.characterPack[itemx][character]; break;
                             }
@@ -3906,7 +3908,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             nameskin = nameskin.slice(3);
                             gzbool = true;
                         }
-                        var createButtons = function (num) {
+                        let createButtons = function (num) {
                             if (!num) return;
                             if (!introadded) {
                                 introadded = true;
@@ -3914,7 +3916,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             }
                             var buttons = ui.create.div('.buttons.smallzoom.scrollbuttons');
                             lib.setMousewheel(buttons);
-                            for (var i = 0; i <= num; i++) {
+                            for (let i = 0; i <= num; i++) {
                                 var button = ui.create.div('.button.character.pointerdiv', buttons, function () {
                                     if (this._link) {
                                         lib.config.skin[nameskin] = this._link;
@@ -3939,7 +3941,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                             }
                             uiintro.add(buttons);
                         };
-                        var loadImage = function () {
+                        let loadImage = function () {
                             var img = new Image();
                             img.onload = function () {
                                 num++;
@@ -3972,7 +3974,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                         ui.control.show();
                     }
                     var confirmbutton;
-                    for (var i = 0; i < uiintro.buttons.length; i++) {
+                    for (let i = 0; i < uiintro.buttons.length; i++) {
                         var button = uiintro.buttons[i];
                         button.classList.add('pointerdiv');
                         if (button.link.classList.contains('selected')) {
@@ -4056,7 +4058,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                     uiintro.add('<div class="text center">卡牌</div>');
                     uiintro.addSmall(node.cards);
                 }
-                for (var i = 0; i < node.added.length; i++) {
+                for (let i = 0; i < node.added.length; i++) {
                     uiintro.add(node.added[i]);
                 }
                 if (node.added.length) {
@@ -4075,7 +4077,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             dialog.content.firstChild.remove();
             dialog.add('<div class="text center">已横置</div>');
             var list = [];
-            for (var i = 0; i < game.players.length; i++) {
+            for (let i = 0; i < game.players.length; i++) {
                 if (game.players[i].isLinked() && game.players[i].name && game.players[i].name.indexOf('unknown') != 0) {
                     list.push(game.players[i]);
                 }
@@ -4095,7 +4097,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         types: function () {
             var types = [];
-            for (var i in lib.card) {
+            for (let i in lib.card) {
                 if (lib.card[i].mode && lib.card[i].mode.contains(lib.config.mode) == false) continue;
                 if (lib.card[i].forbid && lib.card[i].forbid.contains(lib.config.mode)) continue;
                 if (lib.card[i].type) {
@@ -4107,7 +4109,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
         },
         links: function (buttons) {
             var links = [];
-            for (var i = 0; i < buttons.length; i++) {
+            for (let i = 0; i < buttons.length; i++) {
                 if (buttons[i].link != undefined) links.push(buttons[i].link);
             }
             return links;
@@ -4143,7 +4145,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (!player && player !== false) {
                 player = _status.event.player;
             }
-            for (var i = 0; i < skills.length; i++) {
+            for (let i = 0; i < skills.length; i++) {
                 var info = get.info(skills[i]);
                 if (info && info.ai && info.ai.threaten) {
                     if (typeof info.ai.threaten == 'function' && player) {
@@ -4208,7 +4210,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             }
             num += player.countCards('h') / 2;
             var es = player.getCards('e');
-            for (var i = 0; i < es.length; i++) {
+            for (let i = 0; i < es.length; i++) {
                 var val = get.equipValueNumber(es[i]);
                 if (val >= 7) num += 0.8;
                 if (val >= 5) num += 0.5;
@@ -4355,7 +4357,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var value;
             if (Array.isArray(card)) {
                 value = 0;
-                for (var i = 0; i < card.length; i++) {
+                for (let i = 0; i < card.length; i++) {
                     value += get.value(card[i], player, method);
                 }
                 return value / Math.sqrt(card.length);
@@ -4534,7 +4536,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 var info2 = get.info(skill);
                 if (info2.ai) {
                     info2 = info2.ai.result;
-                    for (var i in info2) {
+                    for (let i in info2) {
                         result[i] = info2[i];
                     }
                 }
@@ -4569,7 +4571,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
                 var targets = [target];
                 info.changeTarget(player, targets);
                 var eff = 0;
-                for (var i of targets) {
+                for (let i of targets) {
                     eff += get.effect(i, card, player, player2, isLink);
                 }
                 return eff;
@@ -4585,7 +4587,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var skills1 = player.getSkills().concat(lib.skill.global);
             game.expandSkills(skills1);
             var zerotarget = false, zeroplayer = false;
-            for (var i = 0; i < skills1.length; i++) {
+            for (let i = 0; i < skills1.length; i++) {
                 temp1 = get.info(skills1[i]).ai;
                 if (temp1 && typeof temp1.effect == 'object' && typeof temp1.effect.player_use == 'function') {
                     temp1 = temp1.effect.player_use(card, player, target, result1, isLink);
@@ -4621,7 +4623,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (target) {
                 var skills2 = target.getSkills().concat(lib.skill.global);
                 game.expandSkills(skills2);
-                for (var i = 0; i < skills2.length; i++) {
+                for (let i = 0; i < skills2.length; i++) {
                     temp2 = get.info(skills2[i]).ai;
                     if (temp2 && temp2.threaten) temp3 = temp2.threaten;
                     else temp3 = undefined;
@@ -4777,7 +4779,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             var skills1 = player.getSkills().concat(lib.skill.global);
             game.expandSkills(skills1);
             var zerotarget = false, zeroplayer = false;
-            for (var i = 0; i < skills1.length; i++) {
+            for (let i = 0; i < skills1.length; i++) {
                 temp1 = get.info(skills1[i]).ai;
                 if (temp1 && typeof temp1.effect == 'object' && typeof temp1.effect.player == 'function') {
                     temp1 = temp1.effect.player(card, player, target, result1, isLink);
@@ -4810,7 +4812,7 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({_s
             if (target) {
                 var skills2 = target.getSkills().concat(lib.skill.global);
                 game.expandSkills(skills2);
-                for (var i = 0; i < skills2.length; i++) {
+                for (let i = 0; i < skills2.length; i++) {
                     temp2 = get.info(skills2[i]).ai;
                     if (temp2 && temp2.threaten) temp3 = temp2.threaten;
                     else temp3 = undefined;

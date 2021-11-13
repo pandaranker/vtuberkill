@@ -98,7 +98,7 @@ class Status_Event {
     _LinkAfter = []
     //从子状态事件转到父状态事件
     LinkParent(evt = this.parent){
-        if(!evt)    throw(event)
+        if(!evt)    throw(this)
         // this.forget('Parent',evt)
         event = evt
         // update_record()
@@ -110,7 +110,6 @@ class Status_Event {
         let child = new Status_Event(evt)
         this._LinkChild.push(child)
         child.parent = this
-        event = child
         // update_record()
         return child
     }
@@ -118,9 +117,9 @@ class Status_Event {
     LinkAfter(evt){
         // this.forget('After')
         let after = new Status_Event(evt)
+        if(!this._linkAfter)   this._linkAfter = []
         this._linkAfter.push(after)
         after._before = this
-        event = after
         // update_record()
         return after
     }

@@ -153,9 +153,8 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 							return 0;
 						}
 						var es=ui.selected.targets[0].getCards('e');
-						var i;
 						var att2=get.sgn(get.attitude(player,ui.selected.targets[0]));
-						for(i=0;i<es.length;i++){
+						for(let i=0;i<es.length;i++){
 							if(ui.selected.targets[0]==player&&target.isEmpty(get.subtype(es[i]))){
 								var effect = 0;
 								game.filterPlayer(cur => {
@@ -169,9 +168,6 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 								target.isEmpty(get.subtype(es[i]))){
 								return Math.abs(att);
 							}
-						}
-						if(i==es.length){
-							return 0;
 						}
 						return -att*get.attitude(player,ui.selected.targets[0]);
 					});
@@ -203,11 +199,11 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 5'
 					if(event.judgeGroup.length>0){
 						var shanString='<br>';
-						for(var i=0;i<event.judgeGroup.length;i++){
+						for(let i=0;i<event.judgeGroup.length;i++){
 							shanString+=(get.translation(event.judgeGroup[i])+',');
 						}
 						var check = 0;
-						for(var i of event.judgeGroup){
+						for(let i of event.judgeGroup){
 							check+=lib.card.shandian.ai.result.target(player,i)
 						}
 						player.chooseBool('是否对所有闪避者追加闪电判定？'+shanString).set('check',check).ai=function(){
@@ -663,9 +659,6 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 				},
-				check(event,player){
-					return get.attitude(player,event.player)>0
-				},
 				ai:{
 					basic:{
 						order:10
@@ -767,7 +760,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 							if(result.bool){
 								player.logSkill('mark_quanxinquanyi');
 								event.videoId = lib.status.videoId++;
-								var list = event.list;
+								let list = event.list;
 								game.broadcastAll(function(id, list){
 									var dialog=ui.create.dialog('声明一张牌',[list,'vcard']);
 									dialog.videoId = id;
@@ -1444,7 +1437,6 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 						}
 					},
 					use: {
-						popup: false,
 						trigger: {
 							global: 'useCardAfter'
 						},
@@ -1458,7 +1450,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 						content() {
 							'step 0'
 							game.delay(0.5);
-							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target',trigger.player).ai=function(button){
+							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target',trigger.player).ai = button=>{
 								var val = get.buttonValue(button);
 								var player = _status.event.player;
 								var target = _status.event.target;
@@ -1537,9 +1529,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 								return user.canUse(cardName, target)
 									&& target != player
 									&& target != user;
-							}).set('ai', function(target) {
-								return -get.attitude(player, target);
-							});
+							}).set('ai', target => -get.attitude(player, target));
 						}, player, trigger.player, pStr, event.cardName)
 					}
 					else event.finish();
@@ -1587,8 +1577,9 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 							var next=player.chooseButton();
 							next.set('att',att);
 							next.set('createDialog',['是否发动『狂暴双刃』，弃置'+get.translation(trigger.player)+'的一张坐骑牌？',trigger.player.getDiscardableCards(player,'e',{subtype:['equip3','equip4','equip6']})]);
-							next.set('ai',function(button){
-								if(_status.event.att) return get.buttonValue(button);
+							next.set('ai',button => {
+								if (_status.event.att)
+									return get.buttonValue(button);
 								return 0;
 							});
 							"step 1"
@@ -1622,9 +1613,9 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 								if (_status.event.targets.contains(target)) return false;
 								return lib.filter.targetEnabled2(_status.event.card, player, target)
 									&& player.inRange(target);
-							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
+							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',target => {
 								var player = _status.event.player;
-								return get.effect(target,_status.event.card,player,player);
+								return get.effect(target, _status.event.card, player, player);
 							});
 							'step 1'
 							if(result.bool && result.targets.length){
@@ -2050,7 +2041,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 							}).set('shaTarget', player).set('targetRequired',true);
 							//ai
 							var aiChoice = event.jmTarget.hasSha('use')?player:-1;
-							next.set('choice',aiChoice).set('ai2',function(target){return _status.event.choice});
+							next.set('choice',aiChoice).set('ai2',target => _status.event.choice);
 							'step 1'
 							if(event.directfalse||result.bool==false){
 								player.addTempSkill('jiaoming_invalid');
