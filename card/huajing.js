@@ -249,7 +249,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					if(result.control=='弃置装备区所有牌'){
 						target.discard(target.getCards('e'))
 					}else{
-						target.damage(event.baseDamage,'ocean');
+						target.damage(event.baseDamage,'ocean')
 					}
 				},
 				ai:{

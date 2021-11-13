@@ -423,7 +423,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (!evt || !evt.card || evt.skill)
                         return false;
                     var name = get.name(evt.card);
-                    var tri = false;
+                    var tri;
                     if (name == 'sha')
                         tri = evt.getParent('chooseUseTarget');
                     else
@@ -1737,7 +1737,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 dam = true;
                                 game.log(c, '掉落了');
                             }
-                            re = event.B.equip(card);
+                            event.B.equip(card);
                         }
                         else if (get.position(card) == 'j') {
                             var cname = card.viewAs ? card.viewAs : get.name(card);
@@ -4204,7 +4204,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 1';
                     if (result.bool && result.cards) {
                         var att = get.attitude(player, event.target);
-                        var list0 = ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'];
+                        var list0 = lib.phaseName;
                         var list = ['『策竞』：选择一个阶段'];
                         list.push([list0, 'vcard']);
                         list.push('hidden');
@@ -4846,7 +4846,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 return evt.card == event.card;
                             }).length == 0) {
                                 let evt = event.getParent('chooseUseTarget');
-                                return (evt === null || evt === void 0 ? void 0 : evt.logSkill) == 're_huawen_useBy'
+                                return (evt === null || evt === void 0 ? void 0 : evt.logSkill) === 're_huawen_useBy'
                                     & event.cards.filter(card => get.color(card) == 'black' && get.position(card) == 'd').length;
                             }
                         },
@@ -5302,8 +5302,9 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     return false;
                 },
                 content() {
+                    let evt;
                     if (trigger.name == 'wuxie') {
-                        var evt = event.getParent('useCard');
+                        evt = event.getParent('useCard');
                         if (evt.respondTo) {
                             var card = evt.respondTo[1].cards[0];
                             player.gain(card, 'gain2');
@@ -5319,11 +5320,11 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                             }, card);
                     }
                     else if (trigger.name == 'shan') {
-                        var evt = event.getParent('sha');
+                        evt = event.getParent('sha');
                         player.gain(evt.card.cards[0], 'gain2');
                     }
                     else {
-                        var evt = trigger;
+                        evt = trigger;
                         if (evt.respondTo) {
                             var card = evt.respondTo[1].cards[0];
                             player.gain(card, 'gain2');
@@ -5749,7 +5750,6 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         },
                     },
                     gain: {
-                        onremove: true,
                         marktext: "失",
                         locked: true,
                         intro: {
@@ -5764,7 +5764,6 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         },
                     },
                     lose: {
-                        onremove: true,
                         marktext: "失",
                         locked: true,
                         intro: {

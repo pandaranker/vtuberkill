@@ -1217,7 +1217,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 								dam = true;
 								game.log(c, '掉落了');
 							}
-							re = event.B.equip(card);
+							event.B.equip(card);
 						}
 						else {
 							var cname = card.viewAs ? card.viewAs : get.name(card);
@@ -1393,7 +1393,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 								dam = true;
 								game.log(c, '掉落了');
 							}
-							re = event.B.equip(card);
+							event.B.equip(card);
 						}
 						else if(get.position(card)=='j'){
 							var cname = card.viewAs ? card.viewAs : get.name(card);

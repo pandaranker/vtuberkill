@@ -2537,25 +2537,6 @@ globalThis.moduleManager.define(['core/core', 'view/PlayerModel'], function ({ _
                         }
                         page.classList.add('menu-buttons');
                         page.classList.add('leftbutton');
-                        if (!connectMenu) {
-                            if (mode.indexOf('mode_') != 0) {
-                                ui.create.div('.config.pointerspan', '<span>隐藏武将包</span>', page, function () {
-                                    if (this.firstChild.innerHTML == '隐藏武将包') {
-                                        this.firstChild.innerHTML = '武将包将在重启后隐藏';
-                                        lib.config.hiddenCharacterPack.add(mode);
-                                        if (!lib.config.prompt_hidepack) {
-                                            alert('隐藏的扩展包可通过选项-其它-重置隐藏内容恢复');
-                                            game.saveConfig('prompt_hidepack', true);
-                                        }
-                                    }
-                                    else {
-                                        this.firstChild.innerHTML = '隐藏武将包';
-                                        lib.config.hiddenCharacterPack.remove(mode);
-                                    }
-                                    game.saveConfig('hiddenCharacterPack', lib.config.hiddenCharacterPack);
-                                });
-                            }
-                        }
                         return node;
                     };
                     if (lib.config.show_favourite_menu && !connectMenu && Array.isArray(lib.config.favouriteCharacter)) {

@@ -2113,7 +2113,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
             DoumyoujiHaruto: `道明寺晴翔`,
             YuNi: `YuNi`,
             Fairys: `Fairys`,
-            Fairys: `鹦鹉`,
+            Fairys_ab: `鹦鹉`,
         },
     };
 });

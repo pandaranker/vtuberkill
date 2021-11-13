@@ -3,17 +3,27 @@ declare global {
     //模块结构
     type Key = string | Array<any>
     type Keyword = string | Array<string>
+    type AObject = {[propName: string]: Array<string>}
+    type Keymap = {[propName: string]: string | Array<string>}
     type Dialogword = Array<Key>
     type Charaword = Array<>
-    type Skill = {
+	type skillContent = () => void
+	type skillCheck = (event:Status_Event, player?:PlayerModel) => boolean|number
+    interface Skill{
+		audio?: number|boolean
         enable?: Keyword
-        trigger?: Keyword
+        trigger?: Keymap
         usable?: number
         group?: Keyword
-        subSkill?: { [propName: string]: Skill }
+        filter?: skillCheck
+        check?: skillCheck
+        prompt2?: string | skillCheck
+        logTarget?: string | skillCheck
+		content?: skillContent
+        subSkill?: {[propName: string]: Skill}
         [propName: string]: any
     }
-    type Chara = {
+    interface Chara{
         [propName: string]: [string, string, number | string, Array<string>, Array<string>?]
     }
     interface currentObject {
@@ -49,6 +59,7 @@ declare global {
     }
     //扩展的类
     class JSZip {
+        generate(Object): String|Uint8Array|ArrayBuffer|Buffer|Blob
         file(name: string | RegExp, data: String | ArrayBuffer | Uint8Array | Buffer, o?: Object): JSZip | Object | Array
     }
 }

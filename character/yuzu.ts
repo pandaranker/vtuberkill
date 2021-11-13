@@ -1,6 +1,81 @@
 /// <reference path = "../game/built-in.d.ts" />
 globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 
+	type skillType = 'active'|'trigger'|'regard'|'mark'|'rule'	//技能类型：主动、触发、半主动|视为、状态|纯标记、规则相关
+	class toSkill implements Skill{
+		readonly type: skillType
+		audio?: number|boolean
+        enable?: Keyword
+        usable?: number
+        group?: Keyword
+		trigger?: Keymap
+		content?:skillContent
+        subSkill?: {[propName: string]: Skill}
+		set(...arg){
+			for(let i=0; i<arg.length; i++){
+				if(Array.isArray(arg[i]))	this.set(...arg[i])
+				else if(typeof arg[i] === 'string'&&arg[i+1]!==undefined){
+					this[arg[i]] = arg[i+1]
+				}
+			}
+			return this
+		}
+		setT(tri:Keymap|Array<string>|string,method?:Array<string>|string){
+			if(typeof tri === 'string')	tri = [tri]
+			if(tri instanceof Array)	tri = {player:tri}
+			for(let i in tri){
+				if(!Array.isArray(tri[i])){
+					tri[i] = [tri[i] as string]
+				}
+			}
+			if(method instanceof Array){
+				for(let i in tri){
+					let v = tri[i]
+					if(!Array.isArray(v)){
+						tri[i] = [v]
+					}
+					let vb = tri[i]
+					if(vb instanceof Array){
+						tri[i] = vb.map(t => {
+							return method.map(m => t+m)
+						}).flat()
+					}
+				}
+			}else if(typeof method === 'string'){
+				for(let i in tri){
+					let v = tri[i]
+					if(!Array.isArray(v)){
+						tri[i] = [v]
+					}
+					let vb = tri[i]
+					if(vb instanceof Array){
+						tri[i] = vb.map(t => {
+							return t+method
+						})
+					}
+				}
+			}
+			return this.set('trigger',{...this.trigger,...tri})
+		}
+		constructor(type:skillType,obj?:Skill,...arg){
+			this.type = type
+			if(type === 'active'){
+				this.enable='phaseUse'
+			}
+			for(let i in obj){
+				this[i] = obj[i]
+			}
+			for(let i of arg){
+				if(typeof i === 'string'){
+					if(i.split(':').length==2){
+						let v = i.split(':')
+						this[v[0]] = v[1]
+					}
+					this[i] = true
+				}
+			}
+		}
+	}
 	return <currentObject>{
 		name:"yuzu",
 		connect:true,
@@ -17,6 +92,9 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 			// AngeKatrina:['female','nijisanji',3,['shencha','chuangzuo']],
 			/**西西 */
 			//YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
+			
+			//月紫亚里亚
+			TsukushiAria:['female','qun',3,['tatongling','yumeng'],['riV']],
 			
 			/**Melody */
 			Melody: ['female','vshojo',4,['kuangbiao','leizhu','tonggan'],['zhu','yingV']],
@@ -330,6 +408,87 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//月紫亚里亚
+			tatongling:new toSkill('trigger',{
+				intro:{
+					content:'cards',
+					onunmark:'throw',
+				},
+				cardAround:true,
+				init(player,skill){
+					player.storage[skill] ??= [];
+				},
+				check(event,player){
+					if(event.player.isTurnedOver())	return get.attitude(player,event.player)>0
+					return get.attitude(player,event.player)<0
+				},
+				content(){
+					'step 0'
+					event.target = trigger.player
+					let check = !event.target.isTurnedOver()&&(get.attitude(event.target,player)>=0||event.target.needsToDiscard())
+					event.target.chooseCard().set('ai',function(card){
+						if(!_status.event.check)	return 0;
+						return get.unuseful3(card)
+					}).set('check',check).set('prompt',`『彤灵』：将一张牌置于${get.translation(player)}武将牌上，否则翻面并回复一点体力`);
+					'step 1'
+					if(result.cards?.length){
+						event.target.$give(result.cards,player)
+						event.target.lose(result.cards,ui.special,'toStorage')
+						player.markAuto('tatongling',result.cards)
+					}else{
+						event.target.turnOver();
+						event.target.recover()
+					}
+
+				},
+			},'logTarget:player').setT({global:'loseHpAfter',source:'damageAfter'}).set(['group','tatongling_gainBy'],['subSkill',{
+				gainBy:new toSkill('trigger',{
+					content(){
+						let cards = player.getStorage('tatongling')
+						player.gain(cards)
+						player.$give(cards,player,false)
+						player.unmarkAuto('tatongling',cards)
+					},
+				},'direct').setT(lib.phaseName,'Skipped'),
+				used:new toSkill('rule'),
+			}]),
+			yumeng:new toSkill('trigger',{
+				content(){
+					"step 0"
+					var check= player.countCards('h')>2;
+					player.chooseTarget(get.prompt2(`yumeng`),function(card,player,target){
+						if(player==target) return false;
+						return true;
+					}).set('check',check).set('ai',function(target){
+						if(!_status.event.check) return 0;
+						return get.attitude(_status.event.player,target);
+					});
+					"step 1"
+					if(result.bool){
+						player.logSkill('yumeng',result.targets);
+						event.target = result.targets[0]
+						event.target.storage.yumeng2 = player
+						event.target.addTempSkill('yumeng2','none')
+						trigger.cancel();
+						player.skip('phaseDraw');
+					}
+				},
+			},'direct').setT('phaseJudgeBefore').set(['group','yumeng_clear'],['subSkill',{
+				clear:new toSkill('trigger',{
+					prompt2:`sss`,
+					content(){
+						game.filterPlayer(cur => {
+							if(cur.storage.yumeng2 != player)	cur.removeSkill('yumeng2')
+						})
+					},
+				},'direct').setT('phaseBegin')
+			}]),
+			yumeng2:new toSkill('trigger',{
+				content(){
+					trigger.cancel();
+					trigger.player.loseHp(trigger.num);
+				}
+			},'forced','mark:character','onremove').setT('damageBefore').set(['intro',{content:'受到的伤害改为体力流失'}]),
 			//雪团
 			chentu:{
 				enable:'phaseUse',
@@ -1496,14 +1655,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 				intro:{
 					name:'好汉歌',
 					content:'cards',
-					onunmark(storage,player){
-						if(storage&&storage.length){
-							player.$throw(storage,1000);
-							game.cardsDiscard(storage);
-							game.log(storage,'被置入了弃牌堆');
-							storage.length=0;
-						}
-					},
+					onunmark:'throw',
 				},
 				cardAround:true,
 				trigger:{global:'drawEnd'},
@@ -16204,6 +16356,16 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 			wuxia_yuanyao_append:lib.figurer(`特性：制衡`),
 
 /**------------------------------------------------------------------------------------------------------- */
+						
+			TsukushiAria: `月紫亚里亚`,
+			tatongling: `彤灵`,
+			tatongling_info: `一名角色体力流失或受到来源为你的伤害后，你可令其选择一项：
+			将一张手牌置于你的武将牌上；翻面并回复一点体力，令你的『彤灵』失效直到回合结束。<br>
+			当你的阶段被跳过时，你获得武将牌上的牌。`,
+			tatongling_append:lib.figurer(`特性：压制`),
+			yumeng: `预梦`,
+			yumeng2: `预梦`,
+			yumeng_info: `你可以跳过判定阶段与摸牌阶段，指定一名其他角色，其受到的伤害改为体力流失，直到你的下个回合开始。`,
 
 			TEST: `测试员`,
 			Ruki: `琉绮Ruki`,
@@ -16707,13 +16869,14 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 			shengya_append:lib.figurer(`特性：易上手`),
 			liangshan: `汉歌`,
 			liangshan_info: `其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。`,
+			liangshan_append:lib.figurer(`特性：辅助`),
 			chongshi: `铳士`,
 			chongshi_info: `你使用【杀】指定目标后，可与其各摸一张牌。`,
 		
 			MorinagaMiu: `森永缪`,
 			guanzhai: `观宅`,
 			guanzhai_info: `其他角色的回合结束时，若其本回合使用的牌少于（2）张，你可观看其手牌并获得其中（1）张。`,
-			guanzhai_append:lib.figurer(`特性：易上手`),
+			guanzhai_append:lib.figurer(`特性：易上手 压制`),
 			zhishu: `直抒`,
 			zhishu_info: `出牌阶段开始或你的体力改变时，你可以展示一张手牌，令一名其他角色选择一项：<br>交给你一张同花色的牌；令你与其下个回合内『观宅』的（）值+1。`,
 		

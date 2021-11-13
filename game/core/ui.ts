@@ -2550,25 +2550,25 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                         }
                         page.classList.add('menu-buttons');
                         page.classList.add('leftbutton');
-                        if (!connectMenu) {
-                            if (mode.indexOf('mode_') != 0) {
-                                ui.create.div('.config.pointerspan', '<span>隐藏武将包</span>', page, function () {
-                                    if (this.firstChild.innerHTML == '隐藏武将包') {
-                                        this.firstChild.innerHTML = '武将包将在重启后隐藏';
-                                        lib.config.hiddenCharacterPack.add(mode);
-                                        if (!lib.config.prompt_hidepack) {
-                                            alert('隐藏的扩展包可通过选项-其它-重置隐藏内容恢复');
-                                            game.saveConfig('prompt_hidepack', true);
-                                        }
-                                    }
-                                    else {
-                                        this.firstChild.innerHTML = '隐藏武将包';
-                                        lib.config.hiddenCharacterPack.remove(mode);
-                                    }
-                                    game.saveConfig('hiddenCharacterPack', lib.config.hiddenCharacterPack);
-                                });
-                            }
-                        }
+                        // if (!connectMenu) {
+                        //     if (mode.indexOf('mode_') != 0) {
+                        //         ui.create.div('.config.pointerspan', '<span>隐藏武将包</span>', page, function () {
+                        //             if (this.firstChild.innerHTML == '隐藏武将包') {
+                        //                 this.firstChild.innerHTML = '武将包将在重启后隐藏';
+                        //                 lib.config.hiddenCharacterPack.add(mode);
+                        //                 if (!lib.config.prompt_hidepack) {
+                        //                     alert('隐藏的扩展包可通过选项-其它-重置隐藏内容恢复');
+                        //                     game.saveConfig('prompt_hidepack', true);
+                        //                 }
+                        //             }
+                        //             else {
+                        //                 this.firstChild.innerHTML = '隐藏武将包';
+                        //                 lib.config.hiddenCharacterPack.remove(mode);
+                        //             }
+                        //             game.saveConfig('hiddenCharacterPack', lib.config.hiddenCharacterPack);
+                        //         });
+                        //     }
+                        // }
                         return node;
                     };
                     if (lib.config.show_favourite_menu && !connectMenu && Array.isArray(lib.config.favouriteCharacter)) {
@@ -8258,6 +8258,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
                 else controls = arguments;
                 var control = ui.create.div('.control');
                 ui.control.insertBefore(control, _status.createControl || ui.confirm);
+                // control = new ControlButton()
                 for (i in lib.element.control) {
                     control[i] = lib.element.control[i];
                 }
@@ -13566,7 +13567,7 @@ globalThis.moduleManager.define(['core/core','view/PlayerModel'], function ({_st
             var length = 0;
             var controls = [];
             var widths = [];
-            var add = function (node, first) {
+            var add = function (node, first?) {
                 var thiswidth = parseInt(node.style.width);
                 if (thiswidth) {
                     thiswidth += 8;

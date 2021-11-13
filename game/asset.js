@@ -1390,6 +1390,7 @@ window.noname_asset_list=[
 	'image/character/TenkaiTsukasa.jpg',
 	'image/character/tianxixi.jpg',
 	'image/character/TokinoSora.jpg',
+	'image/character/TsukushiAria.jpg',
 	'image/character/UmoriHinako.jpg',
 	'image/character/Umy.jpg',
 	'image/character/UsadaPekora.jpg',

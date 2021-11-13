@@ -1,6 +1,7 @@
 /// <reference path = "../game/built-in.d.ts" />
 globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
-	return {
+
+	return <currentObject>{
 		name:'vtuber',
 		connect:true,
 		character:{
@@ -2119,7 +2120,7 @@ globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
 			DoumyoujiHaruto: `道明寺晴翔`,
 			YuNi: `YuNi`,
 			Fairys: `Fairys`,
-			Fairys: `鹦鹉`,
+			Fairys_ab: `鹦鹉`,
 		},
 	};
 });
