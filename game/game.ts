@@ -1,29 +1,22 @@
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./core/core"], factory);
-    }
-})(function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    //Load moduleManager.
-    const core_1 = require("./core/core");
-    globalThis.game = core_1.game;
-    globalThis.event = core_1._status.event;
-    globalThis.player = core_1._status.event.player;
-    globalThis._context = core_1._status;
-    core_1.lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">';
-    core_1.lib.figurer = (text) => ` ${core_1.lib.figure}${text}</span> `;
-    core_1.lib.spanClass = (str, classes) => {
-        return `<span class="${classes}">${str}</span>`;
-    };
-    core_1.game.galgameMod();
-    core_1.lib.init.init();
-    console.log('Game initialized.');
-});
+"use strict";
+
+//Load moduleManager.
+import {_status, game, lib} from './core/core';
+(globalThis as any).game = game;
+(globalThis as any).event = _status.event;
+(globalThis as any).player = _status.event.player;
+(globalThis as any)._context = _status;
+lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">';
+lib.figurer = (text: string) => ` ${lib.figure}${text}</span> `;
+lib.spanClass = (str:string,classes:string)=>{
+    return `<span class="${classes}">${str}</span>`;
+}
+
+game.galgameMod();
+lib.init.init();
+console.log('Game initialized.');
+
+
 /**
  * Build-in Array
  * @name Array
@@ -36,7 +29,7 @@
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error Error}
  */
 /**
- *
+ * 
  * @name HTMLDivElement
  * @class
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLDivElement HTMLDivElement}
@@ -63,6 +56,7 @@
  * @event KeyboardEvent
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent KeyboardEvent}
  */
+
 /** 访问本地存储数据，如果是网页端或禁止使用indexedDB的情况下，部分数据会以`lib.configprefix + name`的形式存入localStorage
  * ##### 键值表
  * |Key Name|Constant|Nullable|Desciption|
@@ -74,6 +68,7 @@
  * @name localStorage
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage localStorage}
  */
+
 /**
  * 游戏核心组件
  * @namespace GameCores
@@ -97,7 +92,7 @@
  * **Support**: 当前版本是否支持
  * **Custom Config**: 是否可由用户自定义
  * @name GameConfig
- *
+ * 
  */
 /**
  * 游戏牌区域
@@ -142,9 +137,9 @@
  * @param {?Object} result 子事件的返回结果，等同于`event._result`
  * @param {!_status} _status 全局变量
  * @param {!lib} lib
- * @param {!game} game
+ * @param {!game} game 
  * @param {!ui} ui
  * @param {!get} get
  * @param {!ai} ai
  * @this GameCores.Bases.Event
- */ 
+ */

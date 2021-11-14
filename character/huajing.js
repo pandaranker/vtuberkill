@@ -1,20 +1,33 @@
+/// <reference path = "../game/built-in.d.ts" />
 'use strict';
 globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'huajing',
         connect: true,
         character: {
+            /**长尾景 */
             NagaoKei: ['male', 'nijisanji', 3, ['nkfumo', 'chidu']],
+            /**白神遥 */
             ShirakamiHaruka: ['female', 'psp', 3, ['baoxiao', 'quru'], ['guoV']],
+            /**海狗 */
             KisaragiKoyori: ['female', 'kagura', 3, ['shinve', 'juzu']],
+            /**鲨皇 */
             GawrGura: ['female', 'holo', 3, ['lingqun', 'yangliu'], ['yingV']],
+            /**Ina */
             NinomaeInanis: ['female', 'holo', 3, ['mochu', 'fuyue'], ['yingV']],
+            /**娜娜米 */
             Nana7mi: ['female', 'VirtuaReal', 4, ['xieqi', 'youhai'], ['guoV']],
+            /**海星宫汐 */
             sea_HosimiyaSio: ['female', 'qun', 5, ['zhuhan', 'pobing'],],
+            /**海熊猫 */
             sea_SasakiSaku: ['female', 'nijisanji', 4, ['haishou', 'lishi']],
+            /**潜水夸 */
             sea_MinatoAqua: ['female', 'holo', 3, ['jinchen', 'qianyong']],
+            /**海向晚 */
             sea_Ava: ['female', 'asoul', 3, ['zhuiguang', 'ronglei'], ['guoV']],
+            /**皇团 */
             sp_HisekiErio: ['female', 'shen', '1/6', ['qiming', 'shengbian', 'tulong']],
+            /**鲨皇 */
             sp_GawrGura: ['female', 'shen', 3, ['sp_guaisheng', 'sp_guiliu'], ['yingV']],
         },
         characterSort: {
@@ -306,6 +319,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                 },
                 content() {
                     player.gainMaxHp();
+                    // if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
                     player.drawTo(player.maxHp);
                     player.storage.juzu = true;
                     player.awakenSkill('juzu');
@@ -338,6 +352,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 }
             },
+            //HOLOEN
             lingqun: {
                 trigger: { player: 'phaseDiscardEnd' },
                 frequent: true,
@@ -490,6 +505,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player: 1,
                 }
             },
+            //VR
             xieqi: {
                 auido: 2,
                 hiddenCard(player, name) {
@@ -518,17 +534,21 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         return get.number(i);
                     });
                     function getNumbers(source, count, isPermutation = true) {
+                        //如果只取一位，返回数组中的所有项，例如 [ [1], [2], [3] ]
                         let currentList = source.map((item) => [item]);
                         if (count === 1) {
                             return currentList;
                         }
                         let result = [];
+                        //取出第一项后，再取出后面count - 1 项的排列组合，并把第一项的所有可能（currentList）和 后面count-1项所有可能交叉组合
                         for (let i = 0; i < currentList.length; i++) {
                             let current = currentList[i];
+                            //如果是排列的方式，在取count-1时，源数组中排除当前项
                             let children = [];
                             if (isPermutation) {
                                 children = getNumbers(source.filter(item => item !== current[0]), count - 1, isPermutation);
                             }
+                            //如果是组合的方法，在取count-1时，源数组只使用当前项之后的
                             else {
                                 children = getNumbers(source.slice(i + 1), count - 1, isPermutation);
                             }
@@ -603,6 +623,9 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                     return [ui.selected.cards.length, ui.selected.cards.length + 1];
                                 return ui.selected.cards.length + 2;
                             },
+                            // forceAuto(){
+                            // 	return ui.selected.buttons.length==1;
+                            // },
                             popname: true,
                             check(card) {
                                 return 7 - get.value(card);
@@ -683,6 +706,8 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     gainHujia: true
                 }
             },
+            //特典角色
+            //海企鹅
             zhuhan: {
                 trigger: { player: 'changeHujiaBegin' },
                 filter(event, player) {
@@ -719,6 +744,9 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     var _a;
                     return player.hujia > ((_a = event.player) === null || _a === void 0 ? void 0 : _a.hujia);
                 },
+                // check(event,player){
+                // 	return event.player.hp>player.hp&&get.attitude(player,event.player)<0;
+                // },
                 forced: true,
                 logTarget: 'player',
                 content() {
@@ -736,6 +764,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     num > 0 && (trigger.num += num);
                 },
             },
+            //海熊猫
             haishou: {
                 audio: 3,
                 enable: 'chooseToUse',
@@ -789,6 +818,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.draw();
                 }
             },
+            //海夸
             jinchen: {
                 audio: 2,
                 trigger: { player: 'phaseUseEnd' },
@@ -865,6 +895,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     draw: { audio: 2 }
                 },
             },
+            //海向晚
             zhuiguang: {
                 enable: 'phaseUse',
                 usable: 1,
@@ -967,6 +998,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
+            //SP团长
             qiming: {
                 audio: 5,
                 global: 'qiming_viewH',
@@ -1114,12 +1146,14 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
+            //SP鲨皇
             sp_guaisheng: {
                 audio: 5,
                 trigger: { global: 'damageBegin1' },
                 priority: -10,
                 init(player) {
                     player.storage.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
+                    //player.storage.guaishengMap={1:false,2:false,3:false,12:false,13:false,23:false,123:false};
                 },
                 onremove(player) {
                     delete player.storage.sp_guaisheng;
@@ -1146,6 +1180,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                             event.list[i] = '';
                         }
                     }
+                    //if(trigger.source==undefined) event.list['two']='';
                     var list = [];
                     for (var i in event.list) {
                         if (event.list[i] != '')
@@ -1170,9 +1205,11 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         switch (result.control) {
                             case '选项一': {
                                 player.storage.sp_guaisheng['one'] = true;
+                                // event.one=true;				   
                                 break;
                             }
                             case '选项二': {
+                                // event.two=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1181,6 +1218,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项三': {
+                                // event.three=true;
                                 trigger.nature = 'ice';
                                 player.logSkill('sp_guaisheng');
                                 player.storage.sp_guaisheng['three'] = true;
@@ -1188,6 +1226,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项四': {
+                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1195,11 +1234,13 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项五': {
+                                //event.three=true;
                                 trigger.nature = 'ice';
                                 player.storage.sp_guaisheng['five'] = true;
                                 break;
                             }
                             case '选项六': {
+                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1209,6 +1250,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项七': {
+                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1319,6 +1361,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                         event.cards.push(card);
                     }
+                    //if(event.num>=0) event.goto(1);
                     'step 4';
                     event.cards.randomSort();
                     for (var i = 0; i < event.cards.length; i++) {

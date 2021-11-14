@@ -70,6 +70,10 @@ window.noname_source_list=[
 	'game/update.js',
 	'game/module.js',
     
+    'game/base/Status_Event.js',
+    'game/content/content.js',
+    'game/skill/skill.js',
+    'game/core/_context.js',
     'game/core/core.js',
 	'game/core/_status.js',
 	'game/core/ai.js',
@@ -77,8 +81,8 @@ window.noname_source_list=[
 	'game/core/get.js',
 	'game/core/lib.js',
     'game/core/ui.js',
-	'game/view/HTMLDivElementProxy.js',
-	'game/view/PlayerModel.js',
+	'game/core/view/HTMLDivElementProxy.js',
+	'game/core/view/PlayerModel.js',
 	
 	'layout/default/codemirror.css',
 	'layout/default/layout.css',

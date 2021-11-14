@@ -50,13 +50,13 @@ declare global {
     }
     var event:Status_Event
     //原生游戏核心类
-    class Status_Event {
-        LinkParent(event: Object): Status_Event
-        LinkChild(event: Object): Status_Event
-        LinkAfter(event: Object): Status_Event
-        [propName: string]: any
-        constructor(event: Object)
-    }
+    // class Status_Event {
+    //     LinkParent(event: Object): Status_Event
+    //     LinkChild(event: Object): Status_Event
+    //     LinkAfter(event: Object): Status_Event
+    //     [propName: string]: any
+    //     constructor(event: Object)
+    // }
     //扩展的类
     class JSZip {
         generate(Object): String|Uint8Array|ArrayBuffer|Buffer|Blob

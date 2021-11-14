@@ -1,5 +1,8 @@
 declare global {
     interface HTMLDivElement {
+        _onEndDelete: boolean | undefined;
+        _listeningEnd:boolean | undefined;
+        _transitionEnded: boolean | undefined;
         /**
          * 本元素播放动画
          * @function HTMLDivElement#animate
@@ -43,7 +46,7 @@ declare global {
          * @param {HTMLDivElement~deleteCallback} callback - 移除后回调函数
          * @returns {HTMLDivElement} this self
          */
-        delete(time: number, callback?: () => void): HTMLDivElement;
+        delete(time?: number, callback?: () => void): HTMLDivElement;
         /**
          * 移动本元素(牌)
          * @function HTMLDivElement#goto

@@ -1931,10 +1931,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 
 					for(var i=0;i<game.players.length;i++){
-						game.players[i].send(function(zhu,zhuid,me,identity){
-							for(var i in lib.playerOL){
-								lib.playerOL[i].setIdentity('cai');
-								lib.playerOL[i].node.identity.classList.add('guessing');
+						game.players[i].send(function(zhu,zhuid,me,identity, players){
+							for(const player of players){
+								player.setIdentity('cai');
+								player.node.identity.classList.add('guessing');
 							}
 							zhu.identityShown=true;
 							zhu.identity=zhuid;
@@ -1945,7 +1945,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(me.special_identity){
 								me.node.identity.firstChild.innerHTML=get.translation(me.special_identity+'_bg');
 							}
-						},game.zhu,game.zhu.identity,game.players[i],game.players[i].identity);
+						},game.zhu,game.zhu.identity,game.players[i],game.players[i].identity, game.players);
 					}
 					"step 1"
 					event.videoId=lib.status.videoId++;
@@ -2114,10 +2114,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 
 					for(var i=0;i<game.players.length;i++){
-						game.players[i].send(function(zhu,zhuid,me,identity){
-							for(var i in lib.playerOL){
-								lib.playerOL[i].setIdentity('cai');
-								lib.playerOL[i].node.identity.classList.add('guessing');
+						game.players[i].send(function(zhu,zhuid,me,identity, players){
+							for(const player of players){
+								player.setIdentity('cai');
+								player.node.identity.classList.add('guessing');
 							}
 							zhu.identityShown=true;
 							zhu.identity=zhuid;
@@ -2129,7 +2129,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								me.node.identity.firstChild.innerHTML=get.translation(me.special_identity+'_bg');
 							}
 							ui.arena.classList.add('choose-character');
-						},game.zhu,game.zhu.identity,game.players[i],game.players[i].identity);
+						},game.zhu,game.zhu.identity,game.players[i],game.players[i].identity, game.players);
 					}
 
 					var list;

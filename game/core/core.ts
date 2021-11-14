@@ -2,13 +2,19 @@
  * 游戏内核模块
  * @module core
  */
-globalThis.moduleManager.define([], function(){
-    return /**@lends module:core */ {
-        _status:{},
-        lib:{},
-        game: {},
-        ui: {},
-        get: {},
-        ai: {}
-    };
-});
+ import _status from './_status';
+ import lib from './lib';
+ import game from './game';
+ import ui from './ui';
+ import get from './get';
+ import ai from './ai';
+ import { mixin } from './_context';
+ export {
+     _status,
+     lib,
+     game,
+     ui,
+     get,
+     ai,
+     mixin
+ }

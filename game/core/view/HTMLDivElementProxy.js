@@ -1,19 +1,28 @@
-moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) {
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "../_context"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const _context_1 = require("../_context");
     /**
      * HTMLDivElementProxy代理类
-     * @class HTMLDivElementProxyProxy
+     * @class HTMLDivElementProxy
      * @global
      */
-    class HTMLDivElementProxyProxy {
-        get element() {
-            return this._element;
-        }
-        
+    class HTMLDivElementProxy {
         constructor(element) {
             this._element = element;
         }
+        get element() {
+            return this._element;
+        }
         //vtuberkill part
-
         /**
          * 本元素播放动画
          * @function animate
@@ -21,10 +30,10 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @param {number} [time=1000] - 动画持续时间（ms）
          * @returns {HTMLDivElementProxy} this self
          */
-        animate(name, time) {
+        animate(name, time = 1000) {
             var that;
-            if (get.is.mobileMe(this) && name == 'target') {
-                that = ui.mebg;
+            if (_context_1.get.is.mobileMe(this) && name == 'target') {
+                that = _context_1.ui.mebg;
             }
             else {
                 that = this;
@@ -34,7 +43,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 that.classList.remove(name);
             }, time || 1000);
             return this;
-        };
+        }
+        ;
         /**
          * 隐藏本元素及其子元素
          * @function hide
@@ -50,7 +60,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @returns {HTMLDivElementProxy} this self
          */
         unfocus() {
-            if (lib.config.transparent_dialog) this.classList.add('transparent');
+            if (_context_1.lib.config.transparent_dialog)
+                this.classList.add('transparent');
             return this;
         }
         /**
@@ -88,7 +99,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 delete this.timeout;
             }
             if (!this._listeningEnd || this._transitionEnded) {
-                if (typeof time != 'number') time = 500;
+                if (typeof time != 'number')
+                    time = 500;
                 this.classList.add('removing');
                 var that = this;
                 this.timeout = setTimeout(function () {
@@ -116,10 +128,9 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 clearTimeout(this.timeout);
                 delete this.timeout;
             }
-
-            if (typeof time != 'number') time = 500;
+            if (typeof time != 'number')
+                time = 500;
             this.classList.add('removing');
-
             var that = this;
             this.timeout = setTimeout(function () {
                 if (!that.destroyed) {
@@ -154,27 +165,29 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @returns {?HTMLDivElementProxy} this self
          */
         setBackground(name, type, ext, subfolder) {
-            if (!name) return;
+            if (!name)
+                return;
             var src;
             if (ext == 'noskin') {
                 ext = '.jpg';
             }
             ext = ext || '.jpg';
-            subfolder = subfolder || 'default'
+            subfolder = subfolder || 'default';
             if (type) {
                 var dbimage = null, extimage = null, modeimage = null;
                 var nameinfo;
                 var gzbool = false;
-                var mode = get.mode();
+                var mode = _context_1.get.mode();
                 if (type == 'character') {
-                    if (lib.characterPack['mode_' + mode] && lib.characterPack['mode_' + mode][name]) {
+                    if (_context_1.lib.characterPack['mode_' + mode] && _context_1.lib.characterPack['mode_' + mode][name]) {
                         if (mode == 'guozhan') {
-                            nameinfo = lib.character[name];
+                            nameinfo = _context_1.lib.character[name];
                             if (name.indexOf('gz_shibing') == 0) {
                                 name = name.slice(3, 11);
                             }
                             else {
-                                if (lib.config.mode_config.guozhan.guozhanSkin && lib.character[name] && lib.character[name][4].contains('gzskin')) gzbool = true;
+                                if (_context_1.lib.config.mode_config.guozhan.guozhanSkin && _context_1.lib.character[name] && _context_1.lib.character[name][4].contains('gzskin'))
+                                    gzbool = true;
                                 name = name.slice(3);
                             }
                         }
@@ -182,8 +195,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                             modeimage = mode;
                         }
                     }
-                    else if (lib.character[name]) {
-                        nameinfo = lib.character[name];
+                    else if (_context_1.lib.character[name]) {
+                        nameinfo = _context_1.lib.character[name];
                     }
                     else if (name.indexOf('::') != -1) {
                         name = name.split('::');
@@ -194,16 +207,20 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 if (!modeimage && nameinfo && nameinfo[4]) {
                     for (var i = 0; i < nameinfo[4].length; i++) {
                         if (nameinfo[4][i].indexOf('ext:') == 0) {
-                            extimage = nameinfo[4][i]; break;
+                            extimage = nameinfo[4][i];
+                            break;
                         }
                         else if (nameinfo[4][i].indexOf('db:') == 0) {
-                            dbimage = nameinfo[4][i]; break;
+                            dbimage = nameinfo[4][i];
+                            break;
                         }
                         else if (nameinfo[4][i].indexOf('mode:') == 0) {
-                            modeimage = nameinfo[4][i].slice(5); break;
+                            modeimage = nameinfo[4][i].slice(5);
+                            break;
                         }
                         else if (nameinfo[4][i].indexOf('character:') == 0) {
-                            name = nameinfo[4][i].slice(10); break;
+                            name = nameinfo[4][i].slice(10);
+                            break;
                         }
                     }
                 }
@@ -217,8 +234,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 else if (modeimage) {
                     src = 'image/mode/' + modeimage + '/character/' + name + ext;
                 }
-                else if (type == 'character' && lib.config.skin[name] && arguments[2] != 'noskin') {
-                    src = 'image/skin/' + name + '/' + lib.config.skin[name] + ext;
+                else if (type == 'character' && _context_1.lib.config.skin[name] && arguments[2] != 'noskin') {
+                    src = 'image/skin/' + name + '/' + _context_1.lib.config.skin[name] + ext;
                 }
                 else {
                     if (type == 'character') {
@@ -243,7 +260,7 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          */
         setBackgroundDB(img) {
             var node = this;
-            game.getDB('image', img, function (src) {
+            _context_1.game.getDB('image', img, function (src) {
                 node.style.backgroundImage = "url('" + src + "')";
                 node.style.backgroundSize = "cover";
             });
@@ -254,7 +271,7 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
          */
         setBackgroundImage(img) {
-            this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
+            this.style.backgroundImage = 'url("' + _context_1.lib.assetURL + img + '")';
         }
         /**
          * {@link listen|listen}（click）的回调函数
@@ -268,20 +285,20 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @returns {HTMLDivElementProxy} this self
          */
         listen(func) {
-            if (lib.config.touchscreen) {
+            if (_context_1.lib.config.touchscreen) {
                 this.addEventListener('touchend', function (e) {
-                    if (!_status.dragged) {
+                    if (!_context_1._status.dragged) {
                         func.call(this, e);
                     }
                 });
                 var fallback = function (e) {
-                    if (!_status.touchconfirmed) {
+                    if (!_context_1._status.touchconfirmed) {
                         func.call(this, e);
                     }
                     else {
                         this.removeEventListener('click', fallback);
                     }
-                }
+                };
                 this.addEventListener('click', fallback);
             }
             else {
@@ -298,7 +315,7 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
          * @function listenTransition
          * @param {listenTransition~callback} func - 回调函数
          * @param {number} [time=1000] - 延迟时间
-         * @returns {!number} timeoutID 
+         * @returns {!number} timeoutID
          */
         listenTransition(func, time) {
             var that = this;
@@ -340,7 +357,8 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             var position;
             if (arguments.length == 4) {
                 position = [];
-                for (var i = 0; i < arguments.length; i++) position.push(arguments[i]);
+                for (var i = 0; i < arguments.length; i++)
+                    position.push(arguments[i]);
             }
             else if (arguments.length == 1 && Array.isArray(arguments[0]) && arguments[0].length == 4) {
                 position = arguments[0];
@@ -349,11 +367,15 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
                 return this;
             }
             var top = 'calc(' + position[0] + '% ';
-            if (position[1] > 0) top += '+ ' + position[1] + 'px)';
-            else top += '- ' + Math.abs(position[1]) + 'px)';
+            if (position[1] > 0)
+                top += '+ ' + position[1] + 'px)';
+            else
+                top += '- ' + Math.abs(position[1]) + 'px)';
             var left = 'calc(' + position[2] + '% ';
-            if (position[3] > 0) left += '+ ' + position[3] + 'px)';
-            else left += '- ' + Math.abs(position[3]) + 'px)';
+            if (position[3] > 0)
+                left += '+ ' + position[3] + 'px)';
+            else
+                left += '- ' + Math.abs(position[3]) + 'px)';
             this.style.top = top;
             this.style.left = left;
             return this;
@@ -377,10 +399,7 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             }
             return this;
         }
-
-
         //Node part
-
         appendChild() {
             return this._element.appendChild(...arguments);
         }
@@ -429,7 +448,6 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
         // contains(){
         //     return this._element.contains(...arguments);
         // }
-
         get baseURI() {
             return this._element.baseURI;
         }
@@ -479,7 +497,6 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             this._element.textContent = arg;
         }
         //Element part
-
         addEventListener() {
             this._element.addEventListener(...arguments);
         }
@@ -760,7 +777,6 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             return this._element.tagName;
         }
         //HTMLElement part
-
         attachInternals() {
             return this._element.attachInternals(...arguments);
         }
@@ -933,7 +949,6 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             this._element.translate = arg;
         }
         //HTMLDivElementProxy part
-
         get align() {
             return this._element.align;
         }
@@ -941,5 +956,5 @@ moduleManager.define(['core/core'], function({_status, lib, game, ui, get, ai}) 
             this._element.align = arg;
         }
     }
-    return HTMLDivElementProxyProxy;
-})
+    exports.default = HTMLDivElementProxy;
+});
