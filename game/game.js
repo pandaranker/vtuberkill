@@ -1,5 +1,5 @@
 var exports;
-if(!exports && module && module.exports) exports = module.exports;
+if(!exports && typeof module === 'object' && typeof module.exports === 'object') exports = module.exports;
 if(typeof module === "object" && typeof module.exports === "object") require.main.filename =  __dirname + '\\game\\game.js';
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -14,10 +14,10 @@ if(typeof module === "object" && typeof module.exports === "object") require.mai
     Object.defineProperty(exports, "__esModule", { value: true });
     //Load moduleManager.
     const core_1 = require("./core/core");
-    globalThis.game = core_1.game;
-    globalThis.event = core_1._status.event;
-    globalThis.player = core_1._status.event.player;
-    globalThis._context = core_1._status;
+    window.game = core_1.game;
+    window.event = core_1._status.event;
+    window.player = core_1._status.event.player;
+    window._context = core_1._status;
     core_1.lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">';
     core_1.lib.figurer = (text) => ` ${core_1.lib.figure}${text}</span> `;
     core_1.lib.spanClass = (str, classes) => {

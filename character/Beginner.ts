@@ -1,5 +1,5 @@
 /// <reference path = "../game/built-in.d.ts" />
-(globalThis as any).game.import('character',function(lib:lib_type,game:Record<string, any>,ui:Record<string, any>,get:Record<string,any>,ai:Record<string, any>,_status:_status_type){
+(window as any).game.import('character',function(lib:lib_type,game:Record<string, any>,ui:Record<string, any>,get:Record<string,any>,ai:Record<string, any>,_status:_status_type){
 	return {
 		name:'Beginner',
 		connect:true,

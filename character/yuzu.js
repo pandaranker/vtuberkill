@@ -1,6 +1,6 @@
 "use strict";
 /// <reference path = "../game/built-in.d.ts" />
-globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
+window.game.import('character', function (lib, game, ui, get, ai, _status) {
     class toSkill {
         constructor(type, obj, ...arg) {
             this.type = type;

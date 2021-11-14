@@ -294,12 +294,12 @@ mixin(game, /**@lends module:core.game */ {
                     }
                     function skip0(e) {
                         if (e.ctrlKey) {
-                            globalThis.status = 'skip';
+                            window.status = 'skip';
                         }
                     }
                     function skip1(e) {
                         if (e.keyCode=='17') {
-                            globalThis.status = '';
+                            window.status = '';
                         }
                     }
                     var skipfun0 = function(e){
@@ -325,9 +325,9 @@ mixin(game, /**@lends module:core.game */ {
                         txt.innerHTML = str;
                         i++;
                         if (i <= link.length) {
-                            globalThis.addEventListener('keydown',skipfun0);
-                            globalThis.addEventListener('keyup',skipfun1);
-                            if (globalThis.status == 'skip') {
+                            window.addEventListener('keydown',skipfun0);
+                            window.addEventListener('keyup',skipfun1);
+                            if (window.status == 'skip') {
                                 setTimeout(show, 200);
                             }
                             else {
@@ -339,11 +339,11 @@ mixin(game, /**@lends module:core.game */ {
                             }
                         } else {
                             if (num < galgame.text[event.shijian].length) {
-                                if (globalThis.status == 'skip') {
+                                if (window.status == 'skip') {
                                     i = 0;
                                     galgame.audio.pause();
                                     bofang();
-                                    globalThis.status = '';
+                                    window.status = '';
                                 }
                                 drive.onclick = function () {
                                     this.onclick = false;
@@ -352,13 +352,13 @@ mixin(game, /**@lends module:core.game */ {
                                     bofang();
                                 }
                             } else {
-                                globalThis.removeEventListener('keydown',skipfun0);
-                                globalThis.removeEventListener('keyup',skipfun1);
-                                if (globalThis.status == 'skip') {
+                                window.removeEventListener('keydown',skipfun0);
+                                window.removeEventListener('keyup',skipfun1);
+                                if (window.status == 'skip') {
                                     ui.backgroundMusic.play();
                                     ui.window.removeChild(beijing);
                                     galgame.end();
-                                    globalThis.status = '';
+                                    window.status = '';
                                 }
                                 drive.onclick = function () {
                                     ui.backgroundMusic.play();
@@ -643,7 +643,7 @@ mixin(game, /**@lends module:core.game */ {
             ui.arena.classList.add('playerhidden');
         }
         game.prepareArena();
-        if (globalThis.isNonameServer) {
+        if (window.isNonameServer) {
             game.me = ui.create.player();
         }
         var list = [];
@@ -662,7 +662,7 @@ mixin(game, /**@lends module:core.game */ {
             current.nickname = current.ws.nickname;
             current.setNickname();
         }
-        if (!globalThis.isNonameServer) {
+        if (!window.isNonameServer) {
             game.me.playerid = get.id();
             game.me.nickname = get.connectNickname();
             game.me.setNickname();
@@ -1345,8 +1345,8 @@ mixin(game, /**@lends module:core.game */ {
         success = success || nullFC;
         error = error || nullFC;
         dir = dir.split("/");
-        if (globalThis.resolveLocalFileSystemURL) {
-            globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+        if (window.resolveLocalFileSystemURL) {
+            window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                 (function redo(entry) {
                     var i = dir.shift();
                     entry.getDirectory(i, { create: true }, function (dirEntry) {
@@ -1379,7 +1379,7 @@ mixin(game, /**@lends module:core.game */ {
         }
     },
     importExtension: function (data, finishLoad, exportext, pkg) {
-        if (!globalThis.JSZip) {
+        if (!window.JSZip) {
             lib.init.js(lib.assetURL + 'game', 'jszip', function () {
                 game.importExtension(data, finishLoad, exportext, pkg);
             });
@@ -1450,7 +1450,7 @@ mixin(game, /**@lends module:core.game */ {
                     else {
                         directory = cordova.file.documentsDirectory;
                     }
-                    globalThis.resolveLocalFileSystemURL(directory, function (entry) {
+                    window.resolveLocalFileSystemURL(directory, function (entry) {
                         entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                             fileEntry.createWriter(function (fileWriter) {
                                 fileWriter.onwriteend = function () {
@@ -1465,7 +1465,7 @@ mixin(game, /**@lends module:core.game */ {
                     var downloadLink = document.createElement("a");
                     downloadLink.download = fileNameToSaveAs;
                     downloadLink.innerHTML = "Download File";
-                    downloadLink.href = globalThis.URL.createObjectURL(blob);
+                    downloadLink.href = window.URL.createObjectURL(blob);
                     downloadLink.click();
                 }
 
@@ -1549,7 +1549,7 @@ mixin(game, /**@lends module:core.game */ {
                         });
                     }
                     else {
-                        globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+                        window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                             entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
                                 //扩展文件夹
                                 writeFile();
@@ -1637,7 +1637,7 @@ mixin(game, /**@lends module:core.game */ {
             else {
                 directory = cordova.file.documentsDirectory;
             }
-            globalThis.resolveLocalFileSystemURL(directory, function (entry) {
+            window.resolveLocalFileSystemURL(directory, function (entry) {
                 entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                     fileEntry.createWriter(function (fileWriter) {
                         fileWriter.onwriteend = function () {
@@ -1652,7 +1652,7 @@ mixin(game, /**@lends module:core.game */ {
             var downloadLink = document.createElement("a");
             downloadLink.download = fileNameToSaveAs;
             downloadLink.innerHTML = "Download File";
-            downloadLink.href = globalThis.URL.createObjectURL(textFileAsBlob);
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
             downloadLink.click();
         }
     },
@@ -3086,7 +3086,7 @@ mixin(game, /**@lends module:core.game */ {
             _status.waitingToReload = true;
         }
         else {
-            globalThis.location.reload();
+            window.location.reload();
         }
     },
     reload2: function () {
@@ -3101,7 +3101,7 @@ mixin(game, /**@lends module:core.game */ {
         }
         if (lib.status.reload == 0) {
             if (_status.waitingToReload) {
-                globalThis.location.reload();
+                window.location.reload();
                 delete _status.waitingToReload;
             }
         }
@@ -3116,7 +3116,7 @@ mixin(game, /**@lends module:core.game */ {
             if (_status.video && !_status.replayvideo) {
                 localStorage.removeItem(lib.configprefix + 'playbackmode');
             }
-            globalThis.location.reload();
+            window.location.reload();
         }
         else {
             if (navigator.app && navigator.app.exitApp) {
@@ -3134,7 +3134,7 @@ mixin(game, /**@lends module:core.game */ {
             }
         }
         else {
-            globalThis.open(url);
+            window.open(url);
         }
     },
     reloadCurrent: function () {
@@ -3318,7 +3318,7 @@ mixin(game, /**@lends module:core.game */ {
         _status.toprint.push(Array.from(arguments));
     },
     animate: {
-        globalThis: function (num) {
+        window: function (num) {
             switch (num) {
                 case 1: {
                     ui.window.style.transition = 'all 0.5s';
@@ -4180,7 +4180,7 @@ mixin(game, /**@lends module:core.game */ {
                 catch (e) { }
             }
             else {
-                globalThis.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
+                window.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
                     entry.removeRecursively();
                 });
             }
@@ -4844,7 +4844,7 @@ mixin(game, /**@lends module:core.game */ {
         dialog.add(ui.create.div('.placeholder.slim'));
         game.addVideo('over', null, dialog.content.innerHTML);
         var vinum = parseInt(lib.config.video);
-        if (!_status.video && vinum && game.getVideoName && globalThis.indexedDB && _status.videoInited) {
+        if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
             var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
             var videos = lib.videos.slice(0);
             for (var i = 0; i < videos.length; i++) {
@@ -5013,9 +5013,9 @@ mixin(game, /**@lends module:core.game */ {
         if (game.addRecord) {
             game.addRecord(resultbool);
         }
-        if (globalThis.isNonameServer) {
+        if (window.isNonameServer) {
             lib.configOL.gameStarted = false;
-            game.saveConfig('pagecfg' + globalThis.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
+            game.saveConfig('pagecfg' + window.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
             game.reload();
         }
         else if (_status.connectMode && !game.online) {
@@ -5319,7 +5319,7 @@ mixin(game, /**@lends module:core.game */ {
                     firstCheck = true;
                 }
                 if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
-                    !event._targetChoice && !firstCheck && globalThis.Map && !lib.config.compatiblemode) {
+                    !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
                     event._targetChoice = new Map();
                     for (var i = 0; i < event._cardChoice.length; i++) {
                         if (!lib.card[event._cardChoice[i].name].complexTarget) {

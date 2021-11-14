@@ -356,12 +356,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         function skip0(e) {
                             if (e.ctrlKey) {
-                                globalThis.status = 'skip';
+                                window.status = 'skip';
                             }
                         }
                         function skip1(e) {
                             if (e.keyCode == '17') {
-                                globalThis.status = '';
+                                window.status = '';
                             }
                         }
                         var skipfun0 = function (e) {
@@ -387,9 +387,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             txt.innerHTML = str;
                             i++;
                             if (i <= link.length) {
-                                globalThis.addEventListener('keydown', skipfun0);
-                                globalThis.addEventListener('keyup', skipfun1);
-                                if (globalThis.status == 'skip') {
+                                window.addEventListener('keydown', skipfun0);
+                                window.addEventListener('keyup', skipfun1);
+                                if (window.status == 'skip') {
                                     setTimeout(show, 200);
                                 }
                                 else {
@@ -402,11 +402,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                             else {
                                 if (num < galgame.text[event.shijian].length) {
-                                    if (globalThis.status == 'skip') {
+                                    if (window.status == 'skip') {
                                         i = 0;
                                         galgame.audio.pause();
                                         bofang();
-                                        globalThis.status = '';
+                                        window.status = '';
                                     }
                                     drive.onclick = function () {
                                         this.onclick = false;
@@ -416,13 +416,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     };
                                 }
                                 else {
-                                    globalThis.removeEventListener('keydown', skipfun0);
-                                    globalThis.removeEventListener('keyup', skipfun1);
-                                    if (globalThis.status == 'skip') {
+                                    window.removeEventListener('keydown', skipfun0);
+                                    window.removeEventListener('keyup', skipfun1);
+                                    if (window.status == 'skip') {
                                         ui.backgroundMusic.play();
                                         ui.window.removeChild(beijing);
                                         galgame.end();
-                                        globalThis.status = '';
+                                        window.status = '';
                                     }
                                     drive.onclick = function () {
                                         ui.backgroundMusic.play();
@@ -720,7 +720,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 ui.arena.classList.add('playerhidden');
             }
             game.prepareArena();
-            if (globalThis.isNonameServer) {
+            if (window.isNonameServer) {
                 game.me = ui.create.player();
             }
             var list = [];
@@ -742,7 +742,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 current.nickname = current.ws.nickname;
                 current.setNickname();
             }
-            if (!globalThis.isNonameServer) {
+            if (!window.isNonameServer) {
                 game.me.playerid = get.id();
                 game.me.nickname = get.connectNickname();
                 game.me.setNickname();
@@ -1437,8 +1437,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             success = success || nullFC;
             error = error || nullFC;
             dir = dir.split("/");
-            if (globalThis.resolveLocalFileSystemURL) {
-                globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+            if (window.resolveLocalFileSystemURL) {
+                window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                     (function redo(entry) {
                         var i = dir.shift();
                         entry.getDirectory(i, { create: true }, function (dirEntry) {
@@ -1477,7 +1477,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
         },
         importExtension: function (data, finishLoad, exportext, pkg) {
-            if (!globalThis.JSZip) {
+            if (!window.JSZip) {
                 lib.init.js(lib.assetURL + 'game', 'jszip', function () {
                     game.importExtension(data, finishLoad, exportext, pkg);
                 });
@@ -1547,7 +1547,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         else {
                             directory = cordova.file.documentsDirectory;
                         }
-                        globalThis.resolveLocalFileSystemURL(directory, function (entry) {
+                        window.resolveLocalFileSystemURL(directory, function (entry) {
                             entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                                 fileEntry.createWriter(function (fileWriter) {
                                     fileWriter.onwriteend = function () {
@@ -1562,7 +1562,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         var downloadLink = document.createElement("a");
                         downloadLink.download = fileNameToSaveAs;
                         downloadLink.innerHTML = "Download File";
-                        downloadLink.href = globalThis.URL.createObjectURL(blob);
+                        downloadLink.href = window.URL.createObjectURL(blob);
                         downloadLink.click();
                     }
                     if (typeof finishLoad == 'function') {
@@ -1650,7 +1650,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             });
                         }
                         else {
-                            globalThis.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+                            window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                                 entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
                                     //扩展文件夹
                                     writeFile();
@@ -1739,7 +1739,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 else {
                     directory = cordova.file.documentsDirectory;
                 }
-                globalThis.resolveLocalFileSystemURL(directory, function (entry) {
+                window.resolveLocalFileSystemURL(directory, function (entry) {
                     entry.getFile(fileNameToSaveAs, { create: true }, function (fileEntry) {
                         fileEntry.createWriter(function (fileWriter) {
                             fileWriter.onwriteend = function () {
@@ -1754,7 +1754,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var downloadLink = document.createElement("a");
                 downloadLink.download = fileNameToSaveAs;
                 downloadLink.innerHTML = "Download File";
-                downloadLink.href = globalThis.URL.createObjectURL(textFileAsBlob);
+                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
                 downloadLink.click();
             }
         },
@@ -3197,7 +3197,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 _status.waitingToReload = true;
             }
             else {
-                globalThis.location.reload();
+                window.location.reload();
             }
         },
         reload2: function () {
@@ -3212,7 +3212,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             if (lib.status.reload == 0) {
                 if (_status.waitingToReload) {
-                    globalThis.location.reload();
+                    window.location.reload();
                     delete _status.waitingToReload;
                 }
             }
@@ -3228,7 +3228,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (_status.video && !_status.replayvideo) {
                     localStorage.removeItem(lib.configprefix + 'playbackmode');
                 }
-                globalThis.location.reload();
+                window.location.reload();
             }
             else {
                 if (navigator.app && navigator.app.exitApp) {
@@ -3246,7 +3246,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             else {
-                globalThis.open(url);
+                window.open(url);
             }
         },
         reloadCurrent: function () {
@@ -3432,7 +3432,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             _status.toprint.push(Array.from(arguments));
         },
         animate: {
-            globalThis: function (num) {
+            window: function (num) {
                 switch (num) {
                     case 1: {
                         ui.window.style.transition = 'all 0.5s';
@@ -4309,7 +4309,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     catch (e) { }
                 }
                 else {
-                    globalThis.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
+                    window.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + extname, function (entry) {
                         entry.removeRecursively();
                     });
                 }
@@ -4996,7 +4996,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             dialog.add(ui.create.div('.placeholder.slim'));
             game.addVideo('over', null, dialog.content.innerHTML);
             var vinum = parseInt(lib.config.video);
-            if (!_status.video && vinum && game.getVideoName && globalThis.indexedDB && _status.videoInited) {
+            if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
                 var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
                 var videos = lib.videos.slice(0);
                 for (var i = 0; i < videos.length; i++) {
@@ -5178,9 +5178,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (game.addRecord) {
                 game.addRecord(resultbool);
             }
-            if (globalThis.isNonameServer) {
+            if (window.isNonameServer) {
                 lib.configOL.gameStarted = false;
-                game.saveConfig('pagecfg' + globalThis.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
+                game.saveConfig('pagecfg' + window.isNonameServer, [lib.configOL, game.roomId, _status.onlinenickname, _status.onlineavatar]);
                 game.reload();
             }
             else if (_status.connectMode && !game.online) {
@@ -5509,7 +5509,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         firstCheck = true;
                     }
                     if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
-                        !event._targetChoice && !firstCheck && globalThis.Map && !lib.config.compatiblemode) {
+                        !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
                         event._targetChoice = new Map();
                         for (var i = 0; i < event._cardChoice.length; i++) {
                             if (!lib.card[event._cardChoice[i].name].complexTarget) {

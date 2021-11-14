@@ -1,5 +1,5 @@
 /// <reference path = "../game/built-in.d.ts" />
-globalThis.game.import('character',function(lib,game,ui,get,ai,_status){
+window.game.import('character',function(lib,game,ui,get,ai,_status){
 
 	type skillType = 'active'|'trigger'|'regard'|'mark'|'rule'	//技能类型：主动、触发、半主动|视为、状态|纯标记、规则相关
 	class toSkill implements Skill{

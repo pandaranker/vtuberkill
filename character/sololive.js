@@ -1,6 +1,6 @@
 /// <reference path = "../game/built-in.d.ts" />
 'use strict';
-globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
+window.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: "sololive",
         connect: true,
@@ -1678,7 +1678,7 @@ globalThis.game.import('character', function (lib, game, ui, get, ai, _status) {
                         direct: true,
                         content() {
                             'step 0';
-                            //globalThis.prompt("sometext","defaultvalue");
+                            //window.prompt("sometext","defaultvalue");
                             player.chooseCardButton('『闭目成佛』：使用其中一张装备牌', trigger.discards).set('filterButton', function (button) {
                                 return get.type(button.link) == 'equip';
                             });
