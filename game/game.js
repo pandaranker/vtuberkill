@@ -1,4 +1,6 @@
+var exports;
 if(!exports && module && module.exports) exports = module.exports;
+if(typeof module === "object" && typeof module.exports === "object") require.main.filename =  __dirname + '\\game\\game.js';
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);

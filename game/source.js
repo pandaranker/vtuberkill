@@ -70,9 +70,9 @@ window.noname_source_list=[
 	'game/update.js',
 	'game/module.js',
     
-    'game/base/Status_Event.js',
-    'game/content/content.js',
-    'game/skill/skill.js',
+    'game/core/base/Status_Event.js',
+    'game/core/content/content.js',
+    'game/core/skill/skill.js',
     'game/core/_context.js',
     'game/core/core.js',
 	'game/core/_status.js',

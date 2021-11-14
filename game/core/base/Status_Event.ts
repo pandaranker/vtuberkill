@@ -212,5 +212,5 @@ class Status_Event implements State_Event{
     //     update_record('skill')
     // }
 }
-(globalThis as any).Status_Event = Status_Event;
+(window as any).Status_Event = Status_Event;
 export default Status_Event;

@@ -63,6 +63,6 @@
             return after;
         }
     }
-    globalThis.Status_Event = Status_Event;
+    window.Status_Event = Status_Event;
     exports.default = Status_Event;
 });
