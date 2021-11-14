@@ -1,3 +1,4 @@
+if(!exports && module && module.exports) exports = module.exports;
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
