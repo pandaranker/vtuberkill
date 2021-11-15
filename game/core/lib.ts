@@ -14040,23 +14040,23 @@ mixin(lib, /**@lends module:core.lib */ {
                             player.$disableJudge();
                         }
                         if (Array.isArray(info.disableEquip)) {
-                            for (var ii = 0; ii < info.disableEquip.length; ii++) {
+                            for (let ii = 0; ii < info.disableEquip.length; ii++) {
                                 player.$disableEquip(info.disableEquip[ii]);
                             }
                         }
 
                         player.directgain(info.handcards);
                         lib.playerOL[i] = player;
-                        for (var i = 0; i < info.equips.length; i++) {
+                        for (let i = 0; i < info.equips.length; i++) {
                             player.$equip(info.equips[i]);
                         }
-                        for (var i = 0; i < info.handcards.length; i++) {
+                        for (let i = 0; i < info.handcards.length; i++) {
                             info.handcards[i].addGaintag(info.gaintag[i]);
                         }
-                        for (var i = 0; i < info.specials.length; i++) {
+                        for (let i = 0; i < info.specials.length; i++) {
                             info.specials[i].classList.add('glows');
                         }
-                        for (var i = 0; i < info.judges.length; i++) {
+                        for (let i = 0; i < info.judges.length; i++) {
                             if (info.views[i] && info.views[i] != info.judges[i]) {
                                 info.judges[i].classList.add('fakejudge');
                                 info.judges[i].viewAs = info.views[i];

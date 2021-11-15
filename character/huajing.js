@@ -1,33 +1,20 @@
-/// <reference path = "../game/built-in.d.ts" />
 'use strict';
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'huajing',
         connect: true,
         character: {
-            /**长尾景 */
             NagaoKei: ['male', 'nijisanji', 3, ['nkfumo', 'chidu']],
-            /**白神遥 */
             ShirakamiHaruka: ['female', 'psp', 3, ['baoxiao', 'quru'], ['guoV']],
-            /**海狗 */
             KisaragiKoyori: ['female', 'kagura', 3, ['shinve', 'juzu']],
-            /**鲨皇 */
             GawrGura: ['female', 'holo', 3, ['lingqun', 'yangliu'], ['yingV']],
-            /**Ina */
             NinomaeInanis: ['female', 'holo', 3, ['mochu', 'fuyue'], ['yingV']],
-            /**娜娜米 */
             Nana7mi: ['female', 'VirtuaReal', 4, ['xieqi', 'youhai'], ['guoV']],
-            /**海星宫汐 */
             sea_HosimiyaSio: ['female', 'qun', 5, ['zhuhan', 'pobing'],],
-            /**海熊猫 */
             sea_SasakiSaku: ['female', 'nijisanji', 4, ['haishou', 'lishi']],
-            /**潜水夸 */
             sea_MinatoAqua: ['female', 'holo', 3, ['jinchen', 'qianyong']],
-            /**海向晚 */
             sea_Ava: ['female', 'asoul', 3, ['zhuiguang', 'ronglei'], ['guoV']],
-            /**皇团 */
             sp_HisekiErio: ['female', 'shen', '1/6', ['qiming', 'shengbian', 'tulong']],
-            /**鲨皇 */
             sp_GawrGura: ['female', 'shen', 3, ['sp_guaisheng', 'sp_guiliu'], ['yingV']],
         },
         characterSort: {
@@ -250,6 +237,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 ai: {
                     order: 7,
                     result: { player: 1 },
+                    gainHujia: true
                 },
                 group: ['quru_addDam'],
                 subSkill: {
@@ -271,9 +259,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         },
                     },
                 },
-                ai: {
-                    gainHujia: true
-                }
             },
             shinve: {
                 trigger: { player: 'changeHp' },
@@ -319,7 +304,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 },
                 content() {
                     player.gainMaxHp();
-                    // if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
                     player.drawTo(player.maxHp);
                     player.storage.juzu = true;
                     player.awakenSkill('juzu');
@@ -352,7 +336,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 }
             },
-            //HOLOEN
             lingqun: {
                 trigger: { player: 'phaseDiscardEnd' },
                 frequent: true,
@@ -505,7 +488,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player: 1,
                 }
             },
-            //VR
             xieqi: {
                 auido: 2,
                 hiddenCard(player, name) {
@@ -527,55 +509,42 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 },
                 enable: 'chooseToUse',
                 usable: 1,
+                getResult(cards) {
+                    let l = cards.length, all = Math.pow(l, 2), list = [];
+                    for (let i = 1; i < all; i++) {
+                        let array = [];
+                        for (let j = 0; j < l; j++) {
+                            if (Math.floor((i % Math.pow(2, j + 1)) / Math.pow(2, j)) > 0)
+                                array.push(cards[j]);
+                        }
+                        let num = 0;
+                        for (let k of array) {
+                            num += get.number(k);
+                        }
+                        if (num > 0 && num % 7 == 0)
+                            list.push(array);
+                    }
+                    if (list.length) {
+                        list.sort(function (a, b) {
+                            if (a.length != b.length)
+                                return b.length - a.length;
+                            return get.value(a) - get.value(b);
+                        });
+                        return list[0];
+                    }
+                    return list;
+                },
                 filter(event, player) {
-                    if (player.countCards('h') < 1)
-                        return false;
-                    var list = player.getCards().map(function (i) {
-                        return get.number(i);
-                    });
-                    function getNumbers(source, count, isPermutation = true) {
-                        //如果只取一位，返回数组中的所有项，例如 [ [1], [2], [3] ]
-                        let currentList = source.map((item) => [item]);
-                        if (count === 1) {
-                            return currentList;
-                        }
-                        let result = [];
-                        //取出第一项后，再取出后面count - 1 项的排列组合，并把第一项的所有可能（currentList）和 后面count-1项所有可能交叉组合
-                        for (let i = 0; i < currentList.length; i++) {
-                            let current = currentList[i];
-                            //如果是排列的方式，在取count-1时，源数组中排除当前项
-                            let children = [];
-                            if (isPermutation) {
-                                children = getNumbers(source.filter(item => item !== current[0]), count - 1, isPermutation);
-                            }
-                            //如果是组合的方法，在取count-1时，源数组只使用当前项之后的
-                            else {
-                                children = getNumbers(source.slice(i + 1), count - 1, isPermutation);
-                            }
-                            for (let child of children) {
-                                result.push([...current, ...child]);
-                            }
-                        }
-                        return result;
-                    }
-                    for (let i in list) {
-                        let num = getNumbers(list, i, false);
-                        for (let j in num) {
-                            let sum = 0;
-                            for (let k = 1; k < j.length; k++) {
-                                sum += j[k];
-                            }
-                            if (sum > 0 && sum % 7 == 0)
-                                return true;
-                        }
-                    }
-                    let sum = 0;
-                    for (let i in list) {
-                        sum += Number(i);
-                    }
-                    if (sum > 0 && sum % 7 == 0)
-                        return true;
-                    return false;
+                    let xieqi_choice = lib.skill.xieqi.getResult(player.getCards('h'));
+                    return xieqi_choice.length;
+                },
+                check(card) {
+                    let evt = _status.event;
+                    if (!evt.xieqi_choice)
+                        evt.xieqi_choice = lib.skill.xieqi.getResult(evt.player.getCards('h'));
+                    if (!evt.xieqi_choice.includes(card))
+                        return 0;
+                    return 1;
                 },
                 chooseButton: {
                     dialog(event, player) {
@@ -623,9 +592,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                     return [ui.selected.cards.length, ui.selected.cards.length + 1];
                                 return ui.selected.cards.length + 2;
                             },
-                            // forceAuto(){
-                            // 	return ui.selected.buttons.length==1;
-                            // },
                             popname: true,
                             check(card) {
                                 return 7 - get.value(card);
@@ -706,8 +672,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     gainHujia: true
                 }
             },
-            //特典角色
-            //海企鹅
             zhuhan: {
                 trigger: { player: 'changeHujiaBegin' },
                 filter(event, player) {
@@ -744,9 +708,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     var _a;
                     return player.hujia > ((_a = event.player) === null || _a === void 0 ? void 0 : _a.hujia);
                 },
-                // check(event,player){
-                // 	return event.player.hp>player.hp&&get.attitude(player,event.player)<0;
-                // },
                 forced: true,
                 logTarget: 'player',
                 content() {
@@ -764,7 +725,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     num > 0 && (trigger.num += num);
                 },
             },
-            //海熊猫
             haishou: {
                 audio: 3,
                 enable: 'chooseToUse',
@@ -818,7 +778,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.draw();
                 }
             },
-            //海夸
             jinchen: {
                 audio: 2,
                 trigger: { player: 'phaseUseEnd' },
@@ -895,7 +854,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     draw: { audio: 2 }
                 },
             },
-            //海向晚
             zhuiguang: {
                 enable: 'phaseUse',
                 usable: 1,
@@ -998,7 +956,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //SP团长
             qiming: {
                 audio: 5,
                 global: 'qiming_viewH',
@@ -1077,7 +1034,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         priority: 999,
                         forced: true,
                         firstDo: true,
-                        priority: 999,
                         filter(event, player) {
                             return get.name(event.card) == player.storage.qiming_saycards;
                         },
@@ -1146,14 +1102,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
-            //SP鲨皇
             sp_guaisheng: {
                 audio: 5,
                 trigger: { global: 'damageBegin1' },
                 priority: -10,
                 init(player) {
                     player.storage.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
-                    //player.storage.guaishengMap={1:false,2:false,3:false,12:false,13:false,23:false,123:false};
                 },
                 onremove(player) {
                     delete player.storage.sp_guaisheng;
@@ -1180,7 +1134,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             event.list[i] = '';
                         }
                     }
-                    //if(trigger.source==undefined) event.list['two']='';
                     var list = [];
                     for (var i in event.list) {
                         if (event.list[i] != '')
@@ -1205,11 +1158,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         switch (result.control) {
                             case '选项一': {
                                 player.storage.sp_guaisheng['one'] = true;
-                                // event.one=true;				   
                                 break;
                             }
                             case '选项二': {
-                                // event.two=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1218,7 +1169,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项三': {
-                                // event.three=true;
                                 trigger.nature = 'ice';
                                 player.logSkill('sp_guaisheng');
                                 player.storage.sp_guaisheng['three'] = true;
@@ -1226,7 +1176,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项四': {
-                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1234,13 +1183,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项五': {
-                                //event.three=true;
                                 trigger.nature = 'ice';
                                 player.storage.sp_guaisheng['five'] = true;
                                 break;
                             }
                             case '选项六': {
-                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1250,7 +1197,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 break;
                             }
                             case '选项七': {
-                                // event.three=true;
                                 if (trigger.source && trigger.source.num('he'))
                                     player.discardPlayerCard('he', true, trigger.source);
                                 player.logSkill('sp_guaisheng', trigger.source);
@@ -1361,13 +1307,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                         event.cards.push(card);
                     }
-                    //if(event.num>=0) event.goto(1);
                     'step 4';
                     event.cards.randomSort();
-                    for (var i = 0; i < event.cards.length; i++) {
+                    for (let i = 0; i < event.cards.length; i++) {
                         ui.cardPile.appendChild(event.cards[i]);
                     }
-                    for (var i in event.cards2) {
+                    for (let i in event.cards2) {
                         if (event.cards2[i].length > 1) {
                             game.log(player, '将', event.cards2[i], '各', i, '张洗入了牌堆');
                         }
@@ -1378,7 +1323,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     var list = ['海', '沉', '浪', '落', '涌', '漩', '涡', '没', '浮', '淹', '洪', '河', '酒', '渡', '洞'], cards = [], card = trigger.cards[event.num];
                     if (card.classList[2] == 'ocean')
                         cards.push(card);
-                    for (var i in list) {
+                    for (let i in list) {
                         var names = get.translation(card);
                         for (var k = 0; k < names.length; k++) {
                             if (names[k] == list[i] && !cards.contains(card))
@@ -1462,7 +1407,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             Nana7mi: `七海Nana7mi`,
             Nana7mi_ab: `七海`,
             xieqi: `携七`,
-            xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
+            xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的手牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
             youhai: `佑海`,
             youhai_info: `你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲。（X为你已损失的体力值）`,
             youhai_append: lib.figurer(`特性：叠甲`),

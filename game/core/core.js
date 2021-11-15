@@ -13,10 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.mixin = exports.ai = exports.get = exports.ui = exports.game = exports.lib = exports._status = void 0;
-    /**
-     * 游戏内核模块
-     * @module core
-     */
     const _status_1 = __importDefault(require("./_status"));
     exports._status = _status_1.default;
     const lib_1 = __importDefault(require("./lib"));

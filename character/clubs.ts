@@ -1,7 +1,7 @@
 /// <reference path = "../game/built-in.d.ts" />
 'use strict';
 window.game.import('character',function(lib,game,ui,get,ai,_status){
-	return {
+	return <currentObject>{
 		name:'clubs',
 		connect:true,
 		character:{
@@ -110,8 +110,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			HosimiyaSio:['HosimiyaSio','sea_HosimiyaSio'],
 
 			Eilene:['Eilene','old_Eilene'],
-
-			HisekiErio:['HisekiErio','sp_HisekiErio'],
 		},
 		characterIntro:{
 			Paryi: '帕里，巴蜀富豪者也，累世公卿，广散金帛，养士三千，昔绊爱首义，左右劝帕里图之，帕里由此建国，聚诸奇士建国帕里破一期，天时地利人和皆不顺，诸士心皆背，P家无疾而终，帕里亦败走青城，后党锢事泄，杏国树倒猴散，P家有团长绯赤艾利欧接连败诸侯，中兴P家，OTO、古守血遊等士亦借此征战，P家之势渐盛。',
@@ -602,7 +600,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						event.next.remove(next);
 						trigger.after.push(next);
 						next.setContent(function(){
-							card.name = sha;
+							card.name = 'sha';
 						});
 					}
 				},
@@ -798,7 +796,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						// },
 						content(){
 							trigger.directHit.addArray(game.filterPlayer(function(cur){
-								return current.countCards('h') < player.countCards('h')
+								return cur.countCards('h') < player.countCards('h')
 							}));
 						},
 					},
@@ -1005,14 +1003,15 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}).set('targets',trigger.targets);
 					'step 1'
 					if (result.bool) {
-						event.tar = result.targets[0];
-						if (player.hasZhuSkill('xinluezhili') && player != event.tar) {
-							event.tar.addSkill('xinluezhili_draw');
+						event.target = result.targets[0];
+						if (player.hasZhuSkill('xinluezhili') && player != event.target) {
+							event.target.addSkill('xinluezhili_draw');
 						}
-						var count = (event.tar.countCards('h') >= player.countCards('h')) 
-									+ (event.tar.hp >= player.hp) 
-									+ (event.tar.countCards('e') >= player.countCards('e'));
-						player.choosePlayerCard(event.tar, 'he', [1, count], "移除至多" + count + "张牌").set('ai',function(button){
+						var count = 0
+						if(event.target.countCards('h') >= player.countCards('h')) count++
+						if(event.target.hp >= player.hp) count++
+						if(event.target.countCards('e') >= player.countCards('e')) count++
+						player.choosePlayerCard(event.target, 'he', [1, count], "移除至多" + count + "张牌").set('ai',function(button){
 							var player=_status.event.player;
 							var target=_status.event.target;
 							var count=_status.event.count;
@@ -1035,24 +1034,24 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(result.bool){
-						player.logSkill('DDzhanshou', event.tar);
-						if(event.tar.storage.DDzhanshou_card){
-							event.tar.storage.DDzhanshou_card = event.tar.storage.DDzhanshou_card.concat(result.links);
+						player.logSkill('DDzhanshou', event.target);
+						if(event.target.storage.DDzhanshou_card){
+							event.target.storage.DDzhanshou_card = event.target.storage.DDzhanshou_card.concat(result.links);
 						}
 						else {
-							event.tar.storage.DDzhanshou_card = result.links.slice(0);
+							event.target.storage.DDzhanshou_card = result.links.slice(0);
 						}
-						// game.addVideo('storage', event.tar, ['DDzhanshou_card',get.cardsInfo(event.tar.storage.DDzhanshou_card),'cards']);
-						event.tar.addSkill('DDzhanshou_card');
-						event.tar.lose(result.links,ui.special,'toStorage');
+						// game.addVideo('storage', event.target, ['DDzhanshou_card',get.cardsInfo(event.target.storage.DDzhanshou_card),'cards']);
+						event.target.addSkill('DDzhanshou_card');
+						event.target.lose(result.links,ui.special,'toStorage');
 					}
 					'step 3'
-					if (event.tar && event.tar.countCards('h') == 0) {
-						event.tar.draw();
+					if (event.target && event.target.countCards('h') == 0) {
+						event.target.draw();
 					}
 					'step 4'
-					if (event.tar && event.tar.hasSkill('xinluezhili_draw')) {
-						event.tar.removeSkill('xinluezhili_draw');
+					if (event.target && event.target.hasSkill('xinluezhili_draw')) {
+						event.target.removeSkill('xinluezhili_draw');
 					}
 				},
 				subSkill: {
@@ -1090,24 +1089,16 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				filter(event, player) {
 					if (player.countCards('h')) return false;
-					var target = game.filterPlayer(function(cur){
-						return cur.hasZhuSkill('xinluezhili');
-					});
+					var target = game.filterPlayer(cur =>  cur.hasZhuSkill('xinluezhili'));
 					return event.hs&&event.hs.length>0 && target.length;
 				},
-				filter(event, player) {
-					var targets = game.filterPlayer(function(cur){
-						return cur.hasZhuSkill('xinluezhili');
-					});
+				check(event, player) {
+					var targets = game.filterPlayer(cur =>  cur.hasZhuSkill('xinluezhili'));
 					return get.attitude(player,targets[0])>0;
 				},
 				content() {
-					var targets = game.filterPlayer(function(cur){
-						return cur.hasZhuSkill('xinluezhili');
-					});
-					if (targets.length) {
-						targets[0].draw(player);
-					}
+					var targets = game.filterPlayer(cur =>  cur.hasZhuSkill('xinluezhili'));
+					game.asyncDraw(targets)
 				}
 			},
 
@@ -1449,18 +1440,18 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					"step 2"
 					delete player.storage.Xvalue;
 					if(result.bool){
-						event.tar = result.targets[0];
-						player.logSkill('dianyinchuancheng', event.tar);
-						player.swapHandcards(event.tar);
+						event.target = result.targets[0];
+						player.logSkill('dianyinchuancheng', event.target);
+						player.swapHandcards(event.target);
 					}
 					else{
 						event.finish();
 					}
 					'step 3'
-					if (event.tar) {
-						var max = Math.max(player.countCards('h'), event.tar.countCards('h'));
+					if (event.target) {
+						var max = Math.max(player.countCards('h'), event.target.countCards('h'));
 						if(max>player.countCards('h'))	player.gain(get.cards(max-player.countCards('h')),'draw','log');
-						if(max>event.tar.countCards('h'))	event.tar.gain(get.cards(max-event.tar.countCards('h')),'draw','log');
+						if(max>event.target.countCards('h'))	event.target.gain(get.cards(max-event.target.countCards('h')),'draw','log');
 						if (event.count) event.goto(1);
 					}
 				},
@@ -1480,7 +1471,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content(){
 					'step 0'
-					var list = ['不观看牌'];
+					let list = ['不观看牌'];
 					var att = Math.max(game.countPlayer(),5)-player.storage.shushi;
 					var prompt2 = player.storage.shushi?'你本回合已看'+get.cnNumber(player.storage.shushi)+'张牌':'你本回合未看牌';
 					for(var i=1;i<=att;i++){
@@ -1510,7 +1501,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 2'
 					if(result.bool){
-						var list=result.links.slice(0);
+						let list=result.links.slice(0);
 						while(list.length){
 							ui.cardPile.insertBefore(list.pop(),ui.cardPile.firstChild);
 						}
@@ -1600,14 +1591,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					event.recards=[];
 					if(event.cards&&event.cards.length>0){
 						if(player.storage.anyingxuemai){
-							for( i of event.cards){
+							for(let i of event.cards){
 								if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
 									event.recards.add(i);
 								}
 							}
 						}
 						else{
-							for( i of event.cards){
+							for(let i of event.cards){
 								if(i.name=='shan'){
 									event.recards.add(i);
 								}
@@ -1667,7 +1658,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					event.recards=[];
 					if(event.cards&&event.cards.length>0){
-						for( i of event.cards){
+						for(let i of event.cards){
 							if(get.suit(i)=='heart'||get.suit(i)=='diamond'){
 								event.recards.add(i);
 							}
@@ -1723,7 +1714,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					player.showHandcards();
 					var handcards=player.getCards('h');
 					var suitlist=[0,0,0,0];
-					for(i of handcards){
+					for(let i of handcards){
 						if(get.suit(i)=='spade'){
 							suitlist[0]++;
 						}
@@ -1739,7 +1730,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					suitlist.sort();
 					var recoverHp=0;
-					for(i of suitlist){
+					for(let i of suitlist){
 						if(i!=0){
 							recoverHp=i;
 							break;
@@ -1760,7 +1751,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{
 					player: ['phaseBegin','phaseEnd','zhengtibuming']
 				},
-				filter(event,player,name){
+				filter(event,player){
 					return player.storage.zhengtibuming&&player.storage.zhengtibuming.character.length>0;
 				},
 				group: ['zhengtibuming_init', 'zhengtibuming_onDamaged'],
@@ -1856,15 +1847,15 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					event.configPrompt(event.videoId, opts[1]);
 					event.closeDialog(player, event.videoId);
-					var list = [];
-					for(var i=0;i< player.storage.zhengtibuming.character.length;++i){
-						var ch = player.storage.zhengtibuming.character[i];
+					let list = [];
+					for(let i=0;i< player.storage.zhengtibuming.character.length;++i){
+						let ch = player.storage.zhengtibuming.character[i];
 						if(player.storage.zhengtibuming.current && ch == player.storage.zhengtibuming.current) continue;
 						list.push(ch);
 					}
 					if(list.length){
-						var selectedTishenId = Math.floor(Math.random()*list.length);
-						var selectedTishenName = list[selectedTishenId];
+						let selectedTishenId = Math.floor(Math.random()*list.length);
+						let selectedTishenName = list[selectedTishenId];
 						lib.skill.zhengtibuming.exchangeTishen(player, selectedTishenName);
 					}
 					event.finish();
@@ -1877,7 +1868,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 4'
 					if(result.bool){
 						event.prepareCard = result.links[0];
-						var func=function(card,id){
+						let func=function(card,id){
 							var dialog=get.idDialog(id);
 							if(dialog){
 								for(var i=0;i<dialog.buttons.length;i++){
@@ -1897,7 +1888,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							func(event.prepareCard,event.videoId);
 						}
 						//choose one skill or go back
-						var list=player.storage.zhengtibuming.characterskillMap[event.prepareCard].slice(0);
+						let list=player.storage.zhengtibuming.characterskillMap[event.prepareCard].slice(0);
 						list.push(opts[2]);
 						//ai
 						if(!list.contains(event.aiChoiceSkill)) event.aiOpt = list[0];
@@ -1910,7 +1901,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 					'step 5'
 						if(result.control == opts[2]){
-							var func=function(id){
+							let func=function(id){
 								var dialog=get.idDialog(id);
 								if(dialog){
 									for(var i=0;i<dialog.buttons.length;i++){
@@ -1959,7 +1950,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				addTishen(player){
 					if(!player.storage.zhengtibuming) return;
 					if(!_status.characterlist){//mark
-						if(_status.connectMode) var list=get.charactersOL();
+						let list
+						if(_status.connectMode)	list=get.charactersOL();
 						else{
 							list=get.gainableCharacters(true);
 						}
@@ -1977,8 +1969,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					do{
 						++rollCnt;
 						if(rollCnt > 256){
-							var list = [];
-							for(var i=0;i<_status.characterlist.length;++i){
+							let list = [];
+							for(let i=0;i<_status.characterlist.length;++i){
 								var name = _status.characterlist[i];
 								if(!lib.skill.zhengtibuming.characterFilter(name, player))	continue;
 								list.push(i);
@@ -2885,12 +2877,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				//      true:   满足条件
 				//      false:  不满足条件或者条件获取失败
 				checkNumber(lstNum, curNum, item){
-					if(typeof item == 'string') var str = item;
+					let str
+					if(typeof item == 'string') str = item;
 					else{
 						var player = item;
 						if(!player) player = _status.event.player;
 						if(!player||!player.storage.budingpaidui||!player.storage.budingpaidui.current) return false;
-						var str = player.storage.budingpaidui.current;
+						str = player.storage.budingpaidui.current;
 					}
 
 					if(str == '小'){

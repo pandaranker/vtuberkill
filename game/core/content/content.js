@@ -29,13 +29,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const _context = __importStar(require("../_context"));
-    /**
-     * 内容方法，setContent所调用的方法，即事件的具体内容
-     * 状态机
-     * @name commonContent
-     * @namespace
-     * @global
-     */
     let commonContent = (({ _status, lib, game, ui, get, ai }) => {
         return {
             resetRound: function () {
@@ -53,7 +46,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.unmarkSkill(roundname);
                 }
             },
-            //崭新出炉
             chooseShengjie: function () {
                 'step 0';
                 var list = [];
@@ -621,7 +613,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (js.length)
                     player.discard(js);
                 player.storage._disableJudge = true;
-                //player.markSkill('_disableJudge');
                 'step 1';
                 game.broadcastAll(function (player, card) {
                     player.$disableJudge();
@@ -635,7 +626,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.$enableJudge();
                 }, player);
             },
-            /*----分界线----*/
             phasing: function () {
                 'step 0';
                 while (ui.dialogs.length) {
@@ -720,11 +710,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 'step 1';
                 event.trigger('phaseBeginStart');
             },
-            /**
-                * 更换随从
-                * @name content.toggleSubPlayer
-                * @type {GameCores.Bases.StateMachine}
-                */
             toggleSubPlayer: function () {
                 'step 0';
                 var list = event.list || player.storage.subplayer.skills.slice(0);
@@ -781,11 +766,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         player.directequip(cfg.es);
                 }
             },
-            /**
-                * 结束调遣随从
-                * @name content.callSubPlayer
-                * @type {GameCores.Bases.StateMachine}
-                */
             exitSubPlayer: function () {
                 'step 0';
                 if (player.storage.subplayer) {
@@ -829,11 +809,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.trigger('subPlayerDie');
                 }
             },
-            /**
-                * 调遣随从
-                * @name content.callSubPlayer
-                * @type {GameCores.Bases.StateMachine}
-                */
             callSubPlayer: function () {
                 'step 0';
                 var list = player.getSubPlayers(event.tag);
@@ -893,11 +868,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 'step 2';
                 game.delay();
             },
-            /**
-                * 反转结算顺序
-                * @name content.reverseOrder
-                * @type {GameCores.Bases.StateMachine}
-                */
             reverseOrder: function () {
                 "step 0";
                 game.delay();
@@ -923,29 +893,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 使用判定牌
-                * @name content.addJudgeCard
-                * @type {GameCores.Bases.StateMachine}
-                */
             addJudgeCard: function () {
                 if (lib.filter.judge(card, player, target) && cards.length && get.position(cards[0], true) == 'o')
                     target.addJudge(card, cards);
             },
-            /**
-                * 使用装备牌
-                * @name content.equipCard
-                * @type {GameCores.Bases.StateMachine}
-                */
             equipCard: function () {
                 if (cards.length && get.position(cards[0], true) == 'o')
                     target.equip(card, cards[0]);
             },
-            /**
-                * 游戏开始前分牌
-                * @name content.gameDraw
-                * @type {GameCores.Bases.StateMachine}
-                */
             gameDraw: function () {
                 "step 0";
                 if (_status.brawl && _status.brawl.noGameDraw) {
@@ -1028,11 +983,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.finish();
                 }
             },
-            /**
-                * 阶段循环
-                * @name content.phaseLoop
-                * @type {GameCores.Bases.StateMachine}
-                */
             phaseLoop: function () {
                 "step 0";
                 for (var i = 0; i < lib.onphase.length; i++) {
@@ -1048,19 +998,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.goto(0);
             },
-            /**
-                * 加载包
-                * @name content.loadPackage
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Array<Object>} event.packages 包名数组，用于加载
-                * @property {string} event.packages[].0 包目录，相对`lib.assetURL`路径
-                * @property {string} event.packages[].1 包名
-                */
             loadPackage: function () {
                 'step 0';
                 if (event.packages.length) {
-                    // window.game = game;//[todo delete]
                     var pack = event.packages.shift().split('/');
                     lib.init.js(lib.assetURL + pack[0], pack[1], game.resume);
                     game.pause();
@@ -1069,7 +1009,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.finish();
                 }
                 'step 1';
-                // if (!lib.config.dev) delete window.game;//[todo delete]
                 var character = lib.imported.character;
                 var card = lib.imported.card;
                 var i, j, k;
@@ -1153,32 +1092,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.goto(0);
             },
-            /**
-                * 加载模组
-                * @name content.loadMode
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!string} event.mode 要加载的mode名
-                * @property {?Object} event.result 如果加载成功返回加载的模组，如果失败则返回未指定(undefined)结果
-                */
             loadMode: function () {
                 'step 0';
-                // window.game = game;//[todo delete]
                 lib.init.js(lib.assetURL + 'mode', event.mode, game.resume);
                 game.pause();
                 'step 1';
-                // if (!lib.config.dev) delete window.game;//[todo delete]
                 event.result = lib.imported.mode[event.mode];
                 delete lib.imported.mode[event.mode];
             },
-            /**
-                * 强制结束
-                * @name content.forceOver
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {?string} event.bool 是否调用{@link game.over}，如果为'noover'，则不调用
-                * @property {?function():void} [event.callback] 回调函数，在事件结束前调用
-                */
             forceOver: function () {
                 'step 0';
                 while (ui.controls.length) {
@@ -1195,11 +1116,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.callback();
                 }
             },
-            /**
-                * 事件触发调度状态机
-                * @name content.arrangeTrigger
-                * @type {GameCores.Bases.StateMachine}
-                */
             arrangeTrigger: function () {
                 'step 0';
                 event.filter1 = function (info) {
@@ -1305,12 +1221,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 else
                     event.goto(event.doing.list.length ? 3 : 2);
             },
-            /**
-                * 检测时机并让玩家选择是否发动触发类技能
-                * 创建触发器
-                * @name content.createTrigger
-                * @type {GameCores.Bases.StateMachine}
-                */
             createTrigger: function () {
                 "step 0";
                 if (lib.filter.filterTrigger(trigger, player, event.triggername, event.skill)) {
@@ -1510,11 +1420,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * Play video
-                * @name content.playVideoContent
-                * @type {GameCores.Bases.StateMachine}
-                */
             playVideoContent: function () {
                 'step 0';
                 game.delay(0, 500);
@@ -1601,7 +1506,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 'step 2';
                 if (event.video.length) {
                     var content = event.video.shift();
-                    // console.log(content);
                     if (content.type == 'delay') {
                         game.delay(content.content);
                     }
@@ -1646,11 +1550,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }, 500);
                 }
             },
-            /**
-                * wait for player
-                * @name content.waitForPlayer
-                * @type {GameCores.Bases.StateMachine}
-                */
             waitForPlayer: function () {
                 'step 0';
                 ui.auto.hide();
@@ -1710,11 +1609,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     ui.cardPileButton.style.display = '';
                 }
             },
-            /**
-                * 置换手牌(单机)
-                * @name content.replaceHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             replaceHandcards: function () {
                 'step 0';
                 if (event.players.contains(game.me)) {
@@ -1732,11 +1626,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.me.directgain(get.cards(hs.length));
                 }
             },
-            /**
-                * 置换手牌[support online]
-                * @name content.replaceHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             replaceHandcardsOL: function () {
                 'step 0';
                 var send = function () {
@@ -1776,11 +1665,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.pause();
                 }
             },
-            /**
-                * 一个完整的回合
-                * @name content.phase
-                * @type {GameCores.Bases.StateMachine}
-                */
             phase: function () {
                 "step 0";
                 if (!event.stageList || !event.stageList.length)
@@ -1820,11 +1704,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.goto(1);
                 }
             },
-            /**
-                * 判定阶段
-                * @name content.phaseJudge
-                * @type {GameCores.Bases.StateMachine}
-                */
             phaseJudge: function () {
                 "step 0";
                 event.cards = player.getCards('j');
@@ -1886,11 +1765,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 ui.clear();
                 event.goto(1);
             },
-            /**
-                * 摸牌阶段
-                * @name content.phaseDraw
-                * @type {GameCores.Bases.StateMachine}
-                */
             phaseDraw: function () {
                 "step 0";
                 event.trigger("phaseDrawBegin1");
@@ -1920,11 +1794,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.cards = result;
                 }
             },
-            /**
-                * 出牌阶段
-                * @name content.phaseUse
-                * @type {GameCores.Bases.StateMachine}
-                */
             phaseUse: function () {
                 "step 0";
                 var next = player.chooseToUse();
@@ -1967,11 +1836,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         stat.card[i] = 0;
                 }
             },
-            /**
-                * 弃牌阶段
-                * @name content.phaseDiscard
-                * @type {GameCores.Bases.StateMachine}
-                */
             phaseDiscard: function () {
                 "step 0";
                 if (!event.num)
@@ -1989,13 +1853,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 2";
                 event.cards = result.cards;
             },
-            /**
-                * 选择以使用(牌|技能)
-                * @name content.chooseToUse
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToUse: function () {
                 "step 0";
                 if (event.responded)
@@ -2252,13 +2109,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.result.result = event._result;
                 }
             },
-            /**
-                * 选择以响应(牌|技能)
-                * @name content.chooseToUse
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToRespond: function () {
                 "step 0";
                 if (event.responded) {
@@ -2441,13 +2291,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.stopCountChoose();
                 }
             },
-            /**
-                * 选择以弃置牌
-                * @name content.chooseToDiscard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToDiscard: function () {
                 "step 0";
                 if (event.autochoose()) {
@@ -2464,7 +2307,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
                 else {
-                    // &&!lib.filter.wuxieSwap(trigger)
                     if (game.modeSwapPlayer && !_status.auto && player.isUnderControl()) {
                         game.modeSwapPlayer(player);
                     }
@@ -2601,13 +2443,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event.dialog && event.dialog.close)
                     event.dialog.close();
             },
-            /**
-                * 拼点失败
-                * @name content.chooseToCompareLose
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToCompareLose: function () {
                 for (var i = 0; i < event.lose_list.length; i++) {
                     var next = event.lose_list[i][0].lose(event.lose_list[i][1], ui.ordering);
@@ -2615,13 +2450,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     next.getlx = false;
                 }
             },
-            /**
-                * 多人拼点
-                * @name content.chooseToCompareMultiple
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToCompareMultiple: function () {
                 "step 0";
                 if (player.countCards('h') == 0) {
@@ -2783,13 +2611,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 7";
                 event.cards.add(event.card1);
             },
-            /**
-                * 两人拼点
-                * @name content.chooseToCompare
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseToCompare: function () {
                 "step 0";
                 if (player.countCards('h') == 0 || target.countCards('h') == 0) {
@@ -2978,13 +2799,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.preserve = !event.result.bool;
                 }
             },
-            /**
-                * 选择以获得一项技能
-                * @name content.discoverSkill
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             discoverSkill: function () {
                 'step 0';
                 var num = event.num || 3;
@@ -3068,13 +2882,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.result = { bool: true, skill: result };
                 }
             },
-            /**
-                * 选择以获得一项技能
-                * @name content.chooseSkill
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseSkill: function () {
                 'step 0';
                 var list;
@@ -3134,13 +2941,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.result = { bool: true, skill: result };
             },
-            /**
-                * 选择以(获得|使用)牌
-                * @name content.chooseSkill
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             discoverCard: function () {
                 'step 0';
                 var num = event.num || 3;
@@ -3212,13 +3012,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 选择项(按钮)
-                * @name content.chooseButton
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseButton: function () {
                 "step 0";
                 if (typeof event.dialog == 'number') {
@@ -3276,13 +3069,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.resume();
             },
-            /**
-                * 多人选择牌
-                * @name content.chooseCardOL
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseCardOL: function () {
                 'step 0';
                 event.targets = event.list.slice(0);
@@ -3357,13 +3143,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 event.result[event.targets.indexOf(event.target)] = result;
                 event.goto(7);
             },
-            /**
-                * 多人选择项(按钮)
-                * @name content.chooseButtonOL
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseButtonOL: function () {
                 'step 0';
                 ui.arena.classList.add('markhidden');
@@ -3432,13 +3211,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 });
                 event.result = event.resultOL;
             },
-            /**
-                * 选择牌
-                * @name content.chooseCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseCard: function () {
                 "step 0";
                 if (event.directresult) {
@@ -3531,13 +3303,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event.dialog)
                     event.dialog.close();
             },
-            /**
-                * 选择角色对象
-                * @name content.chooseTarget
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseTarget: function () {
                 "step 0";
                 if (event.isMine()) {
@@ -3597,7 +3362,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         ui.click.cancel();
                     }
                 }
-                if (event.result.bool && event.animate !== false) { //play anim
+                if (event.result.bool && event.animate !== false) {
                     for (var i = 0; i < event.result.targets.length; i++) {
                         event.result.targets[i].animate('target');
                     }
@@ -3618,13 +3383,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 选择卡牌和目标角色
-                * @name content.chooseCardTarget
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseCardTarget: function () {
                 "step 0";
                 if (event.isMine()) {
@@ -3676,13 +3434,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event.dialog)
                     event.dialog.close();
             },
-            /**
-                * 选择项(列表项)
-                * @name content.chooseControl
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseControl: function () {
                 "step 0";
                 if (event.controls.length == 0) {
@@ -3859,13 +3610,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.resume();
             },
-            /**
-                * 确认项(确认|取消)
-                * @name content.chooseBool
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseBool: function () {
                 "step 0";
                 if (event.isMine()) {
@@ -3920,13 +3664,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.dialog.close();
                 event.resume();
             },
-            /**
-                * 选择(摸牌|回血)
-                * @name content.chooseDrawRecover
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             chooseDrawRecover: function () {
                 'step 0';
                 if (player.isHealthy() && event.forced) {
@@ -3992,13 +3729,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.result = result;
             },
-            /**
-                * 从目标角色选择牌
-                * @name content.choosePlayerCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             choosePlayerCard: function () {
                 "step 0";
                 if (!event.dialog)
@@ -4071,13 +3801,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.resume();
             },
-            /**
-                * 从目标角色选择牌弃置
-                * @name content.discardPlayerCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             discardPlayerCard: function () {
                 "step 0";
                 if (event.directresult) {
@@ -4201,13 +3924,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 从目标角色选择牌获得
-                * @name content.gainPlayerCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             gainPlayerCard: function () {
                 "step 0";
                 if (event.directresult) {
@@ -4340,11 +4056,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 else
                     target[event.visibleMove ? '$give' : '$giveAuto'](cards, player);
             },
-            /**
-                * 展示角色手牌
-                * @name content.showHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             showHandcards: function () {
                 "step 0";
                 if (player.countCards('h') == 0) {
@@ -4369,11 +4080,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 game.broadcast('closeDialog', event.dialogid);
                 event.dialog.close();
             },
-            /**
-                * 展示角色的牌
-                * @name content.showHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             showCards: function () {
                 "step 0";
                 if (get.itemtype(cards) != 'cards') {
@@ -4423,11 +4129,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 game.broadcast('closeDialog', event.dialogid);
                 event.dialog.close();
             },
-            /**
-                * 查看牌
-                * @name content.showHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             viewCards: function () {
                 "step 0";
                 if (player == game.me) {
@@ -4460,13 +4161,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event.dialog)
                     event.dialog.close();
             },
-            /**
-                * 移动牌位置
-                * @name content.moveCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Object} event.result 返回选择结果给父事件
-                */
             moveCard: function () {
                 'step 0';
                 if (!player.canMoveCard(null, event.nojudge, event.moveHandcard)) {
@@ -4642,13 +4336,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.delay();
                 }
             },
-            /**
-                * 角色使用牌
-                * @name content.useCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {?Object} event.result 返回选择使用结果(如果有)给父事件
-                */
             useCard: function () {
                 "step 0";
                 if (!card) {
@@ -4667,7 +4354,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 if (directDiscard.length)
                     game.cardsGotoOrdering(directDiscard);
-                //player.using=cards;
                 var cardaudio = true;
                 if (event.skill) {
                     if (lib.skill[event.skill].audio) {
@@ -4698,7 +4384,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                                 return;
                             var sex = player.sex == 'female' ? 'female' : 'male';
                             var audioinfo = lib.card[card.name].audio;
-                            // if(audioinfo||true){
                             if (card.name == 'sha' && (card.nature == 'fire' || card.nature == 'thunder' || card.nature == 'ice' || card.nature == 'ocean')) {
                                 game.playAudio('card', sex, card.name + '_' + card.nature);
                             }
@@ -4713,10 +4398,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                                     game.playAudio('card', sex, card.name);
                                 }
                             }
-                            // }
-                            // else if(get.type(card)!='equip'){
-                            //     game.playAudio('card/default');
-                            // }
                         }
                     }, player, card);
                 }
@@ -5092,8 +4773,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     next.directHit = true;
                 if (next.target && !info.multitarget) {
                     if (num == 0 && targets.length > 1) {
-                        // var ttt=next.target;
-                        // setTimeout(function(){ttt.animate('target');},0.5*lib.config.duration);
                     }
                     else {
                         next.target.animate('target');
@@ -5131,7 +4810,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event._result) {
                     event.result = event._result;
                 }
-                //delete player.using;
                 if (document.getElementsByClassName('thrown').length) {
                     if (event.delayx !== false)
                         game.delayx();
@@ -5142,11 +4820,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 13";
                 event._oncancel();
             },
-            /**
-                * 角色使用技能
-                * @name content.useSkill
-                * @type {GameCores.Bases.StateMachine}
-                */
             useSkill: function () {
                 "step 0";
                 var info = get.info(event.skill);
@@ -5337,8 +5010,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     next.forceDie = true;
                 if (next.target && !info.multitarget) {
                     if (num == 0 && targets.length > 1) {
-                        // var ttt=next.target;
-                        // setTimeout(function(){ttt.animate('target');},0.5*lib.config.duration);
                     }
                     else {
                         next.target.animate('target');
@@ -5389,22 +5060,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 5";
                 ui.clear();
             },
-            /**
-                * 从(牌库|牌堆顶|牌堆底)摸牌
-                * @name content.useCard
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 当前事件
-                * @property {!Array<GameCores.GameObjects.Card>} event.result 返回摸到的牌数组
-                */
             draw: function () {
-                // if(lib.config.background_audio){
-                //     game.playAudio('effect','draw');
-                // }
-                // game.broadcast(function(){
-                //     if(lib.config.background_audio){
-                //         game.playAudio('effect','draw');
-                //     }
-                // });
                 if (typeof event.minnum == 'number' && num < event.minnum) {
                     num = event.minnum;
                 }
@@ -5462,11 +5118,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     next.gaintag.addArray(event.gaintag);
                 event.result = cards;
             },
-            /**
-                * 从(手牌区|装备区|武将牌上|判定区)弃置牌
-                * @name content.discard
-                * @type {GameCores.Bases.StateMachine}
-                */
             discard: function () {
                 "step 0";
                 game.log(player, '弃置了', cards);
@@ -5474,11 +5125,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 1";
                 event.trigger('discard');
             },
-            /**
-                * 角色打出牌
-                * @name content.respond
-                * @type {GameCores.Bases.StateMachine}
-                */
             respond: function () {
                 'step 0';
                 var cardaudio = true;
@@ -5499,17 +5145,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         if (lib.config.background_audio) {
                             var sex = player.sex == 'female' ? 'female' : 'male';
                             var audioinfo = lib.card[card.name].audio;
-                            // if(audioinfo||true){
                             if (typeof audioinfo == 'string' && audioinfo.indexOf('ext:') == 0) {
                                 game.playAudio('..', 'extension', audioinfo.slice(4), card.name + '_' + sex);
                             }
                             else {
                                 game.playAudio('card', sex, card.name);
                             }
-                            // }
-                            // else{
-                            //     game.playAudio('card/default');
-                            // }
                         }
                     }, player, card);
                 }
@@ -5554,11 +5195,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 'step 1';
                 game.delayx(0.5);
             },
-            /**
-                * 角色和目标交换(手)牌
-                * @name content.swapHandcards
-                * @type {GameCores.Bases.StateMachine}
-                */
             swapHandcards: function () {
                 'step 0';
                 event.cards1 = event.cards1 || player.getCards('h');
@@ -5601,11 +5237,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (!event.delayed)
                     game.delay();
             },
-            /**
-                * 角色从每个目标获得一张牌
-                * @name content.gainMultiple
-                * @type {GameCores.Bases.StateMachine}
-                */
             gainMultiple: function () {
                 'step 0';
                 event.delayed = false;
@@ -5627,11 +5258,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (!event.delayed)
                     game.delay();
             },
-            /**
-                * 角色获得牌
-                * @name content.lose
-                * @type {GameCores.Bases.StateMachine}
-                */
             gain: function () {
                 "step 0";
                 if (cards) {
@@ -5672,7 +5298,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     return;
                 }
                 player.getHistory('gain').push(event);
-                //if(event.source&&event.delay!==false) game.delayx();
                 "step 2";
                 if (player.getStat().gain == undefined) {
                     player.getStat().gain = cards.length;
@@ -5700,7 +5325,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     if (_status.discarded) {
                         _status.discarded.remove(cards[num]);
                     }
-                    // cards[num].vanishtag.length=0;
                     for (var num2 = 0; num2 < cards[num].vanishtag.length; num2++) {
                         if (cards[num].vanishtag[num2][0] != '_') {
                             cards[num].vanishtag.splice(num2--, 1);
@@ -5811,11 +5435,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 4";
                 game.delayx();
             },
-            /**
-                * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
-                * @name content.lose
-                * @type {GameCores.Bases.StateMachine}
-                */
             lose: function () {
                 "step 0";
                 var evt = event.getParent();
@@ -5940,7 +5559,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     else {
                         cards[i].remove();
                     }
-                    //if(ss.contains(cards[i])) cards.splice(i--,1);
                 }
                 if (player == game.me)
                     ui.updatehl();
@@ -6052,11 +5670,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 令角色受到伤害
-                * @name content.damage
-                * @type {GameCores.Bases.StateMachine}
-                */
             damage: function () {
                 "step 0";
                 event.forceDie = true;
@@ -6217,11 +5830,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (!event.notrigger)
                     event.trigger('damageSource');
             },
-            /**
-                * 角色回复血量
-                * @name content.recover
-                * @type {GameCores.Bases.StateMachine}
-                */
             recover: function () {
                 if (lib.config.background_audio) {
                     game.playAudio('effect', 'recover');
@@ -6248,11 +5856,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 player.getHistory('recover').push(event);
             },
-            /**
-                * 令角色失去血量
-                * @name content.loseHp
-                * @type {GameCores.Bases.StateMachine}
-                */
             loseHp: function () {
                 "step 0";
                 if (lib.config.background_audio) {
@@ -6271,11 +5874,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.dying(event);
                 }
             },
-            /**
-                * 双将模式下，如果“双将体力设置”选择为“平均值”，因此向下取整体力的角色可以摸一张牌
-                * @name content.doubleDraw
-                * @type {GameCores.Bases.StateMachine}
-                */
             doubleDraw: function () {
                 "step 0";
                 player.chooseBool('你的主副将体力上限之和是奇数，是否摸一张牌？');
@@ -6284,11 +5882,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.draw();
                 }
             },
-            /**
-                * 令角色减少血量上限
-                * @name content.loseMaxHp
-                * @type {GameCores.Bases.StateMachine}
-                */
             loseMaxHp: function () {
                 "step 0";
                 game.log(player, '减少了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
@@ -6300,24 +5893,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.die(event);
                 }
             },
-            /**
-                * 令角色增加血量上限
-                * @name content.gainMaxHp
-                * @type {GameCores.Bases.StateMachine}
-                */
             gainMaxHp: function () {
                 "step 0";
                 game.log(player, '增加了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
                 player.maxHp += num;
                 player.update();
             },
-            /**
-                * 令角色改变血量(不能超过上限)
-                * @name content.changeHp
-                * @type {GameCores.Bases.StateMachine}
-                */
             changeHp: function () {
-                //柚子：这里加了一个改变体力前时机
                 'step 0';
                 event.trigger('changeHpBegin');
                 'step 1';
@@ -6330,7 +5912,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (event.popup !== false) {
                     player.$damagepop(num, 'water');
                 }
-                //改变体力后立即刷新濒死列表
                 if (_status.dying.contains(player) && player.hp > 0) {
                     _status.dying.remove(player);
                     game.broadcast(function (list) {
@@ -6345,11 +5926,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 event.trigger('changeHp');
             },
-            /**
-                * 令角色获得/失去护甲
-                * @name content.changeHujia
-                * @type {GameCores.Bases.StateMachine}
-                */
             changeHujia: function () {
                 if (lib.config.background_audio) {
                     game.playAudio('effect', 'hujia');
@@ -6367,7 +5943,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 else if (num < 0) {
                     if (event.type == 'damage')
                         game.log(player, '的护甲抵挡了' + get.cnNumber(-num) + '点伤害');
-                    //else if(event.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
                     else
                         game.log(player, '失去了' + get.cnNumber(-num) + '点护甲');
                 }
@@ -6377,11 +5952,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 player.getHistory('changeHujia').push(event);
                 player.update();
             },
-            /**
-                * 角色濒死事件
-                * @name content.dying
-                * @type {GameCores.Bases.StateMachine}
-                */
             dying: function () {
                 "step 0";
                 event.forceDie = true;
@@ -6428,11 +5998,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (player.hp <= 0 && !player.nodying)
                     player.die(event.reason);
             },
-            /**
-                * 角色死亡事件
-                * @name content.die
-                * @type {GameCores.Bases.StateMachine}
-                */
             die: function () {
                 "step 0";
                 event.forceDie = true;
@@ -6465,15 +6030,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 else {
                     game.log(player, '阵亡');
                 }
-                // player.removeEquipTrigger();
-                // for(var i in lib.skill.globalmap){
-                //     if(lib.skill.globalmap[i].contains(player)){
-                //                  lib.skill.globalmap[i].remove(player);
-                //                  if(lib.skill.globalmap[i].length==0&&!lib.skill[i].globalFixed){
-                //                               game.removeGlobalSkill(i);
-                //                  }
-                //     }
-                // }
                 game.broadcastAll(function (player) {
                     player.classList.add('dead');
                     player.removeLink();
@@ -6492,7 +6048,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         if (lib.character[player.name] && lib.character[player.name][4].contains('die_audio')) {
                             game.playAudio('die', player.name);
                         }
-                        // else if(true){
                         else {
                             game.playAudio('die', player.name, function () {
                                 game.playAudio('die', player.name.slice(player.name.indexOf('_') + 1));
@@ -6547,7 +6102,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.cards = player.getCards('hejs');
                     if (event.cards.length) {
                         player.discard(event.cards).forceDie = true;
-                        //player.$throw(event.cards,1000);
                     }
                 }
                 "step 4";
@@ -6574,9 +6128,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
                 if (!_status.connectMode && player == game.me && !game.modeSwapPlayer) {
-                    // _status.auto=false;
                     if (ui.auto) {
-                        // ui.auto.classList.remove('glow');
                         ui.auto.hide();
                     }
                     if (ui.wuxie)
@@ -6626,11 +6178,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     source.classList.add('topcount');
                 }
             },
-            /**
-                * 角色使用装备牌
-                * @name content.equip
-                * @type {GameCores.Bases.StateMachine}
-                */
             equip: function () {
                 "step 0";
                 console.log(card, cards);
@@ -6758,11 +6305,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.delayx();
                 }
             },
-            /**
-                * 角色添加判定牌
-                * @name content.addJudge
-                * @type {GameCores.Bases.StateMachine}
-                */
             addJudge: function () {
                 "step 0";
                 if (cards) {
@@ -6820,7 +6362,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         cards[0].clone.moveDelete(player);
                         game.addVideo('gain2', player, get.cardsInfo(cards));
                     }
-                    // player.$gain2(cards);
                     if (get.itemtype(card) != 'card') {
                         if (typeof card == 'string')
                             cards[0].viewAs = card;
@@ -6835,7 +6376,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                             cards[0].classList.add('fakejudge');
                             cards[0].node.background.innerHTML = lib.translate[cards[0].viewAs + '_bg'] || get.translation(cards[0].viewAs)[0];
                         }
-                        //姑且改成了取单牌的形式，以后需要叠多张牌的时候再改回来
                         game.log(player, '被贴上了<span class="yellowtext">' + get.translation(cards[0].viewAs) + '</span>（', cards[0], '）');
                     }
                     else {
@@ -6845,13 +6385,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.addVideo('addJudge', player, [get.cardInfo(cards[0]), cards[0].viewAs]);
                 }
             },
-            /**
-                * 角色进行判定
-                * @name content.judge
-                * @type {GameCores.Bases.StateMachine}
-                * @property {!Object} event 本事件
-                * @property {!Object} event.result 将判定牌信息返回给父事件
-                */
             judge: function () {
                 "step 0";
                 var judgestr = get.translation(player) + '的' + event.judgestr + '判定';
@@ -6952,11 +6485,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-                * 角色武将牌翻面
-                * @name content.turnOver
-                * @type {GameCores.Bases.StateMachine}
-                */
             turnOver: function () {
                 game.log(player, '翻面');
                 player.classList.toggle('turnedover');
@@ -6965,11 +6493,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }, player);
                 game.addVideo('turnOver', player, player.classList.contains('turnedover'));
             },
-            /**
-                * 角色连环/解除连环
-                * @name content.link
-                * @type {GameCores.Bases.StateMachine}
-                */
             link: function () {
                 if (player.isLinked()) {
                     game.log(player, '解除连环');

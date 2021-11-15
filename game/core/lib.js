@@ -31,14 +31,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    ///<reference path="./lib.d.ts" />
     const _context = __importStar(require("./_context"));
     const { _status, lib, game, ui, get, ai, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
     const Status_Event_1 = __importDefault(require("./base/Status_Event"));
     const content_1 = __importDefault(require("./content/content"));
     const skill_1 = __importDefault(require("./skill/skill"));
-    mixin(lib, /**@lends module:core.lib */ {
+    mixin(lib, {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
         config: null,
         configprefix: 'vtuberkill_1.9_',
@@ -96,12 +95,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         hookmap: {},
         imported: {},
         layoutfixed: ['chess', 'tafang', 'stone'],
-        /**
-         * 角色选择弹窗中的特殊选项
-         * ['收藏', '最近']
-         * @name lib.characterDialogGroup
-         * @see {@link ui.create.characterDialog}
-         */
         characterDialogGroup: {
             '收藏': function (name, capt) {
                 return lib.config.favouriteCharacter.contains(name) ? capt : null;
@@ -111,10 +104,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return list.contains(name) ? capt : null;
             }
         },
-        /**
-         * 监听节点动画结束
-         * @param {HTMLDivElement} node 节点
-         */
         listenEnd: function (node) {
             if (!node._listeningEnd) {
                 node._listeningEnd = true;
@@ -130,18 +119,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
             }
         },
-        /**
-         * 游戏菜单
-         * @name configMenu
-         * @namespace
-         * @type {!Object}
-         */
         configMenu: {
-            /**
-             * 通用设置
-             * @name configMenu.general
-             * @type {!Object}
-             */
             general: {
                 name: '通用',
                 config: {
@@ -252,29 +230,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         unfrequent: true,
                         intro: '拖拽时显示虚线，可能降低游戏速度',
                     },
-                    // enable_pressure:{
-                    //     name:'启用压感',
-                    //     init:false,
-                    //     intro:'开启后可通过按压执行操作',
-                    //     unfrequent:true,
-                    // },
-                    // pressure_taptic:{
-                    //     name:'触觉反馈',
-                    //     init:false,
-                    //     intro:'开启后按压操作执行时将产生震动',
-                    //     unfrequent:true,
-                    // },
-                    // pressure_click:{
-                    //     name:'按压操作',
-                    //     init:'pause',
-                    //     intro:'在空白区域按压时的操作',
-                    //     unfrequent:true,
-                    //     item:{
-                    //         pause:'暂停',
-                    //         config:'选项',
-                    //         auto:'托管',
-                    //     }
-                    // },
                     touchscreen: {
                         name: '触屏模式',
                         init: false,
@@ -561,7 +516,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                             else {
                                 delete window.cheat;
-                                // delete window.game;//[todo delete]
                                 delete window.ui;
                                 delete window.get;
                                 delete window.ai;
@@ -589,7 +543,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             lib.updateURL = lib.updateURLS[item] || lib.updateURLS.coding;
                         },
                     },
-                    //https://raw.githubusercontent.com/libccy/noname-extension/master/
                     extension_source: {
                         name: '获取扩展地址',
                         init: 'Coding',
@@ -705,19 +658,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             map.enable_vibrate.hide();
                             map.keep_awake.hide();
                         }
-                        // if(config.enable_pressure){
-                        //     map.pressure_click.show();
-                        //     if(lib.device){
-                        //         map.pressure_taptic.show();
-                        //     }
-                        //     else{
-                        //         map.pressure_taptic.hide();
-                        //     }
-                        // }
-                        // else{
-                        //     map.pressure_click.hide();
-                        //     map.pressure_taptic.hide();
-                        // }
                         if (lib.config.touchscreen) {
                             map.mousewheel.hide();
                             map.hover_all.hide();
@@ -795,11 +735,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
             },
-            /**
-             * 外观设置
-             * @name configMenu.appearence
-             * @type {!Object}
-             */
             appearence: {
                 name: '外观',
                 config: {
@@ -833,10 +768,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }, 500);
                         }
                     },
-                    /**
-                     * 游戏布局
-                     * @name configMenu.appearence.layout
-                     */
                     layout: {
                         name: '布局',
                         init: 'mobile',
@@ -854,11 +785,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 node.created = true;
                                 node.style.overflow = 'hidden';
                                 node.firstChild.style.display = 'none';
-                                // node.firstChild.classList.add('shadowed');
-                                // node.firstChild.style.width='16px';
-                                // node.firstChild.style.height='auto';
-                                // node.firstChild.style.padding='2px';
-                                // node.firstChild.style.textAlign='center';
                                 var me = ui.create.div(node);
                                 me.style.top = 'auto';
                                 if (link == 'default' || link == 'newlayout') {
@@ -999,29 +925,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     },
-                    // fewplayer:{
-                    //     name:'启用人数',
-                    //     intro:'设置启用新版布局的最小人数（不足时切换至默认布局）',
-                    //     init:'3',
-                    //     // unfrequent:true,
-                    //     item:{
-                    //                  '2':'两人',
-                    //                  '3':'三人',
-                    //                  '4':'四人',
-                    //                  '5':'五人',
-                    //                  '6':'六人',
-                    //                  '7':'七人',
-                    //                  '8':'八人',
-                    //     },
-                    //     onclick:function(item){
-                    //                  game.saveConfig('fewplayer',item);
-                    //                  if(ui.arena) ui.arena.setNumber(ui.arena.dataset.number);
-                    //     }
-                    // },
                     player_height: {
                         name: '角色高度',
                         init: 'long',
-                        // unfrequent:true,
                         item: {
                             short: '矮',
                             default: '中',
@@ -1036,62 +942,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         name: '角色高度',
                         init: 'short',
                         item: {
-                            // auto:'自动',
                             short: '矮',
                             default: '中',
                             long: '高',
                         },
                         onclick: function (item) {
                             game.saveConfig('player_height_nova', item);
-                            // if(item=='auto'){
-                            //     if(parseInt(ui.arena.dataset.number)>=7){
-                            //         ui.arena.dataset.player_height_nova='short';
-                            //     }
-                            //     else{
-                            //         ui.arena.dataset.player_height_nova='default';
-                            //     }
-                            // }
-                            // else{
                             ui.arena.dataset.player_height_nova = item;
-                            // }
                         }
                     },
-                    // background_color_music:{
-                    //     name:'背景色',
-                    //     init:'black',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('background_color_music',color);
-                    //         document.body.dataset.background_color_music=color;
-                    //     }
-                    // },
-                    // background_color_wood:{
-                    //     name:'背景色',
-                    //     init:'blue',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('background_color_wood',color);
-                    //         document.body.dataset.background_color_wood=color;
-                    //     }
-                    // },
-                    // theme_color_music:{
-                    //     name:'主题色',
-                    //     init:'black',
-                    //     item:{
-                    //         blue:'蓝色',
-                    //         black:'黑色',
-                    //     },
-                    //     onclick:function(color){
-                    //         game.saveConfig('theme_color_music',color);
-                    //         document.body.dataset.theme_color_music=color;
-                    //     }
-                    // },
                     ui_zoom: {
                         name: '界面缩放',
                         unfrequent: true,
@@ -1411,7 +1270,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             music: '音乐',
                             simple: '原版',
                             ol: '手杀',
-                            // new:'新版',
                             custom: '自定',
                             default: '默认',
                         },
@@ -1542,11 +1400,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         intro: '设置背面朝上的卡牌的样式',
                         init: 'default',
                         item: {
-                            // wood:'木纹',
-                            // music:'音乐',
                             vk: 'V杀',
                             official: '原版',
-                            // new:'新版',
                             liusha: '流沙',
                             ol: '手杀',
                             custom: '自定',
@@ -1715,7 +1570,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         init: 'ol',
                         item: {
                             default: '默认',
-                            // official:'勾玉',
                             emotion: '表情',
                             glass: '勾玉',
                             round: '国战',
@@ -3015,7 +2869,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (lib.config.image_background_random) {
                             map.image_background_blur.show();
                             map.image_background.hide();
-                            // map.import_background.hide();
                         }
                         else {
                             map.image_background.show();
@@ -3025,12 +2878,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             else {
                                 map.image_background_blur.show();
                             }
-                            // if(lib.config.image_background=='custom'&&lib.db){
-                            //     map.import_background.show();
-                            // }
-                            // else{
-                            //     map.import_background.hide();
-                            // }
                         }
                         if (lib.config.layout == 'long' || lib.config.layout == 'mobile') {
                             map.textequip.show();
@@ -3049,11 +2896,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                         if (lib.config.layout == 'long') {
-                            // map.fewplayer.show();
                             map.player_height.show();
                         }
                         else {
-                            // map.fewplayer.hide();
                             if (lib.config.layout == 'long2') {
                                 map.player_height.show();
                             }
@@ -3084,11 +2929,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     },
                 }
             },
-            /**
-             * 显示设置
-             * @name configMenu.view
-             * @type {!Object}
-             */
             view: {
                 name: '显示',
                 config: {
@@ -3756,11 +3596,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
             },
-            /**
-             * 音效设置
-             * @name configMenu.audio
-             * @type {!Object}
-             */
             audio: {
                 name: '音效',
                 config: {
@@ -3877,11 +3712,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     },
                 }
             },
-            /**
-             * (自动, 禁用)技能设置
-             * @name configMenu.skill
-             * @type {!Object}
-             */
             skill: {
                 name: '技能',
                 config: {
@@ -3907,38 +3737,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
             },
-            /**
-             * 其他菜单项
-             * @name configMenu.others
-             * @type {!Object}
-             */
             others: {
                 name: '其它',
                 config: {
-                    // reset_database:{
-                    //     name:'重置游戏',
-                    //     onclick:function(){
-                    //         var node=this;
-                    //         if(node._clearing){
-                    //             if(indexedDB) indexedDB.deleteDatabase(lib.configprefix+'data');
-                    //             game.reload();
-                    //             return;
-                    //         }
-                    //         node._clearing=true;
-                    //         node.innerHTML='单击以确认 (3)';
-                    //         setTimeout(function(){
-                    //             node.innerHTML='单击以确认 (2)';
-                    //             setTimeout(function(){
-                    //                 node.innerHTML='单击以确认 (1)';
-                    //                 setTimeout(function(){
-                    //                     node.innerHTML='重置游戏录像';
-                    //                     delete node._clearing;
-                    //                 },1000);
-                    //             },1000);
-                    //         },1000);
-                    //     },
-                    //     clear:true
-                    // },
                     reset_game: {
                         name: '重置游戏设置',
                         onclick: function () {
@@ -4086,65 +3887,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             map.redownload_game.hide();
                         }
                     }
-                    // trim_game:{
-                    //     name:'隐藏非官方扩展包',
-                    //     onclick:function(){
-                    //         if(this.innerHTML!='已隐藏'){
-                    //             this.innerHTML='已隐藏';
-                    //                               var pack=lib.config.all.cards.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenCardPack)){
-                    //                                            for(var i=0;i<lib.config.hiddenCardPack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenCardPack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgscards.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenCardPack',pack);
-                    //
-                    //                               var pack=lib.config.all.characters.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenCharacterPack)){
-                    //                                            for(var i=0;i<lib.config.hiddenCharacterPack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenCharacterPack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgscharacters.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenCharacterPack',pack);
-                    //
-                    //                               var pack=lib.config.all.mode.slice(0);
-                    //                               if(Array.isArray(lib.config.hiddenModePack)){
-                    //                                            for(var i=0;i<lib.config.hiddenModePack.length;i++){
-                    //                                                                  pack.add(lib.config.hiddenModePack[i]);
-                    //                                            }
-                    //                               }
-                    //                               for(var i=0;i<pack.length;i++){
-                    //                                            if(lib.config.all.sgsmodes.contains(pack[i])){
-                    //                                                                  pack.splice(i--,1);
-                    //                                            }
-                    //                               }
-                    //             game.saveConfig('hiddenModePack',pack);
-                    //
-                    //             var that=this;
-                    //             setTimeout(function(){
-                    //                 that.innerHTML='隐藏非官方扩展包';
-                    //             },500);
-                    //         }
-                    //     },
-                    //     clear:true
-                    // }
                 }
             }
         },
-        /**
-         * 拓展菜单
-         * @name configMenu.extensionMenu
-         */
         extensionMenu: {
             cardpile: {
                 enable: {
@@ -4285,73 +4030,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 },
             },
-            // boss: {
-            //     enable: {
-            //         name: '开启',
-            //         init: false,
-            //         restart: true,
-            //         onswitch: function (bool) {
-            //             if (bool) {
-            //                 var storage = { boss: {}, versus: {}, translate: {} };
-            //                 var loadversus = function () {
-            //                     game.loadModeAsync('versus', function (mode) {
-            //                         for (var i in mode.translate) {
-            //                             storage.translate[i] = mode.translate[i];
-            //                         }
-            //                         for (var i in mode.jiangeboss) {
-            //                             if (mode.jiangeboss[i][4].contains('bossallowed')) {
-            //                                 storage.versus[i] = mode.jiangeboss[i];
-            //                             }
-            //                         }
-            //                         localStorage.setItem('boss_storage_playpackconfig', JSON.stringify(storage));
-            //                     });
-            //                 };
-            //                 game.loadModeAsync('boss', function (mode) {
-            //                     for (var i in mode.translate) {
-            //                         storage.translate[i] = mode.translate[i];
-            //                     }
-            //                     for (var i in mode.characterPack.mode_boss) {
-            //                         if (mode.characterPack.mode_boss[i][4].contains('bossallowed')) {
-            //                             storage.boss[i] = mode.characterPack.mode_boss[i];
-            //                         }
-            //                     }
-            //                     loadversus();
-            //                 });
-            //             }
-            //             else {
-            //                 localStorage.removeItem('boss_storage_playpackconfig');
-            //             }
-            //         }
-            //     },
-            //     intro: {
-            //         name: '将剑阁和挑战模式的武将添加到其它模式',
-            //         clear: true,
-            //         nopointer: true,
-            //     },
-            //     enableai: {
-            //         name: '随机选将可用',
-            //         init: false
-            //     },
-            //     hide: {
-            //         name: '隐藏此扩展',
-            //         clear: true,
-            //         onclick: function () {
-            //             if (this.firstChild.innerHTML == '隐藏此扩展') {
-            //                 this.firstChild.innerHTML = '此扩展将在重启后隐藏';
-            //                 lib.config.hiddenPlayPack.add('boss');
-            //                 if (!lib.config.prompt_hidepack) {
-            //                     alert('隐藏的扩展包可通过选项-其它-重置隐藏内容恢复');
-            //                     game.saveConfig('prompt_hidepack', true);
-            //                 }
-            //             }
-            //             else {
-            //                 this.firstChild.innerHTML = '隐藏此扩展';
-            //                 lib.config.hiddenPlayPack.remove('boss');
-            //             }
-            //             game.saveConfig('hiddenPlayPack', lib.config.hiddenPlayPack);
-            //         }
-            //     },
-            // },
             wuxing: {
                 enable: {
                     name: '开启',
@@ -4460,13 +4138,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 },
             },
         },
-        /**
-         * 游戏模式菜单
-         * @name configMenu.mode
-         * @type {!Object}
-         */
         mode: {
-            //引导
             yindao: {
                 name: '引导',
                 config: {
@@ -4474,98 +4146,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     },
                 }
             },
-            // richer: {
-            //     name: '大富翁',
-            //     connect: {
-            //         connect_player_number: {
-            //             name: '游戏人数',
-            //             init: '6',
-            //             item: {
-            //                 '2': '两人',
-            //                 '3': '三人',
-            //                 '4': '四人',
-            //                 '5': '五人',
-            //                 '6': '六人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         update: function (config, map) {
-            //         },
-            //         connect_show_range: {
-            //             name: '显示卡牌范围',
-            //             init: true,
-            //         },
-            //         // connect_show_distance:{
-            //         // 	name:'显示距离',
-            //         // 	init:true,
-            //         // },
-            //         connect_chessscroll_speed: {
-            //             name: '边缘滚动速度',
-            //             init: '20',
-            //             intro: '鼠标移至屏幕边缘时自动滚屏',
-            //             item: {
-            //                 '0': '不滚动',
-            //                 '10': '10格/秒',
-            //                 '20': '20格/秒',
-            //                 '30': '30格/秒',
-            //             }
-            //         },
-            //     },
-            //     config: {
-            //         player_number: {
-            //             name: '游戏人数',
-            //             init: '6',
-            //             item: {
-            //                 '2': '两人',
-            //                 '3': '三人',
-            //                 '4': '四人',
-            //                 '5': '五人',
-            //                 '6': '六人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         update: function (config, map) {
-            //             switch (config.player_number) {
-            //                 case 4:
-            //                 case 6: {
-            //                     map.team_number.show();
-            //                     break;
-            //                 }
-            //                 default: {
-            //                     map.team_number.hide();
-            //                     break;
-            //                 }
-            //             }
-            //         },
-            //         show_range: {
-            //             name: '显示卡牌范围',
-            //             init: true,
-            //         },
-            //         team_number: {
-            //             name: '每队人数',
-            //             init: '1',
-            //             item: {
-            //                 '1': '单人',
-            //                 '2': '两人',
-            //             },
-            //             frequent: true,
-            //             restart: true,
-            //         },
-            //         chessscroll_speed: {
-            //             name: '边缘滚动速度',
-            //             init: '20',
-            //             intro: '鼠标移至屏幕边缘时自动滚屏',
-            //             item: {
-            //                 '0': '不滚动',
-            //                 '10': '10格/秒',
-            //                 '20': '20格/秒',
-            //                 '30': '30格/秒',
-            //             }
-            //         },
-            //     }
-            // },
             identity: {
                 name: '身份',
                 connect: {
@@ -4648,7 +4228,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         name: '双内奸',
                         init: false,
                         restart: true,
-                        // frequent:true,
                         intro: '开启后游戏中将有两个内奸（内奸胜利条件仍为主内1v1时击杀主公）'
                     },
                     connect_double_character: {
@@ -4676,16 +4255,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         frequent: true,
                         intro: '开启后游戏中将增加军师、大将、贼首三个身份'
                     },
-                    // connect_ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // connect_ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     connect_enhance_zhu: {
                         name: '加强主公',
                         init: false,
@@ -4938,16 +4507,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         init: true,
                         intro: '根据角色的出牌行为自动标记可能的身份',
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     enhance_zhu: {
                         name: '加强主公',
                         init: false,
@@ -5257,13 +4816,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     connect_zhulian: {
                         name: '珠联璧合',
                         init: true,
-                        // frequent:true,
                         intro: '主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
                     },
                     connect_junzhu: {
                         name: '替换君主',
                         init: true,
-                        // frequent:true,
                         restart: true,
                         intro: '若开启此选项，玩家的第一个回合开始时，若其主武将牌有对应的君主武将牌，则其可以将此武将牌替换为对应的君主武将牌，然后重新调整体力上限。若玩家的体力上限因此增大，则玩家回复等量的体力。'
                     },
@@ -5280,16 +4837,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         restart: true,
                         intro: '将军争和基础包的装备牌回调至《三国杀》原版'
                     }
-                    // connect_ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
-                    // connect_ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                 },
                 config: {
                     update: function (config, map) {
@@ -5368,7 +4915,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     zhulian: {
                         name: '珠联璧合',
                         init: true,
-                        // frequent:true,
                         intro: '主将和副将都明置后，若为特定组合，可获得【珠联璧合】标记'
                     },
                     changeViceType: {
@@ -5398,7 +4944,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     junzhu: {
                         name: '替换君主',
                         init: true,
-                        // frequent:true,
                         restart: true,
                         intro: '若开启此选项，玩家的第一个回合开始时，若其主武将牌有对应的君主武将牌，则其可以将此武将牌替换为对应的君主武将牌，然后重新调整体力上限。若玩家的体力上限因此增大，则玩家回复等量的体力。'
                     },
@@ -5414,16 +4959,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         },
                         restart: true,
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                     free_choose: {
                         name: '自由选将',
                         init: true,
@@ -5598,7 +5133,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             '2v2': '2v2',
                             '3v3': '3v3',
                             '4v4': '4v4',
-                            //'guandu':'官渡',
                         },
                         frequent: true
                     },
@@ -5633,16 +5167,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             '5': '5人',
                         }
                     },
-                    // connect_ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // connect_ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                 },
                 config: {
                     update: function (config, map) {
@@ -5740,13 +5264,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             four: '对抗',
                             three: '统率',
                             two: '欢乐',
-                            //guandu:'官渡',
                             jiange: '战场',
                             siguo: '四国',
                             standard: '自由'
-                            // endless:'无尽',
-                            // triple:'血战',
-                            // one:'<span style="display:inline-block;width:100%;text-align:center">1v1</span>',
                         },
                         restart: true,
                         frequent: true,
@@ -5917,16 +5437,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         },
                         frequent: true
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true
-                    // },
                     ladder_reset: {
                         name: '重置天梯数据',
                         onclick: function () {
@@ -6161,16 +5671,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         },
                         intro: '只控制一名角色，其他角色由AI控制'
                     },
-                    // ban_weak:{
-                    //     name:'屏蔽弱将',
-                    //     init:true,
-                    //     restart:true,
-                    // },
-                    // ban_strong:{
-                    //     name:'屏蔽强将',
-                    //     init:false,
-                    //     restart:true,
-                    // },
                 }
             },
             doudizhu: {
@@ -6727,8 +6227,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         init: 'dianjiang',
                         item: {
                             dianjiang: '点将单挑',
-                            // normal:'新1v1',
-                            // changban:'血战长坂坡',
                         },
                         restart: true,
                         frequent: true,
@@ -6754,8 +6252,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         init: 'dianjiang',
                         item: {
                             dianjiang: '点将单挑',
-                            // normal:'新1v1',
-                            // changban:'血战长坂坡',
                         },
                         restart: true,
                         frequent: true,
@@ -6814,31 +6310,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         init: true,
                         frequent: true
                     },
-                    // tongqueduopao:{
-                    // 	name:'铜雀夺袍',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     tongjiangmoshi: {
                         name: '同将模式',
                         init: true,
                         frequent: true
                     },
-                    // baiyidujiang:{
-                    // 	name:'白衣渡江',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     qianlidanji: {
                         name: '千里单骑',
                         init: true,
                         frequent: true
                     },
-                    // liangjunduilei:{
-                    // 	name:'两军对垒',
-                    // 	init:true,
-                    // 	frequent:true
-                    // },
                     scene: {
                         name: '创建场景',
                         init: true,
@@ -6847,10 +6328,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             },
         },
-        /**
-         * lib状态，储存如delayed、videoId等动态数据
-         * @type {!Object}
-         */
         status: {
             running: false,
             canvas: false,
@@ -6861,28 +6338,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             videoId: 0,
             globalId: 0,
         },
-        /**
-         * 帮助菜单
-         * @type {!Object}
-         */
         help: {
             'FAQ': '<ul><li>Q：关于家长麦技能中的“除外”，有详细的说明吗？<li>A：你不执行奖惩，不能发动技能或使用牌，不能指定目标或被选择为目标（令角色解除除外状态除外）；计算有关全场角色的数据时，不计算你的存在：当你于回合内被除外时，结束你的回合（若当前有卡牌正在结算，则结算后再结束你的回合）。<br>' +
                 '<li>Q：若角色有出牌阶段限制次数的技能，则其会因额外的出牌阶段多次发动此技能吗？<li>A：是的，但是一般情况仅限于主动释放的技能（比如下地的『引流』和MEA的『掠财』）。若不做特殊说明，额外出牌阶段结束时，角色回合内的技能使用次数均会清空，而卡牌使用次数不变。<br>' +
                 '<li>Q：夜雾和lulu的技能改变出牌效果时，影响牌的使用次数吗？<li>A：不影响，牌的使用次数始终在牌使用或打出时计入。特别的，lulu的技能可以改变牌名，有可能影响牌的后续结算；而夜雾的技能不改变牌名，（虽然效果已经变化）与原牌名关联的效果不会受影响（如【初始服】之于【杀】【万箭】【南蛮】）<br>',
             '游戏操作': '<ul><li>长按/鼠标悬停/右键单击显示信息<li>触屏模式中，双指点击切换暂停；下划显示菜单，上划切换托管<li>键盘快捷键<br>' +
                 '<table><tr><td>A<td>切换托管<tr><td>W<td>切换不询问无懈<tr><td>空格<td>暂停</table><li>编辑牌堆<br>在卡牌包中修改牌堆后，将自动创建一个临时牌堆，在所有模式中共用，当保存当前牌堆后，临时牌堆被清除。每个模式可设置不同的已保存牌堆，设置的牌堆优先级大于临时牌堆</ul>',
-            // '游戏命令':'<div style="margin:10px">变量名</div><ul style="margin-top:0"><li>场上角色<br>game.players<li>阵亡角色<br>game.dead'+
-            // '<li>玩家<br>game.me<li>玩家的上/下家<br>game.me.previous/next'+
-            // '<li>玩家的上/下家（含阵亡）<br>game.me.previousSeat/<br>nextSeat'+
-            // '<li>牌堆<br>ui.cardPile<li>弃牌堆<br>ui.discardPile</ul>'+
-            // '<div style="margin:10px">角色属性</div><ul style="margin-top:0"><li>体力值<br>player.hp'+
-            // '<li>体力上限<br>player.maxHp<li>身份<br>player.identity<li>手牌<br>player.getCards("h")<li>装备牌<br>player.getCards("e")<li>判定牌<br>player.getCards("j")'+
-            // '<li>是否存活/横置/翻面<br>player.isAlive()/<br>isLinked()/<br>isTurnedOver()</ul>'+
-            // '<div style="margin:10px">角色操作</div><ul style="margin-top:0"><li>受到伤害<br>player.damage(source,<br>num)'+
-            // '<li>回复体力<br>player.recover(num)<li>摸牌<br>player.draw(num)<li>获得牌<br>player.gain(cards)<li>弃牌<br>player.discard(cards)'+
-            // '<li>使用卡牌<br>player.useCard(card,<br>targets)<li>死亡<br>player.die()<li>复活<br>player.revive(hp)</ul>'+
-            // '<div style="margin:10px">游戏操作</div><ul style="margin-top:0"><li>在命令框中输出结果<br>game.print(str)<li>清除命令框中的内容<br>cls<li>上一条/下一条输入的内容<br>up/down<li>游戏结束<br>game.over(bool)'+
-            // '<li>角色资料<br>lib.character<li>卡牌资料<br>lib.card</ul>',
             '游戏名词': '<ul><li>智囊：无名杀默认为过河拆桥/无懈可击/无中生有/洞烛先机。牌堆中没有的智囊牌会被过滤。可在卡牌设置中自行增减。若没有可用的智囊，则改为随机选取的三种锦囊牌的牌名。' +
                 '<li>仁库：部分武将使用的游戏外共通区域。至多包含六张牌。当有新牌注入后，若牌数超过上限，则将最早进入仁库的溢出牌置入弃牌堆。' +
                 '<li>护甲：和体力类似，每点护甲可抵挡一点伤害，但不影响手牌上限。' +
@@ -6890,14 +6351,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 '<li>发现：从三张随机亮出的牌中选择一张，若无特殊说明，则获得此牌。' +
                 '<li>蓄力技：发动时可以增大黄色的数字。若如此做，红色数字于技能的结算过程中改为原来的两倍。'
         },
-        /**
-         * 设置(触屏: 长按[, 点击])|(鼠标: 悬浮, 右击[, 点击])弹窗
-         * @name lib.setIntro
-         * @param {(HTMLDivElement|PlayerModel)} node 要弹窗的节点
-         * @param {?function} func 用于自定义弹窗的回调函数
-         * @param {?boolean} left 如果为true，点击事件也能触发弹窗
-         * @see {@link get.nodeintro}
-         */
         setIntro: function (node, func, left) {
             if (node instanceof PlayerModel_1.default) {
                 node = node.element;
@@ -6921,18 +6374,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     node.oncontextmenu = ui.click.rightplayer;
                 }
             }
-            // if(!left){
-            //     lib.setPressure(node,ui.click.rightpressure);
-            // }
             if (func) {
                 node._customintro = func;
             }
         },
-        // setPressure:function(node,func){
-        //     if(window.Pressure){
-        //         window.Pressure.set(node,{change: func}, {polyfill: false});
-        //     }
-        // },
         setPopped: function (node, func, width, height, forceclick, paused2) {
             node._poppedfunc = func;
             node._poppedwidth = width;
@@ -6945,7 +6390,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             else {
                 node.addEventListener('mouseenter', ui.click.hoverpopped);
-                // node.addEventListener('mouseleave',ui.click.hoverpopped_leave);
             }
             if (paused2) {
                 node._paused2 = true;
@@ -6982,21 +6426,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             dialog.style.top = idealtop + 'px';
         },
-        /**
-         * @callback lib.setHover~callback
-         * @param {MouseEvent} e MouseEvent on mouse move
-         * @returns {*}TODO
-         */
-        /**
-         * 设置悬浮
-         * 监听悬停事件
-         * @function
-         * @param {!HTMLElement} node
-         * @param {?lib.setHover~callback} func 回调函数
-         * @param {?number} hoveration 悬停的时间，如果为null，使用默认悬停事件 {@link GameConfig}
-         * @param {?number} width 弹窗宽度，为null时不设置
-         * @returns {!HTMLElement}
-         */
         setHover: function (node, func, hoveration, width) {
             node._hoverfunc = func;
             if (typeof hoveration == 'number') {
@@ -7011,48 +6440,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             node.addEventListener('mousemove', ui.click.mousemove);
             return node;
         },
-        /**
-         * 设置滚轮
-         * 为节点监听滚动事件
-         * @function
-         * @param {!HTMLElement} node 要监听滚动事件的节点
-         * @returns {!HTMLElement}
-         */
         setScroll: function (node) {
             node.ontouchstart = ui.click.touchStart;
             node.ontouchmove = ui.click.touchScroll;
             node.style.WebkitOverflowScrolling = 'touch';
             return node;
         },
-        /**
-         * 设置鼠标滚轮（用于切换皮肤菜单）
-         * 为节点监听鼠标滚轮事件
-         * @function
-         * @param {!HTMLElement} node 要监听鼠标滚轮事件的节点
-         * @returns {!HTMLElement}
-         */
         setMousewheel: function (node) {
             if (lib.config.mousewheel)
                 node.onmousewheel = ui.click.mousewheel;
         },
-        /**
-         * 设置长按
-         * 监听长按事件
-         * @param {!HTMLElement} node 要监听长按事件的节点
-         * @param {?function} func 回调事件
-         * @returns {!HTMLElement}
-         */
         setLongPress: function (node, func) {
             node.addEventListener('touchstart', ui.click.longpressdown);
             node.addEventListener('touchend', ui.click.longpresscancel);
             node._longpresscallback = func;
             return node;
         },
-        /**
-         * 更新`ui.canvas`
-         * @param {!number} time 当前时间
-         * @returns {(undefined|false)} 如果没有需要更新的`<canvas>`返回false
-         */
         updateCanvas: function (time) {
             if (lib.canvasUpdates.length === 0) {
                 lib.status.canvas = false;
@@ -7064,7 +6467,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             ctx.shadowBlur = 5;
             ctx.shadowColor = 'rgba(0,0,0,0.3)';
             ctx.strokeStyle = 'white';
-            // ctx.lineCap='round';
             ctx.lineWidth = 3;
             ctx.save();
             for (var i = 0; i < lib.canvasUpdates.length; i++) {
@@ -7079,10 +6481,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-         * 一个启动函数，其中循环更新`lib.updates`直至没有需要更新的函数
-         * @param {!number} time 当前时间
-         */
         run: function (time) {
             lib.status.time = time;
             for (var i = 0; i < lib.updates.length; i++) {
@@ -7101,40 +6499,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 lib.status.delayed = 0;
             }
         },
-        /**
-         * 将date转化为对应的datetime并返回转化后的datetime
-         * [recommend] 移到{@link get}中
-         * @function
-         * @param {Date} date
-         * @returns {number} datetime
-         * @see {@link get.utc}
-         */
         getUTC: function (date) {
             return date.getTime();
         },
-        /**
-         * 保存录像
-         */
         saveVideo: function () {
             if (_status.videoToSave) {
                 game.export(lib.init.encode(JSON.stringify(_status.videoToSave)), '无名杀 - 录像 - ' + _status.videoToSave.name[0] + ' - ' + _status.videoToSave.name[1]);
             }
         },
-        /**
-         * 初始化
-         * @namespace
-         */
         init: {
-            /**
-             * 初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
-             * 入口函数
-             * @function
-             */
             init: function () {
-                //part: `lib.configprefix` 初始化
-                //如果是从PC端（node.js）载入，额外需要`__dirname`的各级文件夹首字母来拼接
-                //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'|'vtuberkill_1.9_Fvts_'`
-                //BUG: [PC win10] 路径使用`\`时，只获取了盘符
                 if (typeof __dirname === 'string' && __dirname.length) {
                     var dirsplit = __dirname.split('/');
                     for (var i = 0; i < dirsplit.length; i++) {
@@ -7145,13 +6519,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     lib.configprefix += '_';
                 }
-                //window.resetGameTimeout = setTimeout(lib.init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 5000);
-                //part: `cordovaLoadTimeout`的创建，在 ../app/redirect.js
                 if (window.cordovaLoadTimeout) {
                     clearTimeout(window.cordovaLoadTimeout);
                     delete window.cordovaLoadTimeout;
                 }
-                //part: 从html中，删除首次启动使用的样式（css）
                 var links = document.head.querySelectorAll('link');
                 for (var i = 0; i < links.length; i++) {
                     if (links[i].href.indexOf('app/color.css') != -1) {
@@ -7159,31 +6530,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         break;
                     }
                 }
-                //part: 如果是phantom，则禁用indexedDB
                 var index = window.location.href.indexOf('index.html?server=');
                 if (index != -1) {
-                    /**
-                     * 服务器ID
-                     * @type {string}
-                     * @global
-                     */
                     window.isNonameServer = window.location.href.slice(index + 18);
-                    /**
-                     * 禁用indexedDB，为真值时禁用
-                     * @type {boolean}
-                     * @global
-                     */
                     window.nodb = true;
                 }
                 else {
-                    //??
                     index = localStorage.getItem(lib.configprefix + 'asserver');
                     if (index) {
                         window.isNonameServer = index;
                         window.isNonameServerIp = lib.hallURL;
                     }
                 }
-                //part: 设置背景图
                 var htmlbg = localStorage.getItem(lib.configprefix + 'background');
                 if (htmlbg) {
                     if (htmlbg[0] == '[') {
@@ -7210,13 +6568,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 }
-                //part: get, ui, ai, game 引用到 lib对象
                 lib.get = get;
                 lib.ui = ui;
                 lib.ai = ai;
                 lib.game = game;
-                //part: 拓展 HTMLDivElement.
-                //#region 
                 HTMLDivElement.prototype.animate = function (name, time) {
                     var that;
                     if (get.is.mobileMe(this) && name == 'target') {
@@ -7465,17 +6820,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return this;
                 };
-                //#endregion
-                //part: 拓展 HTMLTableElement
-                //#region
                 HTMLTableElement.prototype.get = function (row, col) {
                     if (row < this.childNodes.length) {
                         return this.childNodes[row].childNodes[col];
                     }
                 };
-                //#endregion
-                //part: 拓展数组
-                //#region
                 Array.prototype.numOf = function (item) {
                     var num = 0;
                     for (var i = 0; i < this.length; i++) {
@@ -7595,15 +6944,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         return list;
                     };
                 }
-                //#endregion
-                //part: 设置全局window.onkeydown, window.onload, window.onerror，直到关闭网页（退出游戏）
-                /**
-                 * 监听键盘按下事件
-                 * @function
-                 * @global
-                 * @param {KeyboardEvent} e - 键盘事件
-                 * @listens KeyboardEvent
-                 */
                 window.onkeydown = function (e) {
                     if (!ui.menuContainer || !ui.menuContainer.classList.contains('hidden')) {
                         if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
@@ -7697,16 +7037,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
                             lib.node.debug();
                         }
-                        // else if(e.keyCode==27){
-                        //     if(!ui.arena.classList.contains('paused')) ui.click.config();
-                        // }
                     }
                 };
-                /**
-                 * window加载结束时调用
-                 * @function
-                 * @global
-                 */
                 window.onload = function () {
                     if (lib.device) {
                         var script = document.createElement('script');
@@ -7724,27 +7056,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.init.onload();
                     }
                     else {
-                        /**
-                         * 当onload调用先于包的加载时，标志onload已经运行完毕，直至包全部加载完毕则删除该标志
-                         * @private
-                         * @default
-                         */
                         _status.windowLoaded = true;
                     }
                 };
                 if (document.readyState === 'complete') {
                     window.onload();
                 }
-                /**
-                 * 触发错误时调用
-                 * @function
-                 * @global
-                 * @param {string} msg - 错误信息
-                 * @param {string} src - 引发错误的脚本URL
-                 * @param {string} line - 引发错误的行号
-                 * @param {string} column - 发生错误的行的列号
-                 * @param {Error} err - 错误对象
-                 */
                 window.onerror = function (msg, src, line, column, err) {
                     var str = msg;
                     if (window._status && _status.event) {
@@ -7793,7 +7110,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         game.loop();
                     }
                 };
-                //part: 更新内容，window.nogame_update，创建于config.js
                 if (window.noname_update) {
                     lib.version = window.noname_update.version;
                     lib.changeLog = window.noname_update.changeLog;
@@ -7805,7 +7121,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     delete window.noname_update;
                 }
-                //part: 如果是移动端，设置移动设备信息lib.device, 资源根路径lib.assetURL
                 var noname_inited = localStorage.getItem('noname_inited');
                 if (noname_inited && noname_inited !== 'nodejs') {
                     var ua = navigator.userAgent.toLowerCase();
@@ -7817,15 +7132,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     lib.assetURL = noname_inited;
                 }
-                //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
                 var config3 = null;
                 var proceed = function (config2) {
-                    //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
                     if (config3 === null) {
                         config3 = config2;
                         return;
                     }
-                    //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
                     if (config2.mode)
                         lib.config.mode = config2.mode;
                     if (lib.config.mode_config[lib.config.mode] == undefined)
@@ -7835,15 +7147,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
                         }
                     }
-                    //part: defaultcharacters
                     if (lib.config.characters) {
                         lib.config.defaultcharacters = lib.config.characters.slice(0);
                     }
-                    //part: defaultcards
                     if (lib.config.cards) {
                         lib.config.defaultcards = lib.config.cards.slice(0);
                     }
-                    //part: 从`config2`加载`lib.config`和`lib.mode_config`的数据
                     for (var i in config2) {
                         if (i.indexOf('_mode_config') != -1) {
                             var thismode = i.substr(i.indexOf('_mode_config') + 13);
@@ -7856,7 +7165,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             lib.config[i] = config2[i];
                         }
                     }
-                    //part: 从`lib.config.translate`拷贝到`lib.translate`
                     for (var i in lib.config.translate) {
                         lib.translate[i] = lib.config.translate[i];
                     }
@@ -7864,7 +7172,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     lib.config.all.cards = [];
                     lib.config.all.plays = [];
                     lib.config.all.mode = [];
-                    //part: 如果测试模式已开启，重置资源列表
                     if (lib.config.debug) {
                         lib.init.js(lib.assetURL + 'game', 'asset', function () {
                             lib.skin = window.noname_skin_list;
@@ -7875,7 +7182,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (window.isNonameServer) {
                         lib.config.mode = 'connect';
                     }
-                    //part: `window.noname_package`，创建于package.js
                     var pack = window.noname_package;
                     delete window.noname_package;
                     for (i in pack.character) {
@@ -7911,7 +7217,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     }
-                    //??
                     if (lib.config.all.mode.length == 0) {
                         lib.config.all.mode.push('identity');
                         lib.translate.identity = '身份';
@@ -7971,14 +7276,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
                         lib.configMenu.appearence.config.global_font.item.default = '默认';
                     }
-                    //part: touch, layout, scroll config
                     var ua = navigator.userAgent.toLowerCase();
                     if ('ontouchstart' in document) {
-                        //移动端
                         if (!lib.config.totouched) {
                             game.saveConfig('totouched', true);
                             if (lib.device) {
-                                //移动端通过客户端访问
                                 game.saveConfig('low_performance', true);
                                 game.saveConfig('confirm_exit', true);
                                 game.saveConfig('touchscreen', true);
@@ -7991,7 +7293,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                             }
                             else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
-                                //移动端通过网页访问
                                 game.saveConfig('touchscreen', true);
                                 if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
                                     game.saveConfig('phonelayout', true);
@@ -8000,14 +7301,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     }
-                    else if (lib.config.touchscreen) { //非移动端，如果触屏模式开启，就设置关闭
+                    else if (lib.config.touchscreen) {
                         game.saveConfig('touchscreen', false);
                     }
                     if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
                         game.saveConfig('toscrolled', true);
                         game.saveConfig('mousewheel', false);
                     }
-                    //part: 是否打开开始界面
                     var show_splash = lib.config.show_splash;
                     if (show_splash == 'off') {
                         show_splash = false;
@@ -8018,9 +7318,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     localStorage.removeItem('show_splash_off');
-                    //part: extension list
-                    //??
-                    //[never executed]
                     var extensionlist = [];
                     if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
                         if (lib.config.extensions && lib.config.extensions.length) {
@@ -8060,7 +7357,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     }
-                    //用于加载包的函数
                     var loadPack = function () {
                         var toLoad = lib.config.all.cards.length + lib.config.all.characters.length + 1;
                         var packLoaded = function () {
@@ -8071,11 +7367,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     lib.init.onload();
                                 }
                                 else {
-                                    /**
-                                     * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
-                                     * @private
-                                     * @default
-                                     */
                                     _status.packLoaded = true;
                                 }
                             }
@@ -8092,9 +7383,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.init.js(lib.assetURL + 'card', lib.config.all.cards, packLoaded, packLoaded);
                         lib.init.js(lib.assetURL + 'character', lib.config.all.characters, packLoaded, packLoaded);
                         lib.init.js(lib.assetURL + 'character', 'rank', packLoaded, packLoaded);
-                        // if(lib.device!='ios'&&lib.config.enable_pressure) lib.init.js(lib.assetURL+'game','pressure');
                     };
-                    //part: 检查layout并设置`game.layout = layout`
                     var layout = lib.config.layout;
                     if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
                         layout = 'mobile';
@@ -8105,7 +7394,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         game.saveConfig('phonelayout', true);
                     }
                     game.layout = layout;
-                    //part: 随机选取背景或选择_status.htmlbg作为背景图像
                     if (lib.config.image_background_random) {
                         if (_status.htmlbg) {
                             game.saveConfig('image_background', _status.htmlbg);
@@ -8122,9 +7410,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.init.background();
                     }
                     delete _status.htmlbg;
-                    //part: game to window.game
-                    // window.game = game;//[todo delete]
-                    //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
                     var styleToLoad = 6;
                     var styleLoaded = function () {
                         styleToLoad--;
@@ -8154,7 +7439,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     };
-                    //css.layout
                     if (lib.config.layout != 'default') {
                         ui.css.layout = lib.init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
                     }
@@ -8162,7 +7446,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         ui.css.layout = lib.init.css();
                         styleToLoad--;
                     }
-                    //css.phone
                     if (get.is.phoneLayout()) {
                         ui.css.phone = lib.init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
                     }
@@ -8170,15 +7453,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         ui.css.phone = lib.init.css();
                         styleToLoad--;
                     }
-                    //css.theme
                     ui.css.theme = lib.init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
-                    //css.card_style
                     ui.css.card_style = lib.init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
-                    //css_cardpack_style
                     ui.css.cardback_style = lib.init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
-                    //css.hp_style
                     ui.css.hp_style = lib.init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
-                    //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
                     if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
                         var str = '';
                         switch (lib.config.player_style) {
@@ -8239,9 +7517,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
                     }
-                    //part: ??
                     lib.config.duration = 500;
-                    //part: add mouse/touch event listeners to document.
                     if (!lib.config.touchscreen) {
                         document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
                         document.addEventListener('mousemove', ui.click.windowmousemove);
@@ -8264,16 +7540,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         config3 = true;
                     }
                 };
-                //part: 初始化ui.css.menu和ui.css.default样式
                 ui.css = {
                     menu: lib.init.css(lib.assetURL + 'layout/default', 'menu', function () {
                         ui.css.default = lib.init.css(lib.assetURL + 'layout/default', 'layout');
                         proceed2();
                     })
                 };
-                //part: config for different type of devices(PC, mobile devices).
                 if (lib.device) {
-                    //移动端，window加载完成时被调用
                     lib.init.cordovaReady = function () {
                         if (lib.device == 'android') {
                             document.addEventListener("pause", function () {
@@ -8482,7 +7755,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     };
                 }
                 else if (localStorage.getItem('noname_inited') === 'nodejs') {
-                    //part: PC端
                     lib.node = {
                         fs: require('fs'),
                         debug: function () {
@@ -8627,7 +7899,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
                 else {
-                    //part: 网页端
                     window.onbeforeunload = function () {
                         if (lib.config.confirm_exit && !_status.reloading) {
                             return '是否离开游戏？';
@@ -8637,20 +7908,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     };
                 }
-                //part: 游戏设置信息，window.config，创建于config.js
                 lib.config = window.config;
-                //part: 联机部分的设置
                 lib.configOL = {};
                 delete window.config;
                 var config2;
                 if (localStorage.getItem(lib.configprefix + 'nodb')) {
                     window.nodb = true;
                 }
-                //part: 持久化数据
-                //`config2` 在这里从indexedDB/localStorage加载config数据，存入`config2`；`config2`，可能是`{}`，`false`或者读取到的config对象
-                //如果config加载完成时，`ui.css`未加载完成，则暂存`config2`于`config3`中，等到完成再调用`proceed`
                 if (window.indexedDB && !window.nodb) {
-                    //part: indexedDB
                     var request = window.indexedDB.open(lib.configprefix + 'data', 4);
                     request.onupgradeneeded = function (e) {
                         var db = e.target.result;
@@ -8672,7 +7937,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     };
                     request.onsuccess = function (e) {
                         lib.db = e.target.result;
-                        //part: indexedDB 读取config对象
                         game.getDB('config', null, function (obj) {
                             if (!obj.storageImported) {
                                 try {
@@ -8701,7 +7965,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                 }
                                 game.saveConfig('storageImported', true);
-                                //init background
                                 lib.init.background();
                                 localStorage.removeItem(lib.configprefix + 'config');
                             }
@@ -8713,7 +7976,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     };
                 }
                 else {
-                    //part: localStorage
                     try {
                         config2 = JSON.parse(localStorage.getItem(lib.configprefix + 'config'));
                         if (!config2 || typeof config2 != 'object')
@@ -8726,11 +7988,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     proceed(config2);
                 }
             },
-            /**
-             * 重置游戏
-             * 在游戏初始载入过程中超时的回调函数，发出弹窗询问是否重置（重启）游戏。
-             * @function
-             */
             reset: function () {
                 if (window.inSplash)
                     return;
@@ -8789,16 +8046,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
             },
-            /**
-             * 游戏初始载入成功时被调用，加载游戏样式数据，并载入开始界面。
-             * @function
-             */
             onload: function () {
                 ui.updated();
-                /**
-                 * 文档缩放比例
-                 * @type {number}
-                 */
                 game.documentZoom = game.deviceZoom;
                 if (game.documentZoom != 1) {
                     ui.updatez();
@@ -9014,7 +8263,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     var card = lib.imported.card;
                     var character = lib.imported.character;
                     var play = lib.imported.play;
-                    // delete window.game;//[todo delete]
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i])
@@ -9353,7 +8601,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     continue;
                                 for (k in play[i][j]) {
                                     if (j == 'translate' && k == i) {
-                                        // lib[j][k+'_play_config']=play[i][j][k];
                                     }
                                     else {
                                         if (lib[j][k] != undefined) {
@@ -9605,7 +8852,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     proceed();
                 }
                 localStorage.removeItem(lib.configprefix + 'directstart');
-                delete lib.init.init; //??
+                delete lib.init.init;
             },
             startOnline: ((game) => {
                 return function () {
@@ -9623,10 +8870,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     event.goto(0);
                 };
             })(game),
-            /**
-             * 闲时执行，一般选择角色后开始执行这个方法
-             * @function
-             */
             onfree: function () {
                 if (lib.onfree) {
                     clearTimeout(window.resetGameTimeout);
@@ -9689,12 +8932,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
                 client.send('opened');
             },
-            /**
-             * 创建（并插入文档）新的`<style>`
-             * @function
-             * @param {...string} rules css rules
-             * @returns {!HTMLStyleElement} 新的`<style>`
-             */
             sheet: function () {
                 var style = document.createElement('style');
                 document.head.appendChild(style);
@@ -9705,24 +8942,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 return style;
             },
-            /**
-             * 读取一个css文件
-             * 于文档中创建（并插入文档中）新的`<link>`，如果设置路径则先加载再返回，否则直接返回空`<link>`
-             * @function lib.init.css
-             * @param {string} [path=null] 要加载的css文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {string} file 文件名（不包括拓展名），自动添加后缀.css；如果path为null，则被忽略
-             * @param {function():void} [before] 可选，onload回调函数，在新`<link>`加载完成时被调用
-             */
-            /**
-             * 读取一个css文件
-             * 于文档中创建（并插入文档中）新的`<link>`，如果设置路径则先加载再返回，否则直接返回空`<link>`
-             * @function lib.init.css
-             * @variation 2
-             * @param {string} [path=null] 要加载的css文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {string} file 文件名（不包括拓展名），自动添加后缀.css；如果path为null，则被忽略
-             * @param {HTMLLinkElement} [before] 可选，一个{@link HTMLLinkElement}对象，新`<link>`会插入到`before`前
-             * @returns {HTMLLinkElement} 新的`<link>`
-             */
             css: function (path, file, before) {
                 var style = document.createElement("link");
                 style.rel = "stylesheet";
@@ -9741,42 +8960,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 return style;
             },
-            /**
-             * 读取一个js文件
-             * 于文档中创建新的`<script>`对象
-             * @function lib.init.js
-             * @param {!string} dir 要加载的js文件所在目录, 如果为null，不设置生成的`<link>`的href值
-             * @param {!string} file 文件名（不包括拓展名），自动添加后缀.js；如果path为null，则被忽略
-             * @param {function():void} [onload] 可选，onload回调函数
-             * @param {function():void} [onerror] 可选，onerror回调函数
-             * @returns {!HTMLScriptElement} 新的`<script>`
-             */
-            /**
-             * 读取一个js文件
-             * 于文档中创建新的`<script>`对象
-             * @function lib.init.js
-             * @variation 2
-             * @param {!string} path 要加载的js文件所在路径, 如果为null，不设置生成的`<link>`的href值
-             * @param {null} file 文件名（无拓展名），自动添加后缀.js
-             * @param {function():void} [onload] 可选，onload回调函数
-             * @param {function():void} [onerror] 可选，onerror回调函数
-             * @returns {!HTMLScriptElement} 新的`<script>`
-             */
-            /**
-             * 读取一个js文件
-             * 于文档中创建一组新的`<script>`对象
-             * @function lib.init.js
-             * @variation 3
-             * @param {!string} path 要加载的js文件所在路径, 如果为null，不设置生成的`<link>`的href值
-             * @param {Array<string>} files 文件名数组
-             * @param {?function():void} [onload] 可选，onload回调函数，对每个新的`<script>`调用
-             * @param {?function():void} [onerror] 可选，onerror回调函数，对每个新的`<script>`调度
-             */
             js: function (path, file, onload, onerror) {
                 if (path[path.length - 1] == '/') {
                     path = path.slice(0, path.length - 1);
                 }
-                //??
                 if (path == lib.assetURL + 'mode' && lib.config.all.stockmode.indexOf(file) == -1) {
                     lib.init['setMode_' + file]();
                     onload();
@@ -9829,13 +9016,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 oReq.open("GET", sScriptURL);
                 oReq.send();
             },
-            /**
-             * 读取一个json文件
-             * @function
-             * @param {!string} url url路径
-             * @param {function(Object):void} onload 成功时的回调函数
-             * @param {function():void} onerror 失败时回调函数
-             */
             json: function (url, onload, onerror) {
                 var oReq = new XMLHttpRequest();
                 if (onload)
@@ -9858,10 +9038,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 oReq.open("GET", url);
                 oReq.send();
             },
-            /**
-             * 初始化角色字体样式和边缘样式
-             * @function
-             */
             cssstyles: function () {
                 if (ui.css.styles) {
                     ui.css.styles.remove();
@@ -9889,12 +9065,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         break;
                 }
             },
-            /**
-             * 初始化布局
-             * @function
-             * @param {string} layout 布局类型
-             * @param {boolean} nosave 是否保存
-             */
             layout: function (layout, nosave) {
                 if (!nosave)
                     game.saveConfig('layout', layout);
@@ -10007,10 +9177,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }, 100);
                 }, 500);
             },
-            /**
-             * 保存当前的背景图片
-             * @function
-             */
             background: function () {
                 if (lib.config.image_background_random) {
                     var list = [];
@@ -10053,7 +9219,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             },
             parse: function (func) {
                 var str = func.toString();
-                //galgame调整
                 str = str.replace(/(?!\.)galgame/g, 'game.galgame');
                 str = str.slice(str.indexOf('{') + 1);
                 if (str.indexOf('step 0') == -1) {
@@ -10070,12 +9235,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 return (new Function('event', 'step', 'source', 'player', 'target', 'targets', 'card', 'cards', 'skill', 'num', 'trigger', 'result', '_status', 'lib', 'game', 'ui', 'get', 'ai', str));
             },
-            /**
-             * 执行一个，或一组无参函数，并返回结果；如果是`{a:function(){}, b:function(){}}`的形式，返回`{a: any, b: any}`作为结果
-             * @function
-             * @param {(function():any|Object<string, function():any>)} func 要执行的函数/函数组
-             * @returns {(any|Object<string, any>)}
-             */
             eval: function (func) {
                 if (typeof func == 'function') {
                     return eval('(' + func.toString() + ')');
@@ -10089,12 +9248,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 return func;
             },
-            /**
-             * 加密文本
-             * @function
-             * @param {string} strUni 原文本
-             * @returns 加密文本
-             */
             encode: function (strUni) {
                 var strUtf = strUni.replace(/[\u0080-\u07ff]/g, function (c) {
                     var cc = c.charCodeAt(0);
@@ -10106,12 +9259,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
                 return btoa(strUtf);
             },
-            /**
-             * 解密
-             * @function
-             * @param {string} str 加密文本
-             * @returns {string} 原文本
-             */
             decode: function (str) {
                 var strUtf = atob(str);
                 var strUni = strUtf.replace(/[\u00e0-\u00ef][\u0080-\u00bf][\u0080-\u00bf]/g, function (c) {
@@ -10124,11 +9271,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
                 return strUni;
             },
-            /**
-             * js对象转为json字符串
-             * @function
-             * @returns {!string}
-             */
             stringify: function (obj) {
                 var str = '{';
                 for (var i in obj) {
@@ -10147,11 +9289,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 str += '}';
                 return str;
             },
-            /**
-             * 技能对象转为json字符串
-             * @function
-             * @returns {!string}
-             */
             stringifySkill: function (obj) {
                 var str = '';
                 for (var i in obj) {
@@ -10170,14 +9307,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return str;
             }
         },
-        /**
-         * 测试用作弊方法
-         * @name cheat
-         */
         cheat: {
             i: function () {
                 window.cheat = lib.cheat;
-                // window.game = game;//[todo delete]
                 window.ui = ui;
                 window.get = get;
                 window.ai = ai;
@@ -10297,8 +9429,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.saveConfig('animation', false);
                 game.saveConfig('hover_all', false);
                 game.saveConfig('asset_version', 'v1.9');
-                // game.saveConfig('characters',lib.config.all.characters);
-                // game.saveConfig('cards',lib.config.all.cards);
                 game.saveConfig('plays', ['cardpile']);
                 game.saveConfig('skip_shan', false);
                 game.saveConfig('tao_enemy', true);
@@ -10329,7 +9459,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             },
             q: function () {
-                // if(lib.config.layout!='mobile') lib.init.layout('mobile');
                 if (arguments.length == 0) {
                     var style = ui.css.card_style;
                     if (lib.config.card_style != 'simple') {
@@ -10414,51 +9543,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             },
             c: function () {
-                // (function () {
-                //     var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
-                //     var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
-                //     for (var i in lib.character) {
-                //         switch (lib.character[i][1]) {
-                //             case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
-                //             case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
-                //             case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
-                //             case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
-                //             case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
-                //             case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
-                //             case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
-                //             case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
-                //             case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
-                //             case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
-                //             case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
-                //             case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
-                //             case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
-                //             case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
-                //             case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
-                //             case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
-                //             case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
-                //             case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
-                //             case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
-                //             case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
-                //             case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
-                //             case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
-                //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
-                //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //             case 'chidori': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //         }
-                //     }
-                //     console.log('魏：' + (a - sa) + '/' + a);
-                //     console.log('蜀：' + (b - sb) + '/' + b);
-                //     console.log('吴：' + (c - sc) + '/' + c);
-                //     console.log('群：' + (d - sd) + '/' + d);
-                //     console.log('西：' + (e - se) + '/' + e);
-                //     console.log('键：' + (f - sf) + '/' + f);
-                //     console.log('杏：' + (g - sg) + '/' + g);
-                //     console.log('虹：' + (h - sh) + '/' + h);
-                //     console.log('U：' + (j - sj) + '/' + j);
-                //     console.log('点：' + (k - sk) + '/' + k);
-                //     console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
-                // }());
                 (function () {
                     var a = 0, b = 0, c = 0, d = 0;
                     var aa = 0, bb = 0, cc = 0, dd = 0;
@@ -10926,11 +10010,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.zhu.update();
             },
         },
-        /**
-         * 词汇翻译
-         * 翻译文本
-         * @type {!Object}
-         */
         translate: {
             sc: '打钱',
             ship: '上舰',
@@ -11218,27 +10297,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             group_xuyan_bg: "虚",
             group_xuefeng_bg: "雪",
         },
-        /**
-         * 游戏基础对象和状态机
-         * @name element
-         * @namespace
-         * @see {@link content}
-         * @see {@link lib.element.player}
-         * @see {@link lib.element.card}
-         */
         element: {
             content: content_1.default,
-            /**
-             * 卡牌方法，.card节点共用的方法（比如检测卡牌是否在区域内【hasPosition】和添加去除标签【add/removeGaintag】）
-             * 卡牌
-             * @namespace
-             * @mixin
-             */
             card: {
-                /**
-                 * 为本游戏牌添加gain标签名；本游戏牌`this.node.gaintag`也会更新
-                 * @param {(string|Array<string>)} gaintag gain标签名，如果是一个数组，会**覆盖**本游戏牌的原gain标签数组为此数组，而不是向原数组中添加gain标签
-                 */
                 addGaintag: function (gaintag) {
                     if (Array.isArray(gaintag))
                         this.gaintag = gaintag.slice(0);
@@ -11252,10 +10313,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     this.node.gaintag.innerHTML = str;
                 },
-                /**
-                 * 为本游戏牌移除gain标签，或置空gain标签数组；本游戏牌`this.node.gaintag`也会更新
-                 * @param {(string|true)} tag 要移除的gain标签名，如果此gain标签不在其中则不做任何处理；如果此值为true，置空gain标签数组
-                 */
                 removeGaintag: function (tag) {
                     if (tag === true) {
                         if (this.gaintag && this.gaintag.length || this.node.gaintag.innerHTML.length)
@@ -11266,11 +10323,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         this.addGaintag(this.gaintag);
                     }
                 },
-                /**
-                 * 返回本游戏牌是否含有某一个gain标签
-                 * @param {!string} tag 要搜索的gain标签
-                 * @returns {!boolean}
-                 */
                 hasGaintag: function (tag) {
                     if (['ming_', 'an_'].contains(tag)) {
                         return this.gaintag && this.gaintag.filter(function (gain) {
@@ -11280,13 +10332,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     else
                         return this.gaintag && this.gaintag.contains(tag);
                 },
-                /**
-                 * 初始化
-                 * 同时将info.global内的技能添加到{@link lib.skill.global}
-                 * @function
-                 * @param {(Array|Object)} card TODO
-                 * @returns {!GameCores.GameObjects.Card} this self
-                 */
                 init: function (card) {
                     if (Array.isArray(card)) {
                         if (card[2] == 'huosha') {
@@ -11521,7 +10566,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     else {
                         this.node.background.innerHTML = lib.translate[bg + '_cbg'] || lib.translate[bg + '_bg'] || get.translation(bg)[0];
-                        // this.node.background.style.fontFamily=lib.config.card_font;
                         if (this.node.background.innerHTML.length > 1)
                             this.node.background.classList.add('tight');
                         else
@@ -11728,11 +10772,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return this;
                 },
-                /**
-                 * 选中状态，更新本游戏牌的位置；仅供`ui.me`中的手牌使用的函数(本机)
-                 * @param {?boolean} [bool] 如果为true，translate`translateY(-20px)`
-                 * @param {?number} [delay] 延迟`delay`(ms)时长，再更新本游戏牌位置；如果未指定或为0，不调用延迟函数，立即更新
-                 */
                 updateTransform: function (bool, delay) {
                     if (delay) {
                         var that = this;
@@ -11887,17 +10926,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return false;
                 },
-                /**
-                 * 判断本卡牌是否在某角色的区域中
-                 * @returns {!boolean}
-                 */
                 hasPosition: function () {
                     return ['h', 'e', 'j'].contains(get.position(this));
                 },
-                /**
-                 * 判断本卡牌是否在牌堆或弃牌堆中
-                 * @returns {!boolean}
-                 */
                 isInPile: function () {
                     return ['c', 'd'].contains(get.position(this));
                 }
@@ -11905,11 +10936,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             player: {
                 inits: {}
             },
-            /**
-             * 按钮方法
-             * @name element.button
-             * @type {!Object}
-             */
             button: {
                 exclude: function () {
                     if (_status.event.excludeButton == undefined) {
@@ -11918,34 +10944,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     _status.event.excludeButton.add(this);
                 }
             },
-            /**
-             * 事件方法，游戏进行过程中每一个事件所具有的方法（比如设置事件内容【setContent】和停止事件【finish】）
-             * 事件
-             * @namespace
-             * @mixin
-             */
             event: {
                 changeToZero: function () {
                     this.num = 0;
                     this.numFixed = true;
                 },
-                /**
-                 * 结束事件
-                 * @function
-                 */
                 finish: function () {
                     this.finished = true;
                 },
-                /**
-                 * 取消事件
-                 * 直接结束事件，也跳过子事件的触发和执行
-                 * @function
-                 * @param {?boolean} all 见{@link lib.element.event.untrigger}
-                 * @param {?GameCores.GameObjects.Player} player 见{@link lib.element.event.untrigger}
-                 * @param {?string} notrigger 如果为'notrigger'则**不尝试触发**`${this.name}Cancelled`
-                 */
                 cancel: function (arg1, arg2, notrigger) {
-                    this.untrigger.call(this, arguments); //??
+                    this.untrigger.call(this, arguments);
                     this.finish();
                     if (notrigger != 'notrigger') {
                         this.trigger(this.name + 'Cancelled');
@@ -11953,18 +10961,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             this.player.getHistory('skipped').add(this.name);
                     }
                 },
-                /**
-                 * 转移状态
-                 * @function
-                 * @param {!number} step 新状态
-                 */
                 goto: function (step) {
                     this.step = step - 1;
                 },
-                /**
-                 * 自环(循环)
-                 * @function
-                 */
                 redo: function () {
                     this.step--;
                 },
@@ -11977,23 +10976,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         this.set('hsskill', skill);
                     return this;
                 },
-                /**
-                 * 链式函数，为Event的属性赋值
-                 * 赋值`this[key] = value`，同时绑定`this._set.push([key, value])`
-                 * @function lib.element.event.set
-                 * @param {!string} key 键名
-                 * @param {?Object} value 键值
-                 * @returns {GameCores.GameObjects.Event} this self
-                 */
-                /**
-                 * 为Event的属性赋值
-                 * 对每个键值对，调用{@link lib.element.event.set}绑定到Event上
-                 * @function lib.element.event.set
-                 * @variation 2
-                 * @param {!Array<Array>} pairs 要设置键值对数组
-                 * @param {!string} pairs[].'[0]' 键名
-                 * @param {?Object} pairs[].'[1]' 键值
-                 */
                 set: function (key, value) {
                     if (arguments.length == 1 && Array.isArray(arguments[0])) {
                         for (var i = 0; i < arguments[0].length; i++) {
@@ -12013,17 +10995,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return this;
                 },
-                /**
-                 * 设置事件的状态机
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机，如果未指定则不设置
-                 * @returns {GameCores.Bases.Event} this self
-                 */
-                /**
-                 * 设置事件的状态机
-                 * @param {?string} name 状态机名，使用`lib.element.content[name]`作为事件的状态机，见{@link lib.element.content}
-                 * @returns {GameCores.Bases.Event} this self
-                 */
                 setContent: function (name) {
                     if (typeof name == 'function') {
                         this.content = lib.init.parse(name);
@@ -12061,21 +11032,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.player.wait();
                     game.pause();
                 },
-                /**
-                 * 选择结束，清空事件的选择(card，target, skill)
-                 */
                 resume: function () {
                     delete this._cardChoice;
                     delete this._targetChoice;
                     delete this._skillChoice;
                 },
-                /**
-                 * 获取本事件的指定父事件
-                 * @function
-                 * @param {(string|number)} [level] 指定父事件的名称 | 为number值时表示重复取level次_parent
-                 * @param {?boolean} [forced] 为true表示强制返回：获取不到指定父事件时返回{null}
-                 * @returns {?GameCores.Bases.Event} 通过_parent（_modparent）属性获取本事件的父事件，若父事件不满足要求或重复次数少于level，则取父事件的_parent，依此类推直至获取到满足条件的父事件
-                 */
                 getParent: function (level, forced) {
                     var parent;
                     if (this._modparent && game.online) {
@@ -12113,18 +11074,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return parent;
                 },
-                /**
-                 * 获取本事件的触发事件
-                 * @function
-                 * @returns {?GameCores.Bases.Event} 本事件的触发事件，如果本事件没有触发事件，返回undefined/null
-                 */
                 getTrigger: function () {
                     return this.getParent()._trigger;
                 },
-                /**
-                 * 返回本事件的随机值，如果已经有随机值就返回之前的随机值；未调用该函数时，随机值`this._rand`默认未指定(undefined)
-                 * @returns {!number} this._rand
-                 */
                 getRand: function (name) {
                     if (name) {
                         if (!this._rand_map)
@@ -12137,13 +11089,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         this._rand = Math.random();
                     return this._rand;
                 },
-                /**
-                 * 创建不可触发的`${this.name}Inserted`事件，立即执行
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机
-                 * @param {?Object<string, Object>} map 键值对对象
-                 * @returns {!GameCores.Bases.Event} 创建的事件
-                 */
                 insert: function (func, map) {
                     var next = game.createEvent(this.name + 'Inserted', false, this);
                     next.setContent(func);
@@ -12152,13 +11097,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return next;
                 },
-                /**
-                 * 创建不可触发的`${this.name}Inserted`事件，于本事件结算后执行
-                 * @function
-                 * @param {?GameCores.Bases.StateMachine} stateMachine 状态机
-                 * @param {?Object<string, Object>} map 键值对对象
-                 * @returns {!GameCores.Bases.Event} 创建的事件
-                 */
                 insertAfter: function (func, map) {
                     var next = game.createEvent(this.name + 'Inserted', false, { next: [] });
                     this.after.push(next);
@@ -12168,11 +11106,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return next;
                 },
-                /**
-                 * 备份
-                 * @function
-                 * @param {?string} skill 技能ID
-                 */
                 backup: function (skill) {
                     this._backup = {
                         filterButton: this.filterButton,
@@ -12432,23 +11365,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 },
-                /**
-                 * 尝试触发子事件
-                 * @param {!string} name trigger name
-                 */
                 trigger: function (name) {
-                    //??
                     if (_status.video)
                         return;
-                    //如果是游戏开始前，分发手牌时，一切因获得/失去牌而触发的技能不会触发
                     if ((this.name === 'gain' || this.name === 'lose') && !_status.gameDrawed)
                         return;
-                    //分发手牌结束 [recommend] why here//??
-                    /**
-                     * 如果为true，表示游戏开始前分发手牌结束；如果未指定，则游戏未开始且手牌没有分发完成
-                     * @name _status.gameDrawed
-                     * @type {?true}
-                     */
                     if (name === 'gameDrawEnd')
                         _status.gameDrawed = true;
                     if (name === 'gameStart') {
@@ -12458,23 +11379,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (lib.config.show_cardpile) {
                             ui.cardPileButton.style.display = '';
                         }
-                        /**
-                         * 如果为true，表示游戏已经开始；如果未指定，则游戏还在分发武将和手牌，尚未开始
-                         * @name _status.gameStarted
-                         * @type {?true}
-                         */
                         _status.gameStarted = true;
                         game.showHistory();
                     }
-                    //通过hookmap优化性能，但是hookmap不向下兼容；如果处于兼容模式，则忽略hookmap优化
                     if (!lib.hookmap[name] && !lib.config.compatiblemode)
                         return;
-                    //?? 是否需要判空?
                     if (!game.players || !game.players.length)
                         return;
                     var event = this;
-                    //?? 是否可以简化?
-                    //??
                     var start = false;
                     var starts = [_status.currentPhase, event.source, event.player, game.me, game.players[0]];
                     for (var i = 0; i < starts.length; i++) {
@@ -12485,7 +11397,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     if (!start)
                         return;
-                    //确保start角色在游戏之中
                     if (!game.players.contains(start)) {
                         start = game.findNext(start);
                     }
@@ -12665,16 +11576,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         next.map = mapx;
                         next._trigger = event;
                         next.triggername = name;
-                        //next.starter=start;
                         event._triggering = next;
                     }
                 },
-                /**
-                 * 取消将要触发的子事件；如果无参调用，不进行任何处理
-                 * @function
-                 * @param {?boolean} all 如果为true，取消全部要触发的子事件；如果未指定或为false，忽略该值
-                 * @param {?GameCores.GameObjects.Player} player 一个角色，取消所有将要对该角色触发的子事件，如果未指定，忽略该值
-                 */
                 untrigger: function (all, player) {
                     var evt = this._triggering;
                     if (all) {
@@ -12702,12 +11606,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
             },
-            /**
-             * 弹窗方法，.dialog节点共用的方法（比如开启和关闭弹窗【open/close】）
-             * 对话框(弹窗)
-             * @name element.dialog
-             * @type {!Object}
-             */
             dialog: {
                 add: function (item, noclick, zoom) {
                     if (typeof item == 'string') {
@@ -12834,9 +11732,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         ui.dialog.refocus();
                         ui.update();
                     }
-                    // if(ui.arenalog){
-                    //     ui.arenalog.classList.remove('withdialog');
-                    // }
                     return this;
                 },
                 setCaption: function (str) {
@@ -12844,12 +11739,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return this;
                 }
             },
-            /**
-             * 选项方法，参考弹窗方法，在创建.control节点时依次为其添加
-             * 选择项
-             * @name element.control
-             * @type {!Object}
-             */
             control: {
                 open: function () {
                     ui.control.insertBefore(this, _status.createControl || ui.confirm);
@@ -12890,7 +11779,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         delete ui.skills3;
                 },
                 replace: function () {
-                    // this.animate('controlpressdownx',500);
                     if (this.replaceTransition === false) {
                         this.style.transitionProperty = 'none';
                         ui.refresh(this);
@@ -12928,11 +11816,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return this;
                 }
             },
-            /**
-             * 客户端
-             * @name element.client
-             * @type {!Object}
-             */
             client: {
                 send: function () {
                     if (this.closed)
@@ -12986,11 +11869,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return this;
                 }
             },
-            /**
-             * Node Web Server listeners and callbacks
-             * @name element.nodews
-             * @type {!Object}
-             */
             nodews: {
                 send: function (message) {
                     game.send('server', 'send', this.wsid, message);
@@ -13002,11 +11880,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     game.send('server', 'close', this.wsid);
                 }
             },
-            /**
-             * Web Server
-             * @name element.ws
-             * @type {!Object}
-             */
             ws: {
                 onopen: function () {
                     if (_status.connectCallback) {
@@ -13064,17 +11937,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     else {
-                        // game.saveConfig('reconnect_info');
                     }
                     game.online = false;
                     game.ws = null;
                 }
             }
         },
-        //全局卡牌
         card: {
             list: [],
-            //石头剪刀布
             pss_paper: {
                 type: 'pss',
                 fullskin: true,
@@ -13087,7 +11957,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 type: 'pss',
                 fullskin: true,
             },
-            //区域废弃标志
             feichu_equip1: {
                 type: "equip",
                 subtype: "equip1",
@@ -13109,7 +11978,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 subtype: "equip5",
             },
             disable_judge: {},
-            //势力卡牌
             group_wei: { fullskin: true },
             group_shu: { fullskin: true },
             group_wu: { fullskin: true },
@@ -13131,10 +11999,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             group_xuyan: { fullskin: true, },
             group_xuefeng: { fullskin: true, },
         },
-        /**
-         * 用于简单筛选的回调函数组
-         * @namespace
-         */
         filter: {
             all: function () {
                 return true;
@@ -13145,14 +12009,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             filterButton: function (button) {
                 return true;
             },
-            /**
-             * 检测角色A能否使用某卡牌救治角色B
-             * @function
-             * @param {!GameCores.GameObjects.Card} card 检测卡牌
-             * @param {!GameCores.GameObjects.Player} player 卡牌使用者(角色A)
-             * @param {!GameCores.GameObjects.Player} target 卡牌目标(角色B)
-             * @returns {!boolean} 如果可触发，返回true；否则返回false
-             */
             cardSavable: function (card, player, target) {
                 var mod2 = game.checkMod(card, player, 'unchanged', 'cardEnabled2', player);
                 if (mod2 != 'unchanged')
@@ -13165,15 +12021,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     savable = savable(card, player, target);
                 return savable;
             },
-            /**
-             * 检测技能的trigger事件是否可触发
-             * @function
-             * @param {!GameCores.Bases.Event} event 父事件
-             * @param {!GameCores.GameObjects.Player} player 触发对象(角色)
-             * @param {!string} name 触发器名/触发条件，即triggername
-             * @param {!string} skill 技能ID
-             * @returns {!boolean} 如果可触发，返回true；否则返回false
-             */
             filterTrigger: function (event, player, name, skill) {
                 if (player._hookTrigger) {
                     for (var i = 0; i < player._hookTrigger.length; i++) {
@@ -13200,7 +12047,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         return true;
                     return false;
                 };
-                for (var i in info.trigger) { //check trigger
+                for (var i in info.trigger) {
                     if ((i == 'global' || player == event[i]) && has(info.trigger[i])) {
                         bool = true;
                         break;
@@ -13250,16 +12097,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (double_character && lib.config.forbiddouble.contains(i)) {
                         return true;
                     }
-                    // if(lib.configOL.ban_weak){
-                    //     if(lib.config.replacecharacter[i]&&libCharacter&&libCharacter[lib.config.replacecharacter[i]]) return true;
-                    //     if(lib.config.forbidall.contains(i)) return true;
-                    //     if(!double_character&&get.rank(i,true)<=2){
-                    //         return true;
-                    //     }
-                    // }
-                    // if(lib.configOL.ban_strong&&get.rank(i,true)>=8){
-                    //     return true;
-                    // }
                 }
                 else {
                     if (lib.config.banned.contains(i))
@@ -13277,16 +12114,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (double_character && lib.config.forbiddouble.contains(i)) {
                         return true;
                     }
-                    // if(get.config('ban_weak')){
-                    //     if(lib.config.replacecharacter[i]&&lib.character[lib.config.replacecharacter[i]]) return true;
-                    //     if(lib.config.forbidall.contains(i)) return true;
-                    //     if(!double_character&&get.rank(i,true)<=2){
-                    //         return true;
-                    //     }
-                    // }
-                    // if(get.config('ban_strong')&&get.rank(i,true)>=8){
-                    //     return true;
-                    // }
                 }
             },
             characterDisabled2: function (i) {
@@ -13449,7 +12276,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             },
             filterCard: function (card, player, event) {
                 var info = get.info(card);
-                //if(info.toself&&!lib.filter.targetEnabled(card,player,player)) return false;
                 if (player == undefined)
                     player = _status.event.player;
                 if (!lib.filter.cardEnabled(card, player, event) || !lib.filter.cardUsable(card, player, event))
@@ -13665,17 +12491,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-         * 用于简单排序的回调函数组
-         * @name sort
-         * @namespace
-         */
         sort: {
-            /**
-             * 将角色按照势力排列
-             * @name sort.character
-             * @function
-             */
             character: function (a, b) {
                 var getGroup = function (name) {
                     var group = get.is.double(name, true);
@@ -13712,11 +12528,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 return aa > bb ? 1 : -1;
             },
-            /**
-             * 将卡牌按照类型排列
-             * @name sort.card
-             * @function
-             */
             card: function (a, b) {
                 var typeSort = function (name) {
                     var type = get.type(name);
@@ -13754,11 +12565,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             random: function () {
                 return (Math.random() - 0.5);
             },
-            /**
-             * 将角色按照距离排列
-             * @name sort.seat
-             * @function
-             */
             seat: function (a, b) {
                 var player = lib.tempSortSeat || _status.event.player;
                 var delta = get.distance(player, a, 'absolute') - get.distance(player, b, 'absolute');
@@ -13819,16 +12625,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         },
         skill: skill_1.default,
         character: {},
-        /**
-         * 珠联璧合映射
-         * @type {!Object}
-         */
         perfectPair: {},
         cardPile: {},
-        /**
-         * 网络部分的消息处理（回调）函数
-         * @type {!Object}
-         */
         message: {
             server: {
                 init: function (version, config, banned_info) {
@@ -14059,11 +12857,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 },
                 exec: function (func) {
-                    // if(typeof func=='function'){
-                    //     var args=Array.from(arguments);
-                    //     args.shift();
-                    //     func.apply(this,args);
-                    // }
                 },
                 log: function () {
                     var items = [];
@@ -14118,7 +12911,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 selfclose: function () {
                     if (game.online || game.onlineroom) {
                         if ((game.servermode || game.onlinehall) && _status.over) {
-                            // later
                         }
                         else {
                             game.saveConfig('tmp_user_roomId');
@@ -14646,22 +13438,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 player.$disableJudge();
                             }
                             if (Array.isArray(info.disableEquip)) {
-                                for (var ii = 0; ii < info.disableEquip.length; ii++) {
+                                for (let ii = 0; ii < info.disableEquip.length; ii++) {
                                     player.$disableEquip(info.disableEquip[ii]);
                                 }
                             }
                             player.directgain(info.handcards);
                             lib.playerOL[i] = player;
-                            for (var i = 0; i < info.equips.length; i++) {
+                            for (let i = 0; i < info.equips.length; i++) {
                                 player.$equip(info.equips[i]);
                             }
-                            for (var i = 0; i < info.handcards.length; i++) {
+                            for (let i = 0; i < info.handcards.length; i++) {
                                 info.handcards[i].addGaintag(info.gaintag[i]);
                             }
-                            for (var i = 0; i < info.specials.length; i++) {
+                            for (let i = 0; i < info.specials.length; i++) {
                                 info.specials[i].classList.add('glows');
                             }
-                            for (var i = 0; i < info.judges.length; i++) {
+                            for (let i = 0; i < info.judges.length; i++) {
                                 if (info.views[i] && info.views[i] != info.judges[i]) {
                                     info.judges[i].classList.add('fakejudge');
                                     info.judges[i].viewAs = info.views[i];
@@ -14880,51 +13672,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-         * 游戏牌颜色
-         * @type {('red'|'black'|'none')}
-         */
         color: ['red', 'black', 'none'],
-        /**
-         * 游戏牌花色
-         * @type {('club'|'spade'|'diamond'|'heart')}
-         */
         suit: ['club', 'spade', 'diamond', 'heart'],
-        /**
-         * 游戏牌点数
-         * @type {('A'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'X'|'J'|'Q'|'K')}
-         */
         number: ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'],
-        /**
-         * 武将牌势力
-         * |string|Group Name|
-         * |:----:|:--------:|
-         * |vtuber|企业|
-         * |clubs|社团|
-         * |wei|魏|
-         * |shu|蜀|
-         * |wu|吴|
-         * |qun|群|
-         * |jin|晋|
-         * |shen|神、特典|
-         * |holo|Hololive|
-         * |nijisanji|虹|
-         * |dotlive|点|
-         * |upd8|U|
-         * |eilene|艾琳|
-         * |paryi|帕里|
-         * |kagura|神楽|
-         * |nori|苔|
-         * |vwp|神椿|
-         * |nanashi|774 inc.|
-         * |VirtuaReal|VirtuaReal|
-         * |psp|psplive|
-         * |asoul|A-SOUL|
-         * |chaos|Chaos Live|
-         * |xuefeng|雪风军团|
-         * |vshojo|Vshojo|
-         * @type {string}
-         */
         group: [
             'vtuber', 'clubs',
             'wei', 'shu', 'wu', 'qun', 'jin', 'shen',
@@ -14932,26 +13682,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
             'vshojo'
         ],
-        /**
-         * shen势力可选的武将牌势力
-         * 较group去除了企业、社团、三国势力
-         * @type {string}
-         */
         group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi', 'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng'],
-        /**
-         * 卡牌属性
-         * @type {('fire'|'thunder'|'poison'|'ocean'|'ice'|'kami'|'yami')}
-         */
         nature: ['fire', 'thunder', 'poison', 'ocean', 'ice', 'kami', 'yami'],
-        /**
-         * 铁索属性 - TODO
-         * @type {string}
-         */
         linked: ['fire', 'thunder', 'ocean', 'ice', 'kami', 'yami'],
-        /**
-         * 势力对应属性
-         * @constant
-         */
         groupnature: {
             shen: 'thunder',
             wei: 'water',
@@ -14988,22 +13721,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             vtuber: 'metal',
             clubs: 'ice',
         },
-        /**
-         * 游戏阶段
-         *
-         * @type {string}
-         */
         phaseName: ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'],
-        /**
-         * 游戏阶段
-         *
-         * @type {string}
-         */
         historyRecorder: { useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], recover: [], changeHujia: [], custom: [] },
-        /**
-         * 快捷语音 - TODO
-         * @type {string}
-         */
         quickVoice: [
             '我从未见过如此厚颜无耻之人！',
             '这波不亏',

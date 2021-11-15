@@ -34,4 +34,25 @@ declare type _status_type = {
     waitingToReload?: boolean,
     noclearcountdown?: boolean,
     connectMode?: boolean
+
+    gameStarted?: boolean
+    waitingForPlayer?: boolean
+    dragged?: boolean
+    video?: boolean
+    multitarget?: boolean
+    mode?: string
+    clickingidentity?:[PlayerModel,Array]
+    /**当前回合角色 */
+    currentPhase?:PlayerModel
+    /**当前回合弃牌 */
+    discarded?:Array
+    /**发送聊天 */
+    addChatEntry?:Array
+    /**轮次开始角色 */
+    roundStart?:PlayerModel
+    /**先攻少摸牌 */
+    first_less_forced:boolean
+    first_less:boolean
+    /**选择中 */
+    imchoosing:boolean
 }

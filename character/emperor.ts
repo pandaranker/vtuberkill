@@ -879,8 +879,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				priority:6,
 				content(){
 					'step 0'
-					var number = get.number(trigger.card);
-					var list = [];
+					let number = get.number(trigger.card);
+					let list = [];
 					if(number){
 						if(number%3==0)	list.add('liuxuan_huoli');
 						if(number%4==0)	list.add('liuxuan_haixiu');
@@ -898,7 +898,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						player.removeSkill([from]);
 						event.goto(3);
 					}else if(event.list.length>1){
-						var list = event.list.slice(0);
+						let list = event.list.slice(0);
 						player.chooseButton(true,['选择一个姿态进入',[list,'vcard'],'hidden']).set('filterButton',function(button){
 							var player = _status.event.player;
 							if(button.link[2]==player.storage.liuxuan)	return false;
@@ -997,12 +997,12 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						else if(player==game.me&&!_status.auto){
 							func(event.links,event.videoId);
 						}
-						var list = ['+1','-1','取消选择'];
+						let list = ['+1','-1','取消选择'];
 						if(event.links[0].hasGaintag('liuxuan_lose2'))	list.remove('-1');
 						if(event.links[0].hasGaintag('liuxuan_plus2'))	list.remove('+1');
 						player.chooseControl(list,true).set('ai',function(){
-							var card = _status.event.card;
-							var controls=_status.event.controls;
+							let card = _status.event.card;
+							let controls=_status.event.controls;
 							if([5,10,12].contains(get.number(card)+1)&&controls.contains('+1'))	return '+1';
 							if([5,10,12].contains(get.number(card)-1)&&controls.contains('-1'))	return '-1';
 							return controls.randomGet();
@@ -1213,24 +1213,22 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					})):[trigger.card];
 					'step 1'
 					var card = event.cards.shift();
-					var list = [];
-					for(var i of lib.inpile){
-						var type=get.type(i);
-						// if(i==get.name(card))		continue;
-						if(type!='basic')			continue;
-						if(player.storage.tangyan.contains(i))		continue;
+					for(let i of lib.inpile){
+					}
+					event.filterCards = get.inpile('basic',card => {
+						let type=get.type(card);
+						if(player.storage.tangyan.contains(i))	return false;
 						if(lib.filter.filterCard({name:i},player,trigger)&&player.hasUseTarget({name:i,isCard:false})){ 
 							list.push([type,'',i]);
 							var natures = get.info({name:i}).nature;
 							if(natures&&natures.length){
-								for(var j=0;j<natures.length;j++){
-									if(natures[j]=='kami')	continue;
-									list.push([type,'',i,natures[j]]);
+								for(let j=0;j<natures.length;j++){
+									if(natures[j]=='kami')	return false;
+									return true;
 								}
 							}
 						}
-					}
-					event.filterCards = list;
+					});
 					if(event.xinjia){ 
 						if(!event.allBy)	event.allBy = 1;
 						event.goto(3);
@@ -1238,11 +1236,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					event.list = ['令一名角色摸一张牌','防止你下一次受到的伤害'];
 					if(event.filterCards.length) event.list.push('视为使用一张本回合未以此法使用过的基本牌');
-					var list = event.list;
 					var choice = [0,1].randomGet();
 					if(!player.storage.tangyan_on)	choice = 1;
-					if(list.length>=3)	choice = 2;
-					player.chooseControlList(list,function(){
+					if(event.list.length>=3)	choice = 2;
+					player.chooseControlList(event.list,function(){
 						return _status.event.choice;
 					}).set('prompt',get.prompt2('tangyan')).set('choice',choice);
 					'step 3'
@@ -1349,7 +1346,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				init(player,skill){
 					if(!player.storage[skill]) player.storage[skill] = true;
 				},
-				filter(event,player,cards){
+				filter(event,player){
 					return player.countCards('h')
 				},
 				filterCard:true,
@@ -1567,7 +1564,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 
 						event.cards = cards;
 						event.videoId = lib.status.videoId++;
-						var func =function(id, cards){
+						let func =function(id, cards){
 							var firstNum = game.countPlayer()+1;
 
 
@@ -1596,7 +1593,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					var firstNum = event.firstNum;
 					if(firstNum <= game.countPlayer()) firstNum = game.countPlayer() + 1;
 					event.firstNum = firstNum;
-					var func = function(id,firstNum, hiddenLeft){
+					let func = function(id,firstNum, hiddenLeft){
 						var dialog = get.idDialog(id);
 						if(!dialog)return;
 						if(hiddenLeft){
@@ -1615,7 +1612,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}else{
 						func(event.videoId, firstNum, firstNum == game.countPlayer() + 1);
 					}
-					for(var i=1;i<event.cards.length-1;++i){
+					for(let i=1;i<event.cards.length-1;++i){
 						event.cards[i].name = (firstNum+i-1);
 					}
 

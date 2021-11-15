@@ -29,13 +29,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const _context = __importStar(require("../_context"));
-    /**
-    * {@link GameCores}的公共技能组
-    * @namespace
-    */
     let commonSkill = (({ _status, lib, game, ui, get, ai }) => {
         return {
-            //升阶
             _shengjie: {
                 enable: 'phaseUse',
                 usable: 1,
@@ -81,7 +76,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            //搬过来的应变
             _yingbian: {
                 trigger: { player: 'useCard1' },
                 forced: true,
@@ -356,7 +350,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 },
             },
-            //
             _showHiddenCharacter: {
                 trigger: { player: ['changeHp', 'phaseBeginStart', 'loseMaxHpBegin'] },
                 firstDo: true,
@@ -373,7 +366,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
             },
             _kamisha: {
                 trigger: { source: 'damageBegin2' },
-                //forced:true,
                 popup: false,
                 prompt: function (event, player) {
                     return '是否防止即将对' + get.translation(event.player) + '造成的伤害，改为令其减少' + get.cnNumber(event.num) + '点体力上限？';
@@ -396,7 +388,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     trigger.player.loseMaxHp(trigger.num).source = player;
                 },
             },
-            //海洋伤害特性
             _oceansha: {
                 trigger: { source: 'damageBegin4' },
                 forced: true,
@@ -413,7 +404,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     trigger.oceanAddDam = true;
                 },
             },
-            //暗影伤害特性
             _yamisha: {
                 trigger: { player: 'useCardToPlayered' },
                 forced: true,
@@ -504,10 +494,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         }
                     };
                     event.settle = function () {
-                        /*if(!event.state){
-                            trigger.cancel();
-                            trigger.result = {yamied: true};
-                        }*/
                         event.finish();
                     };
                     'step 1';
@@ -619,15 +605,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     'step 9';
                     if (event.yamiresult) {
                         if (result) {
-                            // event.noyami=result.noyami;
-                            // event.directHit=result.directHit;
-                            // event.stateplayer=event.yamiresult;
-                            // if(event.yamiresult2&&event.yamiresult2.used){
-                            // 	event.statecard=event.yamiresult2.used;
-                            // }
-                            // else{
-                            // 	event.statecard=true;
-                            // }
                             event.goto(1);
                         }
                         else
@@ -713,12 +690,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     },
                 },
             },
-            /**
-             * 特殊_全局技能
-             * 将全局技能的技能名储存于此数组中
-             * @type {!Array<string>}
-             * @see {@link game.addGlobalSkill}
-             */
             global: [],
             globalmap: {},
             storage: {},
@@ -902,10 +873,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     player.storage.disableEquip = [];
                 },
             },
-            /**
-             * 技能_封印
-             * 使非锁定技失效
-             */
             fengyin: {
                 init: function (player, skill) {
                     player.addSkillBlocker(skill);
@@ -929,10 +896,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-             * 技能_白板
-             * 使全部技能失效
-             */
             baiban: {
                 init: function (player, skill) {
                     player.addSkillBlocker(skill);
@@ -972,10 +935,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-             * 技能_免疫
-             * 防止受到的伤害
-             */
             mianyi: {
                 trigger: { player: 'damageBefore' },
                 mark: true,
@@ -1044,10 +1003,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     trigger.cancel();
                 },
             },
-            /**
-             * 规则技能_翻面
-             * 被翻面的角色跳过回合
-             */
             _turnover: {
                 trigger: { player: 'phaseBefore' },
                 forced: true,
@@ -1086,10 +1041,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 },
             },
-            /**
-             * 规则技能_使用
-             * 使用一张牌结算后，通过{@link ui.clear}清除残留ui
-             */
             _usecard: {
                 trigger: { global: 'useCardAfter' },
                 forced: true,
@@ -1106,10 +1057,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event._cleared = true;
                 }
             },
-            /**
-             * 规则技能_弃牌
-             * 弃牌结算后，延时一段时间清除残留弃牌效果
-             */
             _discard: {
                 trigger: { global: 'discardAfter' },
                 forced: true,
@@ -1141,14 +1088,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
             },
             _save: {
-                //trigger:{source:'dying2',player:'dying2'},
                 priority: 5,
                 forced: true,
                 popup: false,
                 filter: function (event, player) {
-                    //if(!event.player.isDying()) return false;
-                    //if(event.source&&event.source.isIn()&&event.source!=player) return false;
-                    //return true;
                     return false;
                 },
                 content: function () {
@@ -1232,10 +1175,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             },
-            /**
-             * 规则技能_重铸
-             * 令角色可以重铸特定的牌
-             */
             _chongzhu: {
                 enable: 'phaseUse',
                 logv: false,
@@ -1261,9 +1200,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     game.log(player, '将', cards, '置入了弃牌堆');
                 },
                 check: function (card) {
-                    // if(get.type(card)=='stonecharacter'&&_status.event.player.countCards('h',{type:'stonecharacter'})<=1){
-                    //     return 0;
-                    // }
                     return 1;
                 },
                 discard: false,
@@ -1316,10 +1252,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     },
                 }
             },
-            /**
-             * 规则技能_连环
-             * 被横置的角色传递属性伤害
-             */
             _lianhuan: {
                 trigger: { player: 'damageAfter' },
                 filter: function (event, player) {
@@ -1329,7 +1261,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 popup: false,
                 logv: false,
                 forceDie: true,
-                //priority:-5,
                 content: function () {
                     "step 0";
                     event.logvid = trigger.getLogv();

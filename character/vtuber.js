@@ -1,89 +1,48 @@
 "use strict";
-/// <reference path = "../game/built-in.d.ts" />
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'vtuber',
         connect: true,
         character: {
-            /**绊爱 */
             KizunaAI: ['female', 'upd8', 4, ['ailian', 'qixu'], ['zhu']],
-            /**小白 */
             Siro: ['female', 'dotlive', 4, ['zhongxinghezou', 'xiugong'], ['zhu']],
-            /**巴恰鲁 */
             Bacharu: ['male', 'dotlive', 4, ['zuodun', 'baidao']],
-            /**小明 */
             MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
-            /**小希小桃 */
             XiaoxiXiaotao: ['female', 'xuyan', 3, ['yipengyidou', 'renleiguancha'], ['guoV']],
-            /**兰音 */
             Reine: ['female', 'xuyan', 4, ['yueyao', 'kongling'], ['guoV']],
-            /**辉夜月 */
             KaguyaLuna: ['female', 'qun', 3, ['jiajiupaidui', 'kuangzuiluanwu']],
-            /**兔妈妈 */
             InabaHaneru: ['female', 'nanashi', '2/3', ['jiance', 'chanbing', 'buyu'], ['zhu']],
-            /**BFM */
             UmoriHinako: ['female', 'nanashi', 4, ['hongyi', 'jueshou']],
-            /**patra */
             SuouPatra: ['female', 'nanashi', 4, ['mianmo', 'tiaolv'], ['forbidai']],
-            /**天开司 */
             TenkaiTsukasa: ['male', 'upd8', 4, ['pojie', 'dazhen']],
-            /**向晚 */
             Ava: ['female', 'asoul', 4, ['yiqu', 'wanxian'], ['guoV']],
-            /**贝拉 */
             Bella: ['female', 'asoul', '3/4', ['aswusheng', 'gunxun'], ['guoV']],
-            /**珈乐 */
             Carol: ['female', 'asoul', 4, ['shixi', 'xueta', 'yuezhi'], ['guoV']],
-            /**嘉然 */
             Diana: ['female', 'asoul', 4, ['quanyu', 'wulian'], ['guoV']],
-            /**乃琳 */
             EQueen: ['female', 'asoul', 4, ['yehua', 'fengqing'], ['guoV']],
-            /**步玎 */
             Pudding: ['female', 'psp', 4, ['tianlve', 'luxian'], ['guoV', 'P_SP']],
-            /**粉兔 */
             AyanaNana: ['female', 'psp', '2/4', ['erni', 'shouru', 'chonghuang', 'yinzun'], ['zhu', 'guoV', 'P_SP']],
-            /**红晓音 */
             KurenaiAkane: ['female', 'psp', 4, ['quankai', 'heyuan'], ['guoV', 'P_SP']],
-            /**东爱璃 */
             Lovely: ['female', 'psp', 4, ['yangyao', 'shili'], ['guoV', 'P_SP']],
-            /**阿秋 */
             AkiRinco: ['female', 'psp', 4, ['jiren', 'luqiu', 'canxin'], ['guoV', 'P_SP']],
-            /**花谱 */
             Kaf: ['female', 'vwp', 3, ['liuhua', 'yishi', 'shiji'], ['zhu']],
-            /**理芽 */
             Rim: ['female', 'vwp', 4, ['shenghua', 'zhanchong'],],
-            /**异世界情绪 */
             IsekaiJoucho: ['female', 'vwp', 4, ['baiqing', 'shuangxing'],],
-            /**春猿火 */
             Harusaruhi: ['female', 'vwp', 4, ['huoju', 'zouyang'],],
-            /**幸祜 */
             Koko: ['female', 'vwp', 4, ['xiezhen', 'wenzhou'],],
-            /**可不 */
             Kafu: ['female', 'vwp', 3, ['nisheng', 'jingyan']],
-            /**塞菲拉·苏 */
             SephiraSu: ['female', 'qun', 3, ['mishu', 'xingchen']],
-            /**姬雏 */
             HIMEHINA: ['female', 'qun', 3, ['jichu', 'mingshizhige']],
-            /**泠鸢 */
             Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
-            /**阿梓 */
             Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
-            /**勺宝 */
             Shaun: ['female', 'VirtuaReal', 3, ['juxiao', 'shshenyan'], ['guoV']],
-            /**蜜球兔 */
             Miqiutu: ['female', 'VirtuaReal', 4, ['zhazong', 'mengnan'], ['guoV']],
-            /**阿萨Aza */
             Aza: ['male', 'VirtuaReal', 3, ['qiding', 'chouxin'], ['guoV']],
-            /**千幽Chiyuu */
             Chiyuu: ['female', 'VirtuaReal', 4, ['anyou', 'mingyou'], ['guoV']],
-            /**茉里Mari */
             Mari: ['female', 'VirtuaReal', 4, ['tingzhu', 'xuemo'], ['guoV']],
-            /**胡桃 */
             Menherachan: ['female', 'NetEase', 4, ['shangbei', 'qianqing'], ['guoV']],
-            /**犬山 */
             InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 'hundunliandong']],
-            /**Mishiro */
             ShirayukiMishiro: ['female', 'nori', 3, ['tianyi', 'nveyu']],
-            /**机萪 */
             jike: ['female', 'qun', 3, ['qianjiwanbian'], ['guoV']],
         },
         characterSort: {
@@ -167,7 +126,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.goto(3);
                     }
                     'step 1';
-                    //console.log(result);
                     if (result === null || result === void 0 ? void 0 : result.bool) {
                         if (result.targets) {
                             if (!player.storage.targets)
@@ -315,7 +273,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.goto(10);
                     }
                     'step 9';
-                    //console.log(result);
                     if (result.targets)
                         event.targets = result.targets;
                     else
@@ -380,7 +337,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 filter(event, player) {
                     if (event.responded)
                         return false;
-                    //if(player.storage.qixuing) return false;
                     if (!player.hasZhuSkill('qixu'))
                         return false;
                     if (player.hasSkill('qixu3'))
@@ -402,7 +358,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.finish();
                     }
                     else if (event.current) {
-                        //player.storage.qixuing=true;
                         var next = event.current.chooseCard(get.translation(player) + '声明使用一张杀，是否替弃置一张杀阻止', function (card, player, event) {
                             event = event || _status.event;
                             return card.name == 'sha';
@@ -422,7 +377,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.redo();
                     }
                     "step 1";
-                    //player.storage.qixuing=false;
                     if (!result.bool) {
                         event.current = event.current.next;
                         if (event.current == player) {
@@ -495,8 +449,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         next.set('target', target);
                         next.set('qixu', true);
                         next.set('skillwarn', '阻止' + get.translation(player) + '打出一张杀');
-                        //next.noOrdering=true;
-                        //next.autochoose=lib.filter.autoRespondSha;
                     }
                     else {
                         event.current = event.current.next;
@@ -556,9 +508,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 mark: true,
                 intro: { content: '一轮后重置(杀)' },
                 silent: true,
-                // filter(event){
-                // 	return event.skill!='qixu2'&&event.skill!='qixu4';
-                // },
                 content() {
                     player.removeSkill('qixu3');
                 }
@@ -569,7 +518,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 filter(event, player) {
                     if (event.responded)
                         return false;
-                    //if(player.storage.qixu4) return false;
                     if (!player.hasZhuSkill('qixu'))
                         return false;
                     if (player.hasSkill('qixu5'))
@@ -592,21 +540,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.goto(2);
                     }
                     else if (event.current) {
-                        //player.storage.qixu4=true;
-                        // var next=event.current.chooseToDiscard('弃置一张闪阻止'+get.translation(player)+'发动技能？',{name:'shan'},
-                        // function(card,player,event){
-                        // 	event=event||_status.event;
-                        // 	return card.name=='shan';
-                        // },1);
-                        var next = event.current.chooseCard(get.translation(player) + '声明使用一张闪，是否替弃置一张闪阻止', { name: 'shan' }, 
-                        // function(card,player,event){
-                        // 	return card.name=='shan';
-                        // },
-                        1, false);
-                        // next.set('ai',card => {
-                        // 	var event=_status.event;
-                        // 	return get.effect(event.target,card,event.event.source,event.player);
-                        // });
+                        var next = event.current.chooseCard(get.translation(player) + '声明使用一张闪，是否替弃置一张闪阻止', { name: 'shan' }, 1, false);
                         next.set('ai', function () {
                             var event = _status.event;
                             return (3 - get.attitude(event.player, event.source));
@@ -616,8 +550,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         next.set('source', player);
                     }
                     "step 1";
-                    //player.storage.qixu4=false;
-                    //console.log(result);
                     if (result.bool) {
                         event.current.discard(result.cards);
                         event.finish();
@@ -635,7 +567,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     trigger.result = { bool: true, card: { name: 'shan', isCard: true } };
                     trigger.responded = true;
                     trigger.animate = false;
-                    //player.addSkill('qixu3');
                     if (typeof event.current.ai.shown == 'number' && event.current.ai.shown < 0.95) {
                         event.current.ai.shown += 0.3;
                         if (event.current.ai.shown > 0.95)
@@ -661,9 +592,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 mark: true,
                 intro: { content: '一轮后重置(闪)' },
                 silent: true,
-                // filter(event){
-                // 	return event.skill!='qixu2'&&event.skill!='qixu4';
-                // },
                 content() {
                     player.removeSkill('qixu5');
                 }
@@ -672,7 +600,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 trigger: {
                     player: "damageBegin3",
                 },
-                //alter:true,
                 filter(event, player) {
                     if (event.source == undefined || event.source == player)
                         return false;
@@ -799,7 +726,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                     }
                     'step 3';
-                    ///显示当前弃牌框，待改进
                     ui.clear();
                     game.broadcast('closeDialog', event.dialogId);
                     if (event.dialog && event.dialogId) {
@@ -843,7 +769,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 filter(event, player) {
                     if (!(get.itemtype(event.cards) == 'cards'))
                         return false;
-                    // if (event.getParent().triggeredTargets3.length > 1) return false;
                     return get.number(event.card) && !player.hasSkill('zhongxinghezou_used');
                 },
                 check(event, player) {
@@ -914,8 +839,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.card = result.cards[0];
                         var num = get.number(event.card) + get.number(trigger.card);
                         if (num < 12) {
-                            // trigger.targets.length=0;
-                            // trigger.getParent().triggeredTargets2.length=0;
                             player.gain(result.cards, event.starget, 'give');
                             trigger.cancel();
                         }
@@ -1385,11 +1308,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         forced: true,
                         filter(event, player) {
                             if (event.source) {
-                                return event.source.hasSkill('renleiguancha_mark'); //||event.player.hasSkill('renleiguancha_mark');
+                                return event.source.hasSkill('renleiguancha_mark');
                             }
                             else
                                 return false;
-                            //return event.player.hasSkill('renleiguancha_mark');
                         },
                         content() {
                             player.addSkill('renleiguancha_damaged');
@@ -1425,7 +1347,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //兰音
             yueyao: {
                 init(player, skill) {
                     player.storage[skill] = 0;
@@ -1450,7 +1371,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     },
                 },
                 group: 'yueyao_addDam',
-                // global:'yueyao_useStop',
                 subSkill: {
                     addDam: {
                         trigger: { source: 'damageBegin' },
@@ -1647,7 +1567,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
-            //黄兔
             jiance: {
                 frequent: true,
                 trigger: { player: ['loseHpEnd', 'damageEnd'] },
@@ -1798,7 +1717,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 mark: true,
                 intro: { content: '当前『不渝』技能：$' },
             },
-            //蝙蝠妹
             hongyi: {
                 trigger: { global: 'judgeAfter' },
                 usable: 1,
@@ -1873,7 +1791,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     order: 9,
                 }
             },
-            //Kaf
             liuhua: {
                 init(player, skill) {
                     if (!player.storage[skill])

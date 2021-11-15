@@ -10,8 +10,6 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.mixin = exports.ai = exports.get = exports.ui = exports.game = exports.lib = exports._status = void 0;
-    ///<reference path="./_status.d.ts" />
-    ///<reference path="./lib.d.ts" />
     const _status = {};
     exports._status = _status;
     const lib = {};
@@ -24,12 +22,6 @@
     exports.get = get;
     const ai = {};
     exports.ai = ai;
-    /**
-         * 混入函数
-         * @param {(object|prototype)} ori 被混入的对象[原型]
-         * @param {Object} mix 混入的对象
-         * @returns {undefined}
-         */
     function mixin(ori, mix) {
         if (!mix || !ori)
             return ori;

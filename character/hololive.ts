@@ -1258,8 +1258,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:['damageAfter','loseHpAfter','useCardAfter']},
 						priority:2,
 						direct:true,
-						filter(event,player,name){
-							if(name=='useCardAfter'){
+						filter(event,player){
+							if(event.name=='useCard'){
 								var indexi=0
 								while(indexi<event.cards.length){
 									if(get.type(event.cards[indexi])=='trick'||get.type(event.cards[indexi])=='delay')
@@ -1560,15 +1560,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							['spade', '', 'spade', 'spade', 'div2']
 						];
 					var numberlist = [];
-					for (var i = 1; i <= 13; ++i) {
-						var c = i;
-						if (i == 1) c = 'A';
-						else if (i == 10) c = 'X'
-						else if (i == 11) c = 'J';
-						else if (i == 12) c = 'Q';
-						else if (i == 13) c = 'K';
-						else c = i;
-						numberlist.push(['', i, c, i, 'div3']);
+					for (let i = 1; i <= 13; ++i) {
+						numberlist.push(['', i, get.strNumber(i), i, 'div3']);
 					}
 					game.broadcastAll(function(id, typelist, suitlist, numberlist){
 						var dialog=ui.create.dialog('『豪赌』 选择');
@@ -1789,14 +1782,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 							else event.finish();
 							'step 2'
-							var chk = player.countCards('h') >= 2;
-							if(chk){
-								chk &= lib.filter.cardUsable({name:'jiu'},player, 
-										event.getParent('chooseToUse'))
-										&& player.canUse('jiu', player);
-								game.players.forEach(function(p) {
-									if (p != player && player.canUse('guohe', p)) chk = true; 
-								})
+							if(player.countCards('h') >= 2){
+								let chk = (lib.filter.cardUsable({name:'jiu'},player, event.getParent('chooseToUse')) && player.canUse('jiu', player))
+								if(player.hasUseTarget('guohe')) chk = true; 
 								if (!chk) event.finish();
 							}
 							else{
@@ -2677,7 +2665,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				init(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
-				onremove:true,
 				marktext:"握",
 				locked:true,
 				intro:{
@@ -2701,7 +2688,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				init(player,skill){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
-				onremove:true,
 				marktext:"握",
 				locked:true,
 				intro:{

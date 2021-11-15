@@ -1,7 +1,7 @@
 /// <reference path = "../game/built-in.d.ts" />
 'use strict';
 window.game.import('character',function(lib,game,ui,get,ai,_status){
-	return {
+	return <currentObject>{
 		name:"sololive",
 		connect:true,
 		character:{

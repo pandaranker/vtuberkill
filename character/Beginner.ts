@@ -1,6 +1,6 @@
 /// <reference path = "../game/built-in.d.ts" />
 (window as any).game.import('character',function(lib:lib_type,game:Record<string, any>,ui:Record<string, any>,get:Record<string,any>,ai:Record<string, any>,_status:_status_type){
-	return {
+	return <currentObject>{
 		name:'Beginner',
 		connect:true,
 		character:{
@@ -428,7 +428,7 @@
 				audio:'seqinghuashen',
 				trigger: {global:'useCardAfter'},
 				direct:true,
-				filter(event: { card: { name: string; }; player: any; },player: any){
+				filter(event,player){
 					return event.card.name=='tao'
 						&&event.player!=player;
 				},
@@ -461,15 +461,15 @@
 				trigger: {player:['useCardBefore','shaBefore','shanBefore','wuxieBefore','damageBefore']},
 				direct:true,
 				firstDo:true,
-				filter(event: { name: string; getParent: () => any; },player: any){
+				filter(event,player: any){
 					var evt = event;
 					if(event.name=='damage')	evt = event.getParent();
 					if(!evt||!evt.card||evt.skill)		return false;
 					var name = get.name(evt.card);
-					var tri:Status_Event | null;
+					var tri;
 					if(name=='sha')	tri = evt.getParent('chooseUseTarget');
 					else			tri = evt.getParent('pre_yingdan_'+name);
-					console.log(evt,tri)
+					// console.log(evt,tri)
 					return tri&&tri.addedSkill&&tri.addedSkill.contains('number')&&evt.skill == 'yingdan_'+name;
 				},
 				content() {
@@ -814,7 +814,7 @@
 			},
 			zhiqiu:{
 				trigger:{player:['useCardAfter','respondAfter']},
-				filter(event: { card: any; skill: string; },player: { countCards: (arg0: string) => number; canCompare: (arg0: any) => any; }){
+				filter(event, player){
 					var name = get.name(event.card);
 					if(!['sha','shan'].contains(name)) return false;
 					return event.skill&&event.skill=='kouhu_'+name&&player.countCards('h')>0&&game.hasPlayer((cur: any) => {
@@ -857,7 +857,7 @@
 			re_shengcai:{
 				trigger:{player:'useCardAfter'},
 				priority:123,
-				filter(event: { card: any; },player: any){
+				filter(event, player){
 					var repeat = 0;
 					var another =0;
 					game.hasPlayer((cur: { getHistory: (arg0: string, arg1: (evt: any) => void) => void; }) => {
@@ -983,14 +983,14 @@
 				}
 			},
 			chongxin:{
-				init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
-					if(!player.storage[skill]) player.storage[skill]=[];
+				init(player:PlayerModel,skill: string){
+					player.storage[skill] ??= [];
 				},
 				mark:true,
 				intro:{
 					name:'崇新',
 					content:'cards',
-					onunmark(storage: string | any[],player: { $throw: (arg0: any, arg1: number) => void; }){
+					onunmark(storage:any[],player:PlayerModel){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);
 							game.cardsDiscard(storage);
@@ -1107,7 +1107,7 @@
 				clickableFilter(player: { storage: { yayun: boolean; }; countDiscardableCards: (arg0: any, arg1: string) => any; }){
 					return player.storage.yayun==true&&player.countDiscardableCards(player,'h');
 				},
-				laohuji(player: { name: any; name1: any; name2: any; logSkill: (arg0: string, arg1: boolean, arg2: boolean, arg3: boolean, arg4: boolean) => void; getDiscardableCards: (arg0: any, arg1: string) => any; discard: (arg0: any) => void; judge: (arg0: (card: any) => 1 | -1) => any; draw: (arg0: number | undefined) => void; }){
+				laohuji(player: PlayerModel){
 					console.log('Outter')
 					var next=game.createEvent('laohuji');
 					next.player = player;
@@ -1165,7 +1165,7 @@
 					player.updateMark('yayun',true);
 				},
 				intro:{
-					mark(dialog: { addText: (arg0: string) => void; add: (arg0: any) => void; },content: any,player: { isUnderControl: (arg0: boolean) => any; storage: { yayun: any; }; getDiscardableCards: (arg0: any, arg1: string) => any; }){
+					mark(dialog: { addText: (arg0: string) => void; add: (arg0: any) => void; },content: any,player){
 						if(player.isUnderControl(true)){
 							if(_status.gameStarted){
 								if(player.storage.yayun){
@@ -1257,7 +1257,7 @@
 			yinni:{
 				trigger:{player:'useCard2'},
 				direct:true,
-				filter(event: { card: any; targets: string | any[]; },player: { storage: { yinni_record_color: any; yinni_record: any; }; }){
+				filter(event, player){
 					var card=event.card;
 					var info=get.info(card);
 					if(info.allowMultiple==false) return false;
@@ -1315,7 +1315,7 @@
 						},
 						silent:true,
 						firstDo:true,
-						filter(event: { card: any; targets: string | any[]; },player: any,name: any){
+						filter(event, player){
 							if(!event.card||!get.color(event.card)||!event.targets||!event.targets.length) return false;
 							var type=get.type2(event.card);
 							return type!='equip';
@@ -1380,10 +1380,10 @@
 			re_dazhen:{
 				enable:'phaseUse',
 				usable:1,
-				filter(event: any,player: { getEquip: (arg0: number) => any; },cards: any){
+				filter(event, player){
 					return player.getEquip(1);
 				},
-				filterCard(card: any,player: any){
+				filterCard(card, player){
 					return get.subtype(card) == 'equip1';
 				},
 				discard:false,
@@ -2041,7 +2041,7 @@
 				},
 				ai:{
 					useSha:1,
-					skillTagFilter(player: { storage: { re_longdan: boolean; }; countCards: (arg0: string, arg1: { type?: string; name?: string; }) => number; },tag: any){
+					skillTagFilter(player:PlayerModel,tag: any){
 						switch(tag){
 							case 'respondSha':{
 								if(player.storage.re_longdan!=true||!player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'})) return false;
@@ -2192,7 +2192,7 @@
 			},
 			//安啾
 			akxiaoqiao:{
-				init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+				init(player: PlayerModel,skill: number){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				trigger:{player:'phaseDiscardBegin'},
@@ -2561,10 +2561,10 @@
 					global: 'phaseBegin',
 				},
 				round:1,
-				filter(event: any, player: { countCards: (arg0: string) => any; }) {
+				filter(event, player: PlayerModel) {
 					return player.countCards('h');
 				},
-				check(event: { player: any; }, player: { countCards: (arg0: string, arg1: { color: string; } | undefined) => any; }) {
+				check(event, player: PlayerModel) {
 					if(player.countCards('h')==player.countCards('h',{color: 'red'}))	return get.recoverEffect(event.player,player,player)>0;
 					return true;
 				},
@@ -2740,7 +2740,7 @@
 			re_huxi1:{
 				audio:'huxi1',
 				trigger:{player:'gainEnd'},
-				filter(event: { getParent: (arg0: number | undefined) => { (): any; new(): any; skill: string; }; },player: { storage: { huxiGroup: any[] | null; }; }){
+				filter(event,player: PlayerModel){
 					return game.hasPlayer((cur: any) => {
 						if(player.storage.huxiGroup==null) return true;
 						return !player.storage.huxiGroup.contains(cur)&&cur!=player;
@@ -3141,7 +3141,7 @@
 				},
 			},
 			qiangyun2:{
-				init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+				init(player: PlayerModel,skill: string){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				trigger:{global:'judgeAfter'},
@@ -3162,7 +3162,7 @@
 				}
 			},
 			qiangyun3:{
-				init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+				init(player: PlayerModel,skill: string){
 					if(!player.storage[skill]) player.storage[skill]=[];
 				},
 				trigger:{source:'damageEnd'},
@@ -3561,12 +3561,12 @@
 				trigger:{global:'phaseBegin'},
 				round:1,
 				priority:996,
-				filter(event: any,player: any){
+				filter(event, player: PlayerModel){
 					return game.countPlayer((cur: { hp: number; }) => {
 						return cur.hp!=Infinity;
 					});
 				},
-				check(event: { player: { inRange: (arg0: any) => any; }; },player: { hasJudge: (arg0: string) => any; hasUnknown: (arg0: number) => any; needsToDiscard: () => any; }){
+				check(event, player: PlayerModel){
 					if(event.player!=player&&get.attitude(event.player,player)<0&&event.player.inRange(player))	return true;
 					return event.player==player&&!player.hasJudge('lebu')&&(!player.hasUnknown(2)||!player.needsToDiscard());
 				},
@@ -4058,7 +4058,7 @@
 			anshu:{
 				trigger:{global:'phaseJieshuBegin'},
 				direct:true,
-				filter(event: { player: { countCards: (arg0: string) => number; }; },player: { countCards: (arg0: string, arg1: ((card: any) => any) | undefined) => number; canUse: (arg0: any, arg1: any) => any; }){
+				filter(event, player: PlayerModel){
 					return event.player!=player&&player.countCards('h',(card: any) => player.canUse(card,event.player))
 					&&event.player.countCards('h')>=player.countCards('h');
 				},
@@ -4298,12 +4298,12 @@
 			},
 			yingshi:{
 				enable:['chooseToUse'],
-				viewAs(cards: any[],player: { getStorage: (arg0: string) => any; }){
+				viewAs(cards: any[],player: PlayerModel){
 					var name = false;
 					var nature = null;
 					var suit = null;
 					var number = null;
-					var cards=player.getStorage('yingshi_cardsDis');
+					var cards=player.getStorage('yingshi_cardsDis') as any[];
 					if(cards[0]){
 						name = get.name(cards[0]);
 						nature = get.nature(cards[0]);
@@ -4335,7 +4335,7 @@
 				group:['yingshi_cardsDis'],
 				subSkill:{
 					cardsDis:{
-						init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+						init(player: PlayerModel,skill: string){
 							if(!player.storage[skill]) player.storage[skill] = [];
 						},
 						marktext:'♣',
@@ -4361,7 +4361,7 @@
 			re_meici:{
 				zhuanhuanji:true,	
 				audio:2,
-				init(player: { storage: { [x: string]: boolean; }; },skill: string | number){
+				init(player: PlayerModel,skill: string){
 					if(!player.storage[skill]) player.storage[skill] = true;
 				},
 				trigger:{global:['loseAfter','cardsDiscardAfter']},
@@ -4549,7 +4549,7 @@
 				group:'mark_tianqing_record',
 				subSkill:{
 					record:{
-						init(player: { storage: { [x: string]: boolean; }; },skill: string | number){
+						init(player: PlayerModel,skill: string){
 							if(!player.storage[skill]) player.storage[skill] = false;
 						},
 						trigger:{global:['damageEnd','phaseAfter']},
@@ -4586,7 +4586,7 @@
 				group:'tianqing_record',
 				subSkill:{
 					record:{
-						init(player: { storage: { [x: string]: boolean; }; },skill: string | number){
+						init(player: PlayerModel,skill: string){
 							if(!player.storage[skill]) player.storage[skill] = true;
 						},
 						trigger:{global:['damageZero','damageEnd','phaseAfter']},
@@ -4637,7 +4637,7 @@
 				group:'kuiquan_record',
 				subSkill:{
 					record:{
-						init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+						init(player: PlayerModel,skill: string){
 							if(!player.storage[skill]) player.storage[skill] = [];
 						},
 						trigger:{global:'phaseAfter'},
@@ -4757,7 +4757,7 @@
 						trigger:{player:'useCardAfter'},
 						priority:40,
 						direct:true,
-						filter(event: { skill: string; getParent: (arg0: string) => any; targets: string | any[]; },player: any){
+						filter(event, player: PlayerModel){
 							if(event.skill=='re_huawen_change')	return false;
 							let evt = event.getParent('chooseUseTarget');
 							return event.targets?.length
@@ -4772,12 +4772,12 @@
 						trigger:{player:'useCardAfter'},
 						priority:23,
 						direct:true,
-						filter(event: { card: any; getParent: (arg0: string) => any; cards: { filter: (arg0: (card: any) => boolean) => { (): any; new(): any; length: number; }; }; },player: { hasHistory: (arg0: string, arg1: (evt: any) => boolean) => { (): any; new(): any; length: number; }; }){
+						filter(event, player: PlayerModel){
 							if(player.hasHistory('sourceDamage',(evt: { card: any; }) => {
 								return evt.card==event.card;
 							}).length==0){
 								let evt = event.getParent('chooseUseTarget');
-								return evt?.logSkill==='re_huawen_useBy'
+								return evt?.logSkill === 're_huawen_useBy'
 								&event.cards.filter((card: any) => get.color(card)=='black'&&get.position(card)=='d').length;
 							}
 						},
@@ -4994,7 +4994,7 @@
 			//re大舅子
 			shengfu:{
 				enable:'chooseToUse',
-				init(player: { storage: { shengfu: {}; }; }){
+				init(player: PlayerModel,skill: string){
 					player.storage.shengfu = {};
 				},
 				filter(event: { type: string; respondTo: any[]; }, player: { storage: { shengfu: { wuxie: undefined; }; }; }){
@@ -5182,14 +5182,14 @@
 					player: ['shanAfter', 'wuxieAfter', 'useSkillAfter']
 				},
 				frequent: true,
-				filter(event: { name: string; getParent: (arg0: string) => any; }, player: { countCards: (arg0: string) => number; }){
+				filter(event, player: PlayerModel){
 					if(event.name == 'shan') {
-						var evt = event.getParent('sha');
+						let evt = event.getParent('sha');
 						if(evt.player.countCards('h')<player.countCards('h')) return false;
 						return evt.player != player && evt.card && evt.card.cards[0];
 					}
 					if(event.name == 'wuxie') {
-						var  evt = event.getParent('useCard');
+						let  evt = event.getParent('useCard');
 						//抵消其他角色的牌才返回true
 						if(evt?.respondTo){
 							if(evt.respondTo[0]&&evt.respondTo[0].countCards('h')<player.countCards('h')) return false;
@@ -5201,7 +5201,7 @@
 						}
 					}
 					if(event.name == 'useSkill'&&Object.getOwnPropertyNames(event.getParent('_wuxie')).length){
-						var evt = event;
+						let evt = event;
 						if(evt.result?.wuxied){
 							if(evt.respondTo){
 								if(evt.respondTo[0]&&evt.respondTo[0].countCards('h')<player.countCards('h')) return false;
@@ -5270,7 +5270,7 @@
 				group:'uijieyuan_record',
 				subSkill:{
 					record:{
-						init(player: { storage: { [x: string]: never[]; }; },skill: string | number){
+						init(player: PlayerModel,skill: string){
 							if(!player.storage[skill]) player.storage[skill] = [];
 						},
 						trigger:{global:['gainAfter','loseAfter','phaseAfter']},
@@ -5292,10 +5292,10 @@
 			huixiang:{
 				enable:'phaseUse',
 				usable:1,
-				filter(event: any,player: { countCards: (arg0: string) => number; }){
+				filter(event, player: PlayerModel){
 					return player.countCards('h')>0;
 				},
-				filterTarget(card: any,player: any,target: { countCards: (arg0: string, arg1: (card: any) => boolean) => any; }){
+				filterTarget(card: any,player: PlayerModel,target:PlayerModel){
 					return target!=player&&target.countCards('e',(card: any) => get.equiptype(card)!=5);
 				},
 				position:'he',
@@ -5426,7 +5426,7 @@
 				},
 				onremove:true,
 				intro:{
-					mark(dialog: { add: (arg0: any) => void; addText: (arg0: string, arg1: boolean | undefined) => void; },storage: any,player: { storage: { huixiang_equip2: string; }; }){
+					mark(dialog, storage, player) {
 						dialog.add(storage);
 						dialog.addText('当前装备：'+get.translation(player.storage.huixiang_equip2));
 						var str2=lib.translate[player.storage.huixiang_equip2+'_info'];

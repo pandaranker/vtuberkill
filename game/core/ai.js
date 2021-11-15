@@ -9,14 +9,8 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /// <reference path = "../built-in.d.ts" />
     const _context_1 = require("./_context");
-    /**
-     * 游戏AI模块
-     * @namespace ai
-     * @memberof module:core
-     */
-    (0, _context_1.mixin)(_context_1.ai, /**@lends module:core.ai */ {
+    (0, _context_1.mixin)(_context_1.ai, {
         basic: {
             chooseButton: function (check) {
                 var event = _context_1._status.event;
@@ -46,9 +40,6 @@
                             checkix = checkixtmp;
                         }
                     }
-                    // buttons.sort(function(a,b){
-                    //     return check(b,buttons2)-check(a,buttons2);
-                    // });
                     if (check(buttons[ix]) <= 0) {
                         if (!forced || ok) {
                             return ok;
@@ -98,9 +89,6 @@
                         return ok;
                     }
                     cards2 = cards.slice(0);
-                    // cards.sort(function(a,b){
-                    //     return (check(b,cards2)-check(a,cards2));
-                    // });
                     var ix = 0;
                     var checkix = check(cards[0], cards2);
                     for (i = 1; i < cards.length; i++) {
@@ -167,9 +155,6 @@
                         return range[0] == 0 || ok;
                     }
                     targets2 = targets.slice(0);
-                    // targets.sort(function(a,b){
-                    //     return check(b)-check(a);
-                    // });
                     var ix = 0;
                     var checkix = check(targets[0], targets2);
                     for (i = 1; i < targets.length; i++) {
@@ -196,10 +181,6 @@
                 }
             }
         },
-        /**
-         * AI用取值
-         * @see {@link get}
-         */
         get: _context_1.get
     });
     exports.default = _context_1.ai;

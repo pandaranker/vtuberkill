@@ -865,7 +865,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			xiangnuo2:{
 				enable:'phaseUse',
-				getResult(cards){
+				getResult(cards):Array<[]>{
 					let l=cards.length,all=Math.pow(l,2),list=[];
 					for(let i=1;i<all;i++){
 						let array=[];
@@ -906,8 +906,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				check(card){
 					let evt=_status.event;
-					if(!evt.minsi_choice) evt.minsi_choice=lib.skill.xiangnuo2.getResult(evt.player.getCards('he'));
-					if(!evt.minsi_choice.includes(card)) return 0;
+					if(!evt.xiangnuo_choice) evt.xiangnuo_choice=lib.skill.xiangnuo2.getResult(evt.player.getCards('he'));
+					if(!evt.xiangnuo_choice.includes(card)) return 0;
 					return 1;
 				},
 				content(){
@@ -3484,7 +3484,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:'yubing',
 				trigger:{player:'damageBegin3'},
 				direct:true,
-				filter(event,player,name){
+				filter(event,player){
 					return event.num&&player.countDiscardableCards(player,'e');
 				},
 				content(){
@@ -4475,7 +4475,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseEnd'},
 						priority:24,
 						direct:true,
-						filter(event,player,name){
+						filter(event,player){
 							return game.countPlayer(cur => {
 								return player.storage.zhuqiao_addCard.length>cur.countCards('h');
 							});
@@ -4553,7 +4553,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			dazhen:{
 				enable:'phaseUse',
 				usable:1,
-				filter(event,player,cards){
+				filter(event,player){
 					return player.getEquip(1);
 				},
 				filterCard(card,player){
@@ -5252,7 +5252,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				init(player,skill){
 					player.storage[skill] ||= 1;
 				},
-				filter(event,player,cards){
+				filter(event,player){
 					if(player.storage.gunxun===1)	return player.countCards('h',card => !card.hasGaintag('ming_')&&get.color(card)=='red');
 					return player.countCards('h',card => !card.hasGaintag('ming_')&&get.color(card)=='black');
 				},
@@ -5366,7 +5366,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'phaseUse',
 				unique:true,
 				limited:true,
-				filter(event,player,cards){
+				filter(event,player){
 					return player.isDamaged();
 				},
 				content(){
@@ -6166,7 +6166,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			zhezhuan:{
 				enable:'chooseToUse',
 				usable:1,
-				filter(event,player,cards){
+				filter(event,player){
 					return player.countCards('he',{type:['trick','delay']})>=1;
 				},
 				hiddenCard(player,name){
@@ -6316,7 +6316,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				cardAround:true,
 				enable:'phaseUse',
 				usable:1,
-				filter(event,player,cards){
+				filter(event,player){
 					return player.countCards('he')>=2;
 				},
 				filterCard(card){
@@ -6400,7 +6400,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			jingniang:{
 				enable:'phaseUse',
-				filter(event,player,cards){
+				filter(event,player){
 					return player.countCards('he');
 				},
 				filterCard:true,
@@ -7350,13 +7350,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							if(_status.characterlist){
 								_status.characterlist.remove(i);
 							}
-							let skills=lib.character[i][3];
+							let skills = get.gainableSkillsName(i);
 							for(let j of skills){
 								player.addTempSkill(j,{player:'phaseDiscardAfter'});
-								player.flashAvatar('luxian',i);
 							}
+							player.flashAvatar('luxian',i);
 						}
-						if(!player.storage.luxian_pcr)	player.storage.luxian_pcr = [];
+						player.storage.luxian_pcr ??= [];
 						player.storage.luxian_pcr.addArray(result.links);
 						player.storage.P_SP.addArray(result.links);
 						player.addTempSkill('luxian_pcr',{player:'phaseDiscardAfter'});
@@ -7614,19 +7614,20 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						player.storage.chonghuang = true;
 						player.awakenSkill('chonghuang');
 						player.loseMaxHp();
-						for(let i=0;i<result.links.length;i++){
+						for(let i of result.links){
+							console.log(i)
 							if(_status.characterlist){
 								_status.characterlist.remove(result.links[i]);
 							}
-							let skills=lib.character[result.links[i]][3];
+							let skills = get.gainableSkillsName(i);
 							for(let j of skills){
-								player.addTempSkill(skills[j],'roundStart');
+								player.addTempSkill(j,'roundStart');
 							}
+							player.flashAvatar('chonghuang',i);
 						}
-						if(!player.storage.chonghuang_kamen)	player.storage.chonghuang_kamen = [];
+						player.storage.chonghuang_kamen ??= [];
 						player.storage.chonghuang_kamen.addArray(result.links);
 						player.storage.P_SP.addArray(result.links);
-						player.flashAvatar('chonghuang',result.links[0]);
 						player.addTempSkill('chonghuang_kamen','roundStart');
 						player.markSkill('P_SP');
 					}
@@ -7975,15 +7976,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}else event.finish();
 					'step 2'
 					if(result.links?.length){
-						for(let i=0;i<result.links.length;i++){
+						for(let i of result.links){
 							if(_status.characterlist){
 								_status.characterlist.remove(result.links[i]);
 							}
-							let skills=lib.character[result.links[i]][3];
+							let skills = get.gainableSkillsName(i);
 							for(let j of skills){
-								if(lib.skill[j]&&
-								(event.num?(lib.skill[j].limited):(!lib.skill[j].limited))){
-									player.addTempSkill(skills[j],{player:'phaseBegin'});
+								if(event.num?(lib.skill[j].limited):(!lib.skill[j].limited)){
+									player.addTempSkill(j,{player:'phaseBegin'});
 								}
 							}
 						}
@@ -8324,15 +8324,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}else event.finish();
 					'step 2'
 					if(result.links?.length){
-						for(let i=0;i<result.links.length;i++){
+						for(let i of result.links){
 							if(_status.characterlist){
 								_status.characterlist.remove(result.links[i]);
 							}
-							let skills=lib.character[result.links[i]][3];
+							let skills = get.gainableSkillsName(i);
 							for(let j of skills){
-								if(lib.skill[j]){
-									player.addTempSkill(j,{player:['loseHpAfter','damageAfter']});
-								}
+								player.addTempSkill(j,{player:['loseHpAfter','damageAfter']});
 							}
 						}
 						if(!player.storage.tongzhao_wangzuo)	player.storage.tongzhao_wangzuo = [];

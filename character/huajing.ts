@@ -232,6 +232,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:7,
 					result:{player:1},
+					gainHujia:true
 				},
 				group:['quru_addDam'],
 				subSkill:{
@@ -253,9 +254,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
-				ai:{
-					gainHujia:true
-				}
 			},
 			shinve:{
 				trigger:{player:'changeHp'},
@@ -499,52 +497,37 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				enable:'chooseToUse',
 				usable:1,
+				getResult(cards):Array<[]>{
+					let l=cards.length,all=Math.pow(l,2),list=[];
+					for(let i=1;i<all;i++){
+						let array=[];
+						for(let j=0;j<l;j++){
+							if(Math.floor((i%Math.pow(2,j+1))/Math.pow(2,j))>0) array.push(cards[j])
+						}
+						let num=0;
+						for(let k of array){
+							num+=get.number(k);
+						}
+						if(num>0&&num%7==0) list.push(array);
+					}
+					if(list.length){
+						list.sort(function(a,b){
+							if(a.length!=b.length) return b.length-a.length;
+							return get.value(a)-get.value(b);
+						});
+						return list[0];
+					}
+					return list;
+				},
 				filter(event,player){
-					if(player.countCards('h')<1)	return false;
-					var list = player.getCards().map(function(i){
-						return get.number(i);
-					});
-					function getNumbers(source, count, isPermutation = true) {
-						//如果只取一位，返回数组中的所有项，例如 [ [1], [2], [3] ]
-						let currentList = source.map((item) => [item]);
-						if (count === 1) {
-						  return currentList;
-						}
-						let result = [];
-						//取出第一项后，再取出后面count - 1 项的排列组合，并把第一项的所有可能（currentList）和 后面count-1项所有可能交叉组合
-						for (let i = 0; i < currentList.length; i++) {
-						  let current = currentList[i];
-						  //如果是排列的方式，在取count-1时，源数组中排除当前项
-						  let children = [];
-						  if (isPermutation) {
-							children = getNumbers(source.filter(item => item !== current[0]), count - 1, isPermutation);
-						  }
-						  //如果是组合的方法，在取count-1时，源数组只使用当前项之后的
-						  else {
-							children = getNumbers(source.slice(i + 1), count - 1, isPermutation);
-						  }
-						  for (let child of children) {
-							result.push([...current, ...child]);
-						  }
-						}
-						return result;
-					}
-					for (let i in list) {
-						let num = getNumbers(list, i, false);
-						for(let j in num){
-							let sum = 0;
-							for (let k = 1; k < j.length; k++) {
-								sum += j[k];
-							}
-							if(sum>0&&sum%7==0)	return true;
-						}
-					}
-					let sum = 0;
-					for (let i in list) {
-						sum += Number(i);
-					}
-					if(sum>0&&sum%7==0)	return true;
-					return false;
+					let xieqi_choice = lib.skill.xieqi.getResult(player.getCards('h'));
+					return xieqi_choice.length;
+				},
+				check(card){
+					let evt=_status.event;
+					if(!evt.xieqi_choice) evt.xieqi_choice=lib.skill.xieqi.getResult(evt.player.getCards('h'));
+					if(!evt.xieqi_choice.includes(card)) return 0;
+					return 1;
 				},
 				chooseButton:{
 					dialog(event,player){
@@ -1011,7 +994,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						priority:999,
 						forced:true,
 						firstDo:true,
-						priority:999,
 						filter(event,player){
 							return get.name(event.card)==player.storage.qiming_saycards;
 						},
@@ -1280,10 +1262,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					//if(event.num>=0) event.goto(1);
 					'step 4'
 					event.cards.randomSort();
-					for(var i=0;i<event.cards.length;i++){
+					for (let i=0;i<event.cards.length;i++){
 						ui.cardPile.appendChild(event.cards[i]);
 					}	 	
-					for (var i in event.cards2){
+					for (let i in event.cards2){
 						if(event.cards2[i].length>1){
 							game.log(player,'将',event.cards2[i],'各',i,'张洗入了牌堆');
 						}
@@ -1293,7 +1275,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}	
 					var list=['海','沉','浪','落','涌','漩','涡','没','浮','淹','洪','河','酒','渡','洞'],cards=[],card=trigger.cards[event.num];
 					if(card.classList[2]=='ocean') cards.push(card);	
-					for (var i in list){
+					for (let i in list){
 						var names=get.translation(card);
 						for(var k=0;k<names.length;k++){
 							if(names[k]==list[i]&&!cards.contains(card)) cards.push(card);
@@ -1384,7 +1366,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			Nana7mi: `七海Nana7mi`,
 			Nana7mi_ab: `七海`,
 			xieqi: `携七`,
-			xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
+			xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的手牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
 			youhai: `佑海`,
 			youhai_info: `你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲。（X为你已损失的体力值）`,
 			youhai_append:lib.figurer(`特性：叠甲`),

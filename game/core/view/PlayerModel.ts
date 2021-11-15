@@ -1,5 +1,5 @@
 import * as _context from '../_context';
-const {_status, lib, game, ui, get} = _context;
+const { _status, lib, game, ui, get } = _context;
 import HTMLDivElementProxy from './HTMLDivElementProxy';
 /**
  * Player类
@@ -8,9 +8,80 @@ import HTMLDivElementProxy from './HTMLDivElementProxy';
  * @global
  */
 class PlayerModel extends HTMLDivElementProxy {
-    inits?: ((player:PlayerModel)=>void)[];
-    _inits?: ((player:PlayerModel)=>void)[];
-    updates?:((player:PlayerModel)=>void)[];
+    inits?: ((player: PlayerModel) => void)[];
+    _inits?: ((player: PlayerModel) => void)[];
+    updates?: ((player: PlayerModel) => void)[];
+    node?: {
+        [propName: string]: HTMLDivElement
+    }
+    sex?: Gender
+    group?: string
+    hp: number
+    maxHp: number
+    singleHp?: boolean
+    nodying?: boolean
+    nextSeat: PlayerModel
+    previousSeat: PlayerModel
+    next: PlayerModel
+    previous: PlayerModel
+    logAi: Function
+    outSkills: string[]
+    _hookTrigger: string[]
+    /**
+     * 回合计数，初始为0，每回合开始则加1
+     * @name phaseNumber
+     * @type {!number}
+     * @memberof PlayerModel
+     * @instance
+     */
+    phaseNumber = 0;
+    /**
+     * 事件跳过列表，如果一个事件e的事件名在该列表中存在X个，则接下来的X个事件e会被直接跳过，不执行；每跳过一个事件，列表中就会相应移除一个事件名
+     * @name skipList
+     * @type {!Array<string>}
+     * @memberof PlayerModel
+     * @instance
+     */
+    skipList = [];
+    /**
+     * 技能列表
+     * @name skills
+     * @type {!Array<any>}
+     * @memberof PlayerModel
+     * @instance
+     */
+    skills = [];
+    /**
+     * ??
+     * @name initedSkills
+     * @type {!Array<any>}
+     * @memberof PlayerModel
+     * @instance
+     */
+    initedSkills = [];
+    additionalSkills = {};
+    disabledSkills = {};
+    hiddenSkills = [];
+    awakenedSkills = [];
+    forbiddenSkills = {};
+    popups = [];
+    damagepopups = [];
+    judging = [];
+    stat = [{ card: {}, skill: {} }];
+    actionHistory = [{ ...lib.historyRecorder }];
+    tempSkills = {};
+    storage: { [propName: string]: any } = { skill_blocker: [] };
+    marks = {};
+    ai: Aimap = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
+    queueCount = 0;
+    outCount = 0;
+    hujia: number
+    side?: boolean
+    isZhu?: boolean
+    identity?: string
+    identityShown?: boolean
+    getModeState: () => string
+
     /**
      * 创建Player
      * @param {HTMLElement} parent 父元素
@@ -21,59 +92,9 @@ class PlayerModel extends HTMLDivElementProxy {
 
         this.element.classList.add('player');
         if (parent) parent.appendChild(this.element);
-        //初始化属性
-        node = this;
-        /**
-         * 回合计数，初始为0，每回合开始则加1
-         * @name phaseNumber
-         * @type {!number}
-         * @memberof PlayerModel
-         * @instance
-         */
-        node.phaseNumber = 0;
-        /**
-         * 事件跳过列表，如果一个事件e的事件名在该列表中存在X个，则接下来的X个事件e会被直接跳过，不执行；每跳过一个事件，列表中就会相应移除一个事件名
-         * @name skipList
-         * @type {!Array<string>}
-         * @memberof PlayerModel
-         * @instance
-         */
-        node.skipList = [];
-        /**
-         * 技能列表
-         * @name skills
-         * @type {!Array<any>}
-         * @memberof PlayerModel
-         * @instance
-         */
-        node.skills = [];
-        /**
-         * ??
-         * @name initedSkills
-         * @type {!Array<any>}
-         * @memberof PlayerModel
-         * @instance
-         */
-        node.initedSkills = [];
-        node.additionalSkills = {};
-        node.disabledSkills = {};
-        node.hiddenSkills = [];
-        node.awakenedSkills = [];
-        node.forbiddenSkills = {};
-        node.popups = [];
-        node.damagepopups = [];
-        node.judging = [];
-        node.stat = [{ card: {}, skill: {} }];
-        node.actionHistory = [{...lib.historyRecorder}];
-        node.tempSkills = {};
-        node.storage = {};
-        node.marks = {};
-        node.ai = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
-        node.queueCount = 0;
-        node.outCount = 0;
-
         //初始化子元素
         var node = this.element;
+        this.initEventListeners();
         /**
          * 角色的子节点
          * @name node
@@ -133,7 +154,6 @@ class PlayerModel extends HTMLDivElementProxy {
         //小身份div
         ui.create.div(node.node.identity);
         //点击事件
-        this.initEventListeners();
         if (!noclick) {
             node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickCharacter);
             node.node.identity.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickIdentity);
@@ -146,40 +166,56 @@ class PlayerModel extends HTMLDivElementProxy {
             return this;
         };
     }
+    name: string
+    name1: string
+    name2: string
+    nickname: string
+    _doubleClicking?: boolean
+    playerid: number
     initEventListeners() {
         /**
         * 点击(主)头像时
         */
         var onClickAvatar = () => {
-            if (!lib.config.doubleclick_intro) return;
-            if (this.isUnseen(0)) return;
-            if (!lib.character[this.name]) return;
-            if (!ui.menuContainer) return;
+            if (!lib.config.doubleclick_intro)
+                return;
+            if (this.isUnseen(0))
+                return;
+            if (!lib.character[this.name])
+                return;
+            if (!ui.menuContainer)
+                return;
             // var avatar = this.node.avatar;
             var player = this;
-            if (!game.players.contains(player) && !game.dead.contains(player)) return;
+            if (!game.players.contains(player) && !game.dead.contains(player))
+                return;
             if (!this._doubleClicking) {
                 this._doubleClicking = true;
                 setTimeout(() => {
-                    this._doubleClicking = false;//[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
+                    this._doubleClicking = false; //[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
                 }, 500);
                 return;
             }
             // ui.click.skin(this,player.name);
             game.pause2();
             ui.click.charactercard(player.name, null, null, true, this);
-        }
+        };
         /**
          * 点击(副)头像时
          */
         var onClickAvatar2 = () => {
-            if (!lib.config.doubleclick_intro) return;
-            if (this.classList.contains('unseen2')) return;
-            if (!lib.character[this.name2]) return;
-            if (!ui.menuContainer) return;
+            if (!lib.config.doubleclick_intro)
+                return;
+            if (this.classList.contains('unseen2'))
+                return;
+            if (!lib.character[this.name2])
+                return;
+            if (!ui.menuContainer)
+                return;
             var avatar = this.node.avatar;
             var player = this;
-            if (!game.players.contains(player) && !game.dead.contains(player)) return;
+            if (!game.players.contains(player) && !game.dead.contains(player))
+                return;
             if (!this._doubleClicking) {
                 this._doubleClicking = true;
                 setTimeout(function () {
@@ -190,31 +226,36 @@ class PlayerModel extends HTMLDivElementProxy {
             // ui.click.skin(this,player.name2);
             game.pause2();
             ui.click.charactercard(player.name2, null, null, true, this);
-        }
+        };
         /**
          * 点击角色牌时
          * @param {MouseEvent} e 点击事件
          */
         var onClickCharacter = (e) => {
-            if (_status.dragged) return;
-            if (_status.clicked) return;
-            if (ui.intro) return;
+            if (_status.dragged)
+                return;
+            if (_status.clicked)
+                return;
+            if (ui.intro)
+                return;
             if (this.classList.contains('connect')) {
                 if (game.online) {
                     if (game.onlinezhu) {
                         if (!this.playerid && game.connectPlayers) {
-                            if (['versus', 'doudizhu', 'longlaoguan'].contains(lib.configOL.mode)) return;
-                            if (lib.configOL.mode == 'identity' && lib.configOL.identity_mode == 'zhong') return;
-                            if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
-                            this.classList.toggle('unselectable2')
+                            if (['versus', 'doudizhu', 'longlaoguan'].contains(lib.configOL.mode))
+                                return;
+                            if (lib.configOL.mode == 'identity' && lib.configOL.identity_mode == 'zhong')
+                                return;
+                            if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2)
+                                return;
+                            this.classList.toggle('unselectable2');
                             if (this.classList.contains('unselectable2')) {
                                 lib.configOL.number--;
                             }
                             else {
                                 lib.configOL.number++;
                             }
-                            game.send('changeNumConfig', lib.configOL.number,
-                                game.connectPlayers.indexOf(this), this.classList.contains('unselectable2'));
+                            game.send('changeNumConfig', lib.configOL.number, game.connectPlayers.indexOf(this), this.classList.contains('unselectable2'));
                         }
                     }
                     return;
@@ -235,10 +276,13 @@ class PlayerModel extends HTMLDivElementProxy {
                     }
                 }
                 else {
-                    if (['versus', 'doudizhu', 'longlaoguan', 'single'].contains(lib.configOL.mode)) return;
-                    if (lib.configOL.mode == 'identity' && (lib.configOL.identity_mode == 'zhong' || lib.configOL.identity_mode == 'purple')) return;
-                    if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2) return;
-                    this.classList.toggle('unselectable2')
+                    if (['versus', 'doudizhu', 'longlaoguan', 'single'].contains(lib.configOL.mode))
+                        return;
+                    if (lib.configOL.mode == 'identity' && (lib.configOL.identity_mode == 'zhong' || lib.configOL.identity_mode == 'purple'))
+                        return;
+                    if (!this.classList.contains('unselectable2') && lib.configOL.number <= 2)
+                        return;
+                    this.classList.toggle('unselectable2');
                     if (this.classList.contains('unselectable2')) {
                         lib.configOL.number--;
                     }
@@ -256,7 +300,8 @@ class PlayerModel extends HTMLDivElementProxy {
                 custom.replace.target(this, e);
                 return;
             }
-            if (this.classList.contains('selectable') == false) return;
+            if (this.classList.contains('selectable') == false)
+                return;
             this.unprompt();
             if (this.classList.contains('selected')) {
                 ui.selected.targets.remove(this);
@@ -302,110 +347,120 @@ class PlayerModel extends HTMLDivElementProxy {
                 custom.add.target();
             }
             game.check();
-        }
-        var onClickIdentity = (e) => {
-            if (_status.dragged) return;
-            _status.clicked = true;
-            if (!game.getIdentityList) return;
-            if (_status.video) return;
-            if (this.forceShown) return;
-            if (_status.clickingidentity) {
-                for (var i = 0; i < _status.clickingidentity[1].length; i++) {
-                    _status.clickingidentity[1][i].delete();
-                    _status.clickingidentity[1][i].style.transform = '';
-                }
-                if (_status.clickingidentity[0] == this) {
-                    delete _status.clickingidentity;
-                    return;
-                }
-            }
-            var list = game.getIdentityList(this);
-            if (!list) return;
-            if (lib.config.mark_identity_style == 'click') {
-                var list2 = [];
-                for (var i in list) {
-                    list2.push(i);
-                }
-                list2.push(list2[0]);
-                for (var i = 0; i < list2.length; i++) {
-                    if (this.node.identity.firstChild.innerHTML == list[list2[i]]) {
-                        this.node.identity.firstChild.innerHTML = list[list2[i + 1]];
-                        this.node.identity.dataset.color = list2[i + 1];
-                        break;
-                    }
-                }
-            }
-            else {
-                if (get.mode() == 'guozhan') {
-                    list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
-                }
-                var list2 = get.copy(list);
-                if (game.getIdentityList2) {
-                    game.getIdentityList2(list2);
-                }
-                var rect = this.getBoundingClientRect();
-                this._customintro = (uiintro) => {
-                    if (get.mode() == 'guozhan') {
-                        uiintro.clickintro = true;
-                    }
-                    else {
-                        uiintro.touchclose = true;
-                    }
-                    // if(lib.config.theme!='woodden'){
-                    uiintro.classList.add('woodbg');
-                    // }
-                    if (get.is.phoneLayout()) {
-                        uiintro.style.width = '100px';
-                    }
-                    else {
-                        uiintro.style.width = '85px';
-                    }
-                    var source = this;
-                    for (var i in list) {
-                        var node = ui.create.div();
-                        node.classList.add('guessidentity');
-                        node.classList.add('pointerdiv');
-                        ui.create.div('.menubutton.large', list2[i], node);
-                        if (!get.is.phoneLayout()) {
-                            node.firstChild.style.fontSize = '24px';
-                            node.firstChild.style.lineHeight = '24px';
-                        }
-                        if (get.mode() == 'guozhan') {
-                            if (source._guozhanguess) {
-                                if (!source._guozhanguess.contains(i)) {
-                                    node.classList.add('transparent');
-                                }
-                            }
-                            node._source = source;
-                            node.listen(ui.click.identitycircle);
-                        }
-                        else {
-                            node.listen(function () {
-                                var info = this.link;
-                                info[0].firstChild.innerHTML = info[1];
-                                info[0].dataset.color = info[2];
-                                _status.clicked = false;
-                            });
-                        }
-
-                        node.link = [this.node.identity, list[i], i];
-                        uiintro.add(node);
-                    }
-                };
-                ui.click.touchpop();
-                ui.click.intro.call(this, {
-                    clientX: (rect.left + rect.width) * game.documentZoom,
-                    clientY: (rect.top) * game.documentZoom
-                });
-            }
-        }
+        };
         this.onClickAvatar = this.element.onClickAvatar = onClickAvatar;
         this.onClickAvatar2 = this.element.onClickAvatar2 = onClickAvatar2;
         this.onClickCharacter = this.element.onClickCharacter = onClickCharacter;
-        this.onClickIdentity = this.element.onClickIdentity = onClickIdentity;
+        /**
+         * 点击身份标识时
+         * @param {MouseEvent} e 点击事件
+         */
+        this.element.onClickIdentity = this.onClickIdentity;
 
     }
+    forceShown: boolean
+    _guozhanguess: string[]
+    _customintro: (uiintro) => void
+    onClickAvatar
+    onClickAvatar2
+    onClickCharacter
+    onClickIdentity(e) {
+        if (_status.dragged) return;
+        _status.clicked = true;
+        if (!game.getIdentityList) return;
+        if (_status.video) return;
+        let source:PlayerModel = (this.parentNode as any).getModel()
+        if (source.forceShown) return;
+        if (_status.clickingidentity) {
+            for (var i = 0; i < _status.clickingidentity[1].length; i++) {
+                _status.clickingidentity[1][i].delete();
+                _status.clickingidentity[1][i].style.transform = '';
+            }
+            if (_status.clickingidentity[0] == source) {
+                delete _status.clickingidentity;
+                return;
+            }
+        }
+        var list = game.getIdentityList(source);
+        if (!list) return;
+        if (lib.config.mark_identity_style == 'click') {
+            let list2 = [];
+            for (let i in list) {
+                list2.push(i);
+            }
+            list2.push(list2[0]);
+            for(let i=0;i<list2.length;i++){
+                if(this.firstChild.innerHTML==list[list2[i]]){
+                    this.firstChild.innerHTML=list[list2[i+1]];
+                    this.dataset.color=list2[i+1];
+                    break;
+                }
+            }
+        }
+        else {
+            if (get.mode() == 'guozhan') {
+                list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
+            }
+            let list2 = get.copy(list);
+            if (game.getIdentityList2) {
+                game.getIdentityList2(list2);
+            }
+            let rect = source.getBoundingClientRect();
+            this._customintro = function (uiintro) {
+                if (get.mode() == 'guozhan') {
+                    uiintro.clickintro = true;
+                }
+                else {
+                    uiintro.touchclose = true;
+                }
+                // if(lib.config.theme!='woodden'){
+                uiintro.classList.add('woodbg');
+                // }
+                if (get.is.phoneLayout()) {
+                    uiintro.style.width = '100px';
+                }
+                else {
+                    uiintro.style.width = '85px';
+                }
+                var source = this.parentNode;
+                for (var i in list) {
+                    var node = ui.create.div();
+                    node.classList.add('guessidentity');
+                    node.classList.add('pointerdiv');
+                    ui.create.div('.menubutton.large', list2[i], node);
+                    if (!get.is.phoneLayout()) {
+                        node.firstChild.style.fontSize = '24px';
+                        node.firstChild.style.lineHeight = '24px';
+                    }
+                    if (get.mode() == 'guozhan') {
+                        if (source._guozhanguess) {
+                            if (!source._guozhanguess.contains(i)) {
+                                node.classList.add('transparent');
+                            }
+                        }
+                        node._source = source;
+                        node.listen(ui.click.identitycircle);
+                    }
+                    else {
+                        node.listen(function () {
+                            var info = this.link;
+                            info[0].firstChild.innerHTML = info[1];
+                            info[0].dataset.color = info[2];
+                            _status.clicked = false;
+                        });
+                    }
 
+                    node.link = [this, list[i], i];
+                    uiintro.add(node);
+                }
+            };
+            ui.click.touchpop();
+            ui.click.intro.call(this, {
+                clientX: (rect.left + rect.width) * game.documentZoom,
+                clientY: (rect.top) * game.documentZoom
+            });
+        }
+    }
     /**
      * 检测本角色武将牌周围是否有牌
      */
@@ -448,7 +503,7 @@ class PlayerModel extends HTMLDivElementProxy {
     /**
      * 将一张牌置入本角色的判定区
      */
-    addToJudge(card, source) {
+    addToJudge(card, source?: PlayerModel) {
         let cards = (get.itemtype(card) == 'card') ? [card] : card;
         if (source) source.$give(cards, this, false);
         if (get.type(cards[0]) == 'delay') this.addJudge(cards[0]);
@@ -486,12 +541,12 @@ class PlayerModel extends HTMLDivElementProxy {
         if (lib.configOL.protect_beginner) return false;
         let list = [];
         if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
-        for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
+        for (let i = 0; i < lib.cardPack.mode_derivation.length; i++) {
             var info = lib.card[lib.cardPack.mode_derivation[i]];
             if (info && info.materials && (typeof info.materials == 'function' || Array.isArray(info.materials))) list.push(lib.cardPack.mode_derivation[i]);
         }
         var materials, select, filterProduct, bool = false;
-        for (var i = 0; i < arguments.length; i++) {
+        for (let i = 0; i < arguments.length; i++) {
             if (get.itemtype(arguments[i]) == 'cards') materials = arguments[i];
             else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number') select = arguments[i];
             else if (typeof arguments[i] == 'function') filterProduct = arguments[i];
@@ -503,20 +558,20 @@ class PlayerModel extends HTMLDivElementProxy {
         var cards = materials.slice(0);
         var l = cards.length;
         var all = Math.pow(l, 2);
-        for (var i = 1; i < all; i++) {
+        for (let i = 1; i < all; i++) {
             var array = [];
-            for (var j = 0; j < l; j++) {
+            for (let j = 0; j < l; j++) {
                 if (Math.floor((i % Math.pow(2, j + 1)) / Math.pow(2, j)) > 0) array.push(cards[j])
             }
             if ((get.itemtype(select) == 'select' && array.length >= select[0] && array.length <= select[1])
                 || (typeof select == 'number' && array.length == select)) materialList.push(array);
         }
-        for (var j of materialList) {
-            for (var k of list) {
+        for (let j of materialList) {
+            for (let k of list) {
                 var filter = get.info({ name: k }).materials;
                 if (Array.isArray(filter) && filter.length == j.length) {
                     var mate = filter.slice(0);
-                    for (var l = 0; l < mate.length; l++) {
+                    for (let l = 0; l < mate.length; l++) {
                         for (var card of j) {
                             if (get.is.filterCardBy(card, mate[l])) {
                                 mate.splice(l--, 1);
@@ -539,7 +594,6 @@ class PlayerModel extends HTMLDivElementProxy {
      * 将技能移入本角色的封锁列表
      */
     addSkillBlocker(skill) {
-        if (!this.storage.skill_blocker) this.storage.skill_blocker = [];
         this.storage.skill_blocker.push(skill);
     }
     /**
@@ -562,7 +616,7 @@ class PlayerModel extends HTMLDivElementProxy {
             toStorage: true,
             target: target || this,
         });
-        next.setContent(((ui)=>{
+        next.setContent(((ui) => {
             return function () {
                 "step 0"
                 player.lose(cards, ui.special).set('getlx', false);
@@ -604,8 +658,8 @@ class PlayerModel extends HTMLDivElementProxy {
         var player = this;
         if (player.hasSkillTag('save', true, target, true)) return true;
         var name = {}, hs = player.getCards('hs');
-        for (var i of hs) name[get.name(i)] = true;
-        for (var i in lib.card) {
+        for (let i of hs) name[get.name(i)] = true;
+        for (let i in lib.card) {
             if (lib.card[i].savable && (lib.inpile.contains(i) || name[i])) {
                 if (lib.filter.cardSavable({ name: i }, player, target) && (_status.connectMode || player.hasUsableCard(i))) return true;
             }
@@ -827,62 +881,62 @@ class PlayerModel extends HTMLDivElementProxy {
             }
         }
     }
+    getXY: () => [number, number]
     /**
      * 判断目标角色是否在本角色的攻击范围内
      * @param {string} to 目标角色
      * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
      */
     inRange(to) {
-        var from = this;
-        if (from == to || from.hasSkill('undist') || to.hasSkill('undist')) return false;
-        if (!game.players.contains(from) && !game.dead.contains(from)) return false;
+        if (this == to || this.hasSkill('undist') || to.hasSkill('undist')) return false;
+        if (!game.players.contains(this) && !game.dead.contains(this)) return false;
         if (!game.players.contains(to) && !game.dead.contains(to)) return false;
-        var mod1 = game.checkMod(from, to, 'unchanged', 'inRange', from);
+        var mod1 = game.checkMod(this, to, 'unchanged', 'inRange', this);
         if (mod1 != 'unchanged') return mod1;
-        var mod2 = game.checkMod(from, to, 'unchanged', 'inRangeOf', to);
+        var mod2 = game.checkMod(this, to, 'unchanged', 'inRangeOf', to);
         if (mod2 != 'unchanged') return mod2;
-        if (from.getAttackRange() < 1) return false;
-        var player = from, m, n = 1, i;
+        if (this.getAttackRange() < 1) return false;
+        let m, n = 1, i;
         var fxy, txy;
         if (game.chess) {
-            fxy = from.getXY();
+            fxy = this.getXY();
             txy = to.getXY();
             n = Math.abs(fxy[0] - txy[0]) + Math.abs(fxy[1] - txy[1]);
         }
-        else if (to.isMin(true) || from.isMin(true)) { }
+        else if (to.isMin(true) || this.isMin(true)) { }
         else {
             var length = game.players.length;
             var totalPopulation = game.players.length + game.dead.length + 1;
             for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
-                if (player.nextSeat != to) {
-                    player = player.nextSeat;
+                if (this.nextSeat != to) {
+                    let player = this.nextSeat;
                     if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true)) n++;
                 }
                 else {
                     break;
                 }
             }
-            for (i = 0; i < game.players.length; i++) {
+            for (let i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true)) length--;
             }
-            if (from.isDead()) length++;
+            if (this.isDead()) length++;
             if (to.isDead()) length++;
-            var left = from.hasSkillTag('left_hand');
-            var right = from.hasSkillTag('right_hand');
+            var left = this.hasSkillTag('left_hand');
+            var right = this.hasSkillTag('right_hand');
             if (left === right) n = Math.min(n, length - n);
             else if (left == true) n = length - n;
         }
-        n = game.checkMod(from, to, n, 'globalFrom', from);
-        n = game.checkMod(from, to, n, 'globalTo', to);
+        n = game.checkMod(this, to, n, 'globalFrom', this);
+        n = game.checkMod(this, to, n, 'globalTo', to);
         m = n;
-        m = game.checkMod(from, to, m, 'attackFrom', from);
-        m = game.checkMod(from, to, m, 'attackTo', to);
-        var equips1 = from.getCards('e', function (card) {
+        m = game.checkMod(this, to, m, 'attackFrom', this);
+        m = game.checkMod(this, to, m, 'attackTo', to);
+        var equips1 = this.getCards('e', function (card) {
             return !ui.selected.cards || !ui.selected.cards.contains(card);
         }), equips2 = to.getCards('e', function (card) {
             return !ui.selected.cards || !ui.selected.cards.contains(card);
         });
-        for (i = 0; i < equips1.length; i++) {
+        for (let i = 0; i < equips1.length; i++) {
             var info = get.info(equips1[i]).distance;
             if (!info) continue;
             if (info.globalFrom) {
@@ -893,7 +947,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 m += info.attackFrom;
             }
         }
-        for (i = 0; i < equips2.length; i++) {
+        for (let i = 0; i < equips2.length; i++) {
             var info = get.info(equips2[i]).distance;
             if (!info) continue;
             if (info.globalTo) {
@@ -1169,7 +1223,7 @@ class PlayerModel extends HTMLDivElementProxy {
         if (this.classList.contains('minskin') && this.node.name.querySelectorAll('br').length >= 4) {
             this.node.name.classList.add('long');
         }
-        if (info[4].contains('hiddenSkill') && !this.noclick) {
+        if (info[4].contains('hiddenSkill') && !this.element.noclick) {
             if (!this.hiddenSkills) this.hiddenSkills = [];
             this.hiddenSkills.addArray(skills);
             skills = [];
@@ -1234,7 +1288,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 };
             }
             this.node.count.classList.add('p2');
-            if (info2[4].contains('hiddenSkill') && !this.noclick) {
+            if (info2[4].contains('hiddenSkill') && !this.element.noclick) {
                 if (!this.hiddenSkills) this.hiddenSkills = [];
                 this.hiddenSkills.addArray(info2[3]);
                 this.classList.add(_status.video ? 'unseen2_v' : 'unseen2');
@@ -1260,12 +1314,12 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         lib.group.add(this.group);
         if (this.inits) {
-            for(const initFunc of this.inits){
+            for (const initFunc of this.inits) {
                 initFunc(this);
             }
         }
         if (this._inits) {
-            for(const _initFunc of this._inits){
+            for (const _initFunc of this._inits) {
                 _initFunc(this);
             }
         }
@@ -1282,7 +1336,7 @@ class PlayerModel extends HTMLDivElementProxy {
         this.node.avatar.show();
         this.node.name.innerHTML = get.verticalStr(name);
         this.nickname = name;
-        this.avatar = character;
+        this.node.avatar = character;
         this.node.nameol.innerHTML = '';
         if (lib.character[character]) this.sex = lib.character[character][0];
     }
@@ -1294,7 +1348,7 @@ class PlayerModel extends HTMLDivElementProxy {
         this.node.name.innerHTML = '';
         this.node.identity.firstChild.innerHTML = '';
         delete this.nickname;
-        delete this.avatar;
+        delete this.node.avatar;
         delete this.sex;
     }
     /**
@@ -1302,6 +1356,13 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {GameCores.GameObjects.Player} this self
      * @param {Array} info 房间信息
      */
+    serving?: boolean
+    roomempty?: boolean
+    roomfull?: boolean
+    roomgaming?: boolean
+    version?: boolean
+    config?: Object
+    key?
     initRoom(info, info2) {
         var str = '';
         this.serving = false;
@@ -1559,14 +1620,14 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} [vice] 是否使用副将头像，如果为true则使用副将头像；如果为false或未指定，使用(主将)头像
      * @param {?boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
      */
-    smoothAvatar(vice, video) {
+    smoothAvatar(vice, video?) {
         var div = ui.create.div('.fullsize');
         if (vice) {
-            div.style.background = getComputedStyle(this.node.avatar2).background;
+            div.style.background = getComputedStyle(this.node.avatar2 as any).background;
             this.node.avatar2.appendChild(div);
         }
         else {
-            div.style.background = getComputedStyle(this.node.avatar).background;
+            div.style.background = getComputedStyle(this.node.avatar as any).background;
             this.node.avatar.appendChild(div);
         }
         ui.refresh(div);
@@ -1586,17 +1647,17 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {number} position
      * @param {boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
      */
-    changeSeat(position, video) {
+    changeSeat(position: number, video: boolean) {
         var player = this;
         if (video !== false) game.addVideo('changeSeat', player, position);
         var rect1 = player.getBoundingClientRect();
         player.style.transition = 'all 0s';
         ui.refresh(player);
-        player.dataset.position = position;
+        player.dataset.position = position + '';
         var rect2 = player.getBoundingClientRect();
         var dx = rect1.left - rect2.left;
         var dy = rect1.top - rect2.top;
-        if ((game.chess || (player.dataset.position != 0 && position != 0)) && player.classList.contains('linked')) {
+        if ((game.chess || (player.dataset.position && position != 0)) && player.classList.contains('linked')) {
             player.style.transform = 'rotate(-90deg) translate(' + (-dy) + 'px,' + (dx) + 'px)';
         }
         else {
@@ -1612,7 +1673,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 将数据(参数)传输至服务器
      * @returns {!GameCores.GameObjects.Player} this self
      */
-    send() {
+    send(...args) {
         if (!this.ws || this.ws.closed) return this;
         this.ws.send.apply(this.ws, arguments);
         return this;
@@ -1742,6 +1803,7 @@ class PlayerModel extends HTMLDivElementProxy {
     /**
      * 显示投降按钮
      */
+    _giveUp: boolean
     showGiveup() {
         this._giveUp = true;
         if (this == game.me) {
@@ -1819,7 +1881,7 @@ class PlayerModel extends HTMLDivElementProxy {
          * @property {boolean} unseen2 
          * @property {string} mode 当前的模式
          */
-        var state = {
+        var state: Statmap = {
             hp: this.hp,
             maxHp: this.maxHp,
             nickname: this.nickname,
@@ -1977,12 +2039,12 @@ class PlayerModel extends HTMLDivElementProxy {
      */
     buffAvatar(buff, skill, name) {
         if (lib.skill[name] && !lib.character[name]) {
-            var stop = false;
-            var list = lib.config.all.characters.slice(0);
-            for (var i in lib.characterPack) {
+            let stop = false;
+            let list = lib.config.all.characters.slice(0);
+            for (let i in lib.characterPack) {
                 list.add(i);
             }
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 for (var j in lib.characterPack[list[i]]) {
                     if (lib.characterPack[list[i]][j][3].contains(name)) {
                         name = j;
@@ -2100,7 +2162,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 hp.style.transition = '';
             });
         }
-        var numh = this.countCards('h');
+        let numh: Num = this.countCards('h');
         if (_status.video) {
             numh = arguments[0];
         }
@@ -2205,7 +2267,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {!string} i 技能名
      * @param {?boolean} [storage] 是否同步标记数据，如果为true，同步标记(联网)；如果为false或未指定，不同步
      */
-    updateMark(i, storage) {
+    updateMark(i, storage?) {
         if (!this.marks[i]) {
             if (lib.skill[i] && lib.skill[i].intro && (this.storage[i] || lib.skill[i].intro.markcount)) {
                 this.markSkill(i);
@@ -2264,7 +2326,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 更新本角色全部数值型技能标记信息，不处理非数值标记
      * @param {?string} [skillname] 技能名，同步本角色的一个技能标记数据然后同步更新(联网)；如果未指定，则不进行同步，仅在本机更新
      */
-    updateMarks(connect) {
+    updateMarks(connect?) {
         if (typeof connect == 'string' && _status.connectMode && !game.online) {
             game.broadcast(function (player, storage, skill) {
                 player.storage[skill] = storage;
@@ -2321,9 +2383,9 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     getNext() {
         if (this.hasSkill('undist')) return null;
-        var target = this;
+        var target: PlayerModel;
         for (var i = 0; i < game.players.length - 1; i++) {
-            target = target.next;
+            target = (target || this).next;
             if (!target.hasSkill('undist')) {
                 return target;
             }
@@ -2332,9 +2394,9 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     getPrevious() {
         if (this.hasSkill('undist')) return null;
-        var target = this;
+        var target: PlayerModel;
         for (var i = 0; i < game.players.length - 1; i++) {
-            target = target.previous;
+            target = (target || this).previous;
             if (!target.hasSkill('undist')) {
                 return target;
             }
@@ -2352,11 +2414,11 @@ class PlayerModel extends HTMLDivElementProxy {
             }
             return num;
         }
-        var num;
+        var num: number;
         var stat = this.getStat('card');
         if (!card) {
             num = 0;
-            for (var i in stat) {
+            for (let i in stat) {
                 if (typeof stat[i] == 'number') {
                     console.log(i, stat[i])
                     num += stat[i];
@@ -2442,46 +2504,46 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?getCards~filterCard} [filter] 筛选函数，如果未指定则跳过筛选过程
      * @returns {!Array<GameCores.GameObjects.Card>}
      */
-    getCards(arg1, arg2) {
+    getCards(arg1: string = 'h', arg2?) {
         if (typeof arg1 != 'string') {
             arg1 = 'h';
         }
         var cards = [], cards1 = [];
         var i, j;
-        for (i = 0; i < arg1.length; i++) {
+        for (let i = 0; i < arg1.length; i++) {
             if (arg1[i] == 'h') {
-                for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                     if (!this.node.handcards1.childNodes[j].classList.contains('removing') && !this.node.handcards1.childNodes[j].classList.contains('glows')) {
                         cards.push(this.node.handcards1.childNodes[j]);
                     }
                 }
-                for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                     if (!this.node.handcards2.childNodes[j].classList.contains('removing') && !this.node.handcards2.childNodes[j].classList.contains('glows')) {
                         cards.push(this.node.handcards2.childNodes[j]);
                     }
                 }
             }
             else if (arg1[i] == 's') {
-                for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                     if (!this.node.handcards1.childNodes[j].classList.contains('removing') && this.node.handcards1.childNodes[j].classList.contains('glows')) {
                         cards.push(this.node.handcards1.childNodes[j]);
                     }
                 }
-                for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                     if (!this.node.handcards2.childNodes[j].classList.contains('removing') && this.node.handcards2.childNodes[j].classList.contains('glows')) {
                         cards.push(this.node.handcards2.childNodes[j]);
                     }
                 }
             }
             else if (arg1[i] == 'e') {
-                for (j = 0; j < this.node.equips.childElementCount; j++) {
+                for (let j = 0; j < this.node.equips.childElementCount; j++) {
                     if (!this.node.equips.childNodes[j].classList.contains('removing') && !this.node.equips.childNodes[j].classList.contains('feichu')) {
                         cards.push(this.node.equips.childNodes[j]);
                     }
                 }
             }
             else if (arg1[i] == 'j') {
-                for (j = 0; j < this.node.judges.childElementCount; j++) {
+                for (let j = 0; j < this.node.judges.childElementCount; j++) {
                     if (!this.node.judges.childNodes[j].classList.contains('removing') && !this.node.judges.childNodes[j].classList.contains('feichu')) {
                         cards.push(this.node.judges.childNodes[j]);
                         if (this.node.judges.childNodes[j].viewAs && arguments.length > 1) {
@@ -2497,13 +2559,13 @@ class PlayerModel extends HTMLDivElementProxy {
             return cards;
         }
         if (arg2) {
-            for (i = 0; i < cards.length; i++) {
+            for (let i = 0; i < cards.length; i++) {
                 if (!get.is.filterCardBy(cards[i], arg2)) {
                     cards.splice(i--, 1);
                 }
             }
         }
-        for (i = 0; i < cards1.length; i++) {
+        for (let i = 0; i < cards1.length; i++) {
             if (cards1[i].tempJudge) {
                 cards1[i].name = cards1[i].tempJudge;
                 delete cards1[i].tempJudge;
@@ -2537,7 +2599,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return list;
     }
-    countCards(arg1, arg2) {
+    countCards(arg1?: string, arg2?) {
         return this.getCards(arg1, arg2).length;
     }
     countDiscardableCards(player, arg1, arg2) {
@@ -2561,16 +2623,15 @@ class PlayerModel extends HTMLDivElementProxy {
      * 该技能组不包括子技能；
      * @param {!string} skill 技能名
      * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-     * @param {*} arg3 为false时表示不计入装备技能
-     * @param {*} arg4 为false时表示计入失效的技能
+     * @param {*} eSkill 为false时表示不计入装备技能
+     * @param {*} disable 为false时表示计入失效的技能
      * @returns {!Array<string>}
      */
-    getSkills(arg2, arg3, arg4) {
+    getSkills(arg2?, eSkill?, disable?) {
         var skills = this.skills.slice(0);
         var es = [];
-        var i, j;
-        if (arg3 !== false) {
-            for (i = 0; i < this.node.equips.childElementCount; i++) {
+        if (eSkill !== false) {
+            for (let i = 0; i < this.node.equips.childElementCount; i++) {
                 if (!this.node.equips.childNodes[i].classList.contains('removing')) {
                     var equipskills = get.info(this.node.equips.childNodes[i], false).skills;
                     if (equipskills) {
@@ -2582,9 +2643,9 @@ class PlayerModel extends HTMLDivElementProxy {
                 return es;
             }
         }
-        for (var i in this.additionalSkills) {
+        for (let i in this.additionalSkills) {
             if (Array.isArray(this.additionalSkills[i]) && (arg2 || i.indexOf('hidden:') !== 0)) {
-                for (j = 0; j < this.additionalSkills[i].length; j++) {
+                for (let j = 0; j < this.additionalSkills[i].length; j++) {
                     if (this.additionalSkills[i][j]) {
                         skills.add(this.additionalSkills[i][j]);
                     }
@@ -2594,15 +2655,15 @@ class PlayerModel extends HTMLDivElementProxy {
                 skills.add(this.additionalSkills[i]);
             }
         }
-        for (var i in this.tempSkills) {
+        for (let i in this.tempSkills) {
             skills.add(i);
         }
         if (arg2) skills.addArray(this.hiddenSkills);
-        if (arg3 !== false) skills.addArray(es);
-        for (var i in this.forbiddenSkills) {
+        if (eSkill !== false) skills.addArray(es);
+        for (let i in this.forbiddenSkills) {
             skills.remove(i);
         }
-        if (arg4 !== false) {
+        if (disable !== false) {
             skills = game.filterSkills(skills, this, es);
         }
         return skills;
@@ -2626,13 +2687,12 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * 
      */
-    get(arg1, arg2, arg3, arg4) {
-        var i, j;
+    get(arg1, arg2, arg3, arg4?) {
         if (arg1 == 's') {
             var skills = this.skills.slice(0);
             var es = [];
             if (arg3 !== false) {
-                for (i = 0; i < this.node.equips.childElementCount; i++) {
+                for (let i = 0; i < this.node.equips.childElementCount; i++) {
                     if (!this.node.equips.childNodes[i].classList.contains('removing') && !this.node.equips.childNodes[i].classList.contains('feichu')) {
                         var equipskills = get.info(this.node.equips.childNodes[i]).skills;
                         if (equipskills) {
@@ -2644,9 +2704,9 @@ class PlayerModel extends HTMLDivElementProxy {
                     return es;
                 }
             }
-            for (var i in this.additionalSkills) {
+            for (let i in this.additionalSkills) {
                 if (Array.isArray(this.additionalSkills[i])) {
-                    for (j = 0; j < this.additionalSkills[i].length; j++) {
+                    for (let j = 0; j < this.additionalSkills[i].length; j++) {
                         if (this.additionalSkills[i][j]) {
                             skills.add(this.additionalSkills[i][j]);
                         }
@@ -2656,12 +2716,12 @@ class PlayerModel extends HTMLDivElementProxy {
                     skills.add(this.additionalSkills[i]);
                 }
             }
-            for (var i in this.tempSkills) {
+            for (let i in this.tempSkills) {
                 skills.add(i);
             }
             if (arg2) skills.addArray(this.hiddenSkills);
             if (arg3 !== false) skills.addArray(es);
-            for (var i in this.forbiddenSkills) {
+            for (let i in this.forbiddenSkills) {
                 skills.remove(i);
             }
             if (arg4 !== false) {
@@ -2671,34 +2731,34 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         else if (get.is.pos(arg1)) {
             var cards = [], cards1 = [];
-            for (i = 0; i < arg1.length; i++) {
+            for (let i = 0; i < arg1.length; i++) {
                 if (arg1[i] == 'h') {
-                    for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                         if (!this.node.handcards1.childNodes[j].classList.contains('removing') && !this.node.handcards1.childNodes[j].classList.contains('feichu') && !this.node.handcards1.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards1.childNodes[j]);
                         }
                     }
-                    for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                         if (!this.node.handcards2.childNodes[j].classList.contains('removing') && !this.node.handcards2.childNodes[j].classList.contains('feichu') && !this.node.handcards2.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards2.childNodes[j]);
                         }
                     }
                 }
                 else if (arg1[i] == 'e') {
-                    for (j = 0; j < this.node.equips.childElementCount; j++) {
+                    for (let j = 0; j < this.node.equips.childElementCount; j++) {
                         if (!this.node.equips.childNodes[j].classList.contains('removing') && !this.node.equips.childNodes[j].classList.contains('feichu')) {
                             cards.push(this.node.equips.childNodes[j]);
                         }
                     }
                     if (arguments.length == 2 && typeof arg2 == 'string' && /1|2|3|4|5/.test(arg2)) {
-                        for (j = 0; j < cards.length; j++) {
+                        for (let j = 0; j < cards.length; j++) {
                             if (get.subtype(cards[j]) == 'equip' + arg2) return cards[j];
                         }
                         return;
                     }
                 }
                 else if (arg1[i] == 'j') {
-                    for (j = 0; j < this.node.judges.childElementCount; j++) {
+                    for (let j = 0; j < this.node.judges.childElementCount; j++) {
                         if (!this.node.judges.childNodes[j].classList.contains('removing') && !this.node.judges.childNodes[j].classList.contains('feichu')) {
                             cards.push(this.node.judges.childNodes[j]);
                             if (this.node.judges.childNodes[j].viewAs && arguments.length > 1) {
@@ -2721,15 +2781,15 @@ class PlayerModel extends HTMLDivElementProxy {
                     });
                 }
                 if (typeof arg2 == 'string') {
-                    for (i = 0; i < cards.length; i++) {
+                    for (let i = 0; i < cards.length; i++) {
                         if (cards[i].name != arg2) {
                             cards.splice(i, 1); i--;
                         }
                     }
                 }
                 else if (typeof arg2 == 'object') {
-                    for (i = 0; i < cards.length; i++) {
-                        for (j in arg2) {
+                    for (let i = 0; i < cards.length; i++) {
+                        for (let j in arg2) {
                             if (j == 'type') {
                                 if (typeof arg2[j] == 'object') {
                                     if (arg2[j].contains(get.type(cards[i])) == false) {
@@ -2807,14 +2867,14 @@ class PlayerModel extends HTMLDivElementProxy {
                     cards.splice(arg2);
                 }
                 else if (typeof arg2 == 'function') {
-                    for (i = 0; i < cards.length; i++) {
+                    for (let i = 0; i < cards.length; i++) {
                         if (!arg2(cards[i])) {
                             cards.splice(i, 1); i--;
                         }
                     }
                 }
             }
-            for (i = 0; i < cards1.length; i++) {
+            for (let i = 0; i < cards1.length; i++) {
                 if (cards1[i].tempJudge) {
                     cards1[i].name = cards1[i].tempJudge;
                     delete cards1[i].tempJudge;
@@ -2980,15 +3040,15 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseToUse(use) {
-        var next = game.createEvent('chooseToUse');
+        let next = game.createEvent('chooseToUse');
         next.player = this;
         if (arguments.length == 1 && get.objtype(arguments[0]) == 'object') {
-            for (var i in use) {
+            for (let i in use) {
                 next[i] = use[i];
             }
         }
         else {
-            for (var i = 0; i < arguments.length; i++) {
+            for (let i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'number' || get.itemtype(arguments[i]) == 'select') {
                     next.selectTarget = arguments[i];
                 }
@@ -3303,7 +3363,7 @@ class PlayerModel extends HTMLDivElementProxy {
         if (prompt == undefined) prompt = '请选择卡牌';
         return this.chooseButton(forced, select, 'hidden', [prompt, [list, 'vcard'], 'hidden']);
     }
-    chooseButton() {
+    chooseButton(...args) {
         var next = game.createEvent('chooseButton');
         for (var i = 0; i < arguments.length; i++) {
             if (typeof arguments[i] == 'boolean') {
@@ -3371,7 +3431,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }
         }
         else {
-            for (var i = 0; i < arguments.length; i++) {
+            for (let i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'number') {
                     next.selectCard = [arguments[i], arguments[i]];
                 }
@@ -3564,7 +3624,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return this.chooseControl(forced, func).set('choiceList', list).set('prompt', prompt);
     }
-    chooseControl() {
+    chooseControl(...args) {
         var next = game.createEvent('chooseControl');
         next.controls = [];
         for (var i = 0; i < arguments.length; i++) {
@@ -3946,7 +4006,7 @@ class PlayerModel extends HTMLDivElementProxy {
             return this.useSkill(result.skill, result.cards, result.targets);
         }
     }
-    useCard() {
+    useCard(...args) {
         var next = game.createEvent('useCard');
         next.player = this;
         next.num = 0;
@@ -4015,7 +4075,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         for (var i = 0; i < next.targets.length; i++) {
             if (get.attitude(this, next.targets[i]) >= -1 && get.attitude(this, next.targets[i]) < 0) {
-                if (!this.ai.tempIgnore) this.ai.tempIgnore = [];
+                if (!Array.isArray(this.ai.tempIgnore)) this.ai.tempIgnore = [];
                 this.ai.tempIgnore.add(next.targets[i]);
             }
         }
@@ -4032,7 +4092,7 @@ class PlayerModel extends HTMLDivElementProxy {
         next.setContent('useCard');
         return next;
     }
-    useSkill() {
+    useSkill(...args) {
         var next = game.createEvent('useSkill');
         next.player = this;
         next.num = 0;
@@ -4062,7 +4122,7 @@ class PlayerModel extends HTMLDivElementProxy {
         if (next.targets) {
             for (var i = 0; i < next.targets.length; i++) {
                 if (get.attitude(this, next.targets[i]) >= -1 && get.attitude(this, next.targets[i]) < 0) {
-                    if (!this.ai.tempIgnore) this.ai.tempIgnore = [];
+                    if (!Array.isArray(this.ai.tempIgnore)) this.ai.tempIgnore = [];
                     this.ai.tempIgnore.add(next.targets[i]);
                 }
             }
@@ -4105,7 +4165,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return next;
     }
-    draw() {
+    draw(...args) {
         var next = game.createEvent('draw');
         next.player = this;
         for (var i = 0; i < arguments.length; i++) {
@@ -4141,7 +4201,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return next;
     }
-    randomDiscard() {
+    randomDiscard(...args) {
         var position = 'he', num = 1, delay = null;
         for (var i = 0; i < arguments.length; i++) {
             if (typeof arguments[i] == 'number') {
@@ -4192,7 +4252,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return [];
     }
-    discard() {
+    discard(...args) {
         var next = game.createEvent('discard');
         next.player = this;
         next.num = 0;
@@ -4367,7 +4427,7 @@ class PlayerModel extends HTMLDivElementProxy {
         next.position = position || 'h';
         return next;
     }
-    gain() {
+    gain(...args) {
         var next = game.createEvent('gain');
         next.player = this;
         for (var i = 0; i < arguments.length; i++) {
@@ -4578,7 +4638,7 @@ class PlayerModel extends HTMLDivElementProxy {
         next.setContent('doubleDraw');
         return next;
     }
-    loseHp(num) {
+    loseHp(num?) {
         var next = game.createEvent('loseHp');
         next.num = num;
         next.player = this;
@@ -4586,7 +4646,7 @@ class PlayerModel extends HTMLDivElementProxy {
         next.setContent('loseHp');
         return next;
     }
-    loseMaxHp() {
+    loseMaxHp(...args) {
         var next = game.createEvent('loseMaxHp');
         next.player = this;
         var nosource;
@@ -4610,7 +4670,7 @@ class PlayerModel extends HTMLDivElementProxy {
         next.setContent('loseMaxHp');
         return next;
     }
-    gainMaxHp() {
+    gainMaxHp(...args) {
         var next = game.createEvent('gainMaxHp');
         next.player = this;
         var nosource;
@@ -4643,7 +4703,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
 
-    changeHujia(num, type) {
+    changeHujia(num: number = 1, type?) {
         var next = game.createEvent('changeHujia');
         if (typeof num != 'number') {
             num = 1;
@@ -4691,10 +4751,10 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return this;
     }
-    getDebuff() {
-        var list = [1, 2, 3, 4, 5, 6];
+    getDebuff(...args) {
+        let list = [1, 2, 3, 4, 5, 6];
         var nodelay = false;
-        for (var i = 0; i < arguments.length; i++) {
+        for (let i = 0; i < arguments.length; i++) {
             if (typeof arguments[i] == 'number') {
                 list.remove(arguments[i]);
             }
@@ -4724,7 +4784,7 @@ class PlayerModel extends HTMLDivElementProxy {
             case 4: if (!this.isLinked()) this.link(); break;
             case 5: this.addTempSkill('fengyin', { player: 'phaseAfter' }); break;
             case 6: {
-                var list = [];
+                let list = [];
                 for (var i = 0; i < lib.inpile.length; i++) {
                     var info = lib.card[lib.inpile[i]];
                     if (info.type == 'delay' && !info.cancel && !this.hasJudge(lib.inpile[i])) {
@@ -4900,7 +4960,7 @@ class PlayerModel extends HTMLDivElementProxy {
         };
         return next;
     }
-    addJudge(card, cards) {
+    addJudge(card, cards?) {
         var next = game.createEvent('addJudge');
         next.card = card;
         next.cards = cards;
@@ -5019,7 +5079,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 翻面事件
      * @returns {!boolean}
      */
-    turnOver(bool) {
+    turnOver(bool?) {
         if (typeof bool == 'boolean') {
             if (bool) {
                 if (this.isTurnedOver()) return;
@@ -5095,7 +5155,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 横置事件
      * @returns {!boolean}
      */
-    link(bool) {
+    link(bool?) {
         if (typeof bool == 'boolean') {
             if (bool) {
                 if (this.isLinked()) return;
@@ -5123,6 +5183,8 @@ class PlayerModel extends HTMLDivElementProxy {
     skip(name) {
         this.skipList.add(name);
     }
+    _hide_all_timer: boolean
+    ws
     wait(callback) {
         if (lib.node) {
             if (typeof callback == 'function') {
@@ -5179,7 +5241,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }
         }
         lib.node.torespond[this.playerid] = result;
-        for (var i in lib.node.torespond) {
+        for (let i in lib.node.torespond) {
             if (lib.node.torespond[i] == '_noname_waiting') {
                 return;
             }
@@ -5197,7 +5259,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
-    logSkill(name, targets, nature, logv, audio) {
+    logSkill(name, targets?, nature?, logv?, audio?) {
         if (get.itemtype(targets) == 'player') targets = [targets];
         var nopop = false;
         var popname = name;
@@ -5268,7 +5330,7 @@ class PlayerModel extends HTMLDivElementProxy {
             delete this.node.prompt;
         }
     }
-    prompt(str, nature) {
+    prompt(str, nature?) {
         var node;
         if (this.node.prompt) {
             node = this.node.prompt;
@@ -5399,7 +5461,7 @@ class PlayerModel extends HTMLDivElementProxy {
             delete this.node.timer;
         }
     }
-    markAuto(name, info) {
+    markAuto(name, info?) {
         if (Array.isArray(info)) {
             if (!Array.isArray(this.storage[name])) this.storage[name] = [];
             this.storage[name].addArray(info);
@@ -5411,21 +5473,22 @@ class PlayerModel extends HTMLDivElementProxy {
                 this[storage.length > 0 ? 'markSkill' : 'unmarkSkill'](name);
             }
             else if (typeof storage == 'number') {
-                this[storage.length > 0 ? 'markSkill' : 'unmarkSkill'](name);
+                this[storage > 0 ? 'markSkill' : 'unmarkSkill'](name);
             }
         }
     }
-    unmarkAuto(name, info) {
+    unmarkAuto(name, info?) {
         var storage = this.storage[name]
         if (Array.isArray(info) && Array.isArray(storage)) {
             storage.removeArray(info.slice(0));
             this.markAuto(name);
         }
     }
-    getStorage(name) {
+    getStorage(name: string): any {
         return this.storage[name] || [];
     }
-    markSkill(name, info, card) {
+    /**生产技能标志 */
+    markSkill(name, info?, card?) {
         if (info === true) {
             this.syncStorage(name);
             info = null;
@@ -5582,7 +5645,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {*} skill 
      * @returns {*}
      */
-    mark(name, info, skill) {
+    mark(name, info, skill?): HTMLDivElement {
         if (get.itemtype(name) == 'cards') {
             var marks = [];
             for (var i = 0; i < name.length; i++) {
@@ -5981,7 +6044,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} [nobroadcast] 如果为true，直接添加技能；如果为false或未指定，调用{@link game.broadcast}为本角色添加技能
      * @returns {string} 如果添加技能成功，返回技能名`skill`；如果失败，返回undefined
      */
-    addSkill(skill, checkConflict, nobroadcast) {
+    addSkill(skill, checkConflict?, nobroadcast?) {
         if (Array.isArray(skill)) {
             for (var i = 0; i < skill.length; i++) {
                 this.addSkill(skill[i]);
@@ -6381,7 +6444,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} [checkConflict] 如果为true，添加技能完成后检测冲突；如果为false或未指定，不检测
      * @returns {string} 如果添加成功，返回技能名`skill`；否则，返回undefined
      */
-    addTempSkill(skill, expire, checkConflict) {
+    addTempSkill(skill, expire, checkConflict?) {
         if (this.hasSkill(skill) && this.tempSkills[skill] == undefined) return;
         var noremove = this.skills.contains(skill);
         this.addSkill(skill, checkConflict, true);
@@ -6454,7 +6517,7 @@ class PlayerModel extends HTMLDivElementProxy {
         for (var i = 0; i < arguments.length; i++) {
             exclude.push(arguments[i]);
         }
-        for (i = 0; i < this.skills.length; i++) {
+        for (let i = 0; i < this.skills.length; i++) {
             if (lib.skill[this.skills[i]].superCharlotte) continue;
             if (!all && (lib.skill[this.skills[i]].temp || lib.skill[this.skills[i]].charlotte)) continue;
             if (!exclude.contains(this.skills[i])) {
@@ -6475,7 +6538,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
-    checkConflict(skill?:string) {
+    checkConflict(skill?: string) {
         if (skill) {
             if (this.forbiddenSkills[skill]) {
                 delete this.forbiddenSkills[skill];
@@ -6527,7 +6590,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 返回本角色的一个记录数据
      * @returns {!boolean}
      */
-    getHistory(key, filter, last) {
+    getHistory(key, filter?, last?) {
         if (!key) return this.actionHistory[this.actionHistory.length - 1];
         if (!filter) return this.actionHistory[this.actionHistory.length - 1][key];
         else {
@@ -6539,7 +6602,7 @@ class PlayerModel extends HTMLDivElementProxy {
             return history;
         }
     }
-    hasHistory(key, filter, last) {
+    hasHistory(key, filter, last?) {
         var history = this.getHistory(key).slice(0);
         if (last) history = history.slice(0, history.indexOf(last) + 1);
         for (var i = 0; i < history.length; i++) {
@@ -6693,7 +6756,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 返回攻击范围
      * @returns {!number}
      */
-    getAttackRange(raw) {
+    getAttackRange(raw?) {
         var player = this;
         var range = 0;
         if (raw) range = game.checkMod(player, player, range, 'globalFrom', player);
@@ -7212,7 +7275,8 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {GameCores.GameObjects.Player} [me] 某角色，用于判断本角色是否被`me`的玩家控制，如果未指定，默认使用`game.me`
      * @returns {!boolean}
      */
-    isUnderControl(self, me) {
+    _trueMe: PlayerModel
+    isUnderControl(self, me?: PlayerModel) {
         me = (me || game.me);
         var that = this._trueMe || this;
         if (that.isMad() || game.notMe) return false;
@@ -7272,7 +7336,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return false;
     }
-    checkShow(skill, showonly) {
+    checkShow(skill, showonly?) {
         var sourceSkill = get.info(skill);
         var noshow = false;
         if (sourceSkill && sourceSkill.sourceSkill) {
@@ -7336,12 +7400,12 @@ class PlayerModel extends HTMLDivElementProxy {
      * 实际调用了{@link getSkills this.getSkills(arg2, arg3, arg4)}，并用{@link game.expandSkills}展开
      * @param {!string} skill 技能名
      * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-     * @param {*} arg3 为false时表示不计入装备技能
-     * @param {*} arg4 为false时表示计入失效的技能
+     * @param {*} eSkill 为false时表示不计入装备技能
+     * @param {*} disable 为false时表示计入失效的技能
      * @returns {!boolean}
      */
-    hasSkill(skill, arg2, arg3, arg4) {
-        return game.expandSkills(this.getSkills(arg2, arg3, arg4)).contains(skill);
+    hasSkill(skill, arg2?, eSkill?, disable?) {
+        return game.expandSkills(this.getSkills(arg2, eSkill, disable)).contains(skill);
     }
     hasStockSkill(skill, arg1, arg2, arg3) {
         return game.expandSkills(this.getStockSkills(arg1, arg2, arg3)).contains(skill);
@@ -7381,7 +7445,15 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return false;
     }
-    hasSkillTag(tag, hidden, arg, globalskill) {
+    /**
+     * 判断角色是否具有某技能标签
+     * @param tag 
+     * @param hidden 
+     * @param arg 
+     * @param globalskill 
+     * @returns 
+     */
+    hasSkillTag(tag, hidden?: boolean | 'e', arg?: any, globalskill?: boolean): boolean {
         var skills = this.getSkills(hidden);
         if (globalskill) {
             skills.addArray(lib.skill.global);
@@ -7602,7 +7674,7 @@ class PlayerModel extends HTMLDivElementProxy {
             this.$draw(cards.length);
         }
     }
-    $draw(num, init, config) {
+    $draw(num, init?, config?): void {
         if (init !== false && init !== 'nobroadcast') {
             game.broadcast(function (player, num, init, config) {
                 player.$draw(num, init, config)
@@ -7987,7 +8059,7 @@ class PlayerModel extends HTMLDivElementProxy {
             return node;
         }
     }
-    $throwordered() {
+    $throwordered(...arg) {
         return this.$throwordered2.apply(this, arguments);
         // if(lib.config.low_performance){
         //     return this.$throwordered2.apply(this,arguments);
@@ -8089,13 +8161,12 @@ class PlayerModel extends HTMLDivElementProxy {
                 var add = str.slice(str.indexOf('%') + 1, str.indexOf('px')).replace(/\s/g, '');
                 return [parseInt(per), parseInt(add)];
             }
-            var nx = parseCalc(node.style.left);
-            var ny = parseCalc(node.style.top);
-            nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-            ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+            let ax = parseCalc(node.style.left);
+            let ay = parseCalc(node.style.top);
+            let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
             var dx, dy;
             if (game.chess) {
-                var rect = this.getBoundingClientRect();
+                let rect = this.getBoundingClientRect();
                 dx = rect.left + this.offsetWidth / 2 - 52 - nx;
                 dy = rect.top + this.offsetHeight / 2 - 52 - ny;
             }
@@ -8133,13 +8204,12 @@ class PlayerModel extends HTMLDivElementProxy {
             // node.style.transform='scale(0)';
         }
         else {
-            var nx = [50, -52];
-            var ny = [50, -52];
-            nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-            ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+            let ax = [50, -52];
+            let ay = [50, -52];
+            let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
             var dx, dy;
             if (game.chess) {
-                var rect = this.getBoundingClientRect();
+                let rect = this.getBoundingClientRect();
                 dx = rect.left + this.offsetWidth / 2 - 52 - nx;
                 dy = rect.top + this.offsetHeight / 2 - 52 - ny;
             }
@@ -8241,7 +8311,7 @@ class PlayerModel extends HTMLDivElementProxy {
         lib.listenEnd(node);
         return node;
     }
-    $throwxy2(card, left, top, trans, flipx, flipy) {
+    $throwxy2(card, left, top, trans, flipx, flipy?) {
         if (game.chess) {
             return this.$throwxy.apply(this, arguments);
         }
@@ -8256,10 +8326,9 @@ class PlayerModel extends HTMLDivElementProxy {
             var add = str.slice(str.indexOf('%') + 1, str.indexOf('px')).replace(/\s/g, '');
             return [parseInt(per), parseInt(add)];
         }
-        var nx = parseCalc(node.style.left);
-        var ny = parseCalc(node.style.top);
-        nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-        ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+        let ax = parseCalc(node.style.left);
+        let ay = parseCalc(node.style.top);
+        let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
         var dx = this.getLeft() + this.offsetWidth / 2 - 52 - nx;
         var dy = this.getTop() + this.offsetHeight / 2 - 52 - ny;
         if (flipx) dx = -dx;
@@ -8390,7 +8459,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return this.$give.apply(this, args);
     }
-    $give(card, player, log, init) {
+    $give(card, player, log?, init?) {
         if (init !== false) {
             game.broadcast(function (source, card, player, init) {
                 source.$give(card, player, false, init);
@@ -8495,7 +8564,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }
         }
     }
-    $equip(card, viewAs) {
+    $equip(card, viewAs?) {
         var originalName = card.originalName;
         if (viewAs && this.storage.disableEquip != undefined && this.storage.disableEquip.contains(get.subtype(viewAs))) {
             this.gain(card, 'gain2');

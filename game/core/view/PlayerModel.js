@@ -34,100 +34,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const _context = __importStar(require("../_context"));
     const { _status, lib, game, ui, get } = _context;
     const HTMLDivElementProxy_1 = __importDefault(require("./HTMLDivElementProxy"));
-    /**
-     * Player类
-     * @class PlayerModel
-     * @extends HTMLDivElementProxy
-     * @global
-     */
     class PlayerModel extends HTMLDivElementProxy_1.default {
-        /**
-         * 创建Player
-         * @param {HTMLElement} parent 父元素
-         * @param {boolean?} [noclick] 是否可点击，如果为true不可点击，如果为false或未指定，可点击
-         */
         constructor(parent, noclick) {
             super(document.createElement('div'));
+            this.phaseNumber = 0;
+            this.skipList = [];
+            this.skills = [];
+            this.initedSkills = [];
+            this.additionalSkills = {};
+            this.disabledSkills = {};
+            this.hiddenSkills = [];
+            this.awakenedSkills = [];
+            this.forbiddenSkills = {};
+            this.popups = [];
+            this.damagepopups = [];
+            this.judging = [];
+            this.stat = [{ card: {}, skill: {} }];
+            this.actionHistory = [{ ...lib.historyRecorder }];
+            this.tempSkills = {};
+            this.storage = { skill_blocker: [] };
+            this.marks = {};
+            this.ai = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
+            this.queueCount = 0;
+            this.outCount = 0;
             this.element.classList.add('player');
             if (parent)
                 parent.appendChild(this.element);
-            //初始化属性
-            node = this;
-            /**
-             * 回合计数，初始为0，每回合开始则加1
-             * @name phaseNumber
-             * @type {!number}
-             * @memberof PlayerModel
-             * @instance
-             */
-            node.phaseNumber = 0;
-            /**
-             * 事件跳过列表，如果一个事件e的事件名在该列表中存在X个，则接下来的X个事件e会被直接跳过，不执行；每跳过一个事件，列表中就会相应移除一个事件名
-             * @name skipList
-             * @type {!Array<string>}
-             * @memberof PlayerModel
-             * @instance
-             */
-            node.skipList = [];
-            /**
-             * 技能列表
-             * @name skills
-             * @type {!Array<any>}
-             * @memberof PlayerModel
-             * @instance
-             */
-            node.skills = [];
-            /**
-             * ??
-             * @name initedSkills
-             * @type {!Array<any>}
-             * @memberof PlayerModel
-             * @instance
-             */
-            node.initedSkills = [];
-            node.additionalSkills = {};
-            node.disabledSkills = {};
-            node.hiddenSkills = [];
-            node.awakenedSkills = [];
-            node.forbiddenSkills = {};
-            node.popups = [];
-            node.damagepopups = [];
-            node.judging = [];
-            node.stat = [{ card: {}, skill: {} }];
-            node.actionHistory = [{ ...lib.historyRecorder }];
-            node.tempSkills = {};
-            node.storage = {};
-            node.marks = {};
-            node.ai = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
-            node.queueCount = 0;
-            node.outCount = 0;
-            //初始化子元素
             var node = this.element;
-            /**
-             * 角色的子节点
-             * @name node
-             * @memberof PlayerModel
-             * @instance
-             * @property {HTMLDivElement} avatar (主将)头像
-             * @property {HTMLDivElement} avatar2 副将头像
-             * @property {HTMLDivElement} turnover 翻面
-             * @property {HTMLDivElement} framebg 背景
-             * @property {HTMLDivElement} intro 介绍
-             * @property {HTMLDivElement} identity 身份
-             * @property {HTMLDivElement} hp 当前血量
-             * @property {HTMLDivElement} name (主将)姓名
-             * @property {HTMLDivElement} name2 副将姓名
-             * @property {HTMLDivElement} nameol 姓名OL
-             * @property {HTMLDivElement} count 数量
-             * @property {HTMLDivElement} equips 装备栏
-             * @property {HTMLDivElement} judges 判定栏
-             * @property {HTMLDivElement} marks 标记
-             * @property {HTMLDivElement} chain 连环
-             * @property {HTMLDivElement} handcards1 手牌1
-             * @property {HTMLDivElement} handcards2 手牌2
-             * @property {HTMLDivElement} action action
-             * @property {HTMLDivElement} link 铁索(横置)
-             */
+            this.initEventListeners();
             node.node = {
                 avatar: ui.create.div('.avatar', node, this.onClickAvatar).hide(),
                 avatar2: ui.create.div('.avatar2', node, this.onClickAvatar2).hide(),
@@ -151,23 +85,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             node.node.link = this.mark(' ', { mark: get.linkintro });
             node.node.link.firstChild.setBackgroundImage('image/card/tiesuo_mark.png');
             node.node.link.firstChild.style.backgroundSize = 'cover';
-            //铁索元素
-            //[need optimize]
             var chainlength = game.layout == 'default' ? 64 : 40;
             for (var i = 0; i < chainlength; i++) {
                 ui.create.div(node.node.chain.firstChild, '.cardbg').style.transform = 'translateX(' + (i * 5 - 5) + 'px)';
             }
-            //特殊行动标识：在战棋模式中显示当前正在行动的角色与角色间距离
             node.node.action = ui.create.div('.action', node.node.avatar);
-            //小身份div
             ui.create.div(node.node.identity);
-            //点击事件
-            this.initEventListeners();
             if (!noclick) {
                 node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickCharacter);
                 node.node.identity.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', this.onClickIdentity);
                 if (lib.config.touchscreen) {
-                    node.addEventListener('touchstart', ui.click.playertouchstart); //[never used]
+                    node.addEventListener('touchstart', ui.click.playertouchstart);
                 }
             }
             else
@@ -177,9 +105,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             };
         }
         initEventListeners() {
-            /**
-            * 点击(主)头像时
-            */
             var onClickAvatar = () => {
                 if (!lib.config.doubleclick_intro)
                     return;
@@ -189,24 +114,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return;
                 if (!ui.menuContainer)
                     return;
-                // var avatar = this.node.avatar;
                 var player = this;
                 if (!game.players.contains(player) && !game.dead.contains(player))
                     return;
                 if (!this._doubleClicking) {
                     this._doubleClicking = true;
                     setTimeout(() => {
-                        this._doubleClicking = false; //[bug] Never invoked.[fix] Use 'this' instead of 'avatar'.
+                        this._doubleClicking = false;
                     }, 500);
                     return;
                 }
-                // ui.click.skin(this,player.name);
                 game.pause2();
                 ui.click.charactercard(player.name, null, null, true, this);
             };
-            /**
-             * 点击(副)头像时
-             */
             var onClickAvatar2 = () => {
                 if (!lib.config.doubleclick_intro)
                     return;
@@ -227,14 +147,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }, 500);
                     return;
                 }
-                // ui.click.skin(this,player.name2);
                 game.pause2();
                 ui.click.charactercard(player.name2, null, null, true, this);
             };
-            /**
-             * 点击角色牌时
-             * @param {MouseEvent} e 点击事件
-             */
             var onClickCharacter = (e) => {
                 if (_status.dragged)
                     return;
@@ -352,114 +267,110 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 game.check();
             };
-            var onClickIdentity = (e) => {
-                if (_status.dragged)
-                    return;
-                _status.clicked = true;
-                if (!game.getIdentityList)
-                    return;
-                if (_status.video)
-                    return;
-                if (this.forceShown)
-                    return;
-                if (_status.clickingidentity) {
-                    for (var i = 0; i < _status.clickingidentity[1].length; i++) {
-                        _status.clickingidentity[1][i].delete();
-                        _status.clickingidentity[1][i].style.transform = '';
-                    }
-                    if (_status.clickingidentity[0] == this) {
-                        delete _status.clickingidentity;
-                        return;
-                    }
-                }
-                var list = game.getIdentityList(this);
-                if (!list)
-                    return;
-                if (lib.config.mark_identity_style == 'click') {
-                    var list2 = [];
-                    for (var i in list) {
-                        list2.push(i);
-                    }
-                    list2.push(list2[0]);
-                    for (var i = 0; i < list2.length; i++) {
-                        if (this.node.identity.firstChild.innerHTML == list[list2[i]]) {
-                            this.node.identity.firstChild.innerHTML = list[list2[i + 1]];
-                            this.node.identity.dataset.color = list2[i + 1];
-                            break;
-                        }
-                    }
-                }
-                else {
-                    if (get.mode() == 'guozhan') {
-                        list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
-                    }
-                    var list2 = get.copy(list);
-                    if (game.getIdentityList2) {
-                        game.getIdentityList2(list2);
-                    }
-                    var rect = this.getBoundingClientRect();
-                    this._customintro = (uiintro) => {
-                        if (get.mode() == 'guozhan') {
-                            uiintro.clickintro = true;
-                        }
-                        else {
-                            uiintro.touchclose = true;
-                        }
-                        // if(lib.config.theme!='woodden'){
-                        uiintro.classList.add('woodbg');
-                        // }
-                        if (get.is.phoneLayout()) {
-                            uiintro.style.width = '100px';
-                        }
-                        else {
-                            uiintro.style.width = '85px';
-                        }
-                        var source = this;
-                        for (var i in list) {
-                            var node = ui.create.div();
-                            node.classList.add('guessidentity');
-                            node.classList.add('pointerdiv');
-                            ui.create.div('.menubutton.large', list2[i], node);
-                            if (!get.is.phoneLayout()) {
-                                node.firstChild.style.fontSize = '24px';
-                                node.firstChild.style.lineHeight = '24px';
-                            }
-                            if (get.mode() == 'guozhan') {
-                                if (source._guozhanguess) {
-                                    if (!source._guozhanguess.contains(i)) {
-                                        node.classList.add('transparent');
-                                    }
-                                }
-                                node._source = source;
-                                node.listen(ui.click.identitycircle);
-                            }
-                            else {
-                                node.listen(function () {
-                                    var info = this.link;
-                                    info[0].firstChild.innerHTML = info[1];
-                                    info[0].dataset.color = info[2];
-                                    _status.clicked = false;
-                                });
-                            }
-                            node.link = [this.node.identity, list[i], i];
-                            uiintro.add(node);
-                        }
-                    };
-                    ui.click.touchpop();
-                    ui.click.intro.call(this, {
-                        clientX: (rect.left + rect.width) * game.documentZoom,
-                        clientY: (rect.top) * game.documentZoom
-                    });
-                }
-            };
             this.onClickAvatar = this.element.onClickAvatar = onClickAvatar;
             this.onClickAvatar2 = this.element.onClickAvatar2 = onClickAvatar2;
             this.onClickCharacter = this.element.onClickCharacter = onClickCharacter;
-            this.onClickIdentity = this.element.onClickIdentity = onClickIdentity;
+            this.element.onClickIdentity = this.onClickIdentity;
         }
-        /**
-         * 检测本角色武将牌周围是否有牌
-         */
+        onClickIdentity(e) {
+            if (_status.dragged)
+                return;
+            _status.clicked = true;
+            if (!game.getIdentityList)
+                return;
+            if (_status.video)
+                return;
+            let source = this.parentNode.getModel();
+            if (source.forceShown)
+                return;
+            if (_status.clickingidentity) {
+                for (var i = 0; i < _status.clickingidentity[1].length; i++) {
+                    _status.clickingidentity[1][i].delete();
+                    _status.clickingidentity[1][i].style.transform = '';
+                }
+                if (_status.clickingidentity[0] == source) {
+                    delete _status.clickingidentity;
+                    return;
+                }
+            }
+            var list = game.getIdentityList(source);
+            if (!list)
+                return;
+            if (lib.config.mark_identity_style == 'click') {
+                let list2 = [];
+                for (let i in list) {
+                    list2.push(i);
+                }
+                list2.push(list2[0]);
+                for (let i = 0; i < list2.length; i++) {
+                    if (this.firstChild.innerHTML == list[list2[i]]) {
+                        this.firstChild.innerHTML = list[list2[i + 1]];
+                        this.dataset.color = list2[i + 1];
+                        break;
+                    }
+                }
+            }
+            else {
+                if (get.mode() == 'guozhan') {
+                    list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
+                }
+                let list2 = get.copy(list);
+                if (game.getIdentityList2) {
+                    game.getIdentityList2(list2);
+                }
+                let rect = source.getBoundingClientRect();
+                this._customintro = function (uiintro) {
+                    if (get.mode() == 'guozhan') {
+                        uiintro.clickintro = true;
+                    }
+                    else {
+                        uiintro.touchclose = true;
+                    }
+                    uiintro.classList.add('woodbg');
+                    if (get.is.phoneLayout()) {
+                        uiintro.style.width = '100px';
+                    }
+                    else {
+                        uiintro.style.width = '85px';
+                    }
+                    var source = this.parentNode;
+                    for (var i in list) {
+                        var node = ui.create.div();
+                        node.classList.add('guessidentity');
+                        node.classList.add('pointerdiv');
+                        ui.create.div('.menubutton.large', list2[i], node);
+                        if (!get.is.phoneLayout()) {
+                            node.firstChild.style.fontSize = '24px';
+                            node.firstChild.style.lineHeight = '24px';
+                        }
+                        if (get.mode() == 'guozhan') {
+                            if (source._guozhanguess) {
+                                if (!source._guozhanguess.contains(i)) {
+                                    node.classList.add('transparent');
+                                }
+                            }
+                            node._source = source;
+                            node.listen(ui.click.identitycircle);
+                        }
+                        else {
+                            node.listen(function () {
+                                var info = this.link;
+                                info[0].firstChild.innerHTML = info[1];
+                                info[0].dataset.color = info[2];
+                                _status.clicked = false;
+                            });
+                        }
+                        node.link = [this, list[i], i];
+                        uiintro.add(node);
+                    }
+                };
+                ui.click.touchpop();
+                ui.click.intro.call(this, {
+                    clientX: (rect.left + rect.width) * game.documentZoom,
+                    clientY: (rect.top) * game.documentZoom
+                });
+            }
+        }
         hasCardAround() {
             let cards = [];
             let skills = this.getSkills(true, false, false);
@@ -502,9 +413,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return true;
             }
         }
-        /**
-         * 将一张牌置入本角色的判定区
-         */
         addToJudge(card, source) {
             let cards = (get.itemtype(card) == 'card') ? [card] : card;
             if (source)
@@ -516,9 +424,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             else if (get.color(cards[0]) == 'black' && this.canAddJudge('bingliang'))
                 this.addJudge({ name: 'bingliang' }, cards);
         }
-        /**
-         * 判断一张牌能否本角色的判定区
-         */
         canAddToJudge(card) {
             if (get.type(card) == 'delay')
                 return this.canAddJudge(card);
@@ -528,7 +433,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return true;
             return false;
         }
-        //自创函数(升阶相关)
         chooseShengjie() {
             let next = game.createEvent('chooseShengjie');
             next.player = this;
@@ -561,13 +465,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             let list = [];
             if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length)
                 return false;
-            for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
+            for (let i = 0; i < lib.cardPack.mode_derivation.length; i++) {
                 var info = lib.card[lib.cardPack.mode_derivation[i]];
                 if (info && info.materials && (typeof info.materials == 'function' || Array.isArray(info.materials)))
                     list.push(lib.cardPack.mode_derivation[i]);
             }
             var materials, select, filterProduct, bool = false;
-            for (var i = 0; i < arguments.length; i++) {
+            for (let i = 0; i < arguments.length; i++) {
                 if (get.itemtype(arguments[i]) == 'cards')
                     materials = arguments[i];
                 else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number')
@@ -585,9 +489,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var cards = materials.slice(0);
             var l = cards.length;
             var all = Math.pow(l, 2);
-            for (var i = 1; i < all; i++) {
+            for (let i = 1; i < all; i++) {
                 var array = [];
-                for (var j = 0; j < l; j++) {
+                for (let j = 0; j < l; j++) {
                     if (Math.floor((i % Math.pow(2, j + 1)) / Math.pow(2, j)) > 0)
                         array.push(cards[j]);
                 }
@@ -595,12 +499,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     || (typeof select == 'number' && array.length == select))
                     materialList.push(array);
             }
-            for (var j of materialList) {
-                for (var k of list) {
+            for (let j of materialList) {
+                for (let k of list) {
                     var filter = get.info({ name: k }).materials;
                     if (Array.isArray(filter) && filter.length == j.length) {
                         var mate = filter.slice(0);
-                        for (var l = 0; l < mate.length; l++) {
+                        for (let l = 0; l < mate.length; l++) {
                             for (var card of j) {
                                 if (get.is.filterCardBy(card, mate[l])) {
                                     mate.splice(l--, 1);
@@ -618,18 +522,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return bool;
         }
-        //新函数
-        /**
-         * 将技能移入本角色的封锁列表
-         */
         addSkillBlocker(skill) {
-            if (!this.storage.skill_blocker)
-                this.storage.skill_blocker = [];
             this.storage.skill_blocker.push(skill);
         }
-        /**
-         * 将技能移出本角色的封锁列表
-         */
         removeSkillBlocker(skill) {
             if (this.storage.skill_blocker) {
                 this.storage.skill_blocker.remove(skill);
@@ -637,9 +532,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     delete this.storage.skill_blocker;
             }
         }
-        /**
-         * 将本角色的卡牌移入(目标角色)特殊区
-         */
         loseToSpecial(cards, tag, target) {
             var next = game.loseAsync({
                 player: this,
@@ -658,9 +550,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             })(ui));
             return next;
         }
-        /**
-         * 为本角色的手牌添加标签
-         */
         addGaintag(cards, tag) {
             if (get.itemtype(cards) == 'card')
                 cards = [cards];
@@ -673,9 +562,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }, this, cards, tag);
         }
-        /**
-         * 为本角色手牌移除标签
-         */
         removeGaintag(tag, cards) {
             game.addVideo('removeGaintag', this, tag);
             game.broadcastAll(function (player, tag, cards) {
@@ -684,19 +570,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     i.removeGaintag(tag);
             }, this, tag, cards);
         }
-        /**
-         * 判断本角色能否在濒死求桃事件中救治目标角色
-         * @param {string} target 目标角色
-         * @returns {!boolean} 可以救治返回`true`，不可以返回`false`
-         */
         canSave(target) {
             var player = this;
             if (player.hasSkillTag('save', true, target, true))
                 return true;
             var name = {}, hs = player.getCards('hs');
-            for (var i of hs)
+            for (let i of hs)
                 name[get.name(i)] = true;
-            for (var i in lib.card) {
+            for (let i in lib.card) {
                 if (lib.card[i].savable && (lib.inpile.contains(i) || name[i])) {
                     if (lib.filter.cardSavable({ name: i }, player, target) && (_status.connectMode || player.hasUsableCard(i)))
                         return true;
@@ -704,12 +585,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        /**
-         * 展示本角色
-         * @param {(0|1|2)} num 0:展示主将; 1: 展示副将; 2: 全部展示
-         * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
-         * @returns {GameCores.Bases.Event}
-         */
         showCharacter(num, log) {
             var toShow = [];
             if ((num == 0 || num == 2) && this.isUnseen(0))
@@ -727,11 +602,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('showCharacter');
             return next;
         }
-        /**
-         * 展示本角色(无事件)
-         * @param {(0|1|2)} num 0:展示主将; 1: 展示副将; 2: 全部展示
-         * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
-         */
         $showCharacter(num, log) {
             if (num == 0 && !this.isUnseen(0)) {
                 return;
@@ -820,12 +690,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             this.checkConflict();
         }
-        /**
-         * 观星
-         * 本角色观看牌堆顶的`num`张牌并将其以任意顺序置于牌堆顶或牌堆底
-         * @param {number} num
-         * @returns {GameCores.Bases.Event}
-         */
         chooseToGuanxing(num) {
             var next = game.createEvent('chooseToGuanxing');
             next.num = num || 1;
@@ -833,11 +697,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('chooseToGuanxing');
             return next;
         }
-        /**
-         * 向其他角色发送互动表情(本机)
-         * @param {!GameCores.GameObjects.Player} 互动的对象
-         * @param {!string} emotion 表情
-         */
         $throwEmotion(target, name) {
             game.addVideo('throwEmotion', this, [target.dataset.position, name]);
             var getLeft = function (player) {
@@ -870,12 +729,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }, 1200);
             }, 600);
         }
-        /**
-         * 本角色尝试播放一个技能动画[support online]
-         * @param {string} name 技能名
-         * @param {string} popname 弹出的名称，如果`popname`等于`name`，使用`get.skillTranslation(name, this)`作为弹出的名称
-         * @param {?boolean} [checkShow]
-         */
         trySkillAnimate(name, popname, checkShow) {
             if (!game.online && lib.config.skill_animation_type != 'off' && lib.skill[name] && lib.skill[name].skillAnimation) {
                 if (lib.config.skill_animation_type == 'default') {
@@ -903,13 +756,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.popup(get.skillTranslation(name, this), 'water', false);
             }
         }
-        /**
-         * 本角色尝试播放一个游戏牌动画[support online]
-         * @param {!GameCores.GameObjects.Card} card
-         * @param {string} name 游戏牌名
-         * @param {string} nature 属性
-         * @param {?string} [popname] 弹出的名称，如果未指定，使用`name`作为弹出的名称
-         */
         tryCardAnimate(card, name, nature, popname) {
             var player = this;
             game.broadcast(function (player, card, name, nature, popname) {
@@ -951,41 +797,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        /**
-         * 判断目标角色是否在本角色的攻击范围内
-         * @param {string} to 目标角色
-         * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
-         */
         inRange(to) {
-            var from = this;
-            if (from == to || from.hasSkill('undist') || to.hasSkill('undist'))
+            if (this == to || this.hasSkill('undist') || to.hasSkill('undist'))
                 return false;
-            if (!game.players.contains(from) && !game.dead.contains(from))
+            if (!game.players.contains(this) && !game.dead.contains(this))
                 return false;
             if (!game.players.contains(to) && !game.dead.contains(to))
                 return false;
-            var mod1 = game.checkMod(from, to, 'unchanged', 'inRange', from);
+            var mod1 = game.checkMod(this, to, 'unchanged', 'inRange', this);
             if (mod1 != 'unchanged')
                 return mod1;
-            var mod2 = game.checkMod(from, to, 'unchanged', 'inRangeOf', to);
+            var mod2 = game.checkMod(this, to, 'unchanged', 'inRangeOf', to);
             if (mod2 != 'unchanged')
                 return mod2;
-            if (from.getAttackRange() < 1)
+            if (this.getAttackRange() < 1)
                 return false;
-            var player = from, m, n = 1, i;
+            let m, n = 1, i;
             var fxy, txy;
             if (game.chess) {
-                fxy = from.getXY();
+                fxy = this.getXY();
                 txy = to.getXY();
                 n = Math.abs(fxy[0] - txy[0]) + Math.abs(fxy[1] - txy[1]);
             }
-            else if (to.isMin(true) || from.isMin(true)) { }
+            else if (to.isMin(true) || this.isMin(true)) { }
             else {
                 var length = game.players.length;
                 var totalPopulation = game.players.length + game.dead.length + 1;
                 for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
-                    if (player.nextSeat != to) {
-                        player = player.nextSeat;
+                    if (this.nextSeat != to) {
+                        let player = this.nextSeat;
                         if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true))
                             n++;
                     }
@@ -993,32 +833,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         break;
                     }
                 }
-                for (i = 0; i < game.players.length; i++) {
+                for (let i = 0; i < game.players.length; i++) {
                     if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true))
                         length--;
                 }
-                if (from.isDead())
+                if (this.isDead())
                     length++;
                 if (to.isDead())
                     length++;
-                var left = from.hasSkillTag('left_hand');
-                var right = from.hasSkillTag('right_hand');
+                var left = this.hasSkillTag('left_hand');
+                var right = this.hasSkillTag('right_hand');
                 if (left === right)
                     n = Math.min(n, length - n);
                 else if (left == true)
                     n = length - n;
             }
-            n = game.checkMod(from, to, n, 'globalFrom', from);
-            n = game.checkMod(from, to, n, 'globalTo', to);
+            n = game.checkMod(this, to, n, 'globalFrom', this);
+            n = game.checkMod(this, to, n, 'globalTo', to);
             m = n;
-            m = game.checkMod(from, to, m, 'attackFrom', from);
-            m = game.checkMod(from, to, m, 'attackTo', to);
-            var equips1 = from.getCards('e', function (card) {
+            m = game.checkMod(this, to, m, 'attackFrom', this);
+            m = game.checkMod(this, to, m, 'attackTo', to);
+            var equips1 = this.getCards('e', function (card) {
                 return !ui.selected.cards || !ui.selected.cards.contains(card);
             }), equips2 = to.getCards('e', function (card) {
                 return !ui.selected.cards || !ui.selected.cards.contains(card);
             });
-            for (i = 0; i < equips1.length; i++) {
+            for (let i = 0; i < equips1.length; i++) {
                 var info = get.info(equips1[i]).distance;
                 if (!info)
                     continue;
@@ -1030,7 +870,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     m += info.attackFrom;
                 }
             }
-            for (i = 0; i < equips2.length; i++) {
+            for (let i = 0; i < equips2.length; i++) {
                 var info = get.info(equips2[i]).distance;
                 if (!info)
                     continue;
@@ -1044,18 +884,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return m <= 1;
         }
-        /**
-         * 判断本角色是否在目标角色的攻击范围内
-         * @param {string} source 目标角色
-         * @returns {!boolean} 在范围内返回`true`，在范围外返回`false`
-         */
         inRangeOf(source) {
             return source.inRange(this);
         }
-        /**
-         * 获得本角色已损失的体力值
-         * @returns {!number} this.maxHp - Math.max(0, this.hp)
-         */
         getDamagedHp() {
             return this.maxHp - Math.max(0, this.hp);
         }
@@ -1252,14 +1083,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('enableJudge');
             return next;
         }
-        //原有函数
-        /**
-         * 角色初始化
-         * @param {?string} character 角色名，如果未指定，函数直接返回undefined
-         * @param {(string|false)} character2 如果为角色名，创建双将角色；如果为false，创建单将
-         * @param {!boolean} skill 如果为true，添加技能；如果为false，不添加角色技能；该参数在`character2`参数为false时无效
-         * @returns {GameCores.GameObjects.Card} 角色对象
-         */
         init(character, character2, skill) {
             if (typeof character == 'string' && !lib.character[character]) {
                 lib.character[character] = get.character(character);
@@ -1323,7 +1146,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (this.classList.contains('minskin') && this.node.name.querySelectorAll('br').length >= 4) {
                 this.node.name.classList.add('long');
             }
-            if (info[4].contains('hiddenSkill') && !this.noclick) {
+            if (info[4].contains('hiddenSkill') && !this.element.noclick) {
                 if (!this.hiddenSkills)
                     this.hiddenSkills = [];
                 this.hiddenSkills.addArray(skills);
@@ -1335,7 +1158,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.node.name_seat.dataset.nature = get.groupnature(this.group);
                 }
                 this.sex = 'male';
-                //this.group='unknown';
                 this.storage.nohp = true;
                 skills.add('g_hidden_ai');
             }
@@ -1390,7 +1212,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         ;
                 }
                 this.node.count.classList.add('p2');
-                if (info2[4].contains('hiddenSkill') && !this.noclick) {
+                if (info2[4].contains('hiddenSkill') && !this.element.noclick) {
                     if (!this.hiddenSkills)
                         this.hiddenSkills = [];
                     this.hiddenSkills.addArray(info2[3]);
@@ -1429,37 +1251,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.update();
             return this;
         }
-        /**
-         * 角色初始化[support online]
-         * @param {string} name 玩家名
-         * @param {string} character 角色名
-         */
         initOL(name, character) {
             this.node.avatar.setBackground(character, 'character');
             this.node.avatar.show();
             this.node.name.innerHTML = get.verticalStr(name);
             this.nickname = name;
-            this.avatar = character;
+            this.node.avatar = character;
             this.node.nameol.innerHTML = '';
             if (lib.character[character])
                 this.sex = lib.character[character][0];
         }
-        /**
-         * 在角色销毁时调用[support online]
-         */
         uninitOL() {
             this.node.avatar.hide();
             this.node.name.innerHTML = '';
             this.node.identity.firstChild.innerHTML = '';
             delete this.nickname;
-            delete this.avatar;
+            delete this.node.avatar;
             delete this.sex;
         }
-        /**
-         * 初始化房间
-         * @returns {GameCores.GameObjects.Player} this self
-         * @param {Array} info 房间信息
-         */
         initRoom(info, info2) {
             var str = '';
             this.serving = false;
@@ -1524,14 +1333,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.firstChild.innerHTML = str;
             return this;
         }
-        /**
-         * TODO - 重新初始化
-         * @param {*} from
-         * @param {*} to
-         * @param {*} maxHp
-         * @param {*} online
-         * @returns {(undefined|GameCores.GameObjects.Player)}
-         */
         reinit(from, to, maxHp, online) {
             var info1 = lib.character[from];
             var info2 = lib.character[to];
@@ -1628,10 +1429,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             });
             this.update();
         }
-        /**
-         * 在角色销毁时调用
-         * @returns {!GameCores.GameObjects.Player} this self
-         */
         uninit() {
             for (var i = 1; i < 6; i++) {
                 if (this.isDisabled(i))
@@ -1702,24 +1499,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.ai = { friend: [], enemy: [], neutral: [] };
             return this;
         }
-        /**
-         * 返回`this.offsetLeft`
-         * @returns {!number}
-         */
         getLeft() {
             return this.offsetLeft;
         }
-        /**
-         * 返回`this.offsetTop`
-         * @returns {!number}
-         */
         getTop() {
             return this.offsetTop;
         }
-        /**
-         * @param {?boolean} [vice] 是否使用副将头像，如果为true则使用副将头像；如果为false或未指定，使用(主将)头像
-         * @param {?boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-         */
         smoothAvatar(vice, video) {
             var div = ui.create.div('.fullsize');
             if (vice) {
@@ -1742,11 +1527,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.addVideo('smoothAvatar', this, vice);
             }
         }
-        /**
-         * 强制改变本角色座次，即使目标座次已经有角色存在
-         * @param {number} position
-         * @param {boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-         */
         changeSeat(position, video) {
             var player = this;
             if (video !== false)
@@ -1754,11 +1534,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var rect1 = player.getBoundingClientRect();
             player.style.transition = 'all 0s';
             ui.refresh(player);
-            player.dataset.position = position;
+            player.dataset.position = position + '';
             var rect2 = player.getBoundingClientRect();
             var dx = rect1.left - rect2.left;
             var dy = rect1.top - rect2.top;
-            if ((game.chess || (player.dataset.position != 0 && position != 0)) && player.classList.contains('linked')) {
+            if ((game.chess || (player.dataset.position && position != 0)) && player.classList.contains('linked')) {
                 player.style.transform = 'rotate(-90deg) translate(' + (-dy) + 'px,' + (dx) + 'px)';
             }
             else {
@@ -1770,20 +1550,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 player.style.transform = '';
             }, 100);
         }
-        /**
-         * 将数据(参数)传输至服务器
-         * @returns {!GameCores.GameObjects.Player} this self
-         */
-        send() {
+        send(...args) {
             if (!this.ws || this.ws.closed)
                 return this;
             this.ws.send.apply(this.ws, arguments);
             return this;
         }
-        /**
-         * 为本角色生成并注册ID，如果本角色的ID已经存在就重新生成；如果是在(联机|播放录播)的情况下，该函数不做操作
-         * @returns {!GameCores.GameObjects.Player} this self
-         */
         getId() {
             if (_status.video || _status.connectMode)
                 return this;
@@ -1794,21 +1566,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             game.playerMap[this.playerid] = this;
             return this;
         }
-        /**
-         * 向其他角色发送互动表情[support online]
-         * @param {!GameCores.GameObjects.Player} 互动的对象
-         * @param {!string} emotion 表情
-         */
         throwEmotion(target, emotion) {
             game.broadcastAll(function (player, target, emotion) {
                 player.$throwEmotion(target, emotion);
             }, this, target, emotion);
         }
-        /**
-         * 本角色发送聊天表情
-         * @param {string} emotionPack 表情包
-         * @param {number} emotionID 表情ID
-         */
         emotion(pack, id) {
             var str = '<img src="##assetURL##image/emotion/' + pack + '/' + id + '.gif" width="50" height="50">';
             this.say(str);
@@ -1826,10 +1588,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }, this.playerid, str);
         }
-        /**
-         * 本角色发送聊天消息[support online]
-         * @param {!string} str 聊天消息
-         */
         chat(str) {
             if (get.is.banWords(str))
                 return;
@@ -1848,10 +1606,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }, this.playerid, str);
         }
-        /**
-         * 本角色发送聊天消息(单机)
-         * @param {!string} str 聊天消息
-         */
         say(str) {
             str = str.replace(/##assetURL##/g, lib.assetURL);
             var dialog = ui.create.dialog('hidden');
@@ -1904,9 +1658,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.playAudio('voice', (this.sex == 'female' ? 'female' : 'male'), lib.quickVoice.indexOf(str));
             }
         }
-        /**
-         * 显示投降按钮
-         */
         showGiveup() {
             this._giveUp = true;
             if (this == game.me) {
@@ -1916,14 +1667,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.send(ui.create.giveup);
             }
         }
-        /**
-         * 同步技能信息[support online]
-         * @param {Object} skills 要同步的技能信息
-         * @param {?Array<string>} skills.global 全局技能的信息
-         * @param {?Object} skills.skillinfo 技能模板信息
-         * @param {?Object} skills.stat 本角色的技能状态信息
-         * @param {?Object} skills."['playerid']" 角色的技能信息
-         */
         applySkills(skills) {
             for (var i in skills) {
                 if (i == 'global') {
@@ -1947,43 +1690,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        /**
-         * 返回本角色状态信息
-         * @returns {GameCores.GameObjects.Player~State}
-         */
         getState() {
-            /**
-             * @name GameCores.GameObjects.Player~State
-             * @property {number} hp 当前血量
-             * @property {number} maxHp 最大血量
-             * @property {string} nickname 玩家昵称
-             * @property {string} sex 角色性别
-             * @property {string} group 角色势力
-             * @property {string} name 角色姓名
-             * @property {string} name1 角色(主将)姓名
-             * @property {string} name2 角色(副将)姓名
-             * @property {Array<GameCores.GameObjects.Card>} handcards 角色手牌
-             * @property {Array<string>} gaintag gaintag标签数组
-             * @property {Array<GameCores.GameObjects.Card>} equips 角色装备区的牌
-             * @property {Array<GameCores.GameObjects.Card>} judges 角色判定区的牌
-             * @property {Array<GameCores.GameObjects.Card>} specials 角色武将牌上的牌
-             * @property {Array<string>} disableJudge 对角色无效的判定数组
-             * @property {Array<(string|number)>} disableEquip 角色废除的装备(类型)数组
-             * @property {Array<(string|undefined)>} views 角色判定区牌的视为名数组，即使判定牌的视为名为空也会添加到该数组中，`views`与`judges`一一对应
-             * @property {number} position 角色位置(座次)
-             * @property {number} hujia 角色护甲
-             * @property {(boolean|undefined)} side 角色所属的一侧，如果`p1.side == p2.side`则认为p1与p2为同侧(友方)，否则为异侧(敌方)；该值仅在部分模式(vs等)中使用，在其他模式中默认为undefined
-             * @property {boolean} identityShown 是否显示身份
-             * @property {Array} identityNode [this.node.identity.innerHTML, this.node.identity.dataset.color]
-             * @property {string} identity 角色身份
-             * @property {boolean} dead 角色是否已死亡
-             * @property {boolean} linked 角色是否被链接
-             * @property {boolean} turnedover 角色是否翻面
-             * @property {number} phaseNumber 此时的回合计数
-             * @property {boolean} unseen
-             * @property {boolean} unseen2
-             * @property {string} mode 当前的模式
-             */
             var state = {
                 hp: this.hp,
                 maxHp: this.maxHp,
@@ -2025,22 +1732,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return state;
         }
-        /**
-         * 设置玩家昵称
-         * @param {string} [str] 玩家昵称，如果未指定或为空字符串，使用`this.nickname`。如果`this.nickname`的值也未指定，使用空字符串
-         * @returns {GameCores.GameObjects.Player} this self
-         */
         setNickname(str) {
             this.node.nameol.innerHTML = (str || this.nickname || '').slice(0, 12);
             return this;
         }
-        /**
-         * 设置头像[support online]
-         * @param {!string} name 武将名，如果是角色副将，则设置副将的头像；如果是主将，则设置主将的头像
-         * @param {!string} name2 新图片名(角色名)，用于设置背景；{@link HTMLDivElement#setBackground}
-         * @param {?boolean} [video] 如果为true或未指定，添加动画；如果为false，不添加动画
-         * @param {?boolean} [fakeme] 如果为true或未指定，设置{@link ui.fakeme}的背景图为头像图；如果为false，不设置
-         */
         setAvatar(name, name2, video, fakeme) {
             var node;
             if (this.name2 == name) {
@@ -2064,12 +1759,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 player.setAvatar(name, name2, false);
             }, this, name, name2);
         }
-        /**
-         * 设置头像更新数组，每张头像更新后停留1s，全部更新完成后，还原头像
-         * @param {!string} name 武将名，如果是角色副将，则设置副将的头像；如果是主将，则设置主将的头像
-         * @param {Array<string>} list 头像名(角色名)数组
-         * @see {@link setAvatar}
-         */
         setAvatarQueue(name, list) {
             var node;
             var player = this;
@@ -2102,11 +1791,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             game.addVideo('setAvatarQueue', this, [name, list]);
         }
-        /**
-         * 本角色闪烁头像
-         * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-         * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
-         */
         flashAvatar(skill, name) {
             if (lib.skill[name] && !lib.character[name]) {
                 var stop = false;
@@ -2134,20 +1818,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.setAvatarQueue(this.name, [name]);
             }
         }
-        /**
-         * 本角色头像下绘制图像
-         * @param {!string} buff 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-         * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
-         * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
-         */
         buffAvatar(buff, skill, name) {
             if (lib.skill[name] && !lib.character[name]) {
-                var stop = false;
-                var list = lib.config.all.characters.slice(0);
-                for (var i in lib.characterPack) {
+                let stop = false;
+                let list = lib.config.all.characters.slice(0);
+                for (let i in lib.characterPack) {
                     list.add(i);
                 }
-                for (var i = 0; i < list.length; i++) {
+                for (let i = 0; i < list.length; i++) {
                     for (var j in lib.characterPack[list[i]]) {
                         if (lib.characterPack[list[i]][j][3].contains(name)) {
                             name = j;
@@ -2167,10 +1845,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.setAvatarQueue(this.name, [name]);
             }
         }
-        /**
-         * 同步本角色数据(联网)
-         * @returns {?GameCores.GameObjects.Player} this self；如果是回放模式且该函数被无参调用，返回空值(undefined)
-         */
         update() {
             if (_status.video && arguments.length == 0)
                 return;
@@ -2214,7 +1888,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         hp.lastChild.classList.add('lost');
                     }
                     hp.classList.add('textstyle');
-                    // hp.classList.remove('long');
                 }
                 else {
                     hp.innerHTML = '';
@@ -2238,12 +1911,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             hp.childNodes[index].classList.add('lost');
                         }
                     }
-                    // if(this.maxHp==9){
-                    //     hp.classList.add('long');
-                    // }
-                    // else{
-                    //     hp.classList.remove('long');
-                    // }
                 }
                 if (hp.classList.contains('room')) {
                     hp.dataset.condition = 'high';
@@ -2264,7 +1931,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     hp.style.transition = '';
                 });
             }
-            var numh = this.countCards('h');
+            let numh = this.countCards('h');
             if (_status.video) {
                 numh = arguments[0];
             }
@@ -2299,14 +1966,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.updateMarks();
             return this;
         }
-        /**
-         * 本角色的一个技能标记移除指定数量，如果这个技能当前(没有标记|标记数为0)，返回`undefined`；
-         * 此函数仅支持数值类型的标记，如果是非数值类型的标记，不做任何移除操作，返回`undefined`；
-         * 数值类型仅支持整数
-         * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-         * @param {?number} [num] 正整数，标记要移除的数量；如果值为0或未指定，则使用数量 **1** 作为要移除的数量
-         * @param {?boolean} [log] 是否输出日志，如果为true或未指定，输出日志；如果为false，不输出日志
-         */
         removeMark(i, num, log) {
             if (typeof num != 'number' || !num)
                 num = 1;
@@ -2328,14 +1987,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.syncStorage(i);
             this[this.storage[i] ? 'markSkill' : 'unmarkSkill'](i);
         }
-        /**
-         * 本角色的一个技能标记添加指定数量；
-         * 此函数支持任意类型的标记，但不建议使用非数值类型的标记，因为对非数值类型的标记，会首先使用 0 值覆盖原值；
-         * 数值类型不支持浮点数
-         * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-         * @param {?number} [num] 正整数，标记要添加的数量；如果值为0或未指定，则使用数量 **1** 作为要添加的数量
-         * @param {?boolean} [log] 是否输出日志，如果为true或未指定，输出日志；如果为false，不输出日志
-         */
         addMark(i, num, log) {
             if (typeof num != 'number' || !num)
                 num = 1;
@@ -2355,11 +2006,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.syncStorage(i);
             this.markSkill(i);
         }
-        /**
-         * 返回本角色一个技能的标记数
-         * @param {?string} [i] 技能名，如果是数值型标记，返回此技能的标记数；如果是数组型标记，返回数组的长度值；否则，返回0值
-         * @returns {!number}
-         */
         countMark(i) {
             if (this.storage[i] == undefined)
                 return 0;
@@ -2369,20 +2015,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return this.storage[i].length;
             return 0;
         }
-        /**
-         * 返回此角色是否有一个技能的标记
-         * 此函数仅支持数值型标记，对于非数值型标记，此函数总返回false
-         * @param {!string} i 技能名，此函数会调用`this.storage[i]`获取该技能的标记数量
-         * @returns {!boolean}
-         */
         hasMark(i) {
             return this.countMark(i) > 0;
         }
-        /**
-         * 同步本角色一个技能标记的显示数值，如果是非数值类型的标记，不做同步操作，返回`this`
-         * @param {!string} i 技能名
-         * @param {?boolean} [storage] 是否同步标记数据，如果为true，同步标记(联网)；如果为false或未指定，不同步
-         */
         updateMark(i, storage) {
             if (!this.marks[i]) {
                 if (lib.skill[i] && lib.skill[i].intro && (this.storage[i] || lib.skill[i].intro.markcount)) {
@@ -2439,10 +2074,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         * 更新本角色全部数值型技能标记信息，不处理非数值标记
-         * @param {?string} [skillname] 技能名，同步本角色的一个技能标记数据然后同步更新(联网)；如果未指定，则不进行同步，仅在本机更新
-         */
         updateMarks(connect) {
             if (typeof connect == 'string' && _status.connectMode && !game.online) {
                 game.broadcast(function (player, storage, skill) {
@@ -2502,9 +2133,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         getNext() {
             if (this.hasSkill('undist'))
                 return null;
-            var target = this;
+            var target;
             for (var i = 0; i < game.players.length - 1; i++) {
-                target = target.next;
+                target = (target || this).next;
                 if (!target.hasSkill('undist')) {
                     return target;
                 }
@@ -2514,9 +2145,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         getPrevious() {
             if (this.hasSkill('undist'))
                 return null;
-            var target = this;
+            var target;
             for (var i = 0; i < game.players.length - 1; i++) {
-                target = target.previous;
+                target = (target || this).previous;
                 if (!target.hasSkill('undist')) {
                     return target;
                 }
@@ -2541,7 +2172,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var stat = this.getStat('card');
             if (!card) {
                 num = 0;
-                for (var i in stat) {
+                for (let i in stat) {
                     if (typeof stat[i] == 'number') {
                         console.log(i, stat[i]);
                         num += stat[i];
@@ -2591,84 +2222,46 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return list;
         }
-        /**
-         * 返回本角色(手牌|装备区|判定区|武将牌上)或任意位置组合的游戏牌
-         * @function getCards
-         * @param {string} [position='h'] 游戏牌位置组合: [hesj]+
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
-        /**
-         * 返回本角色所有牌中等于指定名称或手牌轴被视为指定名称的游戏牌
-         * @function getCards
-         * @variation 2
-         * @param {string} [position='h'] 游戏牌位置: [hesj]+
-         * @param {!string} [name] 游戏牌名，返回所有名称等于该牌名，或者手牌中被视为此牌名的牌
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
-        /**
-         * 返回本角色所有牌中满足特定条件的游戏牌
-         * @function getCards
-         * @variation 3
-         * @param {string} [position='h'] 游戏牌位置: [hesj]+
-         * @param {?Object} [cond] 条件对象，每个属性对应一个匹配条件(游戏牌对象必须有该属性，否则该条件会被跳过，不会生效)，只要有一次匹配失败就将牌从结果数组中移除；如果未指定则跳过匹配过程
-         * @param {...(Array<(Object|string)>|string)} cond.'[keyname]' 匹配条件，如果`cond[keyname] == card[keyname] || cond[keyname].contains(card[keyname])`成立，则匹配成功
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
-        /**
-         * getCards筛选函数
-         * @callback getCards~filterCard
-         * @param {!GameCores.GameObjects.Card} card 游戏牌对象
-         * @returns {?boolean} true表示保留此游戏牌，false或未指定表示不保留
-         * @see {@link getCards(4)}
-         */
-        /**
-         * 返回本角色所有牌中通过筛选函数的游戏牌
-         * @function getCards
-         * @variation 4
-         * @param {string} [position='h'] 游戏牌位置: [hesj]+
-         * @param {?getCards~filterCard} [filter] 筛选函数，如果未指定则跳过筛选过程
-         * @returns {!Array<GameCores.GameObjects.Card>}
-         */
-        getCards(arg1, arg2) {
+        getCards(arg1 = 'h', arg2) {
             if (typeof arg1 != 'string') {
                 arg1 = 'h';
             }
             var cards = [], cards1 = [];
             var i, j;
-            for (i = 0; i < arg1.length; i++) {
+            for (let i = 0; i < arg1.length; i++) {
                 if (arg1[i] == 'h') {
-                    for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                         if (!this.node.handcards1.childNodes[j].classList.contains('removing') && !this.node.handcards1.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards1.childNodes[j]);
                         }
                     }
-                    for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                         if (!this.node.handcards2.childNodes[j].classList.contains('removing') && !this.node.handcards2.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards2.childNodes[j]);
                         }
                     }
                 }
                 else if (arg1[i] == 's') {
-                    for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                         if (!this.node.handcards1.childNodes[j].classList.contains('removing') && this.node.handcards1.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards1.childNodes[j]);
                         }
                     }
-                    for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                    for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                         if (!this.node.handcards2.childNodes[j].classList.contains('removing') && this.node.handcards2.childNodes[j].classList.contains('glows')) {
                             cards.push(this.node.handcards2.childNodes[j]);
                         }
                     }
                 }
                 else if (arg1[i] == 'e') {
-                    for (j = 0; j < this.node.equips.childElementCount; j++) {
+                    for (let j = 0; j < this.node.equips.childElementCount; j++) {
                         if (!this.node.equips.childNodes[j].classList.contains('removing') && !this.node.equips.childNodes[j].classList.contains('feichu')) {
                             cards.push(this.node.equips.childNodes[j]);
                         }
                     }
                 }
                 else if (arg1[i] == 'j') {
-                    for (j = 0; j < this.node.judges.childElementCount; j++) {
+                    for (let j = 0; j < this.node.judges.childElementCount; j++) {
                         if (!this.node.judges.childNodes[j].classList.contains('removing') && !this.node.judges.childNodes[j].classList.contains('feichu')) {
                             cards.push(this.node.judges.childNodes[j]);
                             if (this.node.judges.childNodes[j].viewAs && arguments.length > 1) {
@@ -2684,13 +2277,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return cards;
             }
             if (arg2) {
-                for (i = 0; i < cards.length; i++) {
+                for (let i = 0; i < cards.length; i++) {
                     if (!get.is.filterCardBy(cards[i], arg2)) {
                         cards.splice(i--, 1);
                     }
                 }
             }
-            for (i = 0; i < cards1.length; i++) {
+            for (let i = 0; i < cards1.length; i++) {
                 if (cards1[i].tempJudge) {
                     cards1[i].name = cards1[i].tempJudge;
                     delete cards1[i].tempJudge;
@@ -2743,21 +2336,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return skills;
         }
-        /**
-         * 返回本角色的技能组；
-         * 该技能组不包括子技能；
-         * @param {!string} skill 技能名
-         * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-         * @param {*} arg3 为false时表示不计入装备技能
-         * @param {*} arg4 为false时表示计入失效的技能
-         * @returns {!Array<string>}
-         */
-        getSkills(arg2, arg3, arg4) {
+        getSkills(arg2, eSkill, disable) {
             var skills = this.skills.slice(0);
             var es = [];
-            var i, j;
-            if (arg3 !== false) {
-                for (i = 0; i < this.node.equips.childElementCount; i++) {
+            if (eSkill !== false) {
+                for (let i = 0; i < this.node.equips.childElementCount; i++) {
                     if (!this.node.equips.childNodes[i].classList.contains('removing')) {
                         var equipskills = get.info(this.node.equips.childNodes[i], false).skills;
                         if (equipskills) {
@@ -2769,9 +2352,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return es;
                 }
             }
-            for (var i in this.additionalSkills) {
+            for (let i in this.additionalSkills) {
                 if (Array.isArray(this.additionalSkills[i]) && (arg2 || i.indexOf('hidden:') !== 0)) {
-                    for (j = 0; j < this.additionalSkills[i].length; j++) {
+                    for (let j = 0; j < this.additionalSkills[i].length; j++) {
                         if (this.additionalSkills[i][j]) {
                             skills.add(this.additionalSkills[i][j]);
                         }
@@ -2781,47 +2364,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     skills.add(this.additionalSkills[i]);
                 }
             }
-            for (var i in this.tempSkills) {
+            for (let i in this.tempSkills) {
                 skills.add(i);
             }
             if (arg2)
                 skills.addArray(this.hiddenSkills);
-            if (arg3 !== false)
+            if (eSkill !== false)
                 skills.addArray(es);
-            for (var i in this.forbiddenSkills) {
+            for (let i in this.forbiddenSkills) {
                 skills.remove(i);
             }
-            if (arg4 !== false) {
+            if (disable !== false) {
                 skills = game.filterSkills(skills, this, es);
             }
             return skills;
         }
-        /**
-         * 角色的游戏牌区域(手牌|装备区|判定区)组合
-         * Regex: [hej]|he|hj|ej|hej
-         * @typedef {string} GameCores.PlayerCardPosition
-         * @see {@link GameCores.CardPosition}
-         */
-        /**
-         * 返回本角色(武将牌上|手牌|装备区|判定区)的游戏牌 TODO
-         * @param {('s'|GameCores.PlayerCardPosition)} position 角色的游戏牌区域或者角色的武将牌上区域
-         * @param {*} arg2
-         * @param {*} arg3
-         * @param {*} arg4
-         * @returns {Array<GameCores.GameObjects.Card>}
-         * @see {@link GameCores.PlayerCardPosition}
-         * @example
-         * let cards = player.get('he')//手牌和装备区所有未被移除、废除、的牌
-         *
-         *
-         */
         get(arg1, arg2, arg3, arg4) {
-            var i, j;
             if (arg1 == 's') {
                 var skills = this.skills.slice(0);
                 var es = [];
                 if (arg3 !== false) {
-                    for (i = 0; i < this.node.equips.childElementCount; i++) {
+                    for (let i = 0; i < this.node.equips.childElementCount; i++) {
                         if (!this.node.equips.childNodes[i].classList.contains('removing') && !this.node.equips.childNodes[i].classList.contains('feichu')) {
                             var equipskills = get.info(this.node.equips.childNodes[i]).skills;
                             if (equipskills) {
@@ -2833,9 +2396,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         return es;
                     }
                 }
-                for (var i in this.additionalSkills) {
+                for (let i in this.additionalSkills) {
                     if (Array.isArray(this.additionalSkills[i])) {
-                        for (j = 0; j < this.additionalSkills[i].length; j++) {
+                        for (let j = 0; j < this.additionalSkills[i].length; j++) {
                             if (this.additionalSkills[i][j]) {
                                 skills.add(this.additionalSkills[i][j]);
                             }
@@ -2845,14 +2408,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         skills.add(this.additionalSkills[i]);
                     }
                 }
-                for (var i in this.tempSkills) {
+                for (let i in this.tempSkills) {
                     skills.add(i);
                 }
                 if (arg2)
                     skills.addArray(this.hiddenSkills);
                 if (arg3 !== false)
                     skills.addArray(es);
-                for (var i in this.forbiddenSkills) {
+                for (let i in this.forbiddenSkills) {
                     skills.remove(i);
                 }
                 if (arg4 !== false) {
@@ -2862,27 +2425,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             else if (get.is.pos(arg1)) {
                 var cards = [], cards1 = [];
-                for (i = 0; i < arg1.length; i++) {
+                for (let i = 0; i < arg1.length; i++) {
                     if (arg1[i] == 'h') {
-                        for (j = 0; j < this.node.handcards1.childElementCount; j++) {
+                        for (let j = 0; j < this.node.handcards1.childElementCount; j++) {
                             if (!this.node.handcards1.childNodes[j].classList.contains('removing') && !this.node.handcards1.childNodes[j].classList.contains('feichu') && !this.node.handcards1.childNodes[j].classList.contains('glows')) {
                                 cards.push(this.node.handcards1.childNodes[j]);
                             }
                         }
-                        for (j = 0; j < this.node.handcards2.childElementCount; j++) {
+                        for (let j = 0; j < this.node.handcards2.childElementCount; j++) {
                             if (!this.node.handcards2.childNodes[j].classList.contains('removing') && !this.node.handcards2.childNodes[j].classList.contains('feichu') && !this.node.handcards2.childNodes[j].classList.contains('glows')) {
                                 cards.push(this.node.handcards2.childNodes[j]);
                             }
                         }
                     }
                     else if (arg1[i] == 'e') {
-                        for (j = 0; j < this.node.equips.childElementCount; j++) {
+                        for (let j = 0; j < this.node.equips.childElementCount; j++) {
                             if (!this.node.equips.childNodes[j].classList.contains('removing') && !this.node.equips.childNodes[j].classList.contains('feichu')) {
                                 cards.push(this.node.equips.childNodes[j]);
                             }
                         }
                         if (arguments.length == 2 && typeof arg2 == 'string' && /1|2|3|4|5/.test(arg2)) {
-                            for (j = 0; j < cards.length; j++) {
+                            for (let j = 0; j < cards.length; j++) {
                                 if (get.subtype(cards[j]) == 'equip' + arg2)
                                     return cards[j];
                             }
@@ -2890,7 +2453,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     else if (arg1[i] == 'j') {
-                        for (j = 0; j < this.node.judges.childElementCount; j++) {
+                        for (let j = 0; j < this.node.judges.childElementCount; j++) {
                             if (!this.node.judges.childNodes[j].classList.contains('removing') && !this.node.judges.childNodes[j].classList.contains('feichu')) {
                                 cards.push(this.node.judges.childNodes[j]);
                                 if (this.node.judges.childNodes[j].viewAs && arguments.length > 1) {
@@ -2913,7 +2476,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         });
                     }
                     if (typeof arg2 == 'string') {
-                        for (i = 0; i < cards.length; i++) {
+                        for (let i = 0; i < cards.length; i++) {
                             if (cards[i].name != arg2) {
                                 cards.splice(i, 1);
                                 i--;
@@ -2921,8 +2484,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     else if (typeof arg2 == 'object') {
-                        for (i = 0; i < cards.length; i++) {
-                            for (j in arg2) {
+                        for (let i = 0; i < cards.length; i++) {
+                            for (let j in arg2) {
                                 if (j == 'type') {
                                     if (typeof arg2[j] == 'object') {
                                         if (arg2[j].contains(get.type(cards[i])) == false) {
@@ -3024,7 +2587,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         cards.splice(arg2);
                     }
                     else if (typeof arg2 == 'function') {
-                        for (i = 0; i < cards.length; i++) {
+                        for (let i = 0; i < cards.length; i++) {
                             if (!arg2(cards[i])) {
                                 cards.splice(i, 1);
                                 i--;
@@ -3032,7 +2595,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 }
-                for (i = 0; i < cards1.length; i++) {
+                for (let i = 0; i < cards1.length; i++) {
                     if (cards1[i].tempJudge) {
                         cards1[i].name = cards1[i].tempJudge;
                         delete cards1[i].tempJudge;
@@ -3053,10 +2616,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return cards;
             }
         }
-        /**
-         * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link updateMarks})
-         * @param {!string} skill 技能名
-         */
         syncStorage(skill) {
             switch (get.itemtype(this.storage[skill])) {
                 case 'cards':
@@ -3094,10 +2653,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }, this, time);
             return this;
         }
-        /**
-         * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link updateMarks})
-         * @param {!string} skill 技能名
-         */
         setIdentity(identity) {
             if (!identity)
                 identity = this.identity;
@@ -3206,15 +2761,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return next;
         }
         chooseToUse(use) {
-            var next = game.createEvent('chooseToUse');
+            let next = game.createEvent('chooseToUse');
             next.player = this;
             if (arguments.length == 1 && get.objtype(arguments[0]) == 'object') {
-                for (var i in use) {
+                for (let i in use) {
                     next[i] = use[i];
                 }
             }
             else {
-                for (var i = 0; i < arguments.length; i++) {
+                for (let i = 0; i < arguments.length; i++) {
                     if (typeof arguments[i] == 'number' || get.itemtype(arguments[i]) == 'select') {
                         next.selectTarget = arguments[i];
                     }
@@ -3304,7 +2859,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 next.ai = get.unuseful2;
             if (next.prompt != false) {
                 if (typeof next.prompt == 'string') {
-                    //next.dialog=next.prompt;
                 }
                 else {
                     var str = '请打出' + get.cnNumber(next.selectCard[0]) + '张';
@@ -3568,7 +3122,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 prompt = '请选择卡牌';
             return this.chooseButton(forced, select, 'hidden', [prompt, [list, 'vcard'], 'hidden']);
         }
-        chooseButton() {
+        chooseButton(...args) {
             var next = game.createEvent('chooseButton');
             for (var i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'boolean') {
@@ -3643,7 +3197,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             else {
-                for (var i = 0; i < arguments.length; i++) {
+                for (let i = 0; i < arguments.length; i++) {
                     if (typeof arguments[i] == 'number') {
                         next.selectCard = [arguments[i], arguments[i]];
                     }
@@ -3751,7 +3305,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('chooseUseTarget');
             next._args = Array.from(arguments);
             return next;
-            // Fully Online-Ready! Enjoy It!
         }
         chooseTarget() {
             var next = game.createEvent('chooseTarget');
@@ -3851,7 +3404,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this.chooseControl(forced, func).set('choiceList', list).set('prompt', prompt);
         }
-        chooseControl() {
+        chooseControl(...args) {
             var next = game.createEvent('chooseControl');
             next.controls = [];
             for (var i = 0; i < arguments.length; i++) {
@@ -4220,12 +3773,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        /**
-         * 本角色使用牌或技能；`chooseToUse`时调用
-         * @function
-         * @param {*} result `chooseToUse`的结果
-         * @param {?GameCores.Bases.Event} [event] 父事件，如果不指定，使用当前事件作为父事件
-         */
         useResult(result, event) {
             event = event || _status.event;
             if (result._sendskill) {
@@ -4266,7 +3813,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return this.useSkill(result.skill, result.cards, result.targets);
             }
         }
-        useCard() {
+        useCard(...args) {
             var next = game.createEvent('useCard');
             next.player = this;
             next.num = 0;
@@ -4336,7 +3883,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             for (var i = 0; i < next.targets.length; i++) {
                 if (get.attitude(this, next.targets[i]) >= -1 && get.attitude(this, next.targets[i]) < 0) {
-                    if (!this.ai.tempIgnore)
+                    if (!Array.isArray(this.ai.tempIgnore))
                         this.ai.tempIgnore = [];
                     this.ai.tempIgnore.add(next.targets[i]);
                 }
@@ -4354,7 +3901,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('useCard');
             return next;
         }
-        useSkill() {
+        useSkill(...args) {
             var next = game.createEvent('useSkill');
             next.player = this;
             next.num = 0;
@@ -4384,7 +3931,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (next.targets) {
                 for (var i = 0; i < next.targets.length; i++) {
                     if (get.attitude(this, next.targets[i]) >= -1 && get.attitude(this, next.targets[i]) < 0) {
-                        if (!this.ai.tempIgnore)
+                        if (!Array.isArray(this.ai.tempIgnore))
                             this.ai.tempIgnore = [];
                         this.ai.tempIgnore.add(next.targets[i]);
                     }
@@ -4429,7 +3976,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return next;
         }
-        draw() {
+        draw(...args) {
             var next = game.createEvent('draw');
             next.player = this;
             for (var i = 0; i < arguments.length; i++) {
@@ -4467,7 +4014,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return next;
         }
-        randomDiscard() {
+        randomDiscard(...args) {
             var position = 'he', num = 1, delay = null;
             for (var i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'number') {
@@ -4518,7 +4065,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return [];
         }
-        discard() {
+        discard(...args) {
             var next = game.createEvent('discard');
             next.player = this;
             next.num = 0;
@@ -4644,12 +4191,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }, this, cards);
             return this;
         }
-        /**
-         * 本角色获取游戏牌到武将牌上，从除本角色武将牌上、手牌外的区域
-         * @param {Array<GameCores.GameObjects.Card>} cards 要获取的游戏牌数组，如果一张游戏牌在本角色(手牌|武将牌上)，就从数组中移除它
-         * @param {?boolean} [broadcast] 如果为trueh或未指定，通过{@link game.broadcast}同步获取游戏牌；如果为false，本机更新
-         * @param {string} [gaintag] 为此次通过此函数移动到武将牌上的每张游戏牌设置`card.gaintag=`
-         */
         directgains(cards, broadcast, gaintag) {
             var hs = this.getCards('hs');
             for (var i = 0; i < cards.length; i++) {
@@ -4695,7 +4236,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             if (broadcast !== false)
                 game.broadcast(function (player, cards, gaintag) {
-                    player.directgains(cards, null, gaintag); //[recommend] use false instead of null
+                    player.directgains(cards, null, gaintag);
                 }, this, cards, gaintag);
             return this;
         }
@@ -4707,7 +4248,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.position = position || 'h';
             return next;
         }
-        gain() {
+        gain(...args) {
             var next = game.createEvent('gain');
             next.player = this;
             for (var i = 0; i < arguments.length; i++) {
@@ -4825,7 +4366,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         damage() {
             var next = game.createEvent('damage');
-            //next.forceDie=true;
             next.player = this;
             var nocard, nosource;
             var event = _status.event;
@@ -4943,7 +4483,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('loseHp');
             return next;
         }
-        loseMaxHp() {
+        loseMaxHp(...args) {
             var next = game.createEvent('loseMaxHp');
             next.player = this;
             var nosource;
@@ -4968,7 +4508,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('loseMaxHp');
             return next;
         }
-        gainMaxHp() {
+        gainMaxHp(...args) {
             var next = game.createEvent('gainMaxHp');
             next.player = this;
             var nosource;
@@ -5002,7 +4542,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('changeHp');
             return next;
         }
-        changeHujia(num, type) {
+        changeHujia(num = 1, type) {
             var next = game.createEvent('changeHujia');
             if (typeof num != 'number') {
                 num = 1;
@@ -5061,10 +4601,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        getDebuff() {
-            var list = [1, 2, 3, 4, 5, 6];
+        getDebuff(...args) {
+            let list = [1, 2, 3, 4, 5, 6];
             var nodelay = false;
-            for (var i = 0; i < arguments.length; i++) {
+            for (let i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'number') {
                     list.remove(arguments[i]);
                 }
@@ -5107,7 +4647,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.addTempSkill('fengyin', { player: 'phaseAfter' });
                     break;
                 case 6: {
-                    var list = [];
+                    let list = [];
                     for (var i = 0; i < lib.inpile.length; i++) {
                         var info = lib.card[lib.inpile[i]];
                         if (info.type == 'delay' && !info.cancel && !this.hasJudge(lib.inpile[i])) {
@@ -5214,18 +4754,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        /**
-         * 返回本角色是否处于混乱状态
-         * @returns {!boolean}
-         */
         isMad() {
             return this.hasSkill('mad');
         }
-        /**
-         * 令本角色进入混乱状态；
-         * 此函数会输出日志
-         * @param {(string|Object)} [end] 结束时点，下一次触发该时点时结束本角色结束混乱状态；如果未指定，默认为'phaseAfter'
-         */
         goMad(end) {
             if (end) {
                 this.addTempSkill('mad', end);
@@ -5235,9 +4766,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             game.log(this, '进入混乱状态');
         }
-        /**
-         * 令本角色移除混乱状态
-         */
         unMad() {
             this.removeSkill('mad');
         }
@@ -5384,10 +4912,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 card.expired = false;
             }
         }
-        /**
-         * 判定事件
-         * @returns {!boolean}
-         */
         judge() {
             var next = game.createEvent('judge');
             next.player = this;
@@ -5428,10 +4952,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('judge');
             return next;
         }
-        /**
-         * 翻面事件
-         * @returns {!boolean}
-         */
         turnOver(bool) {
             if (typeof bool == 'boolean') {
                 if (bool) {
@@ -5507,10 +5027,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        /**
-         * 横置事件
-         * @returns {!boolean}
-         */
         link(bool) {
             if (typeof bool == 'boolean') {
                 if (bool) {
@@ -5598,7 +5114,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             lib.node.torespond[this.playerid] = result;
-            for (var i in lib.node.torespond) {
+            for (let i in lib.node.torespond) {
                 if (lib.node.torespond[i] == '_noname_waiting') {
                     return;
                 }
@@ -5614,10 +5130,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             else if (_status.paused && !noresume)
                 game.resume();
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         logSkill(name, targets, nature, logv, audio) {
             if (get.itemtype(targets) == 'player')
                 targets = [targets];
@@ -5732,13 +5244,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 node.classList.add(className);
             }
         }
-        /**
-         * 文字弹出动画效果
-         * [recommend] 令人迷惑的是，此函数实质调用了{@link $damagepop}，而不是{@link $damagepop}调用此函数
-         * @param {!string} name (技能|角色|游戏牌)名或其他任意非空字符串
-         * @param {string} [classname='water'] 效果色
-         * @param {?boolean} [nobroadcast] 如果为true，则
-         */
         popup(name, className, nobroadcast) {
             var name2 = get.translation(name);
             if (!name2)
@@ -5790,9 +5295,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (!time && lib.configOL) {
                 time = parseInt(lib.configOL.choose_timeout) * 1000;
             }
-            // if(ui.arena&&ui.arena.classList.contains('choose-character')&&lib.configOL.chooseCharacter_timeout){
-            // 	time *= 5;
-            // }
             if (_status.connectMode && !game.online) {
                 game.broadcast(function (player, time) {
                     player.showTimer(time);
@@ -5836,7 +5338,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this[storage.length > 0 ? 'markSkill' : 'unmarkSkill'](name);
                 }
                 else if (typeof storage == 'number') {
-                    this[storage.length > 0 ? 'markSkill' : 'unmarkSkill'](name);
+                    this[storage > 0 ? 'markSkill' : 'unmarkSkill'](name);
                 }
             }
         }
@@ -6000,14 +5502,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             ui.updatem(this);
             return node;
         }
-        /**
-         * 标记
-         * @function
-         * @param {(Array<Card>|Card|string)} name
-         * @param {*} info mark info
-         * @param {*} skill
-         * @returns {*}
-         */
         mark(name, info, skill) {
             if (get.itemtype(name) == 'cards') {
                 var marks = [];
@@ -6024,9 +5518,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     this.node.marks.insertBefore(node, this.node.marks.childNodes[1]);
                     node.suit = name.suit;
                     node.number = name.number;
-                    // if(name.name&&lib.card[name.name]&&lib.card[name.name].markimage){
-                    //     node.node.image.style.left=lib.card[name.name].markimage;
-                    // }
                     if (name.classList.contains('fullborder')) {
                         node.classList.add('fakejudge');
                         node.classList.add('fakemark');
@@ -6042,7 +5533,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         str = get.translation(name)[0];
                     }
                     ui.create.div('.background.skillmark', node).innerHTML = str;
-                    // node.style.fontFamily=lib.config.card_font;
                 }
                 node.name = name;
                 node.skill = skill || name;
@@ -6066,12 +5556,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return node;
             }
         }
-        /**
-         * 取消标记
-         * @function
-         * @param {*} name
-         * @param {*} info
-         */
         unmark(name, info) {
             game.addVideo('unmarkname', this, name);
             if (get.itemtype(name) == 'card') {
@@ -6110,10 +5594,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.classList.remove('linked');
             }
         }
-        /**
-         * 返回一张牌当前本角色是否可以(对目标角色)使用
-         * @returns {!boolean}
-         */
         canUse(card, target, distance, includecard) {
             if (typeof card == 'string')
                 card = { name: card, isCard: true };
@@ -6126,27 +5606,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return false;
             return lib.filter[includecard ? 'targetEnabledx' : 'targetEnabled'](card, this, target);
         }
-        /**
-         * 返回一张牌当前本角色是否可以使用
-         * @returns {!boolean}
-         */
         hasUseTarget(card, distance, includecard) {
             var player = this;
             return game.hasPlayer(function (current) {
                 return player.canUse(card, current, distance, includecard);
             });
         }
-        /**
-         * 返回一张牌当前本角色使用的收益为正收益，当前可以使用，且有使用对象
-         * @returns {!boolean}
-         */
         hasValueTarget() {
             return this.getUseValue.apply(this, arguments) > 0;
         }
-        /**
-         * 返回一张牌当前本角色使用的收益
-         * @returns {!boolean}
-         */
         getUseValue(card, distance, includecard) {
             if (typeof (card) == 'string') {
                 card = { name: card, isCard: true };
@@ -6192,10 +5660,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return min;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         addSubPlayer(cfg) {
             var skill = 'subplayer_' + cfg.name + '_' + get.id();
             game.log(this, '获得了随从', '#g' + get.translation(cfg.name));
@@ -6235,10 +5699,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.addSkill(skill);
             return skill;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         removeSubPlayer(name) {
             if (this.hasSkill('subplayer') && this.name == name) {
                 this.exitSubPlayer(true);
@@ -6253,10 +5713,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 _status.event.trigger('removeSubPlayer');
             }
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         callSubPlayer() {
             if (this.hasSkill('subplayer'))
                 return;
@@ -6270,10 +5726,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('callSubPlayer');
             return next;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         toggleSubPlayer() {
             if (!this.hasSkill('subplayer'))
                 return;
@@ -6287,10 +5739,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('toggleSubPlayer');
             return next;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         exitSubPlayer(remove) {
             if (!this.hasSkill('subplayer'))
                 return;
@@ -6300,10 +5748,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('exitSubPlayer');
             return next;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         getSubPlayers(tag) {
             var skills = this.getSkills();
             var list = [];
@@ -6318,10 +5762,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return list;
         }
-        /**
-         * 同时将info.global内的技能添加到{@link lib.skill.global}
-         * @returns {!boolean}
-         */
         addSkillTrigger(skill, hidden, triggeronly) {
             var info = lib.skill[skill];
             if (!info)
@@ -6394,35 +5834,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 _status.event.addTrigger(skill, this);
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         addSkillLog(skill) {
             this.addSkill(skill);
             this.popup(skill);
             game.log(this, '获得了技能', '#g『' + get.translation(skill) + '』');
         }
-        /**
-         * 添加一组技能
-         * @name addSkill
-         * @function
-         * @param {Array<string>} skills 技能名数组
-         * @param {?boolean} [checkConflict] 是否检测冲突，如果为true，添加技能完成后检测；如果为false或未指定，不检测
-         * @param {?boolean} [nobroadcast] 如果为true，直接添加技能；如果为false或未指定，调用{@link game.broadcast}为本角色添加技能
-         * @returns {string} 如果添加技能成功，返回技能名`skill`；如果失败，返回undefined
-         * @see {@link addSkill(2)}
-         */
-        /**
-         * 本角色添加技能
-         * @name addSkill
-         * @function
-         * @variation 2
-         * @param {!string} skill 技能名
-         * @param {?boolean} [checkConflict] 是否检测冲突，如果为true，添加技能完成后检测；如果为false或未指定，不检测
-         * @param {?boolean} [nobroadcast] 如果为true，直接添加技能；如果为false或未指定，调用{@link game.broadcast}为本角色添加技能
-         * @returns {string} 如果添加技能成功，返回技能名`skill`；如果失败，返回undefined
-         */
         addSkill(skill, checkConflict, nobroadcast) {
             if (Array.isArray(skill)) {
                 for (var i = 0; i < skill.length; i++) {
@@ -6492,10 +5908,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.checkConflict();
             return skill;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         addAdditionalSkill(skill, skills, keep) {
             if (this.additionalSkills[skill]) {
                 if (keep) {
@@ -6522,10 +5934,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.checkConflict();
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         removeAdditionalSkill(skill, target) {
             if (this.additionalSkills[skill]) {
                 var additionalSkills = this.additionalSkills[skill];
@@ -6549,10 +5957,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         awakenSkill(skill, nounmark) {
             if (!nounmark)
                 this.unmarkSkill(skill);
@@ -6562,10 +5966,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.storage[skill] = true;
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         restoreSkill(skill, nomark) {
             if (this.storage[skill] === true)
                 this.storage[skill] = false;
@@ -6575,10 +5975,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.markSkill(skill);
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         disableSkill(skill, skills) {
             if (typeof skills == 'string') {
                 if (!this.disabledSkills[skills]) {
@@ -6601,10 +5997,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         enableSkill(skill) {
             for (var i in this.disabledSkills) {
                 this.disabledSkills[i].remove(skill);
@@ -6614,10 +6006,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         checkMarks() {
             var skills = this.getSkills();
             game.expandSkills(skills);
@@ -6628,10 +6016,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         addEquipTrigger(card) {
             if (card) {
                 var info = get.info(card);
@@ -6649,10 +6033,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         removeEquipTrigger(card, move) {
             if (card) {
                 var info = get.info(card);
@@ -6672,9 +6052,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                 }
                 else {
-                    //	if(card.viewAs&&card.originalName&&card.originalName){
-                    //		card.name = card.originalName
-                    //	}
                 }
                 var skills = this.getSkills(null, false);
                 if (info.skills) {
@@ -6699,10 +6076,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         removeSkillTrigger(skill, triggeronly) {
             var info = lib.skill[skill];
             if (!info)
@@ -6764,10 +6137,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         removeSkill(skill) {
             if (!skill)
                 return;
@@ -6830,13 +6199,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return skill;
         }
-        /**
-         * 本角色添加一个临时技能
-         * @param {!string} skill 技能名
-         * @param {(string|Object|undefined)} [expire='phaseAfter'] 过期时间，`expire`实际上对应一个触发器，本角色在下一次触发器被触发的时候移除此技能；如果未指定，使用'phaseAfter'
-         * @param {?boolean} [checkConflict] 如果为true，添加技能完成后检测冲突；如果为false或未指定，不检测
-         * @returns {string} 如果添加成功，返回技能名`skill`；否则，返回undefined
-         */
         addTempSkill(skill, expire, checkConflict) {
             if (this.hasSkill(skill) && this.tempSkills[skill] == undefined)
                 return;
@@ -6891,26 +6253,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return skill;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         attitudeTo(target) {
             if (typeof get.attitude == 'function')
                 return get.attitude(this, target);
             return 0;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         clearSkills(all) {
             var list = [];
             var exclude = [];
             for (var i = 0; i < arguments.length; i++) {
                 exclude.push(arguments[i]);
             }
-            for (i = 0; i < this.skills.length; i++) {
+            for (let i = 0; i < this.skills.length; i++) {
                 if (lib.skill[this.skills[i]].superCharlotte)
                     continue;
                 if (!all && (lib.skill[this.skills[i]].temp || lib.skill[this.skills[i]].charlotte))
@@ -6929,10 +6283,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             this.checkMarks();
             return list;
         }
-        /**
-         *
-         * @returns {!boolean}
-         */
         checkConflict(skill) {
             if (skill) {
                 if (this.forbiddenSkills[skill]) {
@@ -6982,10 +6332,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        /**
-         * 返回本角色的一个记录数据
-         * @returns {!boolean}
-         */
         getHistory(key, filter, last) {
             if (!key)
                 return this.actionHistory[this.actionHistory.length - 1];
@@ -7012,10 +6358,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        /**
-         * 返回本角色最近(当前)的记录数据
-         * @returns {Array}
-         */
         getLastHistory(key, filter, last) {
             var history = false;
             for (var i = this.actionHistory.length - 1; i >= 0; i--) {
@@ -7041,10 +6383,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return history;
             }
         }
-        /**
-         * 返回本角色的记录数据 TODO
-         * @returns {Array}
-         */
         getAllHistory(key, filter, last) {
             var list = [];
             var all = this.actionHistory;
@@ -7082,11 +6420,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        /**
-         * 返回一张本角色使用过的牌
-         * @param {number} [idx=0] 索引，从最近到最远，为0表示最近使用的牌，如果未索引到(e.g. `idx >= length`)，返回null
-         * @returns {(GameCores.GameObjects.Card|null)}
-         */
         getLastUsed(num) {
             if (typeof num != 'number')
                 num = 0;
@@ -7095,21 +6428,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return null;
             return history[history.length - num - 1];
         }
-        /**
-         * 返回最后的`stat`的指定键名的值
-         * @param {string} [key] 键名；如果未指定或者为空字符串，返回最后`stat`
-         * @returns {?Object}
-         */
         getStat(key) {
             if (!key)
                 return this.stat[this.stat.length - 1];
             return this.stat[this.stat.length - 1][key];
         }
-        /**
-         * 返回最后的`stat`的指定键名的值 TODO
-         * @param {string} [key] 键名；如果未指定或者为空字符串，返回最后`stat`
-         * @returns {?Object}
-         */
         getLastStat(key) {
             var stat = false;
             for (var i = this.stat.length - 1; i >= 0; i--) {
@@ -7124,10 +6447,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return stat;
             return stat[key];
         }
-        /**
-         * 设置本角色的Timeout队列，Timeout延迟一定时长，然后重置角色位置
-         * @param {(number|false)} [time=500] 等待时长(ms)；如果为false，表示终止最近添加的Timeout并重置本角色Timeout队列计数
-         */
         queue(time) {
             if (time == false) {
                 clearTimeout(this.queueTimeout);
@@ -7152,12 +6471,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }, time);
         }
-        /**
-         * 返回一张游戏牌可以被本角色使用的次数，如果本角色有被动技**cardUsable**改变游戏牌的使用次数，采用改变后的值
-         * @param {!string} cardname 牌名
-         * @param {boolean} [ignoreUsed] 是否忽略使用过的次数，如果为true，忽略使用过的次数；如果为false或者未指定，结果会减去使用过的次数
-         * @returns {!number}
-         */
         getCardUsable(card, pure) {
             var player = this;
             if (typeof card == 'string') {
@@ -7175,10 +6488,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return num;
         }
-        /**
-         * 返回攻击范围
-         * @returns {!number}
-         */
         getAttackRange(raw) {
             var player = this;
             var range = 0;
@@ -7201,10 +6510,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return (1 - range);
         }
-        /**
-         * TODO
-         * @returns {!boolean}
-         */
         getGlobalFrom() {
             var player = this;
             var range = 0;
@@ -7222,10 +6527,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return (-range);
         }
-        /**
-         * TODO
-         * @returns {!boolean}
-         */
         getGlobalTo() {
             var player = this;
             var range = 0;
@@ -7243,10 +6544,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return (range);
         }
-        /**
-         * 返回本角色的最大手牌数**num**；如果本角色有被动技**maxHandcardBase maxHandcard maxHandcardFinal**，依次改变**num**，返回改变后的**num**；**num**不会小于0
-         * @returns {!number} 非负整数
-         */
         getHandcardLimit() {
             var num = Math.max(this.hp, 0);
             num = game.checkMod(this, num, 'maxHandcardBase', this);
@@ -7254,13 +6551,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             num = game.checkMod(this, num, 'maxHandcardFinal', this);
             return Math.max(0, num);
         }
-        /**
-         * 返回本角色的敌方角色
-         * @name getEnemies
-         * @function
-         * @param {function} [predicate] 筛选函数
-         * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-         */
         getEnemies(func) {
             var player = this;
             var targets;
@@ -7365,20 +6655,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             targets.remove(player);
             return targets;
         }
-        /**
-         * 返回本角色的友方角色
-         * @name getFriends
-         * @function
-         * @param {function} predicate 筛选函数
-         * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-         */
-        /**
-         * 返回本角色的友方角色
-         * @name getFriends
-         * @function
-         * @param {?boolean} hasSelf 结果是否包含本角色，如果为true，则包括；如果为false或未指定，则不包括
-         * @returns {!GameCores.GameObjects.Player[]} 如果没有找到角色，返回空数组
-         */
         getFriends(func) {
             var player = this;
             var targets;
@@ -7478,19 +6754,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return targets;
         }
-        /**
-         * 返回本角色是否是目标的敌方
-         * @param {!GameCores.GameObjects.Player} player 目标角色
-         * @returns {!boolean}
-         */
         isEnemyOf() {
             return !this.isFriendOf.apply(this, arguments);
         }
-        /**
-         * 返回本角色是否是目标的友方
-         * @param {!GameCores.GameObjects.Player} player 目标角色
-         * @returns {!boolean}
-         */
         isFriendOf(player) {
             if (get.mode() == 'guozhan') {
                 if (this == player)
@@ -7511,62 +6777,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return this == player;
         }
-        /**
-         * 返回本角色是否是目标的友方
-         * @param {!GameCores.GameObjects.Player} player 目标角色
-         * @returns {!boolean}
-         */
         isFriendsOf(player) {
             return player.getFriends(true).contains(this);
         }
-        /**
-         * 返回本角色是否是目标的敌方
-         * @param {!GameCores.GameObjects.Player} player 目标角色
-         * @returns {!boolean}
-         */
         isEnemiesOf(player) {
             return player.getEnemies().contains(this);
         }
-        /**
-         * 返回本角色是否未死亡
-         * @returns {!boolean} true表示未死亡，false表示已死亡
-         */
         isAlive() {
             return this.classList.contains('dead') == false;
         }
-        /**
-         * 返回本角色是否死亡
-         * @returns {!boolean}
-         */
         isDead() {
             return this.classList.contains('dead');
         }
-        /**
-         * 返回本角色是否处于濒死状态
-         * @returns {!boolean}
-         */
         isDying() {
             return _status.dying.contains(this) && this.hp <= 0 && this.isAlive();
         }
-        /**
-         * 返回本角色是否当前血量小于最大血量，如果本角色处于**无HP状态**，返回false
-         * @returns {!boolean}
-         */
         isDamaged() {
             return this.hp < this.maxHp && !this.storage.nohp;
         }
-        /**
-         * 返回本角色是否当前血量等于最大血量，如果本角色处于**无HP状态**，返回true
-         * @returns {!boolean}
-         */
         isHealthy() {
             return this.hp == this.maxHp || this.storage.nohp;
         }
-        /**
-         * 返回本角色的血量是否是局中最多
-         * @param {boolean} [isUnique] 如果为true，只在血量最多且唯一时返回true；如果为false或未指定，只要血量最多就返回true
-         * @returns {!boolean}
-         */
         isMaxHp(equal) {
             for (var i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut() || game.players[i] == this)
@@ -7582,11 +6813,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的血量是否是局中最少
-         * @param {boolean} [isUnique] 如果为true，只在血量最少且唯一时返回true；如果为false或未指定，只要血量最少就返回true
-         * @returns {!boolean}
-         */
         isMinHp(equal) {
             for (var i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut() || game.players[i] == this)
@@ -7602,11 +6828,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的手牌和装备总数是否是局中最多
-         * @param {boolean} [isUnique] 如果为true，只在数量最多且唯一时返回true；如果为false或未指定，只要数量是最多就返回true
-         * @returns {!boolean}
-         */
         isMaxCard(equal) {
             var nh = this.countCards('he');
             for (var i = 0; i < game.players.length; i++) {
@@ -7623,11 +6844,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的手牌和装备总数是否是局中最少
-         * @param {boolean} [isUnique] 如果为true，只在数量最少且唯一时返回true；如果为false或未指定，只要数量是最少就返回true
-         * @returns {!boolean}
-         */
         isMinCard(equal) {
             var nh = this.countCards('he');
             for (var i = 0; i < game.players.length; i++) {
@@ -7644,11 +6860,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的手牌数量是否是局中最多
-         * @param {boolean} [isUnique] 如果为true，只在手牌数量最多且唯一时返回true；如果为false或未指定，只要装备数量是最多就返回true
-         * @returns {!boolean}
-         */
         isMaxHandcard(equal) {
             var nh = this.countCards('h');
             for (var i = 0; i < game.players.length; i++) {
@@ -7665,11 +6876,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的手牌数量是否是局中最少
-         * @param {boolean} [isUnique] 如果为true，只在手牌数量最少且唯一时返回true；如果为false或未指定，只要手牌数量是最少就返回true
-         * @returns {!boolean}
-         */
         isMinHandcard(equal) {
             var nh = this.countCards('h');
             for (var i = 0; i < game.players.length; i++) {
@@ -7686,11 +6892,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的装备数量是否是局中最多
-         * @param {boolean} [isUnique] 如果为true，只在装备数量最多且唯一时返回true；如果为false或未指定，只要装备数量是最多就返回true
-         * @returns {!boolean}
-         */
         isMaxEquip(equal) {
             var nh = this.countCards('e');
             for (var i = 0; i < game.players.length; i++) {
@@ -7707,11 +6908,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色的装备数量是否是局中最少
-         * @param {boolean} [isUnique] 如果为true，只在装备数量最少且唯一时返回true；如果为false或未指定，只要装备数量是最少就返回true
-         * @returns {!boolean}
-         */
         isMinEquip(equal) {
             var nh = this.countCards('e');
             for (var i = 0; i < game.players.length; i++) {
@@ -7728,36 +6924,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return true;
         }
-        /**
-         * 返回本角色是否被链接
-         * @returns {!boolean} true表示被链接，false表示未被链接
-         */
         isLinked() {
             if (get.is.linked2(this)) {
                 return this.classList.contains('linked2');
             }
             return this.classList.contains('linked');
         }
-        /**
-         * 返回本角色是否翻面
-         * @returns {!boolean} true表示翻面，false表示未翻面
-         */
         isTurnedOver() {
             return this.classList.contains('turnedover');
         }
-        /**
-         * 返回本角色的玩家是否离开
-         * @returns {!boolean} true表示离开，false表示未离开
-         */
         isOut() {
             return this.classList.contains('out');
         }
-        /**
-         * 本角色是否不计入距离的计算
-         * @param {?boolean} [distance]
-         * @returns {!boolean}
-         */
-        //TODO
         isMin(distance) {
             if (distance && lib.config.mode != 'stone')
                 return false;
@@ -7765,18 +6943,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return true;
             return this.classList.contains('minskin') && !game.chess;
         }
-        /**
-         * 表示本角色是否在局中(未死亡&未离开&未移出房间)
-         * @returns {!boolean} true表示在局中，false表示不在局中
-         */
         isIn() {
             return this.classList.contains('dead') == false && this.classList.contains('out') == false && !this.removed;
         }
-        /**
-         * 返回本角色是否可见，如果可见返回true
-         * @param {number} num **0**: unseen; **1**: unseen2; **2**: unseen && unseen2; **default**: unseen && !unseen2
-         * @returns {!boolean}
-         */
         isUnseen(num) {
             switch (num) {
                 case 0: return this.classList.contains('unseen');
@@ -7785,12 +6954,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 default: return this.classList.contains('unseen') && (!this.name2 || this.classList.contains('unseen2'));
             }
         }
-        /**
-         * 判断本角色是否可以被某角色的玩家控制
-         * @param {?boolean} self 如果为true，当是两个角色是同一个角色时返回true；如果为false或未指定，返回false
-         * @param {GameCores.GameObjects.Player} [me] 某角色，用于判断本角色是否被`me`的玩家控制，如果未指定，默认使用`game.me`
-         * @returns {!boolean}
-         */
         isUnderControl(self, me) {
             me = (me || game.me);
             var that = this._trueMe || this;
@@ -7830,31 +6993,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        /**
-         * 角色是否处于联机状态
-         * 注意，该函数如果角色处于托管状态，返回false
-         * @returns {!boolean}
-         */
         isOnline() {
             if (this.ws && lib.node && !this.ws.closed && this.ws.inited && !this.isAuto) {
                 return true;
             }
             return false;
         }
-        /**
-         * 角色是否处于联机状态
-         * @returns {!boolean}
-         */
         isOnline2() {
             if (this.ws && lib.node && !this.ws.closed) {
                 return true;
             }
             return false;
         }
-        /**
-         * 角色是否处于脱机状态
-         * @returns {!boolean}
-         */
         isOffline() {
             if (this.ws && lib.node && this.ws.closed) {
                 return true;
@@ -7899,12 +7049,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        /**
-         * 返回本角色当前超出手牌上限多少张牌，如果没有超出上限，返回0；
-         * 如果角色有被动技**ignoredHandcard**，令被动技返回`true`的牌不计入手牌上限
-         * @param {?number} [num]
-         * @returns {!number} 非负整数
-         */
         needsToDiscard(num) {
             if (typeof num != 'number')
                 num = 0;
@@ -7923,18 +7067,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         distanceFrom(target, method) {
             return get.distance(target, this, method);
         }
-        /**
-         * 返回本角色是否拥有一个技能；
-         * 此技能会在角色拥有(技能|子技能)中查找技能名；
-         * 实际调用了{@link getSkills this.getSkills(arg2, arg3, arg4)}，并用{@link game.expandSkills}展开
-         * @param {!string} skill 技能名
-         * @param {*} arg2 为真时表示计入隐藏的技能、为'e'时表示仅返回装备技能
-         * @param {*} arg3 为false时表示不计入装备技能
-         * @param {*} arg4 为false时表示计入失效的技能
-         * @returns {!boolean}
-         */
-        hasSkill(skill, arg2, arg3, arg4) {
-            return game.expandSkills(this.getSkills(arg2, arg3, arg4)).contains(skill);
+        hasSkill(skill, arg2, eSkill, disable) {
+            return game.expandSkills(this.getSkills(arg2, eSkill, disable)).contains(skill);
         }
         hasStockSkill(skill, arg1, arg2, arg3) {
             return game.expandSkills(this.getStockSkills(arg1, arg2, arg3)).contains(skill);
@@ -8054,7 +7188,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         }
-        //暗属性
         hasYami() {
             if (this.countCards('h', { nature: 'yami' }))
                 return true;
@@ -8119,7 +7252,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         mayHaveShan() {
             return this.hasShan();
-            // modify: After AngelBeats! -2nd Beat-
         }
         hasCard(name, position) {
             if (typeof name == 'function') {
@@ -8148,24 +7280,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return false;
             return true;
         }
-        /**
-         * 装备类型
-         * |string|number|equip|
-         * |:----:|:----:|:---:|
-         * |equip1|1|武器|
-         * |equip2|2|防具|
-         * |equip3|3|防御载具|
-         * |equip4|4|攻击载具|
-         * |equip5|5|宝物|
-         * |equip6|6|坐骑|
-         *
-         * @typedef {('equip[1-6]'|number)} GameCores.EquipType
-         */
-        /**
-         * 返回角色装备区的一张牌
-         * @param {(GameCores.GameObjects.Card|'equip[0-9]'|number)} name 如果为游戏牌对象，使用其装备类型(如果有)；如果不是可装备类型或者`name`未指定，此函数返回null；可以取值为数值[0-9]或字符串'equip[0-9]'，但是通常只在[1-6]范围内({@link GameCores.EquipType})
-         * @returns {(null|GameCores.GameObjects.Card)}
-         */
         getEquip(name) {
             var es = this.getCards('e');
             if (typeof name == 'object' && get.info(name)) {
@@ -8197,12 +7311,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return null;
         }
-        /**
-         * 返回角色判定区一张(指定牌|视为指定牌)
-         * @function
-         * @param {?string} name 指定牌的牌名
-         * @returns {(GameCores.GameObjects.Card|null)} 如果没找到，返回null
-         */
         getJudge(name) {
             var judges = this.node.judges.childNodes;
             for (var i = 0; i < judges.length; i++) {
@@ -8588,14 +7696,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return node;
             }
         }
-        $throwordered() {
+        $throwordered(...arg) {
             return this.$throwordered2.apply(this, arguments);
-            // if(lib.config.low_performance){
-            //     return this.$throwordered2.apply(this,arguments);
-            // }
-            // else{
-            //     return this.$throwordered1.apply(this,arguments);
-            // }
         }
         $throwordered1(node, nosource) {
             node.classList.add('thrown');
@@ -8690,13 +7792,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     var add = str.slice(str.indexOf('%') + 1, str.indexOf('px')).replace(/\s/g, '');
                     return [parseInt(per), parseInt(add)];
                 };
-                var nx = parseCalc(node.style.left);
-                var ny = parseCalc(node.style.top);
-                nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-                ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+                let ax = parseCalc(node.style.left);
+                let ay = parseCalc(node.style.top);
+                let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
                 var dx, dy;
                 if (game.chess) {
-                    var rect = this.getBoundingClientRect();
+                    let rect = this.getBoundingClientRect();
                     dx = rect.left + this.offsetWidth / 2 - 52 - nx;
                     dy = rect.top + this.offsetHeight / 2 - 52 - ny;
                 }
@@ -8730,16 +7831,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             node.hide();
             node.style.transitionProperty = 'left,top,opacity,transform';
             if (nosource) {
-                // node.style.transform='scale(0)';
             }
             else {
-                var nx = [50, -52];
-                var ny = [50, -52];
-                nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-                ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+                let ax = [50, -52];
+                let ay = [50, -52];
+                let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
                 var dx, dy;
                 if (game.chess) {
-                    var rect = this.getBoundingClientRect();
+                    let rect = this.getBoundingClientRect();
                     dx = rect.left + this.offsetWidth / 2 - 52 - nx;
                     dy = rect.top + this.offsetHeight / 2 - 52 - ny;
                 }
@@ -8846,16 +7945,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             node.style.left = left;
             node.style.top = top;
             node.hide();
-            // node.style.transitionProperty='left,top,opacity,transform';
             var parseCalc = function (str) {
                 var per = str.slice(str.indexOf('calc(') + 5, str.indexOf('%'));
                 var add = str.slice(str.indexOf('%') + 1, str.indexOf('px')).replace(/\s/g, '');
                 return [parseInt(per), parseInt(add)];
             };
-            var nx = parseCalc(node.style.left);
-            var ny = parseCalc(node.style.top);
-            nx = nx[0] * ui.arena.offsetWidth / 100 + nx[1];
-            ny = ny[0] * ui.arena.offsetHeight / 100 + ny[1];
+            let ax = parseCalc(node.style.left);
+            let ay = parseCalc(node.style.top);
+            let nx = ax[0] * ui.arena.offsetWidth / 100 + ax[1], ny = ay[0] * ui.arena.offsetHeight / 100 + ay[1];
             var dx = this.getLeft() + this.offsetWidth / 2 - 52 - nx;
             var dy = this.getTop() + this.offsetHeight / 2 - 52 - ny;
             if (flipx)
@@ -8871,7 +7968,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             ui.arena.appendChild(node);
             ui.refresh(node);
             node.show();
-            // node.style.transform=trans||'';
             lib.listenEnd(node);
             return node;
         }
@@ -9041,20 +8137,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     else {
                         node = ui.create.div('.card.thrown');
                     }
-                    // node.dataset.position=this.dataset.position;
                     node.fixed = true;
                     this.$throwordered(node);
-                    // lib.listenEnd(node);
-                    // node.hide();
-                    // node.style.transitionProperty='left,top,opacity';
-                    //
-                    // node.style.transform='rotate('+(Math.random()*16-8)+'deg)';
-                    //
-                    // ui.arena.appendChild(node);
-                    // ui.refresh(node);
-                    // node.show();
-                    // node.style.left='calc(50% - 52px '+((Math.random()-0.5<0)?'+':'-')+' '+Math.random()*100+'px)';
-                    // node.style.top='calc(50% - 52px '+((Math.random()-0.5<0)?'+':'-')+' '+Math.random()*80+'px)';
                     node.listenTransition(function () {
                         var dx = player.getLeft() + player.offsetWidth / 2 - 52 - node.offsetLeft;
                         var dy = player.getTop() + player.offsetHeight / 2 - 52 - node.offsetTop;
@@ -9066,20 +8150,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         node.delete();
                     });
-                    // setTimeout(function(){
-                    //     // node.removeAttribute('style');
-                    //     // node.dataset.position=player.dataset.position;
-                    //     var dx=player.offsetLeft+player.offsetWidth/2-52-node.offsetLeft;
-                    //     var dy=player.offsetTop+player.offsetHeight/2-52-node.offsetTop;
-                    //     if(node.style.transform&&node.style.transform!='none'&&node.style.transform.indexOf('translate')==-1){
-                    //         node.style.transform+=' translate('+dx+'px,'+dy+'px)';
-                    //     }
-                    //     else{
-                    //         node.style.transform='translate('+dx+'px,'+dy+'px)';
-                    //     }
-                    //
-                    //     node.delete();
-                    // },700);
                 }
             }
         }
@@ -9102,7 +8172,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 card.style.transform = '';
                 card.classList.remove('drawinghidden');
                 delete card._transform;
-                //已修改
                 card.originalName = originalName;
                 card.viewAs = viewAs;
                 if (viewAs && viewAs != card.name) {
@@ -9121,7 +8190,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     card.classList.remove('fakejudge');
                     delete card.viewAs;
                 }
-                //console.log(card.viewAs);
                 if (card.viewAs && card.name != card.viewAs) {
                     if (!card.originalName)
                         card.originalName = card.name;
@@ -9209,11 +8277,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 else {
                     var node;
                     if (get.itemtype(card) == 'card') {
-                        // node=this.$throwordered(card.copy(),true);
                         node = card.copy('thrown', false);
                     }
                     else {
-                        // node=this.$throwordered(ui.create.div('.card.thrown'),true);
                         node = ui.create.div('.card.thrown');
                         node.moveTo = lib.element.card.moveTo;
                         node.moveDelete = lib.element.card.moveDelete;
@@ -9267,10 +8333,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return true;
             }
         }
-        /**
-         * 本角色播放技能动画
-         */
-        //TODO
         $skill(name, type, color, avatar) {
             if (typeof type != 'string')
                 type = 'legend';
@@ -9477,7 +8539,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (avatar) {
                 node.classList.add('fullscreenavatar');
                 ui.create.div('', ui.create.div(node));
-                // ui.create.div('',str.split('').join('<br>'),ui.create.div('.text.textbg',node));
                 ui.create.div('', '<div>' + str.split('').join('</div><br><div>') + '</div>', ui.create.div('.text', node));
                 node.firstChild.firstChild.style.backgroundImage = avatar.style.backgroundImage;
                 node.dataset.nature = nature || 'unknown';
@@ -9519,13 +8580,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 node.style.transform = 'scale(1.5)';
             }, avatar ? 1600 : 1000);
         }
-        /**
-         * 伤害效果
-         * @param {(string|number)} num 伤害数值或者任意字符串
-         * @param {string} [nature='soil'] 伤害属性
-         * @param {?boolean} font 如果为true，`damage div`添加类`normal-font`；如果为false或未指定，使用伤害默认字体大小
-         * @param {?boolean} nobroadcast 如果为true或未指定，调用`game.broadcast`广播；如果为false，仅在本机
-         */
         $damagepop(num, nature, font, nobroadcast) {
             if (typeof num == 'number' || typeof num == 'string') {
                 game.addVideo('damagepop', this, [num, nature, font]);
@@ -9562,9 +8616,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         node.delete();
                     }, 200);
                 });
-                // setTimeout(function(){
-                //     node.delete();
-                // },500);
                 var that = this;
                 setTimeout(function () {
                     that.damagepopups.shift();

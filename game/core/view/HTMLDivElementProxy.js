@@ -10,11 +10,6 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const _context_1 = require("../_context");
-    /**
-     * HTMLDivElementProxy代理类
-     * @class HTMLDivElementProxy
-     * @global
-     */
     class HTMLDivElementProxy {
         constructor(element) {
             this._element = element;
@@ -22,14 +17,6 @@
         get element() {
             return this._element;
         }
-        //vtuberkill part
-        /**
-         * 本元素播放动画
-         * @function animate
-         * @param {string} name - 动画名称
-         * @param {number} [time=1000] - 动画持续时间（ms）
-         * @returns {HTMLDivElementProxy} this self
-         */
         animate(name, time = 1000) {
             var that;
             if (_context_1.get.is.mobileMe(this) && name == 'target') {
@@ -45,54 +32,23 @@
             return this;
         }
         ;
-        /**
-         * 隐藏本元素及其子元素
-         * @function hide
-         * @returns {HTMLDivElementProxy} this self
-         */
         hide() {
             this.classList.add('hidden');
             return this;
         }
-        /**
-         * 本元素取消焦点
-         * @function unfocus
-         * @returns {HTMLDivElementProxy} this self
-         */
         unfocus() {
             if (_context_1.lib.config.transparent_dialog)
                 this.classList.add('transparent');
             return this;
         }
-        /**
-         * 本元素重获焦点
-         * @function refocus
-         * @returns {HTMLDivElementProxy} this self
-         */
         refocus() {
             this.classList.remove('transparent');
             return this;
         }
-        /**
-         * 本元素取消隐藏
-         * @function show
-         * @returns {HTMLDivElementProxy} this self
-         */
         show() {
             this.classList.remove('hidden');
             return this;
         }
-        /**
-         * @callback HTMLDivElementProxy~deleteCallback
-         * @see {@link delete}
-         */
-        /**
-         * 延时从所属DOM树移除本元素
-         * @function delete
-         * @param {number} time - 延迟时间（ms）
-         * @param {HTMLDivElementProxy~deleteCallback} callback - 移除后回调函数
-         * @returns {HTMLDivElementProxy} this self
-         */
         delete(time, callback) {
             if (this.timeout) {
                 clearTimeout(this.timeout);
@@ -116,13 +72,6 @@
             }
             return this;
         }
-        /**
-         * 移动本元素(牌)
-         * @function goto
-         * @param {*} position - 位置
-         * @param {number} time - 持续时间
-         * @returns {HTMLDivElementProxy} this self
-         */
         goto(position, time) {
             if (this.timeout) {
                 clearTimeout(this.timeout);
@@ -142,11 +91,6 @@
             this.destiny = position;
             return this;
         }
-        /**
-         * 强制取消移动，固定在当前位置
-         * @function fix
-         * @returns {HTMLDivElementProxy} this self
-         */
         fix() {
             clearTimeout(this.timeout);
             delete this.timeout;
@@ -154,16 +98,6 @@
             this.classList.remove('removing');
             return this;
         }
-        /**
-         * 设置背景图片，当name为虚值或为空白字符串时，使用原背景。
-         * 对应路径：`image/${type?type+'/':''}${type?subfolder+'/':''}${name}${ext}`
-         * @function setBackground
-         * @param {string} [name] - 图片名（无后缀）
-         * @param {string} [type] - 类型对应路径
-         * @param {string} [ext='.jpg'] - 图片后缀
-         * @param {string} [subfolder='default'] - 类型文件夹下的子路径，仅在参数`type`指定值时有效
-         * @returns {?HTMLDivElementProxy} this self
-         */
         setBackground(name, type, ext, subfolder) {
             if (!name)
                 return;
@@ -253,11 +187,6 @@
             this.style.backgroundSize = "cover";
             return this;
         }
-        /**
-         * 设置本元素的背景图片为数据库中的图片
-         * @function setBackgroundDB
-         * @param {string} img - 图片对应的键值
-         */
         setBackgroundDB(img) {
             var node = this;
             _context_1.game.getDB('image', img, function (src) {
@@ -265,25 +194,9 @@
                 node.style.backgroundSize = "cover";
             });
         }
-        /**
-         * 设置本元素的背景图片
-         * @function setBackgroundImage
-         * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
-         */
         setBackgroundImage(img) {
             this.style.backgroundImage = 'url("' + _context_1.lib.assetURL + img + '")';
         }
-        /**
-         * {@link listen|listen}（click）的回调函数
-         * @callback listen~listenCallback
-         * @param {(MouseEvent|TouchEvent)} e - 触发事件
-         */
-        /**
-         * 监听点击事件
-         * @function listen
-         * @param {listen~listenCallback} func - 点击回调函数
-         * @returns {HTMLDivElementProxy} this self
-         */
         listen(func) {
             if (_context_1.lib.config.touchscreen) {
                 this.addEventListener('touchend', function (e) {
@@ -306,17 +219,6 @@
             }
             return this;
         }
-        /**
-         * @callback listenTransition~callback
-         * @see {@link listenTransition}
-         */
-        /**
-         * 延时触发回调函数，同时监听本元素变换动画，如果变换结束则立即触发回调函数
-         * @function listenTransition
-         * @param {listenTransition~callback} func - 回调函数
-         * @param {number} [time=1000] - 延迟时间
-         * @returns {!number} timeoutID
-         */
         listenTransition(func, time) {
             var that = this;
             var done = false;
@@ -329,30 +231,6 @@
             this.addEventListener('webkitTransitionEnd', callback);
             return setTimeout(callback, time || 1000);
         }
-        /**
-         * 设置本元素位置
-         * ```JavaScript
-         * top = calc(`offsets[0]`%+`offsets[1]`px)
-         * left = calc(`offsets[2]`%+`offsets[3]`px)
-         * ```
-         * @function setPosition
-         * @param {!number[]} offsets - 偏移量数组（长度必须为4）。
-         * @returns {HTMLDivElementProxy} this self
-         */
-        /**
-         * 设置本元素位置
-         * ```JavaScript
-         * top  = calc(`top_pc`%+`top_px`px)
-         * left = calc(`lft_pc`%+`lft_px`px)
-         * ```
-         * @function setPosition
-         * @variation 2
-         * @param {number} top_pc
-         * @param {number} top_px
-         * @param {number} lft_pc
-         * @param {number} lft_px
-         * @returns {HTMLDivElementProxy} this self
-         */
         setPosition() {
             var position;
             if (arguments.length == 4) {
@@ -380,14 +258,6 @@
             this.style.left = left;
             return this;
         }
-        /**
-         * 设置本元素css样式
-         * @function css
-         * @param {Object} style - style
-         * @param {string} [style.innerHTML] - 设置本元素内部HTML
-         * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
-         * @returns {HTMLDivElementProxy} this self
-         */
         css(style) {
             for (var i in style) {
                 if (i == 'innerHTML') {
@@ -399,7 +269,6 @@
             }
             return this;
         }
-        //Node part
         appendChild() {
             return this._element.appendChild(...arguments);
         }
@@ -445,9 +314,6 @@
         replaceChild() {
             return this._element.replaceChild(...arguments);
         }
-        // contains(){
-        //     return this._element.contains(...arguments);
-        // }
         get baseURI() {
             return this._element.baseURI;
         }
@@ -496,7 +362,6 @@
         set textContent(arg) {
             this._element.textContent = arg;
         }
-        //Element part
         addEventListener() {
             this._element.addEventListener(...arguments);
         }
@@ -506,9 +371,6 @@
         attachShadow() {
             return this._element.attachShadow(...arguments);
         }
-        // animate(){
-        //     return this._element.animate(...arguments);
-        // }
         append() {
             this._element.append(...arguments);
         }
@@ -548,9 +410,6 @@
         getBoundingClientRect() {
             return this._element.getBoundingClientRect(...arguments);
         }
-        // getBoxQuads(){
-        //     return this._element.getBoxQuads(...arguments);
-        // }
         getClientRects() {
             return this._element.getClientRects(...arguments);
         }
@@ -776,7 +635,6 @@
         get tagName() {
             return this._element.tagName;
         }
-        //HTMLElement part
         attachInternals() {
             return this._element.attachInternals(...arguments);
         }
@@ -948,7 +806,6 @@
         set translate(arg) {
             this._element.translate = arg;
         }
-        //HTMLDivElementProxy part
         get align() {
             return this._element.align;
         }

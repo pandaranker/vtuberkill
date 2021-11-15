@@ -2247,7 +2247,7 @@ mixin(game, /**@lends module:core.game */ {
         windowzoom5: function () {
             ui.window.style.transition = '';
         },
-        updateActCount: function (player, content) {
+        updateActCount: function (player:PlayerModel, content) {
             if (player && content) {
                 player.updateActCount(content[0], content[1], content[2]);
             }
@@ -2255,7 +2255,7 @@ mixin(game, /**@lends module:core.game */ {
                 console.log(player);
             }
         },
-        setIdentity: function (player, identity) {
+        setIdentity: function (player:PlayerModel, identity:string) {
             if (player && identity) {
                 player.setIdentity(identity);
             }

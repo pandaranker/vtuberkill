@@ -31,26 +31,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    /// <reference path = "../built-in.d.ts" />
     const _context = __importStar(require("./_context"));
     const { _status, lib, game, ui, get, ai, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
     const Status_Event_1 = __importDefault(require("./base/Status_Event"));
-    /**
-     * 游戏内核
-     * 游戏循环{@link game.loop}
-     * @namespace game
-     * @memberof module:core
-     */
-    mixin(game, /**@lends module:core.game */ {
-        /**
-         * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
-         * @param {!object} event 弹窗所在的事件对象，必须要有dialog属性
-         * @param {!Player} target 获取牌的目标角色
-         * @param {boolean} [directh] 当添加的牌均为不可见（'blank'）的手牌时，directh为true
-         * @param {?string} [type] 获取牌的条件，可能为'canBeDiscarded' | 'canBeGained'
-         * @param {?function} [callback] 添加动作完成后执行的回调函数
-         */
+    mixin(game, {
         showPlayerCard: function (event, target, directh, type, callback) {
             if (!event.dialog)
                 return;
@@ -116,12 +101,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             callback && callback(event);
             return directh;
         },
-        //galgame相关功能
         galgameMod: function () {
-            /**
-            * @description :
-            * @author 看破一切 date 2021/2/12
-            */
             var galgame = {
                 text: {},
                 game: game,
@@ -483,7 +463,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return next;
         },
-        //获取（角色名）的评级
         getRarity: function (name) {
             var rank = lib.rank.rarity;
             if (rank.beginner.contains(name))
@@ -896,7 +875,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (_status.connectMode && !_status.countDown) {
                 ui.timer.show();
                 var num;
-                //这么一大行都是为了祢衡
                 if (_status.event && _status.event.name == 'chooseToUse' && _status.event.type == 'phase' &&
                     _status.event.player && _status.event.player.forceCountChoose &&
                     typeof _status.event.player.forceCountChoose.phaseUse == 'number') {
@@ -1011,7 +989,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             if (!withport) {
-                //ip=ip+':8080';
                 if ('https:' != document.location.protocol)
                     ip = ip + ':8080';
             }
@@ -1024,14 +1001,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 var ishttps = 'https:' == document.location.protocol ? true : false;
                 if (ishttps) {
-                    //alert("这是一个https请求");
                     game.ws = new WebSocket('wss://' + ip + '/wss/');
                 }
                 else {
-                    //alert("这是一个http请求");
                     game.ws = new WebSocket('ws://' + ip + '');
                 }
-                //game.ws=new WebSocket('ws://'+ip+'');
             }
             catch (e) {
                 alert('错误：无效联机地址');
@@ -1275,11 +1249,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 导入包(卡牌|角色|拓展)
-            * @param {!string} type 类型
-            * @param {!function} content 载入内容的回调函数
-            */
         import: function (type, content) {
             if (type == 'extension') {
                 game.loadExtension(content);
@@ -1458,7 +1427,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     str += dir.shift();
                     fs.exists(str, function (exists) {
                         if (exists) {
-                            //已存在此目录
                             if (dir.length)
                                 redo();
                             else
@@ -1483,7 +1451,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 });
             }
             else if (get.objtype(data) == 'object') {
-                //导出
                 var zip = new JSZip();
                 var filelist = [];
                 var filelist2 = [];
@@ -1574,7 +1541,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             else {
-                //导入
                 function UHP() {
                     alert("导入失败");
                 }
@@ -1582,7 +1548,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var zip = new JSZip();
                 try {
                     zip.load(data);
-                    // alert(zip.file('文件夹/加扩展.js').asText())
                     var str = zip.file('extension.js').asText();
                     if (str === "" || undefined)
                         throw ('你导入的不是扩展！请选择正确的文件');
@@ -1609,15 +1574,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (game.download) {
                         var filelist = [];
                         for (var i in zip.files) {
-                            //alert(zip.files[i].dir+i)
                             if (!zip.files[i].dir && i[0] != '.' && i[0] != '_') {
                                 filelist.push(i);
                             }
                         }
-                        //alert(filelist)
                         if (lib.node && lib.node.fs) {
-                            //电脑端
-                            //具备nodeJS环境
                             game.ensureDirectory('extension/' + extname, function () {
                                 var writeFile = function (e) {
                                     if (e) {
@@ -1627,13 +1588,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                     if (filelist.length) {
                                         var filename = filelist.shift();
-                                        //filename 数组 ...dir+/+file
                                         var zipdir = filename;
                                         filename = filename.split("/");
                                         var name = filename.pop();
                                         if (filename.length)
                                             game.createDir('extension/' + extname + "/" + filename.join("/"), function () {
-                                                //这里需要个创文件夹的函数
                                                 Letgo(filename.join("/") + "/" + name);
                                             }, UHP);
                                         else
@@ -1652,12 +1611,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         else {
                             window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
                                 entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
-                                    //扩展文件夹
                                     writeFile();
                                     function writeFile() {
                                         if (filelist.length) {
                                             var filename = filelist.shift();
-                                            //filename 数组 ...dir+/+file
                                             var zipdir = filename;
                                             filename = filename.split("/");
                                             var name = filename.pop();
@@ -1853,7 +1810,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             ui.window.classList.remove('leftbar');
             ui.window.classList.remove('rightbar');
             ui.historybar.style.display = 'none';
-            // _status.event.renew(next);
             _status.event = _status.event.LinkAfter(next);
             _status.paused = false;
             _status.paused2 = false;
@@ -1868,10 +1824,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('playVideoContent');
             game.loop();
         },
-        /**
-            * 一些函数的回放实现(录像功能)
-            * @type {!Object}
-            */
         videoContent: {
             arrangeLib: function (content) {
                 for (var i in content) {
@@ -1881,7 +1833,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             },
             jiuNode: function (player, bool) {
-                //Powered by 升麻
                 if (bool) {
                     if (!player.node.jiu && lib.config.jiu_effect) {
                         player.node.jiu = ui.create.div('.playerjiu', player.node.avatar);
@@ -2043,7 +1994,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     if (lib.config.glow_phase) {
                         player.classList.add('glow_phase');
-                        // player.dataset.glow_phase=lib.config.glow_phase;
                     }
                 }
                 else {
@@ -2196,7 +2146,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         boss.setIdentity('zhong');
                         boss.identity = 'zhong';
                     }
-                    ui.arena.appendChild(boss.animate('zoominanim').element); //[todo player]
+                    ui.arena.appendChild(boss.animate('zoominanim').element);
                 }
             },
             stoneSwap: function (info) {
@@ -2208,7 +2158,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 player.init(info.name, info.name2);
                 game.players.push(player);
                 player.updateActCount(null, info.actcount, 0);
-                ui.arena.appendChild(player.element); //[todo player]
+                ui.arena.appendChild(player.element);
                 game.playerMap[player.dataset.position] = player;
                 game.arrangePlayers();
             },
@@ -2799,7 +2749,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             },
             phaseJudge: function (player, card) {
                 if (player && card) {
-                    // player.$phaseJudge(get.infoCard(card));
                 }
                 else {
                     console.log(player);
@@ -3352,14 +3301,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (!callback) {
                 return;
             }
-            //try{
-            //    if(noinput){
-            //        throw('e');
-            //    }
-            //    var result=prompt(str);
-            //    callback(result);
-            //}
-            //catch(e){
             var promptContainer = ui.create.div('.popup-container', ui.window, function () {
                 if (this.clicked) {
                     this.clicked = false;
@@ -3420,7 +3361,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 };
                 input.focus();
             }
-            //}
         },
         alert: function (str) {
             game.prompt(str, 'alert');
@@ -3871,13 +3811,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.draw(drawfunc);
             }
         },
-        /**
-            * 创建trigger事件；`trigger`本身也是事件，但是`trigger`事件不可触发
-            * @param {string} name trigger name
-            * @param {*} skill 技能ID
-            * @param {GameCores.GameObjects.Player} player 事件所属的角色
-            * @param {GameCores.Bases.Event} event trigger事件的触发事件
-            */
         createTrigger: function (name, skill, player, event) {
             if (player.isOut() || player.removed)
                 return;
@@ -3891,64 +3824,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._trigger = event;
             next.setContent('createTrigger');
         },
-        /**
-            * 创建事件
-            * @function
-            * @param {string} name 事件名称
-            * @param {?boolean} [canTriggered] 是否可以触发，如果是true或未指定，可以触发；如果是false，不会触发
-            * @param {?GameCores.Bases.Event} [triggerevent] 前置事件，如果未指定，使用当前事件{@link _status.event}
-            */
         createEvent: function (name, trigger, triggerevent) {
-            /**
-                * 事件对象
-                * 创建事件，见{@link game.createEvent}
-                * @namespace GameCores.Bases.Event
-                */
-            var next = 
-            /**@lends GameCores.Bases.Event */
-            {
-                /**
-                    * 事件名称
-                    * @type {string}
-                    */
+            var next = {
                 name: name,
-                /**
-                    * 事件状态，用于记录状态机状态
-                    * @type {string}
-                    * @default 0
-                    */
                 step: 0,
-                /**
-                    * 事件是否结束，如果结束则为true；默认为false
-                    * @type {boolean}
-                    * @default false
-                    */
                 finished: false,
-                /**
-                    * 事件的子事件数组
-                    * @type {!GameCores.Bases.Event[]}
-                    */
                 next: [],
-                /**
-                    * 事件的追加事件数组，在After后如果有事件就执行
-                    * 受`skipList`影响
-                    * @type {GameCores.Bases.Event[]}
-                    */
                 after: [],
                 custom: {
                     add: {},
                     replace: {}
                 },
                 _aiexclude: [],
-                /**
-                    * 禁止触发对象数组，该事件无法被其中的角色对象触发
-                    * @type {GameCores.GameObjects.Player[]}
-                    */
                 _notrigger: [],
-                /**
-                    * 子事件返回值
-                    * @type {?Object}
-                    */
                 _result: {},
                 _set: [],
             };
@@ -3960,12 +3848,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             (triggerevent || _status.event).next.push(next);
             return next;
         },
-        /**
-            * 添加角色
-            * @param {*} name
-            * @param {*} info
-            */
-        //TODO
         addCharacter: function (name, info) {
             var extname = (_status.extension || info.extension);
             var imgsrc;
@@ -3988,12 +3870,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             lib.characterPack[packname][name] = character;
             lib.translate[packname + '_character_config'] = extname;
         },
-        /**
-            * 添加角色包
-            * @param {*} pack
-            * @param {*} packagename
-            */
-        //TODO
         addCharacterPack: function (pack, packagename) {
             var extname = _status.extension || '扩展';
             packagename = packagename || extname;
@@ -4038,10 +3914,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             lib.characterPack[packname] = pack.character;
             lib.translate[packname + '_character_config'] = packagename;
         },
-        /**
-            * 添加卡牌
-            */
-        //TODO
         addCard: function (name, info, info2) {
             var extname = (_status.extension || info2.extension);
             if (info.audio == true) {
@@ -4085,12 +3957,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             lib.cardPack[packname].push(name);
         },
-        /**
-            * 添加卡包
-            * @param {Object} pack 包
-            * @param {string} packagename 包名
-            */
-        //TODO
         addCardPack: function (pack, packagename) {
             var extname = _status.extension || '扩展';
             packagename = packagename || extname;
@@ -4139,10 +4005,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 添加技能
-            */
-        //TODO
         addSkill: function (name, info, translate, description) {
             if (lib.skill[name]) {
                 return false;
@@ -4155,13 +4017,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             lib.translate[name + '_info'] = description;
             return true;
         },
-        /**
-            * 添加游戏模式（Mode）
-            * @param {string} name
-            * @param {string} info
-            * @param {string} info2
-            * @deprecated [never used]
-            */
         addMode: function (name, info, info2) {
             lib.config.all.mode.push(name);
             lib.translate[name] = info2.translate;
@@ -4196,12 +4051,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             game.saveConfig('extensionMode', lib.config.extensionInfo);
         },
-        /**
-            * 添加全局技能
-            * @param {string} skill 技能名
-            * @param {?string} player 可以为该技能绑定一名角色
-            * @deprecated [never used]
-            */
         addGlobalSkill: function (skill, player) {
             var info = lib.skill[skill];
             if (!info)
@@ -4242,7 +4091,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 lib.hook.globalskill[i].remove(skill);
             }
         },
-        //将清除武将牌上的临时技能
         resetSkills: function () {
             for (var i = 0; i < game.players.length; i++) {
                 for (var j in game.players[i].tempSkills) {
@@ -4640,7 +4488,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     ui.ladder.innerHTML = game.getLadderName(lib.storage.ladder.current);
                 }
             }
-            // if(true){
             var tableData = [];
             if (game.players.length) {
                 table = document.createElement('table');
@@ -4667,9 +4514,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     tr = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerHTML = get.translation(game.players[i]);
-                    uploadDataRow.name = game.players[i].name; //名字拼音
-                    uploadDataRow.transName = td.innerHTML; //名字
-                    uploadDataRow.nickname = game.players[i].nickname; //昵称
+                    uploadDataRow.name = game.players[i].name;
+                    uploadDataRow.transName = td.innerHTML;
+                    uploadDataRow.nickname = game.players[i].nickname;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4678,7 +4525,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.players[i].stat[j].damage;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damage = num; //伤害
+                    uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4687,7 +4534,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.players[i].stat[j].damaged;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damaged = num; //受伤
+                    uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4696,7 +4543,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.players[i].stat[j].gain;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.gain = num; //摸牌
+                    uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4706,7 +4553,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     td.innerHTML = num;
-                    uploadDataRow.card = num; //出牌
+                    uploadDataRow.card = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4715,12 +4562,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.players[i].stat[j].kill;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.kill = num; //杀敌
+                    uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.players[i].identity); //身份
-                    uploadDataRow.alive = true; //存活
-                    if (get.mode() == 'identity') { //胜利或失败
+                    uploadDataRow.identity = get.translation(game.players[i].identity);
+                    uploadDataRow.alive = true;
+                    if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
                             if (game.players[i].identity == 'fan' || game.players[i].identity == 'nei') {
                                 uploadDataRow.winner = false;
@@ -4784,9 +4631,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     tr = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerHTML = get.translation(game.dead[i]);
-                    uploadDataRow.name = game.dead[i].name; //名字拼音
-                    uploadDataRow.transName = td.innerHTML; //名字
-                    uploadDataRow.nickname = game.dead[i].nickname; //昵称
+                    uploadDataRow.name = game.dead[i].name;
+                    uploadDataRow.transName = td.innerHTML;
+                    uploadDataRow.nickname = game.dead[i].nickname;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4795,7 +4642,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.dead[i].stat[j].damage;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damage = num; //伤害
+                    uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4804,7 +4651,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.dead[i].stat[j].damaged;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.damaged = num; //受伤
+                    uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4813,7 +4660,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.dead[i].stat[j].gain;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.gain = num; //摸牌
+                    uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4823,7 +4670,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     td.innerHTML = num;
-                    uploadDataRow.card = num; //出牌
+                    uploadDataRow.card = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
@@ -4832,12 +4679,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             num += game.dead[i].stat[j].kill;
                     }
                     td.innerHTML = num;
-                    uploadDataRow.kill = num; //杀敌
+                    uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.dead[i].identity); //身份
-                    uploadDataRow.alive = false; //存活
-                    if (get.mode() == 'identity') { //胜利或失败
+                    uploadDataRow.identity = get.translation(game.dead[i].identity);
+                    uploadDataRow.alive = false;
+                    if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
                             if (game.dead[i].identity == 'fan' || game.dead[i].identity == 'nei') {
                                 uploadDataRow.winner = false;
@@ -4966,7 +4813,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 dialog.add(ui.create.div('.placeholder'));
                 dialog.content.appendChild(table);
             }
-            // }
             dialog.add(ui.create.div('.placeholder'));
             var clients = game.players.concat(game.dead);
             for (var i = 0; i < clients.length; i++) {
@@ -5065,9 +4911,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 store.put(newvid);
                 ui.create.videoNode(newvid, true);
             }
-            // _status.auto=false;
             if (ui.auto) {
-                // ui.auto.classList.remove('glow');
                 ui.auto.hide();
             }
             if (ui.wuxie)
@@ -5187,13 +5031,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 setTimeout(game.reload, 15000);
             }
         },
-        /**
-            * 游戏事件循环
-            * @function
-            */
         loop: function () {
             var event = _status.event;
-            var step = event.step; //很重要，在替换switch-step体系之前，不可删除
+            var step = event.step;
             var source = event.source;
             var player = event.player;
             var target = event.target;
@@ -5201,7 +5041,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var card = event.card;
             var cards = event.cards;
             var skill = event.skill;
-            // var forced = event.forced; //使用过少，故删除
             var num = event.num;
             var trigger = event._trigger;
             var result = event._result;
@@ -5230,23 +5069,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         next.player.getHistory('skipped').add(next.name);
                 }
                 else {
-                    /**
-                        * _status.event.parent(即event.parent)：当前正在执行事件的父事件
-                        * 当_status.event.next或_status.event.after内的事件被执行时，当前事件会成为被执行事件的父事件
-                        * @name _status.event_parent
-                        * @type {!Object}
-                        */
-                    /**
-                        * _status.event.player(即event.player)：当前正在执行事件的角色
-                        * @name _status.event_player
-                        * @type {!HTMLDivElement}
-                        */
-                    /**
-                        * _status.event.target(即event.target)：当前正在执行事件的目标
-                        * @name _status.event_target
-                        * @type {!HTMLDivElement}
-                        */
-                    // _status.event.renew(next);
                     _status.event = _status.event.LinkChild(next);
                 }
             }
@@ -5279,7 +5101,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     else {
                         next.parent = event;
-                        // _status.event.renew(next);
                         _status.event = _status.event.LinkAfter(next);
                     }
                 }
@@ -5288,7 +5109,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (event.result) {
                             event.parent._result = event.result;
                         }
-                        // _status.event.renew(event.parent);
                         _status.event = _status.event.LinkParent(next);
                     }
                     else {
@@ -5421,11 +5241,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return game.delay(time, time2);
         },
-        /**
-            * 检测玩家是否选择完毕(选择按钮`event.filterButton`，选择卡牌`event.filterCard`，选择对象`event.filterTarget`)
-            * @param {?GameCores.Bases.Event} event 要处理的事件，如果为null，使用当前事件
-            * @returns {(undefined|boolean)} 如果事件不需要等待玩家选择，返回undefined；如果事件选择完毕，返回true；否则返回false
-            */
         check: function (event) {
             var i, j, range;
             if (event == undefined)
@@ -5439,12 +5254,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 players.addArray(game.dead);
             if (!event.filterButton && !event.filterCard && !event.filterTarget && (!event.skill || !event._backup)) {
                 if (event.choosing) {
-                    _status.imchoosing = true; //??
+                    _status.imchoosing = true;
                 }
                 return;
             }
             player.node.equips.classList.remove('popequip');
-            //button
             if (event.filterButton) {
                 var dialog = event.dialog;
                 range = get.select(event.selectButton);
@@ -5494,7 +5308,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     custom.add.button();
                 }
             }
-            //card
             if (event.filterCard) {
                 if (ok == false) {
                     game.uncheck('card');
@@ -5616,7 +5429,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     custom.add.card();
                 }
             }
-            //player
             if (event.filterTarget) {
                 if (ok == false) {
                     game.uncheck('target');
@@ -5701,7 +5513,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     custom.add.target();
                 }
             }
-            //skill
             if (!event.skill && get.noSelected() && !_status.noconfirm) {
                 var skills = [], enable, info;
                 var skills2;
@@ -5807,7 +5618,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     ui.skills3.close();
                 }
             }
-            //is multipled targets
             _status.multitarget = false;
             var skillinfo = get.info(_status.event.skill);
             if (_status.event.name == 'chooseToUse') {
@@ -6247,11 +6057,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib[i][j] = mode[lib.config.mode][i][j];
                     }
                 }
-                // var pilecfg=lib.config.customcardpile[get.config('cardpilename')];
-                // if(pilecfg){
-                //     lib.config.bannedpile=pilecfg[0]||{};
-                //     lib.config.addedpile=pilecfg[1]||{};
-                // }
                 _status.event = new Status_Event_1.default({
                     finished: true,
                     next: [],
@@ -6753,7 +6558,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         return true;
                     }
                 };
-                // if(ui.cardPileButton) ui.cardPileButton.style.display='none';
                 ui.auto.hide();
                 ui.wuxie.hide();
                 event.resize();
@@ -6986,13 +6790,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.asyncDraw.apply(this, arguments);
             }
         },
-        /**
-            * 为角色技能添加`translate`文本，设置默认ai，进行预处理
-            * 同时将下划线(_)开头的技能添加到{@link lib.skill.global}
-            * @param {string} i 技能名
-            * @param {*} [sub]
-            * @see{@link game.finishCards}
-            */
         finishSkill: function (i, sub) {
             var j;
             var mode = get.mode();
@@ -7173,10 +6970,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.addGlobalSkill(i);
             }
         },
-        /**
-            * 为(游戏牌|角色技能)添加`translate`文本，设置默认ai，进行预处理
-            * @see {@link game.finishSkill}
-            */
         finishCards: function () {
             _status.cardsFinished = true;
             var i, j, k;
@@ -7268,9 +7061,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                             if (typeof equipValue == 'function') {
                                 if (method == 'raw')
-                                    return equipValue(card, player); //原装备价值
+                                    return equipValue(card, player);
                                 if (method == 'raw2')
-                                    return equipValue(card, player) - value; //装备牌`card`的相对装备价值(相对当前相同位置的装备。如果没有装备，则为原装备价值)
+                                    return equipValue(card, player) - value;
                                 return Math.max(0.1, equipValue(card, player) - value);
                             }
                             if (typeof equipValue != 'number')
@@ -7301,7 +7094,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.finishSkill(i);
             }
         },
-        //Mod类技能的相关检测
         checkMod: function () {
             var name = arguments[arguments.length - 2];
             var skills = arguments[arguments.length - 1];
@@ -7493,7 +7285,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     game.logv(logvid, '<div class="text center">' + lib.config.log_highlight ? str : str2 + '</div>');
                 }
             }
-            // if(lib.config.title) document.title=lib.config.log_highlight?str:str2;
             if (lib.config.show_log != 'off' && !game.chess) {
                 var nodeentry = node.cloneNode(true);
                 ui.arenalog.insertBefore(nodeentry, ui.arenalog.firstChild);
@@ -7703,7 +7494,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 node.addEventListener('touchstart', ui.click.intro);
             }
             else {
-                // node.addEventListener('mouseenter',ui.click.intro);
                 node.addEventListener(lib.config.pop_logv ? 'mousemove' : 'click', ui.click.logv);
                 node.addEventListener('mouseleave', ui.click.logvleave);
             }
@@ -7715,13 +7505,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return node;
         },
-        /**
-            * 从IndexedDB中获取对象仓库(object store)，并更新对象
-            * @param {string} type - 仓库名称
-            * @param {string} id - 键路径的值
-            * @param {any} item - 要插入/更新的对象
-            * @param {function} callback - 成功时回调函数
-            */
         putDB: function (type, id, item, callback) {
             if (!lib.db)
                 return item;
@@ -7740,12 +7523,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.reload2();
             };
         },
-        /**
-            * 从IndexedDB中获取对象仓库(object store)，并获取对象
-            * @param {string} type - 仓库名称
-            * @param {string | null} id - 键路径的值
-            * @param {!function} callback - 成功时回调函数
-            */
         getDB: function (type, id, callback) {
             if (!lib.db) {
                 callback(null);
@@ -7784,12 +7561,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 };
             }
         },
-        /**
-            * 从IndexedDB中获取对象仓库(object store)，并删除对象
-            * @param {string} type - 仓库名称
-            * @param {string} id - 键路径的值
-            * @param {function} callback - 成功时回调函数
-            */
         deleteDB: function (type, id, callback) {
             if (!lib.db) {
                 callback(false);
@@ -7988,15 +7759,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 保存配置
-            * 如果有IndexedDB，使用IndexedDB；否则以`{key:lib.configprefix + 'config', value:{key:value}}`的形式存入localStorage
-            * @function
-            * @param {!string} key 对应的键名
-            * @param {?Object} value 值，如果为虚值表示删除数据，否则添加/更新数据
-            * @param {?string} local 模组名，如果指定字符串，更新模组配置(`lib.config.mode_config[local]`)，否则更新全局配置(`lib.config`)
-            * @param {function():void} callback 更新完成的回调函数
-            */
         saveConfig: function (key, value, local, callback) {
             if (_status.reloading)
                 return;
@@ -8057,41 +7819,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 持久化配置，`lib.config[key]`
-            * @function
-            * @param {!string} key 键名
-            * @see {@link game.saveConfig}
-            */
         saveConfigValue: function (key) {
             game.saveConfig(key, lib.config[key]);
         },
-        /**
-            * 持久化拓展的配置
-            * @function
-            * @param {!string} extension 拓展名
-            * @param {!string} key 键名，自动拓展为`extension_${extension}_${key}`
-            * @param {?Object} value
-            * @see {@link game.saveConfig}
-            */
         saveExtensionConfig: function (extension, key, value) {
             return game.saveConfig('extension_' + extension + '_' + key, value);
         },
-        /**
-            * 获取拓展的配置
-            * @function
-            * @param {!string} extension 拓展名
-            * @param {!string} key 键名
-            * @returns {?Object}
-            */
         getExtensionConfig: function (extension, key) {
             return lib.config['extension_' + extension + '_' + key];
         },
-        /**
-            * 于IndexedDB/localStorage中清空某个mode的配置
-            * @function
-            * @param {!string} mode mode名
-            */
         clearModeConfig: function (mode) {
             if (_status.reloading)
                 return;
@@ -8334,13 +8070,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 检测一组技能，返回其中未失效的技能
-            * @param {!Array<string>} skills 技能名数组
-            * @param {!HTMLDivElement} player 检测角色
-            * @param {?Function} exclude 用于筛选的函数
-            * @returns {Array<string>} 排除失效技能的数组
-            */
         filterSkills: function (skills, player, exclude) {
             let out = skills.slice(0);
             for (let i in player.disabledSkills) {
@@ -8354,11 +8083,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return out;
         },
-        /**
-            * 对一组技能进行展开，得到由其中每个技能和其子技能组成的数组，返回展开后的技能名数组
-            * @param {!Array<string>} skills 技能名数组
-            * @returns {Array<string>} 包含子技能的技能名数组
-            */
         expandSkills: function (skills) {
             var skills2 = [];
             for (var i = 0; i < skills.length; i++) {
@@ -8387,11 +8111,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         },
-        /**
-            * 判定是否存在满足条件的角色
-            * @param {?Function} func 用于筛选的函数
-            * @returns {!boolean} 是否存在
-            */
         hasPlayer: function (func) {
             for (var i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut())
@@ -8401,11 +8120,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         },
-        /**
-            * 判定是否存在满足条件的角色（包括已死亡角色）
-            * @param {?Function} func 用于筛选的函数
-            * @returns {!boolean} 是否存在
-            */
         hasPlayer2: function (func) {
             var players = game.players.slice(0).concat(game.dead);
             for (var i = 0; i < players.length; i++) {
@@ -8416,11 +8130,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return false;
         },
-        /**
-            * 获取满足条件的角色
-            * @param {?Function} func 用于筛选的函数
-            * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
-            */
         countPlayer: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -8439,11 +8148,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return num;
         },
-        /**
-            * 获取满足条件的角色（包括已死亡角色）
-            * @param {?Function} func 用于筛选的函数
-            * @returns {Array<HTMLDivElement>} 由满足条件的角色组成的数组
-            */
         countPlayer2: function (func) {
             var num = 0;
             if (typeof func != 'function') {
@@ -8532,10 +8236,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return cards;
         },
-        /**
-            * 用 countPlayer 计算场上存在的势力数
-            * @returns {!number} 势力数
-            */
         countGroup: function () {
             var list = lib.group.slice(0);
             return game.countPlayer(function (current) {
