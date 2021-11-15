@@ -802,7 +802,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             },
             xiangnuo2: {
                 enable: 'phaseUse',
-                getResult(cards) {
+                getResult(cards, player) {
                     let l = cards.length, all = Math.pow(l, 2), list = [];
                     for (let i = 1; i < all; i++) {
                         let array = [];
@@ -848,7 +848,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 check(card) {
                     let evt = _status.event;
                     if (!evt.xiangnuo_choice)
-                        evt.xiangnuo_choice = lib.skill.xiangnuo2.getResult(evt.player.getCards('he'));
+                        evt.xiangnuo_choice = lib.skill.xiangnuo2.getResult(evt.player.getCards('he'), evt.player);
                     if (!evt.xiangnuo_choice.includes(card))
                         return 0;
                     return 1;

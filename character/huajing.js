@@ -541,7 +541,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 check(card) {
                     let evt = _status.event;
                     if (!evt.xieqi_choice)
-                        evt.xieqi_choice = lib.skill.xieqi.getResult(evt.player.getCards('h'));
+                        evt.xieqi_choice = lib.skill.xieqi.getResult(evt.player.getCards('he'), evt.player);
                     if (!evt.xieqi_choice.includes(card))
                         return 0;
                     return 1;
