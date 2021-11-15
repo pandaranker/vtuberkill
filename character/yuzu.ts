@@ -881,7 +881,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					if(list.length){
 						list.sort(function(a,b){
 							if(a.length!=b.length) return b.length-a.length;
-							return get.value(a)-get.value(b);
+							return get.value(a, player)-get.value(b, player);
 						});
 						return list[0];
 					}
@@ -1239,11 +1239,11 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{player:'phaseJieshuEnd'},
 				filter(event,player){
-					return game.hasPlayer(cur => cur.hasHistory('recover', evt => evt.result))
+					return game.hasPlayer(cur => cur.hasHistory('recover', evt => evt.player==cur && evt.result))
 				},
 				content(){
 					'step 0'
-					event.targets = game.filterPlayer(cur => cur.hasHistory('recover', evt => evt.result));
+					event.targets = game.filterPlayer(cur => cur.hasHistory('recover', evt => evt.player==cur && evt.result));
 					game.asyncDraw(event.targets);
 				},
 				subSkill:{

@@ -513,7 +513,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					if(list.length){
 						list.sort(function(a,b){
 							if(a.length!=b.length) return b.length-a.length;
-							return get.value(a)-get.value(b);
+							return get.value(a, player)-get.value(b, player);
 						});
 						return list[0];
 					}
