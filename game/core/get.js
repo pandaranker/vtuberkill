@@ -2345,8 +2345,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return get.translation(str);
         },
+        interoperableText(name, player) {
+            var _a, _b;
+            let str = lib.translate[name];
+            if (lib.skill[name] && lib.translate[name + '_info']) {
+                str = get.skillInfoTranslation(name, player);
+                let info = lib.skill[name];
+                let iSkill = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].flat();
+                iSkill = [...new Set(iSkill)];
+                for (let i of iSkill) {
+                    let tra = get.translation(i);
+                    if (tra.indexOf('(') > 0)
+                        tra = tra.substring(0, tra.indexOf('('));
+                    let reg = new RegExp(`『(${tra})』`, 'g');
+                    str = str.replace(reg, `<span class="iText" data-introLink="${i}">『$1』</span>`);
+                }
+            }
+            (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText = lib.init.sheet(`.iText{font-style: italic}`));
+            return str;
+        },
         skillInfoTranslation(name, player) {
-            var str = lib.translate[name + '_info'];
+            let str = lib.translate[name + '_info'];
             if (player && lib.dynamicTranslate[name])
                 str = lib.dynamicTranslate[name](player, name);
             if (!str)
@@ -3940,14 +3959,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     for (i = 0; i < skills.length; i++) {
                         if (lib.translate[skills[i] + '_info']) {
                             translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
+                            let info = get.interoperableText(skills[i]);
                             if (lib.skill[skills[i]] && lib.skill[skills[i]].nobracket) {
-                                uiintro.add('<div><div class="skilln">' + get.translation(skills[i]) + '</div><div' + ((get.translation(skills[i]).length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i]) + '</div></div>');
+                                uiintro.add('<div><div class="skilln">' + get.translation(skills[i]) + '</div><div' + ((get.translation(skills[i]).length > 3) ? ' class="skilltext"' : '') + '>' + info + '</div></div>');
                             }
                             else {
-                                uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i]) + '</div></div>');
+                                uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + info + '</div></div>');
                             }
                             if (lib.translate[skills[i] + '_append']) {
                                 uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>');
+                            }
+                            for (let v of uiintro.getElementsByTagName('span')) {
+                                v.link = v.dataset.introlink;
+                                console.log(v, v.dataset, v.dataset.introLink, v.link);
+                                if (v.classList.contains('iText'))
+                                    lib.setIntro(v);
                             }
                         }
                     }
@@ -4047,6 +4073,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 createButtons(lib.skin[nameskin]);
                             });
                         }
+                    }
+                }
+            }
+            else if (node.classList.contains('iText')) {
+                var name = node.link;
+                console.log(node, name);
+                if (lib.translate[name + '_info']) {
+                    translation = lib.translate[name + '_ab'] || get.translation(name).slice(0, 5);
+                    if (lib.skill[name] && lib.skill[name].nobracket) {
+                        uiintro.add('<div><div class="skilln">' + get.translation(name) + '</div><div' + ((get.translation(name).length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                    }
+                    else {
+                        uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                    }
+                    if (lib.translate[name + '_append']) {
+                        uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[name + '_append'] + '</div>');
                     }
                 }
             }

@@ -655,7 +655,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					event.discard = player.chooseToDiscard('he',true).set('prompt2',`若弃置装备牌，则额外对目标造成${get.cnNumber(event.baseDamage)}点暗影伤害`).set('ai',function(card){
+					player.chooseToDiscard('he',true).set('prompt2',`若弃置装备牌，则额外对目标造成${get.cnNumber(event.baseDamage)}点暗影伤害`).set('ai',function(card){
 						var target = _status.event.getParent().target;
 						var player = _status.event.player;
 						if(get.type(card)=='equip') return get.damageEffect(target,player,player)+7-get.value(card);
@@ -664,10 +664,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 1'
 					event.num = target.hujia;
 					target.changeHujia(-event.num);
-					game.delayx();
+					game.delay(1.5);
 					'step 2'
-					var card = event.discard.result.cards[0];
-					if(get.type(card)=='equip')	target.damage(event.baseDamage,'yami');
+					let card
+					for(let i of event._LinkChild){
+						if(i.name==='chooseToDiscard')	card = i.result.cards[0];
+						break
+					}
+					if(card&&get.type(card)=='equip')	target.damage(event.baseDamage,'yami');
 				},
 				ai:{
 					basic:{

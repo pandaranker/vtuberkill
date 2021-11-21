@@ -6631,13 +6631,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (typeof time != 'number')
                         time = 500;
                     this.classList.add('removing');
-                    var that = this;
-                    this.timeout = setTimeout(function () {
-                        if (!that.destroyed) {
-                            position.appendChild(that);
+                    this.timeout = setTimeout(() => {
+                        if (!this.destroyed) {
+                            position.appendChild(this);
                         }
-                        that.classList.remove('removing');
-                        delete that.destiny;
+                        this.classList.remove('removing');
+                        delete this.destiny;
                     }, time);
                     this.destiny = position;
                     return this;

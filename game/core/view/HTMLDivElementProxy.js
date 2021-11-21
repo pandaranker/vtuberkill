@@ -269,50 +269,50 @@
             }
             return this;
         }
-        appendChild() {
-            return this._element.appendChild(...arguments);
+        appendChild(...arg) {
+            return this._element.appendChild.call(this._element, ...arg);
         }
-        cloneNode() {
-            return this._element.cloneNode(...arguments);
+        cloneNode(...arg) {
+            return this._element.cloneNode.call(this._element, ...arg);
         }
-        compareDocumentPosition() {
-            return this._element.compareDocumentPosition(...arguments);
+        compareDocumentPosition(...arg) {
+            return this._element.compareDocumentPosition.call(this._element, ...arg);
         }
-        getBoxQuads() {
-            return this._element.getBoxQuads(...arguments);
+        getBoxQuads(...arg) {
+            return this._element.getBoxQuads.call(this._element, ...arg);
         }
-        getRootNode() {
-            return this._element.getRootNode(...arguments);
+        getRootNode(...arg) {
+            return this._element.getRootNode.call(this._element, ...arg);
         }
-        hasChildNodes() {
-            return this._element.hasChildNodes(...arguments);
+        hasChildNodes(...arg) {
+            return this._element.hasChildNodes.call(this._element, ...arg);
         }
-        insertBefore() {
-            return this._element.insertBefore(...arguments);
+        insertBefore(...arg) {
+            return this._element.insertBefore.call(this._element, ...arg);
         }
-        isDefaultNamespace() {
-            return this._element.isDefaultNamespace(...arguments);
+        isDefaultNamespace(...arg) {
+            return this._element.isDefaultNamespace.call(this._element, ...arg);
         }
-        isEqualNode() {
-            return this._element.isEqualNode(...arguments);
+        isEqualNode(...arg) {
+            return this._element.isEqualNode.call(this._element, ...arg);
         }
-        isSameNode() {
-            return this._element.isSameNode(...arguments);
+        isSameNode(...arg) {
+            return this._element.isSameNode.call(this._element, ...arg);
         }
-        lookupPrefix() {
-            return this._element.lookupPrefix(...arguments);
+        lookupPrefix(...arg) {
+            return this._element.lookupPrefix.call(this._element, ...arg);
         }
-        lookupNamespaceURI() {
-            return this._element.lookupNamespaceURI(...arguments);
+        lookupNamespaceURI(...arg) {
+            return this._element.lookupNamespaceURI.call(this._element, ...arg);
         }
-        normalize() {
-            return this._element.normalize(...arguments);
+        normalize(...arg) {
+            return this._element.normalize.call(this._element, ...arg);
         }
-        removeChild() {
-            return this._element.removeChild(...arguments);
+        removeChild(...arg) {
+            return this._element.removeChild.call(this._element, ...arg);
         }
-        replaceChild() {
-            return this._element.replaceChild(...arguments);
+        replaceChild(...arg) {
+            return this._element.replaceChild.call(this._element, ...arg);
         }
         get baseURI() {
             return this._element.baseURI;
@@ -362,155 +362,155 @@
         set textContent(arg) {
             this._element.textContent = arg;
         }
-        addEventListener() {
-            this._element.addEventListener(...arguments);
+        addEventListener(...arg) {
+            this._element.addEventListener.call(this._element, ...arg);
         }
-        after() {
-            this._element.after(...arguments);
+        after(...arg) {
+            this._element.after.call(this._element, ...arg);
         }
-        attachShadow() {
-            return this._element.attachShadow(...arguments);
+        attachShadow(...arg) {
+            return this._element.attachShadow.call(this._element, ...arg);
         }
-        append() {
-            this._element.append(...arguments);
+        append(...arg) {
+            this._element.append.call(this._element, ...arg);
         }
-        before() {
-            this._element.before(...arguments);
+        before(...arg) {
+            this._element.before.call(this._element, ...arg);
         }
-        closest() {
-            this._element.closest(...arguments);
+        closest(...arg) {
+            this._element.closest.call(this._element, ...arg);
         }
-        createShadowRoot() {
-            return this._element.createShadowRoot(...arguments);
+        createShadowRoot(...arg) {
+            return this._element.createShadowRoot.call(this._element, ...arg);
         }
-        computedStyleMap() {
-            return this._element.computedStyleMap(...arguments);
+        computedStyleMap(...arg) {
+            return this._element.computedStyleMap.call(this._element, ...arg);
         }
-        dispatchEvent() {
-            return this._element.dispatchEvent(...arguments);
+        dispatchEvent(...arg) {
+            return this._element.dispatchEvent.call(this._element, ...arg);
         }
-        getAnimations() {
-            return this._element.getAnimations(...arguments);
+        getAnimations(...arg) {
+            return this._element.getAnimations.call(this._element, ...arg);
         }
-        getAttribute() {
-            return this._element.getAttribute(...arguments);
+        getAttribute(...arg) {
+            return this._element.getAttribute.call(this._element, ...arg);
         }
-        getAttributeNames() {
-            return this._element.getAttributeNames(...arguments);
+        getAttributeNames(...arg) {
+            return this._element.getAttributeNames.call(this._element, ...arg);
         }
-        getAttributeNode() {
-            return this._element.getAttributeNode(...arguments);
+        getAttributeNode(...arg) {
+            return this._element.getAttributeNode.call(this._element, ...arg);
         }
-        getAttributeNodeNS() {
-            return this._element.getAttributeNodeNS(...arguments);
+        getAttributeNodeNS(...arg) {
+            return this._element.getAttributeNodeNS.call(this._element, ...arg);
         }
-        getAttributeNS() {
-            return this._element.getAttributeNS(...arguments);
+        getAttributeNS(...arg) {
+            return this._element.getAttributeNS.call(this._element, ...arg);
         }
-        getBoundingClientRect() {
-            return this._element.getBoundingClientRect(...arguments);
+        getBoundingClientRect(...arg) {
+            return this._element.getBoundingClientRect.call(this._element, ...arg);
         }
-        getClientRects() {
-            return this._element.getClientRects(...arguments);
+        getClientRects(...arg) {
+            return this._element.getClientRects.call(this._element, ...arg);
         }
-        getElementsByClassName() {
-            return this._element.getElementsByClassName(...arguments);
+        getElementsByClassName(...arg) {
+            return this._element.getElementsByClassName.call(this._element, ...arg);
         }
-        getElementsByTagName() {
-            return this._element.getElementsByTagName(...arguments);
+        getElementsByTagName(...arg) {
+            return this._element.getElementsByTagName.call(this._element, ...arg);
         }
-        getElementsByTagNameNS() {
-            return this._element.getElementsByTagNameNS(...arguments);
+        getElementsByTagNameNS(...arg) {
+            return this._element.getElementsByTagNameNS.call(this._element, ...arg);
         }
-        hasAttribute() {
-            return this._element.hasAttribute(...arguments);
+        hasAttribute(...arg) {
+            return this._element.hasAttribute.call(this._element, ...arg);
         }
-        hasAttributeNS() {
-            return this._element.hasAttributeNS(...arguments);
+        hasAttributeNS(...arg) {
+            return this._element.hasAttributeNS.call(this._element, ...arg);
         }
-        hasAttributes() {
-            return this._element.hasAttributes(...arguments);
+        hasAttributes(...arg) {
+            return this._element.hasAttributes.call(this._element, ...arg);
         }
-        hasPointerCapture() {
-            return this._element.hasPointerCapture(...arguments);
+        hasPointerCapture(...arg) {
+            return this._element.hasPointerCapture.call(this._element, ...arg);
         }
-        insertAdjacentElement() {
-            return this._element.insertAdjacentElement(...arguments);
+        insertAdjacentElement(...arg) {
+            return this._element.insertAdjacentElement.call(this._element, ...arg);
         }
-        insertAdjacentHTML() {
-            return this._element.insertAdjacentHTML(...arguments);
+        insertAdjacentHTML(...arg) {
+            return this._element.insertAdjacentHTML.call(this._element, ...arg);
         }
-        matches() {
-            return this._element.matches(...arguments);
+        matches(...arg) {
+            return this._element.matches.call(this._element, ...arg);
         }
-        prepend() {
-            return this._element.prepend(...arguments);
+        prepend(...arg) {
+            return this._element.prepend.call(this._element, ...arg);
         }
-        querySelector() {
-            return this._element.querySelector(...arguments);
+        querySelector(...arg) {
+            return this._element.querySelector.call(this._element, ...arg);
         }
-        querySelectorAll() {
-            return this._element.querySelectorAll(...arguments);
+        querySelectorAll(...arg) {
+            return this._element.querySelectorAll.call(this._element, ...arg);
         }
-        releasePointerCapture() {
-            return this._element.releasePointerCapture(...arguments);
+        releasePointerCapture(...arg) {
+            return this._element.releasePointerCapture.call(this._element, ...arg);
         }
-        remove() {
-            return this._element.remove(...arguments);
+        remove(...arg) {
+            return this._element.remove.call(this._element, ...arg);
         }
-        removeAttribute() {
-            return this._element.removeAttribute(...arguments);
+        removeAttribute(...arg) {
+            return this._element.removeAttribute.call(this._element, ...arg);
         }
-        removeAttributeNode() {
-            return this._element.removeAttributeNode(...arguments);
+        removeAttributeNode(...arg) {
+            return this._element.removeAttributeNode.call(this._element, ...arg);
         }
-        removeAttributeNS() {
-            return this._element.removeAttributeNS(...arguments);
+        removeAttributeNS(...arg) {
+            return this._element.removeAttributeNS.call(this._element, ...arg);
         }
-        removeEventListener() {
-            return this._element.removeEventListener(...arguments);
+        removeEventListener(...arg) {
+            return this._element.removeEventListener.call(this._element, ...arg);
         }
-        replaceChildren() {
-            return this._element.replaceChildren(...arguments);
+        replaceChildren(...arg) {
+            return this._element.replaceChildren.call(this._element, ...arg);
         }
-        replaceWith() {
-            return this._element.replaceWith(...arguments);
+        replaceWith(...arg) {
+            return this._element.replaceWith.call(this._element, ...arg);
         }
-        requestFullscreen() {
-            return this._element.requestFullscreen(...arguments);
+        requestFullscreen(...arg) {
+            return this._element.requestFullscreen.call(this._element, ...arg);
         }
-        requestPointerLock() {
-            return this._element.requestPointerLock(...arguments);
+        requestPointerLock(...arg) {
+            return this._element.requestPointerLock.call(this._element, ...arg);
         }
-        scroll() {
-            return this._element.scroll(...arguments);
+        scroll(...arg) {
+            return this._element.scroll.call(this._element, ...arg);
         }
-        scrollBy() {
-            return this._element.scrollBy(...arguments);
+        scrollBy(...arg) {
+            return this._element.scrollBy.call(this._element, ...arg);
         }
-        scrollIntoView() {
-            return this._element.scrollIntoView(...arguments);
+        scrollIntoView(...arg) {
+            return this._element.scrollIntoView.call(this._element, ...arg);
         }
-        scrollTo() {
-            return this._element.scrollTo(...arguments);
+        scrollTo(...arg) {
+            return this._element.scrollTo.call(this._element, ...arg);
         }
-        setAttribute() {
-            return this._element.setAttribute(...arguments);
+        setAttribute(...arg) {
+            return this._element.setAttribute.call(this._element, ...arg);
         }
-        setAttributeNode() {
-            return this._element.setAttributeNode(...arguments);
+        setAttributeNode(...arg) {
+            return this._element.setAttributeNode.call(this._element, ...arg);
         }
-        setAttributeNS() {
-            return this._element.setAttributeNS(...arguments);
+        setAttributeNS(...arg) {
+            return this._element.setAttributeNS.call(this._element, ...arg);
         }
-        setCapture() {
-            return this._element.setCapture(...arguments);
+        setCapture(...arg) {
+            return this._element.setCapture.call(this._element, ...arg);
         }
-        setPointerCapture() {
-            return this._element.setPointerCapture(...arguments);
+        setPointerCapture(...arg) {
+            return this._element.setPointerCapture.call(this._element, ...arg);
         }
-        toggleAttribute() {
-            return this._element.toggleAttribute(...arguments);
+        toggleAttribute(...arg) {
+            return this._element.toggleAttribute.call(this._element, ...arg);
         }
         get assignedSlot() {
             return this._element.assignedSlot;
@@ -635,17 +635,17 @@
         get tagName() {
             return this._element.tagName;
         }
-        attachInternals() {
-            return this._element.attachInternals(...arguments);
+        attachInternals(...arg) {
+            return this._element.attachInternals.call(this._element, ...arg);
         }
-        blur() {
-            return this._element.blur(...arguments);
+        blur(...arg) {
+            return this._element.blur.call(this._element, ...arg);
         }
-        click() {
-            return this._element.click(...arguments);
+        click(...arg) {
+            return this._element.click.call(this._element, ...arg);
         }
-        focus() {
-            return this._element.focus(...arguments);
+        focus(...arg) {
+            return this._element.focus.call(this._element, ...arg);
         }
         get accessKey() {
             return this._element.accessKey;

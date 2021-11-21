@@ -261,7 +261,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.setAvatar('Shiranekoyuki', 'Shiranekoyuki1');
                     player.addSkill('wuxia_yuanyao');
                 },
-                combo: 'wuxia_yuanyao'
+                ai: {
+                    combo: 'wuxia_yuanyao',
+                },
+                involve: ['jvliu', 'wuxia_yuanyao']
             },
             wuxia_yuanyao: {
                 inherit: 'yuanyao',
@@ -9732,6 +9735,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.storage.fuyu = true;
                     player.awakenSkill('fuyu');
                 },
+                ai: {
+                    combo: 'liying'
+                }
             },
             tieyu: {
                 init(player, skill) {
@@ -10216,7 +10222,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     trigger.line = false;
                     trigger.animate = false;
                     event.prompt = get.translation(player) + '声明了' + get.translation(trigger.card.name) + '，是否质疑？';
-                    event.guessers = game.filterPlayer(cur => cur != player && cur.hasSkill('tianqi_mark'));
+                    event.guessers = game.filterPlayer(cur => cur != player && !cur.hasSkill('tianqi_mark'));
                     event.guessers.sort(lib.sort.seat);
                     game.broadcastAll(card => {
                         _status.guhuoNode = card.copy('thrown');
@@ -10708,6 +10714,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                     }
                 },
+                involve: ['shoumi_yingzi', 'shoumi_guicai']
             },
             shoumi_yingzi: {
                 trigger: { player: 'phaseDrawBegin2' },
@@ -11767,6 +11774,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         },
                     },
                 },
+                involve: ['jiai', 'shengyin', 'quanyu']
             },
             level: {
                 init(player, skill) {
@@ -13252,6 +13260,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
                 ai: {
+                    combo: 'ahbingyi',
                     maixie: true,
                     maixie_hp: true,
                     effect: {
@@ -14148,9 +14157,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 direct: true,
                 content() {
                     'step 0';
+                    var _a;
                     event.num = trigger.hs.filter(chong => get.type(chong) == 'equip').length;
                     if (event.num > 0) {
-                        player.chooseTarget(get.prompt2('zhanchong')).set('ai', function (target) {
+                        player.chooseTarget(get.prompt2('zhanchong'), function (card, player, target) {
+                            return target.countCards('he');
+                        }).set('ai', function (target) {
                             let player = _status.event.player;
                             if (player.isTurnedOver())
                                 return 4 - get.attitude(player, target);
@@ -14171,7 +14183,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     else
                         event.finish();
                     'step 2';
-                    if (result.bool) {
+                    if (result.bool && ((_a = result.cards) === null || _a === void 0 ? void 0 : _a.length)) {
                         player.turnOver();
                         event.num--;
                         if (get.type(result.cards[0]) != 'equip') {
@@ -17891,7 +17903,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             yubao_info: `拥有「天气」的角色的准备阶段开始时，你可以观看牌堆顶的X张牌，并以任意顺序放回（X为场上「天气」的数量）。`,
             yubao_append: lib.figurer(`特性：控顶`),
             butaizhun: `不太准`,
-            butaizhun_info: `每回合限一次，你可以扣置一张手牌当任意一张基本牌或普通锦囊牌使用或打出。此时，拥有「天气」以外的其他角色可质疑则翻开此牌：若为假则此牌作废，若为真则质疑角色将牌堆顶牌置于武将牌旁，称为「天气」。`,
+            butaizhun_info: `每回合限一次，你可以扣置一张手牌当任意一张基本牌或通常锦囊牌使用或打出。此时，未拥有「天气」的其他角色可质疑则翻开此牌：若为假则此牌作废，若为真则质疑角色将牌堆顶牌置于武将牌旁，称为「天气」。`,
             butaizhun_guess: `不太准`,
             butaizhun_respond: `不太准`,
             butaizhun_wuxie: `不太准`,
