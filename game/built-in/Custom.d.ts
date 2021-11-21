@@ -49,7 +49,8 @@ declare global {
     var galgame: { sce(string): void }
     var targets: PlayerModel[]
     var num: number
-    var result: Array | {
+    var skill: string
+    var result: number | Array | {
         bool?: Boolean
         targets?: PlayerModel[]
         cards?: Array
@@ -66,6 +67,8 @@ declare global {
     // }
     interface Window{
         game
+        play
+        isNonameServer
     }
     interface HTMLDivElement{
         getModel:()=>Object

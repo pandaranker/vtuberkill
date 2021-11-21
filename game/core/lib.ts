@@ -7051,13 +7051,12 @@ mixin(lib, /**@lends module:core.lib */ {
                 if (typeof time != 'number') time = 500;
                 this.classList.add('removing');
 
-                var that = this;
-                this.timeout = setTimeout(function () {
-                    if (!that.destroyed) {
-                        position.appendChild(that);
+                this.timeout = setTimeout(() => {
+                    if (!this.destroyed) {
+                        position.appendChild(this);
                     }
-                    that.classList.remove('removing');
-                    delete that.destiny;
+                    this.classList.remove('removing');
+                    delete this.destiny;
                 }, time);
                 this.destiny = position;
                 return this;
@@ -10871,8 +10870,6 @@ mixin(lib, /**@lends module:core.lib */ {
      * @name element
      * @namespace
      * @see {@link content}
-     * @see {@link lib.element.player}
-     * @see {@link lib.element.card}
      */
     element: {
         content: commonContent,

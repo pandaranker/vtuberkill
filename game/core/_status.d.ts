@@ -50,9 +50,28 @@ declare type _status_type = {
     addChatEntry?:Array
     /**轮次开始角色 */
     roundStart?:PlayerModel
+    /**对决模式 */
+    brawl:{noGameDraw}
+    /**观看录像 */
+    videoDuration:number
+    /**重播 */
+    replayvideo:boolean
+    playback
+    /**展示身份 */
+    identityShown:boolean
     /**先攻少摸牌 */
     first_less_forced:boolean
     first_less:boolean
     /**选择中 */
     imchoosing:boolean
+    /**正在进入/创建房间 */
+    enteringroom?:boolean
+    creatingroom?:boolean
+    /**鼠标事件 */
+    mousedown:boolean
+    mouseleft:boolean
+    /**卡片事件等待清单 */
+    waitingForCards?:Array
+    /**过渡等待清单 */
+    waitingForTransition?:Array
 }
