@@ -11724,6 +11724,10 @@ mixin(lib, /**@lends module:core.lib */ {
                 if (toreturn === null) {
                     return null;
                 }
+                if(parent.origin){
+                    parent.origin = {...parent.origin,...parent}
+                    return parent.origin;
+                }
                 return parent;
             },
             /**

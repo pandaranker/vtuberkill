@@ -1072,7 +1072,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.storage.baidao_times = 0;
                         },
                     }
-                }
+                },
+                derivation: 'zhongxinghezou',
             },
             yipengyidou: {
                 enable: 'phaseUse',

@@ -691,7 +691,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     custom: [],
                 });
                 game.countPlayer2(function (current) {
-                    current.actionHistory.push({ ...lib.historyRecorder });
+                    current.actionHistory.push(JSON.parse(JSON.stringify({ ...lib.historyRecorder })));
                     current.stat.push({ card: {}, skill: {} });
                     if (event.parent._roundStart) {
                         current.getHistory().isRound = true;

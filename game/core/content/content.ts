@@ -607,7 +607,7 @@ let commonContent = (({_status, lib, game, ui, get, ai})=>{
                 custom: [],
             });
             game.countPlayer2(function (current) {
-                current.actionHistory.push({ ...lib.historyRecorder });
+                current.actionHistory.push(JSON.parse(JSON.stringify({...lib.historyRecorder})));
                 current.stat.push({ card: {}, skill: {} });
                 if (event.parent._roundStart) {
                     current.getHistory().isRound = true;

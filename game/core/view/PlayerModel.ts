@@ -68,7 +68,7 @@ class PlayerModel extends HTMLDivElementProxy {
     damagepopups = [];
     judging = [];
     stat = [{ card: {}, skill: {} }];
-    actionHistory = [{ ...lib.historyRecorder }];
+    actionHistory = [JSON.parse(JSON.stringify({...lib.historyRecorder}))];
     tempSkills = {};
     storage: { [propName: string]: any } = { skill_blocker: [] };
     marks = {};
@@ -8010,7 +8010,7 @@ class PlayerModel extends HTMLDivElementProxy {
             node2.listenTransition(onEnd02);
         }, 200);
     }
-    $throw(card, time, init, nosource) {
+    $throw(card, time?, init?, nosource?) {
         if (typeof card == 'number') {
             var tmp = card;
             card = [];

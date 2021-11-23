@@ -11071,6 +11071,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (toreturn === null) {
                         return null;
                     }
+                    if (parent.origin) {
+                        parent.origin = { ...parent.origin, ...parent };
+                        return parent.origin;
+                    }
                     return parent;
                 },
                 getTrigger: function () {

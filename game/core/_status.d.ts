@@ -54,6 +54,8 @@ declare type _status_type = {
     brawl:{noGameDraw}
     /**观看录像 */
     videoDuration:number
+    /**是否为引导模式 */
+    yindao:boolean
     /**重播 */
     replayvideo:boolean
     playback
