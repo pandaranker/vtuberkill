@@ -14157,8 +14157,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 direct: true,
                 content() {
                     'step 0';
-                    var _a;
-                    event.num = trigger.hs.filter(chong => get.type(chong) == 'equip').length;
+                    var _a, _b;
+                    (_a = event.num) !== null && _a !== void 0 ? _a : (event.num = trigger.hs.filter(chong => get.type(chong) == 'equip').length);
                     if (event.num > 0) {
                         player.chooseTarget(get.prompt2('zhanchong'), function (card, player, target) {
                             return target.countCards('he');
@@ -14166,7 +14166,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             let player = _status.event.player;
                             if (player.isTurnedOver())
                                 return 4 - get.attitude(player, target);
-                            return -0.5 - get.attitude(player, target);
+                            return -1 - get.attitude(player, target);
                         });
                     }
                     else
@@ -14177,19 +14177,19 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         player.discardPlayerCard(result.targets[0], 'he', true).set('ai', function (button) {
                             if (get.type(button.link) == 'equip')
                                 return 2 - get.value(button.link);
-                            return 1 - get.value(button.link) + get.damageEffect(_status.event.target, _status.event.player, _status.event.player);
+                            return 3 - get.value(button.link) + get.damageEffect(_status.event.target, _status.event.player, _status.event.player);
                         });
                     }
                     else
                         event.finish();
                     'step 2';
-                    if (result.bool && ((_a = result.cards) === null || _a === void 0 ? void 0 : _a.length)) {
+                    if (result.bool && ((_b = result.cards) === null || _b === void 0 ? void 0 : _b.length)) {
                         player.turnOver();
                         event.num--;
                         if (get.type(result.cards[0]) != 'equip') {
                             event.target.damage(player);
                         }
-                        event.goto(1);
+                        event.goto(0);
                     }
                 },
             },

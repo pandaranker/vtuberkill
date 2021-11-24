@@ -3,6 +3,7 @@ import * as _context from './_context';
 const {_status, lib, game, ui, get, ai, mixin} = _context;
 import PlayerModel from './view/PlayerModel';
 import Status_Event from './base/Status_Event';
+import EventModel from './base/EventModel';
 /**
  * 游戏内核
  * 游戏循环{@link game.loop}
@@ -3780,58 +3781,9 @@ mixin(game, /**@lends module:core.game */ {
             * 创建事件，见{@link game.createEvent}
             * @namespace GameCores.Bases.Event
             */
-        var next:{[propName:string]: any} =
+        var next:{[propName:string]: any} = new EventModel(name)
         /**@lends GameCores.Bases.Event */
-        {
-            /**
-                * 事件名称
-                * @type {string}
-                */
-            name: name,
-            /**
-                * 事件状态，用于记录状态机状态
-                * @type {string}
-                * @default 0
-                */
-            step: 0,
-            /**
-                * 事件是否结束，如果结束则为true；默认为false
-                * @type {boolean}
-                * @default false
-                */
-            finished: false,
-            /**
-                * 事件的子事件数组
-                * @type {!GameCores.Bases.Event[]}
-                */
-            next: [],
-            /**
-                * 事件的追加事件数组，在After后如果有事件就执行
-                * 受`skipList`影响
-                * @type {GameCores.Bases.Event[]}
-                */
-            after: [],
-            custom: {//??
-                add: {},
-                replace: {}
-            },
-            _aiexclude: [],
-            /**
-                * 禁止触发对象数组，该事件无法被其中的角色对象触发
-                * @type {GameCores.GameObjects.Player[]}
-                */
-            _notrigger: [],
-            /**
-                * 子事件返回值
-                * @type {?Object}
-                */
-            _result: {},
-            _set: [],
-        }
         if (trigger !== false && !game.online) next._triggered = 0;
-        for (var i in lib.element.event) {
-            next[i] = lib.element.event[i];
-        }
         (triggerevent || _status.event).next.push(next);
         return next;
     },

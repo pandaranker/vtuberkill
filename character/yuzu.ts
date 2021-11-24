@@ -13222,14 +13222,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content(){
 					'step 0'
-					event.num = trigger.hs.filter(chong => get.type(chong)=='equip').length;
+					event.num ??= trigger.hs.filter(chong => get.type(chong)=='equip').length;
 					if(event.num>0){
 						player.chooseTarget(get.prompt2('zhanchong'),function(card,player,target){
 							return target.countCards('he');
 						}).set('ai',function(target){
 							let player = _status.event.player;
 							if(player.isTurnedOver())	return 4-get.attitude(player,target);
-							return -0.5-get.attitude(player,target);
+							return -1-get.attitude(player,target);
 						});
 					}else	event.finish();
 					'step 1'
@@ -13237,7 +13237,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						event.target = result.targets[0];
 						player.discardPlayerCard(result.targets[0],'he',true).set('ai',function(button){
 							if(get.type(button.link)=='equip') return 2-get.value(button.link);
-							return 1-get.value(button.link)+get.damageEffect(_status.event.target,_status.event.player,_status.event.player);
+							return 3-get.value(button.link)+get.damageEffect(_status.event.target,_status.event.player,_status.event.player);
 						})
 					}else	event.finish();
 					'step 2'
@@ -13247,7 +13247,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						if(get.type(result.cards[0])!='equip'){
 							event.target.damage(player);
 						}
-						event.goto(1);
+						event.goto(0);
 					}
 				},
 			},

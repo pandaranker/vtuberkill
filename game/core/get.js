@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./_context", "./view/PlayerModel"], factory);
+        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/EventModel"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -34,6 +34,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const _context = __importStar(require("./_context"));
     const { _status, lib, game, ui, get, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
+    const EventModel_1 = __importDefault(require("./base/EventModel"));
     mixin(get, {
         connectNickname: function () {
             return typeof lib.config.connect_nickname == 'string' ? (lib.config.connect_nickname.slice(0, 12)) : '无名玩家';
@@ -1534,7 +1535,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (level !== false)
                             item2[i] = get.eventInfoOL(item[i], false);
                     }
-                    else if (lib.element.event[i] || i == 'content' || get.itemtype(item[i]) == 'event')
+                    else if (EventModel_1.default.prototype[i] || i == 'content' || get.itemtype(item[i]) == 'event')
                         continue;
                     else
                         item2[i] = get.stringifiedResult(item[i], level - 1);
@@ -1552,8 +1553,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 for (let i in evt) {
                     evt[i] = get.parsedResult(evt[i]);
                 }
-                for (let i in lib.element.event)
-                    evt[i] = lib.element.event[i];
+                for (let i in EventModel_1.default.prototype)
+                    if (EventModel_1.default.prototype[i] instanceof Function)
+                        evt[i] = EventModel_1.default.prototype[i];
             }
             catch (e) {
                 console.log(e);
@@ -1879,7 +1881,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (obj instanceof PlayerModel_1.default)
                 return 'player';
             if (get.is.object(obj)) {
-                if (obj.isMine == lib.element.event.isMine)
+                if (obj.isMine == EventModel_1.default.prototype.isMine)
                     return 'event';
             }
         },
@@ -3971,7 +3973,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                             for (let v of uiintro.getElementsByTagName('span')) {
                                 v.link = v.dataset.introlink;
-                                console.log(v, v.dataset, v.dataset.introLink, v.link);
                                 if (v.classList.contains('iText'))
                                     lib.setIntro(v);
                             }
@@ -4078,7 +4079,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             else if (node.classList.contains('iText')) {
                 var name = node.link;
-                console.log(node, name);
                 if (lib.translate[name + '_info']) {
                     translation = lib.translate[name + '_ab'] || get.translation(name).slice(0, 5);
                     if (lib.skill[name] && lib.skill[name].nobracket) {

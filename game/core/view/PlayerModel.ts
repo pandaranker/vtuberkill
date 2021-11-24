@@ -896,7 +896,7 @@ class PlayerModel extends HTMLDivElementProxy {
         var mod2 = game.checkMod(this, to, 'unchanged', 'inRangeOf', to);
         if (mod2 != 'unchanged') return mod2;
         if (this.getAttackRange() < 1) return false;
-        let m, n = 1, i;
+        let m, n = 1;
         var fxy, txy;
         if (game.chess) {
             fxy = this.getXY();
@@ -905,12 +905,13 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         else if (to.isMin(true) || this.isMin(true)) { }
         else {
-            var length = game.players.length;
-            var totalPopulation = game.players.length + game.dead.length + 1;
-            for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
-                if (this.nextSeat != to) {
-                    let player = this.nextSeat;
-                    if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true)) n++;
+            let length = game.players.length;
+            let totalPopulation = game.players.length + game.dead.length + 1;
+            let cur = this as PlayerModel
+            for (let iwhile = 0; iwhile < totalPopulation; iwhile++) {
+                if (cur.nextSeat != to) {
+                    cur = cur.nextSeat;
+                    if (cur.isAlive() && !cur.isOut() && !cur.hasSkill('undist') && !cur.isMin(true)) n++;
                 }
                 else {
                     break;
@@ -921,8 +922,8 @@ class PlayerModel extends HTMLDivElementProxy {
             }
             if (this.isDead()) length++;
             if (to.isDead()) length++;
-            var left = this.hasSkillTag('left_hand');
-            var right = this.hasSkillTag('right_hand');
+            let left = this.hasSkillTag('left_hand');
+            let right = this.hasSkillTag('right_hand');
             if (left === right) n = Math.min(n, length - n);
             else if (left == true) n = length - n;
         }
@@ -9011,7 +9012,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} font 如果为true，`damage div`添加类`normal-font`；如果为false或未指定，使用伤害默认字体大小
      * @param {?boolean} nobroadcast 如果为true或未指定，调用`game.broadcast`广播；如果为false，仅在本机
      */
-    $damagepop(num, nature, font, nobroadcast) {
+    $damagepop(num?, nature?, font?, nobroadcast?) {
         if (typeof num == 'number' || typeof num == 'string') {
             game.addVideo('damagepop', this, [num, nature, font]);
             if (nobroadcast !== false) game.broadcast(function (player, num, nature, font) {
@@ -9053,6 +9054,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }, 500);
         }
     }
+    _chesstransform:[number,number]
     $damage(source) {
         if (get.itemtype(source) == 'player') {
             game.addVideo('damage', this, source.dataset.position);

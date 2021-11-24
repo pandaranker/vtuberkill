@@ -68,7 +68,8 @@ window.noname_source_list=[
 	'game/source.js',
 	'game/update.js',
 	// 'game/module.js',
-		
+
+	'game/core/base/EventModel.js',
 	'game/core/base/Status_Event.js',
 	'game/core/content/content.js',
 	'game/core/skill/skill.js',

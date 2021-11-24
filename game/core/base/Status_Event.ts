@@ -12,6 +12,8 @@
 // var trigger = event._trigger;
 // var result = event._result;
 
+import EventModel from "./EventModel";
+
 // var keys = ['step','player','source','target','targets','card','cards','_trigger','_result','num','skill']
 // var event = null
 // var step = null
@@ -90,7 +92,7 @@ interface State_Event {
     parent: Status_Event | null;
     [prop: string]: any;
 }
-class Status_Event implements State_Event{
+class Status_Event extends EventModel implements State_Event{
     static event:Status_Event;
     _LinkChild:Status_Event[] = [];
     _LinkAfter:Status_Event[] = [];
@@ -126,7 +128,9 @@ class Status_Event implements State_Event{
     }
     //赋初始值
     constructor(evt:{[prop in keyof State_Event]?:State_Event[prop]}){
+        super(evt.name)
         this.parent = Status_Event.event || null;
+        this.origin = evt;
         Status_Event.event = this;
         for(let v in evt){
             this[v] = evt[v];

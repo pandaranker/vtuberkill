@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.103.18',
+	version:'1.9.103.19',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.103.18微型更新：紧急修复记录bug`,
+		`1.9.103.19微型更新：修复攻击范围判断bug`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		`注意：安卓客户端与最新版本之间可能存在兼容性问题，请勿更新，等待下个版本进行修复`,
 		``,
@@ -12,16 +12,14 @@ window.noname_update={
 		海洋特典角色（湊阿夸、笹木咲、向晚、星宫汐）、皇特典（绯赤艾莉欧、噶呜·古拉）`,
 	],
 	files:[
-		'image/character/Nekomasu.jpg',
-		'image/character/re_Nekomasu.jpg',
-		'image/character/Xiaorou.jpg',
+		// 'image/character/Xiaorou.jpg',
 
-		'character/Beginner.js',
-		'character/hololive.js',
-		'character/clubs.js',
-		'character/emperor.js',
-		'character/nijisanji.js',
-		'character/vtuber.js',
+		// 'character/Beginner.js',
+		// 'character/hololive.js',
+		// 'character/clubs.js',
+		// 'character/emperor.js',
+		// 'character/nijisanji.js',
+		// 'character/vtuber.js',
 		'character/yuzu.js',
 		'character/huajing.js',
 		'character/sololive.js',
@@ -57,9 +55,10 @@ window.noname_update={
 		'mode/versus.js',
 		'mode/boss.js',
 
-		'game/game.js',
 		// 'game/module.js',
-		
+		'game/game.js',
+
+		'game/core/base/EventModel.js',
 		'game/core/base/Status_Event.js',
 		'game/core/content/content.js',
 		'game/core/skill/skill.js',

@@ -812,7 +812,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return mod2;
             if (this.getAttackRange() < 1)
                 return false;
-            let m, n = 1, i;
+            let m, n = 1;
             var fxy, txy;
             if (game.chess) {
                 fxy = this.getXY();
@@ -821,12 +821,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             else if (to.isMin(true) || this.isMin(true)) { }
             else {
-                var length = game.players.length;
-                var totalPopulation = game.players.length + game.dead.length + 1;
-                for (var iwhile = 0; iwhile < totalPopulation; iwhile++) {
-                    if (this.nextSeat != to) {
-                        let player = this.nextSeat;
-                        if (player.isAlive() && !player.isOut() && !player.hasSkill('undist') && !player.isMin(true))
+                let length = game.players.length;
+                let totalPopulation = game.players.length + game.dead.length + 1;
+                let cur = this;
+                for (let iwhile = 0; iwhile < totalPopulation; iwhile++) {
+                    if (cur.nextSeat != to) {
+                        cur = cur.nextSeat;
+                        if (cur.isAlive() && !cur.isOut() && !cur.hasSkill('undist') && !cur.isMin(true))
                             n++;
                     }
                     else {
@@ -841,8 +842,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     length++;
                 if (to.isDead())
                     length++;
-                var left = this.hasSkillTag('left_hand');
-                var right = this.hasSkillTag('right_hand');
+                let left = this.hasSkillTag('left_hand');
+                let right = this.hasSkillTag('right_hand');
                 if (left === right)
                     n = Math.min(n, length - n);
                 else if (left == true)

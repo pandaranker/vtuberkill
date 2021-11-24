@@ -1,19 +1,25 @@
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./EventModel"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    class Status_Event {
+    const EventModel_1 = __importDefault(require("./EventModel"));
+    class Status_Event extends EventModel_1.default {
         constructor(evt) {
+            super(evt.name);
             this._LinkChild = [];
             this._LinkAfter = [];
             this.parent = Status_Event.event || null;
+            this.origin = evt;
             Status_Event.event = this;
             for (let v in evt) {
                 this[v] = evt[v];

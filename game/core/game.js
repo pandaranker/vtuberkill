@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/Status_Event"], factory);
+        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/Status_Event", "./base/EventModel"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -35,6 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const { _status, lib, game, ui, get, ai, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
     const Status_Event_1 = __importDefault(require("./base/Status_Event"));
+    const EventModel_1 = __importDefault(require("./base/EventModel"));
     mixin(game, {
         showPlayerCard: function (event, target, directh, type, callback) {
             if (!event.dialog)
@@ -3825,26 +3826,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('createTrigger');
         },
         createEvent: function (name, trigger, triggerevent) {
-            var next = {
-                name: name,
-                step: 0,
-                finished: false,
-                next: [],
-                after: [],
-                custom: {
-                    add: {},
-                    replace: {}
-                },
-                _aiexclude: [],
-                _notrigger: [],
-                _result: {},
-                _set: [],
-            };
+            var next = new EventModel_1.default(name);
             if (trigger !== false && !game.online)
                 next._triggered = 0;
-            for (var i in lib.element.event) {
-                next[i] = lib.element.event[i];
-            }
             (triggerevent || _status.event).next.push(next);
             return next;
         },

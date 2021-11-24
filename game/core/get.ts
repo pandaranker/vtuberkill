@@ -2,6 +2,7 @@
 import * as _context from './_context';
 const {_status, lib, game, ui, get, mixin} = _context;
 import PlayerModel from './view/PlayerModel';
+import EventModel from './base/EventModel';
 /**
  * 游戏工具函数库，对游戏中一些常用操作(查询，选择，转换，判断等)进行了封装
  * @namespace get
@@ -1450,7 +1451,7 @@ mixin(get, /**@lends module:core.get */ {
                 if (i == '_trigger') {
                     if (level !== false) item2[i] = get.eventInfoOL(item[i], false);
                 }
-                else if (lib.element.event[i] || i == 'content' || get.itemtype(item[i]) == 'event') continue;
+                else if (EventModel.prototype[i] || i == 'content' || get.itemtype(item[i]) == 'event') continue;
                 else item2[i] = get.stringifiedResult(item[i], level - 1);
             }
             return '_noname_event:' + JSON.stringify(item2);
@@ -1466,7 +1467,7 @@ mixin(get, /**@lends module:core.get */ {
             for (let i in evt) {
                 evt[i] = get.parsedResult(evt[i]);
             }
-            for (let i in lib.element.event) evt[i] = lib.element.event[i];
+            for (let i in EventModel.prototype)if(EventModel.prototype[i] instanceof Function) evt[i] = EventModel.prototype[i];
         }
         catch (e) {
             console.log(e);
@@ -1783,7 +1784,7 @@ mixin(get, /**@lends module:core.get */ {
         }
         if(obj instanceof PlayerModel) return 'player';
         if (get.is.object(obj)) {
-            if (obj.isMine == lib.element.event.isMine) return 'event';
+            if (obj.isMine == EventModel.prototype.isMine) return 'event';
         }
     },
     equipNum: function (card) {
@@ -3898,7 +3899,6 @@ mixin(get, /**@lends module:core.get */ {
                         }
                         for(let v of uiintro.getElementsByTagName('span')){
                             v.link = v.dataset.introlink
-                            console.log(v,v.dataset,v.dataset.introLink,v.link)
                             if(v.classList.contains('iText'))   lib.setIntro(v)
                         }
                     }
@@ -3999,7 +3999,6 @@ mixin(get, /**@lends module:core.get */ {
         }
         else if (node.classList.contains('iText')) {
             var name = node.link;
-            console.log(node,name)
             if (lib.translate[name + '_info']) {
                 translation = lib.translate[name + '_ab'] || get.translation(name).slice(0, 5);
                 if (lib.skill[name] && lib.skill[name].nobracket) {
