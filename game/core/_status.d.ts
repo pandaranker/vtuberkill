@@ -89,16 +89,20 @@ declare type _status_type = {
     countDown:NodeJS.Timeout
     /**牌堆计数 */
     cardPileNum:number
+    /**ip地址 */
+    ip:number
     /**源模式 */
     sourcemode:string
     /**联机形象 */
     onlinenickname:string
     onlineavatar:string
     /**扩展说明文本 */
-    extensionChangeLog:string
+    extensionChangeLog:string[]
     extension:string
     evaluatingExtension:boolean
-
+    /**摸光牌堆判定 */
+    maxShuffle:number
+    maxShuffleCheck:()=>string
     /**金币扩展 */
     coin:number
     coinCoeff:number

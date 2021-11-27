@@ -1,3 +1,7 @@
+import { type } from "os"
+import CardModel from "../core/view/CardModel"
+// import PlayerModel from "../core/view/PlayerModel"
+
 declare global {
 
     //模块结构
@@ -8,6 +12,8 @@ declare global {
     type AObject = {[propName: string]: Array<string>}
     type Keymap = {[propName: string]: string | Array<string>}
     type Aimap = {[propName: string]: string | Array<string> | number | Keymap}
+    type St = {[propName: string]: number}
+    type Stat = { card: St, skill: St, isMe?:boolean}
     type Statmap = {judges?:{viewAs?}[],handcards?:{gaintag?}[],[propName: string]: string | Array<string> | number | boolean}
     type Dialogword = Array<Key>
     type Charaword = Array<>
@@ -43,8 +49,8 @@ declare global {
     //常用变量结构
     var player: PlayerModel, source: PlayerModel | string, target: PlayerModel
     var targets: PlayerModel[]
-    var card: Object
-    var cards: Object[]
+    var card: CardModel
+    var cards: CardModel[]
     var trigger:Status_Event
     var galgame: { sce(string): void }
     var targets: PlayerModel[]
@@ -97,9 +103,15 @@ declare global {
         onClickIdentity?
     }
     interface ChildNode{
-        innerHTML
+        innerHTML:string
         setBackgroundImage
+        delete
         style
+        classList?:DOMTokenList
+        name?:string
+        viewAs?:string
+        tempJudge?:string
+        markidentifer?
     }
     //扩展的类
     class JSZip {

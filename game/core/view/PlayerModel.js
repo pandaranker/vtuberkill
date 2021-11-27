@@ -433,22 +433,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return true;
             return false;
         }
-        chooseShengjie() {
+        chooseShengjie(...args) {
             let next = game.createEvent('chooseShengjie');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards')
-                    next.materials = arguments[i];
-                else if (typeof arguments[i] == 'boolean')
-                    next.forced = arguments[i];
-                else if (typeof arguments[i] == 'string')
-                    next.prompt = arguments[i];
-                else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number')
-                    next.select = arguments[i];
-                else if (typeof arguments[i] == 'function')
-                    next.filterProduct = arguments[i];
-                else if (typeof arguments[i] == 'function')
-                    next.filterMaterial = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards')
+                    next.materials = i;
+                else if (typeof i == 'boolean')
+                    next.forced = i;
+                else if (typeof i == 'string')
+                    next.prompt = i;
+                else if (get.itemtype(i) == 'select' || typeof i == 'number')
+                    next.select = i;
+                else if (typeof i == 'function')
+                    next.filterProduct = i;
+                else if (typeof i == 'function')
+                    next.filterMaterial = i;
             }
             if (!this.canShengjie.apply(this, arguments))
                 return;
@@ -459,7 +459,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('chooseShengjie');
             return next;
         }
-        canShengjie() {
+        canShengjie(...args) {
             if (lib.configOL.protect_beginner)
                 return false;
             let list = [];
@@ -471,13 +471,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     list.push(lib.cardPack.mode_derivation[i]);
             }
             var materials, select, filterProduct, bool = false;
-            for (let i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards')
-                    materials = arguments[i];
-                else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number')
-                    select = arguments[i];
-                else if (typeof arguments[i] == 'function')
-                    filterProduct = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards')
+                    materials = i;
+                else if (get.itemtype(i) == 'select' || typeof i == 'number')
+                    select = i;
+                else if (typeof i == 'function')
+                    filterProduct = i;
             }
             if (filterProduct)
                 list = list.filter(filterProduct);
@@ -1954,7 +1954,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 else {
                     this.node.count.dataset.condition = 'none';
                 }
-                this.node.count.innerHTML = numh;
+                this.node.count.innerHTML = numh.toString();
             }
             if (this.updates) {
                 for (var i = 0; i < this.updates.length; i++) {
@@ -2761,7 +2761,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('emptyEvent');
             return next;
         }
-        chooseToUse(use) {
+        chooseToUse(use, ...args) {
             let next = game.createEvent('chooseToUse');
             next.player = this;
             if (arguments.length == 1 && get.objtype(arguments[0]) == 'object') {
@@ -2770,22 +2770,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             else {
-                for (let i = 0; i < arguments.length; i++) {
-                    if (typeof arguments[i] == 'number' || get.itemtype(arguments[i]) == 'select') {
-                        next.selectTarget = arguments[i];
+                for (let i of args) {
+                    if (typeof i == 'number' || get.itemtype(i) == 'select') {
+                        next.selectTarget = i;
                     }
-                    else if ((typeof arguments[i] == 'object' && arguments[i]) || typeof arguments[i] == 'function') {
-                        if (get.itemtype(arguments[i]) == 'player' || next.filterCard) {
-                            next.filterTarget = arguments[i];
+                    else if ((typeof i == 'object' && i) || typeof i == 'function') {
+                        if (get.itemtype(i) == 'player' || next.filterCard) {
+                            next.filterTarget = i;
                         }
                         else
-                            next.filterCard = arguments[i];
+                            next.filterCard = i;
                     }
-                    else if (typeof arguments[i] == 'boolean') {
-                        next.forced = arguments[i];
+                    else if (typeof i == 'boolean') {
+                        next.forced = i;
                     }
-                    else if (typeof arguments[i] == 'string') {
-                        next.prompt = arguments[i];
+                    else if (typeof i == 'string') {
+                        next.prompt = i;
                     }
                 }
             }
@@ -2816,38 +2816,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        chooseToRespond() {
+        chooseToRespond(...args) {
             var next = game.createEvent('chooseToRespond');
             next.player = this;
             var filter;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    next.selectCard = [arguments[i], arguments[i]];
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    next.selectCard = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectCard = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectCard = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    next.position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    next.position = i;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.filterCard)
-                        next.ai = arguments[i];
+                        next.ai = i;
                     else
-                        next.filterCard = arguments[i];
+                        next.filterCard = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i]) {
-                    next.filterCard = get.filter(arguments[i]);
-                    filter = arguments[i];
+                else if (typeof i == 'object' && i) {
+                    next.filterCard = get.filter(i);
+                    filter = i;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     next.nosource = true;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
             }
             if (next.filterCard == undefined)
@@ -2888,41 +2888,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        chooseToDiscard() {
+        chooseToDiscard(...args) {
             var next = game.createEvent('chooseToDiscard');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    next.selectCard = [arguments[i], arguments[i]];
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    next.selectCard = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectCard = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectCard = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'dialog') {
-                    next.dialog = arguments[i];
+                else if (get.itemtype(i) == 'dialog') {
+                    next.dialog = i;
                     next.prompt = false;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    next.position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    next.position = i;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.filterCard)
-                        next.ai = arguments[i];
+                        next.ai = i;
                     else
-                        next.filterCard = arguments[i];
+                        next.filterCard = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i]) {
-                    next.filterCard = get.filter(arguments[i]);
+                else if (typeof i == 'object' && i) {
+                    next.filterCard = get.filter(i);
                 }
-                else if (typeof arguments[i] == 'string') {
-                    get.evtprompt(next, arguments[i]);
+                else if (typeof i == 'string') {
+                    get.evtprompt(next, i);
                 }
-                if (arguments[i] === null) {
-                    for (var i = 0; i < arguments.length; i++) {
-                        console.log(arguments[i]);
+                if (i === null) {
+                    for (let j of args) {
+                        console.log(j);
                     }
                 }
             }
@@ -3026,17 +3026,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('discoverSkill');
             next.list = list;
             for (var i = 1; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.num = arguments[i];
+                else if (typeof i == 'number') {
+                    next.num = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
-                else if (typeof arguments[i] === 'function') {
-                    next.ai = arguments[i];
+                else if (typeof i === 'function') {
+                    next.ai = i;
                 }
             }
         }
@@ -3046,11 +3046,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('chooseSkill');
             next.target = target;
             for (var i = 1; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                if (typeof i == 'string') {
+                    next.prompt = i;
                 }
-                else if (typeof arguments[i] == 'function') {
-                    next.func = arguments[i];
+                else if (typeof i == 'function') {
+                    next.func = i;
                 }
             }
         }
@@ -3061,60 +3061,60 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.list = list || lib.inpile.slice(0);
             next.forced = true;
             for (var i = 1; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    switch (arguments[i]) {
+                else if (typeof i == 'string') {
+                    switch (i) {
                         case 'use':
                             next.use = true;
                             break;
                         case 'nogain':
                             next.nogain = true;
                             break;
-                        default: next.prompt = arguments[i];
+                        default: next.prompt = i;
                     }
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.num = arguments[i];
+                else if (typeof i == 'number') {
+                    next.num = i;
                 }
-                else if (typeof arguments[i] === 'function') {
-                    next.ai = arguments[i];
+                else if (typeof i === 'function') {
+                    next.ai = i;
                 }
             }
             return next;
         }
-        chooseCardButton() {
+        chooseCardButton(...args) {
             var cards, prompt, forced, select;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards')
-                    cards = arguments[i];
-                else if (typeof arguments[i] == 'boolean')
-                    forced = arguments[i];
-                else if (typeof arguments[i] == 'string')
-                    prompt = arguments[i];
-                else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number')
-                    select = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards')
+                    cards = i;
+                else if (typeof i == 'boolean')
+                    forced = i;
+                else if (typeof i == 'string')
+                    prompt = i;
+                else if (get.itemtype(i) == 'select' || typeof i == 'number')
+                    select = i;
             }
             if (prompt == undefined)
                 prompt = '请选择卡牌';
             return this.chooseButton(forced, select, 'hidden', [prompt, cards, 'hidden']);
         }
-        chooseVCardButton() {
+        chooseVCardButton(...args) {
             var list, prompt, forced, select, notype = false;
-            for (var i = 0; i < arguments.length; i++) {
-                if (Array.isArray(arguments[i])) {
-                    list = arguments[i];
+            for (let i of args) {
+                if (Array.isArray(i)) {
+                    list = i;
                 }
-                else if (arguments[i] == 'notype') {
+                else if (i == 'notype') {
                     notype = true;
                 }
-                else if (typeof arguments[i] == 'boolean')
-                    forced = arguments[i];
-                else if (typeof arguments[i] == 'string')
-                    prompt = arguments[i];
-                else if (get.itemtype(arguments[i]) == 'select' || typeof arguments[i] == 'number')
-                    select = arguments[i];
+                else if (typeof i == 'boolean')
+                    forced = i;
+                else if (typeof i == 'string')
+                    prompt = i;
+                else if (get.itemtype(i) == 'select' || typeof i == 'number')
+                    select = i;
             }
             for (var i = 0; i < list.length; i++) {
                 list[i] = [notype ? '' : (get.subtype(list[i]) || get.type(list[i])), '', list[i]];
@@ -3125,28 +3125,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         chooseButton(...args) {
             var next = game.createEvent('chooseButton');
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'dialog') {
-                    next.dialog = arguments[i];
+                else if (get.itemtype(i) == 'dialog') {
+                    next.dialog = i;
                     next.closeDialog = true;
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectButton = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectButton = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.selectButton = [arguments[i], arguments[i]];
+                else if (typeof i == 'number') {
+                    next.selectButton = [i, i];
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.ai)
-                        next.filterButton = arguments[i];
+                        next.filterButton = i;
                     else
-                        next.ai = arguments[i];
+                        next.ai = i;
                 }
-                else if (Array.isArray(arguments[i])) {
-                    next.createDialog = arguments[i];
+                else if (Array.isArray(i)) {
+                    next.createDialog = i;
                 }
             }
             next.player = this;
@@ -3165,31 +3165,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.forceDie = true;
             return next;
         }
-        chooseButtonOL(list, callback, ai) {
+        chooseButtonOL(list, callback, ai, ...args) {
             var next = game.createEvent('chooseButtonOL');
             next.list = list;
             next.setContent('chooseButtonOL');
             next.ai = ai;
             next.callback = callback;
-            next._args = Array.from(arguments);
+            next._args = [...args];
             return next;
         }
-        chooseCardOL() {
+        chooseCardOL(...args) {
             var next = game.createEvent('chooseCardOL');
             next._args = [];
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'players') {
-                    next.list = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'players') {
+                    next.list = i.slice(0);
                 }
                 else {
-                    next._args.push(arguments[i]);
+                    next._args.push(i);
                 }
             }
             next.setContent('chooseCardOL');
             next._args.add('glow_result');
             return next;
         }
-        chooseCard(choose) {
+        chooseCard(choose, ...args) {
             var next = game.createEvent('chooseCard');
             next.player = this;
             if (arguments.length == 1 && get.is.object(choose)) {
@@ -3198,33 +3198,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             else {
-                for (let i = 0; i < arguments.length; i++) {
-                    if (typeof arguments[i] == 'number') {
-                        next.selectCard = [arguments[i], arguments[i]];
+                for (let i of args) {
+                    if (typeof i == 'number') {
+                        next.selectCard = [i, i];
                     }
-                    else if (get.itemtype(arguments[i]) == 'select') {
-                        next.selectCard = arguments[i];
+                    else if (get.itemtype(i) == 'select') {
+                        next.selectCard = i;
                     }
-                    else if (typeof arguments[i] == 'boolean') {
-                        next.forced = arguments[i];
+                    else if (typeof i == 'boolean') {
+                        next.forced = i;
                     }
-                    else if (get.itemtype(arguments[i]) == 'position') {
-                        next.position = arguments[i];
+                    else if (get.itemtype(i) == 'position') {
+                        next.position = i;
                     }
-                    else if (typeof arguments[i] == 'function') {
+                    else if (typeof i == 'function') {
                         if (next.filterCard)
-                            next.ai = arguments[i];
+                            next.ai = i;
                         else
-                            next.filterCard = arguments[i];
+                            next.filterCard = i;
                     }
-                    else if (typeof arguments[i] == 'object' && arguments[i]) {
-                        next.filterCard = get.filter(arguments[i]);
+                    else if (typeof i == 'object' && i) {
+                        next.filterCard = get.filter(i);
                     }
-                    else if (arguments[i] == 'glow_result') {
+                    else if (i == 'glow_result') {
                         next.glow_result = true;
                     }
-                    else if (typeof arguments[i] == 'string') {
-                        get.evtprompt(next, arguments[i]);
+                    else if (typeof i == 'string') {
+                        get.evtprompt(next, i);
                     }
                 }
             }
@@ -3238,54 +3238,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        chooseUseTarget() {
+        chooseUseTarget(...args) {
             var next = game.createEvent('chooseUseTarget');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'players') {
-                    next.targets = arguments[i];
+                else if (get.itemtype(i) == 'players') {
+                    next.targets = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.targets = [arguments[i]];
+                else if (get.itemtype(i) == 'player') {
+                    next.targets = [i];
                 }
-                else if (get.is.object(arguments[i]) && arguments[i].name) {
-                    next.card = arguments[i];
+                else if (get.is.object(i) && i.name) {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    if (arguments[i] == 'nopopup') {
+                else if (typeof i == 'string') {
+                    if (i == 'nopopup') {
                         next.nopopup = true;
                     }
-                    else if (arguments[i] == 'noanimate') {
+                    else if (i == 'noanimate') {
                         next.animate = false;
                     }
-                    else if (arguments[i] == 'nothrow') {
+                    else if (i == 'nothrow') {
                         next.throw = false;
                     }
-                    else if (arguments[i] == 'nodistance') {
+                    else if (i == 'nodistance') {
                         next.nodistance = true;
                     }
-                    else if (arguments[i] == 'noTargetDelay') {
+                    else if (i == 'noTargetDelay') {
                         next.noTargetDelay = true;
                     }
-                    else if (arguments[i] == 'nodelayx') {
+                    else if (i == 'nodelayx') {
                         next.nodelayx = true;
                     }
-                    else if (lib.card[arguments[i]] && !next.card) {
-                        next.card = { name: arguments[i], isCard: true };
+                    else if (lib.card[i] && !next.card) {
+                        next.card = { name: i, isCard: true };
                     }
                     else
-                        get.evtprompt(next, arguments[i]);
+                        get.evtprompt(next, i);
                 }
-                else if (arguments[i] === true) {
+                else if (i === true) {
                     next.forced = true;
                 }
-                else if (arguments[i] === false) {
+                else if (i === false) {
                     next.addCount = false;
                 }
             }
@@ -3307,31 +3307,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        chooseTarget() {
+        chooseTarget(...args) {
             var next = game.createEvent('chooseTarget');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    next.selectTarget = [arguments[i], arguments[i]];
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    next.selectTarget = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectTarget = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectTarget = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'dialog') {
-                    next.dialog = arguments[i];
+                else if (get.itemtype(i) == 'dialog') {
+                    next.dialog = i;
                     next.prompt = false;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.filterTarget)
-                        next.ai = arguments[i];
+                        next.ai = i;
                     else
-                        next.filterTarget = arguments[i];
+                        next.filterTarget = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    get.evtprompt(next, arguments[i]);
+                else if (typeof i == 'string') {
+                    get.evtprompt(next, i);
                 }
             }
             if (next.filterTarget == undefined)
@@ -3379,28 +3379,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        chooseControlList() {
+        chooseControlList(...args) {
             var list = [];
             var prompt = null;
             var forced = 'cancel2';
             var func = null;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'string') {
+            for (let i of args) {
+                if (typeof i == 'string') {
                     if (!prompt) {
-                        prompt = arguments[i];
+                        prompt = i;
                     }
                     else {
-                        list.push(arguments[i]);
+                        list.push(i);
                     }
                 }
-                else if (Array.isArray(arguments[i])) {
-                    list = arguments[i];
+                else if (Array.isArray(i)) {
+                    list = i;
                 }
-                else if (arguments[i] === true) {
+                else if (i === true) {
                     forced = null;
                 }
-                else if (typeof arguments[i] == 'function') {
-                    func = arguments[i];
+                else if (typeof i == 'function') {
+                    func = i;
                 }
             }
             return this.chooseControl(forced, func).set('choiceList', list).set('prompt', prompt);
@@ -3408,29 +3408,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         chooseControl(...args) {
             var next = game.createEvent('chooseControl');
             next.controls = [];
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'string') {
-                    if (arguments[i] == 'dialogcontrol') {
+            for (let i of args) {
+                if (typeof i == 'string') {
+                    if (i == 'dialogcontrol') {
                         next.dialogcontrol = true;
                     }
-                    else if (arguments[i] == 'seperate') {
+                    else if (i == 'seperate') {
                         next.seperate = true;
                     }
                     else {
-                        next.controls.push(arguments[i]);
+                        next.controls.push(i);
                     }
                 }
-                else if (Array.isArray(arguments[i])) {
-                    next.controls = next.controls.concat(arguments[i]);
+                else if (Array.isArray(i)) {
+                    next.controls = next.controls.concat(i);
                 }
-                else if (typeof arguments[i] == 'function') {
-                    next.ai = arguments[i];
+                else if (typeof i == 'function') {
+                    next.ai = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.choice = arguments[i];
+                else if (typeof i == 'number') {
+                    next.choice = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'dialog') {
-                    next.dialog = arguments[i];
+                else if (get.itemtype(i) == 'dialog') {
+                    next.dialog = i;
                 }
             }
             next.player = this;
@@ -3441,20 +3441,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.forceDie = true;
             return next;
         }
-        chooseBool() {
+        chooseBool(...args) {
             var next = game.createEvent('chooseBool');
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'boolean') {
-                    next.choice = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'boolean') {
+                    next.choice = i;
                 }
-                else if (typeof arguments[i] == 'function') {
-                    next.ai = arguments[i];
+                else if (typeof i == 'function') {
+                    next.ai = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    get.evtprompt(next, arguments[i]);
+                else if (typeof i == 'string') {
+                    get.evtprompt(next, i);
                 }
-                else if (get.itemtype(arguments[i]) == 'dialog') {
-                    next.dialog = arguments[i];
+                else if (get.itemtype(i) == 'dialog') {
+                    next.dialog = i;
                 }
                 if (next.choice == undefined)
                     next.choice = true;
@@ -3465,26 +3465,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.forceDie = true;
             return next;
         }
-        chooseDrawRecover() {
+        chooseDrawRecover(...args) {
             var next = game.createEvent('chooseDrawRecover', false);
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
+            for (let i of args) {
+                if (typeof i == 'number') {
                     if (typeof next.num1 == 'number') {
-                        next.num2 = arguments[i];
+                        next.num2 = i;
                     }
                     else {
-                        next.num1 = arguments[i];
+                        next.num1 = i;
                     }
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
-                else if (typeof arguments[i] == 'function') {
-                    next.ai = arguments[i];
+                else if (typeof i == 'function') {
+                    next.ai = i;
                 }
             }
             if (typeof next.num1 != 'number') {
@@ -3496,39 +3496,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('chooseDrawRecover');
             return next;
         }
-        choosePlayerCard() {
+        choosePlayerCard(...args) {
             var next = game.createEvent('choosePlayerCard');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.target = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.target = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.selectButton = [arguments[i], arguments[i]];
+                else if (typeof i == 'number') {
+                    next.selectButton = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectButton = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectButton = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    next.position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    next.position = i;
                 }
-                else if (arguments[i] == 'visible') {
+                else if (i == 'visible') {
                     next.visible = true;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.ai)
-                        next.filterButton = arguments[i];
+                        next.filterButton = i;
                     else
-                        next.ai = arguments[i];
+                        next.ai = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i]) {
-                    next.filterButton = get.filter(arguments[i]);
+                else if (typeof i == 'object' && i) {
+                    next.filterButton = get.filter(i);
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
             }
             if (next.filterButton == undefined)
@@ -3548,39 +3548,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        discardPlayerCard() {
+        discardPlayerCard(...args) {
             var next = game.createEvent('discardPlayerCard');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.target = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.target = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.selectButton = [arguments[i], arguments[i]];
+                else if (typeof i == 'number') {
+                    next.selectButton = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectButton = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectButton = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    next.position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    next.position = i;
                 }
-                else if (arguments[i] == 'visible') {
+                else if (i == 'visible') {
                     next.visible = true;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.ai)
-                        next.filterButton = arguments[i];
+                        next.filterButton = i;
                     else
-                        next.ai = arguments[i];
+                        next.ai = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i]) {
-                    next.filterButton = get.filter(arguments[i]);
+                else if (typeof i == 'object' && i) {
+                    next.filterButton = get.filter(i);
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
             }
             if (next.filterButton == undefined)
@@ -3600,42 +3600,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._args = Array.from(arguments);
             return next;
         }
-        gainPlayerCard() {
+        gainPlayerCard(...args) {
             var next = game.createEvent('gainPlayerCard');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.target = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.target = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.selectButton = [arguments[i], arguments[i]];
+                else if (typeof i == 'number') {
+                    next.selectButton = [i, i];
                 }
-                else if (get.itemtype(arguments[i]) == 'select') {
-                    next.selectButton = arguments[i];
+                else if (get.itemtype(i) == 'select') {
+                    next.selectButton = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    next.position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    next.position = i;
                 }
-                else if (arguments[i] == 'visible') {
+                else if (i == 'visible') {
                     next.visible = true;
                 }
-                else if (arguments[i] == 'visibleMove') {
+                else if (i == 'visibleMove') {
                     next.visibleMove = true;
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.ai)
-                        next.filterButton = arguments[i];
+                        next.filterButton = i;
                     else
-                        next.ai = arguments[i];
+                        next.ai = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i]) {
-                    next.filterButton = get.filter(arguments[i]);
+                else if (typeof i == 'object' && i) {
+                    next.filterButton = get.filter(i);
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.prompt = arguments[i];
+                else if (typeof i == 'string') {
+                    next.prompt = i;
                 }
             }
             if (next.filterButton == undefined)
@@ -3744,29 +3744,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             });
         }
-        moveCard() {
+        moveCard(...args) {
             var next = game.createEvent('moveCard');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'boolean') {
-                    next.forced = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'boolean') {
+                    next.forced = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    get.evtprompt(next, arguments[i]);
+                else if (typeof i == 'string') {
+                    get.evtprompt(next, i);
                 }
-                else if (typeof arguments[i] == 'function') {
+                else if (typeof i == 'function') {
                     if (next.sourceFilterTarget)
-                        next.ai = arguments[i];
+                        next.ai = i;
                     else
-                        next.sourceFilterTarget = arguments[i];
+                        next.sourceFilterTarget = i;
                 }
-                else if (Array.isArray(arguments[i])) {
-                    for (var j = 0; j < arguments[i].length; j++) {
-                        if (typeof arguments[i][j] != 'string')
+                else if (Array.isArray(i)) {
+                    for (var j = 0; j < i.length; j++) {
+                        if (typeof i[j] != 'string')
                             break;
                     }
-                    if (j == arguments[i].length) {
-                        next.targetprompt = arguments[i];
+                    if (j == i.length) {
+                        next.targetprompt = i;
                     }
                 }
             }
@@ -3818,35 +3818,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var next = game.createEvent('useCard');
             next.player = this;
             next.num = 0;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'players') {
-                    next.targets = arguments[i];
+                else if (get.itemtype(i) == 'players') {
+                    next.targets = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.targets = [arguments[i]];
+                else if (get.itemtype(i) == 'player') {
+                    next.targets = [i];
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name) {
-                    next.card = arguments[i];
+                else if (typeof i == 'object' && i && i.name) {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    if (arguments[i] == 'noai') {
+                else if (typeof i == 'string') {
+                    if (i == 'noai') {
                         next.noai = true;
                     }
-                    else if (arguments[i] == 'nowuxie') {
+                    else if (i == 'nowuxie') {
                         next.nowuxie = true;
                     }
                     else {
-                        next.skill = arguments[i];
+                        next.skill = i;
                     }
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.addCount = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.addCount = i;
                 }
             }
             if (next.cards == undefined) {
@@ -3906,21 +3906,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var next = game.createEvent('useSkill');
             next.player = this;
             next.num = 0;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'players') {
-                    next.targets = arguments[i];
+                else if (get.itemtype(i) == 'players') {
+                    next.targets = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.skill = arguments[i];
+                else if (typeof i == 'string') {
+                    next.skill = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.addCount = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.addCount = i;
                 }
             }
             if (next.cards == undefined) {
@@ -3980,28 +3980,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         draw(...args) {
             var next = game.createEvent('draw');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.num = arguments[i];
+                else if (typeof i == 'number') {
+                    next.num = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.animate = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.animate = i;
                 }
-                else if (arguments[i] == 'nodelay') {
+                else if (i == 'nodelay') {
                     next.animate = false;
                     next.$draw = true;
                 }
-                else if (arguments[i] == 'visible') {
+                else if (i == 'visible') {
                     next.visible = true;
                 }
-                else if (arguments[i] == 'bottom') {
+                else if (i == 'bottom') {
                     next.bottom = true;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].drawDeck != undefined) {
-                    next.drawDeck = arguments[i].drawDeck;
+                else if (typeof i == 'object' && i && i.drawDeck != undefined) {
+                    next.drawDeck = i.drawDeck;
                 }
             }
             if (next.num == undefined)
@@ -4017,15 +4017,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         }
         randomDiscard(...args) {
             var position = 'he', num = 1, delay = null;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    num = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    num = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    position = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    delay = arguments[i];
+                else if (typeof i == 'boolean') {
+                    delay = i;
                 }
             }
             var cards = this.getCards(position).randomGets(num);
@@ -4037,20 +4037,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return cards;
         }
-        randomGain() {
+        randomGain(...args) {
             var position = 'he', num = 1, target = null, line = false;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    num = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    num = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'position') {
-                    position = arguments[i];
+                else if (get.itemtype(i) == 'position') {
+                    position = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    target = arguments[i];
+                else if (get.itemtype(i) == 'player') {
+                    target = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    line = arguments[i];
+                else if (typeof i == 'boolean') {
+                    line = i;
                 }
             }
             if (target) {
@@ -4070,23 +4070,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var next = game.createEvent('discard');
             next.player = this;
             next.num = 0;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+                else if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.cards = [arguments[i]];
+                else if (get.itemtype(i) == 'card') {
+                    next.cards = [i];
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.animate = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.animate = i;
                 }
-                else if (get.objtype(arguments[i]) == 'div') {
-                    next.position = arguments[i];
+                else if (get.objtype(i) == 'div') {
+                    next.position = i;
                 }
-                else if (arguments[i] == 'notBySelf') {
+                else if (i == 'notBySelf') {
                     next.notBySelf = true;
                 }
             }
@@ -4095,30 +4095,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('discard');
             return next;
         }
-        respond() {
+        respond(...args) {
             var next = game.createEvent('respond');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+                else if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name) {
-                    next.card = arguments[i];
+                else if (typeof i == 'object' && i && i.name) {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'boolean')
-                    next.animate = arguments[i];
-                else if (arguments[i] == 'highlight')
+                else if (typeof i == 'boolean')
+                    next.animate = i;
+                else if (i == 'highlight')
                     next.highlight = true;
-                else if (arguments[i] == 'noOrdering')
+                else if (i == 'noOrdering')
                     next.noOrdering = true;
-                else if (typeof arguments[i] == 'string')
-                    next.skill = arguments[i];
+                else if (typeof i == 'string')
+                    next.skill = i;
             }
             if (next.cards == undefined) {
                 if (get.itemtype(next.card) == 'card') {
@@ -4252,30 +4252,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         gain(...args) {
             var next = game.createEvent('gain');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+                else if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.cards = [arguments[i]];
+                else if (get.itemtype(i) == 'card') {
+                    next.cards = [i];
                 }
-                else if (arguments[i] === 'log') {
+                else if (i === 'log') {
                     next.log = true;
                 }
-                else if (arguments[i] == 'fromStorage') {
+                else if (i == 'fromStorage') {
                     next.fromStorage = true;
                 }
-                else if (arguments[i] == 'bySelf') {
+                else if (i == 'bySelf') {
                     next.bySelf = true;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.animate = arguments[i];
+                else if (typeof i == 'string') {
+                    next.animate = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.delay = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.delay = i;
                 }
             }
             if (next.animate == 'gain2' || next.animate == 'draw2') {
@@ -4315,30 +4315,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var next = target.gain(cards, this);
             next.animate = visible ? 'give' : 'giveAuto';
         }
-        lose() {
+        lose(...args) {
             var next = game.createEvent('lose');
             next.player = this;
             next.forceDie = true;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+                else if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.cards = [arguments[i]];
+                else if (get.itemtype(i) == 'card') {
+                    next.cards = [i];
                 }
-                else if (get.objtype(arguments[i]) == 'div') {
-                    next.position = arguments[i];
+                else if (get.objtype(i) == 'div') {
+                    next.position = i;
                 }
-                else if (arguments[i] == 'toStorage') {
+                else if (i == 'toStorage') {
                     next.toStorage = true;
                 }
-                else if (arguments[i] == 'visible') {
+                else if (i == 'visible') {
                     next.visible = true;
                 }
-                else if (arguments[i] == 'insert') {
+                else if (i == 'insert') {
                     next.insert_card = true;
                 }
             }
@@ -4365,39 +4365,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             };
             return next;
         }
-        damage() {
+        damage(...args) {
             var next = game.createEvent('damage');
             next.player = this;
             var nocard, nosource;
             var event = _status.event;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.num = arguments[i];
+                else if (typeof i == 'number') {
+                    next.num = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+                else if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name) {
-                    next.card = arguments[i];
+                else if (typeof i == 'object' && i && i.name) {
+                    next.card = i;
                 }
-                else if (arguments[i] == 'nocard') {
+                else if (i == 'nocard') {
                     nocard = true;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
-                else if (arguments[i] == 'notrigger') {
+                else if (i == 'notrigger') {
                     next._triggered = null;
                     next.notrigger = true;
                 }
-                else if (get.itemtype(arguments[i]) == 'nature') {
-                    next.nature = arguments[i];
+                else if (get.itemtype(i) == 'nature') {
+                    next.nature = i;
                 }
             }
             if (next.card == undefined && !nocard)
@@ -4426,31 +4426,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             };
             return next;
         }
-        recover() {
+        recover(...args) {
             var next = game.createEvent('recover');
             next.player = this;
             var nocard, nosource;
             var event = _status.event;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'cards') {
-                    next.cards = arguments[i].slice(0);
+            for (let i of args) {
+                if (get.itemtype(i) == 'cards') {
+                    next.cards = i.slice(0);
                 }
-                else if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+                else if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+                else if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name) {
-                    next.card = arguments[i];
+                else if (typeof i == 'object' && i && i.name) {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'number') {
-                    next.num = arguments[i];
+                else if (typeof i == 'number') {
+                    next.num = i;
                 }
-                else if (arguments[i] == 'nocard') {
+                else if (i == 'nocard') {
                     nocard = true;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
             }
@@ -4490,17 +4490,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var nosource;
             var event = _status.event;
             next.num = 1;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] === 'number') {
-                    next.num = arguments[i];
+                else if (typeof i === 'number') {
+                    next.num = i;
                 }
-                else if (typeof arguments[i] === 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i === 'boolean') {
+                    next.forced = i;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
             }
@@ -4515,17 +4515,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var nosource;
             var event = _status.event;
             next.num = 1;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] === 'number') {
-                    next.num = arguments[i];
+            for (let i of args) {
+                if (typeof i === 'number') {
+                    next.num = i;
                 }
-                else if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+                else if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (typeof arguments[i] === 'boolean') {
-                    next.forced = arguments[i];
+                else if (typeof i === 'boolean') {
+                    next.forced = i;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
             }
@@ -4555,14 +4555,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('changeHujia');
             return next;
         }
-        getBuff() {
+        getBuff(...args) {
             var list = [1, 2, 3, 4, 5, 6];
             var nodelay = false;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    list.remove(arguments[i]);
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    list.remove(i);
                 }
-                else if (arguments[i] === false) {
+                else if (i === false) {
                     nodelay = true;
                 }
             }
@@ -4605,11 +4605,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         getDebuff(...args) {
             let list = [1, 2, 3, 4, 5, 6];
             var nodelay = false;
-            for (let i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'number') {
-                    list.remove(arguments[i]);
+            for (let i of args) {
+                if (typeof i == 'number') {
+                    list.remove(i);
                 }
-                else if (arguments[i] === false) {
+                else if (i === false) {
                     nodelay = true;
                 }
             }
@@ -4913,24 +4913,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 card.expired = false;
             }
         }
-        judge() {
+        judge(...args) {
             var next = game.createEvent('judge');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'card') {
-                    next.card = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'card') {
+                    next.card = i;
                 }
-                else if (typeof arguments[i] == 'string') {
-                    next.skill = arguments[i];
+                else if (typeof i == 'string') {
+                    next.skill = i;
                 }
-                else if (typeof arguments[i] == 'function') {
-                    next.judge = arguments[i];
+                else if (typeof i == 'function') {
+                    next.judge = i;
                 }
-                else if (typeof arguments[i] == 'boolean') {
-                    next.clearArena = arguments[i];
+                else if (typeof i == 'boolean') {
+                    next.clearArena = i;
                 }
-                else if (get.objtype(arguments[i]) == 'div') {
-                    next.position = arguments[i];
+                else if (get.objtype(i) == 'div') {
+                    next.position = i;
                 }
             }
             if (next.card && next.judge == undefined) {
@@ -4953,7 +4953,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.setContent('judge');
             return next;
         }
-        turnOver(bool) {
+        turnOver(bool, ...args) {
             if (typeof bool == 'boolean') {
                 if (bool) {
                     if (this.isTurnedOver())
@@ -4968,11 +4968,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.player = this;
             var nosource;
             var event = _status.event;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
             }
@@ -5028,7 +5028,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
         }
-        link(bool) {
+        link(bool, ...args) {
             if (typeof bool == 'boolean') {
                 if (bool) {
                     if (this.isLinked())
@@ -5043,11 +5043,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next.player = this;
             var nosource;
             var event = _status.event;
-            for (var i = 0; i < arguments.length; i++) {
-                if (get.itemtype(arguments[i]) == 'player') {
-                    next.source = arguments[i];
+            for (let i of args) {
+                if (get.itemtype(i) == 'player') {
+                    next.source = i;
                 }
-                else if (arguments[i] == 'nosource') {
+                else if (i == 'nosource') {
                     nosource = true;
                 }
             }
@@ -5714,27 +5714,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 _status.event.trigger('removeSubPlayer');
             }
         }
-        callSubPlayer() {
+        callSubPlayer(...args) {
             if (this.hasSkill('subplayer'))
                 return;
             var next = game.createEvent('callSubPlayer');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'string') {
-                    next.directresult = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'string') {
+                    next.directresult = i;
                 }
             }
             next.setContent('callSubPlayer');
             return next;
         }
-        toggleSubPlayer() {
+        toggleSubPlayer(...args) {
             if (!this.hasSkill('subplayer'))
                 return;
             var next = game.createEvent('toggleSubPlayer');
             next.player = this;
-            for (var i = 0; i < arguments.length; i++) {
-                if (typeof arguments[i] == 'string') {
-                    next.directresult = arguments[i];
+            for (let i of args) {
+                if (typeof i == 'string') {
+                    next.directresult = i;
                 }
             }
             next.setContent('toggleSubPlayer');
@@ -5764,14 +5764,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return list;
         }
         addSkillTrigger(skill, hidden, triggeronly) {
-            var info = lib.skill[skill];
+            let info = lib.skill[skill];
             if (!info)
                 return;
             if (typeof info.group == 'string') {
                 this.addSkillTrigger(info.group, hidden);
             }
             else if (Array.isArray(info.group)) {
-                for (var i = 0; i < info.group.length; i++) {
+                for (let i = 0; i < info.group.length; i++) {
                     this.addSkillTrigger(info.group[i], hidden);
                 }
             }
@@ -5781,7 +5781,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         game.addGlobalSkill(info.global, this);
                     }
                     else {
-                        for (var j = 0; j < info.global.length; j++) {
+                        for (let j = 0; j < info.global.length; j++) {
                             game.addGlobalSkill(info.global[j], this);
                         }
                     }
@@ -5794,8 +5794,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             if (info.trigger && this.playerid) {
-                var playerid = this.playerid;
-                var setTrigger = function (i, evt) {
+                let playerid = this.playerid;
+                let setTrigger = function (i, evt) {
                     if (i == 'global') {
                         if (!lib.hook.globaltrigger[evt]) {
                             lib.hook.globaltrigger[evt] = {};
@@ -5806,7 +5806,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.hook.globaltrigger[evt][playerid].add(skill);
                     }
                     else {
-                        var name = playerid + '_' + i + '_' + evt;
+                        let name = playerid + '_' + i + '_' + evt;
                         if (!lib.hook[name]) {
                             lib.hook[name] = [];
                         }
@@ -5814,12 +5814,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     lib.hookmap[evt] = true;
                 };
-                for (var i in info.trigger) {
+                for (let i in info.trigger) {
                     if (typeof info.trigger[i] == 'string') {
                         setTrigger(i, info.trigger[i]);
                     }
                     else if (Array.isArray(info.trigger[i])) {
-                        for (var j = 0; j < info.trigger[i].length; j++) {
+                        for (let j = 0; j < info.trigger[i].length; j++) {
                             setTrigger(i, info.trigger[i][j]);
                         }
                     }
@@ -5971,7 +5971,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (this.storage[skill] === true)
                 this.storage[skill] = false;
             this.awakenedSkills.remove(skill);
-            this.enableSkill(skill + '_awake', skill);
+            this.enableSkill(skill + '_awake');
             if (!nomark)
                 this.markSkill(skill);
             return this;
@@ -6200,16 +6200,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             return skill;
         }
-        addTempSkill(skill, expire, checkConflict) {
+        addTempSkill(skill, expire = 'phaseAfter', checkConflict) {
             if (this.hasSkill(skill) && this.tempSkills[skill] == undefined)
                 return;
             var noremove = this.skills.contains(skill);
             this.addSkill(skill, checkConflict, true);
             if (!noremove)
                 this.skills.remove(skill);
-            if (!expire) {
-                expire = 'phaseAfter';
-            }
             this.tempSkills[skill] = expire;
             if (typeof expire == 'string') {
                 lib.hookmap[expire] = true;
@@ -6222,12 +6219,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             else if (get.objtype(expire) == 'object') {
                 var roles = ['player', 'source', 'target'];
                 for (let i = 0; i < roles.length; i++) {
-                    if (typeof expire[roles[i]] == 'string') {
-                        lib.hookmap[expire[roles[i]]] = true;
+                    let t = expire[roles[i]];
+                    if (typeof t == 'string') {
+                        lib.hookmap[t] = true;
                     }
-                    else if (Array.isArray(expire[roles[i]])) {
-                        for (let j = 0; j < expire[roles[i]].length; j++) {
-                            lib.hookmap[expire[roles[i]][j]] = true;
+                    else if (Array.isArray(t)) {
+                        for (let j = 0; j < t.length; j++) {
+                            lib.hookmap[t[j]] = true;
                         }
                     }
                 }
@@ -6241,14 +6239,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 }
-            }
-            for (let i in expire) {
-                if (typeof expire[i] == 'string') {
-                    lib.hookmap[expire[i]] = true;
-                }
-                else if (Array.isArray(expire[i])) {
-                    for (let j = 0; j < expire.length; j++) {
-                        lib.hookmap[expire[i][j]] = true;
+                for (let i in expire) {
+                    let t = expire[i];
+                    if (typeof t == 'string') {
+                        lib.hookmap[t] = true;
+                    }
+                    else if (Array.isArray(t)) {
+                        for (let j = 0; j < t.length; j++) {
+                            lib.hookmap[t[j]] = true;
+                        }
                     }
                 }
             }
@@ -6259,12 +6258,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return get.attitude(this, target);
             return 0;
         }
-        clearSkills(all) {
+        clearSkills(all, ...args) {
             var list = [];
-            var exclude = [];
-            for (var i = 0; i < arguments.length; i++) {
-                exclude.push(arguments[i]);
-            }
+            var exclude = [...args];
             for (let i = 0; i < this.skills.length; i++) {
                 if (lib.skill[this.skills[i]].superCharlotte)
                     continue;
@@ -6436,7 +6432,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return this.stat[this.stat.length - 1][key];
         }
         getLastStat(key) {
-            var stat = false;
+            var stat = null;
             for (var i = this.stat.length - 1; i >= 0; i--) {
                 if (this.stat[i].isMe) {
                     stat = this.stat[i];

@@ -12240,6 +12240,7 @@ mixin(lib, /**@lends module:core.lib */ {
             else if (typeof select == 'number') range = [select, select];
             else if (get.itemtype(select) == 'select') range = select;
             else if (typeof select == 'function') range = select(card, player);
+            if(!range[1]) console.log(card,select,range)
             game.checkMod(card, player, range, 'selectTarget', player);
             if (!range || range[1] != -1) return true;
             var filterTarget = (event && event.filterTarget) ? event.filterTarget : lib.filter.filterTarget;

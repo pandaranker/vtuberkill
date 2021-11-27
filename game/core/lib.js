@@ -11633,6 +11633,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     range = select;
                 else if (typeof select == 'function')
                     range = select(card, player);
+                if (!range[1])
+                    console.log(card, select, range);
                 game.checkMod(card, player, range, 'selectTarget', player);
                 if (!range || range[1] != -1)
                     return true;

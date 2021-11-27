@@ -1358,7 +1358,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     'step 4';
                     target.showHandcards();
-                    game.delayx();
+                    game.delay(1.2);
                     'step 5';
                     var suits = get.suit3(player.getStorage('zuigao'));
                     var discards = target.getCards('he', { suit: suits });
@@ -1415,7 +1415,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                         else {
                             player.chooseCardButton(cards, '选择交给' + get.translation(event.target) + '的一张牌', true).set('ai', function (button) {
-                                return get.attitude2(_status.event.target) * get.value(card, _status.event.target, 'raw');
+                                return get.attitude2(_status.event.target) * get.value(button.link, _status.event.target, 'raw');
                             }).set('target', event.target);
                         }
                     }
