@@ -6687,7 +6687,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {string} [key] 键名；如果未指定或者为空字符串，返回最后`stat`
      * @returns {?Object}
      */
-    getStat(key) {
+    getStat(key?) {
         if (!key) return this.stat[this.stat.length - 1];
         return this.stat[this.stat.length - 1][key];
     }

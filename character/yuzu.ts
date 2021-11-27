@@ -38,7 +38,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					if(vb instanceof Array){
 						tri[i] = vb.map(t => {
 							return method.map(m => t+m)
-						}).flat()
+						}).vkflat()
 					}
 				}
 			}else if(typeof method === 'string'){

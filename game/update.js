@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.103.20',
+	version:'1.9.103.21',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.103.20微型更新：修复国战bug`,
+		`1.9.103.21微型更新：修复客户端选将bug`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		`注意：安卓客户端与最新版本之间可能存在兼容性问题，请勿更新，等待下个版本进行修复`,
 		``,
@@ -64,6 +64,7 @@ window.noname_update={
 		'game/core/content/content.js',
 		'game/core/skill/skill.js',
 		'game/core/_context.js',
+
 		'game/core/core.js',
 		'game/core/_status.js',
 		'game/core/ai.js',
@@ -71,6 +72,7 @@ window.noname_update={
 		'game/core/get.js',
 		'game/core/lib.js',
 		'game/core/ui.js',
+
 		'game/core/view/HTMLDivElementProxy.js',
 		'game/core/view/PlayerModel.js',
 		

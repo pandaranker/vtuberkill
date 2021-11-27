@@ -1855,7 +1855,7 @@ mixin(get, /**@lends module:core.get */ {
      * @param {(GameCores.GameObjects.Player|false)} player 如果为角色对象，当角色有被动技**cardname**改变牌名，返回改变后的牌名；如果为false，直接返回牌名
      * @returns {string} 牌名
      */
-    name(card, player:PlayerModel):string {
+    name(card, player?:PlayerModel|false):string {
         if (get.itemtype(player) == 'player' || (player !== false && get.position(card) == 'h')) {
             var owner = player || get.owner(card);
             if (owner) {
@@ -1925,7 +1925,7 @@ mixin(get, /**@lends module:core.get */ {
         }
         return colors;
     },
-    number(card, player:PlayerModel):string {
+    number(card, player?:PlayerModel|false):string {
         //柚子：已修改
         var number = null;
         if (card.number && typeof card.number == 'number') number = card.number;
@@ -1945,7 +1945,7 @@ mixin(get, /**@lends module:core.get */ {
      * @param {(GameCores.GameObjects.Player|false|undefined)} [player] 要查看的角色，如果未指定，使用被查看牌的所属角色，如果所属角色未定义或这个参数为false，直接返回牌的属性；
      * @returns {string}
      */
-    nature(card, player:PlayerModel):string {
+    nature(card, player?:PlayerModel|false):string {
         if (get.itemtype(player) == 'player' || player !== false) {
             var owner = get.owner(card);
             if (owner) {
@@ -2152,7 +2152,7 @@ mixin(get, /**@lends module:core.get */ {
      * @param {(GameCores.GameObjects.Player|boolean|undefined)} option 将根据`option`获取游戏牌牌名，然后根据牌名获取模板。详见{@link game.name}，{@link game.name(2)}
      * @returns {?GameCores.GameObjects.CardInfo} 游戏牌模板
      */
-    info(item, player:PlayerModel) {
+    info(item, player?:PlayerModel|false) {
         if (typeof item == 'string') {
             return lib.skill[item];
         }
@@ -2309,7 +2309,7 @@ mixin(get, /**@lends module:core.get */ {
         if(lib.skill[name]&&lib.translate[name + '_info']){
             str = get.skillInfoTranslation(name, player)
             let info = lib.skill[name]
-            let iSkill = [info.ai?.combo,info.derivation,info.involve].flat()
+            let iSkill = [info.ai?.combo,info.derivation,info.involve].vkflat()
             iSkill = [...new Set(iSkill)]
             for(let i of iSkill){
                 let tra = get.translation(i)

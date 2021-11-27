@@ -37,7 +37,10 @@ declare type _status_type = {
 
     gameStarted?: boolean
     waitingForPlayer?: boolean
+    /**丢表情相关 */
     dragged?: boolean
+    justdragged?: boolean
+    throwEmotionWait?: boolean
     video?: boolean
     multitarget?: boolean
     mode?: string
@@ -51,7 +54,11 @@ declare type _status_type = {
     /**轮次开始角色 */
     roundStart?:PlayerModel
     /**对决模式 */
-    brawl:{noGameDraw:boolean,gameStart:()=>void}
+    brawl:{
+        noGameDraw:boolean,
+        gameStart:()=>void,
+        playerNumber:number
+    }
     /**观看录像 */
     videoDuration:number
     /**是否为引导模式 */
@@ -108,4 +115,11 @@ declare type _status_type = {
     coinCoeff:number
     betWin:boolean
     additionalReward:()=>number
+    /**稀有度相关 */
+    lord?:string
+    /**态度计算相关 */
+    tempnofake?:boolean
+    /**怒气值 */
+    friendRage?:number
+    enemyRage?:number
 }

@@ -2353,7 +2353,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (lib.skill[name] && lib.translate[name + '_info']) {
                 str = get.skillInfoTranslation(name, player);
                 let info = lib.skill[name];
-                let iSkill = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].flat();
+                let iSkill = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
                 iSkill = [...new Set(iSkill)];
                 for (let i of iSkill) {
                     let tra = get.translation(i);

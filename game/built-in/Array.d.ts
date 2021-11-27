@@ -17,6 +17,13 @@ declare global {
          */
         filterInD(pos?: CardPositionString): /*[todo] Use card type instead.*/ HTMLDivElement[];//Element in array must be the Card Type.
         /**
+         * 数组降维，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.flat()}
+         * @function Array#find
+         * @param {*} depth - 降维深度
+         * @returns {!any[]} 降维后的数组
+         */
+        vkflat(depth?: number): any[];
+        /**
          * 定位元素，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf()}
          * @function Array#find
          * @param {*} item - 要在数组中定位的元素

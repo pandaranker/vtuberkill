@@ -6842,6 +6842,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     return list;
                 };
+                Array.prototype.vkflat = function (depth = 1) {
+                    const result = [];
+                    (function flat(arr, depth) {
+                        arr.forEach((item) => {
+                            if (Array.isArray(item) && depth > 0) {
+                                flat(item, depth - 1);
+                            }
+                            else {
+                                result.push(item);
+                            }
+                        });
+                    })(this, depth);
+                    return result;
+                };
                 Array.prototype.find = function (item) {
                     return this.indexOf(item);
                 };

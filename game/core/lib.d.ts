@@ -10,6 +10,7 @@ declare type lib_type = {
         frameId: number,
         videoId: number,
         globalId: number,
+        date: Date,
         dateDelaying: Date,
         dateDelayed: number
     },

@@ -7254,6 +7254,22 @@ mixin(lib, /**@lends module:core.lib */ {
                 }
                 return list;
             };
+            //数组降维替代方案
+            Array.prototype.vkflat = function (depth = 1) {
+                const result = [];
+                // 开始递归
+                (function flat(arr, depth) {
+                    arr.forEach((item) => {
+                        if (Array.isArray(item) && depth > 0) {
+                            // 递归数组
+                            flat(item, depth - 1)
+                        } else {
+                            result.push(item)
+                        }
+                    })
+                })(this, depth)
+                return result;
+            };
             Array.prototype.find = function (item) {
                 return this.indexOf(item);
             };
