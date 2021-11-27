@@ -2,7 +2,7 @@
 declare type _status_type = {
     paused: boolean,
     paused2: boolean,
-    paused3: boolean,
+    paused3: string,
     over: boolean,
     clicked: boolean,
     auto: boolean,
@@ -51,7 +51,7 @@ declare type _status_type = {
     /**轮次开始角色 */
     roundStart?:PlayerModel
     /**对决模式 */
-    brawl:{noGameDraw}
+    brawl:{noGameDraw:boolean,gameStart:()=>void}
     /**观看录像 */
     videoDuration:number
     /**是否为引导模式 */
@@ -66,14 +66,42 @@ declare type _status_type = {
     first_less:boolean
     /**选择中 */
     imchoosing:boolean
+    /**游戏启动摸牌已进行 */
+    gameDrawed?:boolean
     /**正在进入/创建房间 */
     enteringroom?:boolean
     creatingroom?:boolean
     /**鼠标事件 */
     mousedown:boolean
     mouseleft:boolean
+    /**记录栏 */
+    prepareArena:boolean
+    /**鏖战 */
+    _aozhan:boolean
+    /**卡片事件结算 */
+    cardsFinished:boolean
     /**卡片事件等待清单 */
     waitingForCards?:Array
     /**过渡等待清单 */
     waitingForTransition?:Array
+    skintimeout:NodeJS.Timeout
+    timeout:NodeJS.Timeout
+    countDown:NodeJS.Timeout
+    /**牌堆计数 */
+    cardPileNum:number
+    /**源模式 */
+    sourcemode:string
+    /**联机形象 */
+    onlinenickname:string
+    onlineavatar:string
+    /**扩展说明文本 */
+    extensionChangeLog:string
+    extension:string
+    evaluatingExtension:boolean
+
+    /**金币扩展 */
+    coin:number
+    coinCoeff:number
+    betWin:boolean
+    additionalReward:()=>number
 }

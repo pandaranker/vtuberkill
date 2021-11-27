@@ -135,6 +135,27 @@ class Status_Event extends EventModel implements State_Event{
         for(let v in evt){
             this[v] = evt[v];
         }
+        if(!(evt instanceof Status_Event)){
+            evt.getEvent = () => this
+        }
+    }
+    get orderingCards(){
+        return this._orderingCards
+    }
+    set orderingCards(e){
+        this._orderingCards = e
+    }
+    get targets(){
+        return this._targets
+    }
+    set targets(e){
+        this._targets = e
+    }
+    get fixedSeat(){
+        return this._fixedSeat
+    }
+    set fixedSeat(e){
+        this._fixedSeat = e
     }
     // //切换状态事件时，遗忘原事件产生的全局变量
     // forget(method,evt){

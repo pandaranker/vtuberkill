@@ -465,12 +465,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     cards[i].fix();
                     ui.ordering.appendChild(cards[i]);
                 }
-                var evt = event.relatedEvent || event.getParent();
+                let evt = event.relatedEvent || event.getParent();
                 if (!evt.orderingCards)
                     evt.orderingCards = [];
                 if (!event.noOrdering && !event.cardsOrdered) {
                     event.cardsOrdered = true;
-                    var next = game.createEvent('orderingDiscard', false, evt.getParent());
+                    let next = game.createEvent('orderingDiscard', false, evt.getParent());
                     next.relatedEvent = evt;
                     next.setContent('orderingDiscard');
                 }
@@ -5437,6 +5437,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
             },
             lose: function () {
                 "step 0";
+                var _a;
                 var evt = event.getParent();
                 if (evt.name != 'discard' && event.type != 'discard') {
                     event.delay = false;
@@ -5584,9 +5585,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 game.addVideo('loseAfter', player);
                 event.num = 0;
                 if (event.position == ui.ordering) {
-                    var evt = event.relatedEvent || event.getParent();
-                    if (!evt.orderingCards)
-                        evt.orderingCards = [];
+                    let evt = event.relatedEvent || event.getParent();
+                    (_a = evt.orderingCards) !== null && _a !== void 0 ? _a : (evt.orderingCards = []);
                     if (!event.noOrdering && !event.cardsOrdered) {
                         event.cardsOrdered = true;
                         var next = game.createEvent('orderingDiscard', false, evt.getParent());

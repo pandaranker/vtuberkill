@@ -1,4 +1,4 @@
-window.noname_character_rank={
+window.vtuberkill_character_rank={
 	s:[
 		'gjqt_bailitusu',
 		'gjqt_beiluo',

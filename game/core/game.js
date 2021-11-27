@@ -642,7 +642,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }(updates[i])));
                 }
                 else {
-                    resolveLocalFileSystemURL(lib.assetURL + updates[i], (function (name) {
+                    window.resolveLocalFileSystemURL(lib.assetURL + updates[i], (function (name) {
                         return function (entry) {
                             n--;
                             updates.remove(name);
@@ -704,13 +704,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.me = ui.create.player();
             }
             var list = [];
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i] != game.me) {
-                    list.push(game.players[i]);
+            for (let v of game.players) {
+                if (v != game.me) {
+                    list.push(v);
                 }
             }
             var map = [];
-            for (var i = 0; i < lib.node.clients.length; i++) {
+            for (let i = 0; i < lib.node.clients.length; i++) {
                 if (!list.length)
                     break;
                 if (lib.configOL.observe_race)
@@ -727,12 +727,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.me.nickname = get.connectNickname();
                 game.me.setNickname();
             }
-            for (var i = 0; i < game.players.length; i++) {
-                if (!game.players[i].playerid) {
-                    game.players[i].playerid = get.id();
+            for (let v of game.players) {
+                if (!v.playerid) {
+                    v.playerid = get.id();
                 }
-                map.push([game.players[i].playerid, game.players[i].nickname]);
-                lib.playerOL[game.players[i].playerid] = game.players[i];
+                map.push([v.playerid, v.nickname]);
+                lib.playerOL[v.playerid] = v;
             }
             game.broadcast(function (map, config, hidden) {
                 if (hidden) {
@@ -743,13 +743,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 ui.create.me();
                 game.me.playerid = game.onlineID;
                 game.me.nickname = get.connectNickname();
-                for (var i = 0; i < map.length; i++) {
+                for (let i = 0; i < map.length; i++) {
                     if (map[i][0] == game.me.playerid) {
                         map = map.concat(map.splice(0, i));
                         break;
                     }
                 }
-                for (var i = 0; i < game.players.length; i++) {
+                for (let i = 0; i < game.players.length; i++) {
                     game.players[i].playerid = map[i][0];
                     game.players[i].nickname = map[i][1];
                     game.players[i].setNickname();
@@ -969,8 +969,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (_status.connectMode && !game.online && game.me) {
                 if (game.me._hide_all_timer) {
                     delete game.me._hide_all_timer;
-                    for (var i = 0; i < game.players.length; i++) {
-                        game.players[i].hideTimer();
+                    for (let v of game.players) {
+                        v.hideTimer();
                     }
                 }
                 else if (!_status.event._global_waiting) {
@@ -1646,7 +1646,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     else {
                         localStorage.setItem(lib.configprefix + 'extension_' + extname, str);
                         var imglist = [];
-                        for (var i in zip.files) {
+                        for (let i in zip.files) {
                             if (i[0] != '.' && i[0] != '_') {
                                 if (i.indexOf('.jpg') != -1 || i.indexOf('.png') != -1) {
                                     imglist.push(i);
@@ -1658,15 +1658,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 image: imglist
                             };
                             game.saveConfig('extensionInfo', lib.config.extensionInfo);
-                            for (var i = 0; i < imglist.length; i++) {
-                                var imgname = imglist[i];
-                                var str = zip.file(imgname).asArrayBuffer();
+                            for (let i = 0; i < imglist.length; i++) {
+                                let imgname = imglist[i];
+                                let str = zip.file(imgname).asArrayBuffer();
                                 if (str) {
-                                    var blob = new Blob([str]);
-                                    var fileReader = new FileReader();
+                                    let blob = new Blob([str]);
+                                    let fileReader = new FileReader();
                                     fileReader.onload = (function (imgname) {
                                         return function (fileLoadedEvent) {
-                                            var data = fileLoadedEvent.target.result;
+                                            let data = fileLoadedEvent.target.result;
                                             game.putDB('image', 'extension-' + extname + ':' + imgname, data);
                                         };
                                     }(imgname));
@@ -1868,8 +1868,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (lib.config.mode == 'versus') {
                     if (players.bool) {
                         ui.arena.setNumber(parseInt(ui.arena.dataset.number) + 1);
-                        for (var i = 0; i < game.players.length; i++) {
-                            game.players[i].dataset.position = parseInt(game.players[i].dataset.position) + 1;
+                        for (let v of game.players) {
+                            v.dataset.position = parseInt(v.dataset.position) + 1;
                         }
                         game.singleHandcard = true;
                         ui.arena.classList.add('single-handcard');
@@ -1935,8 +1935,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 }
-                for (var i = 0; i < game.players.length; i++) {
-                    game.playerMap[game.players[i].dataset.position] = game.players[i];
+                for (let v of game.players) {
+                    game.playerMap[v.dataset.position] = v;
                 }
                 if (lib.config.mode == 'versus') {
                     if (players.bool) {
@@ -3015,7 +3015,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     console.log(content);
                     return;
                 }
-                var temp1, pos, i, num;
+                var temp1, pos, num;
                 temp1 = player1.dataset.position;
                 player1.dataset.position = player2.dataset.position;
                 player2.dataset.position = temp1;
@@ -3025,22 +3025,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (pos == 0)
                         pos = parseInt(player2.dataset.position);
                     num = game.players.length + game.dead.length;
-                    for (i = 0; i < game.players.length; i++) {
-                        temp1 = parseInt(game.players[i].dataset.position) - pos;
+                    for (let v of game.players) {
+                        temp1 = parseInt(v.dataset.position) - pos;
                         if (temp1 < 0)
                             temp1 += num;
-                        game.players[i].dataset.position = temp1;
+                        v.dataset.position = temp1;
                     }
-                    for (i = 0; i < game.dead.length; i++) {
-                        temp1 = parseInt(game.dead[i].dataset.position) - pos;
+                    for (let v of game.dead) {
+                        temp1 = parseInt(v.dataset.position) - pos;
                         if (temp1 < 0)
                             temp1 += num;
-                        game.dead[i].dataset.position = temp1;
+                        v.dataset.position = temp1;
                     }
                 }
                 game.playerMap = {};
                 var players = game.players.concat(game.dead);
-                for (var i = 0; i < players.length; i++) {
+                for (let i = 0; i < players.length; i++) {
                     game.playerMap[players[i].dataset.position] = players[i];
                 }
             },
@@ -3812,7 +3812,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.draw(drawfunc);
             }
         },
-        createTrigger: function (name, skill, player, event) {
+        createTrigger(name, skill, player, event) {
             if (player.isOut() || player.removed)
                 return;
             if (player.isDead() && !lib.skill[skill].forceDie)
@@ -3825,14 +3825,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             next._trigger = event;
             next.setContent('createTrigger');
         },
-        createEvent: function (name, trigger, triggerevent) {
+        createEvent(name, trigger, triggerevent) {
             var next = new EventModel_1.default(name);
             if (trigger !== false && !game.online)
                 next._triggered = 0;
-            (triggerevent || _status.event).next.push(next);
+            (((triggerevent === null || triggerevent === void 0 ? void 0 : triggerevent.getEvent) ? triggerevent.getEvent() : triggerevent) || _status.event).next.push(next);
             return next;
         },
-        addCharacter: function (name, info) {
+        addCharacter(name, info) {
             var extname = (_status.extension || info.extension);
             var imgsrc;
             if (_status.evaluatingExtension) {
@@ -3854,7 +3854,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             lib.characterPack[packname][name] = character;
             lib.translate[packname + '_character_config'] = extname;
         },
-        addCharacterPack: function (pack, packagename) {
+        addCharacterPack(pack, packagename) {
             var extname = _status.extension || '扩展';
             packagename = packagename || extname;
             for (var i in pack) {
@@ -3947,16 +3947,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var packname = 'mode_extension_' + packagename;
             lib.cardPack[packname] = [];
             lib.translate[packname + '_card_config'] = packagename;
-            for (var i in pack) {
+            for (let i in pack) {
                 if (i == 'mode' || i == 'forbid')
                     continue;
                 if (i == 'list') {
-                    for (var j = 0; j < pack[i].length; j++) {
+                    for (let j = 0; j < pack[i].length; j++) {
                         lib.card.list.push(pack[i][j]);
                     }
                     continue;
                 }
-                for (var j in pack[i]) {
+                for (let j in pack[i]) {
                     if (i == 'card') {
                         if (pack[i][j].audio == true) {
                             pack[i][j].audio = 'ext:' + extname;
@@ -4071,28 +4071,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         removeGlobalSkill: function (skill) {
             lib.skill.global.remove(skill);
             delete lib.skill.globalmap[skill];
-            for (var i in lib.hook.globalskill) {
+            for (let i in lib.hook.globalskill) {
                 lib.hook.globalskill[i].remove(skill);
             }
         },
         resetSkills: function () {
-            for (var i = 0; i < game.players.length; i++) {
-                for (var j in game.players[i].tempSkills) {
-                    game.players[i].removeSkill(j);
+            for (let v of game.players) {
+                for (let j in v.tempSkills) {
+                    v.removeSkill(j);
                 }
-                var skills = game.players[i].getSkills();
-                for (var j = 0; j < skills.length; j++) {
+                let skills = v.getSkills();
+                for (let j = 0; j < skills.length; j++) {
                     if (lib.skill[skills[j]].vanish) {
-                        game.players[i].removeSkill(skills[j]);
+                        v.removeSkill(skills[j]);
                     }
                 }
-                game.players[i].in(true);
+                v.in(true);
             }
             ui.clear();
         },
         removeExtension: function (extname, keepfile) {
-            var prefix = 'extension_' + extname;
-            for (var i in lib.config) {
+            let prefix = 'extension_' + extname;
+            for (let i in lib.config) {
                 if (i.indexOf(prefix) == 0) {
                     game.saveConfig(i);
                 }
@@ -4101,15 +4101,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             game.deleteDB('data', prefix);
             lib.config.extensions.remove(extname);
             game.saveConfig('extensions', lib.config.extensions);
-            var modelist = lib.config.extensionInfo[extname];
+            let modelist = lib.config.extensionInfo[extname];
             if (modelist) {
                 if (modelist.image) {
-                    for (var i = 0; i < modelist.image.length; i++) {
+                    for (let i = 0; i < modelist.image.length; i++) {
                         game.deleteDB('image', 'extension-' + extname + ':' + modelist.image[i]);
                     }
                 }
                 if (modelist.mode) {
-                    for (var i = 0; i < modelist.mode.length; i++) {
+                    for (let i = 0; i < modelist.mode.length; i++) {
                         game.clearModeConfig(modelist.mode[i]);
                     }
                 }
@@ -4231,7 +4231,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 return;
             if (game.me._trueMe)
                 game.swapPlayer(game.me._trueMe);
-            var i, j, k, num, table, tr, td, dialog;
+            var num, table, tr, td, dialog;
             _status.over = true;
             ui.control.show();
             ui.clear();
@@ -4262,17 +4262,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 ui.update();
                 dialog.add(ui.create.div('.placeholder'));
-                for (var i = 0; i < game.players.length; i++) {
-                    var hs = game.players[i].getCards('h');
+                for (let v of game.players) {
+                    let hs = v.getCards('h');
                     if (hs.length) {
-                        dialog.add('<div class="text center">' + get.translation(game.players[i]) + '</div>');
+                        dialog.add('<div class="text center">' + get.translation(v) + '</div>');
                         dialog.addSmall(hs);
                     }
                 }
-                for (var j = 0; j < game.dead.length; j++) {
-                    var hs = game.dead[j].getCards('h');
+                for (let v of game.dead) {
+                    let hs = v.getCards('h');
                     if (hs.length) {
-                        dialog.add('<div class="text center">' + get.translation(game.dead[j]) + '</div>');
+                        dialog.add('<div class="text center">' + get.translation(v) + '</div>');
                         dialog.addSmall(hs);
                     }
                 }
@@ -4313,8 +4313,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (ui.wuxie)
                     ui.wuxie.hide();
                 if (game.getIdentityList) {
-                    for (var i = 0; i < game.players.length; i++) {
-                        game.players[i].setIdentity();
+                    for (let v of game.players) {
+                        v.setIdentity();
                     }
                 }
                 return;
@@ -4493,47 +4493,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 td.innerHTML = '杀敌';
                 tr.appendChild(td);
                 table.appendChild(tr);
-                for (i = 0; i < game.players.length; i++) {
-                    var uploadDataRow = {};
+                for (let i of game.players) {
+                    let uploadDataRow = {
+                        name: i.name,
+                        transName: td.innerHTML,
+                        nickname: i.nickname,
+                        damage: 0,
+                        damaged: 0,
+                        gain: 0,
+                        card: 0,
+                        kill: 0,
+                        alive: true
+                    };
                     tr = document.createElement('tr');
                     td = document.createElement('td');
-                    td.innerHTML = get.translation(game.players[i]);
-                    uploadDataRow.name = game.players[i].name;
-                    uploadDataRow.transName = td.innerHTML;
-                    uploadDataRow.nickname = game.players[i].nickname;
+                    td.innerHTML = get.translation(i);
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.players[i].stat.length; j++) {
-                        if (game.players[i].stat[j].damage != undefined)
-                            num += game.players[i].stat[j].damage;
+                    for (let j of i.stat) {
+                        if (j.damage != undefined)
+                            num += j.damage;
                     }
                     td.innerHTML = num;
                     uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.players[i].stat.length; j++) {
-                        if (game.players[i].stat[j].damaged != undefined)
-                            num += game.players[i].stat[j].damaged;
+                    for (let j of i.stat) {
+                        if (j.damaged != undefined)
+                            num += j.damaged;
                     }
                     td.innerHTML = num;
                     uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.players[i].stat.length; j++) {
-                        if (game.players[i].stat[j].gain != undefined)
-                            num += game.players[i].stat[j].gain;
+                    for (let j of i.stat) {
+                        if (j.gain != undefined)
+                            num += j.gain;
                     }
                     td.innerHTML = num;
                     uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.players[i].stat.length; j++) {
-                        for (k in game.players[i].stat[j].card) {
-                            num += game.players[i].stat[j].card[k];
+                    for (let j of i.stat) {
+                        for (let k in j.card) {
+                            num += j.card[k];
                         }
                     }
                     td.innerHTML = num;
@@ -4541,19 +4548,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.players[i].stat.length; j++) {
-                        if (game.players[i].stat[j].kill != undefined)
-                            num += game.players[i].stat[j].kill;
+                    for (let j of i.stat) {
+                        if (j.kill != undefined)
+                            num += j.kill;
                     }
                     td.innerHTML = num;
                     uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.players[i].identity);
-                    uploadDataRow.alive = true;
+                    uploadDataRow.identity = get.translation(i.identity);
                     if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
-                            if (game.players[i].identity == 'fan' || game.players[i].identity == 'nei') {
+                            if (i.identity == 'fan' || i.identity == 'nei') {
                                 uploadDataRow.winner = false;
                             }
                             else {
@@ -4562,13 +4568,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         else {
                             if (game.players.length == 1) {
-                                if (game.players[i].identity == 'zhong')
+                                if (i.identity == 'zhong')
                                     uploadDataRow.winner = false;
                                 else
                                     uploadDataRow.winner = true;
                             }
                             else {
-                                if (game.players[i].identity == 'fan') {
+                                if (i.identity == 'fan') {
                                     uploadDataRow.winner = true;
                                 }
                                 else
@@ -4610,47 +4616,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     tr.appendChild(td);
                     table.appendChild(tr);
                 }
-                for (i = 0; i < game.dead.length; i++) {
-                    var uploadDataRow = {};
+                for (let i of game.dead) {
+                    let uploadDataRow = {
+                        name: i.name,
+                        transName: td.innerHTML,
+                        nickname: i.nickname,
+                        damage: 0,
+                        damaged: 0,
+                        gain: 0,
+                        card: 0,
+                        kill: 0,
+                        alive: false
+                    };
                     tr = document.createElement('tr');
                     td = document.createElement('td');
-                    td.innerHTML = get.translation(game.dead[i]);
-                    uploadDataRow.name = game.dead[i].name;
-                    uploadDataRow.transName = td.innerHTML;
-                    uploadDataRow.nickname = game.dead[i].nickname;
+                    td.innerHTML = get.translation(i);
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.dead[i].stat.length; j++) {
-                        if (game.dead[i].stat[j].damage != undefined)
-                            num += game.dead[i].stat[j].damage;
+                    for (let j of i.stat) {
+                        if (j.damage != undefined)
+                            num += j.damage;
                     }
                     td.innerHTML = num;
                     uploadDataRow.damage = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.dead[i].stat.length; j++) {
-                        if (game.dead[i].stat[j].damaged != undefined)
-                            num += game.dead[i].stat[j].damaged;
+                    for (let j of i.stat) {
+                        if (j.damaged != undefined)
+                            num += j.damaged;
                     }
                     td.innerHTML = num;
                     uploadDataRow.damaged = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.dead[i].stat.length; j++) {
-                        if (game.dead[i].stat[j].gain != undefined)
-                            num += game.dead[i].stat[j].gain;
+                    for (let j of i.stat) {
+                        if (j.gain != undefined)
+                            num += j.gain;
                     }
                     td.innerHTML = num;
                     uploadDataRow.gain = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.dead[i].stat.length; j++) {
-                        for (k in game.dead[i].stat[j].card) {
-                            num += game.dead[i].stat[j].card[k];
+                    for (let j of i.stat) {
+                        for (let k in j.card) {
+                            num += j.card[k];
                         }
                     }
                     td.innerHTML = num;
@@ -4658,19 +4671,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.dead[i].stat.length; j++) {
-                        if (game.dead[i].stat[j].kill != undefined)
-                            num += game.dead[i].stat[j].kill;
+                    for (let j of i.stat) {
+                        if (j.kill != undefined)
+                            num += j.kill;
                     }
                     td.innerHTML = num;
                     uploadDataRow.kill = num;
                     tr.appendChild(td);
                     table.appendChild(tr);
-                    uploadDataRow.identity = get.translation(game.dead[i].identity);
-                    uploadDataRow.alive = false;
+                    uploadDataRow.identity = get.translation(i.identity);
                     if (get.mode() == 'identity') {
                         if (game.zhu.isAlive()) {
-                            if (game.dead[i].identity == 'fan' || game.dead[i].identity == 'nei') {
+                            if (i.identity == 'fan' || i.identity == 'nei') {
                                 uploadDataRow.winner = false;
                             }
                             else {
@@ -4683,14 +4695,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     uploadDataRow.winner = false;
                                 }
                                 else if (game.players[0].identity == 'fan') {
-                                    if (game.dead[i].identity == 'fan')
+                                    if (i.identity == 'fan')
                                         uploadDataRow.winner = true;
                                     else
                                         uploadDataRow.winner = false;
                                 }
                             }
                             else {
-                                if (game.dead[i].identity == 'fan') {
+                                if (i.identity == 'fan') {
                                     uploadDataRow.winner = true;
                                 }
                                 else
@@ -4699,8 +4711,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     else if (get.mode() == 'guozhan') {
-                        if (game.players[0] && (game.dead[i].identity == game.players[0])) {
-                            if (game.dead[i].identity != 'ye') {
+                        if (game.players[0] && (i.identity == game.players[0])) {
+                            if (i.identity != 'ye') {
                                 uploadDataRow.winner = true;
                             }
                             else {
@@ -4711,8 +4723,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             uploadDataRow.winner = false;
                     }
                     else {
-                        if (game.players[0] && (game.dead[i].identity == game.players[0])) {
-                            if (game.dead[i].identity != 'ye') {
+                        if (game.players[0] && (i.identity == game.players[0])) {
+                            if (i.identity != 'ye') {
                                 uploadDataRow.winner = true;
                             }
                             else {
@@ -4746,49 +4758,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (game.additionaldead && game.additionaldead.length) {
                 table = document.createElement('table');
                 table.style.opacity = '0.5';
-                for (i = 0; i < game.additionaldead.length; i++) {
+                for (let i of game.additionaldead) {
                     tr = document.createElement('tr');
                     td = document.createElement('td');
-                    td.innerHTML = get.translation(game.additionaldead[i]);
+                    td.innerHTML = get.translation(i);
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                        if (game.additionaldead[i].stat[j].damage != undefined)
-                            num += game.additionaldead[i].stat[j].damage;
+                    for (let j of i.stat) {
+                        if (j.damage != undefined)
+                            num += j.damage;
                     }
                     td.innerHTML = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                        if (game.additionaldead[i].stat[j].damaged != undefined)
-                            num += game.additionaldead[i].stat[j].damaged;
+                    for (let j of i.stat) {
+                        if (j.damaged != undefined)
+                            num += j.damaged;
                     }
                     td.innerHTML = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                        if (game.additionaldead[i].stat[j].gain != undefined)
-                            num += game.additionaldead[i].stat[j].gain;
+                    for (let j of i.stat) {
+                        if (j.gain != undefined)
+                            num += j.gain;
                     }
                     td.innerHTML = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                        for (k in game.additionaldead[i].stat[j].card) {
-                            num += game.additionaldead[i].stat[j].card[k];
+                    for (let j of i.stat) {
+                        for (let k in j.card) {
+                            num += j.card[k];
                         }
                     }
                     td.innerHTML = num;
                     tr.appendChild(td);
                     td = document.createElement('td');
                     num = 0;
-                    for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                        if (game.additionaldead[i].stat[j].kill != undefined)
-                            num += game.additionaldead[i].stat[j].kill;
+                    for (let j of i.stat) {
+                        if (j.kill != undefined)
+                            num += j.kill;
                     }
                     td.innerHTML = num;
                     tr.appendChild(td);
@@ -4799,27 +4811,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             dialog.add(ui.create.div('.placeholder'));
             var clients = game.players.concat(game.dead);
-            for (var i = 0; i < clients.length; i++) {
+            for (let i = 0; i < clients.length; i++) {
                 if (clients[i].isOnline2()) {
                     clients[i].send(game.over, dialog.content.innerHTML, game.checkOnlineResult(clients[i]));
                 }
             }
             dialog.add(ui.create.div('.placeholder'));
-            for (var i = 0; i < game.players.length; i++) {
-                if (!_status.connectMode && game.players[i].isUnderControl(true) && game.layout != 'long2')
+            for (let i of game.players) {
+                if (!_status.connectMode && i.isUnderControl(true) && game.layout != 'long2')
                     continue;
-                var hs = game.players[i].getCards('h');
+                var hs = i.getCards('h');
                 if (hs.length) {
-                    dialog.add('<div class="text center">' + get.translation(game.players[i]) + '</div>');
+                    dialog.add('<div class="text center">' + get.translation(i) + '</div>');
                     dialog.addSmall(hs);
                 }
             }
-            for (var i = 0; i < game.dead.length; i++) {
-                if (!_status.connectMode && game.dead[i].isUnderControl(true) && game.layout != 'long2')
+            for (let i of game.dead) {
+                if (!_status.connectMode && i.isUnderControl(true) && game.layout != 'long2')
                     continue;
-                var hs = game.dead[i].getCards('h');
+                let hs = i.getCards('h');
                 if (hs.length) {
-                    dialog.add('<div class="text center">' + get.translation(game.dead[i]) + '</div>');
+                    dialog.add('<div class="text center">' + get.translation(i) + '</div>');
                     dialog.addSmall(hs);
                 }
             }
@@ -4829,14 +4841,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
                 var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
                 var videos = lib.videos.slice(0);
-                for (var i = 0; i < videos.length; i++) {
+                for (let i = 0; i < videos.length; i++) {
                     if (videos[i].starred) {
                         videos.splice(i--, 1);
                     }
                 }
-                for (var deletei = 0; deletei < 5; deletei++) {
+                for (let deletei = 0; deletei < 5; deletei++) {
                     if (videos.length >= vinum) {
-                        var toremove = videos.pop();
+                        let toremove = videos.pop();
                         lib.videos.remove(toremove);
                         store.delete(toremove.time);
                     }
@@ -5226,7 +5238,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return game.delay(time, time2);
         },
         check: function (event) {
-            var i, j, range;
+            let range;
             if (event == undefined)
                 event = _status.event;
             var custom = event.custom || {};
@@ -5251,7 +5263,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     auto = true;
                 else if (range[0] != range[1] || range[0] > 1)
                     auto = false;
-                for (i = 0; i < dialog.buttons.length; i++) {
+                for (let i = 0; i < dialog.buttons.length; i++) {
                     if (dialog.buttons[i].classList.contains('unselectable'))
                         continue;
                     if (event.filterButton(dialog.buttons[i], player) && lib.filter.buttonIncluded(dialog.buttons[i])) {
@@ -5308,10 +5320,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
                         !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
                         event._targetChoice = new Map();
-                        for (var i = 0; i < event._cardChoice.length; i++) {
+                        for (let i = 0; i < event._cardChoice.length; i++) {
                             if (!lib.card[event._cardChoice[i].name].complexTarget) {
-                                var targets = [];
-                                for (var j = 0; j < players.length; j++) {
+                                let targets = [];
+                                for (let j = 0; j < players.length; j++) {
                                     if (event.filterTarget(event._cardChoice[i], player, players[j])) {
                                         targets.push(players[j]);
                                     }
@@ -5323,7 +5335,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     var selectableCards = false;
                     if (range[0] != range[1] || range[0] > 1)
                         auto = false;
-                    for (i = 0; i < cards.length; i++) {
+                    for (let i = 0; i < cards.length; i++) {
                         if (lib.config.cardtempname != 'off') {
                             var cardname = get.name(cards[i]);
                             var cardnature = get.nature(cards[i]);
@@ -5424,7 +5436,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     var selectableTargets = false;
                     if (range[0] != range[1] || range[0] > 1)
                         auto = false;
-                    for (i = 0; i < players.length; i++) {
+                    for (let i = 0; i < players.length; i++) {
                         var nochess = true;
                         if (game.chess && !event.chessForceAll && player && get.distance(player, players[i], 'pure') > 7) {
                             nochess = false;
@@ -5502,7 +5514,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var skills2;
                 if (event._skillChoice) {
                     skills2 = event._skillChoice;
-                    for (var i = 0; i < skills2.length; i++) {
+                    for (let i = 0; i < skills2.length; i++) {
                         if (event.isMine() || !event._aiexclude.contains(skills2[i])) {
                             skills.push(skills2[i]);
                         }
@@ -5519,7 +5531,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     skills2 = game.filterSkills(skills2.concat(lib.skill.global), player, player.getSkills('e').concat(lib.skill.global));
                     event._skillChoice = [];
                     game.expandSkills(skills2);
-                    for (i = 0; i < skills2.length; i++) {
+                    for (let i = 0; i < skills2.length; i++) {
                         _status.event.skillBy = skills2[i];
                         info = get.info(skills2[i]);
                         enable = false;
@@ -5559,7 +5571,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var globalskills = [];
                 var globallist = lib.skill.global.slice(0);
                 game.expandSkills(globallist);
-                for (var i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     if (globallist.contains(skills[i])) {
                         globalskills.push(skills.splice(i--, 1)[0]);
                     }
@@ -5567,7 +5579,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var equipskills = [];
                 var ownedskills = player.getSkills(true, false);
                 game.expandSkills(ownedskills);
-                for (var i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     if (!ownedskills.contains(skills[i])) {
                         equipskills.push(skills.splice(i--, 1)[0]);
                     }
@@ -5620,7 +5632,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             if (event.isMine()) {
                 if (game.chess && game.me && get.config('show_distance')) {
-                    for (var i = 0; i < players.length; i++) {
+                    for (let i = 0; i < players.length; i++) {
                         if (players[i] == game.me) {
                             players[i].node.action.hide();
                         }
@@ -5682,7 +5694,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return ok;
         },
         uncheck: function () {
-            var i, j;
             if (game.chess) {
                 var shadows = ui.chessContainer.getElementsByClassName('playergrid temp');
                 while (shadows.length) {
@@ -5691,12 +5702,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             var argc = arguments.length;
             var args = new Array(argc);
-            for (var i = 0; i < argc; i++) {
+            for (let i = 0; i < argc; i++) {
                 args[i] = arguments[i];
             }
             if ((args.length == 0 || args.contains('card')) && _status.event.player) {
                 var cards = _status.event.player.getCards('hejs');
-                for (j = 0; j < cards.length; j++) {
+                for (let j = 0; j < cards.length; j++) {
                     cards[j].classList.remove('selected');
                     cards[j].classList.remove('selectable');
                     if (cards[j]._tempName) {
@@ -5712,7 +5723,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (_status.event.deadTarget)
                 players.addArray(game.dead);
             if ((args.length == 0 || args.contains('target'))) {
-                for (j = 0; j < players.length; j++) {
+                for (let j = 0; j < players.length; j++) {
                     players[j].classList.remove('selected');
                     players[j].classList.remove('selectable');
                     if (players[j].instance) {
@@ -5723,7 +5734,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 ui.selected.targets.length = 0;
             }
             if ((args.length == 0 || args.contains('button')) && _status.event.dialog && _status.event.dialog.buttons) {
-                for (var j = 0; j < _status.event.dialog.buttons.length; j++) {
+                for (let j = 0; j < _status.event.dialog.buttons.length; j++) {
                     _status.event.dialog.buttons[j].classList.remove('selectable');
                     _status.event.dialog.buttons[j].classList.remove('selected');
                 }
@@ -5742,10 +5753,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             ui.canvas.width = ui.arena.offsetWidth;
             ui.canvas.height = ui.arena.offsetHeight;
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 players[i].unprompt();
             }
-            for (var i = 0; i < _status.dragline.length; i++) {
+            for (let i = 0; i < _status.dragline.length; i++) {
                 if (_status.dragline[i])
                     _status.dragline[i].remove();
             }
@@ -5775,7 +5786,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             else {
                 game.addVideo('swapSeat', null, [player1.dataset.position, player2.dataset.position]);
-                var temp1, pos, i, num;
+                var temp1, pos, num;
                 temp1 = player1.dataset.position;
                 player1.dataset.position = player2.dataset.position;
                 player2.dataset.position = temp1;
@@ -5786,17 +5797,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (pos == 0)
                             pos = parseInt(player2.dataset.position);
                         num = game.players.length + game.dead.length;
-                        for (i = 0; i < game.players.length; i++) {
-                            temp1 = parseInt(game.players[i].dataset.position) - pos;
+                        for (let i of game.players) {
+                            temp1 = parseInt(i.dataset.position) - pos;
                             if (temp1 < 0)
                                 temp1 += num;
-                            game.players[i].dataset.position = temp1;
+                            i.dataset.position = temp1;
                         }
-                        for (i = 0; i < game.dead.length; i++) {
-                            temp1 = parseInt(game.dead[i].dataset.position) - pos;
+                        for (let i of game.dead) {
+                            temp1 = parseInt(i.dataset.position) - pos;
                             if (temp1 < 0)
                                 temp1 += num;
-                            game.dead[i].dataset.position = temp1;
+                            i.dataset.position = temp1;
                         }
                     }
                 }
@@ -6052,34 +6063,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     game.clearConnect();
                     lib.configOL.mode = name;
                     if (configx) {
-                        for (var i in configx) {
+                        for (let i in configx) {
                             lib.configOL[i] = configx[i];
                         }
                     }
                     else {
-                        for (var i in lib.mode[name].connect) {
+                        for (let i in lib.mode[name].connect) {
                             if (i == 'update')
                                 continue;
                             lib.configOL[i.slice(8)] = get.config(i);
                         }
                         lib.configOL.characterPack = lib.connectCharacterPack.slice(0);
                         lib.configOL.cardPack = lib.connectCardPack.slice(0);
-                        for (var i = 0; i < lib.config.connect_characters.length; i++) {
+                        for (let i = 0; i < lib.config.connect_characters.length; i++) {
                             lib.configOL.characterPack.remove(lib.config.connect_characters[i]);
                         }
-                        for (var i = 0; i < lib.config.connect_cards.length; i++) {
+                        for (let i = 0; i < lib.config.connect_cards.length; i++) {
                             lib.configOL.cardPack.remove(lib.config.connect_cards[i]);
                         }
                         lib.configOL.banned = lib.config['connect_' + name + '_banned'];
                         lib.configOL.bannedcards = lib.config['connect_' + name + '_bannedcards'];
                     }
                     lib.configOL.version = lib.versionOL;
-                    for (var i in lib.cardPackList) {
+                    for (let i in lib.cardPackList) {
                         if (lib.configOL.cardPack.contains(i)) {
                             lib.card.list = lib.card.list.concat(lib.cardPackList[i]);
                         }
                     }
-                    for (i = 0; i < lib.card.list.length; i++) {
+                    for (let i = 0; i < lib.card.list.length; i++) {
                         if (lib.card.list[i][2] == 'huosha') {
                             lib.card.list[i] = lib.card.list[i].slice(0);
                             lib.card.list[i][2] = 'sha';
@@ -6192,7 +6203,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         chooseCharacterDouble: function () {
             var next = game.createEvent('chooseCharacter', false);
             var config, width, num, ratio, func, update, list, first;
-            for (var i = 0; i < arguments.length; i++) {
+            for (let i = 0; i < arguments.length; i++) {
                 if (typeof arguments[i] == 'number') {
                     if (!width) {
                         width = arguments[i];
@@ -6239,7 +6250,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             if (!list) {
                 list = [];
-                for (var i in lib.character) {
+                for (let i in lib.character) {
                     if (typeof func == 'function') {
                         if (!func(i))
                             continue;
@@ -6260,7 +6271,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 event.friend = [];
                 event.enemy = [];
                 event.blank = [];
-                for (var i = 0; i < event.config.size; i++) {
+                for (let i = 0; i < event.config.size; i++) {
                     event.nodes.push(ui.create.div('.shadowed.reduce_radius.choosedouble'));
                 }
                 event.moveAvatar = function (node, i) {
@@ -6282,12 +6293,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 };
                 event.aiMove = function (friend) {
                     var list = [];
-                    for (var i = 0; i < event.avatars.length; i++) {
+                    for (let i = 0; i < event.avatars.length; i++) {
                         if (!event.avatars[i].classList.contains('moved')) {
                             list.push(event.avatars[i]);
                         }
                     }
-                    for (var i = 0; i < list.length; i++) {
+                    for (let i = 0; i < list.length; i++) {
                         if (Math.random() < 0.7 || i == list.length - 1) {
                             if (friend) {
                                 event.moveAvatar(list[i], event.friend.length + event.config.width * (event.config.height - 1));
@@ -7648,7 +7659,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var caption;
                 var players = null, cards = null;
                 if (lib.version != lib.config.version) {
-                    for (var i = 0; i < lib.changeLog.length; i++) {
+                    for (let i = 0; i < lib.changeLog.length; i++) {
                         if (lib.changeLog[i].indexOf('players://') == 0) {
                             try {
                                 players = JSON.parse(lib.changeLog[i].slice(10));
@@ -7677,7 +7688,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     caption = '扩展更新';
                 }
                 game.saveConfig('version', lib.version);
-                for (var i in _status.extensionChangeLog) {
+                for (let i in _status.extensionChangeLog) {
                     var li = document.createElement('li');
                     li.innerHTML = i + '：' + _status.extensionChangeLog[i];
                     ul.appendChild(li);
@@ -7973,41 +7984,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 var friendCount = 0;
                 var enemyCount = 0;
                 var rand = Math.random() < 0.5;
-                for (var i = 0; i < game.players.length; i++) {
-                    if (game.players[i].side == game.me.side) {
+                for (let i of game.players) {
+                    if (i.side == game.me.side) {
                         if (rand) {
-                            if (game.players[i] == game.friendZhu) {
-                                game.players[i]._sortCount = -2;
+                            if (i == game.friendZhu) {
+                                i._sortCount = -2;
                             }
                             else {
-                                game.players[i]._sortCount = 2 * friendCount;
+                                i._sortCount = 2 * friendCount;
                             }
                         }
                         else {
-                            if (game.players[i] == game.friendZhu) {
-                                game.players[i]._sortCount = -1;
+                            if (i == game.friendZhu) {
+                                i._sortCount = -1;
                             }
                             else {
-                                game.players[i]._sortCount = 2 * friendCount + 1;
+                                i._sortCount = 2 * friendCount + 1;
                             }
                         }
                         friendCount++;
                     }
                     else {
                         if (rand) {
-                            if (game.players[i] == game.enemyZhu) {
-                                game.players[i]._sortCount = -1;
+                            if (i == game.enemyZhu) {
+                                i._sortCount = -1;
                             }
                             else {
-                                game.players[i]._sortCount = 2 * enemyCount + 1;
+                                i._sortCount = 2 * enemyCount + 1;
                             }
                         }
                         else {
-                            if (game.players[i] == game.enemyZhu) {
-                                game.players[i]._sortCount = -2;
+                            if (i == game.enemyZhu) {
+                                i._sortCount = -2;
                             }
                             else {
-                                game.players[i]._sortCount = 2 * enemyCount;
+                                i._sortCount = 2 * enemyCount;
                             }
                         }
                         enemyCount++;
@@ -8016,8 +8027,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 game.players.sort(function (a, b) {
                     return a._sortCount - b._sortCount;
                 });
-                for (var i = 0; i < game.players.length; i++) {
-                    delete game.players[i]._sortCount;
+                for (let i of game.players) {
+                    delete i._sortCount;
                 }
             }
             else {
@@ -8076,6 +8087,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         skills2 = skills2.concat(info.group);
                 }
                 else {
+                    console.log(skills);
                     console.log(skills[i]);
                 }
             }
@@ -8096,10 +8108,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
         },
         hasPlayer: function (func) {
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].isOut())
+            for (let v of game.players) {
+                if (v.isOut())
                     continue;
-                if (func(game.players[i]))
+                if (func(v))
                     return true;
             }
             return false;
@@ -8119,10 +8131,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (typeof func != 'function') {
                 func = lib.filter.all;
             }
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].isOut())
+            for (let v of game.players) {
+                if (v.isOut())
                     continue;
-                var result = func(game.players[i]);
+                var result = func(v);
                 if (typeof result == 'number') {
                     num += result;
                 }
@@ -8158,11 +8170,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (typeof func != 'function') {
                 func = lib.filter.all;
             }
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].isOut())
+            for (let v of game.players) {
+                if (v.isOut())
                     continue;
-                if (func(game.players[i])) {
-                    list.add(game.players[i]);
+                if (func(v)) {
+                    list.add(v);
                 }
             }
             return list;
@@ -8185,11 +8197,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return list;
         },
         findPlayer: function (func) {
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].isOut())
+            for (let v of game.players) {
+                if (v.isOut())
                     continue;
-                if (func(game.players[i])) {
-                    return game.players[i];
+                if (func(v)) {
+                    return v;
                 }
             }
             return null;

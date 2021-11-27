@@ -54,6 +54,7 @@ class EventModel{
     num:number
     numFixed:boolean
     player:PlayerModel
+    source:PlayerModel
     _modparent:Status_Event
     parent:Status_Event|null
     _triggering:Status_Event
@@ -64,23 +65,48 @@ class EventModel{
     _args:Array<any>
     _rand_map?:{}
     _rand?:number
-    _backup?:Object
-    filterButton?
-    selectButton?
-    filterTarget?
-    selectTarget?
-    filterCard?
-    selectCard?
+    _backup?:{
+        filterButton
+        selectButton
+        filterTarget
+        selectTarget
+        filterCard
+        selectCard
+        position
+        forced
+        fakeforce
+        _aiexclude
+        complexSelect
+        complexCard
+        complexTarget
+        ai1
+        ai2
+        _cardChoice
+        _targetChoice
+        _skillChoice
+    }
+    filterButton?:Function
+    selectButton?:Function
+    filterTarget?:Function
+    selectTarget?:Function
+    filterCard?:Function
+    selectCard?:Function
     position
     forced?
     fakeforce?
     complexSelect?
     complexCard?
     complexTarget?
-    ai1?
-    ai2?
+    ai1?:Function
+    ai2?:Function
     skill?:string
     ignoreMod?:boolean
+    doing:{player,list?}
+    map:{player,list?}[]
+    triggername:string
+    _triggered:number
+
+    getEvent?:Function
     
     constructor(name:string){
         this.name = name
@@ -195,9 +221,10 @@ class EventModel{
         }
         return this;
     }
+    logvid:number
     getLogv () {
         for (var i = 1; i <= 3; i++) {
-            var event = this.getParent(i);
+            var event = this.getParent(i) as EventModel;
             if (event && event.logvid) return event.logvid;
         }
         return null;
@@ -234,7 +261,7 @@ class EventModel{
      * @param {?boolean} [forced] 为true表示强制返回：获取不到指定父事件时返回{null}
      * @returns {?GameCores.Bases.Event} 通过_parent（_modparent）属性获取本事件的父事件，若父事件不满足要求或重复次数少于level，则取父事件的_parent，依此类推直至获取到满足条件的父事件
      */
-    getParent (level = 1, forced = false) {
+    getParent (level:string|number = 1, forced = false):EventModel | Statmap {
         var parent;
         if (this._modparent && game.online) {
             parent = this._modparent;
@@ -242,7 +269,7 @@ class EventModel{
         else {
             parent = this.parent;
         }
-        var toreturn = {};
+        var toreturn:Statmap = {};
         if (typeof level == 'string' && forced == true) {
             toreturn = null;
         }
@@ -277,8 +304,9 @@ class EventModel{
      * @function
      * @returns {?GameCores.Bases.Event} 本事件的触发事件，如果本事件没有触发事件，返回undefined/null
      */
+    _trigger:Status_Event
     getTrigger () {
-        return this.getParent()._trigger;
+        return (this.getParent() as EventModel)._trigger;
     }
     /**
      * 返回本事件的随机值，如果已经有随机值就返回之前的随机值；未调用该函数时，随机值`this._rand`默认未指定(undefined)
@@ -329,6 +357,7 @@ class EventModel{
      * @function
      * @param {?string} skill 技能ID
      */
+    filterCard2:Function
     backup (skill) {
         this._backup = {
             filterButton: this.filterButton,
@@ -479,9 +508,9 @@ class EventModel{
     }
     addTrigger (skill, player) {
         if (!player) return;
-        var evt = this;
+        let evt:EventModel = this;
         while (true) {
-            var evt = evt.getParent('arrangeTrigger');
+            evt = evt.getParent('arrangeTrigger') as EventModel;
             if (!evt || evt.name != 'arrangeTrigger' || !evt.map) return;
             if (typeof skill == 'string') skill = [skill];
             game.expandSkills(skill);
@@ -491,7 +520,7 @@ class EventModel{
             };
             var trigger = evt._trigger;
             var triggername = evt.triggername;
-            var map = false;
+            var map = null;
             if (evt.doing && evt.doing.player == player) map = evt.doing;
             else {
                 for (var i = 0; i < evt.map.length; i++) {
@@ -502,7 +531,7 @@ class EventModel{
             var func = function (skillx) {
                 var info = lib.skill[skillx];
                 var bool = false;
-                for (var i in info.trigger) {
+                for (let i in info.trigger) {
                     if (filter(info.trigger[i])) { bool = true; break }
                 }
                 if (!bool) return;
@@ -518,11 +547,11 @@ class EventModel{
                 if (info.ruleSkill) priority -= 75;
                 var toadd = [skillx, player, priority];
                 if (map.list2) {
-                    for (var i = 0; i < map.list2.length; i++) {
+                    for (let i = 0; i < map.list2.length; i++) {
                         if (map.list2[i][0] == toadd[0] && map.list2[i][1] == toadd[1]) return;
                     }
                 };
-                for (var i = 0; i < map.list.length; i++) {
+                for (let i = 0; i < map.list.length; i++) {
                     if (map.list[i][0] == toadd[0] && map.list[i][1] == toadd[1]) return;
                 }
                 map.list.add(toadd);
@@ -530,7 +559,7 @@ class EventModel{
                     return b[2] - a[2];
                 });
             }
-            for (var j = 0; j < skill.length; j++) {
+            for (let j = 0; j < skill.length; j++) {
                 func(skill[j]);
             }
         }
@@ -573,7 +602,7 @@ class EventModel{
         var event = this;
         //?? 是否可以简化?
         //??
-        var start = false;
+        var start:false|PlayerModel = false;
         var starts = [_status.currentPhase, event.source, event.player, game.me, game.players[0]];
         for (var i = 0; i < starts.length; i++) {
             if (get.itemtype(starts[i]) == 'player') {
@@ -591,8 +620,7 @@ class EventModel{
         var allbool = false;
         var roles = ['player', 'source', 'target'];
         var listAdded;
-        var mapxx;
-        var addList = function (skill, player) {
+        var addList = function (skill, player, mapxx) {
             if (listAdded[skill]) return;
             if (player.forbiddenSkills[skill]) return;
             if (player.disabledSkills[skill]) return;
@@ -698,36 +726,36 @@ class EventModel{
                                 else if (trigger.global.contains(name)) add = true;
                             }
                             if (add) {
-                                addList(skills[i], player);
+                                addList(skills[i], player, mapxx);
                             }
                         }
                     }
                 }());
             }
             else {
-                for (var i = 0; i < roles.length; i++) {
+                for (let i = 0; i < roles.length; i++) {
                     var triggername = player.playerid + '_' + roles[i] + '_' + name;
                     if (lib.hook[triggername]) {
-                        for (var j = 0; j < lib.hook[triggername].length; j++) {
-                            addList(lib.hook[triggername][j], player);
+                        for (let j = 0; j < lib.hook[triggername].length; j++) {
+                            addList(lib.hook[triggername][j], player, mapxx);
                         }
                     }
                     triggername = roles[i] + '_' + name;
                     if (lib.hook.globalskill[triggername]) {
-                        for (var j = 0; j < lib.hook.globalskill[triggername].length; j++) {
-                            addList(lib.hook.globalskill[triggername][j], player);
+                        for (let j = 0; j < lib.hook.globalskill[triggername].length; j++) {
+                            addList(lib.hook.globalskill[triggername][j], player, mapxx);
                         }
                     }
                 }
                 if (lib.hook.globalskill[globalskill]) {
-                    for (var j = 0; j < lib.hook.globalskill[globalskill].length; j++) {
-                        addList(lib.hook.globalskill[globalskill][j], player);
+                    for (let j = 0; j < lib.hook.globalskill[globalskill].length; j++) {
+                        addList(lib.hook.globalskill[globalskill][j], player, mapxx);
                     }
                 }
-                for (var i in lib.hook.globaltrigger[name]) {
+                for (let i in lib.hook.globaltrigger[name]) {
                     if (map[i] === player) {
-                        for (var j = 0; j < lib.hook.globaltrigger[name][i].length; j++) {
-                            addList(lib.hook.globaltrigger[name][i][j], map[i]);
+                        for (let j = 0; j < lib.hook.globaltrigger[name][i].length; j++) {
+                            addList(lib.hook.globaltrigger[name][i][j], map[i], mapxx);
                         }
                     }
                 }
@@ -758,6 +786,10 @@ class EventModel{
      * @param {?GameCores.GameObjects.Player} player 一个角色，取消所有将要对该角色触发的子事件，如果未指定，忽略该值
      */
     untrigger (all, player) {
+        if(this instanceof EventModel&&this.getEvent){
+            this.getEvent().untrigger(all, player)
+            return;
+        }
         var evt = this._triggering;
         if (all) {
             if (evt && evt.map) {
@@ -778,6 +810,27 @@ class EventModel{
                 }
             }
         }
+    }
+    get orderingCards(){
+        return this.getEvent()._orderingCards
+    }
+    set orderingCards(e){
+        this.getEvent()._orderingCards = e
+    }
+    _targets
+    get targets(){
+        if(this.getEvent)   return this.getEvent()._targets
+        else    return this._targets
+    }
+    set targets(e){
+        if(this.getEvent)   this.getEvent()._targets = e
+        else    this._targets = e
+    }
+    get fixedSeat(){
+        return this.getEvent()._fixedSeat
+    }
+    set fixedSeat(e){
+        this.getEvent()._fixedSeat = e
     }
 }
 export default EventModel;

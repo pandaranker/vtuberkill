@@ -20,11 +20,12 @@ const ai:Record<string, any> = {};
             ori[key] = mix[key];
         }else if(typeof mix[key] === 'function' && typeof ori[key] === 'function'){
             console.warn('Function['+key+'] is overridden.');
-            let oriFunc = ori[key];
-            ori[key] = function(){
-                oriFunc.apply(this, arguments);
-                mix[key].apply(this, arguments);
-            }
+            ori[key] = mix[key];
+            // let oriFunc = ori[key];
+            // ori[key] = function(){
+            //     oriFunc.apply(this, arguments);
+            //     mix[key].apply(this, arguments);
+            // }
         }else if(Array.isArray(mix[key]) && Array.isArray(ori[key])){
             (ori[key] as Array<any>).push(...(mix[key] as Array<any>));
         }else{

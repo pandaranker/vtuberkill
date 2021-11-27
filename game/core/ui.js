@@ -820,7 +820,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             if (connectMenu) {
                                 if (_status.waitingForPlayer) {
                                     var config = {};
-                                    for (var i in lib.mode[lib.configOL.mode].connect) {
+                                    for (let i in lib.mode[lib.configOL.mode].connect) {
                                         if (i == 'update')
                                             continue;
                                         config[i.slice(8)] = get.config(i, lib.configOL.mode);
@@ -832,12 +832,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                     else {
                                         game.broadcastAll(function (config) {
-                                            for (var i in config) {
+                                            for (let i in config) {
                                                 lib.configOL[i] = config[i];
                                             }
                                         }, config);
                                         if (lib.configOL.mode == 'identity' && lib.configOL.identity_mode == 'zhong' && game.connectPlayers) {
-                                            for (var i = 0; i < game.connectPlayers.length; i++) {
+                                            for (let i = 0; i < game.connectPlayers.length; i++) {
                                                 game.connectPlayers[i].classList.remove('unselectable2');
                                             }
                                             lib.configOL.number = 8;
@@ -861,10 +861,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         }
                                         config.characterPack = lib.connectCharacterPack.slice(0);
                                         config.cardPack = lib.connectCardPack.slice(0);
-                                        for (var i = 0; i < lib.config.connect_characters.length; i++) {
+                                        for (let i = 0; i < lib.config.connect_characters.length; i++) {
                                             config.characterPack.remove(lib.config.connect_characters[i]);
                                         }
-                                        for (var i = 0; i < lib.config.connect_cards.length; i++) {
+                                        for (let i = 0; i < lib.config.connect_cards.length; i++) {
                                             config.cardPack.remove(lib.config.connect_cards[i]);
                                         }
                                         config.banned = lib.config['connect_' + active.mode + '_banned'];
@@ -1129,10 +1129,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         return node;
                     };
                     var modeorder = lib.config.modeorder || [];
-                    for (var i in lib.mode) {
+                    for (let i in lib.mode) {
                         modeorder.add(i);
                     }
-                    for (var i = 0; i < modeorder.length; i++) {
+                    for (let i = 0; i < modeorder.length; i++) {
                         if (connectMenu) {
                             if (!lib.mode[modeorder[i]].connect)
                                 continue;
@@ -1195,7 +1195,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         game.saveConfig('autoskilllist', list);
                     };
                     var skilllistexpanded = game.expandSkills(lib.skilllist);
-                    for (var i in lib.skill) {
+                    for (let i in lib.skill) {
                         if (!skilllistexpanded.contains(i))
                             continue;
                         if (lib.skill[i].frequent && lib.translate[i]) {
@@ -1209,8 +1209,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     var clickBanSkill = function (bool) {
-                        var name = this._link.config._name;
-                        var list = lib.config.forbidlist;
+                        let name = this._link.config._name;
+                        let list = lib.config.forbidlist;
                         if (bool) {
                             list.remove(name);
                         }
@@ -1223,12 +1223,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (!lib.config.forbidlist) {
                         game.saveConfig('forbidlist', []);
                     }
-                    for (var i = 0; i < forbid.length; i++) {
-                        var skip = false;
-                        var str = '';
-                        var str2 = '';
-                        var str3 = '';
-                        for (var j = 0; j < forbid[i].length; j++) {
+                    for (let i = 0; i < forbid.length; i++) {
+                        let skip = false;
+                        let str = '';
+                        let str2 = '';
+                        let str3 = '';
+                        for (let j = 0; j < forbid[i].length; j++) {
                             if (!lib.skilllist.contains(forbid[i][j])) {
                                 skip = true;
                                 break;
@@ -1351,7 +1351,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                                 (function () {
                                     var list = [];
-                                    for (var i in lib.character) {
+                                    for (let i in lib.character) {
                                         if (lib.character[i][3].length)
                                             list.push([i, lib.translate[i]]);
                                     }
@@ -1372,7 +1372,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     });
                                     var list2 = [];
                                     var skills = lib.character[list[0][0]][3];
-                                    for (var i = 0; i < skills.length; i++) {
+                                    for (let i = 0; i < skills.length; i++) {
                                         list2.push([skills[i], lib.translate[skills[i]]]);
                                     }
                                     var selectname = ui.create.selectlist(list, list[0], banskilladdNode);
@@ -2334,10 +2334,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             if (!lib.character[name])
                                 return 50;
                             var group = getGroup(name);
-                            if (group == 'vtuber')
-                                return 40;
-                            if (group == 'clubs')
-                                return 41;
                             var list = get.groups();
                             if (list.contains(group))
                                 return list.indexOf(group);
@@ -6662,14 +6658,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 return;
                             }
                             var list = [];
-                            for (var i = 0; i < game.players.length; i++) {
-                                if (lib.character[game.players[i].name] || game.players[i].name1) {
-                                    list.push(game.players[i]);
+                            for (let v of game.players) {
+                                if (lib.character[v.name] || v.name1) {
+                                    list.push(v);
                                 }
                             }
-                            for (var i = 0; i < game.dead.length; i++) {
-                                if (lib.character[game.dead[i].name] || game.dead[i].name1) {
-                                    list.push(game.dead[i]);
+                            for (let v of game.dead) {
+                                if (lib.character[v.name] || v.name1) {
+                                    list.push(v);
                                 }
                             }
                             if (list.length) {
@@ -7252,7 +7248,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }, true, true);
             },
             groupControl: function (dialog) {
-                return ui.create.control('qun', 'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi', 'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca', 'vshojo', function (link, node) {
+                return ui.create.control(...lib.group2, function (link, node) {
                     if (link == '全部') {
                         dialog.currentcapt = '';
                         dialog.currentgroup = '';
@@ -7935,10 +7931,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         if (!lib.character[name])
                             return 50;
                         var group = getGroup(name);
-                        if (group == 'vtuber')
-                            return 40;
-                        if (group == 'clubs')
-                            return 41;
                         var list = get.groups();
                         if (list.contains(group))
                             return list.indexOf(group);

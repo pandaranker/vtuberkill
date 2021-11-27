@@ -586,7 +586,7 @@ mixin(game, /**@lends module:core.game */ {
                 }(updates[i])));
             }
             else {
-                resolveLocalFileSystemURL(lib.assetURL + updates[i], (function (name) {
+                window.resolveLocalFileSystemURL(lib.assetURL + updates[i], (function (name) {
                     return function (entry) {
                         n--;
                         updates.remove(name);
@@ -648,13 +648,13 @@ mixin(game, /**@lends module:core.game */ {
             game.me = ui.create.player();
         }
         var list = [];
-        for (var i = 0; i < game.players.length; i++) {
-            if (game.players[i] != game.me) {
-                list.push(game.players[i]);
+        for (let v of game.players) {
+            if (v != game.me) {
+                list.push(v);
             }
         }
         var map = [];
-        for (var i = 0; i < lib.node.clients.length; i++) {
+        for (let i = 0; i < lib.node.clients.length; i++) {
             if (!list.length) break;
             if (lib.configOL.observe_race) var current = list.shift();
             else var current = list.randomRemove();
@@ -668,12 +668,12 @@ mixin(game, /**@lends module:core.game */ {
             game.me.nickname = get.connectNickname();
             game.me.setNickname();
         }
-        for (var i = 0; i < game.players.length; i++) {
-            if (!game.players[i].playerid) {
-                game.players[i].playerid = get.id();
+        for (let v of game.players) {
+            if (!v.playerid) {
+                v.playerid = get.id();
             }
-            map.push([game.players[i].playerid, game.players[i].nickname]);
-            lib.playerOL[game.players[i].playerid] = game.players[i];
+            map.push([v.playerid, v.nickname]);
+            lib.playerOL[v.playerid] = v;
         }
         game.broadcast(function (map, config, hidden) {
             if (hidden) {
@@ -684,13 +684,13 @@ mixin(game, /**@lends module:core.game */ {
             ui.create.me();
             game.me.playerid = game.onlineID;
             game.me.nickname = get.connectNickname();
-            for (var i = 0; i < map.length; i++) {
+            for (let i = 0; i < map.length; i++) {
                 if (map[i][0] == game.me.playerid) {
                     map = map.concat(map.splice(0, i));
                     break;
                 }
             }
-            for (var i = 0; i < game.players.length; i++) {
+            for (let i = 0; i < game.players.length; i++) {
                 game.players[i].playerid = map[i][0];
                 game.players[i].nickname = map[i][1];
                 game.players[i].setNickname();
@@ -904,8 +904,8 @@ mixin(game, /**@lends module:core.game */ {
         if (_status.connectMode && !game.online && game.me) {
             if (game.me._hide_all_timer) {
                 delete game.me._hide_all_timer;
-                for (var i = 0; i < game.players.length; i++) {
-                    game.players[i].hideTimer();
+                for (let v of game.players) {
+                   v.hideTimer();
                 }
             }
             else if (!_status.event._global_waiting) {
@@ -1521,7 +1521,7 @@ mixin(game, /**@lends module:core.game */ {
                         //电脑端
                         //具备nodeJS环境
                         game.ensureDirectory('extension/' + extname, function () {
-                            var writeFile = function (e) {
+                            var writeFile = function (e?) {
                                 if (e) {
                                     finishLoad();
                                     UHP();
@@ -1586,7 +1586,7 @@ mixin(game, /**@lends module:core.game */ {
                 else {
                     localStorage.setItem(lib.configprefix + 'extension_' + extname, str);
                     var imglist = [];
-                    for (var i in zip.files) {
+                    for (let i in zip.files) {
                         if (i[0] != '.' && i[0] != '_') {
                             if (i.indexOf('.jpg') != -1 || i.indexOf('.png') != -1) {
                                 imglist.push(i);
@@ -1598,15 +1598,15 @@ mixin(game, /**@lends module:core.game */ {
                             image: imglist
                         }
                         game.saveConfig('extensionInfo', lib.config.extensionInfo);
-                        for (var i = 0; i < imglist.length; i++) {
-                            var imgname = imglist[i];
-                            var str = zip.file(imgname).asArrayBuffer();
+                        for (let i = 0; i < imglist.length; i++) {
+                            let imgname = imglist[i];
+                            let str = zip.file(imgname).asArrayBuffer();
                             if (str) {
-                                var blob = new Blob([str]);
-                                var fileReader = new FileReader();
+                                let blob = new Blob([str]);
+                                let fileReader = new FileReader();
                                 fileReader.onload = (function (imgname) {
                                     return function (fileLoadedEvent) {
-                                        var data = fileLoadedEvent.target.result;
+                                        let data = fileLoadedEvent.target.result;
                                         game.putDB('image', 'extension-' + extname + ':' + imgname, data);
                                     };
                                 }(imgname))
@@ -1808,8 +1808,8 @@ mixin(game, /**@lends module:core.game */ {
             if (lib.config.mode == 'versus') {
                 if (players.bool) {
                     ui.arena.setNumber(parseInt(ui.arena.dataset.number) + 1);
-                    for (var i = 0; i < game.players.length; i++) {
-                        game.players[i].dataset.position = parseInt(game.players[i].dataset.position) + 1;
+                    for (let v of game.players) {
+                        v.dataset.position = parseInt(v.dataset.position) + 1;
                     }
                     game.singleHandcard = true;
                     ui.arena.classList.add('single-handcard');
@@ -1878,8 +1878,8 @@ mixin(game, /**@lends module:core.game */ {
                     }
                 }
             }
-            for (var i = 0; i < game.players.length; i++) {
-                game.playerMap[game.players[i].dataset.position] = game.players[i];
+            for (let v of game.players) {
+                game.playerMap[v.dataset.position] = v;
             }
 
             if (lib.config.mode == 'versus') {
@@ -2958,7 +2958,7 @@ mixin(game, /**@lends module:core.game */ {
                 console.log(content);
                 return;
             }
-            var temp1, pos, i, num;
+            var temp1, pos, num;
             temp1 = player1.dataset.position;
             player1.dataset.position = player2.dataset.position;
             player2.dataset.position = temp1;
@@ -2967,20 +2967,20 @@ mixin(game, /**@lends module:core.game */ {
                 pos = parseInt(player1.dataset.position);
                 if (pos == 0) pos = parseInt(player2.dataset.position);
                 num = game.players.length + game.dead.length;
-                for (i = 0; i < game.players.length; i++) {
-                    temp1 = parseInt(game.players[i].dataset.position) - pos;
+                for (let v of game.players) {
+                    temp1 = parseInt(v.dataset.position) - pos;
                     if (temp1 < 0) temp1 += num;
-                    game.players[i].dataset.position = temp1;
+                    v.dataset.position = temp1;
                 }
-                for (i = 0; i < game.dead.length; i++) {
-                    temp1 = parseInt(game.dead[i].dataset.position) - pos;
+                for (let v of game.dead) {
+                    temp1 = parseInt(v.dataset.position) - pos;
                     if (temp1 < 0) temp1 += num;
-                    game.dead[i].dataset.position = temp1;
+                    v.dataset.position = temp1;
                 }
             }
             game.playerMap = {};
             var players = game.players.concat(game.dead);
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 game.playerMap[players[i].dataset.position] = players[i];
             }
         },
@@ -3757,7 +3757,7 @@ mixin(game, /**@lends module:core.game */ {
         * @param {GameCores.GameObjects.Player} player 事件所属的角色
         * @param {GameCores.Bases.Event} event trigger事件的触发事件
         */
-    createTrigger: function (name, skill, player, event) {
+    createTrigger (name, skill, player, event) {
         if (player.isOut() || player.removed) return;
         if (player.isDead() && !lib.skill[skill].forceDie) return;
         var next = game.createEvent('trigger', false);
@@ -3775,7 +3775,7 @@ mixin(game, /**@lends module:core.game */ {
         * @param {?boolean} [canTriggered] 是否可以触发，如果是true或未指定，可以触发；如果是false，不会触发
         * @param {?GameCores.Bases.Event} [triggerevent] 前置事件，如果未指定，使用当前事件{@link _status.event}
         */
-    createEvent: function (name, trigger, triggerevent) {
+    createEvent (name, trigger, triggerevent) {
         /**
             * 事件对象
             * 创建事件，见{@link game.createEvent}
@@ -3784,7 +3784,7 @@ mixin(game, /**@lends module:core.game */ {
         var next:{[propName:string]: any} = new EventModel(name)
         /**@lends GameCores.Bases.Event */
         if (trigger !== false && !game.online) next._triggered = 0;
-        (triggerevent || _status.event).next.push(next);
+        ((triggerevent?.getEvent?triggerevent.getEvent():triggerevent) || _status.event).next.push(next);
         return next;
     },
     /**
@@ -3793,7 +3793,7 @@ mixin(game, /**@lends module:core.game */ {
         * @param {*} info 
         */
     //TODO
-    addCharacter: function (name, info) {
+    addCharacter (name, info) {
         var extname = (_status.extension || info.extension);
         var imgsrc;
         if (_status.evaluatingExtension) {
@@ -3821,7 +3821,7 @@ mixin(game, /**@lends module:core.game */ {
         * @param {*} packagename 
         */
     //TODO
-    addCharacterPack: function (pack, packagename) {
+    addCharacterPack (pack, packagename) {
         var extname = _status.extension || '扩展';
         packagename = packagename || extname;
         for (var i in pack) {
@@ -3923,15 +3923,15 @@ mixin(game, /**@lends module:core.game */ {
         var packname = 'mode_extension_' + packagename;
         lib.cardPack[packname] = [];
         lib.translate[packname + '_card_config'] = packagename;
-        for (var i in pack) {
+        for (let i in pack) {
             if (i == 'mode' || i == 'forbid') continue;
             if (i == 'list') {
-                for (var j = 0; j < pack[i].length; j++) {
+                for (let j = 0; j < pack[i].length; j++) {
                     lib.card.list.push(pack[i][j]);
                 }
                 continue;
             }
-            for (var j in pack[i]) {
+            for (let j in pack[i]) {
                 if (i == 'card') {
                     if (pack[i][j].audio == true) {
                         pack[i][j].audio = 'ext:' + extname;
@@ -4061,29 +4061,29 @@ mixin(game, /**@lends module:core.game */ {
     removeGlobalSkill: function (skill) {
         lib.skill.global.remove(skill);
         delete lib.skill.globalmap[skill];
-        for (var i in lib.hook.globalskill) {
+        for (let i in lib.hook.globalskill) {
             lib.hook.globalskill[i].remove(skill);
         }
     },
     //将清除武将牌上的临时技能
     resetSkills: function () {
-        for (var i = 0; i < game.players.length; i++) {
-            for (var j in game.players[i].tempSkills) {
-                game.players[i].removeSkill(j);
+        for (let v of game.players) {
+            for (let j in v.tempSkills) {
+                v.removeSkill(j);
             }
-            var skills = game.players[i].getSkills();
-            for (var j = 0; j < skills.length; j++) {
+            let skills = v.getSkills();
+            for (let j = 0; j < skills.length; j++) {
                 if (lib.skill[skills[j]].vanish) {
-                    game.players[i].removeSkill(skills[j]);
+                    v.removeSkill(skills[j]);
                 }
             }
-            game.players[i].in(true);
+            v.in(true);
         }
         ui.clear();
     },
     removeExtension: function (extname, keepfile) {
-        var prefix = 'extension_' + extname;
-        for (var i in lib.config) {
+        let prefix = 'extension_' + extname;
+        for (let i in lib.config) {
             if (i.indexOf(prefix) == 0) {
                 game.saveConfig(i);
             }
@@ -4092,15 +4092,15 @@ mixin(game, /**@lends module:core.game */ {
         game.deleteDB('data', prefix);
         lib.config.extensions.remove(extname);
         game.saveConfig('extensions', lib.config.extensions);
-        var modelist = lib.config.extensionInfo[extname];
+        let modelist = lib.config.extensionInfo[extname];
         if (modelist) {
             if (modelist.image) {
-                for (var i = 0; i < modelist.image.length; i++) {
+                for (let i = 0; i < modelist.image.length; i++) {
                     game.deleteDB('image', 'extension-' + extname + ':' + modelist.image[i]);
                 }
             }
             if (modelist.mode) {
-                for (var i = 0; i < modelist.mode.length; i++) {
+                for (let i = 0; i < modelist.mode.length; i++) {
                     game.clearModeConfig(modelist.mode[i]);
                 }
             }
@@ -4217,7 +4217,7 @@ mixin(game, /**@lends module:core.game */ {
     over: function (result) {
         if (_status.over) return;
         if (game.me._trueMe) game.swapPlayer(game.me._trueMe);
-        var i, j, k, num, table, tr, td, dialog;
+        var num, table, tr, td, dialog;
         _status.over = true;
         ui.control.show();
         ui.clear();
@@ -4248,18 +4248,17 @@ mixin(game, /**@lends module:core.game */ {
             }
             ui.update();
             dialog.add(ui.create.div('.placeholder'));
-            for (var i = 0; i < game.players.length; i++) {
-                var hs = game.players[i].getCards('h');
+            for (let v of game.players) {
+                let hs = v.getCards('h');
                 if (hs.length) {
-                    dialog.add('<div class="text center">' + get.translation(game.players[i]) + '</div>');
+                    dialog.add('<div class="text center">' + get.translation(v) + '</div>');
                     dialog.addSmall(hs);
                 }
             }
-
-            for (var j = 0; j < game.dead.length; j++) {
-                var hs = game.dead[j].getCards('h');
+            for (let v of game.dead) {
+                let hs = v.getCards('h');
                 if (hs.length) {
-                    dialog.add('<div class="text center">' + get.translation(game.dead[j]) + '</div>');
+                    dialog.add('<div class="text center">' + get.translation(v) + '</div>');
                     dialog.addSmall(hs);
                 }
             }
@@ -4299,8 +4298,8 @@ mixin(game, /**@lends module:core.game */ {
             if (ui.auto) ui.auto.hide();
             if (ui.wuxie) ui.wuxie.hide();
             if (game.getIdentityList) {
-                for (var i = 0; i < game.players.length; i++) {
-                    game.players[i].setIdentity();
+                for (let v of game.players) {
+                    v.setIdentity();
                 }
             }
             return;
@@ -4475,44 +4474,63 @@ mixin(game, /**@lends module:core.game */ {
             td.innerHTML = '杀敌';
             tr.appendChild(td);
             table.appendChild(tr);
-            for (i = 0; i < game.players.length; i++) {
-                var uploadDataRow = {}
+            for (let i of game.players) {
+                let uploadDataRow:{
+                    name:string
+                    transName:string
+                    nickname:string
+                    identity?:string
+                    damage:number
+                    damaged:number
+                    gain:number
+                    card:number
+                    kill:number
+                    alive:boolean
+                    winner?:boolean
+                } = {
+                    name: i.name, //名字拼音
+                    transName: td.innerHTML, //名字
+                    nickname: i.nickname, //昵称
+                    damage:0,
+                    damaged:0,
+                    gain:0,
+                    card:0,
+                    kill:0,
+                    alive:true //存活
+                }
                 tr = document.createElement('tr');
                 td = document.createElement('td');
-                td.innerHTML = get.translation(game.players[i]);
-                uploadDataRow.name = game.players[i].name; //名字拼音
-                uploadDataRow.transName = td.innerHTML; //名字
-                uploadDataRow.nickname = game.players[i].nickname;//昵称
+                td.innerHTML = get.translation(i);
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.players[i].stat.length; j++) {
-                    if (game.players[i].stat[j].damage != undefined) num += game.players[i].stat[j].damage;
+                for (let j of i.stat) {
+                    if (j.damage != undefined) num += j.damage;
                 }
                 td.innerHTML = num;
                 uploadDataRow.damage = num; //伤害
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.players[i].stat.length; j++) {
-                    if (game.players[i].stat[j].damaged != undefined) num += game.players[i].stat[j].damaged;
+                for (let j of i.stat) {
+                    if (j.damaged != undefined) num += j.damaged;
                 }
                 td.innerHTML = num;
                 uploadDataRow.damaged = num; //受伤
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.players[i].stat.length; j++) {
-                    if (game.players[i].stat[j].gain != undefined) num += game.players[i].stat[j].gain;
+                for (let j of i.stat) {
+                    if (j.gain != undefined) num += j.gain;
                 }
                 td.innerHTML = num;
                 uploadDataRow.gain = num; //摸牌
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.players[i].stat.length; j++) {
-                    for (k in game.players[i].stat[j].card) {
-                        num += game.players[i].stat[j].card[k];
+                for (let j of i.stat) {
+                    for (let k in j.card) {
+                        num += j.card[k];
                     }
                 }
                 td.innerHTML = num;
@@ -4520,18 +4538,17 @@ mixin(game, /**@lends module:core.game */ {
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.players[i].stat.length; j++) {
-                    if (game.players[i].stat[j].kill != undefined) num += game.players[i].stat[j].kill;
+                for (let j of i.stat) {
+                    if (j.kill != undefined) num += j.kill;
                 }
                 td.innerHTML = num;
                 uploadDataRow.kill = num; //杀敌
                 tr.appendChild(td);
                 table.appendChild(tr);
-                uploadDataRow.identity = get.translation(game.players[i].identity) //身份
-                uploadDataRow.alive = true; //存活
+                uploadDataRow.identity = get.translation(i.identity) //身份
                 if (get.mode() == 'identity') {	//胜利或失败
                     if (game.zhu.isAlive()) {
-                        if (game.players[i].identity == 'fan' || game.players[i].identity == 'nei') {
+                        if (i.identity == 'fan' || i.identity == 'nei') {
                             uploadDataRow.winner = false;
                         }
                         else {
@@ -4540,13 +4557,13 @@ mixin(game, /**@lends module:core.game */ {
                     }
                     else {
                         if (game.players.length == 1) {
-                            if (game.players[i].identity == 'zhong')
+                            if (i.identity == 'zhong')
                                 uploadDataRow.winner = false;
                             else
                                 uploadDataRow.winner = true;
                         }
                         else {
-                            if (game.players[i].identity == 'fan') {
+                            if (i.identity == 'fan') {
                                 uploadDataRow.winner = true;
                             }
                             else
@@ -4588,44 +4605,63 @@ mixin(game, /**@lends module:core.game */ {
                 tr.appendChild(td);
                 table.appendChild(tr);
             }
-            for (i = 0; i < game.dead.length; i++) {
-                var uploadDataRow = {}
+            for (let i of game.dead) {
+                let uploadDataRow:{
+                    name:string
+                    transName:string
+                    nickname:string
+                    identity?:string
+                    damage:number
+                    damaged:number
+                    gain:number
+                    card:number
+                    kill:number
+                    alive:boolean
+                    winner?:boolean
+                } = {
+                    name: i.name, //名字拼音
+                    transName: td.innerHTML, //名字
+                    nickname: i.nickname, //昵称
+                    damage:0,
+                    damaged:0,
+                    gain:0,
+                    card:0,
+                    kill:0,
+                    alive:false //存活
+                }
                 tr = document.createElement('tr');
                 td = document.createElement('td');
-                td.innerHTML = get.translation(game.dead[i]);
-                uploadDataRow.name = game.dead[i].name;//名字拼音
-                uploadDataRow.transName = td.innerHTML; //名字
-                uploadDataRow.nickname = game.dead[i].nickname;//昵称
+                td.innerHTML = get.translation(i);
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.dead[i].stat.length; j++) {
-                    if (game.dead[i].stat[j].damage != undefined) num += game.dead[i].stat[j].damage;
+                for (let j of i.stat) {
+                    if (j.damage != undefined) num += j.damage;
                 }
                 td.innerHTML = num;
                 uploadDataRow.damage = num; //伤害
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.dead[i].stat.length; j++) {
-                    if (game.dead[i].stat[j].damaged != undefined) num += game.dead[i].stat[j].damaged;
+                for (let j of i.stat) {
+                    if (j.damaged != undefined) num += j.damaged;
                 }
                 td.innerHTML = num;
                 uploadDataRow.damaged = num; //受伤
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.dead[i].stat.length; j++) {
-                    if (game.dead[i].stat[j].gain != undefined) num += game.dead[i].stat[j].gain;
+                for (let j of i.stat) {
+                    if (j.gain != undefined) num += j.gain;
                 }
                 td.innerHTML = num;
                 uploadDataRow.gain = num; //摸牌
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.dead[i].stat.length; j++) {
-                    for (k in game.dead[i].stat[j].card) {
-                        num += game.dead[i].stat[j].card[k];
+                for (let j of i.stat) {
+                    for (let k in j.card) {
+                        num += j.card[k];
                     }
                 }
                 td.innerHTML = num;
@@ -4633,18 +4669,17 @@ mixin(game, /**@lends module:core.game */ {
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.dead[i].stat.length; j++) {
-                    if (game.dead[i].stat[j].kill != undefined) num += game.dead[i].stat[j].kill;
+                for (let j of i.stat) {
+                    if (j.kill != undefined) num += j.kill;
                 }
                 td.innerHTML = num;
                 uploadDataRow.kill = num; //杀敌
                 tr.appendChild(td);
                 table.appendChild(tr);
-                uploadDataRow.identity = get.translation(game.dead[i].identity); //身份
-                uploadDataRow.alive = false; //存活
+                uploadDataRow.identity = get.translation(i.identity); //身份
                 if (get.mode() == 'identity') {	//胜利或失败
                     if (game.zhu.isAlive()) {
-                        if (game.dead[i].identity == 'fan' || game.dead[i].identity == 'nei') {
+                        if (i.identity == 'fan' || i.identity == 'nei') {
                             uploadDataRow.winner = false;
                         }
                         else {
@@ -4657,14 +4692,14 @@ mixin(game, /**@lends module:core.game */ {
                                 uploadDataRow.winner = false;
                             }
                             else if (game.players[0].identity == 'fan') {
-                                if (game.dead[i].identity == 'fan')
+                                if (i.identity == 'fan')
                                     uploadDataRow.winner = true;
                                 else
                                     uploadDataRow.winner = false;
                             }
                         }
                         else {
-                            if (game.dead[i].identity == 'fan') {
+                            if (i.identity == 'fan') {
                                 uploadDataRow.winner = true;
                             }
                             else
@@ -4673,8 +4708,8 @@ mixin(game, /**@lends module:core.game */ {
                     }
                 }
                 else if (get.mode() == 'guozhan') {
-                    if (game.players[0] && (game.dead[i].identity == game.players[0])) {
-                        if (game.dead[i].identity != 'ye') {
+                    if (game.players[0] && (i.identity == game.players[0])) {
+                        if (i.identity != 'ye') {
                             uploadDataRow.winner = true;
                         }
                         else {
@@ -4685,8 +4720,8 @@ mixin(game, /**@lends module:core.game */ {
                         uploadDataRow.winner = false;
                 }
                 else {
-                    if (game.players[0] && (game.dead[i].identity == game.players[0])) {
-                        if (game.dead[i].identity != 'ye') {
+                    if (game.players[0] && (i.identity == game.players[0])) {
+                        if (i.identity != 'ye') {
                             uploadDataRow.winner = true;
                         }
                         else {
@@ -4718,45 +4753,45 @@ mixin(game, /**@lends module:core.game */ {
         if (game.additionaldead && game.additionaldead.length) {
             table = document.createElement('table');
             table.style.opacity = '0.5';
-            for (i = 0; i < game.additionaldead.length; i++) {
+            for (let i of game.additionaldead) {
                 tr = document.createElement('tr');
                 td = document.createElement('td');
-                td.innerHTML = get.translation(game.additionaldead[i]);
+                td.innerHTML = get.translation(i);
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                    if (game.additionaldead[i].stat[j].damage != undefined) num += game.additionaldead[i].stat[j].damage;
+                for (let j of i.stat) {
+                    if (j.damage != undefined) num += j.damage;
                 }
                 td.innerHTML = num;
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                    if (game.additionaldead[i].stat[j].damaged != undefined) num += game.additionaldead[i].stat[j].damaged;
+                for (let j of i.stat) {
+                    if (j.damaged != undefined) num += j.damaged;
                 }
                 td.innerHTML = num;
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                    if (game.additionaldead[i].stat[j].gain != undefined) num += game.additionaldead[i].stat[j].gain;
+                for (let j of i.stat) {
+                    if (j.gain != undefined) num += j.gain;
                 }
                 td.innerHTML = num;
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                    for (k in game.additionaldead[i].stat[j].card) {
-                        num += game.additionaldead[i].stat[j].card[k];
+                for (let j of i.stat) {
+                    for (let k in j.card) {
+                        num += j.card[k];
                     }
                 }
                 td.innerHTML = num;
                 tr.appendChild(td);
                 td = document.createElement('td');
                 num = 0;
-                for (j = 0; j < game.additionaldead[i].stat.length; j++) {
-                    if (game.additionaldead[i].stat[j].kill != undefined) num += game.additionaldead[i].stat[j].kill;
+                for (let j of i.stat) {
+                    if (j.kill != undefined) num += j.kill;
                 }
                 td.innerHTML = num;
                 tr.appendChild(td);
@@ -4769,7 +4804,7 @@ mixin(game, /**@lends module:core.game */ {
         dialog.add(ui.create.div('.placeholder'));
 
         var clients = game.players.concat(game.dead);
-        for (var i = 0; i < clients.length; i++) {
+        for (let i = 0; i < clients.length; i++) {
             if (clients[i].isOnline2()) {
                 clients[i].send(game.over, dialog.content.innerHTML, game.checkOnlineResult(clients[i]));
             }
@@ -4777,19 +4812,19 @@ mixin(game, /**@lends module:core.game */ {
 
         dialog.add(ui.create.div('.placeholder'));
 
-        for (var i = 0; i < game.players.length; i++) {
-            if (!_status.connectMode && game.players[i].isUnderControl(true) && game.layout != 'long2') continue;
-            var hs = game.players[i].getCards('h');
+        for (let i of game.players) {
+            if (!_status.connectMode && i.isUnderControl(true) && game.layout != 'long2') continue;
+            var hs = i.getCards('h');
             if (hs.length) {
-                dialog.add('<div class="text center">' + get.translation(game.players[i]) + '</div>');
+                dialog.add('<div class="text center">' + get.translation(i) + '</div>');
                 dialog.addSmall(hs);
             }
         }
-        for (var i = 0; i < game.dead.length; i++) {
-            if (!_status.connectMode && game.dead[i].isUnderControl(true) && game.layout != 'long2') continue;
-            var hs = game.dead[i].getCards('h');
+        for (let i of game.dead) {
+            if (!_status.connectMode && i.isUnderControl(true) && game.layout != 'long2') continue;
+            let hs = i.getCards('h');
             if (hs.length) {
-                dialog.add('<div class="text center">' + get.translation(game.dead[i]) + '</div>');
+                dialog.add('<div class="text center">' + get.translation(i) + '</div>');
                 dialog.addSmall(hs);
             }
         }
@@ -4799,14 +4834,14 @@ mixin(game, /**@lends module:core.game */ {
         if (!_status.video && vinum && game.getVideoName && window.indexedDB && _status.videoInited) {
             var store = lib.db.transaction(['video'], 'readwrite').objectStore('video');
             var videos = lib.videos.slice(0);
-            for (var i = 0; i < videos.length; i++) {
+            for (let i = 0; i < videos.length; i++) {
                 if (videos[i].starred) {
                     videos.splice(i--, 1);
                 }
             }
-            for (var deletei = 0; deletei < 5; deletei++) {
+            for (let deletei = 0; deletei < 5; deletei++) {
                 if (videos.length >= vinum) {
-                    var toremove = videos.pop();
+                    let toremove = videos.pop();
                     lib.videos.remove(toremove);
                     store.delete(toremove.time);
                 }
@@ -5194,7 +5229,7 @@ mixin(game, /**@lends module:core.game */ {
         * @returns {(undefined|boolean)} 如果事件不需要等待玩家选择，返回undefined；如果事件选择完毕，返回true；否则返回false
         */
     check: function (event) {
-        var i, j, range;
+        let range;
         if (event == undefined) event = _status.event;
         var custom = event.custom || {};
         var ok = true, auto = true;
@@ -5216,7 +5251,7 @@ mixin(game, /**@lends module:core.game */ {
             var selectableButtons = false;
             if (event.forceAuto && ui.selected.buttons.length == range[1]) auto = true;
             else if (range[0] != range[1] || range[0] > 1) auto = false;
-            for (i = 0; i < dialog.buttons.length; i++) {
+            for (let i = 0; i < dialog.buttons.length; i++) {
                 if (dialog.buttons[i].classList.contains('unselectable')) continue;
                 if (event.filterButton(dialog.buttons[i], player) && lib.filter.buttonIncluded(dialog.buttons[i])) {
                     if (ui.selected.buttons.length < range[1]) {
@@ -5273,10 +5308,10 @@ mixin(game, /**@lends module:core.game */ {
                 if (event.isMine() && event.name == 'chooseToUse' && event.parent.name == 'phaseUse' && !event.skill &&
                     !event._targetChoice && !firstCheck && window.Map && !lib.config.compatiblemode) {
                     event._targetChoice = new Map();
-                    for (var i = 0; i < event._cardChoice.length; i++) {
+                    for (let i = 0; i < event._cardChoice.length; i++) {
                         if (!lib.card[event._cardChoice[i].name].complexTarget) {
-                            var targets = [];
-                            for (var j = 0; j < players.length; j++) {
+                            let targets = [];
+                            for (let j = 0; j < players.length; j++) {
                                 if (event.filterTarget(event._cardChoice[i], player, players[j])) {
                                     targets.push(players[j]);
                                 }
@@ -5287,7 +5322,7 @@ mixin(game, /**@lends module:core.game */ {
                 }
                 var selectableCards = false;
                 if (range[0] != range[1] || range[0] > 1) auto = false;
-                for (i = 0; i < cards.length; i++) {
+                for (let i = 0; i < cards.length; i++) {
                     if (lib.config.cardtempname != 'off') {
                         var cardname = get.name(cards[i]);
                         var cardnature = get.nature(cards[i]);
@@ -5382,7 +5417,7 @@ mixin(game, /**@lends module:core.game */ {
                 range = get.select(event.selectTarget);
                 var selectableTargets = false;
                 if (range[0] != range[1] || range[0] > 1) auto = false;
-                for (i = 0; i < players.length; i++) {
+                for (let i = 0; i < players.length; i++) {
                     var nochess = true;
                     if (game.chess && !event.chessForceAll && player && get.distance(player, players[i], 'pure') > 7) {
                         nochess = false;
@@ -5461,7 +5496,7 @@ mixin(game, /**@lends module:core.game */ {
             var skills2;
             if (event._skillChoice) {
                 skills2 = event._skillChoice;
-                for (var i = 0; i < skills2.length; i++) {
+                for (let i = 0; i < skills2.length; i++) {
                     if (event.isMine() || !event._aiexclude.contains(skills2[i])) {
                         skills.push(skills2[i]);
                     }
@@ -5478,7 +5513,7 @@ mixin(game, /**@lends module:core.game */ {
                 skills2 = game.filterSkills(skills2.concat(lib.skill.global), player, player.getSkills('e').concat(lib.skill.global));
                 event._skillChoice = [];
                 game.expandSkills(skills2);
-                for (i = 0; i < skills2.length; i++) {
+                for (let i = 0; i < skills2.length; i++) {
                     _status.event.skillBy = skills2[i];
                     info = get.info(skills2[i]);
                     enable = false;
@@ -5508,7 +5543,7 @@ mixin(game, /**@lends module:core.game */ {
             var globalskills = [];
             var globallist = lib.skill.global.slice(0);
             game.expandSkills(globallist);
-            for (var i = 0; i < skills.length; i++) {
+            for (let i = 0; i < skills.length; i++) {
                 if (globallist.contains(skills[i])) {
                     globalskills.push(skills.splice(i--, 1)[0]);
                 }
@@ -5516,7 +5551,7 @@ mixin(game, /**@lends module:core.game */ {
             var equipskills = [];
             var ownedskills = player.getSkills(true, false);
             game.expandSkills(ownedskills);
-            for (var i = 0; i < skills.length; i++) {
+            for (let i = 0; i < skills.length; i++) {
                 if (!ownedskills.contains(skills[i])) {
                     equipskills.push(skills.splice(i--, 1)[0]);
                 }
@@ -5571,7 +5606,7 @@ mixin(game, /**@lends module:core.game */ {
 
         if (event.isMine()) {
             if (game.chess && game.me && get.config('show_distance')) {
-                for (var i = 0; i < players.length; i++) {
+                for (let i = 0; i < players.length; i++) {
                     if (players[i] == game.me) {
                         players[i].node.action.hide();
                     }
@@ -5630,7 +5665,6 @@ mixin(game, /**@lends module:core.game */ {
         return ok;
     },
     uncheck: function () {
-        var i, j;
         if (game.chess) {
             var shadows = ui.chessContainer.getElementsByClassName('playergrid temp');
             while (shadows.length) {
@@ -5639,12 +5673,12 @@ mixin(game, /**@lends module:core.game */ {
         }
         var argc = arguments.length;
         var args = new Array(argc);
-        for (var i = 0; i < argc; i++) {
+        for (let i = 0; i < argc; i++) {
             args[i] = arguments[i];
         }
         if ((args.length == 0 || args.contains('card')) && _status.event.player) {
             var cards = _status.event.player.getCards('hejs');
-            for (j = 0; j < cards.length; j++) {
+            for (let j = 0; j < cards.length; j++) {
                 cards[j].classList.remove('selected');
                 cards[j].classList.remove('selectable');
                 if (cards[j]._tempName) {
@@ -5659,7 +5693,7 @@ mixin(game, /**@lends module:core.game */ {
         var players = game.players.slice(0);
         if (_status.event.deadTarget) players.addArray(game.dead);
         if ((args.length == 0 || args.contains('target'))) {
-            for (j = 0; j < players.length; j++) {
+            for (let j = 0; j < players.length; j++) {
                 players[j].classList.remove('selected');
                 players[j].classList.remove('selectable');
                 if (players[j].instance) {
@@ -5670,7 +5704,7 @@ mixin(game, /**@lends module:core.game */ {
             ui.selected.targets.length = 0;
         }
         if ((args.length == 0 || args.contains('button')) && _status.event.dialog && _status.event.dialog.buttons) {
-            for (var j = 0; j < _status.event.dialog.buttons.length; j++) {
+            for (let j = 0; j < _status.event.dialog.buttons.length; j++) {
                 _status.event.dialog.buttons[j].classList.remove('selectable');
                 _status.event.dialog.buttons[j].classList.remove('selected');
             }
@@ -5690,10 +5724,10 @@ mixin(game, /**@lends module:core.game */ {
         }
         ui.canvas.width = ui.arena.offsetWidth;
         ui.canvas.height = ui.arena.offsetHeight;
-        for (var i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             players[i].unprompt();
         }
-        for (var i = 0; i < _status.dragline.length; i++) {
+        for (let i = 0; i < _status.dragline.length; i++) {
             if (_status.dragline[i]) _status.dragline[i].remove();
         }
         ui.arena.classList.remove('dragging');
@@ -5722,7 +5756,7 @@ mixin(game, /**@lends module:core.game */ {
         }
         else {
             game.addVideo('swapSeat', null, [player1.dataset.position, player2.dataset.position]);
-            var temp1, pos, i, num;
+            var temp1, pos, num;
             temp1 = player1.dataset.position;
             player1.dataset.position = player2.dataset.position;
             player2.dataset.position = temp1;
@@ -5732,15 +5766,15 @@ mixin(game, /**@lends module:core.game */ {
                     pos = parseInt(player1.dataset.position);
                     if (pos == 0) pos = parseInt(player2.dataset.position);
                     num = game.players.length + game.dead.length;
-                    for (i = 0; i < game.players.length; i++) {
-                        temp1 = parseInt(game.players[i].dataset.position) - pos;
+                    for (let i of game.players) {
+                        temp1 = parseInt(i.dataset.position) - pos;
                         if (temp1 < 0) temp1 += num;
-                        game.players[i].dataset.position = temp1;
+                        i.dataset.position = temp1;
                     }
-                    for (i = 0; i < game.dead.length; i++) {
-                        temp1 = parseInt(game.dead[i].dataset.position) - pos;
+                    for (let i of game.dead) {
+                        temp1 = parseInt(i.dataset.position) - pos;
                         if (temp1 < 0) temp1 += num;
-                        game.dead[i].dataset.position = temp1;
+                        i.dataset.position = temp1;
                     }
                 }
             }
@@ -5988,33 +6022,33 @@ mixin(game, /**@lends module:core.game */ {
                 game.clearConnect();
                 lib.configOL.mode = name;
                 if (configx) {
-                    for (var i in configx) {
+                    for (let i in configx) {
                         lib.configOL[i] = configx[i];
                     }
                 }
                 else {
-                    for (var i in lib.mode[name].connect) {
+                    for (let i in lib.mode[name].connect) {
                         if (i == 'update') continue;
                         lib.configOL[i.slice(8)] = get.config(i);
                     }
                     lib.configOL.characterPack = lib.connectCharacterPack.slice(0);
                     lib.configOL.cardPack = lib.connectCardPack.slice(0);
-                    for (var i = 0; i < lib.config.connect_characters.length; i++) {
+                    for (let i = 0; i < lib.config.connect_characters.length; i++) {
                         lib.configOL.characterPack.remove(lib.config.connect_characters[i]);
                     }
-                    for (var i = 0; i < lib.config.connect_cards.length; i++) {
+                    for (let i = 0; i < lib.config.connect_cards.length; i++) {
                         lib.configOL.cardPack.remove(lib.config.connect_cards[i]);
                     }
                     lib.configOL.banned = lib.config['connect_' + name + '_banned'];
                     lib.configOL.bannedcards = lib.config['connect_' + name + '_bannedcards'];
                 }
                 lib.configOL.version = lib.versionOL;
-                for (var i in lib.cardPackList) {
+                for (let i in lib.cardPackList) {
                     if (lib.configOL.cardPack.contains(i)) {
                         lib.card.list = lib.card.list.concat(lib.cardPackList[i]);
                     }
                 }
-                for (i = 0; i < lib.card.list.length; i++) {
+                for (let i = 0; i < lib.card.list.length; i++) {
                     if (lib.card.list[i][2] == 'huosha') {
                         lib.card.list[i] = lib.card.list[i].slice(0);
                         lib.card.list[i][2] = 'sha';
@@ -6123,7 +6157,7 @@ mixin(game, /**@lends module:core.game */ {
     chooseCharacterDouble: function () {
         var next = game.createEvent('chooseCharacter', false);
         var config, width, num, ratio, func, update, list, first;
-        for (var i = 0; i < arguments.length; i++) {
+        for (let i = 0; i < arguments.length; i++) {
             if (typeof arguments[i] == 'number') {
                 if (!width) {
                     width = arguments[i];
@@ -6170,7 +6204,7 @@ mixin(game, /**@lends module:core.game */ {
         }
         if (!list) {
             list = [];
-            for (var i in lib.character) {
+            for (let i in lib.character) {
                 if (typeof func == 'function') {
                     if (!func(i)) continue;
                 }
@@ -6189,7 +6223,7 @@ mixin(game, /**@lends module:core.game */ {
             event.friend = [];
             event.enemy = [];
             event.blank = [];
-            for (var i = 0; i < event.config.size; i++) {
+            for (let i = 0; i < event.config.size; i++) {
                 event.nodes.push(ui.create.div('.shadowed.reduce_radius.choosedouble'));
             }
             event.moveAvatar = function (node, i) {
@@ -6211,12 +6245,12 @@ mixin(game, /**@lends module:core.game */ {
             };
             event.aiMove = function (friend) {
                 var list = [];
-                for (var i = 0; i < event.avatars.length; i++) {
+                for (let i = 0; i < event.avatars.length; i++) {
                     if (!event.avatars[i].classList.contains('moved')) {
                         list.push(event.avatars[i]);
                     }
                 }
-                for (var i = 0; i < list.length; i++) {
+                for (let i = 0; i < list.length; i++) {
                     if (Math.random() < 0.7 || i == list.length - 1) {
                         if (friend) {
                             event.moveAvatar(list[i], event.friend.length + event.config.width * (event.config.height - 1));
@@ -7530,7 +7564,7 @@ mixin(game, /**@lends module:core.game */ {
             var caption;
             var players = null, cards = null;
             if (lib.version != lib.config.version) {
-                for (var i = 0; i < lib.changeLog.length; i++) {
+                for (let i = 0; i < lib.changeLog.length; i++) {
                     if (lib.changeLog[i].indexOf('players://') == 0) {
                         try {
                             players = JSON.parse(lib.changeLog[i].slice(10));
@@ -7559,7 +7593,7 @@ mixin(game, /**@lends module:core.game */ {
                 caption = '扩展更新';
             }
             game.saveConfig('version', lib.version);
-            for (var i in _status.extensionChangeLog) {
+            for (let i in _status.extensionChangeLog) {
                 var li = document.createElement('li');
                 li.innerHTML = i + '：' + _status.extensionChangeLog[i];
                 ul.appendChild(li);
@@ -7878,41 +7912,41 @@ mixin(game, /**@lends module:core.game */ {
             var friendCount = 0;
             var enemyCount = 0;
             var rand = Math.random() < 0.5;
-            for (var i = 0; i < game.players.length; i++) {
-                if (game.players[i].side == game.me.side) {
+            for (let i of game.players) {
+                if (i.side == game.me.side) {
                     if (rand) {
-                        if (game.players[i] == game.friendZhu) {
-                            game.players[i]._sortCount = -2;
+                        if (i == game.friendZhu) {
+                            i._sortCount = -2;
                         }
                         else {
-                            game.players[i]._sortCount = 2 * friendCount;
+                            i._sortCount = 2 * friendCount;
                         }
                     }
                     else {
-                        if (game.players[i] == game.friendZhu) {
-                            game.players[i]._sortCount = -1;
+                        if (i == game.friendZhu) {
+                            i._sortCount = -1;
                         }
                         else {
-                            game.players[i]._sortCount = 2 * friendCount + 1;
+                            i._sortCount = 2 * friendCount + 1;
                         }
                     }
                     friendCount++;
                 }
                 else {
                     if (rand) {
-                        if (game.players[i] == game.enemyZhu) {
-                            game.players[i]._sortCount = -1;
+                        if (i == game.enemyZhu) {
+                            i._sortCount = -1;
                         }
                         else {
-                            game.players[i]._sortCount = 2 * enemyCount + 1;
+                            i._sortCount = 2 * enemyCount + 1;
                         }
                     }
                     else {
-                        if (game.players[i] == game.enemyZhu) {
-                            game.players[i]._sortCount = -2;
+                        if (i == game.enemyZhu) {
+                            i._sortCount = -2;
                         }
                         else {
-                            game.players[i]._sortCount = 2 * enemyCount;
+                            i._sortCount = 2 * enemyCount;
                         }
                     }
                     enemyCount++;
@@ -7921,8 +7955,8 @@ mixin(game, /**@lends module:core.game */ {
             game.players.sort(function (a, b) {
                 return a._sortCount - b._sortCount;
             });
-            for (var i = 0; i < game.players.length; i++) {
-                delete game.players[i]._sortCount;
+            for (let i of game.players) {
+                delete i._sortCount;
             }
         }
         else {
@@ -7991,6 +8025,7 @@ mixin(game, /**@lends module:core.game */ {
                 if (info.group) skills2 = skills2.concat(info.group);
             }
             else {
+                console.log(skills)
                 console.log(skills[i]);
             }
         }
@@ -8015,9 +8050,9 @@ mixin(game, /**@lends module:core.game */ {
         * @returns {!boolean} 是否存在
         */
     hasPlayer: function (func) {
-        for (var i = 0; i < game.players.length; i++) {
-            if (game.players[i].isOut()) continue;
-            if (func(game.players[i])) return true;
+        for (let v of game.players) {
+            if (v.isOut()) continue;
+            if (func(v)) return true;
         }
         return false;
     },
@@ -8044,9 +8079,9 @@ mixin(game, /**@lends module:core.game */ {
         if (typeof func != 'function') {
             func = lib.filter.all;
         }
-        for (var i = 0; i < game.players.length; i++) {
-            if (game.players[i].isOut()) continue;
-            var result = func(game.players[i]);
+        for (let v of game.players) {
+            if (v.isOut()) continue;
+            var result = func(v);
             if (typeof result == 'number') {
                 num += result;
             }
@@ -8086,10 +8121,10 @@ mixin(game, /**@lends module:core.game */ {
         if (typeof func != 'function') {
             func = lib.filter.all;
         }
-        for (var i = 0; i < game.players.length; i++) {
-            if (game.players[i].isOut()) continue;
-            if (func(game.players[i])) {
-                list.add(game.players[i]);
+        for (let v of game.players) {
+            if (v.isOut()) continue;
+            if (func(v)) {
+                list.add(v);
             }
         }
         return list;
@@ -8111,10 +8146,10 @@ mixin(game, /**@lends module:core.game */ {
         return list;
     },
     findPlayer: function (func) {
-        for (var i = 0; i < game.players.length; i++) {
-            if (game.players[i].isOut()) continue;
-            if (func(game.players[i])) {
-                return game.players[i];
+        for (let v of game.players) {
+            if (v.isOut()) continue;
+            if (func(v)) {
+                return v;
             }
         }
         return null;

@@ -400,9 +400,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
         addTrigger(skill, player) {
             if (!player)
                 return;
-            var evt = this;
+            let evt = this;
             while (true) {
-                var evt = evt.getParent('arrangeTrigger');
+                evt = evt.getParent('arrangeTrigger');
                 if (!evt || evt.name != 'arrangeTrigger' || !evt.map)
                     return;
                 if (typeof skill == 'string')
@@ -415,7 +415,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 };
                 var trigger = evt._trigger;
                 var triggername = evt.triggername;
-                var map = false;
+                var map = null;
                 if (evt.doing && evt.doing.player == player)
                     map = evt.doing;
                 else {
@@ -431,7 +431,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 var func = function (skillx) {
                     var info = lib.skill[skillx];
                     var bool = false;
-                    for (var i in info.trigger) {
+                    for (let i in info.trigger) {
                         if (filter(info.trigger[i])) {
                             bool = true;
                             break;
@@ -454,13 +454,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         priority -= 75;
                     var toadd = [skillx, player, priority];
                     if (map.list2) {
-                        for (var i = 0; i < map.list2.length; i++) {
+                        for (let i = 0; i < map.list2.length; i++) {
                             if (map.list2[i][0] == toadd[0] && map.list2[i][1] == toadd[1])
                                 return;
                         }
                     }
                     ;
-                    for (var i = 0; i < map.list.length; i++) {
+                    for (let i = 0; i < map.list.length; i++) {
                         if (map.list[i][0] == toadd[0] && map.list[i][1] == toadd[1])
                             return;
                     }
@@ -469,7 +469,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         return b[2] - a[2];
                     });
                 };
-                for (var j = 0; j < skill.length; j++) {
+                for (let j = 0; j < skill.length; j++) {
                     func(skill[j]);
                 }
             }
@@ -515,8 +515,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
             var allbool = false;
             var roles = ['player', 'source', 'target'];
             var listAdded;
-            var mapxx;
-            var addList = function (skill, player) {
+            var addList = function (skill, player, mapxx) {
                 if (listAdded[skill])
                     return;
                 if (player.forbiddenSkills[skill])
@@ -637,36 +636,36 @@ var __importStar = (this && this.__importStar) || function (mod) {
                                         add = true;
                                 }
                                 if (add) {
-                                    addList(skills[i], player);
+                                    addList(skills[i], player, mapxx);
                                 }
                             }
                         }
                     }());
                 }
                 else {
-                    for (var i = 0; i < roles.length; i++) {
+                    for (let i = 0; i < roles.length; i++) {
                         var triggername = player.playerid + '_' + roles[i] + '_' + name;
                         if (lib.hook[triggername]) {
-                            for (var j = 0; j < lib.hook[triggername].length; j++) {
-                                addList(lib.hook[triggername][j], player);
+                            for (let j = 0; j < lib.hook[triggername].length; j++) {
+                                addList(lib.hook[triggername][j], player, mapxx);
                             }
                         }
                         triggername = roles[i] + '_' + name;
                         if (lib.hook.globalskill[triggername]) {
-                            for (var j = 0; j < lib.hook.globalskill[triggername].length; j++) {
-                                addList(lib.hook.globalskill[triggername][j], player);
+                            for (let j = 0; j < lib.hook.globalskill[triggername].length; j++) {
+                                addList(lib.hook.globalskill[triggername][j], player, mapxx);
                             }
                         }
                     }
                     if (lib.hook.globalskill[globalskill]) {
-                        for (var j = 0; j < lib.hook.globalskill[globalskill].length; j++) {
-                            addList(lib.hook.globalskill[globalskill][j], player);
+                        for (let j = 0; j < lib.hook.globalskill[globalskill].length; j++) {
+                            addList(lib.hook.globalskill[globalskill][j], player, mapxx);
                         }
                     }
-                    for (var i in lib.hook.globaltrigger[name]) {
+                    for (let i in lib.hook.globaltrigger[name]) {
                         if (map[i] === player) {
-                            for (var j = 0; j < lib.hook.globaltrigger[name][i].length; j++) {
-                                addList(lib.hook.globaltrigger[name][i][j], map[i]);
+                            for (let j = 0; j < lib.hook.globaltrigger[name][i].length; j++) {
+                                addList(lib.hook.globaltrigger[name][i][j], map[i], mapxx);
                             }
                         }
                     }
@@ -689,6 +688,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
             }
         }
         untrigger(all, player) {
+            if (this instanceof EventModel && this.getEvent) {
+                this.getEvent().untrigger(all, player);
+                return;
+            }
             var evt = this._triggering;
             if (all) {
                 if (evt && evt.map) {
@@ -713,6 +716,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             }
+        }
+        get orderingCards() {
+            return this.getEvent()._orderingCards;
+        }
+        set orderingCards(e) {
+            this.getEvent()._orderingCards = e;
+        }
+        get targets() {
+            if (this.getEvent)
+                return this.getEvent()._targets;
+            else
+                return this._targets;
+        }
+        set targets(e) {
+            if (this.getEvent)
+                this.getEvent()._targets = e;
+            else
+                this._targets = e;
+        }
+        get fixedSeat() {
+            return this.getEvent()._fixedSeat;
+        }
+        set fixedSeat(e) {
+            this.getEvent()._fixedSeat = e;
         }
     }
     exports.default = EventModel;

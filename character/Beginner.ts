@@ -1,4 +1,6 @@
 /// <reference path = "../game/built-in.d.ts" />
+
+
 (window as any).game.import('character',function(lib:lib_type,game:Record<string, any>,ui:Record<string, any>,get:Record<string,any>,ai:Record<string, any>,_status:_status_type){
 	return <currentObject>{
 		name:'Beginner',
@@ -2664,7 +2666,7 @@
 					}
 					'step 4'
 					player.judge((card: any) => {
-						if(get.suit(card,'player')=='heart') return 4;
+						if(get.suit(card,player)=='heart') return 4;
 						else{
 							player.addTempSkill('huangyou_used');
 							return -1;
@@ -2717,23 +2719,20 @@
 						event.finish();
 					}
 					'step 2'
-	//				if(result.bool){
-					console.log(result)
-						if(trigger.player.judging[0].clone){
-							trigger.player.judging[0].clone.classList.remove('thrownhighlight');
-							game.broadcast((card: { clone: { classList: any[]; }; }) => {
-								if(card.clone){
-									card.clone.classList.remove('thrownhighlight');
-								}
-							},trigger.player.judging[0]);
-							game.addVideo('deletenode',player,get.cardsInfo([trigger.player.judging[0].clone]));
-						}
-						game.cardsDiscard(trigger.player.judging[0]);
-						trigger.player.judging[0]=result.card;
-						trigger.orderingCards.add(result.card);
-						game.log(trigger.player,'重新判定后的判定牌为',result.card);
-						game.delay(0.5);
-	//				}
+					if(trigger.player.judging[0].clone){
+						trigger.player.judging[0].clone.classList.remove('thrownhighlight');
+						game.broadcast((card: { clone: { classList: any[]; }; }) => {
+							if(card.clone){
+								card.clone.classList.remove('thrownhighlight');
+							}
+						},trigger.player.judging[0]);
+						game.addVideo('deletenode',player,get.cardsInfo([trigger.player.judging[0].clone]));
+					}
+					game.cardsDiscard(trigger.player.judging[0]);
+					trigger.player.judging[0]=result.card;
+					trigger.orderingCards.add(result.card);
+					game.log(trigger.player,'重新判定后的判定牌为',result.card);
+					game.delay(0.5);
 				},
 			},
 			//re夏色祭
@@ -3744,7 +3743,6 @@
 								}
 								if(types.length==3) list.push(array);
 							}
-							console.log(list)
 							if(list.length){
 								var sortx = function(x: any[]){
 									var num = get.value(x);
@@ -3773,7 +3771,6 @@
 					}
 					'step 3'
 					if(result.bool){
-						console.log(get.type3(result.cards))
 						if(get.type3(result.cards).length>=3){
 							event.target.recover();
 						}
@@ -4772,13 +4769,13 @@
 						trigger:{player:'useCardAfter'},
 						priority:23,
 						direct:true,
-						filter(event, player: PlayerModel){
+						filter(event, player){
 							if(player.hasHistory('sourceDamage',(evt: { card: any; }) => {
 								return evt.card==event.card;
 							}).length==0){
 								let evt = event.getParent('chooseUseTarget');
 								return evt?.logSkill === 're_huawen_useBy'
-								&event.cards.filter((card: any) => get.color(card)=='black'&&get.position(card)=='d').length;
+								&&event.cards.filter((card: any) => get.color(card)=='black'&&get.position(card)=='d').length;
 							}
 						},
 						content(){

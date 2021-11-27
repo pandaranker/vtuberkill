@@ -4135,13 +4135,7 @@ mixin(get, /**@lends module:core.get */ {
         }
     },
     groups: function () {
-        return [
-            'vtuber', 'clubs',
-            'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key',
-            'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
-            'vshojo'
-        ];
+        return [...lib.group].remove('shen');
     },
     types: function () {
         var types = [];

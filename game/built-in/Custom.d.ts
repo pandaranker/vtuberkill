@@ -8,7 +8,7 @@ declare global {
     type AObject = {[propName: string]: Array<string>}
     type Keymap = {[propName: string]: string | Array<string>}
     type Aimap = {[propName: string]: string | Array<string> | number | Keymap}
-    type Statmap = {[propName: string]: string | Array<string> | number | boolean}
+    type Statmap = {judges?:{viewAs?}[],handcards?:{gaintag?}[],[propName: string]: string | Array<string> | number | boolean}
     type Dialogword = Array<Key>
     type Charaword = Array<>
 	type skillContent = () => void
@@ -56,7 +56,7 @@ declare global {
         cards?: Array
         links?: Array
     }
-    var event:Status_Event
+    declare var event:Status_Event
     //原生游戏核心类
     // class Status_Event {
     //     LinkParent(event: Object): Status_Event
@@ -65,10 +65,26 @@ declare global {
     //     [propName: string]: any
     //     constructor(event: Object)
     // }
+    var cheat:{[propName: string]:Function}
     interface Window{
         game
         play
         isNonameServer
+        /**屏幕常亮相关 */
+        plugins
+        noSleep
+        /**cheat相关 */
+        cheat,
+        ui,
+        get,
+        ai,
+        lib,
+        _status,
+        /**菜单 */
+        StatusBar
+        /**Rank */
+        vtuberkill_character_rank
+        resolveLocalFileSystemURL//？？？
     }
     interface HTMLDivElement{
         getModel:()=>Object
@@ -88,7 +104,8 @@ declare global {
     //扩展的类
     class JSZip {
         generate(Object): String|Uint8Array|ArrayBuffer|Buffer|Blob
-        file(name: string | RegExp, data: String | ArrayBuffer | Uint8Array | Buffer, o?: Object): JSZip | Object | Array
+        file(name: string | RegExp, data?: String | ArrayBuffer | Uint8Array | Buffer, o?: Object): JSZip | Object | Array
+        files: JSZip[]
     }
 }
 export { }

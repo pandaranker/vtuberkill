@@ -1796,10 +1796,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (lib.skill[name] && !lib.character[name]) {
                 var stop = false;
                 var list = lib.config.all.characters.slice(0);
-                for (var i in lib.characterPack) {
+                for (let i in lib.characterPack) {
                     list.add(i);
                 }
-                for (var i = 0; i < list.length; i++) {
+                for (let i = 0; i < list.length; i++) {
                     for (var j in lib.characterPack[list[i]]) {
                         if (lib.characterPack[list[i]][j][3].contains(name)) {
                             name = j;
@@ -1883,7 +1883,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 else if (get.is.newLayout() &&
                     (this.maxHp > 9 ||
                         (this.maxHp > 5 && this.classList.contains('minskin')) ||
-                        ((game.layout == 'mobile' || game.layout == 'long') && this.dataset.position == 0 && this.maxHp > 7))) {
+                        ((game.layout == 'mobile' || game.layout == 'long') && this.dataset.position == '0' && this.maxHp > 7))) {
                     hp.innerHTML = this.hp + '<br>/<br>' + this.maxHp + '<div></div>';
                     if (this.hp == 0) {
                         hp.lastChild.classList.add('lost');
@@ -2682,8 +2682,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 next = game.createEvent('phase');
             }
             if (evt && insert && evt.next.contains(next)) {
-                evt.next.remove(next);
-                evt.next.unshift(next);
+                (evt.getEvent ? evt.getEvent() : evt).next.remove(next);
+                (evt.getEvent ? evt.getEvent() : evt).next.unshift(next);
             }
             next.player = this;
             next.skill = skill || _status.event.name;
@@ -5232,7 +5232,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.node.prompt = node;
             }
             node.dataset.position = this.dataset.position;
-            if (this.dataset.position == 0 || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
+            if (this.dataset.position == '0' || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
                 typeof name2 == 'number' || this.classList.contains('minskin')) {
                 node.innerHTML = name2;
             }
@@ -5245,11 +5245,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 node.classList.add(className);
             }
         }
-        popup(name, className, nobroadcast) {
+        popup(name, className = 'water', nobroadcast) {
             var name2 = get.translation(name);
             if (!name2)
                 return;
-            this.$damagepop(name2, className || 'water', true, nobroadcast);
+            this.$damagepop(name2, className, true, nobroadcast);
         }
         popup_old(name, className) {
             var name2 = get.translation(name);
@@ -5260,7 +5260,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             game.addVideo('popup', this, [name, className]);
             node.dataset.position = this.dataset.position;
-            if (this.dataset.position == 0 || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
+            if (this.dataset.position == '0' || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
                 typeof name2 == 'number' || this.classList.contains('minskin')) {
                 node.innerHTML = name2;
             }
@@ -6085,15 +6085,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 this.removeSkillTrigger(info.group);
             }
             else if (Array.isArray(info.group)) {
-                for (var i = 0; i < info.group.length; i++) {
+                for (let i = 0; i < info.group.length; i++) {
                     this.removeSkillTrigger(info.group[i]);
                 }
             }
             if (!triggeronly)
                 this.initedSkills.remove(skill);
             if (info.trigger) {
-                var playerid = this.playerid;
-                var removeTrigger = function (i, evt) {
+                let playerid = this.playerid;
+                let removeTrigger = function (i, evt) {
                     if (i == 'global') {
                         for (var j in lib.hook.globaltrigger) {
                             if (lib.hook.globaltrigger[j][playerid]) {
@@ -6117,12 +6117,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 };
-                for (var i in info.trigger) {
+                for (let i in info.trigger) {
                     if (typeof info.trigger[i] == 'string') {
                         removeTrigger(i, info.trigger[i]);
                     }
                     else if (Array.isArray(info.trigger[i])) {
-                        for (var j = 0; j < info.trigger[i].length; j++) {
+                        for (let j = 0; j < info.trigger[i].length; j++) {
                             removeTrigger(i, info.trigger[i][j]);
                         }
                     }
@@ -6215,18 +6215,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 lib.hookmap[expire] = true;
             }
             else if (Array.isArray(expire)) {
-                for (var i = 0; i < expire.length; i++) {
+                for (let i = 0; i < expire.length; i++) {
                     lib.hookmap[expire[i]] = true;
                 }
             }
             else if (get.objtype(expire) == 'object') {
                 var roles = ['player', 'source', 'target'];
-                for (var i = 0; i < roles.length; i++) {
+                for (let i = 0; i < roles.length; i++) {
                     if (typeof expire[roles[i]] == 'string') {
                         lib.hookmap[expire[roles[i]]] = true;
                     }
                     else if (Array.isArray(expire[roles[i]])) {
-                        for (var j = 0; j < expire[roles[i]].length; j++) {
+                        for (let j = 0; j < expire[roles[i]].length; j++) {
                             lib.hookmap[expire[roles[i]][j]] = true;
                         }
                     }
@@ -6236,18 +6236,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib.hookmap[expire.global] = true;
                     }
                     else if (Array.isArray(expire.global)) {
-                        for (var i = 0; i < expire.global.length; i++) {
+                        for (let i = 0; i < expire.global.length; i++) {
                             lib.hookmap[expire.global[i]] = true;
                         }
                     }
                 }
             }
-            for (var i in expire) {
+            for (let i in expire) {
                 if (typeof expire[i] == 'string') {
                     lib.hookmap[expire[i]] = true;
                 }
                 else if (Array.isArray(expire[i])) {
-                    for (var j = 0; j < expire.length; j++) {
+                    for (let j = 0; j < expire.length; j++) {
                         lib.hookmap[expire[i][j]] = true;
                     }
                 }
@@ -6275,7 +6275,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
             }
             if (all) {
-                for (var i in this.additionalSkills) {
+                for (let i in this.additionalSkills) {
                     this.removeAdditionalSkill(i);
                 }
             }
@@ -6311,10 +6311,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 };
                 var forbidlist = lib.config.forbid.concat(lib.config.customforbid);
                 var skills = this.getSkills();
-                for (var i = 0; i < forbidlist.length; i++) {
+                for (let i = 0; i < forbidlist.length; i++) {
                     if (lib.config.customforbid.contains(forbidlist[i]) ||
                         !lib.config.forbidlist.contains(getName(forbidlist[i]))) {
-                        for (var j = 0; j < forbidlist[i].length; j++) {
+                        let j;
+                        for (j = 0; j < forbidlist[i].length; j++) {
                             if (!skills.contains(forbidlist[i][j]))
                                 break;
                         }
@@ -6323,7 +6324,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                 }
-                for (var i = 0; i < forbid.length; i++) {
+                for (let i = 0; i < forbid.length; i++) {
                     if (forbid[i][1] || this.name2) {
                         this.forbiddenSkills[forbid[i][0]] = this.forbiddenSkills[forbid[i][0]] || [];
                         if (forbid[i][1]) {
@@ -6360,7 +6361,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return false;
         }
         getLastHistory(key, filter, last) {
-            var history = false;
+            var history = null;
             for (var i = this.actionHistory.length - 1; i >= 0; i--) {
                 if (this.actionHistory[i].isMe) {
                     history = this.actionHistory[i];

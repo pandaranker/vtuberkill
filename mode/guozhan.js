@@ -11158,7 +11158,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(this.identity=='unknown'||(this.identity!='ye'&&(num==0||num==2)&&lib.character[this.name1][1]=='ye')){
 						this.group=this.getGuozhanGroup(num);
 						this._group=this.group;
-						if((num==0||num==2)&&lib.character[this.name1][1]=='ye'){
+						if((num==0||num==2)&&lib.character[this.name1][1]==='ye'){
 							this.identity='ye';
 							if(!this._ye){
 								this._ye=true;

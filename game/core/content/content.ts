@@ -412,11 +412,11 @@ let commonContent = (({_status, lib, game, ui, get, ai})=>{
                 cards[i].fix();
                 ui.ordering.appendChild(cards[i]);
             }
-            var evt = event.relatedEvent || event.getParent();
+            let evt = event.relatedEvent || event.getParent();
             if (!evt.orderingCards) evt.orderingCards = [];
             if (!event.noOrdering && !event.cardsOrdered) {
                 event.cardsOrdered = true;
-                var next = game.createEvent('orderingDiscard', false, evt.getParent());
+                let next = game.createEvent('orderingDiscard', false, evt.getParent());
                 next.relatedEvent = evt;
                 next.setContent('orderingDiscard');
             }
@@ -5633,8 +5633,8 @@ let commonContent = (({_status, lib, game, ui, get, ai})=>{
             game.addVideo('loseAfter', player);
             event.num = 0;
             if (event.position == ui.ordering) {
-                var evt = event.relatedEvent || event.getParent();
-                if (!evt.orderingCards) evt.orderingCards = [];
+                let evt = event.relatedEvent || event.getParent();
+                evt.orderingCards ??= [];
                 if (!event.noOrdering && !event.cardsOrdered) {
                     event.cardsOrdered = true;
                     var next = game.createEvent('orderingDiscard', false, evt.getParent());

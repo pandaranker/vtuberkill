@@ -630,7 +630,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         nodexx.updateInner();
                         var nodeyy = nodexx._link.menu;
                         var nodezz = nodexx._link.config;
-                        for (var i = 0; i < nodeyy.childElementCount; i++) {
+                        for (let i = 0; i < nodeyy.childElementCount; i++) {
                             if (nodeyy.childNodes[i]._link == name) {
                                 nodeyy.childNodes[i].remove();
                                 break;
@@ -4761,7 +4761,7 @@ mixin(lib, /**@lends module:core.lib */ {
                             case '三轮': num = 3; break;
                             default: num = 0; break;
                         }
-                        if (num & !_status.identityShown && game.phaseNumber > game.players.length * num && game.showIdentity) {
+                        if (num && !_status.identityShown && game.phaseNumber > game.players.length * num && game.showIdentity) {
                             _status.identityShown = true;
                             game.showIdentity(false);
                         }
@@ -6884,7 +6884,7 @@ mixin(lib, /**@lends module:core.lib */ {
      * @returns {number} datetime
      * @see {@link get.utc}
      */
-    getUTC: function (date) {
+    getUTC: function (date:Date) {
         return date.getTime();
     },
     /**
@@ -7280,7 +7280,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     for (var i = 0; i < item.length; i++) this.remove(item[i]);
                     return;
                 }
-                var pos = this.find(item);
+                var pos = this.indexOf(item);
                 if (pos == -1) {
                     return false;
                 }
@@ -7582,7 +7582,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
                 if (config2.mode) lib.config.mode = config2.mode;
                 if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
-                for (var i in lib.config.mode_config.global) {
+                for (let i in lib.config.mode_config.global) {
                     if (lib.config.mode_config[lib.config.mode][i] == undefined) {
                         lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
                     }
@@ -7596,9 +7596,9 @@ mixin(lib, /**@lends module:core.lib */ {
                     lib.config.defaultcards = lib.config.cards.slice(0);
                 }
                 //part: 从`config2`加载`lib.config`和`lib.mode_config`的数据
-                for (var i in config2) {
+                for (let i in config2) {
                     if (i.indexOf('_mode_config') != -1) {
-                        var thismode = i.substr(i.indexOf('_mode_config') + 13);
+                        let thismode = i.substr(i.indexOf('_mode_config') + 13);
                         if (!lib.config.mode_config[thismode]) {
                             lib.config.mode_config[thismode] = {};
                         }
@@ -7609,7 +7609,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     }
                 }
                 //part: 从`lib.config.translate`拷贝到`lib.translate`
-                for (var i in lib.config.translate) {
+                for (let i in lib.config.translate) {
                     lib.translate[i] = lib.config.translate[i];
                 }
 
@@ -8740,11 +8740,10 @@ mixin(lib, /**@lends module:core.lib */ {
                 var character = lib.imported.character;
                 var play = lib.imported.play;
                 // delete window.game;//[todo delete]
-                var i, j, k;
-                for (i in mode[lib.config.mode].element) {
+                for (let i in mode[lib.config.mode].element) {
                     if (!lib.element[i]) lib.element[i] = [];
                     mixin(PlayerModel.prototype, mode[lib.config.mode].element.player);
-                    for (j in mode[lib.config.mode].element[i]) {
+                    for (let j in mode[lib.config.mode].element[i]) {
                         if (j == 'init') {
                             if (!lib.element[i].inits) lib.element[i].inits = [];
                             lib.element[i].inits.push(mode[lib.config.mode].element[i][j]);
@@ -8754,10 +8753,10 @@ mixin(lib, /**@lends module:core.lib */ {
                         }
                     }
                 }
-                for (i in mode[lib.config.mode].ai) {
+                for (let i in mode[lib.config.mode].ai) {
                     if (typeof mode[lib.config.mode].ai[i] == 'object') {
                         if (ai[i] == undefined) ai[i] = {};
-                        for (j in mode[lib.config.mode].ai[i]) {
+                        for (let j in mode[lib.config.mode].ai[i]) {
                             ai[i][j] = mode[lib.config.mode].ai[i][j];
                         }
                     }
@@ -8765,10 +8764,10 @@ mixin(lib, /**@lends module:core.lib */ {
                         ai[i] = mode[lib.config.mode].ai[i];
                     }
                 }
-                for (i in mode[lib.config.mode].ui) {
+                for (let i in mode[lib.config.mode].ui) {
                     if (typeof mode[lib.config.mode].ui[i] == 'object') {
                         if (ui[i] == undefined) ui[i] = {};
-                        for (j in mode[lib.config.mode].ui[i]) {
+                        for (let j in mode[lib.config.mode].ui[i]) {
                             ui[i][j] = mode[lib.config.mode].ui[i][j];
                         }
                     }
@@ -8776,10 +8775,10 @@ mixin(lib, /**@lends module:core.lib */ {
                         ui[i] = mode[lib.config.mode].ui[i];
                     }
                 }
-                for (i in mode[lib.config.mode].game) {
+                for (let i in mode[lib.config.mode].game) {
                     game[i] = mode[lib.config.mode].game[i];
                 }
-                for (i in mode[lib.config.mode].get) {
+                for (let i in mode[lib.config.mode].get) {
                     get[i] = mode[lib.config.mode].get[i];
                 }
                 lib.init.start = mode[lib.config.mode].start;
@@ -8795,9 +8794,9 @@ mixin(lib, /**@lends module:core.lib */ {
                 lib.config.banned = lib.config[lib.config.mode + '_banned'] || [];
                 lib.config.bannedcards = lib.config[lib.config.mode + '_bannedcards'] || [];
 
-                lib.rank = window.noname_character_rank;
-                delete window.noname_character_rank;
-                for (i in mode[lib.config.mode]) {
+                lib.rank = window.vtuberkill_character_rank;
+                delete window.vtuberkill_character_rank;
+                for (let i in mode[lib.config.mode]) {
                     if (i == 'element') continue;
                     if (i == 'game') continue;
                     if (i == 'ai') continue;
@@ -8818,11 +8817,11 @@ mixin(lib, /**@lends module:core.lib */ {
 
                 var connectCharacterPack = [];
                 var connectCardPack = [];
-                for (i in character) {
+                for (let i in character) {
                     if (character[i].character) {
                         lib.characterPack[i] = character[i].character
                     }
-                    for (j in character[i]) {
+                    for (let j in character[i]) {
                         if (j == 'mode' || j == 'forbid') continue;
                         if (j == 'connect') {
                             connectCharacterPack.push(i);
@@ -8830,7 +8829,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         }
                         if (j == 'character' && !lib.config.characters.contains(i) && lib.config.mode != 'connect') {
                             if (lib.config.mode == 'chess' && get.config('chess_mode') == 'leader' && get.config('chess_leader_allcharacter')) {
-                                for (k in character[i][j]) {
+                                for (let k in character[i][j]) {
                                     lib.hiddenCharacters.push(k);
                                 }
                             }
@@ -8842,7 +8841,7 @@ mixin(lib, /**@lends module:core.lib */ {
                             lib[j].addArray(character[i][j]);
                             continue;
                         }
-                        for (k in character[i][j]) {
+                        for (let k in character[i][j]) {
                             if (j == 'character') {
                                 if (!character[i][j][k][4]) {
                                     character[i][j][k][4] = [];
@@ -8895,16 +8894,16 @@ mixin(lib, /**@lends module:core.lib */ {
                     }
                 }
                 var connect_avatar_list = [];
-                for (var i in lib.character) {
+                for (let i in lib.character) {
                     connect_avatar_list.push(i);
                 }
                 connect_avatar_list.sort(lib.sort.capt);
-                for (var i = 0; i < connect_avatar_list.length; i++) {
-                    var ia = connect_avatar_list[i];
+                for (let i = 0; i < connect_avatar_list.length; i++) {
+                    let ia = connect_avatar_list[i];
                     lib.mode.connect.config.connect_avatar.item[ia] = lib.translate[ia];
                 }
                 if (lib.config.mode != 'connect') {
-                    var pilecfg = lib.config.customcardpile[get.config('cardpilename') || '当前牌堆'];
+                    let pilecfg = lib.config.customcardpile[get.config('cardpilename') || '当前牌堆'];
                     if (pilecfg) {
                         lib.config.bannedpile = get.copy(pilecfg[0] || {});
                         lib.config.addedpile = get.copy(pilecfg[1] || {});
@@ -8917,7 +8916,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 else {
                     lib.cardPackList = {};
                 }
-                for (i in card) {
+                for (let i in card) {
                     lib.cardPack[i] = [];
                     if (card[i].card) {
                         for (var j in card[i].card) {
@@ -8926,7 +8925,7 @@ mixin(lib, /**@lends module:core.lib */ {
                             }
                         }
                     }
-                    for (j in card[i]) {
+                    for (let j in card[i]) {
                         if (j == 'mode' || j == 'forbid') continue;
                         if (j == 'connect') {
                             connectCardPack.push(i);
@@ -8966,7 +8965,7 @@ mixin(lib, /**@lends module:core.lib */ {
                             }
                         }
                         else {
-                            for (k in card[i][j]) {
+                            for (let k in card[i][j]) {
                                 if (j == 'skill' && k[0] == '_' && !card[i][j][k].forceLoad && (lib.config.mode != 'connect' ? (!lib.config.cards.contains(i)) : (!card[i].connect))) {
                                     continue;
                                 }
@@ -9000,7 +8999,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     }
                 }
                 if (lib.cardPack.mode_derivation) {
-                    for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
+                    for (let i = 0; i < lib.cardPack.mode_derivation.length; i++) {
                         if (typeof lib.card[lib.cardPack.mode_derivation[i]].derivation == 'string' && !lib.character[lib.card[lib.cardPack.mode_derivation[i]].derivation]) {
                             lib.cardPack.mode_derivation.splice(i--, 1);
                         }
@@ -9013,7 +9012,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     }
                 }
                 if (lib.config.mode != 'connect') {
-                    for (i in play) {
+                    for (let i in play) {
                         if (lib.config.hiddenPlayPack.contains(i)) continue;
                         if (play[i].forbid && play[i].forbid.contains(lib.config.mode)) continue;
                         if (play[i].mode && play[i].mode.contains(lib.config.mode) == false) continue;
@@ -9022,7 +9021,7 @@ mixin(lib, /**@lends module:core.lib */ {
                             if(j === 'player'){
                                 mixin(PlayerModel.prototype, play[i].element[j]);
                             }else{
-                                for (k in play[i].element[j]) {
+                                for (let k in play[i].element[j]) {
                                     if (k == 'init') {
                                         if (!lib.element[j].inits) lib.element[j].inits = [];
                                         lib.element[j].inits.push(play[i].element[j][k]);
@@ -9033,10 +9032,10 @@ mixin(lib, /**@lends module:core.lib */ {
                                 }
                             }
                         }
-                        for (j in play[i].ui) {
+                        for (let j in play[i].ui) {
                             if (typeof play[i].ui[j] == 'object') {
                                 if (ui[j] == undefined) ui[j] = {};
-                                for (k in play[i].ui[j]) {
+                                for (let k in play[i].ui[j]) {
                                     ui[j][k] = play[i].ui[j][k];
                                 }
                             }
@@ -9044,16 +9043,16 @@ mixin(lib, /**@lends module:core.lib */ {
                                 ui[j] = play[i].ui[j];
                             }
                         }
-                        for (j in play[i].game) {
+                        for (let j in play[i].game) {
                             game[j] = play[i].game[j];
                         }
-                        for (j in play[i].get) {
+                        for (let j in play[i].get) {
                             get[j] = play[i].get[j];
                         }
-                        for (j in play[i]) {
+                        for (let j in play[i]) {
                             if (j == 'mode' || j == 'forbid' || j == 'init' || j == 'element' ||
                                 j == 'game' || j == 'get' || j == 'ui' || j == 'arenaReady') continue;
-                            for (k in play[i][j]) {
+                            for (let k in play[i][j]) {
                                 if (j == 'translate' && k == i) {
                                     // lib[j][k+'_play_config']=play[i][j][k];
                                 }
@@ -9140,32 +9139,32 @@ mixin(lib, /**@lends module:core.lib */ {
                 delete lib.imported.card;
                 delete lib.imported.mode;
                 delete lib.imported.play;
-                for (var i in lib.init) {
+                for (let i in lib.init) {
                     if (i.indexOf('setMode_') == 0) {
                         delete lib.init[i];
                     }
                 }
                 if (!_status.connectMode) {
-                    for (var i = 0; i < lib.extensions.length; i++) {
+                    for (let i = 0; i < lib.extensions.length; i++) {
                         try {
                             _status.extension = lib.extensions[i][0];
                             _status.evaluatingExtension = lib.extensions[i][3];
                             lib.extensions[i][1](lib.extensions[i][2], lib.extensions[i][4]);
                             if (lib.extensions[i][4]) {
                                 if (lib.extensions[i][4].character) {
-                                    for (var j in lib.extensions[i][4].character.character) {
+                                    for (let j in lib.extensions[i][4].character.character) {
                                         game.addCharacterPack(get.copy(lib.extensions[i][4].character));
                                         break;
                                     }
                                 }
                                 if (lib.extensions[i][4].card) {
-                                    for (var j in lib.extensions[i][4].card.card) {
+                                    for (let j in lib.extensions[i][4].card.card) {
                                         game.addCardPack(get.copy(lib.extensions[i][4].card));
                                         break;
                                     }
                                 }
                                 if (lib.extensions[i][4].skill) {
-                                    for (var j in lib.extensions[i][4].skill.skill) {
+                                    for (let j in lib.extensions[i][4].skill.skill) {
                                         game.addSkill(j, lib.extensions[i][4].skill.skill[j],
                                             lib.extensions[i][4].skill.translate[j], lib.extensions[i][4].skill.translate[j + '_info']);
                                     }
@@ -10157,7 +10156,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 var sa = 0, sb = 0, sc = 0, sd = 0;
                 var sha = 0, shan = 0, tao = 0, jiu = 0, wuxie = 0, heisha = 0, hongsha = 0;
                 var num = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0 };
-                for (var i in lib.card) {
+                for (let i in lib.card) {
                     if (get.objtype(lib.card[i]) == 'object' && lib.translate[i + '_info']) {
                         switch (lib.card[i].type) {
                             case 'basic': a++; break;
@@ -10167,7 +10166,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         }
                     }
                 }
-                for (var i = 0; i < lib.card.list.length; i++) {
+                for (let i = 0; i < lib.card.list.length; i++) {
                     if (typeof lib.card[lib.card.list[i][2]] == 'object') {
                         switch (lib.card[lib.card.list[i][2]].type) {
                             case 'basic': aa++; break;
@@ -10322,17 +10321,17 @@ mixin(lib, /**@lends module:core.lib */ {
         r: function (bool) {
             var list = ['s', 'ap', 'a', 'am', 'bp', 'b', 'bm', 'c', 'd'];
             var str = '';
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 if (str) str += ' 、 ';
                 str += list[i] + '-' + lib.rank[list[i]].length;
             }
             console.log(str);
-            for (var i in lib.characterPack) {
+            for (let i in lib.characterPack) {
                 if (!bool && lib.config.all.sgscharacters.contains(i)) continue;
-                var map = {};
-                var str = '';
-                for (var j in lib.characterPack[i]) {
-                    var rank = get.rank(j);
+                let map = {};
+                let str = '';
+                for (let j in lib.characterPack[i]) {
+                    let rank = get.rank(j);
                     if (!map[rank]) {
                         map[rank] = 1;
                     }
@@ -10340,7 +10339,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         map[rank]++;
                     }
                 }
-                for (var j = 0; j < list.length; j++) {
+                for (let j = 0; j < list.length; j++) {
                     if (map[list[j]]) {
                         if (str) str += ' 、 ';
                         str += list[j] + '-' + map[list[j]];
@@ -10350,12 +10349,13 @@ mixin(lib, /**@lends module:core.lib */ {
                     console.log(lib.translate[i + '_character_config'] + '：' + str);
                 }
             }
-
-            var list = lib.rank.s.concat(lib.rank.ap).concat(lib.rank.a).concat(lib.rank.am).
-                concat(lib.rank.bp).concat(lib.rank.b).concat(lib.rank.bm).concat(lib.rank.c).concat(lib.rank.d);
-            for (var i in lib.character) {
-                if (lib.config.forbidai.contains(i)) continue;
-                if (i.indexOf('boss_') != 0 && i.indexOf('tafang_') != 0 && !list.contains(i)) console.log(get.translation(i), i);
+            {
+                let list = lib.rank.s.concat(lib.rank.ap).concat(lib.rank.a).concat(lib.rank.am).
+                    concat(lib.rank.bp).concat(lib.rank.b).concat(lib.rank.bm).concat(lib.rank.c).concat(lib.rank.d);
+                for (let i in lib.character) {
+                    if (lib.config.forbidai.contains(i)) continue;
+                    if (i.indexOf('boss_') != 0 && i.indexOf('tafang_') != 0 && !list.contains(i)) console.log(get.translation(i), i);
+                }
             }
         },
         h: function (player) {
@@ -12426,8 +12426,6 @@ mixin(lib, /**@lends module:core.lib */ {
                     if (!lib.character[name]) return 50;
                     var group = getGroup(name);
                     if (group == 'shen') return -1;
-                    if (group == 'vtuber') return 40;
-                    if (group == 'clubs') return 41;
                     var list = get.groups();
                     if (list.contains(group)) return list.indexOf(group);
                     return 49;
@@ -13624,15 +13622,15 @@ mixin(lib, /**@lends module:core.lib */ {
      * @type {string}
      */
     group: [
-        'vtuber', 'clubs',
-        'wei', 'shu', 'wu', 'qun', 'jin', 'shen',
+        'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
         'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
         'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
-        'vshojo'
+        'vshojo',
+        'vtuber', 'clubs'
     ],
     /**
      * shen势力可选的武将牌势力
-     * 较group去除了企业、社团、三国势力
+     * 较group相比去除了企业、社团、三国势力
      * @type {string}
      */
     group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi', 'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng'],

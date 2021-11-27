@@ -1814,9 +1814,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 trigger: { global: 'phaseAfter' },
                 lastDo: true,
                 filter(event, player) {
-                    return player.countCards('h') && game.countPlayer2(cur => {
-                        return cur.getHistory('damage').length;
-                    });
+                    return player.countCards('h') && game.countPlayer2(cur => cur.getHistory('damage').length);
                 },
                 check(event, player) {
                     return player.countCards('h') <= 2 || player.getStorage('liuhua').length <= 1;
@@ -1830,6 +1828,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.$give(event.cards, player, false);
                     player.markAuto('liuhua', event.cards);
                     game.log(player, '将', event.cards, '置于武将牌上');
+                    game.delay(1);
+                    'step 2';
                     player.insertPhase();
                 },
                 group: 'liuhua_regain',
@@ -1896,7 +1896,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         mark: 'character',
                         intro: {
                             content(storage, player) {
-                                console.log(storage, get.translation(storage));
                                 if (storage == player)
                                     return '使用牌只能指定自己为目标';
                                 return '使用牌只能指定自己或' + get.translation(storage) + '为目标';

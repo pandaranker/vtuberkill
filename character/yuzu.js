@@ -800,6 +800,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 return [1, 3];
                         }
                     },
+                    expose: 0.5,
                     threaten: 1.3
                 }
             },

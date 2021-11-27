@@ -24,6 +24,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             for (let v in evt) {
                 this[v] = evt[v];
             }
+            if (!(evt instanceof Status_Event)) {
+                evt.getEvent = () => this;
+            }
         }
         LinkParent(evt = this.parent) {
             if (!evt)
@@ -44,6 +47,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             after._before = this;
             Status_Event.event = after;
             return after;
+        }
+        get orderingCards() {
+            return this._orderingCards;
+        }
+        set orderingCards(e) {
+            this._orderingCards = e;
+        }
+        get targets() {
+            return this._targets;
+        }
+        set targets(e) {
+            this._targets = e;
+        }
+        get fixedSeat() {
+            return this._fixedSeat;
+        }
+        set fixedSeat(e) {
+            this._fixedSeat = e;
         }
     }
     window.Status_Event = Status_Event;

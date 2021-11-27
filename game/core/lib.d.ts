@@ -9,7 +9,9 @@ declare type lib_type = {
         delayed: number,
         frameId: number,
         videoId: number,
-        globalId: number
+        globalId: number,
+        dateDelaying: Date,
+        dateDelayed: number
     },
     ondb: [string, any[]][],
     ondb2: [string, any[]][],

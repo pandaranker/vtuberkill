@@ -1,3 +1,4 @@
+import EventModel from '../base/EventModel';
 import * as _context from '../_context';
 const { _status, lib, game, ui, get } = _context;
 import HTMLDivElementProxy from './HTMLDivElementProxy';
@@ -82,6 +83,8 @@ class PlayerModel extends HTMLDivElementProxy {
     identityShown?: boolean
     getModeState: () => string
 
+    /**战棋相关 */
+    chessFocus:()=>void
     /**
      * 创建Player
      * @param {HTMLElement} parent 父元素
@@ -140,7 +143,7 @@ class PlayerModel extends HTMLDivElementProxy {
             handcards2: ui.create.div('.handcards'),
         };
         this.node = this.element.node;
-        node.node.link = this.mark(' ', { mark: get.linkintro });
+        node.node.link = this.mark(' ', { mark: get.linkintro }) as HTMLDivElement;
         node.node.link.firstChild.setBackgroundImage('image/card/tiesuo_mark.png')
         node.node.link.firstChild.style.backgroundSize = 'cover';
         //铁索元素
@@ -642,7 +645,7 @@ class PlayerModel extends HTMLDivElementProxy {
     /**
      * 为本角色手牌移除标签
      */
-    removeGaintag(tag, cards) {
+    removeGaintag(tag:string, cards) {
         game.addVideo('removeGaintag', this, tag);
         game.broadcastAll(function (player, tag, cards) {
             cards = cards || player.getCards('h');
@@ -654,7 +657,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {string} target 目标角色
      * @returns {!boolean} 可以救治返回`true`，不可以返回`false`
      */
-    canSave(target) {
+    canSave(target:PlayerModel):boolean {
         var player = this;
         if (player.hasSkillTag('save', true, target, true)) return true;
         var name = {}, hs = player.getCards('hs');
@@ -672,7 +675,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
      * @returns {GameCores.Bases.Event}
      */
-    showCharacter(num, log) {
+    showCharacter(num:0|1|2, log?:boolean):EventModel {
         var toShow = [];
         if ((num == 0 || num == 2) && this.isUnseen(0)) toShow.add(this.name1);
         if ((num == 1 || num == 2) && this.isUnseen(1)) toShow.add(this.name2);
@@ -691,7 +694,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {(0|1|2)} num 0:展示主将; 1: 展示副将; 2: 全部展示
      * @param {?boolean} [log] 如果为true或未指定，输出日志；如果为false，不输出日志
      */
-    $showCharacter(num, log) {
+    $showCharacter(num:0|1|2, log?:boolean) {
         if (num == 0 && !this.isUnseen(0)) {
             return;
         }
@@ -2009,10 +2012,10 @@ class PlayerModel extends HTMLDivElementProxy {
         if (lib.skill[name] && !lib.character[name]) {
             var stop = false;
             var list = lib.config.all.characters.slice(0);
-            for (var i in lib.characterPack) {
+            for (let i in lib.characterPack) {
                 list.add(i);
             }
-            for (var i = 0; i < list.length; i++) {
+            for (let i = 0; i < list.length; i++) {
                 for (var j in lib.characterPack[list[i]]) {
                     if (lib.characterPack[list[i]][j][3].contains(name)) {
                         name = j;
@@ -2105,7 +2108,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 (
                     this.maxHp > 9 ||
                     (this.maxHp > 5 && this.classList.contains('minskin')) ||
-                    ((game.layout == 'mobile' || game.layout == 'long') && this.dataset.position == 0 && this.maxHp > 7)
+                    ((game.layout == 'mobile' || game.layout == 'long') && this.dataset.position == '0' && this.maxHp > 7)
                 )) {
                 hp.innerHTML = this.hp + '<br>/<br>' + this.maxHp + '<div></div>';
                 if (this.hp == 0) {
@@ -2404,7 +2407,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return null;
     }
-    countUsed(card, type) {
+    countUsed(card, type?:boolean) {
         if (type === true) {
             var num = 0;
             var history = this.getHistory('useCard');
@@ -2961,8 +2964,8 @@ class PlayerModel extends HTMLDivElementProxy {
             next = game.createEvent('phase');
         }
         if (evt && insert && evt.next.contains(next)) {
-            evt.next.remove(next);
-            evt.next.unshift(next);
+            (evt.getEvent?evt.getEvent():evt).next.remove(next);
+            (evt.getEvent?evt.getEvent():evt).next.unshift(next);
         }
         next.player = this;
         next.skill = skill || _status.event.name;
@@ -5359,7 +5362,7 @@ class PlayerModel extends HTMLDivElementProxy {
             this.node.prompt = node;
         }
         node.dataset.position = this.dataset.position;
-        if (this.dataset.position == 0 || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
+        if (this.dataset.position == '0' || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
             typeof name2 == 'number' || this.classList.contains('minskin')) {
             node.innerHTML = name2;
         }
@@ -5379,10 +5382,10 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {string} [classname='water'] 效果色
      * @param {?boolean} [nobroadcast] 如果为true，则
      */
-    popup(name, className, nobroadcast) {
+    popup(name, className = 'water', nobroadcast?:boolean) {
         var name2 = get.translation(name);
         if (!name2) return;
-        this.$damagepop(name2, className || 'water', true, nobroadcast);
+        this.$damagepop(name2, className, true, nobroadcast);
     }
     popup_old(name, className) {
         var name2 = get.translation(name);
@@ -5393,7 +5396,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         game.addVideo('popup', this, [name, className]);
         node.dataset.position = this.dataset.position;
-        if (this.dataset.position == 0 || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
+        if (this.dataset.position == '0' || parseInt(this.dataset.position) == parseInt(ui.arena.dataset.number) / 2 ||
             typeof name2 == 'number' || this.classList.contains('minskin')) {
             node.innerHTML = name2;
         }
@@ -5646,7 +5649,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {*} skill 
      * @returns {*}
      */
-    mark(name, info, skill?): HTMLDivElement {
+    mark(name, info, skill?): HTMLDivElement|any[] {
         if (get.itemtype(name) == 'cards') {
             var marks = [];
             for (var i = 0; i < name.length; i++) {
@@ -5947,7 +5950,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 同时将info.global内的技能添加到{@link lib.skill.global}
      * @returns {!boolean}
      */
-    addSkillTrigger(skill, hidden, triggeronly) {
+    addSkillTrigger(skill, hidden?, triggeronly?) {
         var info = lib.skill[skill];
         if (!info) return;
         if (typeof info.group == 'string') {
@@ -6145,7 +6148,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
-    removeAdditionalSkill(skill, target) {
+    removeAdditionalSkill(skill, target?) {
         if (this.additionalSkills[skill]) {
             var additionalSkills = this.additionalSkills[skill];
             if (Array.isArray(additionalSkills) && typeof target == 'string') {
@@ -6170,9 +6173,9 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     /**
      * 
-     * @returns {!boolean}
+     * @returns {!PlayerModel}
      */
-    awakenSkill(skill, nounmark) {
+    awakenSkill(skill, nounmark?:boolean):PlayerModel {
         if (!nounmark) this.unmarkSkill(skill);
         this.disableSkill(skill + '_awake', skill);
         this.awakenedSkills.add(skill);
@@ -6181,9 +6184,9 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     /**
      * 
-     * @returns {!boolean}
+     * @returns {!PlayerModel}
      */
-    restoreSkill(skill, nomark) {
+    restoreSkill(skill, nomark?:boolean):PlayerModel {
         if (this.storage[skill] === true) this.storage[skill] = false;
         this.awakenedSkills.remove(skill);
         this.enableSkill(skill + '_awake', skill);
@@ -6268,7 +6271,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
-    removeEquipTrigger(card, move) {
+    removeEquipTrigger(card, move?) {
         if (card) {
             var info = get.info(card);
             if (move === false) {
@@ -6315,21 +6318,21 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
-    removeSkillTrigger(skill, triggeronly) {
+    removeSkillTrigger(skill, triggeronly?) {
         var info = lib.skill[skill];
         if (!info) return;
         if (typeof info.group == 'string') {
             this.removeSkillTrigger(info.group);
         }
         else if (Array.isArray(info.group)) {
-            for (var i = 0; i < info.group.length; i++) {
+            for (let i = 0; i < info.group.length; i++) {
                 this.removeSkillTrigger(info.group[i]);
             }
         }
         if (!triggeronly) this.initedSkills.remove(skill);
         if (info.trigger) {
-            var playerid = this.playerid;
-            var removeTrigger = function (i, evt) {
+            let playerid = this.playerid;
+            let removeTrigger = function (i, evt) {
                 if (i == 'global') {
                     for (var j in lib.hook.globaltrigger) {
                         if (lib.hook.globaltrigger[j][playerid]) {
@@ -6353,12 +6356,12 @@ class PlayerModel extends HTMLDivElementProxy {
                     }
                 }
             }
-            for (var i in info.trigger) {
+            for (let i in info.trigger) {
                 if (typeof info.trigger[i] == 'string') {
                     removeTrigger(i, info.trigger[i]);
                 }
                 else if (Array.isArray(info.trigger[i])) {
-                    for (var j = 0; j < info.trigger[i].length; j++) {
+                    for (let j = 0; j < info.trigger[i].length; j++) {
                         removeTrigger(i, info.trigger[i][j]);
                     }
                 }
@@ -6378,6 +6381,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 
      * @returns {!boolean}
      */
+    onremove
     removeSkill(skill) {
         if (!skill) return;
         if (Array.isArray(skill)) {
@@ -6460,18 +6464,18 @@ class PlayerModel extends HTMLDivElementProxy {
             lib.hookmap[expire] = true;
         }
         else if (Array.isArray(expire)) {
-            for (var i = 0; i < expire.length; i++) {
+            for (let i = 0; i < expire.length; i++) {
                 lib.hookmap[expire[i]] = true;
             }
         }
         else if (get.objtype(expire) == 'object') {
             var roles = ['player', 'source', 'target'];
-            for (var i = 0; i < roles.length; i++) {
+            for (let i = 0; i < roles.length; i++) {
                 if (typeof expire[roles[i]] == 'string') {
                     lib.hookmap[expire[roles[i]]] = true;
                 }
                 else if (Array.isArray(expire[roles[i]])) {
-                    for (var j = 0; j < expire[roles[i]].length; j++) {
+                    for (let j = 0; j < expire[roles[i]].length; j++) {
                         lib.hookmap[expire[roles[i]][j]] = true;
                     }
                 }
@@ -6481,19 +6485,19 @@ class PlayerModel extends HTMLDivElementProxy {
                     lib.hookmap[expire.global] = true;
                 }
                 else if (Array.isArray(expire.global)) {
-                    for (var i = 0; i < expire.global.length; i++) {
+                    for (let i = 0; i < expire.global.length; i++) {
                         lib.hookmap[expire.global[i]] = true;
                     }
                 }
             }
         }
 
-        for (var i in expire) {
+        for (let i in expire) {
             if (typeof expire[i] == 'string') {
                 lib.hookmap[expire[i]] = true;
             }
             else if (Array.isArray(expire[i])) {
-                for (var j = 0; j < expire.length; j++) {
+                for (let j = 0; j < expire.length; j++) {
                     lib.hookmap[expire[i][j]] = true;
                 }
             }
@@ -6526,7 +6530,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }
         }
         if (all) {
-            for (var i in this.additionalSkills) {
+            for (let i in this.additionalSkills) {
                 this.removeAdditionalSkill(i);
             }
         }
@@ -6566,10 +6570,11 @@ class PlayerModel extends HTMLDivElementProxy {
             }
             var forbidlist = lib.config.forbid.concat(lib.config.customforbid);
             var skills = this.getSkills();
-            for (var i = 0; i < forbidlist.length; i++) {
+            for (let i = 0; i < forbidlist.length; i++) {
                 if (lib.config.customforbid.contains(forbidlist[i]) ||
                     !lib.config.forbidlist.contains(getName(forbidlist[i]))) {
-                    for (var j = 0; j < forbidlist[i].length; j++) {
+                    let j
+                    for (j = 0; j < forbidlist[i].length; j++) {
                         if (!skills.contains(forbidlist[i][j])) break;
                     }
                     if (j == forbidlist[i].length) {
@@ -6577,7 +6582,7 @@ class PlayerModel extends HTMLDivElementProxy {
                     }
                 }
             }
-            for (var i = 0; i < forbid.length; i++) {
+            for (let i = 0; i < forbid.length; i++) {
                 if (forbid[i][1] || this.name2) {
                     this.forbiddenSkills[forbid[i][0]] = this.forbiddenSkills[forbid[i][0]] || [];
                     if (forbid[i][1]) {
@@ -6616,7 +6621,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {Array}
      */
     getLastHistory(key, filter, last) {
-        var history = false;
+        var history = null;
         for (var i = this.actionHistory.length - 1; i >= 0; i--) {
             if (this.actionHistory[i].isMe) {
                 history = this.actionHistory[i]; break;
@@ -6710,7 +6715,8 @@ class PlayerModel extends HTMLDivElementProxy {
      * 设置本角色的Timeout队列，Timeout延迟一定时长，然后重置角色位置
      * @param {(number|false)} [time=500] 等待时长(ms)；如果为false，表示终止最近添加的Timeout并重置本角色Timeout队列计数
      */
-    queue(time) {
+    queueTimeout:NodeJS.Timeout
+    queue(time?) {
         if (time == false) {
             clearTimeout(this.queueTimeout);
             this.queueCount = 0;
@@ -7245,6 +7251,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {!boolean}
      */
     //TODO
+    forcemin?
     isMin(distance) {
         if (distance && lib.config.mode != 'stone') return false;
         if (this.forcemin) return true;
@@ -7254,6 +7261,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 表示本角色是否在局中(未死亡&未离开&未移出房间)
      * @returns {!boolean} true表示在局中，false表示不在局中
      */
+    removed:boolean
     isIn() {
         return this.classList.contains('dead') == false && this.classList.contains('out') == false && !this.removed;
     }
@@ -7262,7 +7270,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {number} num **0**: unseen; **1**: unseen2; **2**: unseen && unseen2; **default**: unseen && !unseen2 
      * @returns {!boolean}
      */
-    isUnseen(num) {
+    isUnseen (num) {
         switch (num) {
             case 0: return this.classList.contains('unseen');
             case 1: return this.classList.contains('unseen2');
@@ -7277,7 +7285,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {!boolean}
      */
     _trueMe: PlayerModel
-    isUnderControl(self, me?: PlayerModel) {
+    isUnderControl (self, me?: PlayerModel) {
         me = (me || game.me);
         var that = this._trueMe || this;
         if (that.isMad() || game.notMe) return false;
@@ -7311,6 +7319,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 注意，该函数如果角色处于托管状态，返回false
      * @returns {!boolean}
      */
+    isAuto?
     isOnline() {
         if (this.ws && lib.node && !this.ws.closed && this.ws.inited && !this.isAuto) {
             return true;
@@ -8460,6 +8469,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         return this.$give.apply(this, args);
     }
+    $givemod?
     $give(card, player, log?, init?) {
         if (init !== false) {
             game.broadcast(function (source, card, player, init) {
@@ -8631,6 +8641,7 @@ class PlayerModel extends HTMLDivElementProxy {
             return player;
         };
     }
+    $gainmod:Function
     $gain(card, log, init) {
         if (init !== false) {
             game.broadcast(function (player, card, init) {
@@ -9012,7 +9023,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @param {?boolean} font 如果为true，`damage div`添加类`normal-font`；如果为false或未指定，使用伤害默认字体大小
      * @param {?boolean} nobroadcast 如果为true或未指定，调用`game.broadcast`广播；如果为false，仅在本机
      */
-    $damagepop(num?, nature?, font?, nobroadcast?) {
+    $damagepop(num?:string|number, nature?:string, font?:boolean, nobroadcast?:boolean) {
         if (typeof num == 'number' || typeof num == 'string') {
             game.addVideo('damagepop', this, [num, nature, font]);
             if (nobroadcast !== false) game.broadcast(function (player, num, nature, font) {
@@ -9126,6 +9137,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         this.queue();
     }
+    $dieAfter?
     $die() {
         game.addVideo('die', this);
         game.broadcast(function (player) {

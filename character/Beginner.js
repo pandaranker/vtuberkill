@@ -2632,7 +2632,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     'step 4';
                     player.judge((card) => {
-                        if (get.suit(card, 'player') == 'heart')
+                        if (get.suit(card, player) == 'heart')
                             return 4;
                         else {
                             player.addTempSkill('huangyou_used');
@@ -2687,7 +2687,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.finish();
                     }
                     'step 2';
-                    console.log(result);
                     if (trigger.player.judging[0].clone) {
                         trigger.player.judging[0].clone.classList.remove('thrownhighlight');
                         game.broadcast((card) => {
@@ -3751,7 +3750,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 if (types.length == 3)
                                     list.push(array);
                             }
-                            console.log(list);
                             if (list.length) {
                                 var sortx = function (x) {
                                     var num = get.value(x);
@@ -3784,7 +3782,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     'step 3';
                     if (result.bool) {
-                        console.log(get.type3(result.cards));
                         if (get.type3(result.cards).length >= 3) {
                             event.target.recover();
                         }
@@ -4847,7 +4844,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             }).length == 0) {
                                 let evt = event.getParent('chooseUseTarget');
                                 return (evt === null || evt === void 0 ? void 0 : evt.logSkill) === 're_huawen_useBy'
-                                    & event.cards.filter((card) => get.color(card) == 'black' && get.position(card) == 'd').length;
+                                    && event.cards.filter((card) => get.color(card) == 'black' && get.position(card) == 'd').length;
                             }
                         },
                         content() {

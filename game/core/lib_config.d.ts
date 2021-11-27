@@ -18,6 +18,8 @@ declare type lib_config = {
 		card_font:string[],
 		double_hp:string[],
 		image_background_filter:string[],
+		background_music:string[],
+		characters:string[]
 	},
 
 	game:string,
@@ -166,7 +168,7 @@ declare type lib_config = {
         [modeName: string]: Record<string, any>
 	},
 	current_mode:Record<string, any>,
-	customforbid:string[],
-	forbid:[string, string][],
+	customforbid:([string, string]|[string])[],
+	forbid:([string, string]|[string])[],
     [prop:string]:any
 };
