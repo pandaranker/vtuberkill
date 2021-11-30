@@ -1,5 +1,4 @@
 import * as _context from '../_context';
-import Status_Event from './Status_Event';
 const { _status, lib, game, ui, get } = _context;
 /**
  * Event类
@@ -35,7 +34,7 @@ class EventModel{
         * @type {GameCores.Bases.Event[]}
         */
     after= []
-    custom= {//??
+    custom= {//自定义事件属性区域
         add:{},
         replace:{}
     }
@@ -55,9 +54,8 @@ class EventModel{
     numFixed:boolean
     player:PlayerModel
     source:PlayerModel
-    _modparent:Status_Event
-    parent:Status_Event|null
-    _triggering:Status_Event
+    _modparent:EventModel
+    _triggering:EventModel
     content:Function
     _cardChoice
     _targetChoice
@@ -106,10 +104,45 @@ class EventModel{
     triggername:string
     _triggered:number
 
-    getEvent?:Function
+    // getEvent?:Function
+
     
-    constructor(name:string){
-        this.name = name
+    _LinkChild:EventModel[] = []
+    _LinkAfter:EventModel[] = []
+    parent: EventModel | null
+    _before: EventModel
+    //从子状态事件转到父状态事件
+    LinkParent(evt:EventModel| null = this.parent){
+        if(!evt) throw(event)
+        return evt
+    }
+    //创建子状态事件
+    LinkChild(evt:EventModel){
+        let child = evt
+        this._LinkChild.push(child)
+        child.parent = this
+        // update_record()
+        return child
+    }
+    //创建妹妹状态事件
+    LinkAfter(evt:EventModel){
+        let after = evt
+        this._LinkAfter.push(after)
+        after._before = this
+        return after
+    }
+    constructor(arg?: string | EventModel) {
+        if (!arg) {
+            this.finished = true;
+            this.next = [];
+            this.after = []
+        }
+        else if(arg instanceof EventModel){
+
+        }
+        else{
+            this.name = arg
+        }
     }
 
     changeToZero () {
@@ -291,12 +324,12 @@ class EventModel{
         if (toreturn === null) {
             return null;
         }
-        if(parent?.origin instanceof EventModel){
-            for(let i in parent){
-                parent.origin[i] ??= parent[i]
-            }
-            return parent.origin;
-        }
+        // if(parent?.origin instanceof EventModel){
+        //     for(let i in parent){
+        //         parent.origin[i] ??= parent[i]
+        //     }
+        //     return parent.origin;
+        // }
         return parent;
     }
     /**
@@ -304,7 +337,7 @@ class EventModel{
      * @function
      * @returns {?GameCores.Bases.Event} 本事件的触发事件，如果本事件没有触发事件，返回undefined/null
      */
-    _trigger:Status_Event
+    _trigger:EventModel
     getTrigger () {
         return (this.getParent() as EventModel)._trigger;
     }
@@ -785,11 +818,12 @@ class EventModel{
      * @param {?boolean} all 如果为true，取消全部要触发的子事件；如果未指定或为false，忽略该值
      * @param {?GameCores.GameObjects.Player} player 一个角色，取消所有将要对该角色触发的子事件，如果未指定，忽略该值
      */
+    list?:[]
     untrigger (all, player) {
-        if(this instanceof EventModel&&this.getEvent){
-            this.getEvent().untrigger(all, player)
-            return;
-        }
+        // if(this instanceof EventModel&&this.getEvent){
+        //     this.getEvent().untrigger(all, player)
+        //     return;
+        // }
         var evt = this._triggering;
         if (all) {
             if (evt && evt.map) {
@@ -811,26 +845,26 @@ class EventModel{
             }
         }
     }
-    get orderingCards(){
-        return this.getEvent()._orderingCards
-    }
-    set orderingCards(e){
-        this.getEvent()._orderingCards = e
-    }
-    _targets
-    get targets(){
-        if(this.getEvent)   return this.getEvent()._targets
-        else    return this._targets
-    }
-    set targets(e){
-        if(this.getEvent)   this.getEvent()._targets = e
-        else    this._targets = e
-    }
-    get fixedSeat(){
-        return this.getEvent()._fixedSeat
-    }
-    set fixedSeat(e){
-        this.getEvent()._fixedSeat = e
-    }
+    // get orderingCards(){
+    //     return this.getEvent()._orderingCards
+    // }
+    // set orderingCards(e){
+    //     this.getEvent()._orderingCards = e
+    // }
+    // _targets
+    // get targets(){
+    //     if(this.getEvent)   return this.getEvent()._targets
+    //     else    return this._targets
+    // }
+    // set targets(e){
+    //     if(this.getEvent)   this.getEvent()._targets = e
+    //     else    this._targets = e
+    // }
+    // get fixedSeat(){
+    //     return this.getEvent()._fixedSeat
+    // }
+    // set fixedSeat(e){
+    //     this.getEvent()._fixedSeat = e
+    // }
 }
 export default EventModel;

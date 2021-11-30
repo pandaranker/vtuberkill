@@ -4940,7 +4940,7 @@
                                 case '三轮': num = 3; break;
                                 default: num = 0; break;
                             }
-                            if (num & !_status.identityShown && game.phaseNumber > game.players.length * num && game.showIdentity) {
+                            if (num && !_status.identityShown && game.phaseNumber > game.players.length * num && game.showIdentity) {
                                 _status.identityShown = true;
                                 game.showIdentity(false);
                             }
@@ -7560,6 +7560,22 @@
                     }
                     return num;
                 };
+                //数组降维替代方案
+                Array.prototype.vkflat = function (depth = 1) {
+                    const result = [];
+                    // 开始递归
+                    (function flat(arr, depth) {
+                        arr.forEach((item) => {
+                            if (Array.isArray(item) && depth > 0) {
+                                // 递归数组
+                                flat(item, depth - 1)
+                            } else {
+                                result.push(item)
+                            }
+                        })
+                    })(this, depth)
+                    return result;
+                };
                 /**
                  * 创建一个新的数组（浅复制），包含原数组中匹配卡牌位置的卡牌对象
                  * @function Array#filterInD
@@ -9190,8 +9206,8 @@
                     lib.config.banned = lib.config[lib.config.mode + '_banned'] || [];
                     lib.config.bannedcards = lib.config[lib.config.mode + '_bannedcards'] || [];
 
-                    lib.rank = window.noname_character_rank;
-                    delete window.noname_character_rank;
+                    lib.rank = window.vtuberkill_character_rank;
+                    delete window.vtuberkill_character_rank;
                     for (i in mode[lib.config.mode]) {
                         if (i == 'element') continue;
                         if (i == 'game') continue;
@@ -56226,23 +56242,42 @@
             }
             return get.translation(str);
         },
-        skillInfoTranslation: function (name, player) {
-            var str = lib.translate[name + '_info'];
-            if (player && lib.dynamicTranslate[name]) str = lib.dynamicTranslate[name](player, name);
-            if (!str) return '';
-            str = str
-                .replace(/(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次)，/g, '<font style="font-weight:bold;color:#ddd">$1</font>，')
-                .replace(/锁定技 /g, '<font color=#f77>锁定技 </font>')
-                .replace(/阵法技 /g, '<font color=#fe2>阵法技 </font>')
-                .replace(/轮次技 /g, '<font color=#fc2>轮次技 </font>')
-                .replace(/转换技 /g, '<font color=#8ae>转换技 </font>')
-                .replace(/限定技 /g, '<font color=#baf>限定技 </font>')
-                .replace(/使命技 /g, '<font color=#bf9>使命技 </font>')
-                .replace(/觉醒技 /g, '<font color=#fcd>觉醒技 </font>')
-                .replace(/主公技 /g, '<font color=#ff4>主公技 </font>')
+        interoperableText(name, player) {
+            var _a, _b;
+            let str = lib.translate[name];
+            if (lib.skill[name] && lib.translate[name + '_info']) {
+                str = get.skillInfoTranslation(name, player);
+                let info = lib.skill[name];
+                let iSkill = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
+                iSkill = [...new Set(iSkill)];
+                for (let i of iSkill) {
+                    let tra = get.translation(i);
+                    if (tra.indexOf('(') > 0)
+                        tra = tra.substring(0, tra.indexOf('('));
+                    let reg = new RegExp(`『(${tra})』`, 'g');
+                    str = str.replace(reg, `<span class="iText" data-introLink="${i}">『$1』</span>`);
+                }
+            }
+            (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText = lib.init.sheet(`.iText{font-style: italic}`));
             return str;
-            // 	replace(/主将技/g,'<span class="bluetext">主将技</span>').
-            // 	replace(/副将技/g,'<span class="bluetext">副将技</span>').
+        },
+        skillInfoTranslation(name, player) {
+            let str = lib.translate[name + '_info'];
+            if (player && lib.dynamicTranslate[name])
+                str = lib.dynamicTranslate[name](player, name);
+            if (!str)
+                return '';
+            str = str
+                .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#ccc;font-weight: bold">$2</font>，')
+                .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
+                .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
+                .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')
+                .replace(/(转换技) /g, '<font color=#8ae>$1 </font>')
+                .replace(/(限定技) /g, '<font color=#baf>$1 </font>')
+                .replace(/(使命技) /g, '<font color=#bf9>$1 </font>')
+                .replace(/(觉醒技) /g, '<font color=#fcd>$1 </font>')
+                .replace(/(主公技) /g, '<font color=#ff4>$1 </font>');
+            return str;
         },
         translation: function (str, arg) {
             if (str && typeof str == 'object' && (str.name || str._tempTranslate)) {
@@ -57786,14 +57821,19 @@
                     for (i = 0; i < skills.length; i++) {
                         if (lib.translate[skills[i] + '_info']) {
                             translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
+                            let info = get.interoperableText(skills[i])
                             if (lib.skill[skills[i]] && lib.skill[skills[i]].nobracket) {
-                                uiintro.add('<div><div class="skilln">' + get.translation(skills[i]) + '</div><div' + ((get.translation(skills[i]).length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i]) + '</div></div>');
+                                uiintro.add('<div><div class="skilln">' + get.translation(skills[i]) + '</div><div' + ((get.translation(skills[i]).length > 3) ? ' class="skilltext"' : '') + '>' + info + '</div></div>');
                             }
                             else {
-                                uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(skills[i]) + '</div></div>');
+                                uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + info + '</div></div>');
                             }
                             if (lib.translate[skills[i] + '_append']) {
                                 uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
+                            }
+                            for(let v of uiintro.getElementsByTagName('span')){
+                                v.link = v.dataset.introlink
+                                if(v.classList.contains('iText'))   lib.setIntro(v)
                             }
                         }
                     }
@@ -57888,6 +57928,21 @@
                                 createButtons(lib.skin[nameskin]);
                             });
                         }
+                    }
+                }
+            }
+            else if (node.classList.contains('iText')) {
+                var name = node.link;
+                if (lib.translate[name + '_info']) {
+                    translation = lib.translate[name + '_ab'] || get.translation(name).slice(0, 5);
+                    if (lib.skill[name] && lib.skill[name].nobracket) {
+                        uiintro.add('<div><div class="skilln">' + get.translation(name) + '</div><div' + ((get.translation(name).length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                    }
+                    else {
+                        uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                    }
+                    if (lib.translate[name + '_append']) {
+                        uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[name + '_append'] + '</div>')
                     }
                 }
             }
@@ -59154,6 +59209,11 @@
          * @see {@link get}
          */
         get: get
+    };
+    lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">';
+    lib.figurer = (text) => ` ${lib.figure}${text}</span> `;
+    lib.spanClass = (str, classes) => {
+        return `<span class="${classes}">${str}</span>`;
     };
 
 	lib.init.init();

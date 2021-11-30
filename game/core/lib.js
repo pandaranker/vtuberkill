@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/Status_Event", "./content/content", "./skill/skill"], factory);
+        define(["require", "exports", "./_context", "./view/PlayerModel", "./content/content", "./skill/skill", "./base/EventModel"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -34,9 +34,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const _context = __importStar(require("./_context"));
     const { _status, lib, game, ui, get, ai, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
-    const Status_Event_1 = __importDefault(require("./base/Status_Event"));
     const content_1 = __importDefault(require("./content/content"));
     const skill_1 = __importDefault(require("./skill/skill"));
+    const EventModel_1 = __importDefault(require("./base/EventModel"));
     mixin(lib, {
         discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
         config: null,
@@ -6746,29 +6746,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 };
                 HTMLDivElement.prototype.setBackgroundImage = function (img) {
                     this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
-                },
-                    HTMLDivElement.prototype.listen = function (func) {
-                        if (lib.config.touchscreen) {
-                            this.addEventListener('touchend', function (e) {
-                                if (!_status.dragged) {
-                                    func.call(this, e);
-                                }
-                            });
-                            var fallback = function (e) {
-                                if (!_status.touchconfirmed) {
-                                    func.call(this, e);
-                                }
-                                else {
-                                    this.removeEventListener('click', fallback);
-                                }
-                            };
-                            this.addEventListener('click', fallback);
-                        }
-                        else {
-                            this.addEventListener('click', func);
-                        }
-                        return this;
-                    };
+                };
+                HTMLDivElement.prototype.listen = function (func) {
+                    if (lib.config.touchscreen) {
+                        this.addEventListener('touchend', function (e) {
+                            if (!_status.dragged) {
+                                func.call(this, e);
+                            }
+                        });
+                        var fallback = function (e) {
+                            if (!_status.touchconfirmed) {
+                                func.call(this, e);
+                            }
+                            else {
+                                this.removeEventListener('click', fallback);
+                            }
+                        };
+                        this.addEventListener('click', fallback);
+                    }
+                    else {
+                        this.addEventListener('click', func);
+                    }
+                    return this;
+                };
                 HTMLDivElement.prototype.listenTransition = function (func, time) {
                     var that = this;
                     var done = false;
@@ -12596,11 +12596,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     lib.characterPack[i] = mode.characterPack[i];
                                 }
                             }
-                            _status.event = new Status_Event_1.default({
-                                finished: true,
-                                next: [],
-                                after: []
-                            });
+                            _status.event = new EventModel_1.default();
                             _status.paused = false;
                             game.createEvent('game', false).setContent(lib.init.startOnline);
                             game.loop();
@@ -12835,11 +12831,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         game.arrangePlayers();
                         ui.create.me(true);
-                        _status.event = new Status_Event_1.default({
-                            finished: true,
-                            next: [],
-                            after: []
-                        });
+                        _status.event = new EventModel_1.default();
                         _status.paused = false;
                         _status.dying = get.parsedResult(state.dying) || [];
                         if (game.updateState) {

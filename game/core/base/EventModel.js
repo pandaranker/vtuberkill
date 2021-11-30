@@ -31,7 +31,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     const _context = __importStar(require("../_context"));
     const { _status, lib, game, ui, get } = _context;
     class EventModel {
-        constructor(name) {
+        constructor(arg) {
             this.step = 0;
             this.finished = false;
             this.next = [];
@@ -44,7 +44,35 @@ var __importStar = (this && this.__importStar) || function (mod) {
             this._notrigger = [];
             this._result = {};
             this._set = [];
-            this.name = name;
+            this._LinkChild = [];
+            this._LinkAfter = [];
+            if (!arg) {
+                this.finished = true;
+                this.next = [];
+                this.after = [];
+            }
+            else if (arg instanceof EventModel) {
+            }
+            else {
+                this.name = arg;
+            }
+        }
+        LinkParent(evt = this.parent) {
+            if (!evt)
+                throw (event);
+            return evt;
+        }
+        LinkChild(evt) {
+            let child = evt;
+            this._LinkChild.push(child);
+            child.parent = this;
+            return child;
+        }
+        LinkAfter(evt) {
+            let after = evt;
+            this._LinkAfter.push(after);
+            after._before = this;
+            return after;
         }
         changeToZero() {
             this.num = 0;
@@ -139,8 +167,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
             delete this._skillChoice;
         }
         getParent(level = 1, forced = false) {
-            var _a;
-            var _b;
             var parent;
             if (this._modparent && game.online) {
                 parent = this._modparent;
@@ -174,12 +200,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
             }
             if (toreturn === null) {
                 return null;
-            }
-            if ((parent === null || parent === void 0 ? void 0 : parent.origin) instanceof EventModel) {
-                for (let i in parent) {
-                    (_a = (_b = parent.origin)[i]) !== null && _a !== void 0 ? _a : (_b[i] = parent[i]);
-                }
-                return parent.origin;
             }
             return parent;
         }
@@ -688,10 +708,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
             }
         }
         untrigger(all, player) {
-            if (this instanceof EventModel && this.getEvent) {
-                this.getEvent().untrigger(all, player);
-                return;
-            }
             var evt = this._triggering;
             if (all) {
                 if (evt && evt.map) {
@@ -716,30 +732,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     }
                 }
             }
-        }
-        get orderingCards() {
-            return this.getEvent()._orderingCards;
-        }
-        set orderingCards(e) {
-            this.getEvent()._orderingCards = e;
-        }
-        get targets() {
-            if (this.getEvent)
-                return this.getEvent()._targets;
-            else
-                return this._targets;
-        }
-        set targets(e) {
-            if (this.getEvent)
-                this.getEvent()._targets = e;
-            else
-                this._targets = e;
-        }
-        get fixedSeat() {
-            return this.getEvent()._fixedSeat;
-        }
-        set fixedSeat(e) {
-            this.getEvent()._fixedSeat = e;
         }
     }
     exports.default = EventModel;

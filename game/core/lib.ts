@@ -2,9 +2,9 @@
 import * as _context from "./_context";
 const { _status, lib, game, ui, get, ai, mixin } = _context;
 import PlayerModel from './view/PlayerModel';
-import Status_Event from './base/Status_Event';
 import commonContent from './content/content';
 import commonSkill from "./skill/skill";
+import EventModel from "./base/EventModel";
 
 mixin(lib, /**@lends module:core.lib */ {
     discoloration1: "<samp id='渐变'><font face='yuanli'><style>#渐变{animation:change 0.8s linear 0s infinite;}@keyframes change{0% {color:#FF0000;}20%{color:#F0A00F;}50% {color:#F000FF;}80%{color: #F0A00F;}100%{color:#FF0000;}}</style>",
@@ -6884,7 +6884,7 @@ mixin(lib, /**@lends module:core.lib */ {
      * @returns {number} datetime
      * @see {@link get.utc}
      */
-    getUTC: function (date:Date) {
+    getUTC: function (date: Date) {
         return date.getTime();
     },
     /**
@@ -7023,7 +7023,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 this.classList.remove('hidden');
                 return this;
             };
-            HTMLDivElement.prototype.delete = function (time: number = 500, callback?:()=>void) {
+            HTMLDivElement.prototype.delete = function (time: number = 500, callback?: () => void) {
                 if (this.timeout) {
                     clearTimeout(this.timeout);
                     delete this.timeout;
@@ -7034,7 +7034,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     this.timeout = setTimeout(function () {
                         that.remove();
                         that.classList.remove('removing');
-                        if(callback) callback();
+                        if (callback) callback();
                     }, time);
                 }
                 else {
@@ -7160,29 +7160,29 @@ mixin(lib, /**@lends module:core.lib */ {
             };
             HTMLDivElement.prototype.setBackgroundImage = function (img) {
                 this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
-            },
-                HTMLDivElement.prototype.listen = function (func) {
-                    if (lib.config.touchscreen) {
-                        this.addEventListener('touchend', function (e) {
-                            if (!_status.dragged) {
-                                func.call(this, e);
-                            }
-                        });
-                        var fallback = function (e) {
-                            if (!_status.touchconfirmed) {
-                                func.call(this, e);
-                            }
-                            else {
-                                this.removeEventListener('click', fallback);
-                            }
+            };
+            HTMLDivElement.prototype.listen = function (func) {
+                if (lib.config.touchscreen) {
+                    this.addEventListener('touchend', function (e) {
+                        if (!_status.dragged) {
+                            func.call(this, e);
                         }
-                        this.addEventListener('click', fallback);
+                    });
+                    var fallback = function (e) {
+                        if (!_status.touchconfirmed) {
+                            func.call(this, e);
+                        }
+                        else {
+                            this.removeEventListener('click', fallback);
+                        }
                     }
-                    else {
-                        this.addEventListener('click', func);
-                    }
-                    return this;
-                };
+                    this.addEventListener('click', fallback);
+                }
+                else {
+                    this.addEventListener('click', func);
+                }
+                return this;
+            };
             HTMLDivElement.prototype.listenTransition = function (func, time) {
                 var that = this;
                 var done = false;
@@ -7479,7 +7479,7 @@ mixin(lib, /**@lends module:core.lib */ {
              * @function
              * @global
              */
-             window.onload = function () {
+            window.onload = function () {
                 if (lib.device) {
                     var script = document.createElement('script');
                     script.src = 'cordova.js';
@@ -7504,8 +7504,8 @@ mixin(lib, /**@lends module:core.lib */ {
                     _status.windowLoaded = true;
                 }
             };
-            if(document.readyState === 'complete'){
-                window.onload();   
+            if (document.readyState === 'complete') {
+                window.onload();
             }
 
             /**
@@ -9034,9 +9034,9 @@ mixin(lib, /**@lends module:core.lib */ {
                         if (play[i].mode && play[i].mode.contains(lib.config.mode) == false) continue;
                         for (j in play[i].element) {
                             if (!lib.element[j]) lib.element[j] = [];
-                            if(j === 'player'){
+                            if (j === 'player') {
                                 mixin(PlayerModel.prototype, play[i].element[j]);
-                            }else{
+                            } else {
                                 for (let k in play[i].element[j]) {
                                     if (k == 'init') {
                                         if (!lib.element[j].inits) lib.element[j].inits = [];
@@ -9322,7 +9322,7 @@ mixin(lib, /**@lends module:core.lib */ {
             localStorage.removeItem(lib.configprefix + 'directstart');
             delete lib.init.init;//??
         },
-        startOnline: ((game)=>{
+        startOnline: ((game) => {
             return function () {
                 'step 0'
                 event._resultid = null;
@@ -11540,7 +11540,7 @@ mixin(lib, /**@lends module:core.lib */ {
             }
         },
         player: {
-            inits:{}
+            inits: {}
         },
         /**
          * 按钮方法
@@ -12256,7 +12256,7 @@ mixin(lib, /**@lends module:core.lib */ {
             else if (typeof select == 'number') range = [select, select];
             else if (get.itemtype(select) == 'select') range = select;
             else if (typeof select == 'function') range = select(card, player);
-            if(!range[1]) console.log(card,select,range)
+            if (!range[1]) console.log(card, select, range)
             game.checkMod(card, player, range, 'selectTarget', player);
             if (!range || range[1] != -1) return true;
             var filterTarget = (event && event.filterTarget) ? event.filterTarget : lib.filter.filterTarget;
@@ -13174,11 +13174,7 @@ mixin(lib, /**@lends module:core.lib */ {
                                 lib.characterPack[i] = mode.characterPack[i];
                             }
                         }
-                        _status.event = new Status_Event({
-                            finished: true,
-                            next: [],
-                            after: []
-                        });
+                        _status.event = new EventModel();
                         _status.paused = false;
                         game.createEvent('game', false).setContent(lib.init.startOnline);
                         game.loop();
@@ -13412,11 +13408,7 @@ mixin(lib, /**@lends module:core.lib */ {
                     game.arrangePlayers();
                     ui.create.me(true);
 
-                    _status.event = new Status_Event({
-                        finished: true,
-                        next: [],
-                        after: []
-                    });
+                    _status.event = new EventModel();
                     _status.paused = false;
                     _status.dying = get.parsedResult(state.dying) || [];
 

@@ -2,7 +2,6 @@
 import * as _context from './_context';
 const {_status, lib, game, ui, get, ai, mixin} = _context;
 import PlayerModel from './view/PlayerModel';
-import Status_Event from './base/Status_Event';
 import EventModel from './base/EventModel';
 /**
  * 游戏内核
@@ -1415,11 +1414,11 @@ mixin(game, /**@lends module:core.game */ {
                     }
                     var pkgstr = 'extension["' + exportext + '"]={\n';
                     for (var i in pkg) {
-                        var pkgfrag;
+                        let pkgfrag;
                         if (i == 'files') {
                             var pkgjs = JSON.stringify(pkg[i]);
-                            var pkgfrag = '';
                             var pkgbuffer = 0;
+                            pkgfrag = '';
                             for (var j = 0; j < pkgjs.length; j++) {
                                 pkgfrag += pkgjs[j];
                                 pkgbuffer++;
@@ -3784,7 +3783,7 @@ mixin(game, /**@lends module:core.game */ {
         var next:{[propName:string]: any} = new EventModel(name)
         /**@lends GameCores.Bases.Event */
         if (trigger !== false && !game.online) next._triggered = 0;
-        ((triggerevent?.getEvent?triggerevent.getEvent():triggerevent) || _status.event).next.push(next);
+        (triggerevent || _status.event).next.push(next);
         return next;
     },
     /**
@@ -6010,11 +6009,7 @@ mixin(game, /**@lends module:core.game */ {
             //     lib.config.addedpile=pilecfg[1]||{};
             // }
 
-            _status.event = new Status_Event({
-                finished: true,
-                next: [],
-                after: []
-            });
+            _status.event = new EventModel();
             _status.paused = false;
 
             if (_status.connectMode && lib.mode[name].connect) {

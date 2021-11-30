@@ -365,9 +365,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }, time);
             },
             selectlist: function (list, init, position, onchange) {
-                var select = document.createElement('select');
-                for (var i = 0; i < list.length; i++) {
-                    var option = document.createElement('option');
+                let select = document.createElement('select');
+                for (let i = 0; i < list.length; i++) {
+                    let option = document.createElement('option');
                     if (Array.isArray(list[i])) {
                         option.value = list[i][0];
                         option.innerHTML = list[i][1];
@@ -853,8 +853,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     lib.configOL.mode = active.mode;
                                     if (_status.enteringroomserver) {
                                         game.saveConfig('connect_mode', lib.configOL.mode);
-                                        var config = {};
-                                        for (var i in lib.mode[lib.configOL.mode].connect) {
+                                        let config = {};
+                                        for (let i in lib.mode[lib.configOL.mode].connect) {
                                             if (i == 'update')
                                                 continue;
                                             config[i.slice(8)] = get.config(i, lib.configOL.mode);
@@ -2283,10 +2283,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         updateNodes();
                     };
-                    var createModeConfig = function (mode, position, position2) {
-                        var info = lib.characterPack[mode];
-                        var page = ui.create.div('');
-                        var node = ui.create.div('.menubutton.large', lib.translate[mode + '_character_config'], position, clickMode);
+                    let createModeConfig = function (mode, position, position2) {
+                        let info = lib.characterPack[mode];
+                        let page = ui.create.div('');
+                        let node = ui.create.div('.menubutton.large', lib.translate[mode + '_character_config'], position, clickMode);
                         if (node.innerHTML.length >= 5) {
                             node.classList.add('smallfont');
                         }
@@ -2296,12 +2296,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         node.link = page;
                         node.mode = mode;
                         page.node = node;
-                        var list = [];
-                        var boolAI = true;
-                        var alterableSkills = [];
-                        var alterableCharacters = [];
-                        var charactersToAlter = [];
-                        for (var i in info) {
+                        let list = [];
+                        let boolAI = true;
+                        let alterableSkills = [];
+                        let alterableCharacters = [];
+                        let charactersToAlter = [];
+                        for (let i in info) {
                             if (info[i][4] && info[i][4].contains('unseen'))
                                 continue;
                             if (connectMenu && lib.connectBanned.contains(i))
@@ -2311,7 +2311,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             list.push(i);
                             if (boolAI && !lib.config.forbidai_user.contains(i))
                                 boolAI = false;
-                            for (var j = 0; j < info[i][3].length; j++) {
+                            for (let j = 0; j < info[i][3].length; j++) {
                                 if (!lib.skill[info[i][3][j]]) {
                                     continue;
                                 }
@@ -2440,10 +2440,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             _status.clicked = false;
                             delete this._banning;
                         };
-                        var updateBanned = function () {
-                            var list;
+                        let updateBanned = function () {
+                            let list;
                             if (connectMenu) {
-                                var mode = menux.pages[0].firstChild.querySelector('.active');
+                                let mode = menux.pages[0].firstChild.querySelector('.active');
                                 if (mode && mode.mode) {
                                     list = lib.config['connect_' + mode.mode + '_banned'];
                                 }
@@ -2459,21 +2459,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         };
                         if (lib.characterSort[mode]) {
-                            var listb = [];
+                            let listb = [];
                             if (!connectMenu) {
                                 listb = lib.config[get.mode() + '_banned'] || [];
                             }
                             else {
-                                var modex = menux.pages[0].firstChild.querySelector('.active');
+                                let modex = menux.pages[0].firstChild.querySelector('.active');
                                 if (modex && modex.mode) {
                                     listb = lib.config['connect_' + modex.mode + '_banned'];
                                 }
                             }
-                            for (var pak in lib.characterSort[mode]) {
-                                var info = lib.characterSort[mode][pak];
-                                var listx = [];
-                                var boolx = false;
-                                for (var ii = 0; ii < list2.length; ii++) {
+                            for (let pak in lib.characterSort[mode]) {
+                                let info = lib.characterSort[mode][pak];
+                                let listx = [];
+                                let boolx = false;
+                                for (let ii = 0; ii < list2.length; ii++) {
                                     if (info.contains(list2[ii])) {
                                         listx.add(list2[ii]);
                                         if (!listb.contains(list2[ii]))
@@ -2482,34 +2482,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                 }
                                 if (listx.length) {
-                                    var cfgnodeY = {
+                                    let cfgnodeY = {
                                         name: lib.translate[pak],
                                         _name: pak,
                                         init: boolx,
                                         onclick: function (bool) {
-                                            var banned = [];
+                                            let banned = [], cfg = get.mode() + '_banned';
                                             if (connectMenu) {
-                                                var modex = menux.pages[0].firstChild.querySelector('.active');
+                                                let modex = menux.pages[0].firstChild.querySelector('.active');
                                                 if (modex && modex.mode) {
                                                     banned = lib.config['connect_' + modex.mode + '_banned'];
                                                 }
+                                                cfg = 'connect_' + modex.mode + '_banned';
                                             }
                                             else if (_status.connectMode)
                                                 return;
                                             else
                                                 banned = lib.config[get.mode() + '_banned'] || [];
-                                            var listx = lib.characterSort[mode][this._link.config._name];
+                                            let listx = lib.characterSort[mode][this._link.config._name];
                                             if (bool) {
-                                                for (var i = 0; i < listx.length; i++) {
+                                                for (let i = 0; i < listx.length; i++) {
                                                     banned.remove(listx[i]);
                                                 }
                                             }
                                             else {
-                                                for (var i = 0; i < listx.length; i++) {
+                                                for (let i = 0; i < listx.length; i++) {
                                                     banned.add(listx[i]);
                                                 }
                                             }
-                                            game.saveConfig(connectMenu ? ('connect_' + modex.mode + '_banned') : (get.mode() + '_banned'), banned);
+                                            game.saveConfig(cfg, banned);
                                             updateActive();
                                         },
                                     };
@@ -2517,10 +2518,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         cfgnodeY.clear = true;
                                         delete cfgnodeY.onclick;
                                     }
-                                    var cfgnodeX = createConfig(cfgnodeY);
+                                    let cfgnodeX = createConfig(cfgnodeY);
                                     page.appendChild(cfgnodeX);
-                                    var buttons = ui.create.buttons(listx, 'character', page);
-                                    for (var i = 0; i < buttons.length; i++) {
+                                    let buttons = ui.create.buttons(listx, 'character', page);
+                                    for (let i = 0; i < buttons.length; i++) {
                                         buttons[i].classList.add('noclick');
                                         buttons[i].listen(banCharacter);
                                         ui.create.rarity(buttons[i]);
@@ -2533,14 +2534,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                             }
                             if (list2.length) {
-                                var cfgnodeX = createConfig({
+                                let cfgnodeX = createConfig({
                                     name: '其他',
                                     _name: 'others',
                                     clear: true,
                                 });
                                 page.appendChild(cfgnodeX);
-                                var buttons = ui.create.buttons(list2, 'character', page);
-                                for (var i = 0; i < buttons.length; i++) {
+                                let buttons = ui.create.buttons(list2, 'character', page);
+                                for (let i = 0; i < buttons.length; i++) {
                                     buttons[i].classList.add('noclick');
                                     buttons[i].listen(banCharacter);
                                     ui.create.rarity(buttons[i]);
@@ -2553,8 +2554,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                         else {
-                            var buttons = ui.create.buttons(list, 'character', page);
-                            for (var i = 0; i < buttons.length; i++) {
+                            let buttons = ui.create.buttons(list, 'character', page);
+                            for (let i = 0; i < buttons.length; i++) {
                                 buttons[i].classList.add('noclick');
                                 ui.create.rarity(buttons[i]);
                                 buttons[i].listen(banCharacter);
@@ -2571,8 +2572,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     };
                     if (lib.config.show_favourite_menu && !connectMenu && Array.isArray(lib.config.favouriteCharacter)) {
                         lib.characterPack.mode_favourite = {};
-                        for (var i = 0; i < lib.config.favouriteCharacter.length; i++) {
-                            var favname = lib.config.favouriteCharacter[i];
+                        for (let i = 0; i < lib.config.favouriteCharacter.length; i++) {
+                            let favname = lib.config.favouriteCharacter[i];
                             if (lib.character[favname]) {
                                 lib.characterPack.mode_favourite[favname] = lib.character[favname];
                             }
@@ -2585,34 +2586,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     if (!connectMenu && lib.config.show_ban_menu) {
                         lib.characterPack.mode_banned = {};
-                        for (var i = 0; i < lib.config.all.mode.length; i++) {
-                            var banned = lib.config[lib.config.all.mode[i] + '_banned'];
+                        for (let i = 0; i < lib.config.all.mode.length; i++) {
+                            let banned = lib.config[lib.config.all.mode[i] + '_banned'];
                             if (banned) {
-                                for (var j = 0; j < banned.length; j++) {
+                                for (let j = 0; j < banned.length; j++) {
                                     if (lib.character[banned[j]]) {
                                         lib.characterPack.mode_banned[banned[j]] = lib.character[banned[j]];
                                     }
                                 }
                             }
                         }
-                        var bannednode = createModeConfig('mode_banned', start.firstChild);
+                        let bannednode = createModeConfig('mode_banned', start.firstChild);
                         if (get.is.empty(lib.characterPack.mode_banned)) {
                             bannednode.style.display = 'none';
                         }
                         delete lib.characterPack.mode_banned;
                     }
-                    var characterlist = connectMenu ? lib.connectCharacterPack : lib.config.all.characters;
-                    for (var i = 0; i < characterlist.length; i++) {
+                    let characterlist = connectMenu ? lib.connectCharacterPack : lib.config.all.characters;
+                    for (let i = 0; i < characterlist.length; i++) {
                         createModeConfig(characterlist[i], start.firstChild);
                     }
                     if (!connectMenu) {
-                        for (var i in lib.characterPack) {
+                        for (let i in lib.characterPack) {
                             if (i.indexOf('mode_') == 0) {
                                 createModeConfig(i, start.firstChild);
                             }
                         }
                     }
-                    var active = start.firstChild.querySelector('.active');
+                    let active = start.firstChild.querySelector('.active');
                     if (!active) {
                         active = start.firstChild.firstChild;
                         if (active.style.display == 'none') {
@@ -2626,11 +2627,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     }
                     rightPane.appendChild(active.link);
                     if (!connectMenu) {
-                        var node1 = ui.create.div('.lefttext', '全部开启', start.firstChild, function () {
+                        let node1 = ui.create.div('.lefttext', '全部开启', start.firstChild, function () {
                             game.saveConfig('characters', lib.config.all.characters);
                             updateNodes();
                         });
-                        var node2 = ui.create.div('.lefttext', '恢复默认', start.firstChild, function () {
+                        let node2 = ui.create.div('.lefttext', '恢复默认', start.firstChild, function () {
                             game.saveConfig('characters', lib.config.defaultcharacters);
                             updateNodes();
                         });
@@ -2640,17 +2641,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     updateNodes();
                 }());
                 (function () {
-                    var start = menuxpages.shift();
-                    var rightPane = start.lastChild;
-                    var pileCreated = false;
-                    var recreatePile = function () {
+                    let start = menuxpages.shift();
+                    let rightPane = start.lastChild;
+                    let pileCreated = false;
+                    let recreatePile = function () {
                         lib.config.customcardpile['当前牌堆'] = [lib.config.bannedpile, lib.config.addedpile];
                         game.saveConfig('customcardpile', lib.config.customcardpile);
                         game.saveConfig('cardpilename', '当前牌堆', true);
                         pileCreated = false;
                     };
-                    var clickMode = function () {
-                        var active = this.parentNode.querySelector('.active');
+                    let clickMode = function () {
+                        let active = this.parentNode.querySelector('.active');
                         if (active === this) {
                             return;
                         }
@@ -2671,15 +2672,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 return;
                             }
                         }
-                        for (var i = 0; i < node.link.childElementCount; i++) {
+                        for (let i = 0; i < node.link.childElementCount; i++) {
                             if (node.link.childNodes[i].updateBanned) {
                                 node.link.childNodes[i].updateBanned();
                             }
                         }
                     };
-                    var updateNodes = function () {
-                        for (var i = 0; i < start.firstChild.childNodes.length; i++) {
-                            var node = start.firstChild.childNodes[i];
+                    let updateNodes = function () {
+                        for (let i = 0; i < start.firstChild.childNodes.length; i++) {
+                            let node = start.firstChild.childNodes[i];
                             if (node.link) {
                                 if (node.mode.indexOf('mode_') == 0)
                                     continue;
@@ -2710,8 +2711,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                         }
                     };
-                    var togglePack = function (bool) {
-                        var name = this._link.config._name;
+                    let togglePack = function (bool) {
+                        let name = this._link.config._name;
                         if (connectMenu) {
                             if (!bool) {
                                 lib.config.connect_cards.add(name);
@@ -2732,9 +2733,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         updateNodes();
                     };
-                    var toggleCardPile = function (bool) {
-                        var name = this._link.config._name;
-                        var number = this._link.config._number;
+                    let toggleCardPile = function (bool) {
+                        let name = this._link.config._name;
+                        let number = this._link.config._number;
                         if (!lib.config.bannedpile[name]) {
                             lib.config.bannedpile[name] = [];
                         }
@@ -2746,24 +2747,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         recreatePile();
                     };
-                    var createModeConfig = function (mode, position) {
-                        var info = lib.cardPack[mode];
-                        var page = ui.create.div('');
-                        var node = ui.create.div('.menubutton.large', lib.translate[mode + '_card_config'], position, clickMode);
+                    let createModeConfig = function (mode, position) {
+                        let info = lib.cardPack[mode];
+                        let page = ui.create.div('');
+                        let node = ui.create.div('.menubutton.large', lib.translate[mode + '_card_config'], position, clickMode);
                         if (node.innerHTML.length >= 5) {
                             node.classList.add('smallfont');
                         }
                         node.link = page;
                         node.mode = mode;
-                        var list = [];
-                        for (var i = 0; i < info.length; i++) {
+                        let list = [];
+                        for (let i = 0; i < info.length; i++) {
                             if (!lib.card[info[i]] || (lib.card[info[i]].derivation && mode != 'mode_derivation'))
                                 continue;
                             list.push(['', get.translation(get.type(info[i], 'trick')), info[i]]);
                         }
-                        var sortCard = function (card) {
-                            var type = lib.card[card[2]].type;
-                            var subtype = lib.card[card[2]].subtype;
+                        let sortCard = function (card) {
+                            let type = lib.card[card[2]].type;
+                            let subtype = lib.card[card[2]].subtype;
                             if (lib.cardType[subtype]) {
                                 return lib.cardType[subtype];
                             }
@@ -2923,13 +2924,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             cfgnode.classList.add('toggle');
                             cfgnode.style.marginTop = '5px';
                             page.appendChild(cfgnode);
-                            var cardpileadd = ui.create.div('.config.toggle.hidden.cardpilecfg.cardpilecfgadd', page);
-                            var pileaddlist = [];
-                            for (var i = 0; i < lib.config.cards.length; i++) {
+                            let cardpileadd = ui.create.div('.config.toggle.hidden.cardpilecfg.cardpilecfgadd', page);
+                            let pileaddlist = [];
+                            for (let i = 0; i < lib.config.cards.length; i++) {
                                 if (!lib.cardPack[lib.config.cards[i]])
                                     continue;
-                                for (var j = 0; j < lib.cardPack[lib.config.cards[i]].length; j++) {
-                                    var cname = lib.cardPack[lib.config.cards[i]][j];
+                                for (let j = 0; j < lib.cardPack[lib.config.cards[i]].length; j++) {
+                                    let cname = lib.cardPack[lib.config.cards[i]][j];
                                     pileaddlist.push([cname, get.translation(cname)]);
                                     if (cname == 'sha') {
                                         pileaddlist.push(['huosha', '火杀']);
@@ -2941,11 +2942,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                 }
                             }
-                            var cardpileaddname = ui.create.selectlist(pileaddlist, null, cardpileadd);
+                            let cardpileaddname = ui.create.selectlist(pileaddlist, null, cardpileadd);
                             cardpileaddname.style.width = '75px';
                             cardpileaddname.style.marginRight = '2px';
                             cardpileaddname.style.marginLeft = '-1px';
-                            var cardpileaddsuit = ui.create.selectlist([
+                            let cardpileaddsuit = ui.create.selectlist([
                                 ['heart', '红桃'],
                                 ['diamond', '方片'],
                                 ['club', '梅花'],
@@ -2953,19 +2954,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             ], null, cardpileadd);
                             cardpileaddsuit.style.width = '53px';
                             cardpileaddsuit.style.marginRight = '2px';
-                            var cardpileaddnumber = ui.create.selectlist([
+                            let cardpileaddnumber = ui.create.selectlist([
                                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
                             ], null, cardpileadd);
                             cardpileaddnumber.style.width = '43px';
                             cardpileaddnumber.style.marginRight = '2px';
-                            var button = document.createElement('button');
+                            let button = document.createElement('button');
                             button.innerHTML = '确定';
                             button.style.width = '40px';
-                            var deletecard = function () {
+                            let deletecard = function () {
                                 this.parentNode.remove();
-                                var info = this.parentNode._info;
-                                var list = lib.config.addedpile[mode];
-                                for (var i = 0; i < list.length; i++) {
+                                let info = this.parentNode._info;
+                                let list = lib.config.addedpile[mode];
+                                for (let i = 0; i < list.length; i++) {
                                     if (list[i][0] == info[0] && list[i][1] == info[1] && list[i][2] == info[2]) {
                                         list.splice(i, 1);
                                         break;
@@ -2974,17 +2975,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 recreatePile();
                             };
                             button.onclick = function () {
-                                var card = [
+                                let card = [
                                     cardpileaddsuit.value,
                                     cardpileaddnumber.value,
                                     cardpileaddname.value,
                                 ];
                                 lib.config.addedpile[mode].push(card);
                                 recreatePile();
-                                var cfgnode = ui.create.div('.config.toggle.cardpilecfg');
+                                let cfgnode = ui.create.div('.config.toggle.cardpilecfg');
                                 cfgnode._info = card;
                                 cfgnode.innerHTML = get.translation(card[2]) + ' ' + get.translation(card[0]) + card[1];
-                                var cfgnodedelete = document.createElement('span');
+                                let cfgnodedelete = document.createElement('span');
                                 cfgnodedelete.classList.add('cardpiledelete');
                                 cfgnodedelete.innerHTML = '删除';
                                 cfgnodedelete.onclick = deletecard;
@@ -2994,12 +2995,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             cardpileadd.appendChild(button);
                             cardpileadd.style.whiteSpace = 'nowrap';
                             cardpileNodes.push(cardpileadd);
-                            for (var i = 0; i < lib.config.addedpile[mode].length; i++) {
-                                var card = lib.config.addedpile[mode][i];
-                                var cfgnode = ui.create.div('.config.toggle.cardpilecfg');
+                            for (let i = 0; i < lib.config.addedpile[mode].length; i++) {
+                                let card = lib.config.addedpile[mode][i];
+                                let cfgnode = ui.create.div('.config.toggle.cardpilecfg');
                                 cfgnode._info = card;
                                 cfgnode.innerHTML = get.translation(card[2]) + ' ' + get.translation(card[0]) + card[1];
-                                var cfgnodedelete = document.createElement('span');
+                                let cfgnodedelete = document.createElement('span');
                                 cfgnodedelete.classList.add('cardpiledelete');
                                 cfgnodedelete.innerHTML = '删除';
                                 cfgnodedelete.onclick = deletecard;
@@ -3008,9 +3009,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 cardpileNodes.push(cfgnode);
                                 page.appendChild(cfgnode);
                             }
-                            for (var i = 0; i < lib.cardPile[mode].length; i++) {
-                                var card = lib.cardPile[mode][i];
-                                var cfgnode = createConfig({
+                            for (let i = 0; i < lib.cardPile[mode].length; i++) {
+                                let card = lib.cardPile[mode][i];
+                                let cfgnode = createConfig({
                                     name: get.translation(card[2]) + ' ' + get.translation(card[0]) + card[1],
                                     _number: i,
                                     _name: mode,
@@ -3029,33 +3030,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     };
                     if (!connectMenu && lib.config.show_ban_menu) {
                         lib.cardPack.mode_banned = [];
-                        for (var i = 0; i < lib.config.all.mode.length; i++) {
-                            var banned = lib.config[lib.config.all.mode[i] + '_bannedcards'];
+                        for (let i = 0; i < lib.config.all.mode.length; i++) {
+                            let banned = lib.config[lib.config.all.mode[i] + '_bannedcards'];
                             if (banned) {
-                                for (var j = 0; j < banned.length; j++) {
+                                for (let j = 0; j < banned.length; j++) {
                                     lib.cardPack.mode_banned.add(banned[j]);
                                 }
                             }
                         }
-                        var bannednode = createModeConfig('mode_banned', start.firstChild);
+                        let bannednode = createModeConfig('mode_banned', start.firstChild);
                         if (lib.cardPack.mode_banned.length == 0) {
                             bannednode.style.display = 'none';
                         }
                         delete lib.cardPack.mode_banned;
                     }
-                    for (var i = 0; i < lib.config.all.cards.length; i++) {
+                    for (let i = 0; i < lib.config.all.cards.length; i++) {
                         if (connectMenu && !lib.connectCardPack.contains(lib.config.all.cards[i]))
                             continue;
                         createModeConfig(lib.config.all.cards[i], start.firstChild);
                     }
                     if (!connectMenu) {
-                        for (var i in lib.cardPack) {
+                        for (let i in lib.cardPack) {
                             if (i.indexOf('mode_') == 0) {
                                 createModeConfig(i, start.firstChild);
                             }
                         }
                     }
-                    var active = start.firstChild.querySelector('.active');
+                    let active = start.firstChild.querySelector('.active');
                     if (!active) {
                         active = start.firstChild.firstChild;
                         if (active.style.display == 'none') {
@@ -3068,8 +3069,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     (function () {
                         if (connectMenu)
                             return;
-                        var page = ui.create.div('.menu-buttons');
-                        var node = ui.create.div('.menubutton.large', '牌堆', clickMode);
+                        let page = ui.create.div('.menu-buttons');
+                        let node = ui.create.div('.menubutton.large', '牌堆', clickMode);
                         start.firstChild.insertBefore(node, start.firstChild.querySelector('.lefttext'));
                         node.link = page;
                         node.mode = 'cardpile';
@@ -3078,19 +3079,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 return;
                             pileCreated = true;
                             page.innerHTML = '';
-                            var pileList = null;
-                            var createList = function () {
+                            let pileList = null;
+                            let createList = function () {
                                 if (pileList) {
                                     pileList.remove();
                                 }
-                                var list = ['默认牌堆'];
+                                let list = ['默认牌堆'];
                                 if (lib.config.customcardpile['当前牌堆']) {
                                     list.push('当前牌堆');
                                 }
-                                for (var i in lib.config.customcardpile) {
+                                for (let i in lib.config.customcardpile) {
                                     list.add(i);
                                 }
-                                var currentpile = get.config('cardpilename');
+                                let currentpile = get.config('cardpilename');
                                 if (!currentpile) {
                                     if (list.contains('当前牌堆')) {
                                         currentpile = '当前牌堆';
@@ -3105,13 +3106,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 });
                                 pileList.style.float = 'right';
                             };
-                            var pileChoose = ui.create.div('.config.toggle.cardpilecfg.nomarginleft', '选择牌堆', page);
+                            let pileChoose = ui.create.div('.config.toggle.cardpilecfg.nomarginleft', '选择牌堆', page);
                             createList();
-                            var pileDel = function () {
+                            let pileDel = function () {
                                 delete lib.config.customcardpile[this.parentNode.link];
                                 this.parentNode.remove();
                                 game.saveConfig('customcardpile', lib.config.customcardpile);
-                                for (var i in lib.config.mode_config) {
+                                for (let i in lib.config.mode_config) {
                                     if (i == 'global')
                                         continue;
                                     if (lib.config.mode_config[i].cardpilename == this.parentNode.link) {
@@ -3120,12 +3121,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                                 createList();
                             };
-                            var restart = ui.create.div('.config.more', '重新启动', game.reload, page);
+                            let restart = ui.create.div('.config.more', '重新启动', game.reload, page);
                             restart.style.display = 'none';
-                            var createPileNode = function (name) {
-                                var node = ui.create.div('.config.toggle.cardpilecfg.nomarginleft', name);
+                            let createPileNode = function (name) {
+                                let node = ui.create.div('.config.toggle.cardpilecfg.nomarginleft', name);
                                 node.link = name;
-                                var del = document.createElement('span');
+                                let del = document.createElement('span');
                                 del.innerHTML = '删除';
                                 del.classList.add('cardpiledelete');
                                 del.onclick = pileDel;
@@ -3137,10 +3138,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     page.insertBefore(node, restart);
                                 }
                             };
-                            for (var i in lib.config.customcardpile) {
+                            for (let i in lib.config.customcardpile) {
                                 createPileNode(i);
                             }
-                            var exportCardPile;
+                            let exportCardPile;
                             ui.create.div('.config.more', '保存当前牌堆 <div>&gt;</div>', page, function () {
                                 this.classList.toggle('on');
                                 if (this.classList.contains('on')) {
@@ -3153,15 +3154,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             exportCardPile = ui.create.div('.config.cardpileadd.indent', page);
                             exportCardPile.classList.add('hidden');
                             ui.create.div('', '名称：<input type="text"><button>确定</button>', exportCardPile);
-                            var input = exportCardPile.firstChild.lastChild.previousSibling;
+                            let input = exportCardPile.firstChild.lastChild.previousSibling;
                             input.value = '自定义牌堆';
                             input.style.marginRight = '3px';
                             input.style.width = '120px';
                             exportCardPile.firstChild.lastChild.onclick = function () {
-                                var name = input.value;
-                                var ok = true;
+                                let name = input.value;
+                                let ok = true;
                                 if (lib.config.customcardpile[name] || name == '默认牌堆' || name == '当前牌堆') {
-                                    for (var i = 1; i <= 1000; i++) {
+                                    for (let i = 1; i <= 1000; i++) {
                                         if (!lib.config.customcardpile[name + '(' + i + ')']) {
                                             name = name + '(' + i + ')';
                                             break;
@@ -3170,13 +3171,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                                 lib.config.customcardpile[name] = [lib.config.bannedpile, lib.config.addedpile];
                                 delete lib.config.customcardpile['当前牌堆'];
-                                for (var i in lib.mode) {
+                                for (let i in lib.mode) {
                                     if (lib.config.mode_config[i] &&
                                         (lib.config.mode_config[i].cardpilename == '当前牌堆' || !lib.config.mode_config[i].cardpilename)) {
                                         game.saveConfig('cardpilename', name, i);
                                     }
                                 }
-                                for (var i = 0; i < page.childElementCount; i++) {
+                                for (let i = 0; i < page.childElementCount; i++) {
                                     if (page.childNodes[i].link == '当前牌堆') {
                                         page.childNodes[i].remove();
                                         break;
@@ -3414,12 +3415,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             infoExtLine.appendChild(infoExtName);
                             return infoExtLine;
                         };
-                        var authorExtLine = createExtLine('扩展作者', get.connectNickname());
-                        var introExtLine = createExtLine('扩展描述');
-                        var versionExtLine = createExtLine('扩展版本', '1.0');
-                        var diskExtLine = createExtLine('网盘地址');
-                        var forumExtLine = createExtLine('讨论地址');
-                        var okExtLine = createExtLine(true);
+                        let authorExtLine = createExtLine('扩展作者', get.connectNickname());
+                        let introExtLine = createExtLine('扩展描述');
+                        let versionExtLine = createExtLine('扩展版本', '1.0');
+                        let diskExtLine = createExtLine('网盘地址');
+                        let forumExtLine = createExtLine('讨论地址');
+                        let okExtLine = createExtLine(true);
                         game.editExtension = function (name) {
                             page.currentExtension = name || '无名扩展';
                             inputExtName.value = page.currentExtension;
@@ -3487,7 +3488,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             node.classList.add('active');
                             rightPane.appendChild(node.link);
                         };
-                        var processExtension = function (exportext) {
+                        let processExtension = function (exportext) {
                             if (page.currentExtension) {
                                 if (page.currentExtension != inputExtName.value && !exportext) {
                                     game.removeExtension(page.currentExtension);
@@ -3495,9 +3496,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             }
                             inputExtName.disabled = true;
                             setTimeout(function () {
-                                var ext = {};
-                                var config = null, help = null;
-                                for (var i in dash4.content) {
+                                let ext = {};
+                                let config = null, help = null;
+                                for (let i in dash4.content) {
                                     try {
                                         if (i == 'content' || i == 'precontent') {
                                             eval('ext[i]=' + dash4.content[i]);
@@ -3525,12 +3526,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                 }
                                 page.currentExtension = inputExtName.value || '无名扩展';
-                                var str = '{name:"' + page.currentExtension + '"';
-                                for (var i in ext) {
+                                let str = '{name:"' + page.currentExtension + '"';
+                                for (let i in ext) {
                                     str += ',' + i + ':' + ext[i];
                                 }
                                 dash2.content.pack.list = [];
-                                for (var i = 0; i < dash2.pile.childNodes.length; i++) {
+                                for (let i = 0; i < dash2.pile.childNodes.length; i++) {
                                     dash2.content.pack.list.push(dash2.pile.childNodes[i].link);
                                 }
                                 str += ',package:' + get.stringify({
@@ -3543,27 +3544,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     forumURL: forumExtLine.querySelector('input').value || '',
                                     version: versionExtLine.querySelector('input').value || '',
                                 });
-                                var files = { character: [], card: [], skill: [] };
-                                for (var i in dash1.content.image) {
+                                let files = { character: [], card: [], skill: [] };
+                                for (let i in dash1.content.image) {
                                     files.character.push(i);
                                 }
-                                for (var i in dash2.content.image) {
+                                for (let i in dash2.content.image) {
                                     files.card.push(i);
                                 }
-                                for (var i in dash3.content.audio) {
+                                for (let i in dash3.content.audio) {
                                     files.skill.push(i);
                                 }
                                 str += ',files:' + JSON.stringify(files);
                                 str += '}';
-                                var extension = { 'extension.js': 'game.import("extension",function(lib,game,ui,get,ai,_status){return ' + str + '})' };
-                                for (var i in dash1.content.image) {
+                                let extension = { 'extension.js': 'game.import("extension",function(lib,game,ui,get,ai,_status){return ' + str + '})' };
+                                for (let i in dash1.content.image) {
                                     extension[i] = dash1.content.image[i];
                                 }
-                                for (var i in dash2.content.image) {
+                                for (let i in dash2.content.image) {
                                     extension[i] = dash2.content.image[i];
                                 }
                                 if (exportext) {
-                                    var proexport = function () {
+                                    let proexport = function () {
                                         game.importExtension(extension, null, page.currentExtension, {
                                             intro: introExtLine.querySelector('input').value || '',
                                             author: authorExtLine.querySelector('input').value || '',
@@ -3589,12 +3590,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                             }, 500);
                         };
-                        var buttonConfirm = document.createElement('button');
+                        let buttonConfirm = document.createElement('button');
                         buttonConfirm.innerHTML = '确定';
                         buttonConfirm.style.marginLeft = '5px';
                         buttonConfirm.onclick = buttonConfirmOnclick;
                         inputExtLine.appendChild(buttonConfirm);
-                        var buttonRename = document.createElement('button');
+                        let buttonRename = document.createElement('button');
                         buttonRename.innerHTML = '选项';
                         buttonRename.style.marginLeft = '2px';
                         buttonRename.style.marginRight = '2px';
@@ -3811,10 +3812,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 resetEditor();
                                 var buttons = page.querySelectorAll('.button.character');
                                 var list = [];
-                                for (var i = 0; i < buttons.length; i++) {
+                                for (let i = 0; i < buttons.length; i++) {
                                     list.push(buttons[i]);
                                 }
-                                for (var i = 0; i < list.length; i++) {
+                                for (let i = 0; i < list.length; i++) {
                                     list[i].remove();
                                 }
                                 if (lib.extensionPack[name]) {
@@ -3823,20 +3824,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         translate: {}
                                     };
                                     page.content.image = {};
-                                    for (var i in page.content.pack.character) {
-                                        var file = i + '.jpg';
-                                        var loadImage = function (file, data) {
-                                            var img = new Image();
+                                    for (let i in page.content.pack.character) {
+                                        let file = i + '.jpg';
+                                        let loadImage = function (file, data) {
+                                            let img = new Image();
                                             img.crossOrigin = 'Anonymous';
                                             img.onload = function () {
-                                                var canvas = document.createElement('CANVAS');
-                                                var ctx = canvas.getContext('2d');
-                                                var dataURL;
+                                                let canvas = document.createElement('CANVAS');
+                                                let ctx = canvas.getContext('2d');
+                                                let dataURL;
                                                 canvas.height = this.height;
                                                 canvas.width = this.width;
                                                 ctx.drawImage(this, 0, 0);
                                                 canvas.toBlob(function (blob) {
-                                                    var fileReader = new FileReader();
+                                                    let fileReader = new FileReader();
                                                     fileReader.onload = function (e) {
                                                         page.content.image[file] = e.target.result;
                                                     };
@@ -3846,13 +3847,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                             img.src = data;
                                         };
                                         if (game.download) {
-                                            var url = lib.assetURL + 'extension/' + name + '/' + file;
+                                            let url = lib.assetURL + 'extension/' + name + '/' + file;
                                             createButton(i, url);
                                             if (lib.device == 'ios' || lib.device == 'android') {
                                                 window.resolveLocalFileSystemURL(lib.assetURL + 'extension/' + name, function (entry) {
                                                     entry.getFile(file, {}, function (fileEntry) {
                                                         fileEntry.file(function (fileToLoad) {
-                                                            var fileReader = new FileReader();
+                                                            let fileReader = new FileReader();
                                                             fileReader.onload = function (e) {
                                                                 page.content.image[file] = e.target.result;
                                                             };
@@ -3899,8 +3900,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 },
                                 image: {}
                             };
-                            var newCharacter;
-                            var toggle = ui.create.div('.config.more.on', '创建武将 <div>&gt;</div>', page, function () {
+                            let newCharacter;
+                            let toggle = ui.create.div('.config.more.on', '创建武将 <div>&gt;</div>', page, function () {
                                 this.classList.toggle('on');
                                 if (this.classList.contains('on')) {
                                     newCharacter.style.display = '';
@@ -3909,7 +3910,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     newCharacter.style.display = 'none';
                                 }
                             });
-                            var resetEditor = function () {
+                            let resetEditor = function () {
                                 currentButton = null;
                                 toggle.classList.remove('on');
                                 newCharacter.style.display = 'none';
@@ -3917,12 +3918,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 delete fakeme.image;
                                 delete fakeme.image64;
                                 fakeme.style.backgroundImage = '';
-                                var inputs = newCharacter.querySelectorAll('input');
-                                for (var i = 0; i < inputs.length; i++) {
+                                let inputs = newCharacter.querySelectorAll('input');
+                                for (let i = 0; i < inputs.length; i++) {
                                     inputs[i].value = '';
                                 }
                                 inputs = newCharacter.querySelectorAll('textarea');
-                                for (var i = 0; i < inputs.length; i++) {
+                                for (let i = 0; i < inputs.length; i++) {
                                     inputs[i].value = '';
                                 }
                                 skillList.firstChild.innerHTML = '';
@@ -3933,21 +3934,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 delete delnode.button;
                             };
                             newCharacter = ui.create.div('.new_character', page);
-                            var fakeme = ui.create.div('.avatar', newCharacter);
-                            var input = document.createElement('input');
+                            let fakeme = ui.create.div('.avatar', newCharacter);
+                            let input = document.createElement('input');
                             input.type = 'file';
                             input.accept = 'image/*';
                             input.className = 'fileinput';
                             input.onchange = function () {
-                                var fileToLoad = input.files[0];
+                                let fileToLoad = input.files[0];
                                 if (fileToLoad) {
-                                    var fileReader = new FileReader();
+                                    let fileReader = new FileReader();
                                     fileReader.onload = function (fileLoadedEvent) {
-                                        var data = fileLoadedEvent.target.result;
+                                        let data = fileLoadedEvent.target.result;
                                         fakeme.style.backgroundImage = 'url(' + data + ')';
                                         fakeme.image64 = data;
                                         fakeme.classList.add('inited');
-                                        var fileReader = new FileReader();
+                                        let fileReader = new FileReader();
                                         fileReader.onload = function (fileLoadedEvent) {
                                             fakeme.image = fileLoadedEvent.target.result;
                                             updateButton();
@@ -3963,21 +3964,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             ui.create.div('.indent', '介绍：<input class="new_des" type="text">', newCharacter).style.paddingTop = '8px';
                             ui.create.div('.indent', '体力：<input class="new_hp" type="text">', newCharacter).style.paddingTop = '8px';
                             newCharacter.querySelector('input.new_name').onblur = updateButton;
-                            var sexes = ui.create.selectlist([
+                            let sexes = ui.create.selectlist([
                                 ['male', '男'],
                                 ['female', '女'],
                                 ['none', '无'],
                             ], null, ui.create.div('.indent', '性别：', newCharacter));
-                            var grouplist = [];
-                            for (var i = 0; i < lib.group.length; i++) {
+                            let grouplist = [];
+                            for (let i = 0; i < lib.group.length; i++) {
                                 grouplist.push([lib.group[i], get.translation(lib.group[i])]);
                             }
                             ;
-                            var groups = ui.create.selectlist(grouplist, null, ui.create.div('.indent', '势力：', newCharacter));
-                            var options = ui.create.div('.add_skill.options', '<span>主公<input type="checkbox" name="zhu"></span><span>BOSS<input type="checkbox" name="boss"></span><span>仅点将可用<input type="checkbox" name="forbidai"></span><br><span>隐匿技<input type="checkbox" name="hiddenSkill"></span><br>', newCharacter);
-                            var addSkill = ui.create.div('.add_skill', '添加技能<br>', newCharacter);
-                            var list = [];
-                            for (var i in lib.character) {
+                            let groups = ui.create.selectlist(grouplist, null, ui.create.div('.indent', '势力：', newCharacter));
+                            let options = ui.create.div('.add_skill.options', '<span>主公<input type="checkbox" name="zhu"></span><span>BOSS<input type="checkbox" name="boss"></span><span>仅点将可用<input type="checkbox" name="forbidai"></span><br><span>隐匿技<input type="checkbox" name="hiddenSkill"></span><br>', newCharacter);
+                            let addSkill = ui.create.div('.add_skill', '添加技能<br>', newCharacter);
+                            let list = [];
+                            for (let i in lib.character) {
                                 if (lib.character[i][3].length) {
                                     list.push([i, lib.translate[i]]);
                                 }
@@ -3985,7 +3986,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             list.sort(function (a, b) {
                                 a = a[0];
                                 b = b[0];
-                                var aa = a, bb = b;
+                                let aa = a, bb = b;
                                 if (aa.indexOf('_') != -1) {
                                     aa = aa.slice(aa.indexOf('_') + 1);
                                 }
@@ -3997,28 +3998,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                                 return a > b ? 1 : -1;
                             });
-                            var list2 = [];
-                            var skills = lib.character[list[0][0]][3];
-                            for (var i = 0; i < skills.length; i++) {
+                            let list2 = [];
+                            let skills = lib.character[list[0][0]][3];
+                            for (let i = 0; i < skills.length; i++) {
                                 list2.push([skills[i], lib.translate[skills[i]]]);
                             }
                             list.unshift(['current_extension', '此扩展']);
-                            var selectname = ui.create.selectlist(list, list[1], addSkill);
+                            let selectname = ui.create.selectlist(list, list[1], addSkill);
                             page.selectname = selectname;
                             selectname.onchange = function () {
                                 skillopt.innerHTML = '';
                                 if (this.value == 'current_extension') {
-                                    for (var i in dash3.content.pack.skill) {
-                                        var option = document.createElement('option');
+                                    for (let i in dash3.content.pack.skill) {
+                                        let option = document.createElement('option');
                                         option.value = i;
                                         option.innerHTML = dash3.content.pack.translate[i];
                                         skillopt.appendChild(option);
                                     }
                                 }
                                 else {
-                                    var skills = lib.character[this.value][3];
-                                    for (var i = 0; i < skills.length; i++) {
-                                        var option = document.createElement('option');
+                                    let skills = lib.character[this.value][3];
+                                    for (let i = 0; i < skills.length; i++) {
+                                        let option = document.createElement('option');
                                         option.value = skills[i];
                                         option.innerHTML = lib.translate[skills[i]];
                                         skillopt.appendChild(option);
@@ -4026,25 +4027,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                             };
                             selectname.style.maxWidth = '85px';
-                            var skillopt = ui.create.selectlist(list2, list2[0], addSkill);
+                            let skillopt = ui.create.selectlist(list2, list2[0], addSkill);
                             skillopt.style.maxWidth = '60px';
                             page.skillopt = skillopt;
-                            var addSkillButton = document.createElement('button');
+                            let addSkillButton = document.createElement('button');
                             addSkillButton.innerHTML = '添加';
                             addSkill.appendChild(addSkillButton);
                             page.addSkillButton = addSkillButton;
-                            var deletenode = function () {
+                            let deletenode = function () {
                                 this.remove();
                             };
                             addSkillButton.onclick = function () {
-                                for (var i = 0; i < skillList.firstChild.childNodes.length; i++) {
+                                for (let i = 0; i < skillList.firstChild.childNodes.length; i++) {
                                     if (skillList.firstChild.childNodes[i].skill == skillopt.value)
                                         return;
                                 }
-                                var node = document.createElement('button');
+                                let node = document.createElement('button');
                                 node.skill = skillopt.value;
                                 node.onclick = deletenode;
-                                for (var i = 0; i < skillopt.childElementCount; i++) {
+                                for (let i = 0; i < skillopt.childElementCount; i++) {
                                     if (skillopt.childNodes[i].value == skillopt.value) {
                                         node.innerHTML = skillopt.childNodes[i].innerHTML;
                                         break;
@@ -4052,7 +4053,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 }
                                 skillList.firstChild.appendChild(node);
                             };
-                            var createSkillButton = document.createElement('button');
+                            let createSkillButton = document.createElement('button');
                             createSkillButton.innerHTML = '创建';
                             createSkillButton.style.marginLeft = '3px';
                             addSkill.appendChild(createSkillButton);
@@ -4065,9 +4066,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 dash3.newSkill.style.display = '';
                             };
                             page.updateSkill = function () {
-                                for (var i = 0; i < skillList.firstChild.childNodes.length; i++) {
-                                    var node = skillList.firstChild.childNodes[i];
-                                    var skill = skillList.firstChild.childNodes[i].skill;
+                                for (let i = 0; i < skillList.firstChild.childNodes.length; i++) {
+                                    let node = skillList.firstChild.childNodes[i];
+                                    let skill = skillList.firstChild.childNodes[i].skill;
                                     if (dash3.content.pack.skill[skill]) {
                                         node.innerHTML = dash3.content.pack.translate[skill];
                                     }
@@ -4080,16 +4081,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                     }
                                 }
                             };
-                            var skillList = ui.create.div('.skill_list', newCharacter);
+                            let skillList = ui.create.div('.skill_list', newCharacter);
                             ui.create.div(skillList);
-                            var editnode = ui.create.div('.menubutton.large.disabled', '创建武将', ui.create.div(skillList), function () {
-                                var name = page.querySelector('input.new_name').value;
+                            let editnode = ui.create.div('.menubutton.large.disabled', '创建武将', ui.create.div(skillList), function () {
+                                let name = page.querySelector('input.new_name').value;
                                 if (!name) {
                                     alert('请填写武将名\n提示：武将名格式为id+|+中文名，其中id必须惟一');
                                     return;
                                 }
                                 name = name.split('|');
-                                var translate = name[1] || name[0];
+                                let translate = name[1] || name[0];
                                 name = name[0];
                                 if (currentButton) {
                                     if (currentButton.link != name) {
@@ -4119,17 +4120,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         return;
                                     }
                                 }
-                                var hp = page.querySelector('input.new_hp').value;
+                                let hp = page.querySelector('input.new_hp').value;
                                 if (hp == 'Infinity')
                                     hp = Infinity;
                                 else if (hp.indexOf('/') == -1)
                                     hp = parseInt(hp) || 1;
-                                var skills = [];
-                                for (var i = 0; i < skillList.firstChild.childNodes.length; i++) {
+                                let skills = [];
+                                for (let i = 0; i < skillList.firstChild.childNodes.length; i++) {
                                     skills.add(skillList.firstChild.childNodes[i].skill);
                                 }
-                                var tags = [];
-                                for (var i = 0; i < options.childNodes.length - 1; i++) {
+                                let tags = [];
+                                for (let i = 0; i < options.childNodes.length - 1; i++) {
                                     if (options.childNodes[i].lastChild && options.childNodes[i].lastChild.checked) {
                                         tags.push(options.childNodes[i].lastChild.name);
                                     }
@@ -4156,10 +4157,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 resetEditor();
                                 dash1.link.classList.add('active');
                             });
-                            var delnode = ui.create.div('.menubutton.large', '取消', editnode.parentNode, function () {
+                            let delnode = ui.create.div('.menubutton.large', '取消', editnode.parentNode, function () {
                                 if (this.innerHTML == '删除') {
                                     this.button.remove();
-                                    var name = this.button.link;
+                                    let name = this.button.link;
                                     delete dash1.content.pack.character[name];
                                     delete dash1.content.pack.translate[name];
                                     delete dash1.content.image[name];
@@ -4170,17 +4171,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                             delnode.style.marginLeft = '13px';
                             return page;
                         }());
-                        var dash2 = (function () {
-                            var page = ui.create.div('.hidden.menu-buttons');
-                            var currentButton = null;
+                        let dash2 = (function () {
+                            let page = ui.create.div('.hidden.menu-buttons');
+                            let currentButton = null;
                             page.init = function () {
                                 if (!page.querySelector('.button.card')) {
                                     toggle.classList.add('on');
                                     newCard.style.display = '';
                                 }
                             };
-                            var updateButton = function () {
-                                var name = page.querySelector('input.new_name').value;
+                            let updateButton = function () {
+                                let name = page.querySelector('input.new_name').value;
                                 if (!name) {
                                     editnode.classList.add('disabled');
                                     return;

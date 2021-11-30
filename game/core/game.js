@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/Status_Event", "./base/EventModel"], factory);
+        define(["require", "exports", "./_context", "./view/PlayerModel", "./base/EventModel"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -34,7 +34,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const _context = __importStar(require("./_context"));
     const { _status, lib, game, ui, get, ai, mixin } = _context;
     const PlayerModel_1 = __importDefault(require("./view/PlayerModel"));
-    const Status_Event_1 = __importDefault(require("./base/Status_Event"));
     const EventModel_1 = __importDefault(require("./base/EventModel"));
     mixin(game, {
         showPlayerCard: function (event, target, directh, type, callback) {
@@ -1480,11 +1479,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                         var pkgstr = 'extension["' + exportext + '"]={\n';
                         for (var i in pkg) {
-                            var pkgfrag;
+                            let pkgfrag;
                             if (i == 'files') {
                                 var pkgjs = JSON.stringify(pkg[i]);
-                                var pkgfrag = '';
                                 var pkgbuffer = 0;
+                                pkgfrag = '';
                                 for (var j = 0; j < pkgjs.length; j++) {
                                     pkgfrag += pkgjs[j];
                                     pkgbuffer++;
@@ -3829,7 +3828,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             var next = new EventModel_1.default(name);
             if (trigger !== false && !game.online)
                 next._triggered = 0;
-            (((triggerevent === null || triggerevent === void 0 ? void 0 : triggerevent.getEvent) ? triggerevent.getEvent() : triggerevent) || _status.event).next.push(next);
+            (triggerevent || _status.event).next.push(next);
             return next;
         },
         addCharacter(name, info) {
@@ -6052,11 +6051,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         lib[i][j] = mode[lib.config.mode][i][j];
                     }
                 }
-                _status.event = new Status_Event_1.default({
-                    finished: true,
-                    next: [],
-                    after: []
-                });
+                _status.event = new EventModel_1.default();
                 _status.paused = false;
                 if (_status.connectMode && lib.mode[name].connect) {
                     game.saveConfig('connect_mode', name);

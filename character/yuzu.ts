@@ -12860,6 +12860,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						return num + game.countPlayer(cur => cur.group&&cur.group=='qun');
 					},
 				},
+				ai:{
+					combo:'qijian'
+				}
 			},
 			//Buff
 			shangsheng:{

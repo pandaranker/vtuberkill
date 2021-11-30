@@ -18,8 +18,8 @@ declare global {
     type Dialogword = Array<Key>
     type Charaword = Array<>
 	type skillContent = () => void
-	type skillCheck = (event:Status_Event, player?:PlayerModel) => boolean|number|string
-    type targetCheck = (card:any, player?:PlayerModel, event?:Status_Event) => boolean
+	type skillCheck = (event:EventModel, player?:PlayerModel) => boolean|number|string
+    type targetCheck = (card:any, player?:PlayerModel, event?:EventModel) => boolean
     interface Skill{
 		audio?: number|boolean|string
         enable?: Keyword
@@ -29,7 +29,7 @@ declare global {
         filter?: skillCheck
         check?: skillCheck
         prompt2?: string | skillCheck
-        logTarget?: string | ((event:Status_Event, player?:PlayerModel) => boolean|number|string|string[])
+        logTarget?: string | ((event:EventModel, player?:PlayerModel) => boolean|number|string|string[])
         filterTarget?: boolean | targetCheck
 		content?: skillContent
         subSkill?: {[propName: string]: Skill}
@@ -51,10 +51,11 @@ declare global {
     var targets: PlayerModel[]
     var card: CardModel
     var cards: CardModel[]
-    var trigger:Status_Event
+    var trigger:EventModel
     var galgame: { sce(string): void }
     var targets: PlayerModel[]
-    var num: number
+    var num: any
+    // number | Function
     var skill: string
     var result: number | Array | {
         bool?: Boolean
@@ -62,20 +63,14 @@ declare global {
         cards?: Array
         links?: Array
     }
-    declare var event:Status_Event
+    declare var event:EventModel
     //原生游戏核心类
-    // class Status_Event {
-    //     LinkParent(event: Object): Status_Event
-    //     LinkChild(event: Object): Status_Event
-    //     LinkAfter(event: Object): Status_Event
-    //     [propName: string]: any
-    //     constructor(event: Object)
-    // }
     var cheat:{[propName: string]:Function}
     interface Window{
         game
         play
         isNonameServer
+        isNonameServerIp
         /**屏幕常亮相关 */
         plugins
         noSleep

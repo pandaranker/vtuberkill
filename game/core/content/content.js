@@ -1009,10 +1009,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.finish();
                 }
                 'step 1';
-                var character = lib.imported.character;
-                var card = lib.imported.card;
-                var i, j, k;
-                for (i in character) {
+                let character = lib.imported.character;
+                let card = lib.imported.card;
+                for (let i in character) {
                     if (character[i].character) {
                         lib.characterPack[i] = character[i].character;
                     }
@@ -1020,14 +1019,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         continue;
                     if (character[i].mode && character[i].mode.contains(lib.config.mode) == false)
                         continue;
-                    if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
-                        lib[j].addArray(character[i][j]);
-                        continue;
-                    }
-                    for (j in character[i]) {
-                        if (j == 'mode' || j == 'forbid' || j == 'characterSort')
+                    for (let j in character[i]) {
+                        if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
+                            lib[j].addArray(character[i][j]);
                             continue;
-                        for (k in character[i][j]) {
+                        }
+                        for (let k in character[i][j]) {
                             if (j == 'character') {
                                 if (!character[i][j][k][4]) {
                                     character[i][j][k][4] = [];
@@ -1060,21 +1057,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         }
                     }
                 }
-                for (i in card) {
+                for (let i in card) {
                     lib.cardPack[i] = [];
                     if (card[i].card) {
-                        for (var j in card[i].card) {
+                        for (let j in card[i].card) {
                             if (!card[i].card[j].hidden && card[i].translate[j + '_info']) {
                                 lib.cardPack[i].push(j);
                             }
                         }
                     }
-                    for (j in card[i]) {
+                    for (let j in card[i]) {
                         if (j == 'mode' || j == 'forbid')
                             continue;
                         if (j == 'list')
                             continue;
-                        for (k in card[i][j]) {
+                        for (let k in card[i][j]) {
                             if (j == 'skill' && k[0] == '_' && !lib.config.cards.contains(i)) {
                                 continue;
                             }
@@ -1409,8 +1406,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 "step 4";
                 if (player._hookTrigger) {
-                    for (var i = 0; i < player._hookTrigger.length; i++) {
-                        var info = lib.skill[player._hookTrigger[i]].hookTrigger;
+                    for (let i = 0; i < player._hookTrigger.length; i++) {
+                        let info = lib.skill[player._hookTrigger[i]].hookTrigger;
                         if (info) {
                             if (info.after && info.after(event, player, event.triggername)) {
                                 event.trigger('triggerAfter');
@@ -2837,16 +2834,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         _status.event._result = this.link;
                         game.resume();
                     };
-                    for (i = 0; i < choice.length; i++) {
+                    for (let i = 0; i < choice.length; i++) {
                         if (lib.translate[choice[i] + '_info']) {
-                            var translation = get.translation(choice[i]);
+                            let translation = get.translation(choice[i]);
                             if (translation[0] == '新' && translation.length == 3) {
                                 translation = translation.slice(1, 3);
                             }
                             else {
                                 translation = translation.slice(0, 2);
                             }
-                            var item = event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">' +
+                            let item = event.dialog.add('<div class="popup pointerdiv" style="width:80%;display:inline-block"><div class="skill">' +
                                 translation + '</div><div>' + lib.translate[choice[i] + '_info'] + '</div></div>');
                             item.firstChild.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickItem);
                             item.firstChild.link = choice[i];

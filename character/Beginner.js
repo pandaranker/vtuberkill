@@ -758,6 +758,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (result.bool && result.targets && result.targets[0]) {
                         result.targets[0].damage(player);
                     }
+                },
+                ai: {
+                    combo: 'zhiqiu'
                 }
             },
             re_shengcai: {

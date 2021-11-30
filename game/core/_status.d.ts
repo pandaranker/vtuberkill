@@ -1,4 +1,7 @@
 ///<reference path="./game.ts"/>
+
+import EventModel from "./base/EventModel";
+
 declare type _status_type = {
     paused: boolean,
     paused2: boolean,
@@ -9,9 +12,9 @@ declare type _status_type = {
     /**
      * 当前事件对象，游戏内所有未定义的event等价于_status.event
      * @name _status.event
-     * @type {!Status_Event}
+     * @type {!EventModel}
      */
-    event: Status_Event,
+    event: EventModel,
     ai: Record<string, any>,
     lastdragchange: [],
     skillaudio: [],
@@ -56,6 +59,7 @@ declare type _status_type = {
     /**对决模式 */
     brawl:{
         noGameDraw:boolean,
+        noAddSetting:boolean,
         gameStart:()=>void,
         playerNumber:number
     }
@@ -83,8 +87,12 @@ declare type _status_type = {
     mouseleft:boolean
     /**记录栏 */
     prepareArena:boolean
+    /**点击事件相关 */
+    touchconfirmed:boolean
     /**鏖战 */
     _aozhan:boolean
+    /**房间服务 */
+    enteringroomserver:boolean
     /**卡片事件结算 */
     cardsFinished:boolean
     /**卡片事件等待清单 */
@@ -122,4 +130,5 @@ declare type _status_type = {
     /**怒气值 */
     friendRage?:number
     enemyRage?:number
+    videoToSave?:Object
 }

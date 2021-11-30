@@ -1323,7 +1323,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										}
 									}
 								}
-								_status.event = new Status_Event(_status.event.parent);
+								_status.event=_status.event.parent;
 								_status.event.step=0;
 								_status.event.identity=link;
 								if(link!=(event.zhongmode?'mingzhong':'zhu')){
