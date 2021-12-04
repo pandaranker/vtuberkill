@@ -3596,7 +3596,6 @@
 						intro:{
 							name:'幻歌',
 							content:'回合结束时弃置$体力值的牌',
-							onunmark:true,
 						},
 						trigger:{global:'phaseEnd'},
 						priority:996,
@@ -4287,7 +4286,6 @@
 							name:'轻掠',
 							content:'手牌上限和攻击范围+$',
 						},
-						sub:true,
 						trigger:{player:'disableEquipAfter'},
 						direct:true,
 						content(){
@@ -4343,7 +4341,6 @@
 							name:'影逝',
 							content:'上一次进入弃牌堆的非♣基本牌为$',
 						},
-						sub:true,
 						trigger:{global:['loseAfter','cardsDiscardAfter']},
 						direct:true,
 						filter(event: { cards: { filter: (arg0: (card: any) => boolean) => { (): any; new(): any; length: number; }; }; },player: any){

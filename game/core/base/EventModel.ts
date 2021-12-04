@@ -111,6 +111,7 @@ class EventModel{
     _LinkAfter:EventModel[] = []
     parent: EventModel | null
     _before: EventModel
+    statused: boolean /**该事件是否进入执行流程 */
     //从子状态事件转到父状态事件
     LinkParent(evt:EventModel| null = this.parent){
         if(!evt) throw(event)
@@ -121,6 +122,7 @@ class EventModel{
         let child = evt
         this._LinkChild.push(child)
         child.parent = this
+        child.statused = true
         // update_record()
         return child
     }
@@ -129,6 +131,7 @@ class EventModel{
         let after = evt
         this._LinkAfter.push(after)
         after._before = this
+        after.statused = true
         return after
     }
     constructor(arg?: string | EventModel) {

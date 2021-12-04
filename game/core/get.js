@@ -1815,11 +1815,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             return Math.sqrt((from[0] - to[0]) * (from[0] - to[0]) + (from[1] - to[1]) * (from[1] - to[1]));
         },
         itemtype: function (obj) {
-            var i, j;
             if (typeof obj == 'string') {
                 if (obj.length <= 4) {
                     var bool = true;
-                    for (i = 0; i < obj.length; i++) {
+                    for (let i = 0; i < obj.length; i++) {
                         if (/h|e|j|s/.test(obj[i]) == false) {
                             bool = false;
                             break;
@@ -1833,7 +1832,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }
             if (Array.isArray(obj) && obj.length) {
                 var isPlayers = true;
-                for (i = 0; i < obj.length; i++) {
+                for (let i = 0; i < obj.length; i++) {
                     if (get.itemtype(obj[i]) != 'player') {
                         isPlayers = false;
                         break;
@@ -1842,7 +1841,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 if (isPlayers)
                     return 'players';
                 var isCards = true;
-                for (i = 0; i < obj.length; i++) {
+                for (let i = 0; i < obj.length; i++) {
                     if (get.itemtype(obj[i]) != 'card') {
                         isCards = false;
                         break;
@@ -1858,7 +1857,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 if (obj.length == 4) {
                     var isPosition = true;
-                    for (i = 0; i < obj.length; i++) {
+                    for (let i = 0; i < obj.length; i++) {
                         if (typeof obj[i] != 'number') {
                             isPosition = false;
                             break;
@@ -2144,7 +2143,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         break;
                     }
                 }
-                for (i = 0; i < game.players.length; i++) {
+                for (let i = 0; i < game.players.length; i++) {
                     if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true))
                         length--;
                 }
@@ -2173,7 +2172,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             }), equips2 = to.getCards('e', function (card) {
                 return !ui.selected.cards || !ui.selected.cards.contains(card);
             });
-            for (i = 0; i < equips1.length; i++) {
+            for (let i = 0; i < equips1.length; i++) {
                 var info = get.info(equips1[i]).distance;
                 if (!info)
                     continue;
@@ -2185,7 +2184,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     m += info.attackFrom;
                 }
             }
-            for (i = 0; i < equips2.length; i++) {
+            for (let i = 0; i < equips2.length; i++) {
                 var info = get.info(equips2[i]).distance;
                 if (!info)
                     continue;
@@ -2808,9 +2807,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         population: function (identity) {
             if (identity == undefined)
                 return game.players.length + game.dead.length;
-            var i;
             var num = 0;
-            for (i = 0; i < game.players.length; i++) {
+            for (let i = 0; i < game.players.length; i++) {
                 if (game.players[i].identity == identity)
                     num++;
             }
@@ -2819,9 +2817,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         totalPopulation: function (identity) {
             if (identity == undefined)
                 return game.players.length + game.dead.length;
-            var i, players = game.players.concat(game.dead);
+            var players = game.players.concat(game.dead);
             var num = 0;
-            for (i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 if (players[i].identity == identity)
                     num++;
             }
@@ -3103,7 +3101,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (node.classList.contains('player') && (!node.getModel || !node.getModel().name)) {
                 return uiintro;
             }
-            var i, translation, intro, str;
+            var translation;
             if (node._nointro)
                 return;
             if (typeof node._customintro == 'function') {
@@ -3958,7 +3956,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         }
                     }
                     var skills = infoitem[3];
-                    for (i = 0; i < skills.length; i++) {
+                    for (let i = 0; i < skills.length; i++) {
                         if (lib.translate[skills[i] + '_info']) {
                             translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
                             let info = get.interoperableText(skills[i]);

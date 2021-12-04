@@ -20,6 +20,7 @@ declare type lib_config = {
 		image_background_filter:string[],
 		background_music:string[],
 		characters:string[]
+		mode?:string[]
 	},
 
 	game:string,
@@ -163,7 +164,8 @@ declare type lib_config = {
 		guozhan:{
 			difficulty:string,
 			initshow_draw:string,
-			dierestart:true
+			dierestart:true,
+			guozhanSkin?
 		},
         [modeName: string]: Record<string, any>
 	},

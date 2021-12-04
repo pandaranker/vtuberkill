@@ -15,7 +15,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         let v = i.split(':');
                         this[v[0]] = v[1];
                     }
-                    this[i] = true;
+                    else
+                        this[i] = true;
                 }
             }
         }
@@ -116,6 +117,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             wenjing: ['female', 'chidori', 4, ['zaiying', 'zhengen'], ['guoV']],
             wula: ['female', 'lucca', 4, ['dizuo', 'hongtie'], ['guoV']],
             yunyuluan: ['female', 'lucca', 4, ['jiujiu', 'qitong'], ['guoV']],
+            dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
             Muri: ['female', 'VirtuaReal', 3, ['lique', 'zhangdeng'], ['guoV']],
             xiaoke: ['female', 'VirtuaReal', 4, ['dianying', 'ganfen'], ['guoV']],
             Hanser: ['female', 'VirtuaReal', 3, ['naiwei', 'cishan'], ['guoV']],
@@ -125,6 +127,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             ap_Nana7mi: ['female', 'VirtuaReal', 4, ['niyou', 'shalu'], ['guoV']],
             ap_Azusa: ['female', 'VirtuaReal', 3, ['puyu', 'appojian'], ['guoV']],
             qingzezi: ['female', 'qun', 4, ['menghuan', 'gengu'], ['guoV']],
+            KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
+            NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
             linxi: ['female', 'qun', 5, ['lilian', 'zihuai'], ['guoV']],
             zhongguobanai: ['female', 'NetEase', 4, ['liying', 'fuyu'], ['guoV']],
             RIKO: ['female', 'NetEase', 4, ['tieyu'], ['guoV']],
@@ -261,12 +265,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     player.setAvatar('Shiranekoyuki', 'Shiranekoyuki1');
                     player.addSkill('wuxia_yuanyao');
                 },
-                ai: {
-                    combo: 'wuxia_yuanyao',
-                },
-                involve: ['jvliu', 'wuxia_yuanyao']
+                derivation: 'wuxia_yuanyao',
+                involve: 'jvliu',
             },
             wuxia_yuanyao: {
+                filter(event, player) {
+                    if (player.countCards('h') > player.maxHp || player.countCards('h') == player.hp)
+                        return false;
+                    return (player.getStat('skill').wuxia_yuanyao || 0) < game.countPlayer(cur => cur.sex == 'female');
+                },
                 inherit: 'yuanyao',
             },
             beixie: {
@@ -311,12 +318,194 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
+            danqing: new toSkill('trigger', {
+                trigger: {
+                    player: 'damageAfter', source: 'damageAfter'
+                },
+                init(player, skill) {
+                    var _a;
+                    var _b;
+                    (_a = (_b = player.storage)[skill]) !== null && _a !== void 0 ? _a : (_b[skill] = []);
+                },
+                filter: function (event, player) {
+                    return game.countPlayer(cur => !player.getStorage('danqing')[0].includes(cur));
+                },
+                direct: true,
+                content: function () {
+                    'step 0';
+                    var _a;
+                    player.chooseTarget(get.prompt2('danqing'), function (card, player, target) {
+                        return !player.getStorage('danqing')[0].includes(target);
+                    }, function (target) {
+                        return get.attitude2(target);
+                    });
+                    'step 1';
+                    if (result.bool && ((_a = result.targets) === null || _a === void 0 ? void 0 : _a.length)) {
+                        event.target = result.targets[0];
+                        let card2 = get.cardPile(function (card) { return card.name == 'jiu'; }, ['cardPile', 'discardPile']);
+                        if (card2) {
+                            player.logSkill('danqing', event.target);
+                            event.target.gain(card2, 'draw', 'log');
+                        }
+                        else
+                            event.finish();
+                    }
+                    else
+                        event.finish();
+                    'step 2';
+                    if (!event.target.hasSkill('danqing_Used'))
+                        event.target.addSkill('danqing_Used');
+                    if (player.storage.danqing[0]) {
+                        if (player.storage.danqing[0].includes('first')) {
+                            player.storage.danqing[0].remove('first');
+                            let card2 = get.cardPile(function (card) { return card.name == 'jiu'; }, ['cardPile', 'discardPile']);
+                            if (card2) {
+                                event.target.gain(card2, 'draw', 'log');
+                            }
+                        }
+                        player.storage.danqing[0].push(event.target);
+                    }
+                },
+                group: 'danqing_count',
+                subSkill: {
+                    count: new toSkill('trigger', {
+                        content() {
+                            var _a;
+                            var _b;
+                            (_a = (_b = player.storage).danqing) !== null && _a !== void 0 ? _a : (_b.danqing = []);
+                            player.storage.danqing.unshift(['first']);
+                        }
+                    }, 'direct', 'silent').setT({ global: 'phaseBefore' }),
+                    Used: new toSkill('mark', {
+                        intro: {
+                            content: '已成为过『蛋擎』的目标'
+                        }
+                    }, 'locked', 'mark')
+                },
+            }).setT({ player: 'damageAfter', source: 'damageAfter' }),
+            gaiqu: new toSkill('trigger', {
+                filter: function (event, player) {
+                    return player.countCards('h') < player.storage.gaiqu_count;
+                },
+                content: function () {
+                    'step 0';
+                    delete player.storage.gaiqu_count;
+                    player.awakenSkill('gaiqu');
+                    player.unmarkSkill('gaiqu_count');
+                    player.gainMaxHp();
+                    'step 1';
+                    player.recover();
+                    'step 2';
+                    if (player.countCards('h') > 2)
+                        player.chooseToDiscard(3, true);
+                    else
+                        player.removeSkill('danqing');
+                    'step 3';
+                    game.filterPlayer(cur => { if (cur.hasSkill('danqing_Used') && !cur.hasSkill('songxing'))
+                        cur.addSkill('songxing'); });
+                },
+                group: 'gaiqu_count',
+                subSkill: {
+                    count: new toSkill('trigger', {
+                        intro: {
+                            content: '已使用#张【酒】'
+                        },
+                        filter(event, player) {
+                            return get.name(event.card) === 'jiu';
+                        },
+                        content() {
+                            var _a;
+                            var _b;
+                            (_a = (_b = player.storage).gaiqu_count) !== null && _a !== void 0 ? _a : (_b.gaiqu_count = 0);
+                            player.storage.gaiqu_count++;
+                            player.markSkill('gaiqu_count');
+                        }
+                    }, 'forced').setT('useCardAfter')
+                },
+                derivation: 'songxing',
+                involve: 'danqing',
+            }, 'unique', 'juexingji', 'forced', 'firstDo').setT('phaseZhunbei'),
+            songxing: new toSkill('regard', {
+                init(player, skill) {
+                    player.storage[skill] = [];
+                },
+                hiddenCard(player, name) {
+                    if (!player.countCards('hs', { name: 'jiu' }))
+                        return false;
+                    let list = get.inpile('trick', card => {
+                        if (player.storage.songxing.contains(card))
+                            return false;
+                        return true;
+                    });
+                    for (let i of list) {
+                        if (i == name)
+                            return true;
+                    }
+                },
+                filter(event, player) {
+                    return player.countCards('hs', { name: 'jiu' });
+                },
+                chooseButton: {
+                    dialog(event, player) {
+                        let list = get.inpile('trick2', card => {
+                            if (player.storage.songxing.contains(card))
+                                return false;
+                            return true;
+                        });
+                        for (let i of list) {
+                            list[i] = ['锦囊', '', list[i]];
+                        }
+                        if (list.length == 0) {
+                            return ui.create.dialog('『松星』已无可用牌');
+                        }
+                        return ui.create.dialog('『松星』', [list, 'vcard']);
+                    },
+                    filter(button, player) {
+                        return _status.event.getParent().filterCard({ name: button.link[2] }, player, _status.event.getParent());
+                    },
+                    check(button) {
+                        if (button.link[2] == 'wugu')
+                            return 0;
+                        var effect = player.getUseValue(button.link[2]);
+                        if (effect > 0)
+                            return effect;
+                        return 0;
+                    },
+                    backup(links, player) {
+                        return {
+                            filterCard(card) {
+                                return get.name(card) === 'jiu';
+                            },
+                            selectCard: 1,
+                            popname: true,
+                            check(card) {
+                                return 6 - get.value(card);
+                            },
+                            position: 'hs',
+                            viewAs: { name: links[0][2] },
+                            onuse(result, player) {
+                                player.storage.songxing.add(result.card.name);
+                            },
+                        };
+                    },
+                    prompt(links, player) {
+                        return `###『松星』###将一张【酒】当做【${get.translation(links[0][3]) || ''}${get.translation(links[0][2])}】使用`;
+                    }
+                },
+                group: 'songxing_clear',
+                subSkill: {
+                    clear: new toSkill('trigger', {
+                        content() {
+                            player.storage.songxing = [];
+                        }
+                    }, 'direct', 'silent').setT({ global: 'phaseAfter' }),
+                },
+            }, 'enable:chooseToUse'),
             tatongling: new toSkill('trigger', {
                 intro: {
                     content: 'cards',
                     onunmark: 'throw',
                 },
-                cardAround: true,
                 init(player, skill) {
                     var _a;
                     var _b;
@@ -348,7 +537,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         event.target.recover();
                     }
                 },
-            }, 'logTarget:player').setT({ global: 'loseHpAfter', source: 'damageAfter' }).set(['group', 'tatongling_gainBy'], ['subSkill', {
+            }, 'logTarget:player', 'cardAround').setT({ global: 'loseHpAfter', source: 'damageAfter' }).set(['group', 'tatongling_gainBy'], ['subSkill', {
                     gainBy: new toSkill('trigger', {
                         content() {
                             let cards = player.getStorage('tatongling');
@@ -3907,7 +4096,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 mark: true,
                 intro: {
                     content: '使用基本牌/锦囊牌指定目标时，摸/弃X张牌（X为此牌指定的目标数）',
-                    onunmark: true,
                 },
                 group: ['weizhuang_clear'],
                 subSkill: {
@@ -4854,7 +5042,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         player.popup('重置');
                         let next = game.createEvent('resetSkill');
                         [next.player, next.resetSkill] = [player, 'tuncai'];
-                        next.setContent(lib.element.content.resetRound);
+                        next.setContent('resetRound');
                     }
                 },
                 ai: {
@@ -6902,7 +7090,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.popup('重置');
                             let next = game.createEvent('resetSkill');
                             [next.player, next.resetSkill] = [player, 'tuhui'];
-                            next.setContent(lib.element.content.resetRound);
+                            next.setContent('resetRound');
                             game.delayx();
                         }
                     }
@@ -6913,7 +7101,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             player.popup('重置');
                             let next = game.createEvent('resetSkill');
                             [next.player, next.resetSkill] = [player, 'tuhui_B'];
-                            next.setContent(lib.element.content.resetRound);
+                            next.setContent('resetRound');
                             game.delayx();
                         }
                     }
@@ -8429,7 +8617,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                     player.popup('重置');
                                     let next = game.createEvent('resetSkill');
                                     [next.player, next.resetSkill] = [player, 'quankai'];
-                                    next.setContent(lib.element.content.resetRound);
+                                    next.setContent('resetRound');
                                 }
                             }
                         },
@@ -9536,6 +9724,182 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     noautowuxie: true,
                 }
             },
+            jidou: new toSkill('trigger', {
+                filter(event, player) {
+                    if (!(event.card.name == 'juedou'))
+                        return false;
+                    return player == event.target || event.getParent().targets.length == 1;
+                },
+                content() {
+                    player.draw((player.hp === 1 || player.countCards('h') === 0) ? 3 : 1);
+                },
+            }, 'forced').setT({ player: 'useCardToPlayered', target: 'useCardToTargeted' }),
+            duotian: new toSkill('active', {
+                filter(event, player) {
+                    return lib.skill.duotian.computedCard().length && player.countCards('hs', { type: 'basic' });
+                },
+                computedCard() {
+                    let list = get.inpile('trick2', card => {
+                        let info = lib.card[card];
+                        if (!info)
+                            return false;
+                        if (info.toself === true)
+                            return true;
+                        if ((info.selectTarget && info.selectTarget !== 1)
+                            || info.notarget || info.multitarget)
+                            return false;
+                        return true;
+                    });
+                    return list;
+                },
+                chooseButton: {
+                    dialog(event, player) {
+                        let list = lib.skill.duotian.computedCard();
+                        for (let i of list) {
+                            list[i] = ['锦囊', '', list[i]];
+                        }
+                        return ui.create.dialog('『堕天』选择转化的锦囊', [list, 'vcard']);
+                    },
+                    filter(button, player) {
+                        return lib.filter.filterCard({ name: button.link[2] }, player, _status.event.getParent());
+                    },
+                    check(button) {
+                        return _status.event.player.getUseValue({ name: button.link[2] });
+                    },
+                    backup(links, player) {
+                        return {
+                            popname: true,
+                            position: 'hs',
+                            viewAs: { name: links[0][2] },
+                            check(card) {
+                                return 6 - get.value(card);
+                            },
+                            filterCard(card) {
+                                return get.type(card) == 'basic';
+                            },
+                            onuse(result, player) {
+                                let num = result.card.number;
+                                let targets = result.targets;
+                                if (num) {
+                                    if (num >= 6 && get.type(result.card) !== 'delay') {
+                                        let next = game.createEvent('duotianChangeTarget');
+                                        next.player = player;
+                                        next._trigger = result;
+                                        next.setContent(function () {
+                                            'step 0';
+                                            player.chooseTarget(get.prompt('duotian'), '为' + get.translation(trigger.card) + '增加一个目标', function (card, player, target) {
+                                                return !_status.event.sourcex.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target);
+                                            }).set('sourcex', trigger.targets).set('card', trigger.card);
+                                            'step 1';
+                                            if (result.bool) {
+                                                if (!event.isMine() && !_status.connectMode)
+                                                    game.delayx();
+                                                event.target = result.targets[0];
+                                            }
+                                            else {
+                                                event.finish();
+                                            }
+                                            'step 2';
+                                            player.logSkill('duotian', event.target);
+                                            trigger.targets.push(event.target);
+                                        });
+                                    }
+                                    if (num >= 12) {
+                                        let evt = _status.event.getParent('phaseUse');
+                                        if (evt && evt.name === 'phaseUse') {
+                                            let next = game.createEvent('duotianExtraStage');
+                                            next.player = player;
+                                            next.setContent(function () {
+                                                'step 0';
+                                                game.delay(1);
+                                                player.setAvatar('KurumiUsa', 'KurumiUsa1');
+                                                'step 1';
+                                                player.popup('额外出牌');
+                                                game.delay(0.5);
+                                                'step 2';
+                                                player.phaseUse();
+                                                'step 3';
+                                                player.setAvatar('KurumiUsa', 'KurumiUsa');
+                                            });
+                                            _status.event.next.remove(next);
+                                            evt.after.push(next);
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    },
+                    prompt(links, player) {
+                        return '将一张基本牌当做【' + get.translation(links[0][2]) + '】使用';
+                    }
+                },
+                ai: {
+                    order: 5,
+                    result: {
+                        player: 1
+                    }
+                }
+            }).set('usable', 1),
+            qisui: new toSkill('trigger', {
+                init(player, skill) {
+                    player.storage[skill] = [];
+                },
+                filter(event, player) {
+                    let targets = lib.skill.qisui.logTarget(event, player);
+                    return targets.length;
+                },
+                check(event, player) {
+                    let targets = lib.skill.qisui.logTarget(event, player);
+                    let num = 0;
+                    targets.forEach(target => {
+                        num += get.attitude(player, target);
+                    });
+                    return num >= 0;
+                },
+                logTarget(event, player) {
+                    var _a;
+                    let targets = [];
+                    if (_status.currentPhase === player)
+                        targets.push(event.player);
+                    if (event.player === player && ((_a = event.source) === null || _a === void 0 ? void 0 : _a.isIn()))
+                        targets.push(event.source);
+                    targets.removeArray(player.storage.qisui);
+                    return targets;
+                },
+                content() {
+                    let targets = lib.skill.qisui.logTarget(trigger, player);
+                    targets.forEach(target => {
+                        if (!target.hasSkill('lingjun'))
+                            target.addTempSkill('lingjun', { player: 'juedouBegin' });
+                        else
+                            trigger.num++;
+                    });
+                    player.storage.qisui.addArray(targets);
+                },
+                group: 'qisui_clear',
+                subSkill: {
+                    clear: new toSkill('trigger', {
+                        content() {
+                            if (player.hasSkill('lingjun'))
+                                player.setAvatar('NanaseUnia', 'NanaseUnia1');
+                            else
+                                player.setAvatar('NanaseUnia', 'NanaseUnia');
+                            player.storage.qisui = [];
+                        }
+                    }, 'direct', 'silent').setT({ global: 'phaseAfter' }),
+                },
+            }, 'derivation:lingjun').setT({ global: 'drawBegin' }),
+            lingjun: new toSkill('mark', {
+                intro: {
+                    content: '手牌中的【杀】视为【决斗】'
+                },
+                mod: {
+                    cardname(card, player, name) {
+                        if (get.position(card) === 'h' && name === 'sha')
+                            return 'juedou';
+                    }
+                }
+            }, 'mark'),
             lilian: {
                 trigger: { player: 'phaseBegin' },
                 direct: true,
@@ -17562,8 +17926,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             jvliu_append: lib.figurer(`特性：干扰`),
             wuxia: `无瑕`,
             wuxia_info: `觉醒技 准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『鸢揺』。`,
-            wuxia_yuanyao: `鸢揺`,
-            wuxia_yuanyao_info: `出牌阶段限X次，若你的手牌不多于体力上限，你可以交换体力值与手牌数。（X为场上存在的女性角色数）。`,
+            wuxia_yuanyao: `鸢揺(雪)`,
             wuxia_yuanyao_append: lib.figurer(`特性：制衡`),
             TsukushiAria: `月紫亚里亚`,
             tatongling: `彤灵`,
@@ -18033,6 +18396,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             xiban_info: `其他角色造成伤害的回合结束时，你可以弃置X张「士」令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）`,
             yongtuan: `拥团`,
             yongtuan_info: `主公技 <font color=#fa8>限定技</font> 你弃置「士」时，可以令一名同势力角色获得之。`,
+            dusongziGin: `杜松子_Gin`,
+            dusongziGin_ab: `杜松子`,
+            danqing: `蛋擎`,
+            danqing_info: `你造成或受到伤害后，可以令一名本回合未以此法获得牌的角色获得一张【酒】，若是该回合首次发动，改为获得两张。`,
+            gaiqu: `改躯`,
+            gaiqu_info: `觉醒技 准备阶段，若你本局游戏内使用【酒】的次数多于你的手牌数，你增加一点体力上限并回复一点体力，弃置三张手牌（若不足则改为失去『蛋擎』）并令所有成为过『蛋擎』目标的角色获得『松星』。`,
+            songxing: `松星`,
+            songxing_info: `你可以将一张【酒】当作一张锦囊牌使用，每回合每种牌名限一次。`,
             Yousa: `泠鸢`,
             niaoji: `鸟肌`,
             niaoji_info: `你造成/受到伤害后，可以进行判定：若为♥️，你摸X张牌；若为♠️，你弃置目标/来源X张牌。（X为你已损失的体力值+1）`,
@@ -18146,6 +18517,19 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			你一次性获得3张或以上的「笛」后，可以立即发动一次此技能。`,
             gumei: `古寐`,
             gumei_info: `你使用锦囊牌时，可以令一名角色横置或重置，若其武将牌周围有牌，则改为摸一张牌。`,
+            KurumiUsa: `胡桃Usa`,
+            KurumiUsa_ab: `胡桃`,
+            jidou: `激斗`,
+            jidou_info: `锁定技 你使用【决斗】指定唯一目标或成为【决斗】的目标时，摸一张牌，若你没有手牌或体力为1，改为摸三张。`,
+            duotian: `堕天`,
+            duotian_info: `出牌阶段限一次，你可以将一张基本牌当作一张单体锦囊牌使用，若此牌点数：<br>
+			≥6~你可为之增加一个目标；≥12~你于此阶段结束后进行一个额外的出牌阶段。`,
+            NanaseUnia: `七濑Unia`,
+            NanaseUnia_ab: `七濑`,
+            qisui: `麒随`,
+            qisui_info: `每回合每名角色限一次，一名角色于你的回合内摸牌或其他角色令你摸牌时，你可以令其获得『灵军』直到其下一次使用【决斗】，若其已拥有『灵军』，改为本次摸牌量+1。`,
+            lingjun: `灵军`,
+            lingjun_info: `锁定技 你手牌中的【杀】视为【决斗】。`,
             SukoyaKana: `健屋花那`,
             huawen: `花吻交染`,
             huawen_info: `出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。`,

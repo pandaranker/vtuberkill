@@ -5555,7 +5555,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 enable = false;
                             if (info.chooseButton && _status.event.noButton)
                                 enable = false;
-                            if (info.round && (player.storage[_status.event.skillBy + '_roundcount'] > 0))
+                            if (info.round && player.storage[_status.event.skillBy + '_roundcount'] > 0)
                                 enable = false;
                         }
                         if (enable) {
@@ -6920,7 +6920,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 if (info && info.addintro) {
                                     str += info.addintro(storage, player);
                                 }
-                                var num = round - (game.roundNumber - storage);
+                                var num = storage;
                                 if (num > 0) {
                                     str += get.cnNumber(num) + '轮后' + (info.roundtext || '技能重置');
                                 }

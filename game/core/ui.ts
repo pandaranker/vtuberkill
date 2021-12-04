@@ -4775,11 +4775,11 @@ mixin(ui, /**@lends module:core.ui */ {
                         var pile = ui.create.div(editPile);
                         page.pile = pile;
                         var cardpileaddname = document.createElement('select');
-                        var updatePile = function () {
+                        let updatePile = function () {
                             cardpileaddname.innerHTML = '';
-                            var list = [];
-                            var list2 = [];
-                            for (var i in page.content.pack.card) {
+                            let list = [];
+                            let list2 = [];
+                            for (let i in page.content.pack.card) {
                                 list.push([i, page.content.pack.translate[i]]);
                                 list2.push(i);
                             }
@@ -4791,13 +4791,13 @@ mixin(ui, /**@lends module:core.ui */ {
                                 else {
                                     editPile.style.display = 'none';
                                 }
-                                for (var i = 0; i < list.length; i++) {
-                                    var option = document.createElement('option');
+                                for (let i = 0; i < list.length; i++) {
+                                    let option = document.createElement('option');
                                     option.value = list[i][0];
                                     option.innerHTML = list[i][1];
                                     cardpileaddname.appendChild(option);
                                 }
-                                for (var i = 0; i < pile.childNodes.length; i++) {
+                                for (let i = 0; i < pile.childNodes.length; i++) {
                                     if (!list2.contains(pile.childNodes[i].name)) {
                                         pile.childNodes[i].remove(); i--;
                                     }
@@ -4852,10 +4852,10 @@ mixin(ui, /**@lends module:core.ui */ {
 
                         return page;
                     }());
-                    var dash3 = (function () {
-                        var page = ui.create.div('.hidden.menu-buttons.new_skill');
-                        var updateButton = function () {
-                            var name = page.querySelector('input.new_name').value;
+                    let dash3 = (function () {
+                        let page = ui.create.div('.hidden.menu-buttons.new_skill');
+                        let updateButton = function () {
+                            let name = page.querySelector('input.new_name').value;
                             if (!name) {
                                 editnode.classList.add('disabled');
                                 return;
@@ -4886,12 +4886,12 @@ mixin(ui, /**@lends module:core.ui */ {
                         };
                         page.reset = function (name) {
                             resetEditor();
-                            var buttons = page.querySelectorAll('.menubutton:not(.large)');
-                            var list = [];
-                            for (var i = 0; i < buttons.length; i++) {
+                            let buttons = page.querySelectorAll('.menubutton:not(.large)');
+                            let list = [];
+                            for (let i = 0; i < buttons.length; i++) {
                                 list.push(buttons[i]);
                             }
-                            for (var i = 0; i < list.length; i++) {
+                            for (let i = 0; i < list.length; i++) {
                                 list[i].remove();
                             }
                             if (lib.extensionPack[name]) {
@@ -4900,7 +4900,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                     translate: {}
                                 };
                                 page.content.audio = {};
-                                for (var i in page.content.pack.skill) {
+                                for (let i in page.content.pack.skill) {
                                     createButton(i);
                                 }
                                 dash1.updateSkill();
@@ -5088,11 +5088,11 @@ mixin(ui, /**@lends module:core.ui */ {
                             container.code = code;
                             delete window.saveNonameInput;
                         };
-                        var saveConfig = ui.create.div('.editbutton', '保存', editorpage, saveInput);
-                        var editor = ui.create.div(editorpage);
+                        let saveConfig = ui.create.div('.editbutton', '保存', editorpage, saveInput);
+                        let editor = ui.create.div(editorpage);
                         container.code = 'skill={\n    \n}\n\n\/*\n示例：\nskill={\n    trigger:{player:"phaseJieshuBegin"},\n    frequent:true,\n    content:function(){\n        player.draw()\n    }\n}\n此例为闭月代码\n导出时本段代码中的换行、缩进以及注释将被清除\n*\/';
 
-                        var citebutton = document.createElement('button');
+                        let citebutton = document.createElement('button');
                         citebutton.innerHTML = '引用代码';
                         commandline.appendChild(citebutton);
                         citebutton.onclick = function () {
@@ -5104,15 +5104,15 @@ mixin(ui, /**@lends module:core.ui */ {
                             cancelSkillButton.style.display = '';
                         }
 
-                        var list = [];
-                        for (var i in lib.character) {
+                        let list = [];
+                        for (let i in lib.character) {
                             if (lib.character[i][3].length) {
                                 list.push([i, lib.translate[i]]);
                             }
                         }
                         list.sort(function (a, b) {
                             a = a[0]; b = b[0];
-                            var aa = a, bb = b;
+                            let aa = a, bb = b;
                             if (aa.indexOf('_') != -1) {
                                 aa = aa.slice(aa.indexOf('_') + 1);
                             }
@@ -5125,14 +5125,14 @@ mixin(ui, /**@lends module:core.ui */ {
                             return a > b ? 1 : -1;
                         });
                         list.push(['others', '其它']);
-                        var list2 = [];
-                        var skills = lib.character[list[0][0]][3];
-                        for (var i = 0; i < skills.length; i++) {
+                        let list2 = [];
+                        let skills = lib.character[list[0][0]][3];
+                        for (let i = 0; i < skills.length; i++) {
                             list2.push([skills[i], lib.translate[skills[i]]]);
                         }
-                        var selectname = ui.create.selectlist(list, list[0], commandline);
-                        var list3 = [];
-                        for (var i in lib.skill) {
+                        let selectname = ui.create.selectlist(list, list[0], commandline);
+                        let list3 = [];
+                        for (let i in lib.skill) {
                             if (i != 'global' && !get.is.empty(lib.skill[i]) && !lib.skilllist.contains(i)) {
                                 list3.push(i);
                             }
@@ -5141,12 +5141,12 @@ mixin(ui, /**@lends module:core.ui */ {
                             return a > b ? 1 : -1;
                         });
                         selectname.onchange = function () {
-                            var skills;
+                            let skills;
                             skillopt.innerHTML = '';
                             if (this.value == 'others') {
                                 skills = list3;
-                                for (var i = 0; i < skills.length; i++) {
-                                    var option = document.createElement('option');
+                                for (let i = 0; i < skills.length; i++) {
+                                    let option = document.createElement('option');
                                     option.value = skills[i];
                                     option.innerHTML = skills[i];
                                     skillopt.appendChild(option);
@@ -5154,8 +5154,8 @@ mixin(ui, /**@lends module:core.ui */ {
                             }
                             else {
                                 skills = lib.character[this.value][3];
-                                for (var i = 0; i < skills.length; i++) {
-                                    var option = document.createElement('option');
+                                for (let i = 0; i < skills.length; i++) {
+                                    let option = document.createElement('option');
                                     option.value = skills[i];
                                     option.innerHTML = lib.translate[skills[i]];
                                     skillopt.appendChild(option);
@@ -5164,10 +5164,10 @@ mixin(ui, /**@lends module:core.ui */ {
                         };
                         selectname.style.display = 'none';
                         selectname.style.maxWidth = '80px';
-                        var skillopt = ui.create.selectlist(list2, list2[0], commandline);
+                        let skillopt = ui.create.selectlist(list2, list2[0], commandline);
                         skillopt.style.display = 'none';
                         skillopt.style.maxWidth = '60px';
-                        var addSkillButton = document.createElement('button');
+                        let addSkillButton = document.createElement('button');
                         addSkillButton.style.display = 'none';
                         addSkillButton.innerHTML = '引用';
                         commandline.appendChild(addSkillButton);
@@ -5184,7 +5184,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                 newSkill.querySelector('input.new_description').value = lib.translate[skillopt.value + '_info'];
                             }
                         }
-                        var cancelSkillButton = document.createElement('button');
+                        let cancelSkillButton = document.createElement('button');
                         cancelSkillButton.style.display = 'none';
                         cancelSkillButton.innerHTML = '取消';
                         commandline.appendChild(cancelSkillButton);
@@ -5197,15 +5197,15 @@ mixin(ui, /**@lends module:core.ui */ {
                             cancelSkillButton.style.display = 'none';
                         }
 
-                        var editnode = ui.create.div('.menubutton.large.new_skill.disabled', '创建技能', function () {
-                            var name = page.querySelector('input.new_name').value;
+                        let editnode = ui.create.div('.menubutton.large.new_skill.disabled', '创建技能', function () {
+                            let name = page.querySelector('input.new_name').value;
                             if (!name) {
                                 alert('请填写技能名\n提示：技能名格式为id+|+中文名，其中id必须惟一');
                                 return;
                             }
                             name = name.split('|');
-                            var translate = name[1] || name[0];
-                            var info = page.querySelector('input.new_description').value;
+                            let translate = name[1] || name[0];
+                            let info = page.querySelector('input.new_description').value;
                             name = name[0];
                             if (currentButton) {
                                 if (currentButton.link != name) {
@@ -5228,7 +5228,7 @@ mixin(ui, /**@lends module:core.ui */ {
                             page.content.pack.translate[name] = translate;
                             page.content.pack.translate[name + '_info'] = info;
                             try {
-                                var skill = null;
+                                let skill = null;
                                 eval(container.code);
                                 if (skill == null || typeof skill != 'object') {
                                     throw ('err');
@@ -5258,10 +5258,10 @@ mixin(ui, /**@lends module:core.ui */ {
                             dash3.link.classList.add('active');
                             dash1.updateSkill();
                         }, newSkill);
-                        var delnode = ui.create.div('.menubutton.large.new_card_delete', '取消', editnode.parentNode, function () {
+                        let delnode = ui.create.div('.menubutton.large.new_card_delete', '取消', editnode.parentNode, function () {
                             if (this.innerHTML == '删除') {
                                 this.button.remove();
-                                var name = this.button.link;
+                                let name = this.button.link;
                                 delete dash3.content.pack.skill[name];
                                 delete dash3.content.pack.translate[name];
                                 delete dash3.content.pack.translate[name + '_info'];
@@ -5294,8 +5294,8 @@ mixin(ui, /**@lends module:core.ui */ {
                         };
                         return page;
                     }());
-                    var dash4 = (function () {
-                        var page = ui.create.div('.hidden.menu-buttons');
+                    let dash4 = (function () {
+                        let page = ui.create.div('.hidden.menu-buttons');
                         ui.create.div('.config.more.margin-bottom', '<div style="transform:none;margin-right:3px">←</div>返回', page, function () {
                             ui.create.templayer();
                             page.hide();
@@ -5304,16 +5304,16 @@ mixin(ui, /**@lends module:core.ui */ {
                         page.reset = function (name) {
                             page.content = {};
                             if (lib.extensionPack[name]) {
-                                for (var i in dashes) {
+                                for (let i in dashes) {
                                     dashes[i].node.code = '';
                                 }
-                                for (var i in lib.extensionPack[name].code) {
+                                for (let i in lib.extensionPack[name].code) {
                                     switch (typeof lib.extensionPack[name].code[i]) {
                                         case 'function': page.content[i] = lib.extensionPack[name].code[i].toString(); break;
                                         case 'object': page.content[i] = i + '=' + get.stringify(lib.extensionPack[name].code[i]); break;
                                     }
                                 }
-                                for (var i in page.content) {
+                                for (let i in page.content) {
                                     dashes[i].node.code = page.content[i] || '';
                                 }
                             }
@@ -5562,7 +5562,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         var progress = ui.create.div('.button-progress', this);
                         ui.create.div(progress);
                         var url = extensionURL + this.info.name + '.zip';
-                        var onprogress = function (byte, total) {
+                        var onprogress = function (byte, total?) {
                             if (total) {
                                 size = total;
                             }
@@ -5645,8 +5645,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         }
 
                         var loading = ui.create.div('.loading.config.toggle', '载入中...', page);
-                        var loaded = function (list) {
-                            var list = [];
+                        var loaded = function (list = []) {
                             var extension = window.extension;
                             for (var i in extension) {
                                 extension[i].name = i;
@@ -5655,15 +5654,15 @@ mixin(ui, /**@lends module:core.ui */ {
                             list.randomSort();
                             delete window.extension;
                             loading.style.display = 'none';
-                            for (var i = 0; i < list.length; i++) {
-                                var node = ui.create.div('.videonode.menubutton.extension.large', page, clickExtension);
+                            for (let i = 0; i < list.length; i++) {
+                                let node = ui.create.div('.videonode.menubutton.extension.large', page, clickExtension);
                                 ui.create.div('.caption', list[i].name, node);
                                 ui.create.div('.text.author', '作者：' + list[i].author + '<span>(' + list[i].size + ')</span>', node);
                                 ui.create.div('.text', list[i].intro, node);
-                                var download = ui.create.div('.menubutton.text.active', '下载扩展', node.firstChild);
+                                let download = ui.create.div('.menubutton.text.active', '下载扩展', node.firstChild);
                                 if (game.download) {
                                     if (list[i].netdisk) {
-                                        var linknode = ui.create.div('.text', node);
+                                        let linknode = ui.create.div('.text', node);
                                         ui.create.node('span.hrefnode', '网盘链接', function () {
                                             game.open(this.link);
                                         }, linknode).link = list[i].netdisk;
@@ -5675,7 +5674,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                         }
                                     }
                                     else if (list[i].forum) {
-                                        var linknode = ui.create.div('.text', node);
+                                        let linknode = ui.create.div('.text', node);
                                         ui.create.node('span.hrefnode', '参与讨论', function () {
                                             game.open(this.link);
                                         }, linknode).link = list[i].forum;
@@ -5703,7 +5702,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                 }
                                 else {
                                     if (list[i].forum) {
-                                        var linknode = ui.create.div('.text', node);
+                                        let linknode = ui.create.div('.text', node);
                                         ui.create.node('span', linknode);
                                         ui.create.node('span.hrefnode', '参与讨论', function () {
                                             game.open(this.link);
@@ -5821,22 +5820,22 @@ mixin(ui, /**@lends module:core.ui */ {
                     clickMode.call(ui.commandnode);
                 };
                 (function () {
-                    var page = ui.create.div('');
-                    var node = ui.create.div('.menubutton.large', '更新', start.firstChild, clickMode);
+                    let page = ui.create.div('');
+                    let node = ui.create.div('.menubutton.large', '更新', start.firstChild, clickMode);
                     node.link = page;
                     page.classList.add('menu-help');
-                    var ul = document.createElement('ul');
-                    var li1 = document.createElement('li');
-                    var li2 = document.createElement('li');
-                    var li3 = document.createElement('li');
-                    var trimurl = function (str) {
+                    let ul = document.createElement('ul');
+                    let li1 = document.createElement('li');
+                    let li2 = document.createElement('li');
+                    let li3 = document.createElement('li');
+                    let trimurl = function (str) {
                         if (str == lib.updateURLS.github) {
                             return 'GitHub';
                         }
                         if (str == lib.updateURLS.coding) {
                             return 'Coding';
                         }
-                        var index;
+                        let index;
                         index = str.indexOf('://');
                         if (index != -1) {
                             str = str.slice(index + 3);
@@ -5846,22 +5845,22 @@ mixin(ui, /**@lends module:core.ui */ {
                             str = str.slice(0, index);
                         }
                         if (str.length > 15) {
-                            var list = str.split('.');
+                            let list = str.split('.');
                             if (list.length > 1) {
                                 list.shift();
                             }
                             str = list[0];
-                            for (var i = 1; i < list.length; i++) {
+                            for (let i = 1; i < list.length; i++) {
                                 str += '.' + list[i];
                             }
                         }
                         if (str.length > 15) {
-                            var list = str.split('.');
+                            let list = str.split('.');
                             if (list.length > 1) {
                                 list.pop();
                             }
                             str = list[0];
-                            for (var i = 1; i < list.length; i++) {
+                            for (let i = 1; i < list.length; i++) {
                                 str += '.' + list[i];
                             }
                         }
@@ -6115,28 +6114,28 @@ mixin(ui, /**@lends module:core.ui */ {
                                     return;
                                 }
 
-                                var updates = window.noname_asset_list;
+                                let updates = window.noname_asset_list;
                                 delete window.noname_asset_list;
-                                var skins = window.noname_skin_list;
+                                let skins = window.noname_skin_list;
                                 delete window.noname_skin_list;
-                                var asset_version = updates.shift();
+                                let asset_version = updates.shift();
 
-                                var skipcharacter = [], skipcard = ['tiesuo_mark'];
+                                let skipcharacter = [], skipcard = ['tiesuo_mark'];
                                 if (!lib.config.asset_full) {
-                                    for (var i = 0; i < lib.config.all.sgscharacters.length; i++) {
-                                        var pack = lib.characterPack[lib.config.all.sgscharacters[i]];
-                                        for (var j in pack) {
+                                    for (let i = 0; i < lib.config.all.sgscharacters.length; i++) {
+                                        let pack = lib.characterPack[lib.config.all.sgscharacters[i]];
+                                        for (let j in pack) {
                                             skipcharacter.add(j);
                                         }
                                     }
-                                    for (var i = 0; i < lib.config.all.sgscards.length; i++) {
-                                        var pack = lib.cardPack[lib.config.all.sgscards[i]];
+                                    for (let i = 0; i < lib.config.all.sgscards.length; i++) {
+                                        let pack = lib.cardPack[lib.config.all.sgscards[i]];
                                         if (pack) {
                                             skipcard = skipcard.concat(pack);
                                         }
                                     }
                                 }
-                                for (var i = 0; i < updates.length; i++) {
+                                for (let i = 0; i < updates.length; i++) {
                                     switch (updates[i].slice(0, 5)) {
                                         case 'image': {
                                             if (!lib.config.asset_full) {
@@ -6175,8 +6174,8 @@ mixin(ui, /**@lends module:core.ui */ {
                                     }
                                 }
                                 if (lib.config.asset_skin) {
-                                    for (var i in skins) {
-                                        for (var j = 1; j <= skins[i]; j++) {
+                                    for (let i in skins) {
+                                        for (let j = 1; j <= skins[i]; j++) {
                                             updates.push('image/skin/' + i + '/' + j + '.jpg');
                                         }
                                     }
@@ -6186,7 +6185,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                     ui.click.menuTab('其它');
                                 }
 
-                                var proceed = function () {
+                                let proceed = function () {
                                     if (updates.length == 0) {
                                         game.print(updates);
                                         game.saveConfig('asset_version', asset_version);
@@ -6195,12 +6194,12 @@ mixin(ui, /**@lends module:core.ui */ {
                                         button2.innerHTML = '检查素材更新';
                                         return;
                                     }
-                                    var p = button2.parentNode;
+                                    let p = button2.parentNode;
                                     button2.remove();
-                                    var span = document.createElement('span');
+                                    let span = document.createElement('span');
                                     span.style.whiteSpace = 'nowrap';
-                                    var n1 = 0;
-                                    var n2 = updates.length;
+                                    let n1 = 0;
+                                    let n2 = updates.length;
                                     span.innerHTML = '正在下载素材（' + n1 + '/' + n2 + '）';
                                     span1.remove();
                                     span2.remove();
@@ -6220,20 +6219,20 @@ mixin(ui, /**@lends module:core.ui */ {
                                     span6_br.remove();
                                     p.appendChild(span);
 
-                                    var br6 = ui.create.node('br');
-                                    var span7 = ui.create.div('.hrefnode', '详细信息');
+                                    let br6 = ui.create.node('br');
+                                    let span7 = ui.create.div('.hrefnode', '详细信息');
                                     span7.style.marginTop = '6px';
                                     span7.listen(ui.click.consoleMenu);
                                     p.appendChild(br6);
                                     p.appendChild(span7);
 
-                                    var finish = function () {
+                                    let finish = function () {
                                         if (n1 == n2) {
                                             game.saveConfig('asset_version', asset_version);
                                         }
                                         span.innerHTML = '素材更新完毕（' + n1 + '/' + n2 + '）';
                                         p.appendChild(document.createElement('br'));
-                                        var button = document.createElement('button');
+                                        let button = document.createElement('button');
                                         button.innerHTML = '重新启动';
                                         button.onclick = game.reload;
                                         button.style.marginTop = '8px';
@@ -6829,7 +6828,7 @@ mixin(ui, /**@lends module:core.ui */ {
                     var logs = [];
                     var logindex = -1;
                     var cheat = lib.cheat;
-                    var runCommand = function (e) {
+                    var runCommand = function (e?) {
                         if (text2.value && !['up', 'down'].contains(text2.value)) {
                             logindex = -1;
                             logs.unshift(text2.value);
@@ -7013,7 +7012,7 @@ mixin(ui, /**@lends module:core.ui */ {
                                 }
                                 store.put(this.parentNode.link);
                             }
-                            var createNode = function (video, before) {
+                            var createNode = function (video, before?) {
                                 var node = ui.create.div('.videonode.menubutton.large', clickcapt);
                                 node.link = video;
                                 var nodename1 = ui.create.div('.menubutton.videoavatar', node);
@@ -7477,8 +7476,8 @@ mixin(ui, /**@lends module:core.ui */ {
             //                  return ui.create.characterDialog2.apply(this,arguments);
             //     }
             // }
-            var filter, str, noclick, thisiscard, seperate, expandall, onlypack, heightset, precharacter, characterx;
-            for (var i = 0; i < arguments.length; i++) {
+            let filter, str, noclick, thisiscard, seperate, expandall, onlypack, heightset, precharacter, characterx;
+            for (let i = 0; i < arguments.length; i++) {
                 if (arguments[i] === 'thisiscard') {
                     thisiscard = true;
                 }
@@ -7510,15 +7509,15 @@ mixin(ui, /**@lends module:core.ui */ {
                     noclick = arguments[i];
                 }
             }
-            var list = [];
-            var dialog;
-            var node = ui.create.div('.caption.pointerspan');
+            let list = [];
+            let dialog;
+            let node = ui.create.div('.caption.pointerspan');
             if (get.is.phoneLayout()) {
                 node.style.fontSize = '30px';
             }
-            var namecapt = [];
-            var getCapt = function (str) {
-                var capt;
+            let namecapt = [];
+            let getCapt = function (str) {
+                let capt;
                 if (str.indexOf('_') == -1) {
                     capt = str[0];
                 }
@@ -7532,7 +7531,7 @@ mixin(ui, /**@lends module:core.ui */ {
                 return capt;
             }
             if (thisiscard) {
-                for (var i in lib.card) {
+                for (let i in lib.card) {
                     if (!lib.translate[i + '_info']) continue;
                     if (filter && filter(i)) continue;
                     list.push(['', get.translation(lib.card[i].type), i]);
@@ -7542,7 +7541,7 @@ mixin(ui, /**@lends module:core.ui */ {
                 }
             }
             else {
-                for (var i in lib.character) {
+                for (let i in lib.character) {
                     if (lib.character[i][4].contains('minskin')) continue;
                     if (lib.character[i][4].contains('boss') || lib.character[i][4].contains('hiddenboss')) {
                         if (lib.config.mode == 'boss') continue;
@@ -7566,14 +7565,14 @@ mixin(ui, /**@lends module:core.ui */ {
             if (!thisiscard) {
                 namecapt.remove('自定义');
                 namecapt.push('newline');
-                for (var i in lib.characterDialogGroup) {
+                for (let i in lib.characterDialogGroup) {
                     namecapt.push(i);
                 }
             }
-            var newlined = false;
-            var newlined2;
-            var packsource;
-            var clickCapt = function (e) {
+            let newlined = null;
+            let newlined2;
+            let packsource;
+            let clickCapt = function (e) {
                 if (_status.dragged) return;
                 if (dialog.currentcapt2 == '最近' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
                     dialog.currentcapt2 = null;
@@ -7589,7 +7588,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         if (this.touchlink) {
                             this.touchlink.classList.remove('active');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                             if (dialog.currentgroup && dialog.buttons[i].group != dialog.currentgroup) {
                                 dialog.buttons[i].classList.add('nodisplay');
                             }
@@ -7614,7 +7613,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         if (this.touchlink) {
                             this.touchlink.classList.add('active');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                             if (dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
                                 dialog.buttons[i].classList.add('nodisplay');
                             }
@@ -7647,7 +7646,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         if (this.touchlink) {
                             this.touchlink.classList.remove('active');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                             if (dialog.currentgroup && dialog.buttons[i].group != dialog.currentgroup) {
                                 dialog.buttons[i].classList.add('nodisplay');
                             }
@@ -7676,7 +7675,7 @@ mixin(ui, /**@lends module:core.ui */ {
                             packsource.innerHTML = this.innerHTML;
                             packsource.classList.add('thundertext');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                             if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
                                 dialog.buttons[i].classList.add('nodisplay');
                             }
@@ -7696,7 +7695,7 @@ mixin(ui, /**@lends module:core.ui */ {
                     }
                 }
                 if (dialog.seperate) {
-                    for (var i = 0; i < dialog.seperate.length; i++) {
+                    for (let i = 0; i < dialog.seperate.length; i++) {
                         if (!dialog.seperate[i].nextSibling.querySelector('.button:not(.nodisplay)')) {
                             dialog.seperate[i].style.display = 'none';
                             dialog.seperate[i].nextSibling.style.display = 'none';
@@ -7717,7 +7716,7 @@ mixin(ui, /**@lends module:core.ui */ {
                 }
                 if (e) e.stopPropagation();
             };
-            for (i = 0; i < namecapt.length; i++) {
+            for (let i = 0; i < namecapt.length; i++) {
                 if (namecapt[i] == 'newline') {
                     newlined = document.createElement('div');
                     newlined.style.marginTop = '5px';
@@ -7760,7 +7759,7 @@ mixin(ui, /**@lends module:core.ui */ {
             if (!thisiscard) {
                 var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
                     'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
-                    'xuyan', 'chaos', 'xuefeng', 'NetEase','hunmiao', 'ego', 'chidori', 'lucca',
+                    'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase','hunmiao', 'ego', 'chidori', 'lucca',
                     'vshojo'
                 ];//'wei','shu','wu','key',
                 if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
@@ -10449,12 +10448,12 @@ mixin(ui, /**@lends module:core.ui */ {
             var list = game.getIdentityList(this.parentNode);
             if (!list) return;
             if (lib.config.mark_identity_style == 'click') {
-                var list2 = [];
-                for (var i in list) {
+                let list2 = [];
+                for (let i in list) {
                     list2.push(i);
                 }
                 list2.push(list2[0]);
-                for (var i = 0; i < list2.length; i++) {
+                for (let i = 0; i < list2.length; i++) {
                     if (this.firstChild.innerHTML == list[list2[i]]) {
                         this.firstChild.innerHTML = list[list2[i + 1]];
                         this.dataset.color = list2[i + 1];
@@ -10466,11 +10465,11 @@ mixin(ui, /**@lends module:core.ui */ {
                 if (get.mode() == 'guozhan') {
                     list = { holo: '杏', nijisanji: '虹', vtuber: '企', clubs: '社' };
                 }
-                var list2 = get.copy(list);
+                let list2 = get.copy(list);
                 if (game.getIdentityList2) {
                     game.getIdentityList2(list2);
                 }
-                var rect = this.parentNode.getBoundingClientRect();
+                let rect = this.parentNode.getBoundingClientRect();
                 this._customintro = function (uiintro) {
                     if (get.mode() == 'guozhan') {
                         uiintro.clickintro = true;
@@ -10487,9 +10486,9 @@ mixin(ui, /**@lends module:core.ui */ {
                     else {
                         uiintro.style.width = '85px';
                     }
-                    var source = this.parentNode;
-                    for (var i in list) {
-                        var node = ui.create.div();
+                    let source = this.parentNode;
+                    for (let i in list) {
+                        let node = ui.create.div();
                         node.classList.add('guessidentity');
                         node.classList.add('pointerdiv');
                         ui.create.div('.menubutton.large', list2[i], node);
@@ -10508,7 +10507,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         }
                         else {
                             node.listen(function () {
-                                var info = this.link;
+                                let info = this.link;
                                 info[0].firstChild.innerHTML = info[1];
                                 info[0].dataset.color = info[2];
                                 _status.clicked = false;
@@ -11526,7 +11525,7 @@ mixin(ui, /**@lends module:core.ui */ {
                 dialogs[i].delete();
             }
             var node = _status.currentmouseenter;
-            var sourceitem = document.elementFromPoint(e.clientX, e.clientY);
+            var sourceitem = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
             if (game.chess && ui.selected.cards.length) {
                 var itemtype = get.itemtype(sourceitem);
                 if (itemtype != 'card' && itemtype != 'button') {
@@ -11675,7 +11674,7 @@ mixin(ui, /**@lends module:core.ui */ {
                         }
                         return;
                     }
-                    item = item.parentNode;
+                    item = item.parentNode as HTMLElement;
                 }
                 if (!_status.mouseleft) {
                     _status.mouseleft = true;
@@ -11755,7 +11754,7 @@ mixin(ui, /**@lends module:core.ui */ {
             for (var i = 0; i < dialogs.length; i++) {
                 dialogs[i].delete();
             }
-            var sourceitem = document.elementFromPoint(e.clientX, e.clientY);
+            var sourceitem = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
             var item = sourceitem;
             while (item) {
                 var itemtype = get.itemtype(item);
@@ -11779,7 +11778,7 @@ mixin(ui, /**@lends module:core.ui */ {
                     }
                     return;
                 }
-                item = item.parentNode;
+                item = item.parentNode as HTMLElement;
             }
 
             var evt = _status.event;
@@ -11808,7 +11807,7 @@ mixin(ui, /**@lends module:core.ui */ {
                     }
                     return;
                 }
-                item = item.parentNode;
+                item = item.parentNode as HTMLElement;
             }
         },
         cardtouchstart: function (e) {

@@ -2819,7 +2819,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 };
                 if (_status.connectMode) {
                     if (choice.length == 1)
-                        event._result = { control: list[0] };
+                        event._result = { control: choice[0] };
                     else
                         player.chooseControl(choice).set('prompt', '选择获得一个技能').set('forceDie', true).set('ai', function () {
                             return event.skillai(choice);
@@ -4342,16 +4342,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 if (!get.info(card, false).noForceDie)
                     event.forceDie = true;
-                var next = player.lose(cards, 'visible', ui.ordering).set('type', 'use');
-                var directDiscard = [];
-                for (var i = 0; i < cards.length; i++) {
+                let next = player.lose(cards, 'visible', ui.ordering).set('type', 'use');
+                let directDiscard = [];
+                for (let i = 0; i < cards.length; i++) {
                     if (!next.cards.contains(cards[i])) {
                         directDiscard.push(cards[i]);
                     }
                 }
                 if (directDiscard.length)
                     game.cardsGotoOrdering(directDiscard);
-                var cardaudio = true;
+                let cardaudio = true;
                 if (event.skill) {
                     if (lib.skill[event.skill].audio) {
                         cardaudio = false;
@@ -4379,8 +4379,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         if (lib.config.background_audio) {
                             if (get.type(card) == 'equip' && !lib.config.equip_audio)
                                 return;
-                            var sex = player.sex == 'female' ? 'female' : 'male';
-                            var audioinfo = lib.card[card.name].audio;
+                            let sex = player.sex == 'female' ? 'female' : 'male';
+                            let audioinfo = lib.card[card.name].audio;
                             if (card.name == 'sha' && (card.nature == 'fire' || card.nature == 'thunder' || card.nature == 'ice' || card.nature == 'ocean')) {
                                 game.playAudio('card', sex, card.name + '_' + card.nature);
                             }
@@ -4400,7 +4400,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 if (event.animate != false && event.line != false) {
                     if ((card.name == 'wuxie' || card.name == 'youdishenru') && event.getParent().source) {
-                        var lining = event.getParent().sourcex || event.getParent().source2 || event.getParent().source;
+                        let lining = event.getParent().sourcex || event.getParent().source2 || event.getParent().source;
                         if (lining == player && event.getParent().sourcex2) {
                             lining = event.getParent().sourcex2;
                         }
@@ -4412,7 +4412,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         }
                     }
                     else {
-                        var config = {};
+                        let config = {};
                         if (card.nature == 'fire' ||
                             (card.classList && card.classList.contains('fire'))) {
                             config.color = 'fire';
@@ -4442,7 +4442,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     if (event.throw !== false)
                         player.$throw(cards);
                     if (lib.config.sync_speed && cards[0] && cards[0].clone) {
-                        var waitingForTransition = get.time();
+                        let waitingForTransition = get.time();
                         event.waitingForTransition = waitingForTransition;
                         cards[0].clone.listenTransition(function () {
                             if (_status.waitingForTransition == waitingForTransition && _status.paused) {
@@ -4592,7 +4592,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 var target = event.getTriggerTarget(targets, event.triggeredTargets1);
                 if (target) {
                     event.triggeredTargets1.push(target);
-                    var next = game.createEvent('useCardToPlayer', false);
+                    let next = game.createEvent('useCardToPlayer', false);
                     if (event.triggeredTargets1.length == 1)
                         next.isFirstTarget = true;
                     next.setContent('emptyEvent');
@@ -4616,7 +4616,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 var target = event.getTriggerTarget(targets, event.triggeredTargets2);
                 if (target) {
                     event.triggeredTargets2.push(target);
-                    var next = game.createEvent('useCardToTarget', false);
+                    let next = game.createEvent('useCardToTarget', false);
                     if (event.triggeredTargets2.length == 1)
                         next.isFirstTarget = true;
                     next.setContent('emptyEvent');
@@ -4640,7 +4640,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 var target = event.getTriggerTarget(targets, event.triggeredTargets3);
                 if (target) {
                     event.triggeredTargets3.push(target);
-                    var next = game.createEvent('useCardToPlayered', false);
+                    let next = game.createEvent('useCardToPlayered', false);
                     if (event.triggeredTargets3.length == 1)
                         next.isFirstTarget = true;
                     next.setContent('emptyEvent');
@@ -4664,7 +4664,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 var target = event.getTriggerTarget(targets, event.triggeredTargets4);
                 if (target) {
                     event.triggeredTargets4.push(target);
-                    var next = game.createEvent('useCardToTargeted', false);
+                    let next = game.createEvent('useCardToTargeted', false);
                     if (event.triggeredTargets4.length == 1)
                         next.isFirstTarget = true;
                     next.setContent('emptyEvent');
@@ -4686,7 +4686,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 8";
                 var info = get.info(card, false);
                 if (info.contentBefore) {
-                    var next = game.createEvent(card.name + 'ContentBefore');
+                    let next = game.createEvent(card.name + 'ContentBefore');
                     next.setContent(info.contentBefore);
                     next.targets = targets;
                     next.card = card;
@@ -4697,7 +4697,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                         next.forceDie = true;
                 }
                 else if (info.reverseOrder && get.is.versus() && targets.length > 1) {
-                    var next = game.createEvent(card.name + 'ContentBefore');
+                    let next = game.createEvent(card.name + 'ContentBefore');
                     next.setContent('reverseOrder');
                     next.targets = targets;
                     next.card = card;
@@ -4725,7 +4725,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (targets.length == 0 && !info.notarget)
                     return;
                 if (targets[num] && event.excluded.contains(targets[num])) {
-                    var next = game.createEvent('useCardToExcluded', false);
+                    let next = game.createEvent('useCardToExcluded', false);
                     next.setContent('emptyEvent');
                     next.targets = targets;
                     next.target = targets[num];
@@ -4736,48 +4736,50 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     return;
                 }
                 ;
-                var next = game.createEvent(card.name);
-                next.setContent(info.content);
-                next.targets = targets;
-                next.card = card;
-                next.cards = cards;
-                next.player = player;
-                next.num = num;
-                next.type = 'card';
-                next.skill = event.skill;
-                next.multitarget = info.multitarget;
-                next.preResult = event.preResult;
-                next.baseDamage = event.baseDamage;
-                if (event.forceDie)
-                    next.forceDie = true;
-                if (event.addedTargets) {
-                    next.addedTargets = event.addedTargets;
-                    next.addedTarget = event.addedTarget;
-                    next._targets = event._targets;
-                }
-                if (info.targetDelay === false) {
-                    event.targetDelay = false;
-                }
-                next.target = targets[num];
-                for (var i in event.customArgs.default)
-                    next[i] = event.customArgs.default[i];
-                if (next.target && event.customArgs[next.target.playerid]) {
-                    var customArgs = event.customArgs[next.target.playerid];
-                    for (var i in customArgs)
-                        next[i] = customArgs[i];
-                }
-                if (next.target && event.directHit.contains(next.target))
-                    next.directHit = true;
-                if (next.target && !info.multitarget) {
-                    if (num == 0 && targets.length > 1) {
+                {
+                    let next = game.createEvent(card.name);
+                    next.setContent(info.content);
+                    next.targets = targets;
+                    next.card = card;
+                    next.cards = cards;
+                    next.player = player;
+                    next.num = num;
+                    next.type = 'card';
+                    next.skill = event.skill;
+                    next.multitarget = info.multitarget;
+                    next.preResult = event.preResult;
+                    next.baseDamage = event.baseDamage;
+                    if (event.forceDie)
+                        next.forceDie = true;
+                    if (event.addedTargets) {
+                        next.addedTargets = event.addedTargets;
+                        next.addedTarget = event.addedTarget;
+                        next._targets = event._targets;
                     }
-                    else {
-                        next.target.animate('target');
+                    if (info.targetDelay === false) {
+                        event.targetDelay = false;
                     }
-                }
-                if (!info.nodelay && num > 0) {
-                    if (event.targetDelay !== false) {
-                        game.delayx(0.5);
+                    next.target = targets[num];
+                    for (var i in event.customArgs.default)
+                        next[i] = event.customArgs.default[i];
+                    if (next.target && event.customArgs[next.target.playerid]) {
+                        var customArgs = event.customArgs[next.target.playerid];
+                        for (var i in customArgs)
+                            next[i] = customArgs[i];
+                    }
+                    if (next.target && event.directHit.contains(next.target))
+                        next.directHit = true;
+                    if (next.target && !info.multitarget) {
+                        if (num == 0 && targets.length > 1) {
+                        }
+                        else {
+                            next.target.animate('target');
+                        }
+                    }
+                    if (!info.nodelay && num > 0) {
+                        if (event.targetDelay !== false) {
+                            game.delayx(0.5);
+                        }
                     }
                 }
                 "step 10";
@@ -4789,7 +4791,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 "step 11";
                 if (get.info(card, false).contentAfter) {
-                    var next = game.createEvent(card.name + 'ContentAfter');
+                    let next = game.createEvent(card.name + 'ContentAfter');
                     next.setContent(get.info(card, false).contentAfter);
                     next.targets = targets;
                     next.card = card;
@@ -4948,7 +4950,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 }
                 if (info.round) {
                     var roundname = skill + '_roundcount';
-                    player.storage[roundname] = game.roundNumber;
+                    player.storage[roundname] = info.round;
+                    // player.storage[roundname] = game.roundNumber;
                     player.syncStorage(roundname);
                     player.markSkill(roundname);
                 }
@@ -5258,19 +5261,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
             gain: function () {
                 "step 0";
                 if (cards) {
-                    var map = {};
-                    for (var i of cards) {
-                        var owner = get.owner(i, 'judge');
+                    let map = {};
+                    for (let i of cards) {
+                        let owner = get.owner(i, 'judge');
                         if (owner && (owner != player || get.position(i) != 'h')) {
-                            var id = owner.playerid;
+                            let id = owner.playerid;
                             if (!map[id])
                                 map[id] = [];
                             map[id].push(i);
                         }
                     }
-                    for (var i in map) {
-                        var owner = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
-                        var next = owner.lose(map[i], ui.special).set('type', 'gain').set('forceDie', true).set('getlx', false);
+                    for (let i in map) {
+                        let owner = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
+                        let next = owner.lose(map[i], ui.special).set('type', 'gain').set('forceDie', true).set('getlx', false);
                         if (event.animate == 'give' || event.visible == true)
                             next.visible = true;
                         event.relatedLose = next;
@@ -5280,7 +5283,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                     event.finish();
                 }
                 "step 1";
-                for (var i = 0; i < cards.length; i++) {
+                for (let i = 0; i < cards.length; i++) {
                     if (cards[i].destroyed) {
                         if (player.hasSkill(cards[i].destroyed)) {
                             delete cards[i].destroyed;
@@ -6067,7 +6070,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 "step 3";
                 if (player.isDead()) {
                     if (!game.reserveDead) {
-                        for (var mark in player.marks) {
+                        for (let mark in player.marks) {
                             player.unmarkSkill(mark);
                         }
                         while (player.node.marks.childNodes.length > 1) {
@@ -6079,11 +6082,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
                             }
                         }, player);
                     }
-                    for (var i in player.tempSkills) {
+                    for (let i in player.tempSkills) {
                         player.removeSkill(i);
                     }
-                    var skills = player.getSkills();
-                    for (var i = 0; i < skills.length; i++) {
+                    let skills = player.getSkills();
+                    for (let i = 0; i < skills.length; i++) {
                         if (lib.skill[skills[i]].temp) {
                             player.removeSkill(skills[i]);
                         }

@@ -1455,7 +1455,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				audio:3,
 				enable:'chooseToUse',
 				filter(event,player){
-					if(player.hasSkill('jiajiupaidui_tag')) return false;
 					return event.filterCard({name:'jiu',isCard:true},player,event);
 				},
 				filterTarget(card,player,target){
@@ -1491,7 +1490,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delay();
 					event.allJiu=true;
 					event.cards.forEach(card => {
-						if(get.suit(card)=='spade'||get.number(card)==9)
+						if(get.suit(card)==='spade'||get.number(card)==9)
 							event.isJiu=true;
 						else{
 							event.allJiu=false;
@@ -1511,7 +1510,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							player.popup('重置');
 							var next = game.createEvent('resetSkill');
 							[next.player,next.resetSkill] = [player,'jiajiupaidui']
-							next.setContent(lib.element.content.resetRound);
+							next.setContent('resetRound');
 						}
 						player.draw();
 					}
@@ -1565,7 +1564,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					count:{
 						mark:true,
 						marktext:"酒",
-						trigger:{player:'phaseEnd'},
 						direct:true,
 						intro:{
 							content(storage, player, skill){

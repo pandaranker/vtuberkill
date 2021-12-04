@@ -24,7 +24,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             HanazonoSerena: ['female', 'paryi', 4, ['jiumao', 'enfan', 'shiqi'], ['zhu']],
             MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
             HosimiyaSio: ['female', 'qun', 4, ['yuanyao', 'gongni'],],
-            Hiiro: ['female', 'qun', 4, ['jiace', 'xiangying'], ['yingV']],
+            Hiiro: ['female', 'Providence', 4, ['jiace', 'xiangying'], ['yingV']],
             NecoraNyaru: ['female', 'qun', 3, ['miaolu', 'benglei'],],
             Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],
             Umy: ['female', 'qun', 4, ['naisi', 'tuzai', 'wuneng'], ['guoV']],
@@ -1163,7 +1163,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         content() {
                             trigger.enfan = true;
                         },
-                        sub: true,
                     },
                 },
                 audio: true,
@@ -2349,14 +2348,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                     player.disableEquip(player.storage.yutuo);
                     player.storage.yutuo = parseInt(result.control[5]);
-                    player.syncStorage('yutuo');
                     player.markSkill('yutuo');
                     player.removeSkill('yutuo_disableTag');
                 },
                 init(player) {
                     if (!player.storage.yutuo)
                         player.storage.yutuo = 2;
-                    player.syncStorage('yutuo');
                     player.markSkill('yutuo');
                 },
                 intro: {
@@ -2637,20 +2634,20 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 },
             },
+            bigOrSmall: {
+                init(player, skill) {
+                    player.storage[skill] = '小';
+                },
+                list: ['小', '大', '等'],
+            },
             mozouqiyin: {
+                group: 'bigOrSmall',
                 trigger: {
                     global: 'phaseBegin'
                 },
                 direct: true,
-                init(player) {
-                    if (!player.storage.mozouqiyin)
-                        player.storage.mozouqiyin = '小';
-                },
                 filter(event, player) {
-                    if (player.storage.budingpaidui.current && player.storage.budingpaidui.current != player.storage.mozouqiyin) {
-                        player.storage.mozouqiyin = player.storage.budingpaidui.current;
-                    }
-                    if (event.player == player)
+                    if (event.player === player)
                         return false;
                     if (player.countCards('h', card => lib.filter.cardEnabled(card, player, 'forceEnable'))) {
                         return true;
@@ -2660,16 +2657,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 },
                 content() {
                     'step 0';
-                    var p = trigger.player;
-                    event.chooseToUseEvt = player.chooseToUse('###' + get.prompt('mozouqiyin') + '###你可使用一张牌，若未造成伤害，然后本回合' + get.translation(event.player) + '跳过弃牌阶段且不能使用点数（' + (player.storage.mozouqiyin || '小') + '）于此牌的牌').set('ai1', card => {
-                        var att = get.attitude(player, p);
+                    player.chooseToUse(`###${get.prompt('mozouqiyin')}###你可使用一张牌，若未造成伤害，然后本回合${get.translation(trigger.player)}跳过弃牌阶段且不能使用点数（${player.storage.bigOrSmall}）于此牌的牌`).set('ai1', card => {
+                        let player = _status.event.player;
+                        let p = _status.event.target;
+                        let size = player.storage.bigOrSmall;
+                        let att = get.attitude(player, p);
                         if (att > 0) {
-                            if (player.storage.mozouqiyin == '小') {
+                            if (size == '小') {
                                 return 100 - p.countCards('h', function (cur) {
                                     return cur.number < card.number;
                                 });
                             }
-                            else if (player.storage.mozouqiyin == '大') {
+                            else if (size == '大') {
                                 return 100 - p.countCards('h', function (cur) {
                                     return cur.number > card.number;
                                 });
@@ -2681,12 +2680,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             }
                         }
                         else if (att < 0) {
-                            if (player.storage.mozouqiyin == '小') {
+                            if (size == '小') {
                                 return p.countCards('h', function (cur) {
                                     return cur.number < card.number;
                                 });
                             }
-                            else if (player.storage.mozouqiyin == '大') {
+                            else if (size == '大') {
                                 return p.countCards('h', function (cur) {
                                     return cur.number > card.number;
                                 });
@@ -2698,24 +2697,25 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         else {
                             return 0;
                         }
-                    });
+                    }).set('target', trigger.player);
                     event.sourceDamageHistory = player.getHistory('sourceDamage').slice(0);
                     'step 1';
-                    var p = trigger.player;
                     if (!result.bool) {
                         event.finish();
                         return;
                     }
-                    var card = result.cards[0] || result.used || result.card;
+                    let p = trigger.player;
+                    let card = result.cards[0] || result.used || result.card;
                     if (!card) {
                         event.finish();
                         return;
                     }
-                    var history = player.getHistory('sourceDamage');
-                    for (var i = 0; i < history.length; ++i) {
+                    let history = player.getHistory('sourceDamage');
+                    let causeDamage = false;
+                    for (let i = 0; i < history.length; ++i) {
                         if (event.sourceDamageHistory.contains(history[i]))
                             continue;
-                        var causeDamage = true;
+                        causeDamage = true;
                         break;
                     }
                     if (causeDamage) {
@@ -2723,10 +2723,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         return;
                     }
                     p.storage.mozouqiyin_disableCard = {
+                        source: player,
                         number: card.number,
-                        cond: player.storage.mozouqiyin
+                        cond: player.storage.bigOrSmall
                     };
-                    p.syncStorage('mozouqiyin_disableCard');
                     p.addTempSkill('mozouqiyin_disableCard', { player: 'phaseEnd' });
                     player.logSkill('mozouqiyin', p);
                 },
@@ -2745,23 +2745,23 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             cardUsable(card, player, num) {
                                 if (typeof card != 'object')
                                     return;
-                                var number = get.number(card, player);
+                                let number = get.number(card, player);
                                 if (typeof number != 'number') {
                                     number = parseInt(number);
                                     if (isNaN(number))
                                         return;
                                 }
-                                var storage = player.storage.mozouqiyin_disableCard;
+                                let storage = player.storage.mozouqiyin_disableCard;
                                 return lib.skill.budingpaidui.checkNumber(storage.number, number, storage.cond) ? 0 : num;
                             },
                             cardEnabled2(card, player, ori) {
-                                var number = get.number(card, player);
+                                let number = get.number(card, player);
                                 if (typeof number != 'number') {
                                     number = parseInt(number);
                                     if (isNaN(number))
                                         return;
                                 }
-                                var storage = player.storage.mozouqiyin_disableCard;
+                                let storage = player.storage.mozouqiyin_disableCard;
                                 return lib.skill.budingpaidui.checkNumber(storage.number, number, storage.cond) ? false : ori;
                             }
                         },
@@ -2769,10 +2769,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         intro: {
                             name: '默奏起音的效果',
                             mark(dialog, storage, player) {
-                                var cardnum = storage.number;
-                                if ([1, 11, 12, 13].contains(cardnum)) {
-                                    cardnum = { '1': 'A', '11': 'J', '12': 'Q', '13': 'K' }[cardnum];
-                                }
+                                let cardnum = get.strNumber(storage.number);
                                 dialog.addText('禁止使用点数（' + storage.cond + '）于' + cardnum + '的牌');
                                 dialog.addText('本回合跳过弃牌阶段');
                             }
@@ -2787,29 +2784,22 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 trigger: {
                     player: 'useCardAfter'
                 },
-                mark: true,
                 init(player) {
-                    if (!player.storage.budingpaidui)
-                        player.storage.budingpaidui = {};
-                    if (!player.storage.budingpaidui.current)
-                        player.storage.budingpaidui.current = '小';
-                    if (!player.storage.budingpaidui.left)
-                        player.storage.budingpaidui.left = ['小', '大', '等'];
+                    var _a;
+                    var _b;
+                    (_a = (_b = player.storage).budingpaidui) !== null && _a !== void 0 ? _a : (_b.budingpaidui = ['小', '大', '等']);
                 },
                 filter(event, player) {
-                    if (!player.storage.budingpaidui.left || player.storage.budingpaidui.left.length <= 0) {
-                        player.storage.budingpaidui.left = ['小', '大', '等'];
-                        player.syncStorage('budingpaidui');
+                    if (!player.storage.budingpaidui || player.storage.budingpaidui.length <= 0) {
+                        player.storage.budingpaidui = ['小', '大', '等'];
                         player.markSkill('budingpaidui');
                     }
-                    var curCard = player.storage._usedCardRecord && player.storage._usedCardRecord[player.storage._usedCardRecord.length - 1];
-                    var lstCard = player.storage._usedCardRecord && player.storage._usedCardRecord[player.storage._usedCardRecord.length - 2];
-                    if (lstCard == null || curCard == null)
-                        return;
-                    return lib.skill.budingpaidui.checkNumber(lstCard.number, curCard.number, player);
+                    let curCard = event.card;
+                    let lstCard = player.getStorage('budingpaidui_uCR')[0];
+                    return lstCard && lib.skill.budingpaidui.checkNumber(get.number(lstCard), get.number(curCard), player);
                 },
                 check(event, player) {
-                    if (player.storage.budingpaidui && player.storage.budingpaidui.left && player.storage.budingpaidui.left.length > 1) {
+                    if (player.getStorage('budingpaidui').length > 1) {
                         return true;
                     }
                     return false;
@@ -2819,12 +2809,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (typeof item == 'string')
                         str = item;
                     else {
-                        var player = item;
-                        if (!player)
-                            player = _status.event.player;
-                        if (!player || !player.storage.budingpaidui || !player.storage.budingpaidui.current)
-                            return false;
-                        str = player.storage.budingpaidui.current;
+                        let player = item || _status.event.player;
+                        str = player.storage.bigOrSmall;
                     }
                     if (str == '小') {
                         return curNum < lstNum;
@@ -2841,10 +2827,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 0';
                     player.draw();
                     'step 1';
-                    var curCard = player.storage._usedCardRecord && player.storage._usedCardRecord[player.storage._usedCardRecord.length - 1];
-                    var left = player.storage.budingpaidui.left;
+                    var curCard = trigger.card;
+                    var left = player.storage.budingpaidui;
                     var aiChoice = left[0];
-                    for (var i = 0; i < left.length; ++i) {
+                    for (let i = 0; i < left.length; ++i) {
                         if (player.countCards('h', card => {
                             return player.hasUseTarget(card) && lib.skill.budingpaidui.checkNumber(curCard.number, card.number, left[i]);
                         }) > 0) {
@@ -2852,41 +2838,38 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             break;
                         }
                     }
-                    player.chooseControl(player.storage.budingpaidui.left)
+                    player.chooseControl(player.storage.budingpaidui)
                         .set('prompt', '选择一项替代之前（）内的内容')
                         .set('ai', function () {
                         return _status.event.aiChoice;
                     }).set('aiChoice', aiChoice);
                     'step 2';
-                    player.storage.budingpaidui.current = result.control;
-                    player.storage.budingpaidui.left.splice(result.index, 1);
-                    player.syncStorage('budingpaidui');
+                    player.storage.bigOrSmall = result.control;
+                    player.storage.budingpaidui.splice(result.index, 1);
                     player.markSkill('budingpaidui');
-                    if (player.storage.mozouqiyin)
-                        player.storage.mozouqiyin = result.control;
                     game.countPlayer(function (cur) {
-                        if (cur.hasSkill('mozouqiyin_disableCard')) {
+                        if (cur.getStorage('mozouqiyin_disableCard').source === player) {
                             cur.storage.mozouqiyin_disableCard.cond = result.control;
-                            cur.syncStorage('mozouqiyin_disableCard');
                             cur.markSkill('mozouqiyin_disableCard');
                         }
                     });
                 },
                 intro: {
                     mark(dialog, storage, player) {
-                        var lstCard = player.storage._usedCardRecord && player.storage._usedCardRecord[player.storage._usedCardRecord.length - 1];
+                        let lstCard = player.getStorage('budingpaidui_uCR')[0];
                         if (!lstCard) {
-                            dialog.addText('你使用的下一张牌可能无法发动' + get.translation('budingpaidui'));
+                            dialog.addText(`你使用的下一张牌可能无法发动『${get.translation('budingpaidui')}』`);
                             return;
                         }
-                        var cardnum = lstCard.number;
-                        if ([1, 11, 12, 13].contains(cardnum)) {
-                            cardnum = { '1': 'A', '11': 'J', '12': 'Q', '13': 'K' }[cardnum];
-                        }
-                        dialog.addText('你使用的下一张牌点数（' + storage.current + '）于' + cardnum + '可能发动');
-                    }
+                        let cardnum = get.strNumber(get.number(lstCard));
+                        dialog.addText(`你使用的下一张牌点数（${player.storage.bigOrSmall}）于${cardnum}可以发动『${get.translation('budingpaidui')}』`);
+                    },
+                    markcount(storage, player) {
+                        let lstCard = player.getStorage('budingpaidui_uCR')[0];
+                        return lstCard && get.number(lstCard);
+                    },
                 },
-                group: 'budingpaidui_reset',
+                group: ['bigOrSmall', 'budingpaidui_reset', 'budingpaidui_usedCardRecord'],
                 subSkill: {
                     reset: {
                         trigger: {
@@ -2897,44 +2880,37 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         direct: true,
                         log: false,
                         content() {
-                            player.storage.budingpaidui.left = ['小', '大', '等'];
-                            player.syncStorage('budingpaidui');
+                            player.storage.budingpaidui = ['小', '大', '等'];
+                            player.markSkill('budingpaidui');
+                        }
+                    },
+                    usedCardRecord: {
+                        trigger: {
+                            player: 'useCardAfter'
+                        },
+                        direct: true,
+                        lastDo: true,
+                        log: false,
+                        content() {
+                            player.storage.budingpaidui_uCR = [trigger.card];
                             player.markSkill('budingpaidui');
                         }
                     }
                 }
             },
-            _usedCardRecord: {
-                trigger: {
-                    player: 'useCard'
-                },
-                direct: true,
-                log: false,
-                content() {
-                    if (!player.storage._usedCardRecord)
-                        player.storage._usedCardRecord = [];
-                    player.storage._usedCardRecord.push(trigger.card);
-                    player.syncStorage('_usedCardRecord');
-                    if (player.hasSkill('budingpaidui')) {
-                        player.syncStorage('budingpaidui');
-                        player.markSkill('budingpaidui');
-                    }
-                }
-            }
         },
         dynamicTranslate: {
             mozouqiyin(player) {
                 var str = '小';
-                if (player.storage.mozouqiyin)
-                    str = player.storage.mozouqiyin;
-                return '其他角色的回合开始时，你可使用一张牌，若未造成伤害，本回合其跳过弃牌阶段且不能使用点数（' + player.storage.mozouqiyin + '）于此牌的牌。';
+                if (player.storage.bigOrSmall)
+                    str = player.storage.bigOrSmall;
+                return `其他角色的回合开始时，你可使用一张牌，若未造成伤害，本回合其跳过弃牌阶段且不能使用点数（${str}）于此牌的牌。`;
             },
             budingpaidui(player) {
                 var str = '小';
-                if (player.storage.budingpaidui && player.storage.budingpaidui.current) {
-                    str = player.storage.budingpaidui.current;
-                }
-                return '当你使用一张牌后，若点数（' + str + '）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。';
+                if (player.storage.bigOrSmall)
+                    str = player.storage.bigOrSmall;
+                return `当你使用一张牌后，若点数（${str}）于前一张被使用的牌，你可摸一张牌，然后用以下未选过的一项替代之前（）内的内容：小，大，等。三项均被触发后或一轮开始时，重置选项。`;
             }
         },
         translate: {

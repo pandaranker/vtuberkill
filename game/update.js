@@ -1,10 +1,11 @@
 window.noname_update={
-	version:'1.9.103.22',
+	version:'1.9.104.01',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.103.22微型更新：反向修复bug`,
+		`1.9.104.01中型更新：新增势力普罗维登Providence，新增角色胡桃Usa、七濑Unia【普罗维登】，杜松子【独立运营/群】`,
+		`暂时回退版本，修复大量bug`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
-		`注意：安卓客户端与最新版本之间可能存在兼容性问题，请勿更新，等待下个版本进行修复`,
+		``,
 		``,
 		``,
 		`化鲸篇新增机制可以在游戏内或者设置的“帮助”中查看`,
@@ -58,7 +59,7 @@ window.noname_update={
 
 		// 'game/module.js',
 		'game/game.js',
-		'game/game test.js',
+		'game/game_mark.js',
 
 		// 'game/core/base/EventModel.js',
 		// 'game/core/base/Status_Event.js',

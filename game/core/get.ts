@@ -894,8 +894,10 @@ mixin(get, /**@lends module:core.get */ {
     },
     inpile: function (type, filter) {
         var list = [];
-        if (filter == 'trick') {
-            for (let i = 0; i < lib.inpile.length; i++) {
+        if (filter == 'trick' || type == 'trick2') {
+            if (type == 'trick2') type = 'trick'
+            for (var i = 0; i < lib.inpile.length; i++) {
+                if (typeof filter == 'function' && !filter(lib.inpile[i])) continue;
                 if (get.type(lib.inpile[i], 'trick') == type) list.push(lib.inpile[i]);
             }
         }
@@ -1736,11 +1738,10 @@ mixin(get, /**@lends module:core.get */ {
      * @returns {?string} 对象的物品类型
      */
     itemtype: function (obj) {
-        var i, j;
         if (typeof obj == 'string') {
             if (obj.length <= 4) {
                 var bool = true;
-                for (i = 0; i < obj.length; i++) {
+                for (let i = 0; i < obj.length; i++) {
                     if (/h|e|j|s/.test(obj[i]) == false) {
                         bool = false; break;
                     }
@@ -1751,13 +1752,13 @@ mixin(get, /**@lends module:core.get */ {
         }
         if (Array.isArray(obj) && obj.length) {
             var isPlayers = true;
-            for (i = 0; i < obj.length; i++) {
+            for (let i = 0; i < obj.length; i++) {
                 if (get.itemtype(obj[i]) != 'player') { isPlayers = false; break; }
             }
             if (isPlayers) return 'players';
 
             var isCards = true;
-            for (i = 0; i < obj.length; i++) {
+            for (let i = 0; i < obj.length; i++) {
                 if (get.itemtype(obj[i]) != 'card') { isCards = false; break; }
             }
             if (isCards) return 'cards';
@@ -1770,7 +1771,7 @@ mixin(get, /**@lends module:core.get */ {
 
             if (obj.length == 4) {
                 var isPosition = true;
-                for (i = 0; i < obj.length; i++) {
+                for (let i = 0; i < obj.length; i++) {
                     if (typeof obj[i] != 'number') { isPosition = false; break; }
                 }
                 if (isPosition) return 'divposition';
@@ -2088,7 +2089,7 @@ mixin(get, /**@lends module:core.get */ {
                     break;
                 }
             }
-            for (i = 0; i < game.players.length; i++) {
+            for (let i = 0; i < game.players.length; i++) {
                 if (game.players[i].isOut() || game.players[i].hasSkill('undist') || game.players[i].isMin(true)) length--;
             }
             if (method == 'absolute') return n;
@@ -2111,7 +2112,7 @@ mixin(get, /**@lends module:core.get */ {
         }), equips2 = to.getCards('e', function (card) {
             return !ui.selected.cards || !ui.selected.cards.contains(card);
         });
-        for (i = 0; i < equips1.length; i++) {
+        for (let i = 0; i < equips1.length; i++) {
             var info = get.info(equips1[i]).distance;
             if (!info) continue;
             if (info.globalFrom) {
@@ -2122,7 +2123,7 @@ mixin(get, /**@lends module:core.get */ {
                 m += info.attackFrom;
             }
         }
-        for (i = 0; i < equips2.length; i++) {
+        for (let i = 0; i < equips2.length; i++) {
             var info = get.info(equips2[i]).distance;
             if (!info) continue;
             if (info.globalTo) {
@@ -2635,7 +2636,7 @@ mixin(get, /**@lends module:core.get */ {
     filter: function (filter, i) {
         if (typeof filter == 'function') return filter;
         if (i == undefined) i = 0;
-        var result = function () {
+        var result = <Result>function () {
             if (filter == arguments[i]) return true;
             for (var j in filter) {
                 if (filter.hasOwnProperty(j)) {
@@ -2731,18 +2732,17 @@ mixin(get, /**@lends module:core.get */ {
     },
     population: function (identity) {
         if (identity == undefined) return game.players.length + game.dead.length;
-        var i;
         var num = 0;
-        for (i = 0; i < game.players.length; i++) {
+        for (let i = 0; i < game.players.length; i++) {
             if (game.players[i].identity == identity) num++;
         }
         return num;
     },
     totalPopulation: function (identity) {
         if (identity == undefined) return game.players.length + game.dead.length;
-        var i, players = game.players.concat(game.dead);
+        var players = game.players.concat(game.dead);
         var num = 0;
-        for (i = 0; i < players.length; i++) {
+        for (let i = 0; i < players.length; i++) {
             if (players[i].identity == identity) num++;
         }
         return num;
@@ -3022,7 +3022,7 @@ mixin(get, /**@lends module:core.get */ {
         if (node.classList.contains('player') && (!node.getModel || !node.getModel().name)) {
             return uiintro;
         }
-        var i, translation, intro, str;
+        var translation;
         if (node._nointro) return;
         if (typeof node._customintro == 'function') {
             if (node._customintro(uiintro) === false) return;
@@ -3884,7 +3884,7 @@ mixin(get, /**@lends module:core.get */ {
                     }
                 }
                 var skills = infoitem[3];
-                for (i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     if (lib.translate[skills[i] + '_info']) {
                         translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
                         let info = get.interoperableText(skills[i])

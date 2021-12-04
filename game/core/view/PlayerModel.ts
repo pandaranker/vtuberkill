@@ -142,7 +142,7 @@ class PlayerModel extends HTMLDivElementProxy {
             handcards1: ui.create.div('.handcards'),
             handcards2: ui.create.div('.handcards'),
         };
-        this.node = this.element.node;
+        this.node = this.element.node as {[propName: string]: HTMLDivElement};
         node.node.link = this.mark(' ', { mark: get.linkintro }) as HTMLDivElement;
         node.node.link.firstChild.setBackgroundImage('image/card/tiesuo_mark.png')
         node.node.link.firstChild.style.backgroundSize = 'cover';
@@ -484,7 +484,6 @@ class PlayerModel extends HTMLDivElementProxy {
                 }
                 else if (Array.isArray(storage)) key = key.concat(storage);
                 else key.push(storage);
-                console.log(key);
                 cards.addArray(key);
             }
         }
@@ -5303,7 +5302,8 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         if (info && info.round) {
             var roundname = name + '_roundcount';
-            this.storage[roundname] = game.roundNumber;
+            this.storage[roundname] = info.round;
+            // this.storage[roundname] = game.roundNumber;
             this.syncStorage(roundname);
             this.markSkill(roundname);
         }

@@ -119,7 +119,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			event.trigger('gameStart');
 			'step 5'
 			if(_status.reYindao){
-				_status.reYindao = false;
 				event.goto(4);
 			}
 			game.delay(3);
@@ -208,9 +207,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					galgame.sce("yindaoA0");
-					'step 1'
-					galgame.sce("yindaoA1");
+					if(!_status.reYindao){
+						galgame.sce("yindaoA0");
+					}
+					else{
+						_status.reYindao = false;
+						galgame.sce("yindaoA1");
+					}
 					'step 2'
 					switch(result.bool){
 						case '纯路人，什么是三国杀？':{
@@ -225,7 +228,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							galgame.sce("yindaoD");
 							break;
 						}
-						case '我是资深杀友，各种版本的三国杀都有玩':{
+						case '我是资深杀友，所以快告诉我这里有些什么新东西吧':{
 							galgame.sce("yindaoE");
 							break;
 						}
@@ -239,7 +242,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.trigger('yindaoSkill');
 					}
 					'step 5'
-					event.trigger('yindaoD');
+					event.trigger('yindaoF');
 					'step 6'
 					galgame.sce("over");
 					'step 7'
@@ -550,8 +553,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
-			_yindaoD:{
-				trigger:{player:'yindaoD'},
+			_yindaoF:{
+				trigger:{player:'yindaoF'},
 				silent:true,
 				popup:false,
 				filter:function(event,player){
@@ -559,12 +562,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					galgame.sce("yindaoD0");
+					galgame.sce("yindaoF0");
 					'step 1'
-					galgame.sce("yindaoDIndex");
+					galgame.sce("yindaoFIndex");
 					'step 2'
 					switch(result.bool){
 						case '转换技与使命技':
+							galgame.sce("yindaoNewSkill0")
 							event.going = 1;break;
 						case '新增机制：护甲':
 							event.going = 2;break;
@@ -579,6 +583,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 3'
 					switch(event.going){
 						case 1:
+							switch(result.bool){
+								case '跟随<span class=\"aqua\">樋口枫</span>学习转换技）':
+									event.going = 1;break;
+								case '好的哦~（跟随<span class=\"orange\">乃琳</span>学习转换技）':
+									event.going = 2;break;
+								case '可是转换技我本来就懂啊（“阿瞒……”）':
+									galgame.sce("yindaoNewSkill1")
+									event.going = 'skip';break;
+							}
 							event.going = 1;break;
 						case 2:
 							event.going = 2;break;

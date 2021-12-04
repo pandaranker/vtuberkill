@@ -558,7 +558,7 @@
             return this._element.innerHTML;
         }
         set innerHTML(arg) {
-            return this._element.innerHTML = arg;
+            this._element.innerHTML = arg;
         }
         get lastElementChild() {
             return this._element.lastElementChild;

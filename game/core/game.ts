@@ -5527,7 +5527,7 @@ mixin(game, /**@lends module:core.game */ {
                         if (info.viewAs && typeof info.viewAs != 'function' && info.viewAsFilter && info.viewAsFilter(player) == false) enable = false;
                         if (info.usable && get.skillCount(skills2[i]) >= info.usable) enable = false;
                         if (info.chooseButton && _status.event.noButton) enable = false;
-                        if (info.round && (player.storage[_status.event.skillBy + '_roundcount'] > 0)) enable = false;
+                        if (info.round && player.storage[_status.event.skillBy + '_roundcount'] > 0) enable = false;
                     }
                     if (enable) {
                         if (event.isMine() || !event._aiexclude.contains(skills2[i])) {
@@ -6857,7 +6857,8 @@ mixin(game, /**@lends module:core.game */ {
                             if (info && info.addintro) {
                                 str += info.addintro(storage, player);
                             }
-                            var num = round - (game.roundNumber - storage);
+                            // var num = round - (game.roundNumber - storage);
+                            var num = storage
                             if (num > 0) {
                                 str += get.cnNumber(num) + '轮后' + (info.roundtext || '技能重置');
                             }

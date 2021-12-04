@@ -7648,23 +7648,23 @@ mixin(lib, /**@lends module:core.lib */ {
                 //part: `window.noname_package`，创建于package.js
                 var pack = window.noname_package;
                 delete window.noname_package;
-                for (i in pack.character) {
+                for (let i in pack.character) {
                     if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
                         lib.config.all.characters.push(i);
                         lib.translate[i + '_character_config'] = pack.character[i];
                     }
                 }
-                for (i in pack.card) {
+                for (let i in pack.card) {
                     if (lib.config.hiddenCardPack.indexOf(i) == -1) {
                         lib.config.all.cards.push(i);
                         lib.translate[i + '_card_config'] = pack.card[i];
                     }
                 }
-                for (i in pack.play) {
+                for (let i in pack.play) {
                     lib.config.all.plays.push(i);
                     lib.translate[i + '_play_config'] = pack.play[i];
                 }
-                for (i in pack.submode) {
+                for (let i in pack.submode) {
                     for (var j in pack.submode[i]) {
                         lib.translate[i + '|' + j] = pack.submode[i][j];
                     }
@@ -7673,7 +7673,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 if (!lib.config.gameRecord) {
                     lib.config.gameRecord = {};
                 }
-                for (i in pack.mode) {
+                for (let i in pack.mode) {
                     if (lib.config.hiddenModePack.indexOf(i) == -1) {
                         lib.config.all.mode.push(i);
                         lib.translate[i] = pack.mode[i];
@@ -7691,12 +7691,12 @@ mixin(lib, /**@lends module:core.lib */ {
                     }
                 }
                 if (pack.background) {
-                    for (i in pack.background) {
+                    for (let i in pack.background) {
                         if (lib.config.hiddenBackgroundPack.contains(i)) continue;
                         lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
                     }
-                    for (var i = 0; i < lib.config.customBackgroundPack.length; i++) {
-                        var link = lib.config.customBackgroundPack[i];
+                    for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
+                        let link = lib.config.customBackgroundPack[i];
                         lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
                     }
                     lib.configMenu.appearence.config.image_background.item.default = '默认';
@@ -7706,12 +7706,12 @@ mixin(lib, /**@lends module:core.lib */ {
                         lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
                     }
                     lib.config.all.background_music = ['music_diaochan'];
-                    for (i in pack.music) {
+                    for (let i in pack.music) {
                         lib.config.all.background_music.push(i);
                         lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
                     }
                     if (lib.config.customBackgroundMusic) {
-                        for (i in lib.config.customBackgroundMusic) {
+                        for (let i in lib.config.customBackgroundMusic) {
                             lib.config.all.background_music.push(i);
                             lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
                         }
@@ -7720,19 +7720,19 @@ mixin(lib, /**@lends module:core.lib */ {
                     lib.configMenu.audio.config.background_music.item.music_off = '关闭';
                 }
                 if (pack.theme) {
-                    for (i in pack.theme) {
+                    for (let i in pack.theme) {
                         lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
                     }
                 }
                 if (lib.config.extension_sources) {
-                    for (i in lib.config.extension_sources) {
+                    for (let i in lib.config.extension_sources) {
                         lib.configMenu.general.config.extension_source.item[i] = i;
                     }
                 }
 
                 if (pack.font) {
                     ui.css.fontsheet = lib.init.sheet();
-                    for (i in pack.font) {
+                    for (let i in pack.font) {
                         lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
                         lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
                         lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
@@ -7804,13 +7804,13 @@ mixin(lib, /**@lends module:core.lib */ {
                             localStorage.setItem(lib.configprefix + 'disable_extension', true);
                         }
                     }
-                    for (var i = 0; i < lib.config.plays.length; i++) {
+                    for (let i = 0; i < lib.config.plays.length; i++) {
                         if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
                             extensionlist.push(lib.config.plays[i]);
                         }
                     }
-                    for (var i = 0; i < lib.config.extensions.length; i++) {
-                        var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
+                    for (let i = 0; i < lib.config.extensions.length; i++) {
+                        let extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
                         if (extcontent) {
                             _status.evaluatingExtension = true;
                             try {
@@ -7828,7 +7828,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 }
                 else {
                     if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
-                        for (var i = 0; i < lib.config.extensions.length; i++) {
+                        for (let i = 0; i < lib.config.extensions.length; i++) {
                             game.import('extension', { name: lib.config.extensions[i] });
                         }
                     }
@@ -10316,7 +10316,7 @@ mixin(lib, /**@lends module:core.lib */ {
             game.me.next.useCard({ name: 'jiedao' }, [game.me, game.me.previous]);
         },
         u: function () {
-            var card = { name: 'sha' }, source = game.me.next, targets = [];
+            var card:cardArray = { name: 'sha' }, source = game.me.next, targets = [];
             for (var i = 0; i < arguments.length; i++) {
                 if (get.itemtype(arguments[i]) == 'player') {
                     source = arguments[i];
@@ -10680,6 +10680,7 @@ mixin(lib, /**@lends module:core.lib */ {
         xuyan: '虚',
         chaos: 'C',
         xuefeng: '雪',
+        Providence: '普',
         hunmiao: '魂',
         ego: '复',
         chidori: '鸟',
@@ -10711,6 +10712,7 @@ mixin(lib, /**@lends module:core.lib */ {
         xuyan2: '虚研社',
         chaos2: 'ChaosLive',
         xuefeng2: '雪风军团',
+        Providence2: '雪风军团',
         hunmiao2: '魂喵科技',
         ego2: 'Egolive',
         chidori2: '千鸟战队',
@@ -11296,9 +11298,9 @@ mixin(lib, /**@lends module:core.lib */ {
                 this.node.range.innerHTML = '';
                 switch (get.subtype(this)) {
                     case 'equip1':
-                        var added = false;
+                        let added = false;
                         if (lib.card[this.name] && lib.card[this.name].distance) {
-                            var dist = lib.card[this.name].distance;
+                            let dist = lib.card[this.name].distance;
                             if (dist.attackFrom) {
                                 added = true;
                                 this.node.range.innerHTML = '范围: ' + (-dist.attackFrom + 1);
@@ -11321,7 +11323,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         }
                         break;
                 }
-                var specialEffects = [];
+                let specialEffects = [];
                 if (Array.isArray(card[5])) {
                     specialEffects.addArray(card[5]);
                 }
@@ -11332,7 +11334,7 @@ mixin(lib, /**@lends module:core.lib */ {
                         }
                     });
                 if (specialEffects.length) {
-                    for (var i = 0; i < specialEffects.length; i++) {
+                    for (let i = 0; i < specialEffects.length; i++) {
                         this.node.image.parentNode.classList.add(specialEffects[i]);
                     }
                     this.specialEffects = specialEffects;
@@ -11344,7 +11346,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 if (!_status.connectMode && !_status.video) {
                     this.cardid = get.id();
                 }
-                var tags = [];
+                let tags = [];
                 if (Array.isArray(card[4])) {
                     tags.addArray(card[4]);
                 }
@@ -11352,15 +11354,15 @@ mixin(lib, /**@lends module:core.lib */ {
                     if (!_status.cardtag) {
                         _status.cardtag = {};
                     }
-                    for (var i in _status.cardtag) {
+                    for (let i in _status.cardtag) {
                         if (_status.cardtag[i].contains(this.cardid)) {
                             tags.add(i);
                         }
                     }
                     if (tags.length) {
-                        var tagstr = ' <span class="cardtag">';
-                        for (var i = 0; i < tags.length; i++) {
-                            var tag = tags[i];
+                        let tagstr = ' <span class="cardtag">';
+                        for (let i = 0; i < tags.length; i++) {
+                            let tag = tags[i];
                             if (!_status.cardtag[tag]) {
                                 _status.cardtag[tag] = [];
                             }
@@ -12021,8 +12023,8 @@ mixin(lib, /**@lends module:core.lib */ {
          */
         filterTrigger: function (event, player, name, skill) {
             if (player._hookTrigger) {
-                for (var i = 0; i < player._hookTrigger.length; i++) {
-                    var info = lib.skill[player._hookTrigger[i]].hookTrigger;
+                for (let i = 0; i < player._hookTrigger.length; i++) {
+                    let info = lib.skill[player._hookTrigger[i]].hookTrigger;
                     if (info) {
                         if (info.block && info.block(event, player, name, skill)) {
                             return false;
@@ -12042,7 +12044,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 else if (obj.contains(name)) return true;
                 return false;
             }
-            for (var i in info.trigger) {//check trigger
+            for (let i in info.trigger) {//check trigger
                 if ((i == 'global' || player == event[i]) && has(info.trigger[i])) {
                     bool = true; break;
                 }
@@ -12058,7 +12060,7 @@ mixin(lib, /**@lends module:core.lib */ {
                 player.storage.counttrigger && player.storage.counttrigger[skill] >= info.usable) {
                 return false;
             }
-            if (info.round && (info.round - (game.roundNumber - player.storage[skill + '_roundcount']) > 0)) {
+            if (info.round &&  player.storage[skill + '_roundcount'] > 0) {
                 return false;
             }
             return true;
@@ -13017,25 +13019,25 @@ mixin(lib, /**@lends module:core.lib */ {
             },
             updaterooms: function (list, clients) {
                 if (ui.rooms) {
-                    var map = {}, map2 = {};
-                    for (var i of ui.rooms) map2[i.key] = true;
-                    for (var i of list) {
+                    let map = {}, map2 = {};
+                    for (let i of ui.rooms) map2[i.key] = true;
+                    for (let i of list) {
                         if (!i) continue;
                         map[i[4]] = i;
                     }
                     ui.window.classList.add('more_room');
-                    for (var i = 0; i < ui.rooms.length; i++) {
+                    for (let i = 0; i < ui.rooms.length; i++) {
                         if (!map[ui.rooms[i].key]) {
                             ui.rooms[i].remove();
                             ui.rooms.splice(i--, 1);
                         }
                         else ui.rooms[i].initRoom(list[i]);
                     }
-                    for (var i of list) {
+                    for (let i of list) {
                         if (!i) continue;
                         map[i[4]] = i;
                         if (!map2[i[4]]) {
-                            var player = ui.roombase.add('<div class="popup text pointerdiv" style="width:calc(100% - 10px);display:inline-block;white-space:nowrap">空房间</div>');
+                            let player = ui.roombase.add('<div class="popup text pointerdiv" style="width:calc(100% - 10px);display:inline-block;white-space:nowrap">空房间</div>');
                             player.roomindex = i;
                             player.initRoom = PlayerModel.prototype.initRoom;
                             player.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.connectroom);
@@ -13633,7 +13635,7 @@ mixin(lib, /**@lends module:core.lib */ {
     group: [
         'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
         'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-        'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
+        'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
         'vshojo',
         'vtuber', 'clubs'
     ],
@@ -13685,6 +13687,7 @@ mixin(lib, /**@lends module:core.lib */ {
         xuyan: 'ice',
         chaos: 'ocean',
         xuefeng: 'ocean',
+        Providence: 'ocean',
         NetEase: 'fire',
         hunmiao: 'ocean',
         ego: 'ocean',
@@ -13697,18 +13700,18 @@ mixin(lib, /**@lends module:core.lib */ {
     /**
      * 游戏阶段
      * 
-     * @type {string}
+     * @type {string[]}
      */
     phaseName: ['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'],
     /**
-     * 游戏阶段
+     * 历史记录
      * 
-     * @type {string}
+     * @type {Object}
      */
     historyRecorder: { useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], recover: [], changeHujia: [], custom: [] },
     /**
      * 快捷语音 - TODO
-     * @type {string}
+     * @type {string[]}
      */
     quickVoice: [
         '我从未见过如此厚颜无耻之人！',

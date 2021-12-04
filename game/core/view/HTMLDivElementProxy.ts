@@ -116,7 +116,7 @@ class HTMLDivElementProxy {
      * @param {number} time - 持续时间
      * @returns {HTMLDivElementProxy} this self
      */
-    goto(position, time) {
+    goto(position, time?) {
         if (this.timeout) {
             clearTimeout(this.timeout);
             delete this.timeout;
@@ -687,7 +687,7 @@ class HTMLDivElementProxy {
         return this._element.innerHTML;
     }
     set innerHTML(arg) {
-        return this._element.innerHTML = arg;
+        this._element.innerHTML = arg;
     }
     get lastElementChild() {
         return this._element.lastElementChild;

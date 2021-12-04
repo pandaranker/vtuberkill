@@ -14,14 +14,14 @@
         basic: {
             chooseButton: function (check) {
                 var event = _context_1._status.event;
-                var i, j, range, buttons, buttons2;
+                var j, range, buttons, buttons2;
                 var ok = false, forced = event.forced;
                 var iwhile = 100;
                 while (iwhile--) {
                     range = _context_1.get.select(event.selectButton);
                     if (range[1] == -1) {
                         j = 0;
-                        for (i = 0; i < _context_1.ui.selected.buttons.length; i++) {
+                        for (let i = 0; i < _context_1.ui.selected.buttons.length; i++) {
                             j += check(_context_1.ui.selected.buttons[i]);
                         }
                         return (j > 0);
@@ -33,7 +33,7 @@
                     buttons2 = buttons.slice(0);
                     var ix = 0;
                     var checkix = check(buttons[0], buttons2);
-                    for (i = 1; i < buttons.length; i++) {
+                    for (let i = 1; i < buttons.length; i++) {
                         var checkixtmp = check(buttons[i], buttons2);
                         if (checkixtmp > checkix) {
                             ix = i;
@@ -60,7 +60,7 @@
                 var event = _context_1._status.event;
                 if (event.filterCard == undefined)
                     return (check() > 0);
-                var i, j, range, cards, cards2, skills, check, effect;
+                var j, range, cards, cards2, skills, check, effect;
                 var ok = false, forced = event.forced;
                 var iwhile = 100;
                 while (iwhile--) {
@@ -72,7 +72,7 @@
                         if (_context_1.ui.selected.cards.length == 0)
                             return true;
                         j = 0;
-                        for (i = 0; i < _context_1.ui.selected.cards.length; i++) {
+                        for (let i = 0; i < _context_1.ui.selected.cards.length; i++) {
                             effect = check(_context_1.ui.selected.cards[i]);
                             if (effect < 0)
                                 j -= Math.sqrt(-effect);
@@ -91,7 +91,7 @@
                     cards2 = cards.slice(0);
                     var ix = 0;
                     var checkix = check(cards[0], cards2);
-                    for (i = 1; i < cards.length; i++) {
+                    for (let i = 1; i < cards.length; i++) {
                         var checkixtmp = check(cards[i], cards2);
                         if (checkixtmp > checkix) {
                             ix = i;
@@ -131,14 +131,14 @@
                 var event = _context_1._status.event;
                 if (event.filterTarget == undefined)
                     return (check() > 0);
-                var i, j, range, targets, targets2, effect;
+                var j, range, targets, targets2, effect;
                 var ok = false, forced = event.forced;
                 var iwhile = 100;
                 while (iwhile--) {
                     range = _context_1.get.select(event.selectTarget);
                     if (range[1] == -1) {
                         j = 0;
-                        for (i = 0; i < _context_1.ui.selected.targets.length; i++) {
+                        for (let i = 0; i < _context_1.ui.selected.targets.length; i++) {
                             effect = check(_context_1.ui.selected.targets[i]);
                             if (effect < 0)
                                 j -= Math.sqrt(-effect);
@@ -157,7 +157,7 @@
                     targets2 = targets.slice(0);
                     var ix = 0;
                     var checkix = check(targets[0], targets2);
-                    for (i = 1; i < targets.length; i++) {
+                    for (let i = 1; i < targets.length; i++) {
                         var checkixtmp = check(targets[i], targets2);
                         if (checkixtmp > checkix) {
                             ix = i;

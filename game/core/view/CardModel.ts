@@ -15,6 +15,7 @@ class CardModel extends HTMLDivElementProxy {
     number?: number
     nature?: string
     cardid?: number
+    viewAs?:string
     node: {
         [propName: string]: HTMLDivElement
     }
@@ -24,7 +25,9 @@ class CardModel extends HTMLDivElementProxy {
     gaintag?: string[] = []
     _uncheck?: string[] = []
     destroyed?: boolean
+    _destroy?: boolean
     isCard?: boolean
+    original?: string
     cards?: CardModel[]
     /**
      * 创建Player
@@ -66,7 +69,7 @@ class CardModel extends HTMLDivElementProxy {
         if (!noclick) {
             lib.setIntro(node);
         }
-        this.node = this.element.node;
+        this.node = this.element.node as{[propName: string]: HTMLDivElement};
         if (info != 'noclick') {
             node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.card);
             if (lib.config.touchscreen) {
@@ -511,15 +514,16 @@ class CardModel extends HTMLDivElementProxy {
         if (Array.isArray(card[5])) {
             specialEffects.addArray(card[5]);
         }
-        if (this.node.image.parentNode.classList.length > 0)
-            this.node.image.parentNode.classList.forEach(element => {
+        let parentNode = this.node.image.parentNode as HTMLElement
+        if (parentNode.classList.length > 0)
+            parentNode.classList.forEach(element => {
                 if (element.indexOf("card_") != -1) {
-                    this.node.image.parentNode.classList.remove(element);
+                    parentNode.classList.remove(element);
                 }
             });
         if (specialEffects.length) {
             for (var i = 0; i < specialEffects.length; i++) {
-                this.node.image.parentNode.classList.add(specialEffects[i]);
+                parentNode.classList.add(specialEffects[i]);
             }
             this.specialEffects = specialEffects;
         }
@@ -582,7 +586,7 @@ class CardModel extends HTMLDivElementProxy {
             if (this._transform && this.parentNode && this.parentNode.parentNode &&
                 this.parentNode.parentNode.parentNode == ui.me &&
                 (!_status.mousedown || _status.mouseleft) &&
-                (!this.parentNode.parentNode.classList.contains('scrollh') || (game.layout == 'long2' || game.layout == 'nova'))) {
+                (!(this.parentNode.parentNode as HTMLElement).classList.contains('scrollh') || (game.layout == 'long2' || game.layout == 'nova'))) {
                 if (bool) {
                     this.style.transform = this._transform + ' translateY(-20px)';
                 }
@@ -671,12 +675,12 @@ class CardModel extends HTMLDivElementProxy {
         node.classList.remove('drawinghidden');
         node.classList.remove('glows');
         node.node = {
-            name: node.querySelector('.name'),
-            info: node.querySelector('.info'),
-            intro: node.querySelector('.intro'),
-            background: node.querySelector('.background'),
-            image: node.querySelector('.image'),
-            gaintag: node.querySelector('.gaintag'),
+            name: node.querySelector('.name') as HTMLElement,
+            info: node.querySelector('.info') as HTMLElement,
+            intro: node.querySelector('.intro') as HTMLElement,
+            background: node.querySelector('.background') as HTMLElement,
+            image: node.querySelector('.image') as HTMLElement,
+            gaintag: node.querySelector('.gaintag') as HTMLElement,
         }
         node.node.gaintag.innerHTML = '';
         newcard.node = newcard.element.node
@@ -697,7 +701,7 @@ class CardModel extends HTMLDivElementProxy {
         if (skill) this._uncheck.add(skill);
         this.classList.add('uncheck');
     }
-    recheck (skill) {
+    recheck (skill?) {
         if (skill) this._uncheck.remove(skill);
         else this._uncheck.length = 0;
         if (this._uncheck.length == 0) this.classList.remove('uncheck');
