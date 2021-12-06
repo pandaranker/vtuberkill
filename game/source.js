@@ -1,6 +1,7 @@
 window.noname_source_list=[
 	'galgame/galgame.css',
 	'galgame/galgame.json',
+	'image/background/simple1_bg.svg',
 
 	'card/sp.js',
 	'card/standard.js',

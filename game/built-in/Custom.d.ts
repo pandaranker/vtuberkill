@@ -7,6 +7,7 @@ declare global {
     //模块结构
     type Gender = 'female'|'male'|'none'|'unknown'
     type Key = string | Array<any>
+    type MarkKey = string | string | ((any,PlayerModel,string?) => any)
     type Num = string | number
     type Keyword = string | Array<string>
     type AObject = {[propName: string]: Array<string>}
@@ -19,7 +20,7 @@ declare global {
     type Charaword = Array<>
 	type skillContent = () => void
 	type skillCheck = (event:EventModel, player?:PlayerModel) => boolean|number|string
-    type targetCheck = (card:any, player?:PlayerModel, event?:EventModel) => boolean
+    type targetCheck = (card:CardModel, player?:PlayerModel, event?:EventModel) => boolean
     interface Skill{
 		audio?: number|boolean|string
         enable?: Keyword
@@ -34,6 +35,13 @@ declare global {
 		content?: skillContent
         subSkill?: {[propName: string]: Skill}
         position?: string
+        derivation?: string | string[]
+        involve?: string | string[]
+        unique?: true
+        juexingji?: true
+        firstDo?: true
+        mark?: true | string
+        intro?: {content?:MarkKey,onunmark?:MarkKey,name?:string,mark?:Function}
         [propName: string]: any
     }
     interface Chara{
@@ -60,9 +68,10 @@ declare global {
     var result: number | Array | {
         bool?: Boolean
         targets?: PlayerModel[]
-        cards?: Array
+        cards?: CardModel[]
         links?: Array
     }
+    type cardArray = {name:string,suit?:string,number?:string,nature?:string}
     declare var event:EventModel
     //原生游戏核心类
     var cheat:{[propName: string]:Function}
@@ -74,6 +83,8 @@ declare global {
         /**屏幕常亮相关 */
         plugins
         noSleep
+        /**更改游戏设置延时 */
+        resetGameTimeout:NodeJS.Timeout
         /**cheat相关 */
         cheat,
         ui,
@@ -81,6 +92,8 @@ declare global {
         ai,
         lib,
         _status,
+        /**初始界面 */
+        inSplash
         /**菜单 */
         StatusBar
         /**Rank */
@@ -89,13 +102,14 @@ declare global {
     }
     interface HTMLDivElement{
         getModel:()=>Object
-        node?:{[propName: string]: HTMLDivElement}
+        node?:{[propName: string]: HTMLDivElement|HTMLElement}
         noclick?:boolean
         _doubleClicking?:boolean
         onClickAvatar?
         onClickAvatar2?
         onClickCharacter?
         onClickIdentity?
+        link?
     }
     interface ChildNode{
         innerHTML:string
@@ -113,6 +127,11 @@ declare global {
         generate(Object): String|Uint8Array|ArrayBuffer|Buffer|Blob
         file(name: string | RegExp, data?: String | ArrayBuffer | Uint8Array | Buffer, o?: Object): JSZip | Object | Array
         files: JSZip[]
+    }
+    /**特殊接口 */
+    interface Result {
+        (...args): boolean;
+        _filter_args: [any, number];
     }
 }
 export { }

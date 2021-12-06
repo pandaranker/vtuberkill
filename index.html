@@ -4,6 +4,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport" content="user-scalable=no, viewport-fit=cover">
 <title>VtuberKill</title>
+<style type="text/css">
+	body{
+		opacity: 0;
+		animation: page-fade-in 1s forwards;
+	}
+	@keyframes page-fade-in {
+		0% {
+			opacity: 0
+		}
+		100% {
+			opacity: 1
+		}
+	}
+</style>
 <script src="game/update.js"></script>
 <script src="game/config.js"></script>
 <script src="game/package.js"></script>
@@ -11,5 +25,5 @@
 <script src="game/game.js"></script>
 <!-- <script src="require.js"></script> -->
 <!-- <script>
-    require(['game/game_mark']);
+	require(['game/game_mark']);
 </script> -->

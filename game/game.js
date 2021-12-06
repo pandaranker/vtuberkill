@@ -17170,6 +17170,7 @@
                         game.log(player, '回复了' + get.cnNumber(num) + '点' + get.translation('hp'));
                         event.result = num;
                     }
+                    player.getHistory('recover').push(event);
                 },
                 /**
                  * 令角色失去血量
@@ -41454,553 +41455,553 @@
                     for (var i in lib.configMenu) {
                         if (i != 'others') createModeConfig(i, start.firstChild);
                     }
-                    (function () {
-                        if (!game.download && !lib.device) return;
-                        var page = ui.create.div('#create-extension');
-                        var node = ui.create.div('.menubutton.large', '文件', start.firstChild, clickMode);
-                        node.link = page;
-                        node.mode = 'create';
-                        var pageboard = ui.create.div(page);
+                    // (function () {
+                    //     if (!game.download && !lib.device) return;
+                    //     var page = ui.create.div('#create-extension');
+                    //     var node = ui.create.div('.menubutton.large', '文件', start.firstChild, clickMode);
+                    //     node.link = page;
+                    //     node.mode = 'create';
+                    //     var pageboard = ui.create.div(page);
 
-                        var importextensionexpanded = false;
-                        var importExtension;
-                        var extensionnode = ui.create.div('.config.more', '导入素材包 <div>&gt;</div>', pageboard, function () {
-                            if (importextensionexpanded) {
-                                this.classList.remove('on');
-                                importExtension.style.display = 'none';
-                            }
-                            else {
-                                this.classList.add('on');
-                                importExtension.style.display = '';
-                            }
-                            importextensionexpanded = !importextensionexpanded;
-                        });
-                        extensionnode.style.padding = '13px 33px 4px';
-                        extensionnode.style.left = '0px';
-                        importExtension = ui.create.div('.new_character.export.import', pageboard);
-                        importExtension.style.padding = '0px 33px 10px';
-                        importExtension.style.display = 'none';
-                        importExtension.style.width = '100%';
-                        importExtension.style.textAlign = 'left';
-                        ui.create.div('', '<input type="file" accept="application/zip" style="width:153px"><button>确定</button>', importExtension);
-                        var promptnode = ui.create.div('', '<div style="width:153px;font-size:small;margin-top:8px">', importExtension);
-                        promptnode.style.display = 'none';
-                        importExtension.firstChild.lastChild.onclick = function () {
-                            if (promptnode.style.display != 'none') return;
-                            var fileToLoad = this.previousSibling.files[0];
-                            if (fileToLoad) {
-                                promptnode.style.display = '';
-                                promptnode.firstChild.innerHTML = '正在解压...';
-                                var fileReader = new FileReader();
-                                fileReader.onload = function (fileLoadedEvent) {
-                                    var data = fileLoadedEvent.target.result;
-                                    var loadData = function () {
-                                        var zip = new JSZip();
-                                        zip.load(data);
-                                        var images = [], audios = [], fonts = [], directories = {}, directorylist = [];
-                                        for (var i in zip.files) {
-                                            var ext = i.slice(i.lastIndexOf('.') + 1);
-                                            if (i.indexOf('audio/') == 0 && (ext == 'mp3' || ext == 'ogg')) {
-                                                audios.push(i);
-                                            }
-                                            else if (i.indexOf('font/') == 0 && ext == 'ttf') {
-                                                fonts.push(i);
-                                            }
-                                            else if (i.indexOf('image/') == 0 && (ext == 'jpg' || ext == 'png')) {
-                                                images.push(i);
-                                            }
-                                            else {
-                                                continue;
-                                            }
-                                            var index = i.lastIndexOf('/');
-                                            var str = i.slice(0, index);
-                                            if (!directories[str]) {
-                                                directories[str] = [];
-                                                directorylist.push(str);
-                                            }
-                                            directories[str].push(i.slice(index + 1));
-                                        }
-                                        if (audios.length || fonts.length || images.length) {
-                                            var str = '';
-                                            if (audios.length) {
-                                                str += audios.length + '个音频文件';
-                                            }
-                                            if (fonts.length) {
-                                                if (str.length) str += '、'
-                                                str += fonts.length + '个字体文件';
-                                            }
-                                            if (images.length) {
-                                                if (str.length) str += '、'
-                                                str += images.length + '个图片文件';
-                                            }
-                                            var filelist = audios.concat(fonts).concat(images);
-                                            if (filelist.length > 200) {
-                                                str += '，导入时间可能较长';
-                                            }
-                                            var assetLoaded = function () {
-                                                promptnode.firstChild.innerHTML = '导入成功。<span class="hrefnode">重新启动</span><span class="closenode">×</span>';
-                                                promptnode.firstChild.querySelectorAll('span')[0].onclick = game.reload;
-                                                promptnode.firstChild.querySelectorAll('span')[1].onclick = function () {
-                                                    promptnode.style.display = 'none';
-                                                }
-                                            };
-                                            if (confirm('本次将导入' + str + '，是否继续？')) {
-                                                promptnode.firstChild.innerHTML = '正在导入... <span class="hrefnode">详细信息</span>';
-                                                promptnode.firstChild.querySelector('span.hrefnode').onclick = ui.click.consoleMenu;
-                                                if (lib.node && lib.node.fs) {
-                                                    var writeFile = function () {
-                                                        if (filelist.length) {
-                                                            var str = filelist.shift();
-                                                            game.print(str.slice(str.lastIndexOf('/') + 1));
-                                                            lib.node.fs.writeFile(__dirname + '/' + str, zip.files[str].asNodeBuffer(), null, writeFile);
-                                                        }
-                                                        else {
-                                                            assetLoaded();
-                                                        }
-                                                    };
-                                                    game.ensureDirectory(directorylist, writeFile);
+                    //     var importextensionexpanded = false;
+                    //     var importExtension;
+                    //     var extensionnode = ui.create.div('.config.more', '导入素材包 <div>&gt;</div>', pageboard, function () {
+                    //         if (importextensionexpanded) {
+                    //             this.classList.remove('on');
+                    //             importExtension.style.display = 'none';
+                    //         }
+                    //         else {
+                    //             this.classList.add('on');
+                    //             importExtension.style.display = '';
+                    //         }
+                    //         importextensionexpanded = !importextensionexpanded;
+                    //     });
+                    //     extensionnode.style.padding = '13px 33px 4px';
+                    //     extensionnode.style.left = '0px';
+                    //     importExtension = ui.create.div('.new_character.export.import', pageboard);
+                    //     importExtension.style.padding = '0px 33px 10px';
+                    //     importExtension.style.display = 'none';
+                    //     importExtension.style.width = '100%';
+                    //     importExtension.style.textAlign = 'left';
+                    //     ui.create.div('', '<input type="file" accept="application/zip" style="width:153px"><button>确定</button>', importExtension);
+                    //     var promptnode = ui.create.div('', '<div style="width:153px;font-size:small;margin-top:8px">', importExtension);
+                    //     promptnode.style.display = 'none';
+                    //     importExtension.firstChild.lastChild.onclick = function () {
+                    //         if (promptnode.style.display != 'none') return;
+                    //         var fileToLoad = this.previousSibling.files[0];
+                    //         if (fileToLoad) {
+                    //             promptnode.style.display = '';
+                    //             promptnode.firstChild.innerHTML = '正在解压...';
+                    //             var fileReader = new FileReader();
+                    //             fileReader.onload = function (fileLoadedEvent) {
+                    //                 var data = fileLoadedEvent.target.result;
+                    //                 var loadData = function () {
+                    //                     var zip = new JSZip();
+                    //                     zip.load(data);
+                    //                     var images = [], audios = [], fonts = [], directories = {}, directorylist = [];
+                    //                     for (var i in zip.files) {
+                    //                         var ext = i.slice(i.lastIndexOf('.') + 1);
+                    //                         if (i.indexOf('audio/') == 0 && (ext == 'mp3' || ext == 'ogg')) {
+                    //                             audios.push(i);
+                    //                         }
+                    //                         else if (i.indexOf('font/') == 0 && ext == 'ttf') {
+                    //                             fonts.push(i);
+                    //                         }
+                    //                         else if (i.indexOf('image/') == 0 && (ext == 'jpg' || ext == 'png')) {
+                    //                             images.push(i);
+                    //                         }
+                    //                         else {
+                    //                             continue;
+                    //                         }
+                    //                         var index = i.lastIndexOf('/');
+                    //                         var str = i.slice(0, index);
+                    //                         if (!directories[str]) {
+                    //                             directories[str] = [];
+                    //                             directorylist.push(str);
+                    //                         }
+                    //                         directories[str].push(i.slice(index + 1));
+                    //                     }
+                    //                     if (audios.length || fonts.length || images.length) {
+                    //                         var str = '';
+                    //                         if (audios.length) {
+                    //                             str += audios.length + '个音频文件';
+                    //                         }
+                    //                         if (fonts.length) {
+                    //                             if (str.length) str += '、'
+                    //                             str += fonts.length + '个字体文件';
+                    //                         }
+                    //                         if (images.length) {
+                    //                             if (str.length) str += '、'
+                    //                             str += images.length + '个图片文件';
+                    //                         }
+                    //                         var filelist = audios.concat(fonts).concat(images);
+                    //                         if (filelist.length > 200) {
+                    //                             str += '，导入时间可能较长';
+                    //                         }
+                    //                         var assetLoaded = function () {
+                    //                             promptnode.firstChild.innerHTML = '导入成功。<span class="hrefnode">重新启动</span><span class="closenode">×</span>';
+                    //                             promptnode.firstChild.querySelectorAll('span')[0].onclick = game.reload;
+                    //                             promptnode.firstChild.querySelectorAll('span')[1].onclick = function () {
+                    //                                 promptnode.style.display = 'none';
+                    //                             }
+                    //                         };
+                    //                         if (confirm('本次将导入' + str + '，是否继续？')) {
+                    //                             promptnode.firstChild.innerHTML = '正在导入... <span class="hrefnode">详细信息</span>';
+                    //                             promptnode.firstChild.querySelector('span.hrefnode').onclick = ui.click.consoleMenu;
+                    //                             if (lib.node && lib.node.fs) {
+                    //                                 var writeFile = function () {
+                    //                                     if (filelist.length) {
+                    //                                         var str = filelist.shift();
+                    //                                         game.print(str.slice(str.lastIndexOf('/') + 1));
+                    //                                         lib.node.fs.writeFile(__dirname + '/' + str, zip.files[str].asNodeBuffer(), null, writeFile);
+                    //                                     }
+                    //                                     else {
+                    //                                         assetLoaded();
+                    //                                     }
+                    //                                 };
+                    //                                 game.ensureDirectory(directorylist, writeFile);
 
-                                                }
-                                                else {
-                                                    var getDirectory = function () {
-                                                        if (directorylist.length) {
-                                                            var dir = directorylist.shift();
-                                                            var filelist = directories[dir];
-                                                            window.resolveLocalFileSystemURL(lib.assetURL + dir, function (entry) {
-                                                                var writeFile = function () {
-                                                                    if (filelist.length) {
-                                                                        var filename = filelist.shift();
-                                                                        game.print(filename);
-                                                                        entry.getFile(filename, { create: true }, function (fileEntry) {
-                                                                            fileEntry.createWriter(function (fileWriter) {
-                                                                                fileWriter.onwriteend = writeFile;
-                                                                                fileWriter.onerror = function (e) {
-                                                                                    game.print('Write failed: ' + e.toString());
-                                                                                };
-                                                                                fileWriter.write(zip.files[dir + '/' + filename].asArrayBuffer());
-                                                                            });
-                                                                        });
-                                                                    }
-                                                                    else {
-                                                                        getDirectory();
-                                                                    }
-                                                                };
-                                                                writeFile();
-                                                            });
-                                                        }
-                                                        else {
-                                                            assetLoaded();
-                                                        }
-                                                    };
-                                                    game.ensureDirectory(directorylist, getDirectory);
-                                                }
-                                            }
-                                            else {
-                                                promptnode.style.display = 'none';
-                                            }
-                                        }
-                                        else {
-                                            alert('没有检测到素材');
-                                        }
-                                    }
-                                    if (!window.JSZip) {
-                                        lib.init.js(lib.assetURL + 'game', 'jszip', loadData);
-                                    }
-                                    else {
-                                        loadData();
-                                    }
-                                };
-                                fileReader.readAsArrayBuffer(fileToLoad, "UTF-8");
-                            }
-                        }
+                    //                             }
+                    //                             else {
+                    //                                 var getDirectory = function () {
+                    //                                     if (directorylist.length) {
+                    //                                         var dir = directorylist.shift();
+                    //                                         var filelist = directories[dir];
+                    //                                         window.resolveLocalFileSystemURL(lib.assetURL + dir, function (entry) {
+                    //                                             var writeFile = function () {
+                    //                                                 if (filelist.length) {
+                    //                                                     var filename = filelist.shift();
+                    //                                                     game.print(filename);
+                    //                                                     entry.getFile(filename, { create: true }, function (fileEntry) {
+                    //                                                         fileEntry.createWriter(function (fileWriter) {
+                    //                                                             fileWriter.onwriteend = writeFile;
+                    //                                                             fileWriter.onerror = function (e) {
+                    //                                                                 game.print('Write failed: ' + e.toString());
+                    //                                                             };
+                    //                                                             fileWriter.write(zip.files[dir + '/' + filename].asArrayBuffer());
+                    //                                                         });
+                    //                                                     });
+                    //                                                 }
+                    //                                                 else {
+                    //                                                     getDirectory();
+                    //                                                 }
+                    //                                             };
+                    //                                             writeFile();
+                    //                                         });
+                    //                                     }
+                    //                                     else {
+                    //                                         assetLoaded();
+                    //                                     }
+                    //                                 };
+                    //                                 game.ensureDirectory(directorylist, getDirectory);
+                    //                             }
+                    //                         }
+                    //                         else {
+                    //                             promptnode.style.display = 'none';
+                    //                         }
+                    //                     }
+                    //                     else {
+                    //                         alert('没有检测到素材');
+                    //                     }
+                    //                 }
+                    //                 if (!window.JSZip) {
+                    //                     lib.init.js(lib.assetURL + 'game', 'jszip', loadData);
+                    //                 }
+                    //                 else {
+                    //                     loadData();
+                    //                 }
+                    //             };
+                    //             fileReader.readAsArrayBuffer(fileToLoad, "UTF-8");
+                    //         }
+                    //     }
 
-                        var dashboard = ui.create.div(pageboard);
-                        var clickDash = function () {
-                            ui.create.templayer();
-                            pageboard.hide();
-                            this.link.show();
-                            if (this.link.init) {
-                                this.link.init();
-                            }
-                        };
-                        var createDash = function (str1, str2, node) {
-                            var dash = ui.create.div('.menubutton.large.dashboard');
-                            dashboard.appendChild(dash);
-                            page.appendChild(node);
-                            dash.link = node;
-                            node.link = dash;
-                            dash.listen(clickDash);
-                            lib.setScroll(node);
-                            ui.create.div('', str1, dash);
-                            ui.create.div('', str2, dash);
-                        };
-                        var createDash2 = function (str1, str2, path, page) {
-                            var dash = ui.create.div('.menubutton.large.dashboard.dashboard2');
-                            page.appendChild(dash);
-                            dash.listen(function () {
-                                page.path = path;
-                                enterDirectory(page, path);
-                            });
-                            ui.create.div('', str1, dash);
-                            ui.create.div('', str2, dash);
-                        };
-                        var removeFile = function (selected, page) {
-                            if (lib.node && lib.node.fs) {
-                                var unlink = function () {
-                                    if (selected.length) {
-                                        lib.node.fs.unlink(__dirname + '/' + selected.shift().path, unlink);
-                                    }
-                                    else {
-                                        enterDirectory(page, page.currentpath);
-                                    }
-                                }
-                                unlink();
-                            }
-                            else {
-                                window.resolveLocalFileSystemURL(lib.assetURL + page.currentpath, function (entry) {
-                                    var unlink = function () {
-                                        if (selected.length) {
-                                            entry.getFile(selected.shift().filename, { create: false }, function (fileEntry) {
-                                                fileEntry.remove(unlink);
-                                            });
-                                        }
-                                        else {
-                                            enterDirectory(page, page.currentpath);
-                                        }
-                                    }
-                                    unlink();
-                                });
-                            }
-                        };
-                        var clickDirectory = function () {
-                            if (_status.dragged) return;
-                            var page = this.parentNode.parentNode.parentNode;
-                            if (page.deletebutton.classList.contains('active')) {
-                                if (confirm('确认删除' + this.innerHTML + '文件夹？（此操作不可撤销）')) {
-                                    if (lib.node && lib.node.fs) {
-                                        try {
-                                            var removeDirectory = function (path, callback) {
-                                                lib.node.fs.readdir(__dirname + '/' + path, function (err, list) {
-                                                    if (err) {
-                                                        console.log(err);
-                                                        return;
-                                                    }
-                                                    var removeFile = function () {
-                                                        if (list.length) {
-                                                            var filename = list.shift();
-                                                            var url = __dirname + '/' + path + '/' + filename;
-                                                            if (lib.node.fs.statSync(url).isDirectory()) {
-                                                                removeDirectory(path + '/' + filename, removeFile);
-                                                            }
-                                                            else {
-                                                                lib.node.fs.unlink(url, removeFile);
-                                                            }
-                                                        }
-                                                        else {
-                                                            lib.node.fs.rmdir(__dirname + '/' + path, callback);
-                                                        }
-                                                    }
-                                                    removeFile();
-                                                });
-                                            };
-                                            removeDirectory(this.path, function () {
-                                                enterDirectory(page, page.currentpath);
-                                            });
-                                        }
-                                        catch (e) {
-                                            console.log(e);
-                                        }
-                                    }
-                                    else {
-                                        window.resolveLocalFileSystemURL(lib.assetURL + this.path, function (entry) {
-                                            entry.removeRecursively(function () {
-                                                enterDirectory(page, page.currentpath);
-                                            });
-                                        });
-                                    }
-                                }
-                                return;
-                            }
-                            enterDirectory(page, this.path);
-                        };
-                        var clickFile = function () {
-                            if (_status.dragged) return;
-                            var page = this.parentNode.parentNode.parentNode;
-                            if (page.deletebutton.classList.contains('active')) {
-                                if (confirm('确认删除' + this.innerHTML + '？（此操作不可撤销）')) {
-                                    removeFile([this], page);
-                                }
-                                return;
-                            }
-                            this.classList.toggle('thundertext');
-                            page.clicked = true;
-                            if (this.ext == 'jpg' || this.ext == 'png') {
-                                if (this.classList.contains('thundertext')) {
-                                    if (!this.previewnode) {
-                                        this.previewnode = document.createElement('img');
-                                        this.previewnode.src = lib.assetURL + this.path;
-                                        this.previewnode.width = '60';
-                                        this.previewnode.style.maxHeight = '120px';
-                                        this.parentNode.appendChild(this.previewnode);
-                                    }
-                                }
-                                else {
-                                    if (this.previewnode) {
-                                        this.previewnode.remove();
-                                        delete this.previewnode;
-                                    }
-                                }
-                            }
-                            else if (this.ext == 'mp3' || this.ext == 'ogg') {
-                                if (this.classList.contains('thundertext')) {
-                                    if (!this.previewnode) {
-                                        this.previewnode = game.playAudio(this.path.slice(6));
-                                    }
-                                }
-                                else {
-                                    if (this.previewnode) {
-                                        this.previewnode.remove();
-                                        delete this.previewnode;
-                                    }
-                                }
-                            }
-                        };
-                        var clickFileList = function () {
-                            if (!this.parentNode) return;
-                            if (this.parentNode.clicked) {
-                                this.parentNode.clicked = false;
-                            }
-                            else {
-                                var selected = Array.from(this.querySelectorAll('span.thundertext'));
-                                for (var i = 0; i < selected.length; i++) {
-                                    selected[i].classList.remove('thundertext');
-                                    if (selected[i].previewnode) {
-                                        selected[i].previewnode.remove();
-                                        delete selected[i].previewnode;
-                                    }
-                                }
-                            }
-                        };
-                        var enterDirectory = function (page, path) {
-                            page.innerHTML = '';
-                            page.currentpath = path;
-                            var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
-                                page.clicked = false;
-                                clickFileList.call(filelist);
-                                if (page.path == path) {
-                                    page.reset();
-                                }
-                                else {
-                                    if (path.indexOf('/') == -1) {
-                                        enterDirectory(page, '');
-                                    }
-                                    else {
-                                        enterDirectory(page, path.slice(0, path.lastIndexOf('/')));
-                                    }
-                                }
-                            });
-                            backbutton.style.zIndex = 1;
-                            backbutton.style.right = '10px';
-                            backbutton.style.bottom = '15px';
+                    //     var dashboard = ui.create.div(pageboard);
+                    //     var clickDash = function () {
+                    //         ui.create.templayer();
+                    //         pageboard.hide();
+                    //         this.link.show();
+                    //         if (this.link.init) {
+                    //             this.link.init();
+                    //         }
+                    //     };
+                    //     var createDash = function (str1, str2, node) {
+                    //         var dash = ui.create.div('.menubutton.large.dashboard');
+                    //         dashboard.appendChild(dash);
+                    //         page.appendChild(node);
+                    //         dash.link = node;
+                    //         node.link = dash;
+                    //         dash.listen(clickDash);
+                    //         lib.setScroll(node);
+                    //         ui.create.div('', str1, dash);
+                    //         ui.create.div('', str2, dash);
+                    //     };
+                    //     var createDash2 = function (str1, str2, path, page) {
+                    //         var dash = ui.create.div('.menubutton.large.dashboard.dashboard2');
+                    //         page.appendChild(dash);
+                    //         dash.listen(function () {
+                    //             page.path = path;
+                    //             enterDirectory(page, path);
+                    //         });
+                    //         ui.create.div('', str1, dash);
+                    //         ui.create.div('', str2, dash);
+                    //     };
+                    //     var removeFile = function (selected, page) {
+                    //         if (lib.node && lib.node.fs) {
+                    //             var unlink = function () {
+                    //                 if (selected.length) {
+                    //                     lib.node.fs.unlink(__dirname + '/' + selected.shift().path, unlink);
+                    //                 }
+                    //                 else {
+                    //                     enterDirectory(page, page.currentpath);
+                    //                 }
+                    //             }
+                    //             unlink();
+                    //         }
+                    //         else {
+                    //             window.resolveLocalFileSystemURL(lib.assetURL + page.currentpath, function (entry) {
+                    //                 var unlink = function () {
+                    //                     if (selected.length) {
+                    //                         entry.getFile(selected.shift().filename, { create: false }, function (fileEntry) {
+                    //                             fileEntry.remove(unlink);
+                    //                         });
+                    //                     }
+                    //                     else {
+                    //                         enterDirectory(page, page.currentpath);
+                    //                     }
+                    //                 }
+                    //                 unlink();
+                    //             });
+                    //         }
+                    //     };
+                    //     var clickDirectory = function () {
+                    //         if (_status.dragged) return;
+                    //         var page = this.parentNode.parentNode.parentNode;
+                    //         if (page.deletebutton.classList.contains('active')) {
+                    //             if (confirm('确认删除' + this.innerHTML + '文件夹？（此操作不可撤销）')) {
+                    //                 if (lib.node && lib.node.fs) {
+                    //                     try {
+                    //                         var removeDirectory = function (path, callback) {
+                    //                             lib.node.fs.readdir(__dirname + '/' + path, function (err, list) {
+                    //                                 if (err) {
+                    //                                     console.log(err);
+                    //                                     return;
+                    //                                 }
+                    //                                 var removeFile = function () {
+                    //                                     if (list.length) {
+                    //                                         var filename = list.shift();
+                    //                                         var url = __dirname + '/' + path + '/' + filename;
+                    //                                         if (lib.node.fs.statSync(url).isDirectory()) {
+                    //                                             removeDirectory(path + '/' + filename, removeFile);
+                    //                                         }
+                    //                                         else {
+                    //                                             lib.node.fs.unlink(url, removeFile);
+                    //                                         }
+                    //                                     }
+                    //                                     else {
+                    //                                         lib.node.fs.rmdir(__dirname + '/' + path, callback);
+                    //                                     }
+                    //                                 }
+                    //                                 removeFile();
+                    //                             });
+                    //                         };
+                    //                         removeDirectory(this.path, function () {
+                    //                             enterDirectory(page, page.currentpath);
+                    //                         });
+                    //                     }
+                    //                     catch (e) {
+                    //                         console.log(e);
+                    //                     }
+                    //                 }
+                    //                 else {
+                    //                     window.resolveLocalFileSystemURL(lib.assetURL + this.path, function (entry) {
+                    //                         entry.removeRecursively(function () {
+                    //                             enterDirectory(page, page.currentpath);
+                    //                         });
+                    //                     });
+                    //                 }
+                    //             }
+                    //             return;
+                    //         }
+                    //         enterDirectory(page, this.path);
+                    //     };
+                    //     var clickFile = function () {
+                    //         if (_status.dragged) return;
+                    //         var page = this.parentNode.parentNode.parentNode;
+                    //         if (page.deletebutton.classList.contains('active')) {
+                    //             if (confirm('确认删除' + this.innerHTML + '？（此操作不可撤销）')) {
+                    //                 removeFile([this], page);
+                    //             }
+                    //             return;
+                    //         }
+                    //         this.classList.toggle('thundertext');
+                    //         page.clicked = true;
+                    //         if (this.ext == 'jpg' || this.ext == 'png') {
+                    //             if (this.classList.contains('thundertext')) {
+                    //                 if (!this.previewnode) {
+                    //                     this.previewnode = document.createElement('img');
+                    //                     this.previewnode.src = lib.assetURL + this.path;
+                    //                     this.previewnode.width = '60';
+                    //                     this.previewnode.style.maxHeight = '120px';
+                    //                     this.parentNode.appendChild(this.previewnode);
+                    //                 }
+                    //             }
+                    //             else {
+                    //                 if (this.previewnode) {
+                    //                     this.previewnode.remove();
+                    //                     delete this.previewnode;
+                    //                 }
+                    //             }
+                    //         }
+                    //         else if (this.ext == 'mp3' || this.ext == 'ogg') {
+                    //             if (this.classList.contains('thundertext')) {
+                    //                 if (!this.previewnode) {
+                    //                     this.previewnode = game.playAudio(this.path.slice(6));
+                    //                 }
+                    //             }
+                    //             else {
+                    //                 if (this.previewnode) {
+                    //                     this.previewnode.remove();
+                    //                     delete this.previewnode;
+                    //                 }
+                    //             }
+                    //         }
+                    //     };
+                    //     var clickFileList = function () {
+                    //         if (!this.parentNode) return;
+                    //         if (this.parentNode.clicked) {
+                    //             this.parentNode.clicked = false;
+                    //         }
+                    //         else {
+                    //             var selected = Array.from(this.querySelectorAll('span.thundertext'));
+                    //             for (var i = 0; i < selected.length; i++) {
+                    //                 selected[i].classList.remove('thundertext');
+                    //                 if (selected[i].previewnode) {
+                    //                     selected[i].previewnode.remove();
+                    //                     delete selected[i].previewnode;
+                    //                 }
+                    //             }
+                    //         }
+                    //     };
+                    //     var enterDirectory = function (page, path) {
+                    //         page.innerHTML = '';
+                    //         page.currentpath = path;
+                    //         var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
+                    //             page.clicked = false;
+                    //             clickFileList.call(filelist);
+                    //             if (page.path == path) {
+                    //                 page.reset();
+                    //             }
+                    //             else {
+                    //                 if (path.indexOf('/') == -1) {
+                    //                     enterDirectory(page, '');
+                    //                 }
+                    //                 else {
+                    //                     enterDirectory(page, path.slice(0, path.lastIndexOf('/')));
+                    //                 }
+                    //             }
+                    //         });
+                    //         backbutton.style.zIndex = 1;
+                    //         backbutton.style.right = '10px';
+                    //         backbutton.style.bottom = '15px';
 
 
-                            var refresh = function () {
-                                enterDirectory(page, path);
-                            };
-                            var addbutton = ui.create.div('.menubutton.round', '添', page, function () {
-                                var pos1 = this.getBoundingClientRect();
-                                var pos2 = ui.window.getBoundingClientRect();
-                                openMenu(this.menu, {
-                                    clientX: pos1.left + pos1.width + 5 - pos2.left,
-                                    clientY: pos1.top - pos2.top
-                                });
-                            });
-                            addbutton.menu = ui.create.div('.menu');
-                            ui.create.div('', '添加文件', addbutton.menu, function () {
-                                popupContainer.noclose = true;
-                            });
-                            var createDir = function (str) {
-                                if (lib.node && lib.node.fs) {
-                                    lib.node.fs.mkdir(__dirname + '/' + path + '/' + str, refresh);
-                                }
-                                else {
-                                    window.resolveLocalFileSystemURL(lib.assetURL + path, function (entry) {
-                                        entry.getDirectory(str, { create: true }, refresh);
-                                    });
-                                }
-                            };
-                            ui.create.div('', '添加目录', addbutton.menu, function () {
-                                ui.create.templayer();
-                                game.prompt('输入目录名称', function (str) {
-                                    if (str) {
-                                        createDir(str);
-                                    }
-                                });
-                            });
-                            var input = document.createElement('input');
-                            input.className = 'fileinput';
-                            input.type = 'file';
-                            input.onchange = function () {
-                                var fileToLoad = input.files[0];
-                                game.print(fileToLoad.name);
-                                if (fileToLoad) {
-                                    var fileReader = new FileReader();
-                                    fileReader.onload = function (e) {
-                                        game.writeFile(e.target.result, path, fileToLoad.name, refresh);
-                                    };
-                                    fileReader.readAsArrayBuffer(fileToLoad, "UTF-8");
-                                }
-                            };
-                            addbutton.menu.firstChild.appendChild(input);
-                            addbutton.style.zIndex = 1;
-                            addbutton.style.right = '10px';
-                            addbutton.style.bottom = '80px';
+                    //         var refresh = function () {
+                    //             enterDirectory(page, path);
+                    //         };
+                    //         var addbutton = ui.create.div('.menubutton.round', '添', page, function () {
+                    //             var pos1 = this.getBoundingClientRect();
+                    //             var pos2 = ui.window.getBoundingClientRect();
+                    //             openMenu(this.menu, {
+                    //                 clientX: pos1.left + pos1.width + 5 - pos2.left,
+                    //                 clientY: pos1.top - pos2.top
+                    //             });
+                    //         });
+                    //         addbutton.menu = ui.create.div('.menu');
+                    //         ui.create.div('', '添加文件', addbutton.menu, function () {
+                    //             popupContainer.noclose = true;
+                    //         });
+                    //         var createDir = function (str) {
+                    //             if (lib.node && lib.node.fs) {
+                    //                 lib.node.fs.mkdir(__dirname + '/' + path + '/' + str, refresh);
+                    //             }
+                    //             else {
+                    //                 window.resolveLocalFileSystemURL(lib.assetURL + path, function (entry) {
+                    //                     entry.getDirectory(str, { create: true }, refresh);
+                    //                 });
+                    //             }
+                    //         };
+                    //         ui.create.div('', '添加目录', addbutton.menu, function () {
+                    //             ui.create.templayer();
+                    //             game.prompt('输入目录名称', function (str) {
+                    //                 if (str) {
+                    //                     createDir(str);
+                    //                 }
+                    //             });
+                    //         });
+                    //         var input = document.createElement('input');
+                    //         input.className = 'fileinput';
+                    //         input.type = 'file';
+                    //         input.onchange = function () {
+                    //             var fileToLoad = input.files[0];
+                    //             game.print(fileToLoad.name);
+                    //             if (fileToLoad) {
+                    //                 var fileReader = new FileReader();
+                    //                 fileReader.onload = function (e) {
+                    //                     game.writeFile(e.target.result, path, fileToLoad.name, refresh);
+                    //                 };
+                    //                 fileReader.readAsArrayBuffer(fileToLoad, "UTF-8");
+                    //             }
+                    //         };
+                    //         addbutton.menu.firstChild.appendChild(input);
+                    //         addbutton.style.zIndex = 1;
+                    //         addbutton.style.right = '10px';
+                    //         addbutton.style.bottom = '80px';
 
-                            var deletebutton = ui.create.div('.menubutton.round', '删', page, function () {
-                                if (!this.parentNode) return;
-                                if (!this.classList.contains('active')) {
-                                    var selected = Array.from(filelist.querySelectorAll('span.thundertext'));
-                                    if (selected.length) {
-                                        if (confirm('一共要删除' + selected.length + '个文件，此操作不可撤销，是否确定？')) {
-                                            removeFile(selected, page);
-                                        }
-                                    }
-                                    else {
-                                        this.classList.add('active');
-                                    }
-                                }
-                                else {
-                                    this.classList.remove('active');
-                                }
-                            });
-                            deletebutton.style.zIndex = 1;
-                            deletebutton.style.right = '10px';
-                            deletebutton.style.bottom = '145px';
+                    //         var deletebutton = ui.create.div('.menubutton.round', '删', page, function () {
+                    //             if (!this.parentNode) return;
+                    //             if (!this.classList.contains('active')) {
+                    //                 var selected = Array.from(filelist.querySelectorAll('span.thundertext'));
+                    //                 if (selected.length) {
+                    //                     if (confirm('一共要删除' + selected.length + '个文件，此操作不可撤销，是否确定？')) {
+                    //                         removeFile(selected, page);
+                    //                     }
+                    //                 }
+                    //                 else {
+                    //                     this.classList.add('active');
+                    //                 }
+                    //             }
+                    //             else {
+                    //                 this.classList.remove('active');
+                    //             }
+                    //         });
+                    //         deletebutton.style.zIndex = 1;
+                    //         deletebutton.style.right = '10px';
+                    //         deletebutton.style.bottom = '145px';
 
-                            page.backbutton = backbutton;
-                            page.addbutton = addbutton;
-                            page.deletebutton = deletebutton;
-                            var filelist = ui.create.div(page);
-                            filelist.classList.add('file-container');
-                            filelist.listen(clickFileList);
-                            lib.setScroll(filelist);
-                            game.getFileList(path, function (folders, files) {
-                                var sort = function (a, b) {
-                                    if (a > b) return 1;
-                                    if (a < b) return -1;
-                                    return 0;
-                                }
-                                folders.sort(sort);
-                                files.sort(sort);
-                                var parent = path;
-                                if (parent) {
-                                    parent += '/';
-                                }
-                                for (var i = 0; i < folders.length; i++) {
-                                    if (!page.path && folders[i] == 'app') continue;
-                                    var entry = ui.create.div('', '<span>' + folders[i], filelist);
-                                    entry.firstChild.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickDirectory);
-                                    entry.firstChild.path = parent + folders[i]
-                                }
-                                for (var i = 0; i < files.length; i++) {
-                                    if (!page.path) {
-                                        if (files[i] == 'app.html') continue;
-                                        if (files[i] == 'main.js') continue;
-                                        if (files[i] == 'package.json') continue;
-                                    }
-                                    var entry = ui.create.div('', '<span>' + files[i], filelist);
-                                    entry.firstChild.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickFile);
-                                    entry.firstChild.ext = files[i].slice(files[i].lastIndexOf('.') + 1);
-                                    entry.firstChild.path = parent + files[i];
-                                    entry.firstChild.filename = files[i];
-                                }
-                            });
-                        };
-                        var dash1 = (function () {
-                            var page = ui.create.div('.hidden.menu-buttons');
-                            page.reset = function () {
-                                page.innerHTML = '';
-                                var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
-                                    ui.create.templayer();
-                                    page.hide();
-                                    pageboard.show();
-                                });
-                                backbutton.style.zIndex = 1;
-                                backbutton.style.right = '10px';
-                                backbutton.style.bottom = '15px';
-                                var placeholder = ui.create.div('.placeholder', page);
-                                placeholder.style.position = 'relative';
-                                placeholder.style.display = 'block';
-                                placeholder.style.width = '100%';
-                                placeholder.style.height = '14px';
-                                createDash2('将', '武将图片', 'image/character', page);
-                                createDash2('肤', '皮肤图片', 'image/skin', page);
-                                createDash2('卡', '卡牌图片', 'image/card', page);
-                                createDash2('模', '模式图片', 'image/mode', page);
-                                createDash2('始', '开始图片', 'image/splash', page);
-                                createDash2('景', '背景图片', 'image/background', page);
-                            };
-                            page.reset();
-                            return page;
-                        }());
-                        var dash2 = (function () {
-                            var page = ui.create.div('.hidden.menu-buttons');
-                            page.reset = function () {
-                                page.innerHTML = '';
-                                var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
-                                    ui.create.templayer();
-                                    page.hide();
-                                    pageboard.show();
-                                });
-                                backbutton.style.zIndex = 1;
-                                backbutton.style.right = '10px';
-                                backbutton.style.bottom = '15px';
-                                var placeholder = ui.create.div('.placeholder', page);
-                                placeholder.style.position = 'relative';
-                                placeholder.style.display = 'block';
-                                placeholder.style.width = '100%';
-                                placeholder.style.height = '14px';
-                                createDash2('技', '技能配音', 'audio/skill', page);
-                                createDash2('卡', '男性卡牌', 'audio/card/male', page);
-                                createDash2('牌', '女性卡牌', 'audio/card/female', page);
-                                createDash2('亡', '阵亡配音', 'audio/die', page);
-                                createDash2('效', '游戏音效', 'audio/effect', page);
-                                createDash2('景', '背景音乐', 'audio/background', page);
-                            };
-                            page.reset();
-                            return page;
-                        }());
-                        var dash3 = (function () {
-                            var page = ui.create.div('.hidden.menu-buttons');
-                            page.path = 'font';
-                            page.reset = function () {
-                                ui.create.templayer();
-                                page.hide();
-                                pageboard.show();
-                            };
-                            page.init = function () {
-                                enterDirectory(page, 'font');
-                            };
-                            return page;
-                        }());
-                        var dash4 = (function () {
-                            var page = ui.create.div('.hidden.menu-buttons');
-                            page.path = '';
-                            page.reset = function () {
-                                ui.create.templayer();
-                                page.hide();
-                                pageboard.show();
-                            };
-                            page.init = function () {
-                                enterDirectory(page, '');
-                            };
-                            return page;
-                        }());
-                        createDash('图', '图片文件', dash1);
-                        createDash('音', '音频文件', dash2);
-                        createDash('字', '字体文件', dash3);
-                        createDash('全', '全部文件', dash4);
-                    }());
+                    //         page.backbutton = backbutton;
+                    //         page.addbutton = addbutton;
+                    //         page.deletebutton = deletebutton;
+                    //         var filelist = ui.create.div(page);
+                    //         filelist.classList.add('file-container');
+                    //         filelist.listen(clickFileList);
+                    //         lib.setScroll(filelist);
+                    //         game.getFileList(path, function (folders, files) {
+                    //             var sort = function (a, b) {
+                    //                 if (a > b) return 1;
+                    //                 if (a < b) return -1;
+                    //                 return 0;
+                    //             }
+                    //             folders.sort(sort);
+                    //             files.sort(sort);
+                    //             var parent = path;
+                    //             if (parent) {
+                    //                 parent += '/';
+                    //             }
+                    //             for (var i = 0; i < folders.length; i++) {
+                    //                 if (!page.path && folders[i] == 'app') continue;
+                    //                 var entry = ui.create.div('', '<span>' + folders[i], filelist);
+                    //                 entry.firstChild.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickDirectory);
+                    //                 entry.firstChild.path = parent + folders[i]
+                    //             }
+                    //             for (var i = 0; i < files.length; i++) {
+                    //                 if (!page.path) {
+                    //                     if (files[i] == 'app.html') continue;
+                    //                     if (files[i] == 'main.js') continue;
+                    //                     if (files[i] == 'package.json') continue;
+                    //                 }
+                    //                 var entry = ui.create.div('', '<span>' + files[i], filelist);
+                    //                 entry.firstChild.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickFile);
+                    //                 entry.firstChild.ext = files[i].slice(files[i].lastIndexOf('.') + 1);
+                    //                 entry.firstChild.path = parent + files[i];
+                    //                 entry.firstChild.filename = files[i];
+                    //             }
+                    //         });
+                    //     };
+                    //     var dash1 = (function () {
+                    //         var page = ui.create.div('.hidden.menu-buttons');
+                    //         page.reset = function () {
+                    //             page.innerHTML = '';
+                    //             var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
+                    //                 ui.create.templayer();
+                    //                 page.hide();
+                    //                 pageboard.show();
+                    //             });
+                    //             backbutton.style.zIndex = 1;
+                    //             backbutton.style.right = '10px';
+                    //             backbutton.style.bottom = '15px';
+                    //             var placeholder = ui.create.div('.placeholder', page);
+                    //             placeholder.style.position = 'relative';
+                    //             placeholder.style.display = 'block';
+                    //             placeholder.style.width = '100%';
+                    //             placeholder.style.height = '14px';
+                    //             createDash2('将', '武将图片', 'image/character', page);
+                    //             createDash2('肤', '皮肤图片', 'image/skin', page);
+                    //             createDash2('卡', '卡牌图片', 'image/card', page);
+                    //             createDash2('模', '模式图片', 'image/mode', page);
+                    //             createDash2('始', '开始图片', 'image/splash', page);
+                    //             createDash2('景', '背景图片', 'image/background', page);
+                    //         };
+                    //         page.reset();
+                    //         return page;
+                    //     }());
+                    //     var dash2 = (function () {
+                    //         var page = ui.create.div('.hidden.menu-buttons');
+                    //         page.reset = function () {
+                    //             page.innerHTML = '';
+                    //             var backbutton = ui.create.div('.menubutton.round', '返', page, function () {
+                    //                 ui.create.templayer();
+                    //                 page.hide();
+                    //                 pageboard.show();
+                    //             });
+                    //             backbutton.style.zIndex = 1;
+                    //             backbutton.style.right = '10px';
+                    //             backbutton.style.bottom = '15px';
+                    //             var placeholder = ui.create.div('.placeholder', page);
+                    //             placeholder.style.position = 'relative';
+                    //             placeholder.style.display = 'block';
+                    //             placeholder.style.width = '100%';
+                    //             placeholder.style.height = '14px';
+                    //             createDash2('技', '技能配音', 'audio/skill', page);
+                    //             createDash2('卡', '男性卡牌', 'audio/card/male', page);
+                    //             createDash2('牌', '女性卡牌', 'audio/card/female', page);
+                    //             createDash2('亡', '阵亡配音', 'audio/die', page);
+                    //             createDash2('效', '游戏音效', 'audio/effect', page);
+                    //             createDash2('景', '背景音乐', 'audio/background', page);
+                    //         };
+                    //         page.reset();
+                    //         return page;
+                    //     }());
+                    //     var dash3 = (function () {
+                    //         var page = ui.create.div('.hidden.menu-buttons');
+                    //         page.path = 'font';
+                    //         page.reset = function () {
+                    //             ui.create.templayer();
+                    //             page.hide();
+                    //             pageboard.show();
+                    //         };
+                    //         page.init = function () {
+                    //             enterDirectory(page, 'font');
+                    //         };
+                    //         return page;
+                    //     }());
+                    //     var dash4 = (function () {
+                    //         var page = ui.create.div('.hidden.menu-buttons');
+                    //         page.path = '';
+                    //         page.reset = function () {
+                    //             ui.create.templayer();
+                    //             page.hide();
+                    //             pageboard.show();
+                    //         };
+                    //         page.init = function () {
+                    //             enterDirectory(page, '');
+                    //         };
+                    //         return page;
+                    //     }());
+                    //     createDash('图', '图片文件', dash1);
+                    //     createDash('音', '音频文件', dash2);
+                    //     createDash('字', '字体文件', dash3);
+                    //     createDash('全', '全部文件', dash4);
+                    // }());
                     createModeConfig('others', start.firstChild);
 
                     var active = start.firstChild.querySelector('.active');

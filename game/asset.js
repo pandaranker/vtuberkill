@@ -1382,6 +1382,7 @@ window.noname_asset_list=[
 	'image/character/ShishiroBotan.jpg',
 	'image/character/ShizukaRin.jpg',
 	'image/character/ShizukuLulu.jpg',
+	'image/character/Silvervale.jpg',
 	'image/character/Siro.jpg',
 	'image/character/SisterClearie.jpg',
 	'image/character/SpadeEcho.jpg',

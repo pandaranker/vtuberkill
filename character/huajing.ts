@@ -498,6 +498,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				enable:'chooseToUse',
 				usable:1,
 				getResult(cards):Array<[]>{
+					let player = _status.event.player||_status.event._trigger.player
 					let l=cards.length,all=Math.pow(l,2),list=[];
 					for(let i=1;i<all;i++){
 						let array=[];
@@ -553,7 +554,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						if(player.countCards('h',button.link[2])>0) return 0;
 						if(button.link[2]=='jingluo') return 0;
 						var effect=player.getUseValue(button.link[2]);
-						if(effect>0) return effect;
+						if(effect>0){
+							if(button.link[2]=='haidi') return effect*2;
+							return effect;
+						}
 						return 0;
 					},
 					backup(links,player){
@@ -596,10 +600,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							var players=game.filterPlayer();
 							for(var i=0;i<players.length;i++){
 								if(players[i]!=player&&get.attitude(player,players[i])>0){
-									return 0.5;
+									return 1.5;
 								}
 							}
-							return 0;
+							return 1;
 						}
 					},
 					threaten:1.2,

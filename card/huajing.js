@@ -498,7 +498,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				judge:function(card){
 					if(get.number(card)>10) return 3;
-					return 0;
+					return 1;
 				},
 				effect:function(){
 					if(result.bool==true){
