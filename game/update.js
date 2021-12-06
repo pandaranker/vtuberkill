@@ -2,7 +2,7 @@ window.noname_update={
 	version:'1.9.104.02',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.02小型更新：新增角色樱花狼灵Silvervale【普罗维登】，修复bug`,
+		`1.9.104.02小型更新：新增角色樱花狼灵Silvervale【Vshojo】，修复bug`,
 		`暂时回退版本`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		``,
