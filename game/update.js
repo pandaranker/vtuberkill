@@ -59,6 +59,7 @@ window.noname_update={
 
 		// 'game/module.js',
 		'game/game.js',
+		'game/directory.js',
 		'game/data/grouplist.js',
 		'game/data/translation.js',
 		

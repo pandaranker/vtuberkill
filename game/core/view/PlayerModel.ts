@@ -5303,6 +5303,7 @@ class PlayerModel extends HTMLDivElementProxy {
         if (info && info.round) {
             var roundname = name + '_roundcount';
             this.storage[roundname] = info.round;
+            if(!this.hasSkill(roundname))   this.addSkill(roundname)
             // this.storage[roundname] = game.roundNumber;
             this.syncStorage(roundname);
             this.markSkill(roundname);

@@ -131,7 +131,7 @@ window.translate = {
 	xuyan2: '虚研社',
 	chaos2: 'ChaosLive',
 	xuefeng2: '雪风军团',
-	Providence2: '雪风军团',
+	Providence2: '普罗维登',
 	hunmiao2: '魂喵科技',
 	ego2: 'Egolive',
 	chidori2: '千鸟战队',

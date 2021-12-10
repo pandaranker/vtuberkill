@@ -4981,6 +4981,7 @@ let commonContent = (({_status, lib, game, ui, get, ai})=>{
             if (info.round) {
                 var roundname = skill + '_roundcount';
                 player.storage[roundname] = info.round;
+                if(!player.hasSkill(roundname))   player.addSkill(roundname)
                 // player.storage[roundname] = game.roundNumber;
                 player.syncStorage(roundname);
                 player.markSkill(roundname);

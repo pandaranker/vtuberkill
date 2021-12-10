@@ -5173,6 +5173,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
             if (info && info.round) {
                 var roundname = name + '_roundcount';
                 this.storage[roundname] = info.round;
+                if (!this.hasSkill(roundname))
+                    this.addSkill(roundname);
                 this.syncStorage(roundname);
                 this.markSkill(roundname);
             }
