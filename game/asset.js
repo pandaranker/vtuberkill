@@ -1,4 +1,4 @@
-window.noname_asset_list=[
+window.vk_asset_list=[
 	'v1.9.191.11.2',
 	'audio/background/aozhan_chaoming.mp3',
 	'audio/background/aozhan_online.mp3',
@@ -1414,6 +1414,7 @@ window.noname_asset_list=[
 	'image/character/wenjing.jpg',
 	'image/character/wula.jpg',
 	'image/character/YagamiKaruta.jpg',
+	'image/character/YamaUsagi.jpg',
 	'image/character/YaotomeNoe.jpg',
 	'image/character/yizhiYY.jpg',
 	'image/character/Yogiri.jpg',
@@ -2398,6 +2399,6 @@ window.noname_asset_list=[
 	'theme/woodden/wood2.jpg',
 	'theme/woodden/wood2.png'
 ];
-window.noname_skin_list={
+window.vk_skin_list={
 
 };

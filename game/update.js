@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.02',
+	version:'1.9.104.03',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.02小型更新：新增角色樱花狼灵Silvervale【Vshojo】，修复bug`,
+		`1.9.104.03小型更新：新增角色山兔YamaUsagi【网易】，调整月紫亚里亚的技能，修复部分轮次技不重置的bug`,
 		`暂时回退版本`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -59,6 +59,9 @@ window.noname_update={
 
 		// 'game/module.js',
 		'game/game.js',
+		'game/data/grouplist.js',
+		'game/data/translation.js',
+		
 		'game/game_mark.js',
 
 		// 'game/core/base/EventModel.js',

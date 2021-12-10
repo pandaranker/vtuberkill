@@ -6050,7 +6050,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 lib.init.req('game/asset.js', function () {
                                     try {
                                         eval(this.responseText);
-                                        if (!window.noname_asset_list || !window.noname_skin_list) {
+                                        if (!window.vk_asset_list || !window.vk_skin_list) {
                                             throw ('err');
                                         }
                                     }
@@ -6059,10 +6059,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                         console.log(e);
                                         return;
                                     }
-                                    let updates = window.noname_asset_list;
-                                    delete window.noname_asset_list;
-                                    let skins = window.noname_skin_list;
-                                    delete window.noname_skin_list;
+                                    let updates = window.vk_asset_list;
+                                    delete window.vk_asset_list;
+                                    let skins = window.vk_skin_list;
+                                    delete window.vk_skin_list;
                                     let asset_version = updates.shift();
                                     let skipcharacter = [], skipcard = ['tiesuo_mark'];
                                     if (!lib.config.asset_full) {

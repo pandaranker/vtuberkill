@@ -5,12 +5,12 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 	class toSkill implements Skill{
 		readonly type: skillType
 		audio?: number|boolean
-        enable?: Keyword
-        usable?: number
-        group?: Keyword
+		  enable?: Keyword
+		  usable?: number
+		  group?: Keyword
 		trigger?: Keymap
 		content?:skillContent
-        subSkill?: {[propName: string]: Skill}
+		  subSkill?: {[propName: string]: Skill}
 		set(...arg){
 			for(let i=0; i<arg.length; i++){
 				if(Array.isArray(arg[i]))	this.set(...arg[i])
@@ -232,6 +232,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			zhongguobanai: ['female','NetEase',4,['liying','fuyu'],['guoV']],
 			/**栗子酱 */
 			RIKO: ['female','NetEase',4,['tieyu'],['guoV']],
+			/**山兔 */
+			YamaUsagi: ['female','NetEase',3,['zhengmeng','wadao'],['guoV']],
 
 			/**新科娘 */
 			xinkeniang: ['female','qun',4,['daimao','hongtou'],['zhu','guoV']],
@@ -301,8 +303,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//迟砂：准备阶段，你可以将手牌调整至全场唯一最多，若如此做，你不能使用本回合摸到的牌直到回合结束。
 			wujian:{
-			    trigger:{
-				    player:'damageAfter',source:'damageAfter'
+				 trigger:{
+					 player:'damageAfter',source:'damageAfter'
 				},
 				logTarget(event,player){
 					if(player==event.source) return [player,event.player];
@@ -372,11 +374,11 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//无瑕：觉醒技。准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『攻熏』。
 			wuxia_yuanyao:{
-                filter(event, player) {
-                    if (player.countCards('h') > player.maxHp || player.countCards('h') == player.hp)
-                        return false;
-                    return (player.getStat('skill').wuxia_yuanyao || 0) < game.countPlayer(cur => cur.sex == 'female');
-                },
+					 filter(event, player) {
+						  if (player.countCards('h') > player.maxHp || player.countCards('h') == player.hp)
+								return false;
+						  return (player.getStat('skill').wuxia_yuanyao || 0) < game.countPlayer(cur => cur.sex == 'female');
+					 },
 				inherit:'yuanyao',
 			},
 /**------------------------------------------------------------------------------------------------------- */
@@ -601,6 +603,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					player.storage[skill] ??= [];
 				},
 				check(event,player){
+					if(player.hasSkill('tatongling_used'))	return false
 					if(event.player.isTurnedOver())	return get.attitude(player,event.player)>0
 					return get.attitude(player,event.player)<0
 				},
@@ -608,31 +611,33 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					event.target = trigger.player
 					let check = !event.target.isTurnedOver()&&(get.attitude(event.target,player)>=0||event.target.needsToDiscard())
-					event.target.chooseCard().set('ai',function(card){
+					event.target.chooseCard(2).set('ai',function(card){
 						if(!_status.event.check)	return 0;
 						return get.unuseful3(card)
-					}).set('check',check).set('prompt',`『彤灵』：将一张牌置于${get.translation(player)}武将牌上，否则翻面并回复一点体力`);
+					}).set('check',check).set('prompt',`『彤灵』：将两张手牌置于${get.translation(player)}武将牌上，否则翻面并回复一点体力`);
 					'step 1'
 					if(result.cards?.length){
 						event.target.$give(result.cards,player)
 						event.target.lose(result.cards,ui.special,'toStorage')
 						player.markAuto('tatongling',result.cards)
 					}else{
-						event.target.turnOver();
+						event.target.turnOver()
 						event.target.recover()
+						player.addTempSkill('tatongling_used','phaseNext')
 					}
-
 				},
 			},'logTarget:player','cardAround').setT({global:'loseHpAfter',source:'damageAfter'}).set(['group','tatongling_gainBy'],['subSkill',{
 				gainBy:new toSkill('trigger',{
 					content(){
 						let cards = player.getStorage('tatongling')
-						player.gain(cards)
-						player.$give(cards,player,false)
-						player.unmarkAuto('tatongling',cards)
+						if(cards.length){
+							player.gain(cards)
+							player.$give(cards,player,false)
+							player.unmarkAuto('tatongling',cards)
+						}
 					},
 				},'direct').setT(lib.phaseName,'Skipped'),
-				used:new toSkill('rule'),
+				used:new toSkill('mark'),
 			}]),
 			yumeng:new toSkill('trigger',{
 				content(){
@@ -657,10 +662,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},'direct').setT('phaseJudgeBefore').set(['group','yumeng_clear'],['subSkill',{
 				clear:new toSkill('trigger',{
-					prompt2:`sss`,
 					content(){
 						game.filterPlayer(cur => {
-							if(cur.storage.yumeng2 != player)	cur.removeSkill('yumeng2')
+							if(cur.storage.yumeng2 === player)	cur.removeSkill('yumeng2')
 						})
 					},
 				},'direct').setT('phaseBegin')
@@ -6300,7 +6304,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 								list.splice(i--,1);
 							}else	list[i]=['锦囊','',list[i]];
 						}
-						console.log(list)
 						if(list.length){
 							player.chooseButton(['是否选择一张长度'+num+'的锦囊牌视为使用之？',[list,'vcard'],'hidden']).set('ai',function(button){
 								let card={name:button.link[2]}, value=get.value(card);
@@ -6638,43 +6641,48 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			//宇佐纪诺诺
 			tuhui:{
-				group:'tuhui_B',
-				trigger:{source:'damageEnd'},
-				round:1,
-				filter(event,player){
-					return event.player.isIn()&&event.player!=player;
+				group: ['tuhuiA','tuhuiB'],
+			},
+			tuhuiA: {
+				trigger: { source: 'damageEnd' },
+				round: 1,
+				filter(event, player) {
+					return event.player.isIn() && event.player != player;
 				},
-				check(event,player){
-					return get.attitude(player,event.player)>0;
+				check(event, player) {
+					return get.attitude(player, event.player) > 0;
 				},
-				logTarget:'player',
-				content(){
-					'step 0'
+				logTarget: 'player',
+				content() {
+					'step 0';
 					event.targets = [player];
 					event.targets.add(trigger.player);
-					event.num = player.storage.fuyou?2:1;
-					'step 1'
+					event.num = player.storage.fuyou ? 2 : 1;
+					'step 1';
 					event.target = event.targets.shift();
 					event.recover = event.target.recover(event.num);
-					'step 2'
-					if(!event.recover.result)	event.target.draw(event.num);	
-					if(event.targets.length)	event.goto(1);
+					'step 2';
+					if (!event.recover.result)
+						event.target.draw(event.num);
+					if (event.targets.length)
+						event.goto(1);
 				},
-				ai:{
-					threaten:1.6,
-					effect:{
-						player(card,player,target,current){
-							if(get.tag(card,'damage')==1&&!player.hasMark('tuhui_roundname')&&!target.hujia&&target.hp>1&&get.attitude(player,target)>0){
-								if(target!=player){
-									if(target.hasSkillTag('maixie'))	return [1,1,0,3];
-									return [1,1,0,0.5];
+				ai: {
+					threaten: 1.6,
+					effect: {
+						player(card, player, target, current) {
+							if (get.tag(card, 'damage') == 1 && !player.hasMark('tuhui_roundname') && !target.hujia && target.hp > 1 && get.attitude(player, target) > 0) {
+								if (target != player) {
+									if (target.hasSkillTag('maixie'))
+										return [1, 1, 0, 3];
+									return [1, 1, 0, 0.5];
 								}
 							}
 						}
 					}
 				}
 			},
-			tuhui_B:{
+			tuhuiB:{
 				trigger:{player:'damageEnd'},
 				round:1,
 				filter(event,player){
@@ -6687,7 +6695,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				content(){
 					'step 0'
 					event.targets = [player];
-					event.targets.add(trigger.player);
+					event.targets.add(trigger.source);
 					event.num = player.storage.fuyou?2:1;
 					'step 1'
 					event.target = event.targets.shift();
@@ -6699,7 +6707,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				ai:{
 					effect:{
 						target(card,player,target,current){
-							if(get.tag(card,'damage')==1&&!target.hasMark('tuhui_B_roundcount')&&!target.hujia&&target.hp>1&&get.attitude(target,player)>0){
+							if(get.tag(card,'damage')==1&&!target.hasMark('tuhuiB_roundcount')&&!target.hujia&&target.hp>1&&get.attitude(target,player)>0){
 								if(target!=player)	return [0,0,1,1];
 							}
 						}
@@ -6725,11 +6733,11 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						game.delayx();
 					}}
 					'step 2'
-					{let roundname = 'tuhui_B_roundcount';
+					{let roundname = 'tuhuiB_roundcount';
 					if(player.hasMark(roundname)){
 						player.popup('重置');
 						let next = game.createEvent('resetSkill');
-						[next.player,next.resetSkill] = [player,'tuhui_B']
+						[next.player,next.resetSkill] = [player,'tuhuiB']
 						next.setContent('resetRound');
 						game.delayx();
 					}}
@@ -6965,7 +6973,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					else	event.target = trigger.source;
 					player.chooseDrawRecover(2,1,true);
 					'step 1'
-					console.log(result)
 					if(result){
 						player.storage.baifei.add(event.target);
 						player.markSkill('baifei');
@@ -9059,7 +9066,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 								player.$drawAuto(card);
 								storage[method].add(card);
 								for(let i of storage.left){
-									console.log(i)
 									if(get.color(card)==get.color(i)){
 										left.push(i);
 										player.$give(i,player,false);
@@ -9479,6 +9485,65 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					combo:'liying'
 				}
 			},
+			//山兔YamaUsagi
+			zhengmeng:new toSkill('trigger',{
+				filter(event,player){
+					return !event.numFixed;
+				},
+				check(event,player){
+					return player.countCards('h')>=2;
+				},
+				content(){
+					'step 0'
+					trigger.changeToZero();
+					player.turnOver();
+					'step 1'
+					player.throwDice();
+					'step 2'
+					player.draw(event.num);
+					if(event.num===6){
+						player.addMark('zhengmeng_addDamBy')
+					}
+				},
+				subSkill:{
+					addDamBy:{
+						intro:{
+							content:'【杀】伤害+#'
+						},
+						trigger:{player:'useCard'},
+						forced:true,
+						popup:false,
+						filter(event,player){
+							return ['sha'].contains(event.card.name)&&player.countMark('zhengmeng_addDamBy');
+						},
+						content(){
+							trigger.baseDamage+=player.countMark('zhengmeng_addDamBy');
+						}
+					},
+				}
+			},'group:zhengmeng_addDamBy').setT('phaseDrawBegin1'),
+			wadao:new toSkill('trigger',{
+				filter:function(event,player){
+					return !player.isTurnedOver();
+				},
+				content:function(){
+					'step 0'
+					player.chooseTarget(get.prompt('wadao'),function(card,player,target){
+						return target!==player;
+					}).ai=function(target){
+						return get.attitude2(target);
+					}
+					'step 1'
+					if(result.bool){
+						event.target = result.targets[0];
+						player.logSkill('wadao',event.target);
+						event.target.insertPhase();
+					}
+				},
+				ai:{
+					expose:0.3,
+				}
+			},'direct').setT('turnOverAfter'),
 			//栗子酱
 			tieyu:{
 				init(player,skill){
@@ -9556,15 +9621,15 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			//新科娘
 			daimao:{
 				mod:{
-                    cardUsable(card, player, num) {
-                        if(!get.suit(card)) return
-                        let suits = get.suit3(player.getStorage('daimao_mark'))
-                        if(suits.includes(suits))   return true;
-                    },
-                    targetInRange(card, player, target) {
-                        if(!get.suit(card)) return
-                        let suits = get.suit3(player.getStorage('daimao_mark'))
-                        if(suits.includes(suits))   return true;
+						  cardUsable(card, player, num) {
+								if(!get.suit(card)) return
+								let suits = get.suit3(player.getStorage('daimao_mark'))
+								if(suits.includes(suits))   return true;
+						  },
+						  targetInRange(card, player, target) {
+								if(!get.suit(card)) return
+								let suits = get.suit3(player.getStorage('daimao_mark'))
+								if(suits.includes(suits))   return true;
 					}
 				},
 				enable:'chooseToUse',
@@ -9745,7 +9810,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						trigger.cancel();
 						trigger.getParent().goto(0);
 					}else if(event.current.isGuoV()){
-						console.log(event.current)
 						let next=event.current.chooseToRespond('是否替'+get.translation(player)+'打出一张杀？',{name:'sha'});
 						next.set('ai',function(){
 							let [player, source] = [_status.event.player, _status.event.source];
@@ -11152,7 +11216,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					event.mySkill=result[player.playerid].links[0][2];
 					event.tarSkill=result[event.target.playerid].links[0][2];
 					'step 7'
-					console.log(event)
 					player.popup(get.translation(event.mySkill));
 					event.target.popup(get.translation(event.tarSkill));
 					if(event.mySkill==event.tarSkill){
@@ -11256,7 +11319,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							player.getHistory('useCard',evt => {
 								cards.removeArray(evt.cards);
 							});
-							console.log(player.storage.xingxu_shiyue2,cards)
 							return cards.length==1;
 						},
 						direct:true,
@@ -13626,7 +13688,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					if(!player.storage.baiqing)	player.storage.baiqing = 0;
 					player.storage.baiqing++;
 					player.markSkill('baiqing');
-					console.log(player.storage.baiqing);
 					'step 1'
 					if(player.getDamagedHp()+1==player.storage.baiqing){
 						player.chooseBool(get.prompt2('baiqing')).ai=function(){
@@ -14641,7 +14702,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						return true
 					}).set('ai',target => {
 						let {player,card} = _status.event.getParent()
-						console.log(player,card)
 						return get.attitude(player,target) * (get.value(card,'raw',target)+(target.storage.duchun_drop>1?1:-2))
 					})
 					'step 1'
@@ -16766,8 +16826,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			tuncai(player){
 				let str = lib.translate.tuncai_info;
-                let result = /(阳：.*?)[；。].*(阴：.*?)[；。]/g.exec(str);
-                let yang = result[1], yin = result[2];
+					 let result = /(阳：.*?)[；。].*(阴：.*?)[；。]/g.exec(str);
+					 let yang = result[1], yin = result[2];
 				if(player.storage.tuncai===true) return str.replace(yang,lib.spanClass(yang,'changetext'));
 				return str.replace(yin,lib.spanClass(yin,'changetext'));
 			},
@@ -16792,7 +16852,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			jvliu_append:lib.figurer(`特性：干扰`),
 			wuxia: `无瑕`,
 			wuxia_info: `觉醒技 准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『鸢揺』。`,
-            wuxia_yuanyao: `鸢揺(雪)`,
+				wuxia_yuanyao: `鸢揺(雪)`,
 			wuxia_yuanyao_append:lib.figurer(`特性：制衡`),
 
 /**------------------------------------------------------------------------------------------------------- */
@@ -16800,7 +16860,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			TsukushiAria: `月紫亚里亚`,
 			tatongling: `彤灵`,
 			tatongling_info: `一名角色体力流失或受到来源为你的伤害后，你可令其选择一项：
-			将一张手牌置于你的武将牌上；翻面并回复一点体力，令你的『彤灵』失效直到回合结束。<br>
+			将两张手牌置于你的武将牌上；翻面并回复一点体力，令你的『彤灵』失效直到本阶段结束。<br>
 			当你的阶段被跳过时，你获得武将牌上的牌。`,
 			tatongling_append:lib.figurer(`特性：压制`),
 			yumeng: `预梦`,
@@ -17215,6 +17275,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			fuyu: `扶谕`,
 			fuyu_info: `觉醒技 准备阶段，若你通过『立影』给出的牌数为4的倍数。你扣减一点体力上限，将『立影』里的“基本”改为“通常锦囊”。`,
 			
+			YamaUsagi: `山兔YamaUsagi`,
+			YamaUsagi_ab: `山兔`,
+			zhengmeng: `正萌`,
+			zhengmeng_info: `摸牌阶段，你可以改为翻面并投掷一枚骰子，摸骰点张牌，若骰点为6，你本局游戏内【杀】造成的伤害+1。`,
+			wadao: `蛙蹈`,
+			wadao_info: `你翻至正面时，可以令一名其他角色进行一个额外的回合。`,
+			
 			RIKO: `栗子酱`,
 			tieyu: `铁驭`,
 			tieyu_info: `你使用非装备牌时，可以弃置（3）张牌，若弃牌颜色为：<br>
@@ -17594,6 +17661,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 		
 			UsakiNono: `宇佐纪诺诺`,
 			tuhui: `兔烩`,
+			tuhuiA: `兔烩(伤害)`,
+			tuhuiB: `兔烩(受伤害)`,
 			tuhui_info: `每轮每项限一次。你对其他角色造成伤害或其他角色对你造成伤害后，你可以与其各回复（1）点体力；无法回复体力的角色摸（1）张牌。`,
 			fuyou: `复幼`,
 			fuyou_info: `限定技 出牌阶段，你可以令所有角色无法回复体力直到回合结束，重置『兔烩』并使之的（）值+1。`,

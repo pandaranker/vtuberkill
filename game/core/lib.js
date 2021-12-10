@@ -7187,9 +7187,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     lib.config.all.mode = [];
                     if (lib.config.debug) {
                         lib.init.js(lib.assetURL + 'game', 'asset', function () {
-                            lib.skin = window.noname_skin_list;
-                            delete window.noname_skin_list;
-                            delete window.noname_asset_list;
+                            lib.skin = window.vk_skin_list;
+                            delete window.vk_skin_list;
+                            delete window.vk_asset_list;
                         });
                     }
                     if (window.isNonameServer) {

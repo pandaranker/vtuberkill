@@ -8356,8 +8356,8 @@ class PlayerModel extends HTMLDivElementProxy {
     throwDice(num) {
         if (typeof num != 'number') {
             num = get.rand(6) + 1;
-            _status.event.num = num;
         }
+        _status.event.num = num;
         if (!game.online) {
             game.pause();
         }

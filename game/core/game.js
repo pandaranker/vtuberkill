@@ -6911,7 +6911,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return {
                         init: function (player) {
                             if (typeof player.storage[name] !== 'number')
-                                player.storage[name] = 1 - round;
+                                player.storage[name] = round;
                         },
                         intro: {
                             content: function (storage, player) {
@@ -6930,7 +6930,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                                 return str;
                             },
                             markcount: function (storage, player) {
-                                var num = round - (game.roundNumber - storage);
+                                var num = storage;
                                 if (num > 0) {
                                     return num;
                                 }

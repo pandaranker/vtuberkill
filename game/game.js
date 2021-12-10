@@ -7983,6 +7983,15 @@
                     }
                     lib.assetURL = noname_inited;
                 }
+                lib.init.js(lib.assetURL + 'game/data', ['translation','grouplist'],function () {
+                    let list = ['translate','group','groupnature']
+                    for(let i of list){
+                        if(window[i]){
+                            lib[i] = window[i];
+                            delete window[i];
+                        }
+                    }
+                });
                 //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
                 var config3 = null;
                 var proceed = function (config2) {
@@ -8032,9 +8041,9 @@
                     //part: 如果测试模式已开启，重置资源列表
                     if (lib.config.debug) {
                         lib.init.js(lib.assetURL + 'game', 'asset', function () {
-                            lib.skin = window.noname_skin_list;
-                            delete window.noname_skin_list;
-                            delete window.noname_asset_list;
+                            lib.skin = window.vk_skin_list;
+                            delete window.vk_skin_list;
+                            delete window.vk_asset_list;
                         });
                     }
 
@@ -10968,308 +10977,7 @@
          * 翻译文本
          * @type {!Object}
          */
-        translate: {
-            sc: '打钱',
-            ship: '上舰',
-            flower: '鲜花',
-            egg: '鸡蛋',
-            wine: '酒杯',
-            shoe: '拖鞋',
-            yuxisx: '玉玺',
-            shoukao: '枷锁',
-            junk: '平凡',
-
-            common: '普通',
-            rare: '精品',
-            epic: '史诗',
-            legend: '传说',
-
-            beginner: '简单',
-
-            default: "默认",
-            special: '特殊',
-            zhenfa: '阵法',
-            aozhan: "鏖战",
-            mode_derivation_card_config: '衍生',
-            mode_banned_card_config: '禁卡',
-            mode_favourite_character_config: '收藏',
-            mode_banned_character_config: '禁将',
-            suit: '花色',
-            heart: "♥︎",
-            diamond: "♦︎",
-            spade: "♠︎",
-            club: "♣︎",
-            ghujia: '护甲',
-            ghujia_bg: '甲',
-            heart2: "红桃",
-            diamond2: "方片",
-            spade2: "黑桃",
-            club2: "梅花",
-            color: '颜色',
-            red: '红色',
-            black: '黑色',
-            none: '无色',
-
-            number: '点数',
-            cardname: '牌名',
-
-            ok: "确定",
-            ok2: "确定",
-            cancel: "取消",
-            cancel2: "取消",
-            restart: "重新开始",
-            setting: "设置",
-            start: "开始",
-            random: "随机",
-            _out: '无效',
-            agree: '同意',
-            refuse: '拒绝',
-            fire: "火",
-            thunder: "雷",
-            poison: "毒",
-            kami: '神',
-            ocean: '海',
-            ice: '冰',
-            yami: '暗',
-
-            fire_ab: '火焰',
-            thunder_ab: '雷电',
-            ocean_ab: '海洋',
-            ice_ab: '冰冻',
-            yami_ab: '暗影',
-
-            vtuber: '企',
-            clubs: '社',
-            vtuber2: '企业联合',
-            clubs2: '社团联合',
-
-            wei: '魏',
-            shu: '蜀',
-            wu: '吴',
-            qun: '群',
-            shen: '皇',
-            western: '西',
-            key: 'N',
-            holo: '杏',
-            dotlive: '点',
-            nijisanji: '虹',
-            VirtuaReal: '维阿',
-            HappyElements: '乐',
-            upd8: 'U',
-            eilene: '艾琳',
-            paryi: '帕',
-            kagura: '神楽',
-            nanashi: '774',
-            psp: 'P',
-            asoul: 'A',
-            nori: '苔',
-            vwp: '神椿',
-            vshojo: 'V',
-            xuyan: '虚',
-            chaos: 'C',
-            xuefeng: '雪',
-            Providence: '普',
-            hunmiao: '魂',
-            ego: '复',
-            chidori: '鸟',
-            lucca: 'L',
-            double: '多',
-            wei2: '魏国',
-            shu2: '蜀国',
-            wu2: '吴国',
-            qun2: '群雄',
-            shen2: '特典',
-            western2: '西方',
-            key2: 'KEY',
-            holo2: 'Hololive',
-            upd82: 'Upd8',
-            dotlive2: '.live',
-            nijisanji2: 'Nijisanji',
-            VirtuaReal2: 'VirtuaReal',
-            HappyElements2: '乐元素',
-            eilene2: '艾琳一家',
-            paryi2: '帕里坡',
-            kagura2: '神楽组',
-            nanashi2: '774inc',
-            psp2: 'psplive',
-            asoul2: 'A_SOUL',
-            nori2: 'Noripro',
-            vwp2: '神椿市',
-            vshojo2: 'Vshojo',
-            xuyan2: '虚研社',
-            chaos2: 'ChaosLive',
-            xuefeng2: '雪风军团',
-            Providence2: '普罗维登',
-            hunmiao2: '魂喵科技',
-            ego2: 'Egolive',
-            chidori2: '千鸟战队',
-            lucca2: 'Lucca事务所',
-            double2: '多势力',
-            male: '男',
-            female: '女',
-            mad: '混乱',
-            mad_bg: '疯',
-
-            hp: '体力',
-
-            draw_card: '摸牌',
-            discard_card: '弃牌',
-            take_damage: '受伤害',
-            reset_character: '复原武将牌',
-            recover_hp: '回复体力',
-            lose_hp: '流失体力',
-            get_damage: '受伤害',
-            weiColor: "#b0d0e2",
-            shuColor: "#ffddb9",
-            wuColor: "#b2d9a9",
-            qunColor: "#f6f6f6",
-            shenColor: "#ffe14c",
-            westernColor: "#ffe14c",
-            jinColor: "#ffe14c",
-            keyColor: "#c9b1fd",
-            holoColor: "#38ABE0",
-            nijisanjiColor: "#b0d0e2",
-            dotliveColor: "#b2d9a9",
-            upd8Color: "#ffe14c",
-            eileneColor: "#DB7093",
-            paryiColor: "#DDAAAF",
-            VirtuaRealColor: "#77aaee",
-            HappyElementsColor: "#60ACC8",
-            kaguraColor: "#55deef",
-            nanashiColor: "#e27b6b",
-            pspColor: "#4d3d11",
-            asoulColor: "#ffddcc",
-            noriColor: "#a8ddaa",
-            basic: '基本',
-            equip: '装备',
-            trick: '锦囊',
-            delay: '延时锦囊',
-            character: '角色',
-            revive: '复活',
-            equip1: '武器',
-            equip2: '防具',
-            equip3: '防御载具',
-            equip4: '攻击载具',
-            equip5: '宝物',
-            equip6: '坐骑',
-            zero: '零',
-            one: '一',
-            two: '二',
-            three: '三',
-            four: '四',
-            five: '五',
-            six: '六',
-            seven: '七',
-            eight: '八',
-            nine: '九',
-            ten: '十',
-            _chongzhu: '重铸',
-            _lianhuan: '连环',
-            _lianhuan2: '连环',
-            _kamisha: '神杀',
-            _oceansha: '海杀',
-            _icesha: '冰杀',
-            _yamisha: '暗杀',
-            _yamisha2: '暗影',
-            _shengjie: '升阶',
-            qianxing: '潜行',
-            mianyi: '免疫',
-            fengyin: '封印',
-            baiban: '白板',
-            _disableJudge: "判定区",
-            pileTop: '牌堆顶',
-            pileBottom: '牌堆底',
-
-            xiaowu_emotion: '小无表情',
-            guojia_emotion: '郭嘉表情',
-            zhenji_emotion: '甄姬表情',
-            shibing_emotion: '士兵表情',
-            xiaosha_emotion: '小杀表情',
-            xiaotao_emotion: '小桃表情',
-            xiaojiu_emotion: '小酒表情',
-            Diana_emotion: '嘉然表情',
-
-            pause: '暂停',
-            config: '选项',
-            auto: '托管',
-
-            unknown: '未知',
-            unknown0: '一号位',
-            unknown1: '二号位',
-            unknown2: '三号位',
-            unknown3: '四号位',
-            unknown4: '五号位',
-            unknown5: '六号位',
-            unknown6: '七号位',
-            unknown7: '八号位',
-
-            feichu_equip1: "已废除",
-            feichu_equip1_info: "武器栏已废除",
-            feichu_equip2: "已废除",
-            feichu_equip2_info: "防具栏已废除",
-            feichu_equip3: "已废除",
-            feichu_equip3_info: "防御坐骑栏已废除",
-            feichu_equip4: "已废除",
-            feichu_equip4_info: "攻击坐骑栏已废除",
-            feichu_equip5: "已废除",
-            feichu_equip5_info: "宝物栏已废除",
-            feichu_equip1_bg: "废",
-            feichu_equip2_bg: "废",
-            feichu_equip3_bg: "废",
-            feichu_equip4_bg: "废",
-            feichu_equip5_bg: "废",
-            disable_judge: '已废除',
-            disable_judge_info: '判定区已废除',
-            disable_judge_bg: '废',
-            pss: '手势',
-            pss_paper: '布',
-            pss_scissor: '剪刀',
-            pss_stone: '石头',
-            pss_paper_info: '石头剪刀布时的一种手势。克制石头，但被剪刀克制。',
-            pss_scissor_info: '石头剪刀布时的一种手势。克制布，但被石头克制。',
-            pss_stone_info: '石头剪刀布时的一种手势。克制剪刀，但被布克制。',
-
-            group_wei: "魏势力",
-            group_shu: "蜀势力",
-            group_wu: "吴势力",
-            group_jin: "晋势力",
-            group_qun: "群势力",
-            group_key: "键势力",
-            group_holo: "杏势力",
-            group_nijisanji: "虹势力",
-            group_VirtuaReal: "维势力",
-            group_upd8: "U势力",
-            group_paryi: "帕势力",
-            group_kagura: "神楽势力",
-            group_nanashi: "7势力",
-            group_psp: "P势力",
-            group_asoul: "魂势力",
-            group_nori: "苔势力",
-            group_vwp: "神椿势力",
-            group_chaos: "混沌势力",
-            group_xuyan: "虚势力",
-            group_xuefeng: "雪风势力",
-            group_wei_bg: "魏",
-            group_shu_bg: "蜀",
-            group_wu_bg: "吴",
-            group_qun_bg: "群",
-            group_jin_bg: "晋",
-            group_key_bg: "键",
-            group_holo_bg: "杏",
-            group_nijisanji_bg: "虹",
-            group_VirtuaReal_bg: "维",
-            group_upd8_bg: "U",
-            group_paryi_bg: "帕",
-            group_kagura_bg: "咩",
-            group_nanashi_bg: "な",
-            group_psp_bg: "な",
-            group_asoul_bg: "魂",
-            group_nori_bg: "苔",
-            group_vwp_bg: "椿",
-            group_chaos_bg: "潮",
-            group_xuyan_bg: "虚",
-            group_xuefeng_bg: "雪",
-        },
+        translate: {},
         /**
          * 游戏基础对象和状态机
          * @name element
@@ -16260,6 +15968,7 @@
                     if (info.round) {
                         var roundname = skill + '_roundcount';
                         player.storage[roundname] = info.round;
+                        if(!player.hasSkill(roundname))   player.addSkill(roundname)
                         // player.storage[roundname] = game.roundNumber;
                         player.syncStorage(roundname);
                         player.markSkill(roundname);
@@ -22886,6 +22595,7 @@
                     if (info && info.round) {
                         var roundname = name + '_roundcount';
                         this.storage[roundname] = info.round;
+                        if(!this.hasSkill(roundname))   this.addSkill(roundname)
                         // this.storage[roundname] = game.roundNumber;
                         this.syncStorage(roundname);
                         this.markSkill(roundname);
@@ -25935,8 +25645,8 @@
                 throwDice: function (num) {
                     if (typeof num != 'number') {
                         num = get.rand(6) + 1;
-                        _status.event.num = num;
                     }
+                    _status.event.num = num;
                     if (!game.online) {
                         game.pause();
                     }
@@ -31504,13 +31214,7 @@
          * |vshojo|Vshojo|
          * @type {string}
          */
-        group: [
-            'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
-            'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-            'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
-            'vshojo',
-            'vtuber', 'clubs'
-        ],
+        group: [],
         /**
          * shen势力可选的武将牌势力
          * 较group去除了企业、社团、三国势力
@@ -31531,43 +31235,7 @@
          * 势力对应属性
          * @constant
          */
-        groupnature: {
-            shen: 'thunder',
-            wei: 'water',
-            shu: 'soil',
-            wu: 'wood',
-            qun: 'metal',
-            western: 'thunder',
-            key: 'key',
-            jin: 'thunder',
-            ye: 'thunder',
-            holo: 'soil',
-            upd8: 'metal',
-            dotlive: 'wood',
-            nijisanji: 'water',
-            VirtuaReal: 'ocean',
-            HappyElements: 'ocean',
-            eilene: 'thunder',
-            paryi: 'ice',
-            kagura: 'ocean',
-            nanashi: 'wood',
-            psp: 'fire',
-            asoul: 'fire',
-            nori: 'key',
-            vwp: 'key',
-            vshojo: 'metal',
-            xuyan: 'ice',
-            chaos: 'ocean',
-            xuefeng: 'ocean',
-            Providence: 'ocean',
-            hunmiao: 'ocean',
-            ego: 'ocean',
-            chidori: 'wood',
-            lucca: 'wood',
-
-            vtuber: 'metal',
-            clubs: 'ice',
-        },
+        groupnature: {},
         /**
          * 游戏阶段
          * 
@@ -38477,17 +38145,17 @@
                 }
                 lib.skill[k] = (function (round, name) {
                     return {
-                        init: function (player) {
-                            if (typeof player.storage[name] !== 'number') player.storage[name] = 1 - round;
+                        init (player) {
+                            if (typeof player.storage[name] !== 'number')   player.storage[name] = 0;
                         },
                         intro: {
-                            content: function (storage, player) {
-                                var str = '';
-                                var info = get.info(name.slice(0, name.indexOf('_roundcount')));
+                            content (storage, player) {
+                                let str = '';
+                                let info = get.info(name.slice(0, name.indexOf('_roundcount')));
                                 if (info && info.addintro) {
                                     str += info.addintro(storage, player);
                                 }
-                                // var num = round - (game.roundNumber - storage);
+                                // let num = round - (game.roundNumber - storage);
                                 let num = storage
                                 if (num > 0) {
                                     str += get.cnNumber(num) + '轮后' + (info.roundtext || '技能重置');
@@ -38497,19 +38165,31 @@
                                 }
                                 return str;
                             },
-                            markcount: function (storage, player) {
-                                var num = round - (game.roundNumber - storage);
+                            markcount (storage, player) {
+                                let num = storage;
                                 if (num > 0) {
                                     return num;
                                 }
                                 return 0;
                             }
                         },
-                        trigger: { global: 'roundStart' },
+                        trigger: { global: 'roundEnd' },
                         forced: true,
                         popup: false,
                         silent: true,
-                        content: lib.element.content.resetRound
+                        content() {
+                            var roundname = event.name;
+                            console.log(player,roundname)
+                            if (player.storage[roundname] > 0) {
+                                player.storage[roundname]--
+                            }
+                            if (player.storage[roundname] > 0) {
+                                player.updateMarks();
+                            }
+                            else {
+                                player.unmarkSkill(roundname);
+                            }
+                        }
                     };
                 }(info.round, k));
                 lib.translate[k] = lib.translate[i] || '';
@@ -45924,7 +45604,7 @@
                                 lib.init.req('game/asset.js', function () {
                                     try {
                                         eval(this.responseText);
-                                        if (!window.noname_asset_list || !window.noname_skin_list) {
+                                        if (!window.vk_asset_list || !window.vk_skin_list) {
                                             throw ('err');
                                         }
                                     }
@@ -45934,10 +45614,10 @@
                                         return;
                                     }
 
-                                    var updates = window.noname_asset_list;
-                                    delete window.noname_asset_list;
-                                    var skins = window.noname_skin_list;
-                                    delete window.noname_skin_list;
+                                    var updates = window.vk_asset_list;
+                                    delete window.vk_asset_list;
+                                    var skins = window.vk_skin_list;
+                                    delete window.vk_skin_list;
                                     var asset_version = updates.shift();
 
                                     var skipcharacter = [], skipcard = ['tiesuo_mark'];
@@ -47577,11 +47257,7 @@
                     }
                 }
                 if (!thisiscard) {
-                    var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
-                        'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
-                        'xuyan', 'chaos', 'xuefeng', 'Providence', 'hunmiao', 'ego', 'chidori', 'lucca',
-                        'vshojo'
-                    ];//'wei','shu','wu','key',
+                    var groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key']);
                     if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                     var bool1 = false;
                     var bool2 = false;

@@ -20,7 +20,7 @@ if(process.argv[2]){
 	}
 }
 var assetlist='';
-var skinlist='window.noname_skin_list={\n';
+var skinlist='window.vk_skin_list={\n';
 var entrylist=[];
 var entrymap={};
 var get = function(dir,callback){
@@ -77,22 +77,22 @@ var get = function(dir,callback){
 
 get(path.dirname(__dirname),function(){
 	var diff=false;
-	if(window.noname_asset_list.length==entrylist.length+1){
+	if(window.vk_asset_list.length==entrylist.length+1){
 		for(var i=0;i<entrylist.length;i++){
-			if(entrylist[i]!=window.noname_asset_list[i+1]){
+			if(entrylist[i]!=window.vk_asset_list[i+1]){
 				diff=true;
 				break;
 			}
 		}
 		if(!diff){
 			for(var i in entrymap){
-				if(window.noname_skin_list[i]!==entrymap[i]){
+				if(window.vk_skin_list[i]!==entrymap[i]){
 					diff=true;
 					break;
 				}
 			}
-			for(var i in noname_skin_list){
-				if(window.noname_skin_list[i]!==entrymap[i]){
+			for(var i in vk_skin_list){
+				if(window.vk_skin_list[i]!==entrymap[i]){
 					diff=true;
 					break;
 				}
@@ -164,7 +164,7 @@ get(path.dirname(__dirname),function(){
 		});
 	}
 	if(diff){
-		var assetversion='window.noname_asset_list=[\n\t\''+updates.version+'\'';
+		var assetversion='window.vk_asset_list=[\n\t\''+updates.version+'\'';
 		fs.writeFile('game/asset.js',assetversion+assetlist+'\n];\n'+skinlist.slice(0,skinlist.length-2)+'\n};','utf-8',function(){
 			console.log('udpated asset.js');
 			next();

@@ -29,6 +29,7 @@ declare global {
         group?: Keyword
         filter?: skillCheck
         check?: skillCheck
+        init?: (PlayerModel,string)=>void
         prompt2?: string | skillCheck
         logTarget?: string | ((event:EventModel, player?:PlayerModel) => boolean|number|string|string[])
         filterTarget?: boolean | targetCheck
@@ -92,6 +93,11 @@ declare global {
         ai,
         lib,
         _status,
+        /**导入介质 */
+        data
+        translate
+        group
+        groupnature
         /**初始界面 */
         inSplash
         /**菜单 */
@@ -99,6 +105,7 @@ declare global {
         /**Rank */
         vtuberkill_character_rank
         resolveLocalFileSystemURL//？？？
+        require//？？？
     }
     interface HTMLDivElement{
         getModel:()=>Object

@@ -6848,7 +6848,7 @@ mixin(game, /**@lends module:core.game */ {
             lib.skill[k] = (function (round, name) {
                 return {
                     init: function (player) {
-                        if (typeof player.storage[name] !== 'number') player.storage[name] = 1 - round;
+                        if (typeof player.storage[name] !== 'number') player.storage[name] = round;
                     },
                     intro: {
                         content: function (storage, player) {
@@ -6868,7 +6868,7 @@ mixin(game, /**@lends module:core.game */ {
                             return str;
                         },
                         markcount: function (storage, player) {
-                            var num = round - (game.roundNumber - storage);
+                            var num = storage;
                             if (num > 0) {
                                 return num;
                             }

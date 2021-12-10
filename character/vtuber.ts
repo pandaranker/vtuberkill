@@ -682,7 +682,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				filterTarget(card,player,target){
 					var targets=[player].concat(ui.selected.targets);
 					if(targets.contains(target))	return false;
-					for(var i=0;i<targets.length;i++){
+					for(let i=0;i<targets.length;i++){
 						if(targets[i].hasSkill('rongyaochengyuan_homolive')&&target.hasSkill('rongyaochengyuan_homolive')){
 							return false;
 						}

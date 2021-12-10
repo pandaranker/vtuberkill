@@ -660,7 +660,7 @@
 				group:'lingsi_discard',
 				subSkill:{
 					discard:{
-						trigger:{player:['loseAfter']},
+						trigger:{player:'discardAfter'},
 						filter(event: { cards: any[]; },player: any){
 							if(!event.cards||event.cards.length<2)	return false;
 							var num1=0,num2=0;
@@ -3344,7 +3344,7 @@
 			re_hundunliandong:{
 				enable:'phaseUse',
 				usable:1,
-				filterTarget(card: any,player: any,target: { hasSkill: (arg0: string) => any; group: any; }){
+				filterTarget(card: any,player: any,target){
 					if(target.hasSkill('rongyaochengyuan_homolive')){
 						for(let i of ui.selected.targets){
 							if(i.hasSkill('rongyaochengyuan_homolive')) return false;
@@ -3355,7 +3355,7 @@
 							if(i.group==target.group) return false;
 						}
 					}
-					return true;
+					return target.countCards('he');
 				},
 				selectTarget:[1,Infinity],
 				complexTarget:true,

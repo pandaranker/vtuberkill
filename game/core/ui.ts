@@ -842,22 +842,22 @@ mixin(ui, /**@lends module:core.ui */ {
                                 if (_status.enteringroomserver) {
                                     game.saveConfig('connect_mode', lib.configOL.mode);
 
-                                    let config = {};
+                                    let config = {
+                                        characterPack: lib.connectCharacterPack.slice(0),
+                                        cardPack: lib.connectCardPack.slice(0),
+                                        banned: lib.config['connect_' + active.mode + '_banned'],
+                                        bannedcards: lib.config['connect_' + active.mode + '_bannedcards']
+                                    };
                                     for (let i in lib.mode[lib.configOL.mode].connect) {
                                         if (i == 'update') continue;
                                         config[i.slice(8)] = get.config(i, lib.configOL.mode);
                                     }
-
-                                    config.characterPack = lib.connectCharacterPack.slice(0);
-                                    config.cardPack = lib.connectCardPack.slice(0);
                                     for (let i = 0; i < lib.config.connect_characters.length; i++) {
                                         config.characterPack.remove(lib.config.connect_characters[i]);
                                     }
                                     for (let i = 0; i < lib.config.connect_cards.length; i++) {
                                         config.cardPack.remove(lib.config.connect_cards[i]);
                                     }
-                                    config.banned = lib.config['connect_' + active.mode + '_banned'];
-                                    config.bannedcards = lib.config['connect_' + active.mode + '_bannedcards'];
                                     game.send('server', 'create', game.onlineKey, get.connectNickname(), lib.config.connect_avatar, config, active.mode);
                                 }
                                 else {
@@ -917,7 +917,10 @@ mixin(ui, /**@lends module:core.ui */ {
                             node.classList.add('active');
                         }
                     }
-                    var map = {};
+                    var map:{
+                        connect_player_number?
+                        connect_versus_mode?
+                    } = {};
                     var infoconfig = connectMenu ? info.connect : info.config;
                     if (infoconfig) {
                         var hiddenNodes = [];
@@ -6104,7 +6107,7 @@ mixin(ui, /**@lends module:core.ui */ {
                             lib.init.req('game/asset.js', function () {
                                 try {
                                     eval(this.responseText);
-                                    if (!window.noname_asset_list || !window.noname_skin_list) {
+                                    if (!window.vk_asset_list || !window.vk_skin_list) {
                                         throw ('err');
                                     }
                                 }
@@ -6114,10 +6117,10 @@ mixin(ui, /**@lends module:core.ui */ {
                                     return;
                                 }
 
-                                let updates = window.noname_asset_list;
-                                delete window.noname_asset_list;
-                                let skins = window.noname_skin_list;
-                                delete window.noname_skin_list;
+                                let updates = window.vk_asset_list;
+                                delete window.vk_asset_list;
+                                let skins = window.vk_skin_list;
+                                delete window.vk_skin_list;
                                 let asset_version = updates.shift();
 
                                 let skipcharacter = [], skipcard = ['tiesuo_mark'];
@@ -7757,11 +7760,7 @@ mixin(ui, /**@lends module:core.ui */ {
                 }
             }
             if (!thisiscard) {
-                var groups = ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'dotlive', 'upd8',
-                    'eilene', 'paryi', 'kagura', 'nanashi', 'psp', 'asoul', 'nori', 'vwp',
-                    'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase','hunmiao', 'ego', 'chidori', 'lucca',
-                    'vshojo'
-                ];//'wei','shu','wu','key',
+                var groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key']);
                 if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                 var bool1 = false;
                 var bool2 = false;

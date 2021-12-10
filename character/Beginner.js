@@ -554,7 +554,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 group: 'lingsi_discard',
                 subSkill: {
                     discard: {
-                        trigger: { player: ['loseAfter'] },
+                        trigger: { player: 'discardAfter' },
                         filter(event, player) {
                             if (!event.cards || event.cards.length < 2)
                                 return false;
@@ -3339,7 +3339,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 return false;
                         }
                     }
-                    return true;
+                    return target.countCards('he');
                 },
                 selectTarget: [1, Infinity],
                 complexTarget: true,

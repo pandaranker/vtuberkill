@@ -7971,8 +7971,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
         throwDice(num) {
             if (typeof num != 'number') {
                 num = get.rand(6) + 1;
-                _status.event.num = num;
             }
+            _status.event.num = num;
             if (!game.online) {
                 game.pause();
             }
