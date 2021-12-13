@@ -1275,12 +1275,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 0';
                     var _a, _b;
                     event.source = _status.currentPhase;
-                    if (event.source != player && event.source.countCards('h')) {
-                        var wanxiang = event.source.getCards('h');
-                        for (var i = 0; i < wanxiang.length; i++) {
-                            if (wanxiang[i].hasGaintag('xinjia'))
-                                event.xinjia = true;
-                        }
+                    if (event.source != player && event.source.countCards('h', card => card.hasGaintag('xinjia'))) {
+                        event.xinjia = true;
                     }
                     event.filterCards = [];
                     event.cards = (trigger.name == 'lose') ? (trigger.cards.filter(function (lose) {
@@ -1288,10 +1284,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     })) : [trigger.card];
                     'step 1';
                     var card = event.cards.shift();
-                    for (let i of lib.inpile) {
-                    }
-                    event.filterCards = get.inpile('basic', card => {
-                        let type = get.type(card);
+                    event.filterCards = get.inpile('basic', i => {
+                        let type = get.type(i);
                         if (player.storage.tangyan.contains(i))
                             return false;
                         if (lib.filter.filterCard({ name: i }, player, trigger) && player.hasUseTarget({ name: i, isCard: false })) {

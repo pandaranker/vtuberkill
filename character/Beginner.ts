@@ -5462,6 +5462,7 @@
 				subSkill:{
 					suit:{
 						mark:true,
+						onremove:true,
 						intro:{
 							content:'不能使用、打出或弃置$牌',
 						},

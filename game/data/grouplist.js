@@ -1,11 +1,11 @@
-window.group = [
+window.data_group = [
 	'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
 	'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-	'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca',
+	'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca', 'RedC',
 	'vshojo',
 	'vtuber', 'clubs'
 ]
-window.groupnature = {
+window.data_groupnature = {
 	shen: 'thunder',
 	wei: 'water',
 	shu: 'soil',
@@ -39,6 +39,7 @@ window.groupnature = {
 	ego: 'ocean',
 	chidori: 'wood',
 	lucca: 'wood',
+	RedCircle: 'fire',
 
 	vtuber: 'metal',
 	clubs: 'ice',

@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.03',
+	version:'1.9.104.04',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.03小型更新：新增角色山兔YamaUsagi【网易】，调整月紫亚里亚的技能，修复部分轮次技不重置的bug`,
+		`1.9.104.04中型更新：新增势力红圈RedCircle，新增角色雨街F【红圈】，加强蜜球兔，修复部分bug`,
 		`暂时回退版本`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -62,6 +62,8 @@ window.noname_update={
 		'game/directory.js',
 		'game/data/grouplist.js',
 		'game/data/translation.js',
+		'game/methods/filter.js',
+		'game/methods/sort.js',
 		
 		'game/game_mark.js',
 

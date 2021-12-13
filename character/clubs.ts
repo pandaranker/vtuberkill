@@ -68,10 +68,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			/**牛牛子 */
 			Niuniuzi: ['female','chaos',4,['qiying','hengxuan'],['guoV']],
 			
+			/**蜜球兔 */
+			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
+
 			/**米白 */
-			mibai: ['female','qun',4,['zhepie','chumo'],['guoV']],
+			mibai: ['female','RedC',4,['zhepie','chumo'],['guoV']],
 			/**亚哈 */
-			Ahab: ['female','qun',4,['ahbingyi','sujian'],['guoV']],
+			Ahab: ['female','RedC',4,['ahbingyi','sujian'],['guoV']],
 			
 			/**喵喵人 */
 			Nyanners: ['female','vshojo',3,['shenghuo','dipo','miaoche'],['zhu','yingV']],
@@ -2984,7 +2987,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			zhazong_info: `出牌阶段结束时，若你于此阶段没有使用过基本牌/装备牌/锦囊牌，你可以弃置一名角色手牌区/装备区/判定区各一张牌。`,
 			zhazong_append:lib.figurer(`特性：易上手`),
 			mengnan: `梦喃`,
-			mengnan_info: `锁定技 当一张牌进入/离开你的判定区，你需要摸/弃一张牌，若此时不在判定阶段，张数+1。`,
+			mengnan_info: `锁定技 当一张牌进入/离开你的判定区时，你需要摸/弃一张牌，若此时不在判定阶段，张数+1；<br>
+			当你脱离濒死状态时，将此技能替换为『月喃』。`,
+			yuenan: `月喃`,
+			yuenan_info: `摸牌阶段，你可以改为亮出牌堆顶的五张牌，使用其中至多两张牌。`,
 		
 			Yomemi:`Yomemi`,
 			Yomemi_ab:`ヨメミ`,

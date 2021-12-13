@@ -5582,6 +5582,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 subSkill: {
                     suit: {
                         mark: true,
+                        onremove: true,
                         intro: {
                             content: '不能使用、打出或弃置$牌',
                         },

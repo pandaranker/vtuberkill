@@ -36,7 +36,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
             Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
             Shaun: ['female', 'VirtuaReal', 3, ['juxiao', 'shshenyan'], ['guoV']],
-            Miqiutu: ['female', 'VirtuaReal', 4, ['zhazong', 'mengnan'], ['guoV']],
             Aza: ['male', 'VirtuaReal', 3, ['qiding', 'chouxin'], ['guoV']],
             Chiyuu: ['female', 'VirtuaReal', 4, ['anyou', 'mingyou'], ['guoV']],
             Mari: ['female', 'VirtuaReal', 4, ['tingzhu', 'xuemo'], ['guoV']],

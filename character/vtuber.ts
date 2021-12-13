@@ -74,8 +74,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			Azusa: ['female','VirtuaReal',4,['zhiyue','zhengniu'],['guoV']],
 			/**勺宝 */
 			Shaun: ['female','VirtuaReal',3,['juxiao','shshenyan'],['guoV']],
-			/**蜜球兔 */
-			Miqiutu: ['female','VirtuaReal',4,['zhazong','mengnan'],['guoV']],
 			/**阿萨Aza */
 			Aza: ['male','VirtuaReal',3,['qiding','chouxin'],['guoV']],
 			/**千幽Chiyuu */

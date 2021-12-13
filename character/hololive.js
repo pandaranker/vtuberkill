@@ -3263,12 +3263,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 return _status.event.getParent().filterCard({ name: button.link[2] }, player, _status.event.getParent());
                             },
                             check(button) {
-                                var player = _status.event.player;
+                                let player = _status.event.player;
                                 if (player.countCards('h', button.link[2]) > 0)
                                     return 0;
                                 if (button.link[2] == 'wugu')
                                     return 0;
-                                var effect = player.getUseValue(button.link[2]);
+                                let effect = player.getUseValue(button.link[2]);
                                 if (effect > 0)
                                     return effect;
                                 return 0;

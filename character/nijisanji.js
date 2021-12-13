@@ -400,23 +400,21 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 trigger: {
                     player: 'phaseUseBefore'
                 },
+                check(event, player) {
+                    return !player.needsToDiscard() || (player.hp >= 1 && player.countCards('h') <= 3 && player.countCards('e') >= 1);
+                },
                 content() {
                     'step 0';
-                    player.logSkill('fengxue');
                     trigger.cancel();
                     'step 1';
-                    event.players = [];
-                    event.players = game.filterPlayer(cur => cur != player && cur.hp >= player.hp);
-                    'step 2';
                     ui.clear();
-                    var num;
-                    num = event.players.length + 1;
+                    var num = game.countPlayer(cur => cur != player && cur.hp >= player.hp) + 1;
                     var cards = get.cards(num);
                     event.cards = cards;
                     event.gains = [];
                     event.discards = [];
                     game.cardsGotoOrdering(cards).relatedEvent = event.getParent();
-                    var dialog = ui.create.dialog('奋学', cards, true);
+                    var dialog = ui.create.dialog('奋学(使用一张牌)', cards, true);
                     _status.dieClose.push(dialog);
                     dialog.videoId = lib.status.videoId++;
                     game.addVideo('cardDialog', null, ['奋学', get.cardsInfo(cards), dialog.videoId]);
@@ -427,12 +425,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         dialog.videoId = id;
                     }, cards, dialog.videoId);
                     event.dialog = dialog;
-                    game.log(player, '观看了', '#y牌堆顶的牌');
-                    var chooseButton = player.chooseButton(true, function (button) {
+                    game.log(player, '亮出了', '#y牌堆顶的牌');
+                    var chooseButton = player.chooseButton(true).set('dialog', dialog.videoId).set('filterButton', function (button) {
+                        let player = _status.event.player;
+                        return player.hasUseTarget(button.link);
+                    }).set('ai', function (button) {
                         return get.value(button.link, _status.event.player);
-                    }).set('dialog', dialog.videoId);
+                    });
                     event.chooseButton = chooseButton;
-                    'step 3';
+                    'step 2';
                     if (!result.links[0]) {
                         ui.clear();
                         event.finish();
@@ -445,9 +446,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             event.discards.push(result.links[0]);
                         event.cards.remove(result.links[0]);
                     }
-                    'step 4';
+                    'step 3';
                     ui.clear();
-                    'step 5';
+                    'step 4';
                     event.dialog.close();
                     _status.dieClose.remove(event.dialog);
                     game.broadcast(function (id) {
@@ -460,7 +461,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (event.cards.length == 0) {
                         event.finish();
                     }
-                    'step 6';
+                    'step 5';
                     game.cardsGotoOrdering(cards).relatedEvent = event.getParent();
                     var dialog = ui.create.dialog('奋学(获取一种花色牌)', cards, true);
                     _status.dieClose.push(dialog);
@@ -473,11 +474,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         dialog.videoId = id;
                     }, cards, dialog.videoId);
                     event.dialog = dialog;
-                    var chooseButton = player.chooseButton(true, function (button) {
+                    var chooseButton = player.chooseButton(true).set('dialog', dialog.videoId).set('ai', function (button) {
                         return get.value(button.link, _status.event.player);
-                    }).set('dialog', dialog.videoId);
+                    });
                     event.chooseButton = chooseButton;
-                    'step 7';
+                    'step 6';
                     if (result.links[0]) {
                         game.log(player, '选择了', get.translation(get.suit(result.links[0]) + '2'));
                         event.cards.forEach(card => {
@@ -496,7 +497,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     if (event.gains.length) {
                         player.gain(event.gains, 'gain2');
                     }
-                    'step 8';
+                    'step 7';
                     event.dialog.close();
                     _status.dieClose.remove(event.dialog);
                     game.broadcast(function (id) {
@@ -506,15 +507,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                             _status.dieClose.remove(dialog);
                         }
                     }, event.dialog.videoId);
-                },
-                check(event, player) {
-                    if (player.hp < 2)
-                        return false;
-                    if (player.countCards('h') < 1)
-                        return true;
-                    if (player.countCards('e') >= 2)
-                        return true;
-                    return false;
                 },
                 ai: {
                     result: {

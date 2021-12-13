@@ -62,6 +62,8 @@ window.noname_source_list=[
 	'game/game.js',
 	'game/data/grouplist.js',
 	'game/data/translation.js',
+	'game/methods/filter.js',
+	'game/methods/sort.js',
 	'game/http.js',
 	'game/jszip.js',
 	'game/NoSleep.js',

@@ -66,14 +66,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
             let child = evt;
             this._LinkChild.push(child);
             child.parent = this;
-            child.statused = true;
+            child.mounted = true;
             return child;
         }
         LinkAfter(evt) {
             let after = evt;
             this._LinkAfter.push(after);
             after._before = this;
-            after.statused = true;
+            after.mounted = true;
             return after;
         }
         changeToZero() {

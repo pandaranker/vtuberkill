@@ -1,4 +1,4 @@
-window.translate = {
+window.data_translate = {
 	sc: '打钱',
 	ship: '上舰',
 	flower: '鲜花',
@@ -104,6 +104,7 @@ window.translate = {
 	ego: '复',
 	chidori: '鸟',
 	lucca: 'L',
+	RedC: '红',
 	double: '多',
 	wei2: '魏国',
 	shu2: '蜀国',
@@ -136,6 +137,7 @@ window.translate = {
 	ego2: 'Egolive',
 	chidori2: '千鸟战队',
 	lucca2: 'Lucca事务所',
+	RedC2: 'RedCircle',
 	double2: '多势力',
 	male: '男',
 	female: '女',

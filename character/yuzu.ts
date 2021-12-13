@@ -228,6 +228,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			/**麟＆犀 */
 			linxi: ['female','qun',5,['lilian','zihuai'],['guoV']],
 
+			/**雨街F */
+			AmemachiF: ['female','RedC',3,['ciling','xiyu'],['guoV']],
+
 			/**中国绊爱 */
 			zhongguobanai: ['female','NetEase',4,['liying','fuyu'],['guoV']],
 			/**栗子酱 */
@@ -558,8 +561,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						return _status.event.getParent().filterCard({ name: button.link[2] }, player, _status.event.getParent());
 					},
 					check(button) {
+						let player = _status.event.player
 						if (button.link[2] == 'wugu')	return 0;
-						var effect = player.getUseValue(button.link[2]);
+						let effect = player.getUseValue(button.link[2]);
 						if (effect > 0)	return effect;
 						return 0;
 					},
@@ -2257,9 +2261,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				round:1,
 				priority:996,
 				filter(event,player){
-					return game.countPlayer(cur => {
-						return cur.hp!=Infinity;
-					});
+					return game.countPlayer(cur => cur.hp>0&&cur.hp!==Infinity);
 				},
 				check(event,player){
 					if(event.player!=player&&get.attitude(player,event.player)<0&&event.player.inRange(player))	return true;
@@ -2269,11 +2271,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				content(){
 					'step 0'
 					let next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌',true,function(card,player,target){
-						return target.hp!=Infinity;
+						return target.hp>0&&target.hp!==Infinity;
 					});
 					next.set('ai',function(target){
-						if(player.inRange(target))	return 2-get.attitude(player,target);
-						else return target.hp-(get.attitude(player,target)/2);
+						let num = target.hp
+						if(player.storage.qishi===true)	num+=target.hp
+						if(player.inRange(target))	return num-get.attitude(player,target);
+						else return num-(get.attitude(player,target)/2);
 					})
 					'step 1'
 					if(result.bool&&result.targets?.length){
@@ -3345,7 +3349,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.getStat('damage');
 				},
 				check(event,player){
-					return get.recoverEffect(player.storage?.huawen?.length ? player.storage.huawen[0] : player,player,player);
+					return get.recoverEffect((player.storage?.huawen?.length ? player.storage.huawen[0] : player),player,player)>0;
 				},
 				content(){
 					if(player.getStat().skill.huawen!=undefined){
@@ -9528,7 +9532,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.chooseTarget(get.prompt('wadao'),function(card,player,target){
+					player.chooseTarget(get.prompt('wadao2'),function(card,player,target){
 						return target!==player;
 					}).ai=function(target){
 						return get.attitude2(target);
@@ -9812,7 +9816,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}else if(event.current.isGuoV()){
 						let next=event.current.chooseToRespond('是否替'+get.translation(player)+'打出一张杀？',{name:'sha'});
 						next.set('ai',function(){
-							let [player, source] = [_status.event.player, _status.event.source];
+							let {player, source} = _status.event;
 							return (get.attitude(player,source)-2);
 						});
 						next.set('source',player);
@@ -10869,12 +10873,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
-			mengnan:{
-				trigger:{
-					player:['loseAfter','addJudgeAfter'],
-					global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter'],
-				},
-				forced:true,
+			mengnan:new toSkill('trigger',{
 				filter(event,player){
 					if(event.name=='addJudge'&&event.player==player)	return true;
 					let evt=event.getl(player);
@@ -10898,8 +10897,22 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							}
 						}
 					}
+				},
+				subSkill:{
+					yuenanBy:new toSkill('trigger',{
+						filter(event,player){
+							return player.isAlive();
+						},
+						content(){
+							player.removeSkill('mengnan')
+							player.addSkill('yuenan')
+						},
+					},'forced').setT('dyingAfter')
 				}
-			},
+			},'forced','group:mengnan_yuenanBy','derivation:yuenan').setT({
+				player:['loseAfter','addJudgeAfter'],
+				global:['equipAfter','addJudgeAfter','gainAfter','loseAsyncAfter'],
+			}),
 			//无理
 			lique:{
 				trigger:{target:'useCardToTargeted'},
@@ -12821,6 +12834,88 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//雨街F
+			ciling:new toSkill('trigger',{
+				filter(event,player){
+					return game.countPlayer(cur => cur!==player&&!cur.hasSkill('ciling2'))
+				},
+				content(){
+					'step 0'
+					player.chooseTarget(get.prompt2('ciling'),function(card,player,target){
+						return target!==player&&!target.hasSkill('ciling2')
+					}).set('ai',tar => get.attitude2(tar)<0)
+					'step 1'
+					if(result.targets?.length){
+						event.target = result.targets[0];
+						player.logSkill('ciling',event.target);
+						event.target.addSkill('ciling2')
+						trigger.cancel();
+						game.delayx();
+					}
+				},
+				ai:{
+					threaten:1.1,
+				},
+				involve:'ciling',
+				subSkill:{
+					dis:new toSkill('trigger',{
+						filter(event,player){
+							return event.player.isIn()&&event.player!==player&&event.player.hasSkill('ciling2')
+						},
+						content(){
+							'step 0'
+							event.cards = trigger.cards
+							event.target = trigger.player
+							player.chooseControl('dialogcontrol',['1.获得其弃牌', '2.视为对其使用一张【杀】','取消']).set('ai',function(){
+								let {player,target,cards} = _status.event.getParent();
+								// let values = cards?0:get.value(cards,'raw',player)
+								let values = get.value(cards,'raw',player)
+								if(get.effect(target,{name:'sha'},player,player)>values/3)	return 0
+								if(values>0)	return 1
+								return 2
+							}).set('check',(get.attitude(player,_status.currentPhase)>0)?0:1).set('prompt',get.prompt2('ciling',event.target)).set('addDialog',event.cards?[event.cards]:[]);
+							'step 1'
+							if(result.control.indexOf('1.')===0&&event.cards.length){
+								player.gain(event.cards,'log','gain2')
+							}
+							else if(result.control.indexOf('2.')===0){
+								player.useCard({name:'sha'},event.target,false)
+							}
+						}
+					}).setT({global:'phaseDiscardEnd'})
+				}
+			},'direct','group:ciling_dis').setT('phaseUseBefore'),
+			ciling2:new toSkill('mark',{
+				init(player,skill){
+					if(!player.storage[skill])	player.storage[skill] = 0;
+				},
+				filter(event,player){
+					return event.name==='dying'||event.target.hasSkill('ciling')
+				},
+				intro:{
+					content:'被追杀中，已累计对杀手使用#张【杀】'
+				},
+				content(){
+					if(trigger.name==='dying'){
+						delete player.storage.ciling2
+						player.removeSkill('ciling2')
+					}
+					else{
+						if(++player.storage.ciling2>=3){
+							delete player.storage.ciling2
+							player.removeSkill('ciling2')
+						}
+					}
+				}
+			},'locked','mark').setT(['sha','dying'], 'Begin'),
+			xiyu:new toSkill('trigger',{
+				filter(event,player){
+					return player!==_status.currentPhase
+				},
+				content(){
+					player.draw()
+				}
+			},'forced').setT('useCard2'),
 			//Gaku
 			exi:{
 				enable:'phaseUse',
@@ -15595,7 +15690,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					let list:Dialogword = ['获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力','令其获得本回合进入弃牌堆的一种类型的牌，且若这些牌点数之积大于13，对其造成1点伤害','取消'];
 					list.removeArray(player.storage.mishu);
 					if(list.length){
-						let next = player.chooseControl('dialogcontrol',list).set('ai',function(){
+						player.chooseControl('dialogcontrol',list).set('ai',function(){
 							let evt = _status.event.getParent();
 							let controls = _status.event.controls.slice(0);
 							if(evt.discards.length>=4&&controls.includes('获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力'))	return 0;
@@ -16689,6 +16784,106 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				},
 			},
+			yuenan:new toSkill('trigger',{
+				filter(event,player){
+					return !event.numFixed;
+				},
+				check(event,player){
+					return true;
+				},
+				content(){
+					'step 0'
+					trigger.changeToZero();
+					'step 1'
+					var cards = event.cards = get.cards(5);
+					game.cardsGotoOrdering(cards).relatedEvent=event.getParent();
+					var dialog=ui.create.dialog('『月喃』使用一张牌',cards);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['月喃',get.cardsInfo(cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						let dialog=ui.create.dialog('月喃',cards);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},cards,dialog.videoId);
+					event.dialog=dialog;
+					game.log(player,'亮出了','#y牌堆顶的牌');
+					player.chooseButton().set('dialog',dialog.videoId).set('filterButton',function(button){
+						let player=_status.event.player;
+						return player.hasUseTarget(button.link)
+					}).set('ai',button => {
+						let player=_status.event.player;
+						let effect = player.getUseValue(button.link);
+						if (effect > 0)	return effect;
+						return 0;
+					});
+					'step 2'
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+					if(!result.links[0]){
+						event.goto(5)
+					}
+					else{
+						player.chooseUseTarget(result.links[0],true,false);
+						event.cards.remove(result.links[0]);
+					}
+					'step 3'
+					if(event.cards.length==0){
+						event.finish()
+						return
+					}
+					var cards = event.cards
+					var dialog=ui.create.dialog('『月喃』使用一张牌',cards);
+					_status.dieClose.push(dialog);
+					dialog.videoId=lib.status.videoId++;
+					game.addVideo('cardDialog',null,['月喃',get.cardsInfo(cards),dialog.videoId]);
+					event.getParent().preResult=dialog.videoId;
+					game.broadcast(function(cards,id){
+						var dialog=ui.create.dialog('月喃',cards);
+						_status.dieClose.push(dialog);
+						dialog.videoId=id;
+					},cards,dialog.videoId);
+					event.dialog=dialog;
+					game.log(player,'亮出了','#y牌堆顶的牌');
+					player.chooseButton().set('dialog',dialog.videoId).set('filterButton',function(button){
+						let player=_status.event.player;
+						return player.hasUseTarget(button.link)
+					}).set('ai',button => {
+						let player=_status.event.player;
+						let effect = player.getUseValue(button.link);
+						if (effect > 0)	return effect;
+						return 0;
+					});
+					'step 4'
+					if(!result.links[0]){
+						event.goto(5)
+					}
+					else{
+						player.chooseUseTarget(result.links[0],true,false);
+					}
+					'step 5'
+					event.dialog.close();
+					_status.dieClose.remove(event.dialog);
+					game.broadcast(function(id){
+						var dialog=get.idDialog(id);
+						if(dialog){
+							dialog.close();
+							_status.dieClose.remove(dialog);
+						}
+					},event.dialog.videoId);
+					if(event.cards.length==0){
+						event.finish();
+					}
+				},
+			}).setT('phaseDrawBegin1'),
 		},
 		card:{
 			niwei_sha:{
@@ -17235,6 +17430,16 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			jinghua: `镜花水月`,
 			jinghua_info: `出牌阶段限一次，你可以将X张牌依次展示并交给不同角色，令其无法使用相同类型的牌，直到你的下个回合开始（X为你本回合使用【杀】的次数）。`,
 			
+			AmemachiF: `雨街F`,
+			ciling: `刺令`,
+			ciling_info: `你可以跳过出牌阶段，改为指定一名其他角色，其每次弃牌阶段结束后，你可以选择一项：
+			1.获得其弃牌；2.视为对其使用一张【杀】。<br>
+			『刺令』状态会持续直至其进入濒死状态或其对你使用了三张【杀】。`,
+			ciling2: `刺令`,
+			ciling2_info: `被杀手刺杀中`,
+			xiyu: `细雨`,
+			xiyu_info: `锁定技。你于回合外使用牌时，摸一张牌。`,
+
 			linxi: `麟＆犀`,
 			lilian: `历敛`,
 			lilian_info: `准备阶段，你可以令一名角色摸等同你体力上限的牌，然后令你不为全场唯一最低的体力上限扣减1点。`,
