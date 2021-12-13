@@ -694,12 +694,12 @@
                             }
                             else {
                                 delete window.cheat;
-                                delete window.game;
-                                delete window.ui;
-                                delete window.get;
-                                delete window.ai;
-                                delete window.lib;
-                                delete window._status;
+                                // delete window.game;
+                                // delete window.ui;
+                                // delete window.get;
+                                // delete window.ai;
+                                // delete window.lib;
+                                // delete window._status;
                             }
                         },
                         unfrequent: true,
@@ -7983,8 +7983,15 @@
                     }
                     lib.assetURL = noname_inited;
                 }
+                console.log(config.dev)
                 lib.init.js(lib.assetURL + 'game/data', ['translation','grouplist'],function () {
                     let list = ['translate','group','groupnature']
+                    window.game = game;
+                    window.ui = ui;
+                    window.get = get;
+                    window.ai = ai;
+                    window.lib = lib;
+                    window._status = _status;
                     for(let i of list){
                         let v = 'data_'+i
                         if(window[v]){
@@ -7994,6 +8001,14 @@
                         }
                     }
                 });
+                if(!config.dev){
+                    window.game = game;
+                    window.ui = ui;
+                    window.get = get;
+                    window.ai = ai;
+                    window.lib = lib;
+                    window._status = _status;
+                }
                 lib.init.js(lib.assetURL + 'game/methods', ['filter','sort'],function () {
                     let list = ['filter','sort']
                     for(let i of list){
@@ -8005,6 +8020,14 @@
                         }
                     }
                 });
+                // if(!config.dev){
+                //     delete window.game;
+                //     delete window.ui;
+                //     delete window.get;
+                //     delete window.ai;
+                //     delete window.lib;
+                //     delete window._status;
+                // }
                 //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
                 var config3 = null;
                 var proceed = function (config2) {
@@ -9173,7 +9196,7 @@
                     var card = lib.imported.card;
                     var character = lib.imported.character;
                     var play = lib.imported.play;
-                    delete window.game;
+                    // delete window.game;
                     var i, j, k;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
@@ -11965,7 +11988,7 @@
                         event.finish();
                     }
                     'step 1'
-                    if (!lib.config.dev) delete window.game;//??
+                    // if (!lib.config.dev) delete window.game;
                     var character = lib.imported.character;
                     var card = lib.imported.card;
                     var i, j, k;
@@ -12057,7 +12080,7 @@
                     lib.init.js(lib.assetURL + 'mode', event.mode, game.resume);
                     game.pause();
                     'step 1'
-                    if (!lib.config.dev) delete window.game;
+                    // if (!lib.config.dev) delete window.game;
                     event.result = lib.imported.mode[event.mode];
                     delete lib.imported.mode[event.mode];
                 },
@@ -36654,7 +36677,7 @@
         loadModeAsync: function (name, callback) {
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete window.game;
+                // if (!lib.config.dev) delete window.game;
                 script.remove();
                 var content = lib.imported.mode[name];
                 delete lib.imported.mode[name];
@@ -36677,7 +36700,7 @@
             }
             window.game = game;
             var script = lib.init.js(lib.assetURL + 'mode', name, function () {
-                if (!lib.config.dev) delete window.game;
+                // if (!lib.config.dev) delete window.game;
                 script.remove();
                 var mode = lib.imported.mode;
                 _status.sourcemode = lib.config.mode;
@@ -44542,7 +44565,7 @@
                                     _status.importingExtension = true;
                                     window.game = game;
                                     lib.init.js(lib.assetURL + 'extension/' + that.info.name, 'extension', function () {
-                                        if (!lib.config.dev) delete window.game;
+                                        // if (!lib.config.dev) delete window.game;
                                         if (game.importedPack) {
                                             var extname = game.importedPack.name;
                                             if (lib.config.extensions.contains(extname)) {
