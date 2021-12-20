@@ -75,6 +75,11 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			mibai: ['female','RedC',4,['zhepie','chumo'],['guoV']],
 			/**亚哈 */
 			Ahab: ['female','RedC',4,['ahbingyi','sujian'],['guoV']],
+
+			/**宇佐纪诺诺 */
+			UsakiNono: ['female','ego',4,['tuhui','fuyou'],['guoV']],
+			/**莱妮娅 */
+			Rynia: ['female','ego',4,['yinxu'],['guoV']],
 			
 			/**喵喵人 */
 			Nyanners: ['female','vshojo',3,['shenghuo','dipo','miaoche'],['zhu','yingV']],

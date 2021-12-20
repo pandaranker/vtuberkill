@@ -4725,10 +4725,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 content() {
                     'step 0';
                     if (player.countCards('he', { subtype: 'equip1' }) && player == trigger.source) {
-                        player.chooseToDiscard(get.prompt('kangding'), 'he', { subtype: 'equip1' });
+                        player.chooseToDiscard(get.prompt('kangding'), true, 'he', { subtype: 'equip1' });
                     }
                     else {
-                        player.chooseToDiscard(get.prompt('kangding'), 'he', { subtype: 'equip2' });
+                        player.chooseToDiscard(get.prompt('kangding'), true, 'he', { subtype: 'equip2' });
                         event.goto(2);
                     }
                     'step 1';

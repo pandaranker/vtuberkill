@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.04',
+	version:'1.9.104.05',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.04中型更新：新增势力红圈RedCircle，新增角色雨街F【红圈】，加强蜜球兔，修复部分bug`,
+		`1.9.104.05小型更新：新增角色艾露露【红圈】、露露娜Ruruna【VR/登月计划】，小可的基础体力值因为负伤下调（体力上限不变），修复部分bug`,
 		`暂时回退版本`,
 		`现在于选将界面可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -60,7 +60,10 @@ window.noname_update={
 		// 'game/module.js',
 		'game/game.js',
 		'game/directory.js',
+		'game/data/card.js',
+		'game/data/emotionList.js',
 		'game/data/grouplist.js',
+		'game/data/menu.js',
 		'game/data/translation.js',
 		'game/methods/filter.js',
 		'game/methods/sort.js',

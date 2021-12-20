@@ -16,13 +16,21 @@ if(typeof module === "object" && typeof module.exports === "object") require.mai
     const core_1 = require("./core/core");
     window.game = core_1.game;
     window.event = core_1._status.event;
-    window.player = core_1._status.event.player;
+    // window.player = core_1._status.event.player;
     window._context = core_1._status;
     core_1.lib.figure = '<span style="font-family: LuoLiTi2;color: #dbb">';
     core_1.lib.figurer = (text) => ` ${core_1.lib.figure}${text}</span> `;
     core_1.lib.spanClass = (str, classes) => {
         return `<span class="${classes}">${str}</span>`;
     };
+    window.vkCore = {
+        game:core_1.game,
+        ui:core_1.ui,
+        get:core_1.get,
+        ai:core_1.ai,
+        lib:core_1.lib,
+        _status:core_1._status
+    }
     core_1.game.galgameMod();
     core_1.lib.init.init();
     console.log('Game initialized.');

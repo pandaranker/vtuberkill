@@ -41,6 +41,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             Miqiutu: ['female', 'VirtuaReal', 4, ['zhazong', 'mengnan'], ['guoV']],
             mibai: ['female', 'RedC', 4, ['zhepie', 'chumo'], ['guoV']],
             Ahab: ['female', 'RedC', 4, ['ahbingyi', 'sujian'], ['guoV']],
+            UsakiNono: ['female', 'ego', 4, ['tuhui', 'fuyou'], ['guoV']],
+            Rynia: ['female', 'ego', 4, ['yinxu'], ['guoV']],
             Nyanners: ['female', 'vshojo', 3, ['shenghuo', 'dipo', 'miaoche'], ['zhu', 'yingV']],
             Veibae: ['female', 'vshojo', 4, ['zhexun', 'yuci'], ['yingV']],
             Ironmouse: ['female', 'vshojo', 3, ['haosun', 'banmao'], ['yingV']],

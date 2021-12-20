@@ -49,6 +49,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			Lovely: ['female','psp',4,['yangyao','shili'],['guoV','P_SP']],
 			/**阿秋 */
 			AkiRinco: ['female','psp',4,['jiren','luqiu','canxin'],['guoV','P_SP']],
+			/**星汐Seki */
+			Seki: ['female','psp',4,['zhuxing','shanzhu'],['guoV','P_SP']],
 
 			/**花谱 */
 			Kaf:['female','vwp',3,['liuhua','yishi','shiji'],['zhu']],
@@ -80,6 +82,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			Chiyuu: ['female','VirtuaReal',4,['anyou','mingyou'],['guoV']],
 			/**茉里Mari */
 			Mari: ['female','VirtuaReal',4,['tingzhu','xuemo'],['guoV']],
+			/**弥希MIKI */
+			Miki: ['female','VirtuaReal',4,['xingxu','qingsui'],['guoV']],
+			/**真绯瑠mahiru */
+			Mahiru: ['female','VirtuaReal',4,['jusheng','xingqu'],['guoV']],
 			
 			/**胡桃 */
 			Menherachan: ['female','NetEase',4,['shangbei','qianqing'],['guoV']],

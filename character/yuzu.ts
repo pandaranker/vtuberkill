@@ -119,6 +119,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 
 			/**小柔 */
 			Xiaorou: ['female','xuyan',3,['rouqing','guangying'],['guoV']],
+			/**艾露露 */
+			Ailurus: ['female','xuyan',4,['aldanyan','lunao'],['guoV']],
 
 
 			/**兰若Ruo */
@@ -175,15 +177,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			yizhiYY: ['male','psp',4,['bianshi'],['guoV','P_SP']],
 			/**西魔幽 */
 			AkumaYuu: ['male','psp',4,['akjianwu','tongzhao'],['guoV','P_SP']],
-			/**星汐Seki */
-			Seki: ['female','psp',4,['zhuxing','shanzhu'],['guoV','P_SP']],
 			/**笙歌 */
 			shengge: ['female','psp',4,['dixian','gumei'],['guoV','P_SP']],
-
-			/**宇佐纪诺诺 */
-			UsakiNono: ['female','ego',4,['tuhui','fuyou'],['guoV']],
-			/**莱妮娅 */
-			Rynia: ['female','ego',4,['yinxu'],['guoV']],
 
 			/**艾瑞思 */
 			airuisi: ['female','chidori',4,['maozhi','baifei'],['zhu','guoV']],
@@ -202,15 +197,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			/**无理 */
 			Muri: ['female','VirtuaReal',3,['lique','zhangdeng'],['guoV']],
 			/**小可 */
-			xiaoke: ['female','VirtuaReal',4,['dianying','ganfen'],['guoV']],
+			xiaoke: ['female','VirtuaReal','3/4',['dianying','ganfen'],['guoV']],
 			/**Hanser */
 			Hanser:['female','VirtuaReal',3,['naiwei','cishan'],['guoV']],
 			/**勾檀Mayumi */
 			Mayumi: ['female','VirtuaReal',4,['jinzhou','gouhun'],['guoV']],
-			/**弥希MIKI */
-			Miki: ['female','VirtuaReal',4,['xingxu','qingsui'],['guoV']],
-			/**真绯瑠mahiru */
-			Mahiru: ['female','VirtuaReal',4,['jusheng','xingqu'],['guoV']],
+			/**露露娜Ruruna */
+			Ruruna: ['female','VirtuaReal',4,['miluan','shenjiao'],['guoV']],
 
 			/**启娜娜米 */
 			ap_Nana7mi:['female','VirtuaReal',4,['niyou','shalu'],['guoV']],
@@ -10817,6 +10810,101 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			//艾露露
+			aldanyan:new toSkill('active',{
+				usable: 1,
+				filter(event,player){
+					return player.countCards('he')>0;
+				},
+				filterTarget(card,player,target){
+					if(target.hp>=player.hp) return true;
+				},
+				selectCard:2,
+				discard:false,
+				prepare:'give2',
+				content(){
+					'step 0'
+					target.gain(cards,player);
+					'step 1'
+					event.list = ['令'+get.translation(player)+'获得你的三张牌','受到一点伤害']
+					target.chooseControl('dialogcontrol',event.list).set('ai',function(){
+						let {player, source, controls} = _status.event;
+						if(get.attitude(player,source)>0||player.countCards('he')==0)	return 0;
+						if(get.damageEffect(player,source,player)<0&&player.hp==1)		return 0;
+						if(get.damageEffect(player,source,player)>0)	return 1;
+						return controls.randomGet();
+					}).set('source',player);
+					'step 2'
+					switch(result.control){
+						case event.list[0]:{
+							player.gainPlayerCard(target,[1,3],true,'he','visible');
+							break;
+						}
+						case event.list[1]:{
+							target.damage(player);
+							game.delayx();
+							break;
+						}
+					}
+				},
+				ai:{
+					order(item,player){
+						return 6
+					},
+					result:{
+						player(player,target){
+							return -1;
+						},
+						target(player,target){
+							if(target.countCards('he')) return -2;
+							return get.damageEffect(target,player,target);
+						}
+					},
+					threaten:0.4,
+					expose:0.2,
+				},
+			},'filterCard'),
+			lunao:new toSkill('trigger',{
+				trigger:{source:'damageBegin2'},
+				priority:199,
+				content(){
+					'step 0'
+					let list=lib.linked.slice(0);
+					list.remove('kami');
+					list.remove(trigger.nature);
+					event.map = {};
+					for(let i=0;i<list.length;i++){
+						event.map[get.rawName(list[i])] = list[i];
+						list[i] = get.rawName(list[i]);
+					}
+					list.push('取消');
+					player.chooseControl('dialogcontrol',list).set('ai',function(){
+						return list.randomGets();
+					}).set('prompt',get.prompt2('lunao'));
+					'step 1'
+					if(result.control!='取消'){
+						event.target = trigger.player
+						player.logSkill('lunao',event.target)
+						trigger.nature = event.map[result.control]
+						trigger.num ++
+						let halt = game.createEvent('halt');
+						event.next.remove(halt);
+						trigger.after.push(halt);
+						halt.setContent(function(){
+							var evt=_status.event.getParent('phaseUse');
+							if(evt&&evt.name=='phaseUse'){
+								evt.skipped=true;
+							}
+							var evt=_status.event.getParent('phase');
+							if(evt&&evt.name=='phase'){
+								evt.finish();
+							}
+						});
+					}else{
+						event.finish();
+					}
+				}
+			},'direct'),
 			//蜜球兔
 			zhazong:{
 				trigger:{player:'phaseUseEnd'},
@@ -11693,6 +11781,84 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					},
 				},
 			},
+			//露露娜Ruruna
+			miluan:new toSkill('active',{
+				usable:1,
+				filterTarget(card,player,target){
+					return player.canCompare(target);
+				},
+				selectTarget:[1,2],
+				content(){
+					player.chooseToCompare(targets).callback=lib.skill.miluan.callback;
+				},
+				callback(){
+					if(event.winner!=player){
+						player.damage(target)
+						player.draw(2)
+					}
+					if(event.winner!=target){
+						target.damage(player)
+						target.draw(2)
+					}
+				},
+				ai:{
+					order(item,player){
+						return 6
+					},
+					result:{
+						player(player,target){
+							if(player.hp===1)	return -2
+							return 1;
+						},
+						target(player,target){
+							if(target.hp===1||target.countCards('h')===1) return get.damageEffect(target,player,target)
+							return 2;
+						}
+					},
+					threaten:0.2
+				},
+			},'multitarget'),
+			shenjiao:new toSkill('trigger',{
+				trigger:{player:'damageAfter'},
+				filter(event,player){
+					return event.num>0;
+				},
+				content(){
+					'step 0'
+					player.chooseTarget(get.prompt2('shenjiao')).set('ai',function(target){
+						let player = _status.event.player;
+						return get.attitude(player,target)/((target.storage.shenjiao_dam||0)+1);
+					})
+					'step 1'
+					if(result.targets?.length){
+						event.target = result.targets[0]
+						player.logSkill('shenjiao',event.target)
+						event.target.hasSkill('shenjiao_dam')?event.target.storage.shenjiao_dam++:event.target.addTempSkill('shenjiao_dam')
+					}
+				},
+			},'direct').set('subSkill',{
+				dam:new toSkill('mark',{
+					init(player,skill) {
+						if(!player.storage[skill]){
+							player.storage[skill] = 1;
+						}
+					},
+					trigger:{player:'damageBegin3'},
+					content(){
+						trigger.num -= player.storage.shenjiao_dam
+					},
+					ai:{
+						effect:{
+							target(card,player,target,current){
+								if(get.tag(card,'damage')&&target.storage.shenjiao_dam)	return [1,-target.storage.shenjiao_dam];
+							}
+						},
+					},
+					intro:{
+						content:'受到的伤害-#'
+					}
+				},'forced','onremove','mark')
+			}),
 			//小可
 			mian:{
 				init(player,skill) {
@@ -14918,7 +15084,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					return target.countCards('h')<player.countCards('h');
 				},
 				discard:false,
-				lose:false,
 				prepare:'give2',
 				content(){
 					'step 0'
@@ -14945,7 +15110,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							if(target.hasSkillTag('nogain')) return 0;
 							return ui.selected.cards.length;
 						}
-					}
+					},
+					threaten:0.6
 				}
 			},
 			//萌实
@@ -17257,6 +17423,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			guangying: `光萦`,
 			guangying_info: `锁定技 当你一次性获得四张以上的牌后，你回复一点体力；当你不因使用失去手牌后，你『柔情』的（）值-1，直到你下一次发动『柔情』。`,
 		
+			Ailurus: `艾露露`,
+			aldanyan: `胆燕`,
+			aldanyan_info: `出牌阶段限一次，你可以将两张牌交给体力不少于你的一名角色，令其选择一项：
+			令你获得其三张牌；受到你造成的一点伤害。`,
+			aldanyan_append:lib.figurer(`特性：直接伤害`),
+			lunao: `胡闹`,
+			lunao_info: `当你造成伤害时，若目标体力不多于你，你可以令本次伤害改为指定属性且此伤害+1，本次伤害结算后立即结束当前回合。`,
+		
 			ByakuyaMayoi: `白夜真宵`,
 			bykuangxin: `狂信`,
 			bykuangxin_info: `出牌阶段限一次，你可以进行判定直到出现两次点数为A～10的结果，然后你获得其他判定牌，并根据判定顺序组合（第一次为个位、第二次为十位）执行：<br>
@@ -17705,6 +17879,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			gouhun: `勾魂`,
 			gouhun_info: `出牌阶段限一次，你可以亮出牌堆顶（3）张牌，并选择一项：获得其中一种类型的牌；令所有（）值+1。<br>你以此技能获得的基本牌不计入次数，锦囊牌不计入手牌上限。`,
 			gouhun_append:lib.figurer(`特性：成长`),
+
+			Ruruna: `露露娜Ruruna`,
+			Ruruna_ab: `露露娜`,
+			miluan: `迷乱`,
+			miluan_info: `出牌阶段，你可以与至多两名角色拼点，没赢的角色受到来自对方的一点伤害并摸两张牌。`,
+			shenjiao: `身教`,
+			shenjiao_info: `你受到伤害后，可以令一名角色受到的伤害-1直到回合结束。`,
+			shenjiao_append:lib.figurer(`特性：辅助`),
 		
 			xiaoke: `小可学妹`,
 			xiaoke_ab: `小可`,
