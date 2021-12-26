@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: "sololive",

@@ -68,7 +68,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             }
-            return this.set('trigger', { ...this.trigger, ...tri });
+            return this.set('trigger', Object.assign(Object.assign({}, this.trigger), tri));
         }
     }
     return {
@@ -110,6 +110,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             shenxiaoya: ['female', 'xuefeng', 4, ['xyshixi', 'wenxin'], ['guoV']],
             yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
             AkumaYuu: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
+            AiTeN: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
             shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP']],
             airuisi: ['female', 'chidori', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
             aibai: ['female', 'chidori', 3, ['bianyin', 'shabai'], ['guoV']],
@@ -8237,6 +8238,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     expose: 0.1,
                     threaten: 0.8,
                 },
+                involve: 'erni',
                 subSkill: {
                     used: {}
                 },
@@ -8344,6 +8346,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             yinzun: {
                 unique: true,
                 zhuSkill: true,
+                involve: 'chonghuang',
             },
             jiren: {
                 audio: 6,
@@ -11036,6 +11039,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         player.addSkill('zonghe_mark');
                     }
                 },
+                involve: 'guangan',
                 subSkill: {
                     mark: {
                         mark: 'character',

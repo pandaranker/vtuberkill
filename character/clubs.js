@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
     return {
         name: 'clubs',
@@ -310,6 +310,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         splayer.out('changsheng_diao');
                     }, trigger.player);
                 },
+                involve: 'daimeng',
                 subSkill: {
                     diao: {
                         trigger: { global: ['phaseAfter', 'turnOverAfter'] },

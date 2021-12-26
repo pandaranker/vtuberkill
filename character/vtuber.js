@@ -949,6 +949,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                         }
                     }
                 },
+                involve: 'zhongxinghezou',
                 group: ['xiugong_times', 'xiugong_clear'],
                 subSkill: {
                     times: {

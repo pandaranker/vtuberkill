@@ -4951,7 +4951,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
                 if (info.round) {
                     var roundname = skill + '_roundcount';
                     player.storage[roundname] = info.round;
-                    // player.storage[roundname] = game.roundNumber;
+                    if (!player.hasSkill(roundname))
+                        player.addSkill(roundname);
                     player.syncStorage(roundname);
                     player.markSkill(roundname);
                 }

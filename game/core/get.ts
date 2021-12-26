@@ -2316,12 +2316,37 @@ mixin(get, /**@lends module:core.get */ {
                 let tra = get.translation(i)
                 if(tra.indexOf('(')>0)    tra = tra.substring(0,tra.indexOf('('))
                 let reg = new RegExp(`『(${tra})』`,'g')
-                str = str.replace(reg, `<span class="iText" data-introLink="${i}">『$1』</span>`)
+                str = str.replace(reg, `<span class="iText" data-introLink="${i}">
+                <svg width="${tra.length*1.1+2}em" height="1.3em" style="vertical-align: bottom">
+                    <text x="0" y="80%" fill="white">『$1』</text>
+                    <rect width="100%" height="100%" class="iRec"/>
+                </svg></span>`);
             }
         }
-        ui.interoperableText ??= lib.init.sheet(
-            `.iText{font-style: italic}`
-        );
+        ui.interoperableText ??= [
+            lib.init.sheet(`
+                .iText{
+                    position: relative;
+                    cursor: pointer;
+                    font-style: italic;
+                    line-height: 1em;
+                }
+            `),lib.init.sheet(`
+                .iRec{
+                    fill:transparent;
+                    stroke:aqua;
+                    stroke-width: 6px;
+                    stroke-dasharray: 100 500;
+                    stroke-dashoffset: 230;
+                    transition: 1.2s;
+                }
+            `),lib.init.sheet(`
+                .iText:hover .iRec{
+                    stroke-width: 4px;
+                    stroke-dasharray: 600;
+                    stroke-dashoffset: 0;
+                }
+            `)]);
         return str
     },
     skillInfoTranslation(name, player:PlayerModel):string {
