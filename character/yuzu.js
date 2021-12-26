@@ -110,7 +110,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             shenxiaoya: ['female', 'xuefeng', 4, ['xyshixi', 'wenxin'], ['guoV']],
             yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
             AkumaYuu: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
-            AiTeN: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
             shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP']],
             airuisi: ['female', 'chidori', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
             aibai: ['female', 'chidori', 3, ['bianyin', 'shabai'], ['guoV']],

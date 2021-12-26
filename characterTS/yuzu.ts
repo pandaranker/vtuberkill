@@ -177,7 +177,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			/**西魔幽 */
 			AkumaYuu: ['male','psp',4,['akjianwu','tongzhao'],['guoV','P_SP']],
 			/**莲汰 */
-			AiTeN: ['male','psp',4,['akjianwu','tongzhao'],['guoV','P_SP']],
+			// AiTeN: ['male','psp',4,['akjianwu','tongzhao'],['guoV','P_SP']],
 			/**笙歌 */
 			shengge: ['female','psp',4,['dixian','gumei'],['guoV','P_SP']],
 
