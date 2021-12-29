@@ -3230,9 +3230,9 @@ mixin(lib, /**@lends module:core.lib */ {
                 if (window.isNonameServer) {
                     lib.config.mode = 'connect';
                 }
-                //part: `window.noname_package`，创建于package.js
-                var pack = window.noname_package;
-                delete window.noname_package;
+                //part: `window.vk_package`，创建于package.js
+                var pack = window.vk_package;
+                delete window.vk_package;
                 for (let i in pack.character) {
                     if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
                         lib.config.all.characters.push(i);

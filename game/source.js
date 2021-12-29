@@ -59,7 +59,6 @@ window.noname_source_list=[
 	'game/jszip.js',
 	'game/NoSleep.js',
 	'game/package.js',
-	'game/phantom.js',
 	'game/server.js',
 	'game/source.js',
 	'game/update.js',

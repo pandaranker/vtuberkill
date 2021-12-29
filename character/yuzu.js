@@ -78,6 +78,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             xinyuelan: ['female', 'qun', 4, ['chisha', 'wujian'], ['guoV']],
             Shiranekoyuki: ['female', 'qun', 4, ['jvliu', 'wuxia'], ['riV']],
             TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
+            AoiYui: ['female', 'qun', 3, ['suyuan', 'mujian'], ['riV']],
             Melody: ['female', 'vshojo', 4, ['kuangbiao', 'leizhu', 'tonggan'], ['zhu', 'yingV']],
             Silvervale: ['female', 'vshojo', 4, ['yingling', 'duchun'], ['yingV']],
             ShishiroBotan: ['female', 'holo', 4, ['sbliedan', 'buqiang']],
@@ -110,6 +111,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             shenxiaoya: ['female', 'xuefeng', 4, ['xyshixi', 'wenxin'], ['guoV']],
             yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
             AkumaYuu: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
+            AiTeN: ['male', 'psp', 4, ['langfei', 'xieyun'], ['guoV', 'P_SP']],
             shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP']],
             airuisi: ['female', 'chidori', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
             aibai: ['female', 'chidori', 3, ['bianyin', 'shabai'], ['guoV']],
@@ -593,6 +595,94 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     trigger.player.loseHp(trigger.num);
                 }
             }, 'forced', 'mark:character', 'onremove').setT('damageBefore').set(['intro', { content: '受到的伤害改为体力流失' }]),
+            suyuan: new toSkill('trigger', {
+                filter(event, player) {
+                    if (event.name == 'lose') {
+                        if (event.position != ui.discardPile)
+                            return false;
+                    }
+                    else {
+                        let evt = event.getParent();
+                        if (evt.name != 'orderingDiscard' || !evt.relatedEvent || evt.relatedEvent.player != player || !['useCard', 'respond'].includes(evt.relatedEvent.name))
+                            return false;
+                    }
+                    return get.suit3((event.cards2 || event.cards).filterInD('d')).length >= 3;
+                },
+                content() {
+                    'step 0';
+                    let cards = (trigger.cards2 || trigger.cards).filterInD('d');
+                    event.cards = cards;
+                    player.chooseTarget(function (card, player, target) {
+                        if (player == target)
+                            return false;
+                        return true;
+                    }).set('ai', tar => {
+                        let att = get.attitude2(player, tar);
+                        if (tar.hp == 1)
+                            return att + get.damageEffect(tar, player, player);
+                        return (get.value(_status.event.cards, 'raw', tar) + tar.hp - 5) * att;
+                    }).set('cards', cards).set('createDialog', [get.prompt('suyuan'),
+                        'small', get.skillInfoTranslation('suyuan', player), '令一名其他角色获得这些牌',
+                        [cards, 'card']]);
+                    'step 1';
+                    if (result.bool) {
+                        event.target = result.targets[0];
+                        player.logSkill('suyuan', event.target);
+                        let evt = trigger.getParent().relatedEvent;
+                        if ((trigger.name == 'discard' && !trigger.delay) || (evt === null || evt === void 0 ? void 0 : evt.name) == 'respond')
+                            game.delayx();
+                        event.target.damage('nosource');
+                    }
+                    else
+                        event.finish();
+                    'step 2';
+                    event.target.storage.suyuan = event.cards.length;
+                    event.target.storage.suyuan2 = player;
+                    event.target.addTempSkill('suyuan2', 'none');
+                    event.target.gain(event.cards, 'gain2', 'log');
+                },
+            }, 'direct').setT({ player: 'loseAfter', global: 'cardsDiscardAfter' }),
+            suyuan2: new toSkill('mark', {
+                onremove: ['suyuan', 'suyuan2'],
+                filter(event, player) {
+                    return player.storage.suyuan2 === event.player && player.storage.suyuan;
+                },
+                content() {
+                    trigger.player.logSkill('suyuan', player);
+                    trigger.player.gainPlayerCard(player, true, player.storage.suyuan);
+                }
+            }, 'forced', 'mark:character').setT({ global: 'phaseZhunbeiBegin' }).set(['intro', { content: '在$的下个准备阶段由对方获得牌' }]),
+            mujian: new toSkill('trigger', {
+                content() {
+                    game.filterPlayer(cur => {
+                        cur.addSkill('mujian2');
+                    });
+                }
+            }, 'forced').setT('dieBegin'),
+            mujian2: new toSkill('trigger', {
+                content() {
+                    for (let v of game.dead) {
+                        if (v.isDead() && v.hasSkill('mujian')) {
+                            v.revive(1);
+                            v.logSkill('mujian');
+                            let next = game.createEvent('resetSkill');
+                            next.player = v;
+                            next.setContent([function () {
+                                    let list = get.gainableSkills((info, skill) => {
+                                        return info.enable === 'phaseUse' && !info.forceunique && !info.notemp && !player.hasSkill(skill);
+                                    });
+                                    player.discoverSkill(list);
+                                },
+                                function () {
+                                    let link = result.skill;
+                                    if (link) {
+                                        player.addTempSkill(link, 'dieBegin');
+                                    }
+                                }]);
+                        }
+                    }
+                }
+            }, 'locked', 'direct', 'silent').setT({ global: 'roundStart' }),
             chentu: {
                 enable: 'phaseUse',
                 position: 'h',
@@ -9140,6 +9230,78 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             },
+            langfei: new toSkill('trigger', {
+                filter: function (event, player) {
+                    return get.type(event.card) === 'trick' && get.tag(event.card, 'damage');
+                },
+                content: function () {
+                    trigger.baseDamage++;
+                },
+            }, 'usable').setT('useCard'),
+            xieyun: new toSkill('trigger', {
+                animationColor: 'yami',
+                filter(event, player) {
+                    return game.countPlayer(cur => {
+                        let skills = cur.getSkills(null, false, false);
+                        for (let i of skills) {
+                            if (i != 'xieyun' && lib.skill[i].limited && cur.awakenedSkills.contains(i)) {
+                                return true;
+                            }
+                        }
+                    });
+                },
+                check(event, player) {
+                    return game.countPlayer(cur => {
+                        let skills = cur.getSkills(null, false, false);
+                        for (let i of skills) {
+                            if (i != 'xieyun' && lib.skill[i].limited && cur.awakenedSkills.contains(i)) {
+                                return get.attitude(player, cur) >= 0;
+                            }
+                        }
+                    });
+                },
+                content() {
+                    'step 0';
+                    var _a;
+                    player.awakenSkill('xieyun');
+                    player.chooseTarget('选择『协韵』的目标', true, (card, player, tar) => {
+                        let skills = tar.getSkills(null, false, false);
+                        for (let i of skills) {
+                            if (i != 'xieyun' && lib.skill[i].limited && tar.awakenedSkills.contains(i)) {
+                                return true;
+                            }
+                        }
+                    }, (tar) => {
+                        return get.attitude(player, tar) + 1;
+                    });
+                    'step 1';
+                    if ((_a = result === null || result === void 0 ? void 0 : result.targets) === null || _a === void 0 ? void 0 : _a.length) {
+                        event.target = result.targets[0];
+                        let list = [];
+                        let skills = event.target.getSkills(null, false, false);
+                        for (let i of skills) {
+                            if (i != 'xieyun' && lib.skill[i].limited && event.target.awakenedSkills.contains(i)) {
+                                list.push(i);
+                            }
+                        }
+                        if (list.length == 1) {
+                            event.target.restoreSkill(list[0]);
+                            player.addSkill(list[0]);
+                        }
+                        else if (list.length > 1) {
+                            player.chooseControl(list).set('prompt', '选择一个限定技重置之');
+                        }
+                        else {
+                            event.finish();
+                        }
+                    }
+                    else
+                        event.finish();
+                    'step 2';
+                    event.target.restoreSkill(result.control);
+                    player.addSkill(result.control);
+                }
+            }, 'unique', 'limited', 'skillAnimation', 'forceunique').setT('phaseUseBegin'),
             bianshi: {
                 trigger: { global: 'phaseBegin' },
                 priority: 23,
@@ -9387,14 +9549,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     'step 1';
                     if (result.control != '取消') {
                         player.storage.qianjiwanbian_change = event.map[result.control];
-                        let list = get.gainableSkills(function (info, skill) {
+                        let list = get.gainableSkills((info, skill) => {
                             let name = get.translation(skill);
                             for (let i = 0; i < name.length; i++) {
                                 if (lib.skill.qianjiwanbian.gainable.includes(name.substring(i, i + 1)))
-                                    return true;
+                                    return !info.notemp && !player.hasSkill(skill);
                             }
                         });
-                        list.remove(player.getSkills());
                         list.add('qianjiwanbian');
                         player.discoverSkill(list);
                     }
@@ -13687,7 +13848,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     return (event.cards2 || event.cards).filterInD('d').length > 0;
                 },
                 round: 1,
-                direct: 1,
+                direct: true,
                 content() {
                     'step 0';
                     var _a;
@@ -13705,7 +13866,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                                 num += 2;
                         }
                         return num;
-                    }).set('cards', cards).set('createDialog', [get.prompt('chumo'),
+                    }).set('cards', cards).set('createDialog', [get.prompt2('chumo'),
                         [cards, 'card']]);
                     'step 1';
                     if (result.bool) {
@@ -18456,6 +18617,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             yumeng: `预梦`,
             yumeng2: `预梦`,
             yumeng_info: `你可以跳过判定阶段与摸牌阶段，指定一名其他角色，其受到的伤害改为体力流失，直到你的下个回合开始。`,
+            AoiYui: `碧居结衣`,
+            suyuan: `溯愿`,
+            suyuan_info: `你的牌进入弃牌堆时，若这些牌包含三种或以上花色，
+			你可以令一名其他角色获得这些牌并受到一点无来源的伤害，你于下个准备阶段获得其等量牌。`,
+            mujian: `幕间`,
+            mujian_info: `锁定技 若你以体力为 0 的状态死亡，下个轮次开始时，你复活并发现一个主动技，获得之直到你下次死亡。`,
             TEST: `测试员`,
             Ruki: `琉绮Ruki`,
             Ruki_ab: `琉绮`,
@@ -19252,6 +19419,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             akjianwu_info: `你使用或打出一张基本牌时，可以与对方拼点，赢的角色选择一项：<br>1.于此牌结算后获得之；2.展示并获得对方的一张牌。<br>以此获得【杀】或单体锦囊牌的角色可以立即使用之。`,
             tongzhao: `同召`,
             tongzhao_info: `<font color=#d87>限定技</font> 你拼点没赢时，若你已受伤，你可以发现一次（若为平局则改为发现两次）P-SP势力角色，视为拥有其所有技能直到你下一次体力减少。`,
+            AiTeN: `莲汰`,
+            langfei: `狼吠`,
+            langfei_info: `每回合限一次，你可以令你使用的通常锦囊牌伤害+1。`,
+            xieyun: `协韵`,
+            xieyun_info: `限定技 出牌阶段开始时，你可以指定场上一个已发动的限定技，令持有者重置此技能，然后你获得同名技能。`,
             Seki: `星汐Seki`,
             Seki_ab: `星汐`,
             zhuxing: `铸星`,

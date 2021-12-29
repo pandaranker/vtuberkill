@@ -2965,8 +2965,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     if (window.isNonameServer) {
                         lib.config.mode = 'connect';
                     }
-                    var pack = window.noname_package;
-                    delete window.noname_package;
+                    var pack = window.vk_package;
+                    delete window.vk_package;
                     for (let i in pack.character) {
                         if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
                             lib.config.all.characters.push(i);

@@ -1,4 +1,4 @@
-window.noname_package={
+window.vk_package={
 	character:{
 		// standard:'标准',
 		// refresh:'界限突破',
