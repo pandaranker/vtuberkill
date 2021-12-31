@@ -18688,7 +18688,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             cirong_info: `出牌阶段限一次，你可以将一张手牌交给相邻角色。`,
             maoyu: `猫羽`,
             maoyu_info: `回合内，其他角色因为技能获得牌时，你可以令其选择一项：
-			交给你两张牌；弃置一张非基本牌，令其下家摸一张牌。`,
+			交给你两张牌；弃置一张牌，令其下家摸一张牌。`,
             TEST: `测试员`,
             Ruki: `琉绮Ruki`,
             Ruki_ab: `琉绮`,
