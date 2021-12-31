@@ -5728,7 +5728,7 @@
                 if(Array.isArray(func)){
                     str += `if(event.step==${func.length}) {event.finish();return;}switch(step){`
                     for(let i=0;i<func.length;i++){
-                        str += `case ${i}:{` + func[i].toString().replace(/(?!\.)galgame/g, 'game.galgame').slice(str.indexOf('{'))
+                        str += `case ${i}:{` + func[i].toString().replace(/(?!\.)galgame/g, 'game.galgame').slice(str.indexOf('{'))+'break;'
                     }
                     str += `}`
                 }
@@ -24244,10 +24244,6 @@
                         }
                     };
                     event.settle = function () {
-                        /*if(!event.state){
-                            trigger.cancel();
-                            trigger.result = {yamied: true};
-                        }*/
                         event.finish();
                     };
                 },
@@ -24364,15 +24360,6 @@
                 function () {
                     if (event.yamiresult) {
                         if (result) {
-                            // event.noyami=result.noyami;
-                            // event.directHit=result.directHit;
-                            // event.stateplayer=event.yamiresult;
-                            // if(event.yamiresult2&&event.yamiresult2.used){
-                            // 	event.statecard=event.yamiresult2.used;
-                            // }
-                            // else{
-                            // 	event.statecard=true;
-                            // }
                             event.goto(1);
                         }
                         else event.settle();

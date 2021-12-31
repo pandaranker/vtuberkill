@@ -1610,6 +1610,7 @@ window.vk_asset_list=[
 	'image/skin/MononobeAlice/2.jpg',
 	'image/skin/MorinagaMiu/1.jpg',
 	'image/skin/Muri/1.jpg',
+	'image/skin/NachoNeko/1.jpg',
 	'image/skin/NatsuiroMatsuri/1.jpg',
 	'image/skin/NekomataOkayu/1.jpg',
 	'image/skin/NekomataOkayu/2.jpg',

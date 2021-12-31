@@ -79,6 +79,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             Shiranekoyuki: ['female', 'qun', 4, ['jvliu', 'wuxia'], ['riV']],
             TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
             AoiYui: ['female', 'qun', 3, ['suyuan', 'mujian'], ['riV']],
+            NachoNeko: ['female', 'qun', 4, ['cirong', 'maoyu'], ['riV']],
             Melody: ['female', 'vshojo', 4, ['kuangbiao', 'leizhu', 'tonggan'], ['zhu', 'yingV']],
             Silvervale: ['female', 'vshojo', 4, ['yingling', 'duchun'], ['yingV']],
             ShishiroBotan: ['female', 'holo', 4, ['sbliedan', 'buqiang']],
@@ -683,6 +684,62 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                     }
                 }
             }, 'locked', 'direct', 'silent').setT({ global: 'roundStart' }),
+            cirong: new toSkill('active', {
+                usable: 1,
+                filterTarget(card, player, target) {
+                    return get.distance(player, target, 'pure') <= 1;
+                },
+                discard: false,
+                prepare: 'give2',
+                content() {
+                    target.gain(cards, player);
+                },
+            }, 'filterCard'),
+            maoyu: new toSkill('trigger', {
+                filter(event, player) {
+                    if (player !== _status.currentPhase || event.player == player)
+                        return false;
+                    {
+                        let name = lib.skill.yiqu.process(event), info = lib.skill[name];
+                        if (info && !info.equipSkill && !info.ruleSkill)
+                            return lib.translate[name + '_info'];
+                    }
+                    {
+                        let name = lib.skill.yiqu.process(event.getParent()), info = lib.skill[name];
+                        if (info && !info.equipSkill && !info.ruleSkill)
+                            return lib.translate[name + '_info'];
+                    }
+                },
+                logTarget: 'player',
+                content: [function () {
+                        event.tar0 = trigger.player;
+                        event.tar1 = event.tar0.getNext();
+                        event.list = [`交给${get.translation(player)}两张牌`, `令${get.translation(event.tar1)}摸一张牌`];
+                        if (event.tar0.countCards('he') >= 2) {
+                            event.tar0.chooseControl('dialogcontrol', event.list, function () {
+                                return _status.event.att;
+                            }).set('att', get.attitude(event.tar0, player) > get.attitude(event.tar0, event.tar1) ? 0 : 1).set('prompt', '『猫羽』请选择一项');
+                        }
+                        else {
+                            event._result = { control: event.list[1] };
+                        }
+                    }, function () {
+                        switch (result.control) {
+                            case event.list[0]: {
+                                event.tar0.chooseCard(2, true, 'he', `交给${get.translation(player)}两张牌`);
+                                break;
+                            }
+                            case event.list[1]: {
+                                event.tar1.draw();
+                                event.finish();
+                                break;
+                            }
+                        }
+                    }, function () {
+                        if (result.cards)
+                            player.gain(result.cards, event.tar0, 'giveAuto');
+                    }]
+            }).setT({ global: 'gainAfter' }),
             chentu: {
                 enable: 'phaseUse',
                 position: 'h',
@@ -6337,6 +6394,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
                 trigger: { global: ['chooseTargetAfter', 'chooseCardTargetAfter', 'chooseUseTargetAfter', 'useSkillAfter'] },
                 frequent: true,
                 filter(event, player) {
+                    if (event.player == player)
+                        return false;
                     let name = lib.skill.yiqu.process(event), info = lib.skill[name];
                     if (!info || info.equipSkill || info.ruleSkill)
                         return false;
@@ -17984,10 +18043,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
             xilv: {
                 trigger: { global: 'drawAfter' },
                 filter(event, player) {
+                    if (event.player == player)
+                        return false;
                     let name = lib.skill.yiqu.process(event), info = lib.skill[name];
                     if (!info || info.equipSkill || info.ruleSkill)
-                        return false;
-                    if (event.player == player)
                         return false;
                     return lib.translate[name + '_info'] && player.countCards('h') > 0;
                 },
@@ -18623,6 +18682,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			你可以令一名其他角色获得这些牌并受到一点无来源的伤害，你于下个准备阶段获得其等量牌。`,
             mujian: `幕间`,
             mujian_info: `锁定技 若你以体力为 0 的状态死亡，下个轮次开始时，你复活并发现一个主动技，获得之直到你下次死亡。`,
+            NachoNeko: `甘城なつき`,
+            cirong: `赐绒`,
+            cirong_info: `出牌阶段限一次，你可以将一张手牌交给相邻角色。`,
+            maoyu: `猫羽`,
+            maoyu_info: `回合内，其他角色因为技能获得牌时，你可以令其选择一项：
+			交给你两张牌；弃置一张非基本牌，令其下家摸一张牌。`,
             TEST: `测试员`,
             Ruki: `琉绮Ruki`,
             Ruki_ab: `琉绮`,

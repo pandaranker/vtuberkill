@@ -33,7 +33,7 @@ declare global {
         prompt2?: string | skillCheck
         logTarget?: string | ((event:EventModel, player?:PlayerModel) => boolean|number|string|string[])
         filterTarget?: boolean | targetCheck
-		content?: skillContent
+		content?: skillContent | skillContent[]
         subSkill?: {[propName: string]: Skill}
         position?: string
         derivation?: string | string[]
