@@ -787,7 +787,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				content:[function(){
 					event.tar0 = trigger.player
 					event.tar1 = event.tar0.getNext()
-					event.list = [`交给${get.translation(player)}两张牌`,`令${get.translation(event.tar1)}摸一张牌`];
+					event.list = [`交给${get.translation(player)}两张牌`,`弃置一张牌，令${get.translation(event.tar1)}摸一张牌`];
 					if(event.tar0.countCards('he')>=2){
 						event.tar0.chooseControl('dialogcontrol',event.list,function(){
 							return _status.event.att;
@@ -802,13 +802,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							break;
 						}
 						case event.list[1]:{
-							event.tar1.draw();
-							event.finish()
+							event.tar0.chooseToDiscard(true)
 							break;
 						}
 					}
 				},function(){
-					if(result.cards) player.gain(result.cards,event.tar0,'giveAuto');
+					if(result.cards.length===2) player.gain(result.cards,event.tar0,'giveAuto');
+					else event.tar1.draw();
 				}]
 			}).setT({global:'gainAfter'}),
 			//雪团
