@@ -5717,14 +5717,16 @@
                 if (Array.isArray(func)) {
                     str += `if(Evt.step==${func.length}) {Evt.finish();return;}switch(step){`
                     for (let i = 0; i < func.length; i++) {
-                        str += `case ${i}:{` + func[i].toString().replace(/(?<![\.'])galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt').slice(str.indexOf('{')) + 'break;'
+                        // str += `case ${i}:{` + func[i].toString().replace(/(?<![\.'])galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt').slice(str.indexOf('{')) + 'break;'
+                        str += `case ${i}:{` + func[i].toString().replace(/galgame\./g, 'game.galgame.').slice(str.indexOf('{')) + 'break;'
                     }
                     str += `}`
                 }
                 else {
                     str += func.toString();
                     //galgame调整
-                    str = str.replace(/(?<!\.)galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt');
+                    // str = str.replace(/(?<!\.)galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt');
+                    str = str.replace(/galgame\./g, 'game.galgame.').replace(/event/g, 'Evt').replace(/\.Evt/g, '.event');
                     str = str.slice(str.indexOf('{') + 1);
                     if (str.indexOf('step 0') == -1) {
                         str = `{if(Evt.step==1) {Evt.finish();return;}${str}`;
