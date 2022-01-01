@@ -74,7 +74,7 @@ declare global {
         links?: Array
     }
     type cardArray = {name:string,suit?:string,number?:string,nature?:string}
-    declare var event:EventModel
+    declare var Evt:EventModel
     //原生游戏核心类
     var cheat:{[propName: string]:Function}
     interface Window{

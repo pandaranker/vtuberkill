@@ -1,5 +1,5 @@
 window.game.import('character',function(lib,game,ui,get,ai,_status){
-	return {
+	return <currentObject>{
 		name:'xingtian',
 		connect:true,
 		card:{
@@ -121,14 +121,14 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				derivation:true,
 				derivationpack:'xingtian',
 				content:function(){
-					var evt=event.getParent(3)._trigger;
+					var evt=Evt.getParent(3)._trigger;
 					if(evt.wudaoqu){
 						evt.cancel();
-						event.cards = evt.cards;
+						Evt.cards = evt.cards;
 						var next=game.createEvent('wudaoqu_gain');
 						next.player=player;
 						next.setContent(function(){
-							var cards=event.getParent().cards.filterInD();
+							var cards=Evt.getParent().cards.filterInD();
 							if(cards.length) player.gain(cards,'gain2','log');
 						});
 					}
@@ -203,9 +203,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				trigger:{player:'useCard1'},
 				forced:true,
-				filter:function(event,player){
-					return event.card&&event.card.name=='sha'&&event.addCount!==false&&event.cards&&
-						event.cards.length==1&&get.name(event.cards[0],null)=='ci';
+				filter:function(Evt,player){
+					return Evt.card&&Evt.card.name=='sha'&&Evt.addCount!==false&&Evt.cards&&
+						Evt.cards.length==1&&get.name(Evt.cards[0],null)=='ci';
 				},
 				content:function(){
 					if(trigger.addCount!==false){
@@ -222,11 +222,11 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{source:'damageBegin4'},
 				forced:true,
 				logTarget:'player',
-				filter:function(event,player){
-					return event.player.hujia>0&&player.hasSkillTag('overHujia',true,{
-						name: event.card.name,
-						target: event.player,
-						card: event.card
+				filter:function(Evt,player){
+					return Evt.player.hujia>0&&player.hasSkillTag('overHujia',true,{
+						name: Evt.card.name,
+						target: Evt.player,
+						card: Evt.card
 					});
 				},
 				content:function(){},
@@ -249,9 +249,9 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'useCard'},
 				forced:true,
 				popup:false,
-				filter:function(event,player){
-					if(!event.targets.contains(player)||!event.cards||!event.cards.length)	return false;
-					if(event.getParent().directHit&&event.getParent().directHit.contains(player)) return false;
+				filter:function(Evt,player){
+					if(!Evt.targets.contains(player)||!Evt.cards||!Evt.cards.length)	return false;
+					if(Evt.getParent().directHit&&Evt.getParent().directHit.contains(player)) return false;
 					return player.hasUsableCard('wudaoqu');
 				},
 				content:function(){
