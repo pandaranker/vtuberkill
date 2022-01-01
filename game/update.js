@@ -48,7 +48,7 @@ window.noname_update={
 		'layout/default/layout.css',
 		'layout/default/menu.css',
 		// 'layout/nova/layout.css',
-		// 'mode/identity.js',
+		'mode/identity.js',
 		// 'mode/doudizhu.js',
 		// 'mode/guozhan.js',
 		// 'mode/single.js',
@@ -59,7 +59,7 @@ window.noname_update={
 
 		// 'game/module.js',
 		'game/game.js',
-		'game/directory.js',
+		// 'game/directory.js',
 		'game/data/output/data.js',
 		'game/methods/output/methods.js',
 		
