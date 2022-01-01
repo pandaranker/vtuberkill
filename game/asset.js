@@ -1291,6 +1291,7 @@ window.vk_asset_list=[
 	'image/character/KamikiHasami.jpg',
 	'image/character/KataribeTsumugu.jpg',
 	'image/character/KenmochiDouya.jpg',
+	'image/character/Kino.jpg',
 	'image/character/Kira.jpg',
 	'image/character/KiryuuCoco.jpg',
 	'image/character/KiyoInga.jpg',
