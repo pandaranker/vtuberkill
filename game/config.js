@@ -48,7 +48,7 @@ window.config={
 	right_info:true,
 	longpress_info:true,
 	long_info:true,
-	background_music:'music_diaochan',
+	background_music:'music_danji',
 	background_audio:true,
 	background_speak:true,
 	glow_phase:'yellow',

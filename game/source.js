@@ -3,6 +3,8 @@ window.noname_source_list=[
 	'galgame/galgame.json',
 	'image/background/simple1_bg.svg',
 
+	'audio/background/music_danji.mp3',
+	
 	'card/sp.js',
 	'card/standard.js',
 	'card/yingbian.js',

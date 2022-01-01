@@ -70,11 +70,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			if(!lib.yindao)	lib.yindao={
 				completeNumber:0,
 				addFellow:function(name){
-					game.fan.dataset.position = 2;
-					ui.arena.setNumber(3);
+					game.filterPlayer(cur => {
+						if(cur!==game.me)	cur.dataset.position ++
+					})
+					ui.arena.setNumber(game.countPlayer2()+1);
 					game.fellow = game.addFellow(1, name);
-					game.fellow.gain(get.cards(4));
-					game.fellow.identity = 'zhong';
+					// game.fellow.gain(get.cards(4));
+					game.fellow.identity = 'fan';
 					game.fellow.setIdentity();
 					game.fellow.identityShown = true;
 					game.fellow.node.identity.classList.remove('guessing');
@@ -214,10 +216,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						_status.reYindao = false;
 						galgame.sce("yindaoA1");
 					}
+					'step 1'
+					lib.yindao.addFellow('dusongziGin')
 					'step 2'
 					switch(result.bool){
 						case '纯路人，什么是三国杀？':{
 							galgame.sce("yindaoB");
+							break;
 						}
 						case '听说过，也玩过类似的桌游':{
 							galgame.sce("yindaoC");
@@ -228,7 +233,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							galgame.sce("yindaoD");
 							break;
 						}
-						case '我是资深杀友，所以快告诉我这里有些什么新东西吧':{
+						case '三国杀我懂，快告诉我这里有些什么新东西吧':{
 							galgame.sce("yindaoE");
 							break;
 						}
@@ -278,7 +283,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						player.chooseToUse({
-							prompt:'###选择手牌中的【杀】，再选择〖扇宝〗，就可以使用出这张【杀】###（一张牌被使用后会离开手牌区，并在“结算”后进入名为“弃牌堆的地方）',
+							prompt:'###选择手牌中的【杀】，再选择〖扇宝〗，就可以使用出这张【杀】###（一张牌被使用后就会离开手牌区）',
 							filterCard:function(card,player){
 								return card.name=='sha'&&lib.filter.filterCard.apply(this,arguments);
 							},
@@ -369,7 +374,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.going = 1;break;
 						case 2:
 							player.chooseToUse({
-								prompt:'###来试试使用手牌中的锦囊【无中生有】吧###（锦囊牌的效果千奇百怪，在合适的情形下功能十分强大，类似于游戏王里的魔法卡和炉石里的法术）',
+								prompt:'###来试试使用手牌中的锦囊【无中生有】吧###（锦囊牌的效果千奇百怪，【无中生有】的效果是摸两张牌）',
 								filterCard:function(card,player){
 									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
 								},
@@ -421,7 +426,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.going = 1;break;
 						case 2:
 							player.chooseToUse({
-								prompt:'###来试试使用手牌中的锦囊牌【无中生有】吧###（锦囊牌的效果千奇百怪，【无中生有】的效果是摸两张牌）',
+								prompt:'###来试试使用手牌中的锦囊牌【过河拆桥】吧###（【过河拆桥】的效果是弃置目标一张牌，用它来瓦解敌人的防御吧！）',
 								filterCard:function(card,player){
 									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
 								},
@@ -433,7 +438,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.going = 3;break;
 						case 4:
 							player.chooseToUse({
-								prompt:'###来试试使用手牌中的延时锦囊牌【乐不思蜀】吧###（【无中生有】的效果是跳过出牌阶段，并且只有在判定结果不为♥时才会生效）',
+								prompt:'###来试试使用手牌中的延时锦囊牌【乐不思蜀】吧###（【乐不思蜀】的效果是跳过出牌阶段，并且只有在判定结果不为♥时才会生效）',
 								filterCard:function(card,player){
 									return get.type(card)=='delay'&&lib.filter.filterCard.apply(this,arguments);
 								},
@@ -456,14 +461,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.next.gain(game.createCard('sha'),'gain2');
 							event.going = 1;break;
 						case 2:
-							player.chooseToUse({
-								prompt:'###来试试使用手牌中的锦囊牌吧###（【过河拆桥】的效果是弃置目标一张牌，用它来瓦解敌人的防御吧！）',
-								filterCard:function(card,player){
-									return get.type(card)=='trick'&&lib.filter.filterCard.apply(this,arguments);
-								},
-								addCount:false,
-								forced:true,
-							});
+							galgame.sce("yindaoCard42");
 							event.going = 2;break;
 						case 3:
 							event.going = 3;break;
@@ -490,14 +488,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							});
 							event.going = 1;break;
 						case 2:
-							player.chooseToUse({
-								prompt:'###来试试使用手牌吧###（敌人手中的【闪】已被弃置，已经没有手段阻止【杀】了）',
-								filterCard:function(card,player){
-									return get.type(card)=='basic'&&lib.filter.filterCard.apply(this,arguments);
-								},
-								addCount:false,
-								forced:true,
-							});
+							player.next.next.gain(game.createCard('shan'),'gain2');
 							event.going = 2;break;
 						case 3:
 							event.going = 3;break;
@@ -524,7 +515,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							event.going = 1;break;
 						case 2:
 							player.chooseToUse({
-								prompt:'###来试试使用手牌吧###（敌人手中的【闪】已被弃置，已经没有手段阻止【杀】了',
+								prompt:'###来试试有效的使用手牌吧~###（杜松子手中的【闪】已被弃置了，已经没有手段阻止【杀】了',
 								filterCard:function(card,player){
 									return get.type(card)=='basic'&&lib.filter.filterCard.apply(this,arguments);
 								},
@@ -567,14 +558,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					galgame.sce("yindaoFIndex");
 					'step 2'
 					switch(result.bool){
-						case '转换技与使命技':
+						case '三国杀机制：转换技':
 							galgame.sce("yindaoNewSkill0")
 							event.going = 1;break;
-						case '新增机制：护甲':
+						case '无名杀机制：护甲':
 							event.going = 2;break;
-						case '新增机制：海洋与暗影属性':
+						case 'V杀新增机制：海洋与暗影':
 							event.going = 3;break;
-						case '新增机制：升阶':
+						case 'V杀新增机制：升阶':
 							event.going = 4;break;
 						case '跳过这个部分':
 							event.going = 'skip';break;

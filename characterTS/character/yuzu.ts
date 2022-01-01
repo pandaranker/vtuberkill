@@ -184,7 +184,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			/**莲汰 */
 			AiTeN: ['male','psp',4,['langfei','xieyun'],['guoV','P_SP']],
 			/**笙歌 */
-			shengge: ['female','psp',4,['dixian','gumei'],['guoV','P_SP']],
+			shengge: ['female','psp',4,['dixian','gumei'],['guoV','P_SP','doublegroup:psp:qun']],
 
 			/**艾瑞思 */
 			airuisi: ['female','chidori',4,['maozhi','baifei'],['zhu','guoV']],
@@ -223,6 +223,8 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			KurumiUsa: ['female','Providence',4,['jidou','duotian'],['guoV']],
 			/**七濑Unia */
 			NanaseUnia: ['female','Providence',4,['qisui'],['guoV']],
+			/**白桃shirako */
+			Shirako: ['female','Providence',4,['jufu','qihun'],['guoV','doublegroup:Providence:qun']],
 
 			/**麟＆犀 */
 			linxi: ['female','qun',5,['lilian','zihuai'],['guoV']],
@@ -1087,7 +1089,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						&& event.target.countCards('hej');
 				},
 				check(event, player) {
-					if(_status.mode=='yindao')	return 0;
 					return get.attitude(player,event.target)<=0
 					||(get.attitude(player,event.target)>0&&event.target.countCards('j'));
 				},
@@ -1238,19 +1239,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					player.draw(cards.length).gaintag=['xiangnuo'];
 					'step 1'
 					player.storage.xiangnuo = player.storage.xiangnuo==1?2:1;
-					// event.shanbao = function(name){
-					// 	game.filterPlayer(cur => {
-					// 		if(cur.dataset.position>player.dataset.position)	cur.dataset.position++;
-					// 	})
-					// 	ui.arena.setNumber(game.countPlayer()+1);
-					// 	game.fellow = game.addFellow(1, name);
-					// 	game.fellow.gain(get.cards(4));
-					// 	game.fellow.identity = 'zhong';
-					// 	game.fellow.setIdentity();
-					// 	game.fellow.identityShown = true;
-					// 	game.fellow.node.identity.classList.remove('guessing');
-					// 	_status.event.getParent('phaseLoop').player = game.fellow;
-					// }('shanbao');
 				},
 				ai:{
 					order:5,
@@ -9509,6 +9497,79 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},'mark'),
+			//白桃shirako
+			jufu:new toSkill('regard',{
+				chooseButton:{
+					dialog (){
+						let list=[['锦囊','','wuzhong'],['锦囊','','wugu']];
+						return ui.create.dialog('咀福',[list,'vcard']);
+					},
+					filter (button,player){
+						let evt=_status.event.getParent();
+						if(evt?.filterCard){
+							return evt.filterCard({name:button.link[2]},player,evt);
+						}
+						return true;
+					},
+					backup (links,player){
+						return {
+							filterCard:{name:'tao'},
+							position:'hs',
+							selectCard:1,
+							viewAs:{name:links[0][2],nature:links[0][3]},
+						}
+					},
+					prompt (links,player){
+						return '将一张【桃】做当【'+get.translation(links[0][2])+'】使用';
+					},
+				},
+				filter(event,player){
+					return player.countCards('hs','tao');
+				},
+			},'enable:chooseToUse'),
+			qihun:new toSkill('trigger',{
+				filter(event,player){
+					return game.countPlayer(cur => cur!=player&&cur.countCards('h'));
+				},
+				content:[function(){
+					player.chooseTarget(get.prompt2('qihun'),function(card,player,target){
+						return target!==player;
+					}).set('ai',target => {
+						let player = _status.event.player,att = get.attitude2(target), reds = target.countCards('h',{color:'red'})
+						if(target.countCards('h','tao'))	return -1.6*reds*att
+						else if(target.group===player.group)	return reds*att
+						return -0.4*reds*att
+					})
+				},function(){
+					console.log(result)
+					if(result?.targets?.length){
+						event.target = result.targets[0]
+						player.logSkill('qihun',event.target)
+						event.target.showHandcards('『祈婚』展示手牌');
+						event.cards = event.target.getCards('h',{color:'red'})
+					}
+					else event.finish()
+				},function(){
+					if(event.cards.length){
+						event.target.give(event.cards,player,true)
+					}
+					else event.finish()
+				},function(){
+					if(event.cards.filter(card => card.name==='tao').length===0){
+						if(player.group===event.target.group){
+							event.target.draw(event.cards.length)
+							event.finish()
+						}
+						else{
+							player.chooseCard(`交给${get.translation(event.target)}${get.cnNumber(event.cards.length)}张牌`,'he',true,event.cards.length).set('ai',card => get.unuseful3(card))
+						}
+					}
+				},function(){
+					if(result.cards?.length){
+						player.give(result.cards,event.target,true)
+					}
+				}]
+			}).setT('phaseUseEnd'),
 			//麟＆犀
 			lilian:{
 				trigger:{player:'phaseBegin'},
@@ -9518,7 +9579,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 				content(){
 					'step 0'
-					player.chooseTarget(get.prompt2('lilian')).set('ai',function(target){
+					player.chooseTarget(get.prompt2('lilian')).set('ai',target => {
 						let player = _status.event.player;
 						return get.attitude(player,target)-player.maxHp;
 					});
@@ -9740,7 +9801,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					player.chooseTarget(get.prompt('wadao2'),function(card,player,target){
 						return target!==player;
-					}).ai=function(target){
+					}).ai=target => {
 						return get.attitude2(target);
 					}
 					'step 1'
@@ -18183,6 +18244,13 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			qisui_info: `每回合每名角色限一次，一名角色于你的回合内摸牌或其他角色令你摸牌时，你可以令其获得『灵军』直到其下一次使用【决斗】，若其已拥有『灵军』，改为本次摸牌量+1。`,
 			lingjun: `灵军`,
 			lingjun_info: `锁定技 你手牌中的【杀】视为【决斗】。`,
+
+			Shirako: `白桃shirako`,
+			Shirako_ab: `白桃`,
+			jufu: `咀福`,
+			jufu_info: `你可以将【桃】当作【无中生有】或【五谷丰登】使用。`,
+			qihun: `祈婚`,
+			qihun_info: `出牌阶段结束时，你可以令一名角色展示手牌并将其中所有的红色牌交给你，若其中没有【桃】，你需交给其等量牌（若其势力与你相同，改为令其摸等量牌）。`,
 		
 
 			SukoyaKana: `健屋花那`,

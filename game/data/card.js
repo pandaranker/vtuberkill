@@ -57,4 +57,5 @@ window.data_card = {
 	group_chaos: { fullskin: true, },
 	group_xuyan: { fullskin: true, },
 	group_xuefeng: { fullskin: true, },
+	group_Providence: { fullskin: true, },
 }

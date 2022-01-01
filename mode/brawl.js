@@ -376,7 +376,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'所有角色改为四血白板，依靠灵力值获得技能。灵力值可以通过各种方式获得',
 				],
 				showcase:function(init){
-                    
 					if(init){
 						this.nodes=[];
 					}
@@ -410,7 +409,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						node.node.avatar.style.borderRadius='100%';
 						node.node.name.remove();
 						setPos(node);
-						this.appendChild(node.element);//[todo player]
+						this.appendChild(node);//[todo player]
 					}
 					var nodes=this.nodes;
 					this.showcaseinterval=setInterval(function(){
@@ -1185,7 +1184,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						card.style.left='calc('+rand1+'% - '+(rand1*1.5)+'px)';
 						card.style.top='calc('+rand2+'% - '+(rand2*1.8)+'px)';
 						card.style.transform='scale(0.8) rotate('+rand3+'deg)';
-						node.appendChild(card.element);//[todo player]
+						node.appendChild(card);//[todo player]
 						ui.refresh(card);
 					};
 					
@@ -1600,8 +1599,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player2.style.transform='scale(0.9)';
 						player2.node.count.innerHTML='2';
 						player2.node.count.dataset.condition='mid';
-						this.appendChild(player1.element.element);//[todo player]
-						this.appendChild(player2.element.element);//[todo player]
+						this.appendChild(player1);//[todo player]
+						this.appendChild(player2);//[todo player]
 						this.player1=player1;
 						this.player2=player2;
 					}
@@ -1743,7 +1742,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player.node.count.remove();
 						player.node.hp.remove();
 						player.style.transition='all 0.5s';
-						node.appendChild(player.element);//[todo player]
+						node.appendChild(player);//[todo player]
 						node.playernode=player;
 					}
 					else{
@@ -1912,7 +1911,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						card.style.transform='scale(1.2) rotate('+rand3+'deg)';
 						card.style.opacity=0;
 						ui.refresh(card);
-						node.appendChild(card.element);//[todo player]
+						node.appendChild(card);//[todo player]
 						ui.refresh(card);
 						card.style.transform='scale(0.9) rotate('+rand3+'deg)';
 						card.style.opacity=1;
@@ -2185,7 +2184,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						node.node.avatar.style.borderRadius='100%';
 						node.node.name.remove();
 						setPos(node);
-						this.appendChild(node.element);//[todo player]
+						this.appendChild(node);//[todo player]
 					}
 					var nodes=this.nodes;
 					this.showcaseinterval=setInterval(function(){
@@ -2284,7 +2283,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						card.style.transform='scale(1.2) rotate('+rand3+'deg)';
 						card.style.opacity=0;
 						ui.refresh(card);
-						node.appendChild(card.element);//[todo player]
+						node.appendChild(card);//[todo player]
 						ui.refresh(card);
 						card.style.transform='scale(0.9) rotate('+rand3+'deg)';
 						card.style.opacity=1;
@@ -3038,7 +3037,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player2.node.count.remove();
 						player2.style.transform='scale(0.7)';
 						player2.style.opacity=0;
-						node.appendChild(player2.element);//[todo player]
+						node.appendChild(player2);//[todo player]
 						ui.refresh(player2);
 						player2.style.opacity=1;
 						player2.style.transform='scale(0.9)';
@@ -4717,7 +4716,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.node.marks.remove();
 
 
-							line7.appendChild(player.element);//[todo player]
+							line7.appendChild(player);//[todo player]
 							player.listen(function(){
 								if(confirm('是否删除此角色？')){
 									this.remove();

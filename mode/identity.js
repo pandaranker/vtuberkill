@@ -1778,14 +1778,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					var name=event.choosed[0];
 					if(get.is.double(name)){
+						let list=get.is.double(name,true);
+						list = list.map(i => ['','','group_'+i])
+						console.log(list)
 						game.me._groupChosen=true;
-						game.me.chooseControl(get.is.double(name,true)).set('prompt','请选择你的势力');
+						game.me.chooseButton(['请选择你的势力',[list,'vcard']],true);
 					}
 					else if(lib.character[name][1]=='shen'&&!lib.character[name][4].contains('hiddenSkill')&&get.config('choose_group')){
-						var list=lib.group2.slice(0);
-						for(var i=0;i<list.length;i++){
-							list[i]=['','','group_'+list[i]];
-						}
+						let list=lib.group2.slice(0);
+						list = list.map(i => ['','','group_'+i])
 						game.me.chooseButton(['请选择神武将的势力',[list,'vcard']],true);
 					}
 					"step 2"

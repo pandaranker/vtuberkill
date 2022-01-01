@@ -3680,7 +3680,7 @@
                         if (lib.device || typeof window.require == 'function') {
                             lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
                         }
-                        lib.config.all.background_music = ['music_diaochan'];
+                        lib.config.all.background_music = ['music_danji'];
                         for (i in pack.music) {
                             lib.config.all.background_music.push(i);
                             lib.configMenu.audio.config.background_music.item[i] = pack.music[i];

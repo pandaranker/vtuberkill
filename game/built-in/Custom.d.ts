@@ -1,5 +1,5 @@
 import { type } from "os"
-import CardModel from "../core/view/CardModel"
+// import CardModel from "../core/view/CardModel"
 // import PlayerModel from "../core/view/PlayerModel"
 
 declare global {
@@ -43,6 +43,7 @@ declare global {
         firstDo?: true
         mark?: true | string
         intro?: {content?:MarkKey,onunmark?:MarkKey,name?:string,mark?:Function}
+        chooseButton?: {dialog:(event?:EventModel,player?:PlayerModel)=>any,[propName: string]: any}
         [propName: string]: any
     }
     interface Chara{
@@ -66,7 +67,7 @@ declare global {
     var num: any
     // number | Function
     var skill: string
-    var result: number | Array | {
+    var result: number | any | {
         bool?: Boolean
         targets?: PlayerModel[]
         cards?: CardModel[]

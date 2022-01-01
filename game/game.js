@@ -2731,813 +2731,794 @@
                  * @param {number} [time=1000] - 动画持续时间（ms）
                  * @returns {HTMLDivElement} this self
                  */
-                HTMLDivElement.prototype.animate = function (name, time) {
-                    var that;
-                    if (get.is.mobileMe(this) && name == 'target') {
-                        that = ui.mebg;
-                    }
-                    else {
-                        that = this;
-                    }
-                    that.classList.add(name);
-                    setTimeout(function () {
-                        that.classList.remove(name);
-                    }, time || 1000);
-                    return this;
-                };
-                /**
-                 * 隐藏本元素及其子元素
-                 * @function HTMLDivElement#hide
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.hide = function () {
-                    this.classList.add('hidden');
-                    return this;
-                };
-                /**
-                 * 本元素取消焦点
-                 * @function HTMLDivElement#unfocus
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.unfocus = function () {
-                    if (lib.config.transparent_dialog) this.classList.add('transparent');
-                    return this;
-                };
-                /**
-                 * 本元素重获焦点
-                 * @function HTMLDivElement#refocus
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.refocus = function () {
-                    this.classList.remove('transparent');
-                    return this;
-                };
-                /**
-                 * 本元素取消隐藏
-                 * @function HTMLDivElement#show
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.show = function () {
-                    this.classList.remove('hidden');
-                    return this;
-                };
-                /**
-                 * @callback HTMLDivElement~deleteCallback
-                 * @see {@link HTMLDivElement#delete}
-                 */
-                /**
-                 * 延时从所属DOM树移除本元素
-                 * @function HTMLDivElement#delete
-                 * @param {number} time - 延迟时间（ms）
-                 * @param {HTMLDivElement~deleteCallback} callback - 移除后回调函数
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.delete = function (time, callback) {
-                    if (this.timeout) {
-                        clearTimeout(this.timeout);
-                        delete this.timeout;
-                    }
-                    if (!this._listeningEnd || this._transitionEnded) {
-                        if (typeof time != 'number') time = 500;
-                        this.classList.add('removing');
-                        var that = this;
-                        this.timeout = setTimeout(function () {
-                            that.remove();
-                            that.classList.remove('removing');
-                            if (typeof callback == 'function') {
-                                callback();
-                            }
-                        }, time);
-                    }
-                    else {
-                        this._onEndDelete = true;
-                    }
-                    return this;
-                };
-                /**
-                 * 移动本元素(牌)
-                 * @function HTMLDivElement#goto
-                 * @param {*} position - 位置
-                 * @param {number} time - 持续时间
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.goto = function (position, time) {
-                    if (this.timeout) {
-                        clearTimeout(this.timeout);
-                        delete this.timeout;
-                    }
-
-                    if (typeof time != 'number') time = 500;
-                    this.classList.add('removing');
-
-                    var that = this;
-                    this.timeout = setTimeout(function () {
-                        if (!that.destroyed) {
-                            position.appendChild(that);
-                        }
-                        that.classList.remove('removing');
-                        delete that.destiny;
-                    }, time);
-                    this.destiny = position;
-                    return this;
-                };
-                /**
-                 * 强制取消移动，固定在当前位置
-                 * @function HTMLDivElement#fix
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.fix = function () {
-                    clearTimeout(this.timeout);
-                    delete this.timeout;
-                    delete this.destiny;
-                    this.classList.remove('removing');
-                    return this;
-                };
-                /**
-                 * 设置背景图片，当name为虚值或为空白字符串时，使用原背景。
-                 * 对应路径：`image/${type?type+'/':''}${type?subfolder+'/':''}${name}${ext}`
-                 * @function HTMLDivElement#setBackground
-                 * @param {string} [name] - 图片名（无后缀）
-                 * @param {string} [type] - 类型对应路径
-                 * @param {string} [ext='.jpg'] - 图片后缀
-                 * @param {string} [subfolder='default'] - 类型文件夹下的子路径，仅在参数`type`指定值时有效
-                 * @returns {?HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.setBackground = function (name, type, ext, subfolder) {
-                    if (!name) return;
-                    var src;
-                    if (ext == 'noskin') {
-                        ext = '.jpg';
-                    }
-                    ext = ext || '.jpg';
-                    subfolder = subfolder || 'default'
-                    if (type) {
-                        var dbimage = null, extimage = null, modeimage = null;
-                        var nameinfo;
-                        var gzbool = false;
-                        var mode = get.mode();
-                        if (type == 'character') {
-                            if (lib.characterPack['mode_' + mode] && lib.characterPack['mode_' + mode][name]) {
-                                if (mode == 'guozhan') {
-                                    nameinfo = lib.character[name];
-                                    if (name.indexOf('gz_shibing') == 0) {
-                                        name = name.slice(3, 11);
-                                    }
-                                    else {
-                                        if (lib.config.mode_config.guozhan.guozhanSkin && lib.character[name] && lib.character[name][4].contains('gzskin')) gzbool = true;
-                                        name = name.slice(3);
-                                    }
-                                }
-                                else {
-                                    modeimage = mode;
-                                }
-                            }
-                            else if (lib.character[name]) {
-                                nameinfo = lib.character[name];
-                            }
-                            else if (name.indexOf('::') != -1) {
-                                name = name.split('::');
-                                modeimage = name[0];
-                                name = name[1];
-                            }
-                        }
-                        if (!modeimage && nameinfo && nameinfo[4]) {
-                            for (var i = 0; i < nameinfo[4].length; i++) {
-                                if (nameinfo[4][i].indexOf('ext:') == 0) {
-                                    extimage = nameinfo[4][i]; break;
-                                }
-                                else if (nameinfo[4][i].indexOf('db:') == 0) {
-                                    dbimage = nameinfo[4][i]; break;
-                                }
-                                else if (nameinfo[4][i].indexOf('mode:') == 0) {
-                                    modeimage = nameinfo[4][i].slice(5); break;
-                                }
-                                else if (nameinfo[4][i].indexOf('character:') == 0) {
-                                    name = nameinfo[4][i].slice(10); break;
-                                }
-                            }
-                        }
-                        if (extimage) {
-                            src = extimage.replace(/ext:/, 'extension/');
-                        }
-                        else if (dbimage) {
-                            this.setBackgroundDB(dbimage.slice(3));
-                            return this;
-                        }
-                        else if (modeimage) {
-                            src = 'image/mode/' + modeimage + '/character/' + name + ext;
-                        }
-                        else if (type == 'character' && lib.config.skin[name] && arguments[2] != 'noskin') {
-                            src = 'image/skin/' + name + '/' + lib.config.skin[name] + ext;
+                {
+                    HTMLDivElement.prototype.animate = function (name, time) {
+                        var that;
+                        if (get.is.mobileMe(this) && name == 'target') {
+                            that = ui.mebg;
                         }
                         else {
-                            if (type == 'character') {
-                                src = 'image/character/' + (gzbool ? 'gz_' : '') + name + ext;
-                            }
-                            else {
-                                src = 'image/' + type + '/' + subfolder + '/' + name + ext;
-                            }
+                            that = this;
                         }
-                    }
-                    else {
-                        src = 'image/' + name + ext;
-                    }
-                    this.setBackgroundImage(src);
-                    this.style.backgroundSize = "cover";
-                    return this;
-                };
-                /**
-                 * 设置本元素的背景图片为数据库中的图片
-                 * @function HTMLDivElement#setBackgroundDB
-                 * @param {string} img - 图片对应的键值
-                 */
-                HTMLDivElement.prototype.setBackgroundDB = function (img) {
-                    var node = this;
-                    game.getDB('image', img, function (src) {
-                        node.style.backgroundImage = "url('" + src + "')";
-                        node.style.backgroundSize = "cover";
-                    });
-                };
-                /**
-                 * 设置本元素的背景图片
-                 * @function HTMLDivElement#setBackgroundImage
-                 * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
-                 */
-                HTMLDivElement.prototype.setBackgroundImage = function (img) {
-                    this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
-                },
+                        that.classList.add(name);
+                        setTimeout(function () {
+                            that.classList.remove(name);
+                        }, time || 1000);
+                        return this;
+                    };
                     /**
-                     * {@link HTMLDivElement#listen|listen}（click）的回调函数
-                     * @callback HTMLDivElement#listen~listenCallback
-                     * @param {(MouseEvent|TouchEvent)} e - 触发事件
-                     */
-                    /**
-                     * 监听点击事件
-                     * @function HTMLDivElement#listen
-                     * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
+                     * 隐藏本元素及其子元素
+                     * @function HTMLDivElement#hide
                      * @returns {HTMLDivElement} this self
                      */
-                    HTMLDivElement.prototype.listen = function (func) {
-                        if (lib.config.touchscreen) {
-                            this.addEventListener('touchend', function (e) {
-                                if (!_status.dragged) {
-                                    func.call(this, e);
+                    HTMLDivElement.prototype.hide = function () {
+                        this.classList.add('hidden');
+                        return this;
+                    };
+                    /**
+                     * 本元素取消焦点
+                     * @function HTMLDivElement#unfocus
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.unfocus = function () {
+                        if (lib.config.transparent_dialog) this.classList.add('transparent');
+                        return this;
+                    };
+                    /**
+                     * 本元素重获焦点
+                     * @function HTMLDivElement#refocus
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.refocus = function () {
+                        this.classList.remove('transparent');
+                        return this;
+                    };
+                    /**
+                     * 本元素取消隐藏
+                     * @function HTMLDivElement#show
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.show = function () {
+                        this.classList.remove('hidden');
+                        return this;
+                    };
+                    /**
+                     * @callback HTMLDivElement~deleteCallback
+                     * @see {@link HTMLDivElement#delete}
+                     */
+                    /**
+                     * 延时从所属DOM树移除本元素
+                     * @function HTMLDivElement#delete
+                     * @param {number} time - 延迟时间（ms）
+                     * @param {HTMLDivElement~deleteCallback} callback - 移除后回调函数
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.delete = function (time, callback) {
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                            delete this.timeout;
+                        }
+                        if (!this._listeningEnd || this._transitionEnded) {
+                            if (typeof time != 'number') time = 500;
+                            this.classList.add('removing');
+                            var that = this;
+                            this.timeout = setTimeout(function () {
+                                that.remove();
+                                that.classList.remove('removing');
+                                if (typeof callback == 'function') {
+                                    callback();
                                 }
-                            });
-                            var fallback = function (e) {
-                                if (!_status.touchconfirmed) {
-                                    func.call(this, e);
+                            }, time);
+                        }
+                        else {
+                            this._onEndDelete = true;
+                        }
+                        return this;
+                    };
+                    /**
+                     * 移动本元素(牌)
+                     * @function HTMLDivElement#goto
+                     * @param {*} position - 位置
+                     * @param {number} time - 持续时间
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.goto = function (position, time) {
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                            delete this.timeout;
+                        }
+    
+                        if (typeof time != 'number') time = 500;
+                        this.classList.add('removing');
+    
+                        var that = this;
+                        this.timeout = setTimeout(function () {
+                            if (!that.destroyed) {
+                                position.appendChild(that);
+                            }
+                            that.classList.remove('removing');
+                            delete that.destiny;
+                        }, time);
+                        this.destiny = position;
+                        return this;
+                    };
+                    /**
+                     * 强制取消移动，固定在当前位置
+                     * @function HTMLDivElement#fix
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.fix = function () {
+                        clearTimeout(this.timeout);
+                        delete this.timeout;
+                        delete this.destiny;
+                        this.classList.remove('removing');
+                        return this;
+                    };
+                    /**
+                     * 设置背景图片，当name为虚值或为空白字符串时，使用原背景。
+                     * 对应路径：`image/${type?type+'/':''}${type?subfolder+'/':''}${name}${ext}`
+                     * @function HTMLDivElement#setBackground
+                     * @param {string} [name] - 图片名（无后缀）
+                     * @param {string} [type] - 类型对应路径
+                     * @param {string} [ext='.jpg'] - 图片后缀
+                     * @param {string} [subfolder='default'] - 类型文件夹下的子路径，仅在参数`type`指定值时有效
+                     * @returns {?HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.setBackground = function (name, type, ext, subfolder) {
+                        if (!name) return;
+                        var src;
+                        if (ext == 'noskin') {
+                            ext = '.jpg';
+                        }
+                        ext = ext || '.jpg';
+                        subfolder = subfolder || 'default'
+                        if (type) {
+                            var dbimage = null, extimage = null, modeimage = null;
+                            var nameinfo;
+                            var gzbool = false;
+                            var mode = get.mode();
+                            if (type == 'character') {
+                                if (lib.characterPack['mode_' + mode] && lib.characterPack['mode_' + mode][name]) {
+                                    if (mode == 'guozhan') {
+                                        nameinfo = lib.character[name];
+                                        if (name.indexOf('gz_shibing') == 0) {
+                                            name = name.slice(3, 11);
+                                        }
+                                        else {
+                                            if (lib.config.mode_config.guozhan.guozhanSkin && lib.character[name] && lib.character[name][4].contains('gzskin')) gzbool = true;
+                                            name = name.slice(3);
+                                        }
+                                    }
+                                    else {
+                                        modeimage = mode;
+                                    }
+                                }
+                                else if (lib.character[name]) {
+                                    nameinfo = lib.character[name];
+                                }
+                                else if (name.indexOf('::') != -1) {
+                                    name = name.split('::');
+                                    modeimage = name[0];
+                                    name = name[1];
+                                }
+                            }
+                            if (!modeimage && nameinfo && nameinfo[4]) {
+                                for (var i = 0; i < nameinfo[4].length; i++) {
+                                    if (nameinfo[4][i].indexOf('ext:') == 0) {
+                                        extimage = nameinfo[4][i]; break;
+                                    }
+                                    else if (nameinfo[4][i].indexOf('db:') == 0) {
+                                        dbimage = nameinfo[4][i]; break;
+                                    }
+                                    else if (nameinfo[4][i].indexOf('mode:') == 0) {
+                                        modeimage = nameinfo[4][i].slice(5); break;
+                                    }
+                                    else if (nameinfo[4][i].indexOf('character:') == 0) {
+                                        name = nameinfo[4][i].slice(10); break;
+                                    }
+                                }
+                            }
+                            if (extimage) {
+                                src = extimage.replace(/ext:/, 'extension/');
+                            }
+                            else if (dbimage) {
+                                this.setBackgroundDB(dbimage.slice(3));
+                                return this;
+                            }
+                            else if (modeimage) {
+                                src = 'image/mode/' + modeimage + '/character/' + name + ext;
+                            }
+                            else if (type == 'character' && lib.config.skin[name] && arguments[2] != 'noskin') {
+                                src = 'image/skin/' + name + '/' + lib.config.skin[name] + ext;
+                            }
+                            else {
+                                if (type == 'character') {
+                                    src = 'image/character/' + (gzbool ? 'gz_' : '') + name + ext;
                                 }
                                 else {
-                                    this.removeEventListener('click', fallback);
+                                    src = 'image/' + type + '/' + subfolder + '/' + name + ext;
                                 }
                             }
-                            this.addEventListener('click', fallback);
                         }
                         else {
-                            this.addEventListener('click', func);
+                            src = 'image/' + name + ext;
                         }
+                        this.setBackgroundImage(src);
+                        this.style.backgroundSize = "cover";
                         return this;
                     };
-                /**
-                 * @callback HTMLDivElement#listenTransition~callback
-                 * @see {@link HTMLDivElement#listenTransition}
-                 */
-                /**
-                 * 延时触发回调函数，同时监听本元素变换动画，如果变换结束则立即触发回调函数
-                 * @function HTMLDivElement#listenTransition
-                 * @param {HTMLDivElement#listenTransition~callback} func - 回调函数
-                 * @param {number} [time=1000] - 延迟时间
-                 * @returns {!number} timeoutID 
-                 */
-                HTMLDivElement.prototype.listenTransition = function (func, time) {
-                    var that = this;
-                    var done = false;
-                    var callback = function () {
-                        if (!done) {
-                            func.call(that);
-                            done = true;
-                        }
+                    /**
+                     * 设置本元素的背景图片为数据库中的图片
+                     * @function HTMLDivElement#setBackgroundDB
+                     * @param {string} img - 图片对应的键值
+                     */
+                    HTMLDivElement.prototype.setBackgroundDB = function (img) {
+                        var node = this;
+                        game.getDB('image', img, function (src) {
+                            node.style.backgroundImage = "url('" + src + "')";
+                            node.style.backgroundSize = "cover";
+                        });
                     };
-                    this.addEventListener('webkitTransitionEnd', callback);
-                    return setTimeout(callback, time || 1000);
-                };
-                /**
-                 * 设置本元素位置
-                 * ```JavaScript
-                 * top = calc(`offsets[0]`%+`offsets[1]`px)
-                 * left = calc(`offsets[2]`%+`offsets[3]`px)
-                 * ```
-                 * @function HTMLDivElement#setPosition
-                 * @param {!number[]} offsets - 偏移量数组（长度必须为4）。
-                 * @returns {HTMLDivElement} this self
-                 */
-                /**
-                 * 设置本元素位置
-                 * ```JavaScript
-                 * top  = calc(`top_pc`%+`top_px`px)
-                 * left = calc(`lft_pc`%+`lft_px`px)
-                 * ```
-                 * @function HTMLDivElement#setPosition
-                 * @variation 2
-                 * @param {number} top_pc
-                 * @param {number} top_px
-                 * @param {number} lft_pc
-                 * @param {number} lft_px
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.setPosition = function () {
-                    var position;
-                    if (arguments.length == 4) {
-                        position = [];
-                        for (var i = 0; i < arguments.length; i++) position.push(arguments[i]);
-                    }
-                    else if (arguments.length == 1 && Array.isArray(arguments[0]) && arguments[0].length == 4) {
-                        position = arguments[0];
-                    }
-                    else {
-                        return this;
-                    }
-                    var top = 'calc(' + position[0] + '% ';
-                    if (position[1] > 0) top += '+ ' + position[1] + 'px)';
-                    else top += '- ' + Math.abs(position[1]) + 'px)';
-                    var left = 'calc(' + position[2] + '% ';
-                    if (position[3] > 0) left += '+ ' + position[3] + 'px)';
-                    else left += '- ' + Math.abs(position[3]) + 'px)';
-                    this.style.top = top;
-                    this.style.left = left;
-                    return this;
-                };
-                /**
-                 * 设置本元素css样式
-                 * @function HTMLDivElement#css
-                 * @param {Object} style - style
-                 * @param {string} [style.innerHTML] - 设置本元素内部HTML
-                 * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
-                 * @returns {HTMLDivElement} this self
-                 */
-                HTMLDivElement.prototype.css = function (style) {
-                    for (var i in style) {
-                        if (i == 'innerHTML') {
-                            this.innerHTML = style[i];
-                        }
-                        else {
-                            this.style[i] = style[i];
-                        }
-                    }
-                    return this;
-                };
-                /**
-                 * 获取Table[row][col]对应的元素
-                 * @deprecated <span style="color:red;">[never use]</span> 实现有问题
-                 * @function HTMLTableElement#get
-                 * @param {!number} row - 行元素数组索引
-                 * @param {!number} col - 列元素数组索引
-                 * @returns {HTMLTableCellElement} 要索引的标题/单元格元素
-                 */
-                HTMLTableElement.prototype.get = function (row, col) {
-                    if (row < this.childNodes.length) {
-                        return this.childNodes[row].childNodes[col];
-                    }
-                };
-                //part: 拓展数组
-                /**
-                 * 统计数组中元素`item`出现的数量
-                 * @function Array#numOf
-                 * @param {*} item - 要统计的元素
-                 * @returns {!number} 统计结果（非负）
-                 */
-                Array.prototype.numOf = function (item) {
-                    var num = 0;
-                    for (var i = 0; i < this.length; i++) {
-                        if (this[i] == item) num++;
-                    }
-                    return num;
-                };
-                //数组降维替代方案
-                Array.prototype.vkflat = function (depth = 1) {
-                    const result = [];
-                    // 开始递归
-                    (function flat(arr, depth) {
-                        arr.forEach((item) => {
-                            if (Array.isArray(item) && depth > 0) {
-                                // 递归数组
-                                flat(item, depth - 1)
-                            } else {
-                                result.push(item)
+                    /**
+                     * 设置本元素的背景图片
+                     * @function HTMLDivElement#setBackgroundImage
+                     * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
+                     */
+                    HTMLDivElement.prototype.setBackgroundImage = function (img) {
+                        this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
+                    },
+                        /**
+                         * {@link HTMLDivElement#listen|listen}（click）的回调函数
+                         * @callback HTMLDivElement#listen~listenCallback
+                         * @param {(MouseEvent|TouchEvent)} e - 触发事件
+                         */
+                        /**
+                         * 监听点击事件
+                         * @function HTMLDivElement#listen
+                         * @param {HTMLDivElement#listen~listenCallback} func - 点击回调函数
+                         * @returns {HTMLDivElement} this self
+                         */
+                        HTMLDivElement.prototype.listen = function (func) {
+                            if (lib.config.touchscreen) {
+                                this.addEventListener('touchend', function (e) {
+                                    if (!_status.dragged) {
+                                        func.call(this, e);
+                                    }
+                                });
+                                var fallback = function (e) {
+                                    if (!_status.touchconfirmed) {
+                                        func.call(this, e);
+                                    }
+                                    else {
+                                        this.removeEventListener('click', fallback);
+                                    }
+                                }
+                                this.addEventListener('click', fallback);
                             }
-                        })
-                    })(this, depth)
-                    return result;
-                };
-                /**
-                 * 创建一个新的数组（浅复制），包含原数组中匹配卡牌位置的卡牌对象
-                 * @function Array#filterInD
-                 * @param {CardPosition[]} [pos='o'] - 卡牌位置字符串，匹配其中任意位置
-                 * @returns {!Array} 新的数组，如果没有匹配位置的卡牌，返回空数组
-                 */
-                Array.prototype.filterInD = function (pos) {
-                    if (!pos) pos = 'o';
-                    var list = [];
-                    for (var i = 0; i < this.length; i++) {
-                        if (pos.indexOf(get.position(this[i], true)) != -1) list.push(this[i]);
-                    }
-                    return list;
-                };
-                /**
-                 * 定位元素，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf()}
-                 * @function Array#find
-                 * @param {*} item - 要在数组中定位的元素
-                 * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
-                 */
-                Array.prototype.find = function (item) {
-                    return this.indexOf(item);
-                };
-                /**
-                 * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
-                 * @function Array#contains
-                 * @param {any} item - 要在数组中查找的元素
-                 * @returns {boolean} 存在返回`true`，不存在返回`false`
-                 */
-                Array.prototype.contains = function (item) {
-                    return this.indexOf(item) != -1;
-                };
-                /**
-                 * 向原数组不重复地添加任意数量的元素；但是不保证，添加前，原数组中的元素是否唯一
-                 * @function Array#add
-                 * @param {...any} elements - 要添加的任意数量的元素
-                 * @returns {Array} this self
-                 */
-                Array.prototype.add = function () {
-                    for (var i = 0; i < arguments.length; i++) {
-                        if (this.contains(arguments[i])) {
+                            else {
+                                this.addEventListener('click', func);
+                            }
+                            return this;
+                        };
+                    /**
+                     * @callback HTMLDivElement#listenTransition~callback
+                     * @see {@link HTMLDivElement#listenTransition}
+                     */
+                    /**
+                     * 延时触发回调函数，同时监听本元素变换动画，如果变换结束则立即触发回调函数
+                     * @function HTMLDivElement#listenTransition
+                     * @param {HTMLDivElement#listenTransition~callback} func - 回调函数
+                     * @param {number} [time=1000] - 延迟时间
+                     * @returns {!number} timeoutID 
+                     */
+                    HTMLDivElement.prototype.listenTransition = function (func, time) {
+                        var that = this;
+                        var done = false;
+                        var callback = function () {
+                            if (!done) {
+                                func.call(that);
+                                done = true;
+                            }
+                        };
+                        this.addEventListener('webkitTransitionEnd', callback);
+                        return setTimeout(callback, time || 1000);
+                    };
+                    /**
+                     * 设置本元素位置
+                     * ```JavaScript
+                     * top = calc(`offsets[0]`%+`offsets[1]`px)
+                     * left = calc(`offsets[2]`%+`offsets[3]`px)
+                     * ```
+                     * @function HTMLDivElement#setPosition
+                     * @param {!number[]} offsets - 偏移量数组（长度必须为4）。
+                     * @returns {HTMLDivElement} this self
+                     */
+                    /**
+                     * 设置本元素位置
+                     * ```JavaScript
+                     * top  = calc(`top_pc`%+`top_px`px)
+                     * left = calc(`lft_pc`%+`lft_px`px)
+                     * ```
+                     * @function HTMLDivElement#setPosition
+                     * @variation 2
+                     * @param {number} top_pc
+                     * @param {number} top_px
+                     * @param {number} lft_pc
+                     * @param {number} lft_px
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.setPosition = function () {
+                        var position;
+                        if (arguments.length == 4) {
+                            position = [];
+                            for (var i = 0; i < arguments.length; i++) position.push(arguments[i]);
+                        }
+                        else if (arguments.length == 1 && Array.isArray(arguments[0]) && arguments[0].length == 4) {
+                            position = arguments[0];
+                        }
+                        else {
+                            return this;
+                        }
+                        var top = 'calc(' + position[0] + '% ';
+                        if (position[1] > 0) top += '+ ' + position[1] + 'px)';
+                        else top += '- ' + Math.abs(position[1]) + 'px)';
+                        var left = 'calc(' + position[2] + '% ';
+                        if (position[3] > 0) left += '+ ' + position[3] + 'px)';
+                        else left += '- ' + Math.abs(position[3]) + 'px)';
+                        this.style.top = top;
+                        this.style.left = left;
+                        return this;
+                    };
+                    /**
+                     * 设置本元素css样式
+                     * @function HTMLDivElement#css
+                     * @param {Object} style - style
+                     * @param {string} [style.innerHTML] - 设置本元素内部HTML
+                     * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
+                     * @returns {HTMLDivElement} this self
+                     */
+                    HTMLDivElement.prototype.css = function (style) {
+                        for (var i in style) {
+                            if (i == 'innerHTML') {
+                                this.innerHTML = style[i];
+                            }
+                            else {
+                                this.style[i] = style[i];
+                            }
+                        }
+                        return this;
+                    };
+                    /**
+                     * 获取Table[row][col]对应的元素
+                     * @deprecated <span style="color:red;">[never use]</span> 实现有问题
+                     * @function HTMLTableElement#get
+                     * @param {!number} row - 行元素数组索引
+                     * @param {!number} col - 列元素数组索引
+                     * @returns {HTMLTableCellElement} 要索引的标题/单元格元素
+                     */
+                    HTMLTableElement.prototype.get = function (row, col) {
+                        if (row < this.childNodes.length) {
+                            return this.childNodes[row].childNodes[col];
+                        }
+                    };
+                }
+                {
+                    //part: 拓展数组
+                    /**
+                     * 统计数组中元素`item`出现的数量
+                     * @function Array#numOf
+                     * @param {*} item - 要统计的元素
+                     * @returns {!number} 统计结果（非负）
+                     */
+                    Array.prototype.numOf = function (item) {
+                        var num = 0;
+                        for (var i = 0; i < this.length; i++) {
+                            if (this[i] == item) num++;
+                        }
+                        return num;
+                    };
+                    //数组降维替代方案
+                    Array.prototype.vkflat = function (depth = 1) {
+                        const result = [];
+                        // 开始递归
+                        (function flat(arr, depth) {
+                            arr.forEach((item) => {
+                                if (Array.isArray(item) && depth > 0) {
+                                    // 递归数组
+                                    flat(item, depth - 1)
+                                } else {
+                                    result.push(item)
+                                }
+                            })
+                        })(this, depth)
+                        return result;
+                    };
+                    /**
+                     * 创建一个新的数组（浅复制），包含原数组中匹配卡牌位置的卡牌对象
+                     * @function Array#filterInD
+                     * @param {CardPosition[]} [pos='o'] - 卡牌位置字符串，匹配其中任意位置
+                     * @returns {!Array} 新的数组，如果没有匹配位置的卡牌，返回空数组
+                     */
+                    Array.prototype.filterInD = function (pos) {
+                        if (!pos) pos = 'o';
+                        var list = [];
+                        for (var i = 0; i < this.length; i++) {
+                            if (pos.indexOf(get.position(this[i], true)) != -1) list.push(this[i]);
+                        }
+                        return list;
+                    };
+                    /**
+                     * 定位元素，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf()}
+                     * @function Array#find
+                     * @param {*} item - 要在数组中定位的元素
+                     * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
+                     */
+                    Array.prototype.find = function (item) {
+                        return this.indexOf(item);
+                    };
+                    /**
+                     * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
+                     * @function Array#contains
+                     * @param {any} item - 要在数组中查找的元素
+                     * @returns {boolean} 存在返回`true`，不存在返回`false`
+                     */
+                    Array.prototype.contains = function (item) {
+                        return this.indexOf(item) != -1;
+                    };
+                    /**
+                     * 向原数组不重复地添加任意数量的元素；但是不保证，添加前，原数组中的元素是否唯一
+                     * @function Array#add
+                     * @param {...any} elements - 要添加的任意数量的元素
+                     * @returns {Array} this self
+                     */
+                    Array.prototype.add = function () {
+                        for (var i = 0; i < arguments.length; i++) {
+                            if (this.contains(arguments[i])) {
+                                return false;
+                            }
+                            this.push(arguments[i]);
+                        }
+                        return this;
+                    };
+                    /**
+                     * 将数组中的元素不重复地添加（{@link Array#add}）到原数组中
+                     * @deprecated [since ES 2015] 使用ES2015 Spread语法（详见{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax|Spread syntax}）
+                     * @function Array#addArray
+                     * @param {!Array} arr - 要添加的数组
+                     * @returns {Array} this self
+                     */
+                    Array.prototype.addArray = function (arr) {
+                        for (var i = 0; i < arr.length; i++) {
+                            this.add(arr[i]);
+                        }
+                        return this;
+                    };
+                    /**
+                     * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
+                     * <ul>
+                     *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
+                     * </ul>
+                     * @function Array#remove
+                     * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
+                     * @param {(*|Array)} item - 要删除的元素；要删除元素的（一维|二维|多维）数组
+                     * @returns {?Array} this self；如果`item`是数组，返回undefined
+                     */
+                    Array.prototype.remove = function (item) {
+                        if (Array.isArray(item)) {
+                            for (var i = 0; i < item.length; i++) this.remove(item[i]);
+                            return;
+                        }
+                        var pos = this.find(item);
+                        if (pos == -1) {
                             return false;
                         }
-                        this.push(arguments[i]);
-                    }
-                    return this;
-                };
-                /**
-                 * 将数组中的元素不重复地添加（{@link Array#add}）到原数组中
-                 * @deprecated [since ES 2015] 使用ES2015 Spread语法（详见{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax|Spread syntax}）
-                 * @function Array#addArray
-                 * @param {!Array} arr - 要添加的数组
-                 * @returns {Array} this self
-                 */
-                Array.prototype.addArray = function (arr) {
-                    for (var i = 0; i < arr.length; i++) {
-                        this.add(arr[i]);
-                    }
-                    return this;
-                };
-                /**
-                 * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
-                 * <ul>
-                 *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
-                 * </ul>
-                 * @function Array#remove
-                 * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
-                 * @param {(*|Array)} item - 要删除的元素；要删除元素的（一维|二维|多维）数组
-                 * @returns {?Array} this self；如果`item`是数组，返回undefined
-                 */
-                Array.prototype.remove = function (item) {
-                    if (Array.isArray(item)) {
-                        for (var i = 0; i < item.length; i++) this.remove(item[i]);
-                        return;
-                    }
-                    var pos = this.find(item);
-                    if (pos == -1) {
-                        return false;
-                    }
-                    this.splice(pos, 1);
-                    return this;
-                };
-                /**
-                 * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
-                 * <ul>
-                 *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
-                 *   <li>对`arr`中的每个元素会调用{@link Array#remove|Array.prototype.remove}</li>
-                 * </ul>
-                 * @function Array#removeArray
-                 * @deprecated [performance warning] {@link Array#remove}
-                 * @param {!Array} arr - 要删除元素的数组
-                 * @returns {Array} this self
-                 */
-                Array.prototype.removeArray = function (arr) {
-                    for (var i = 0; i < arr.length; i++) {
-                        this.remove(arr[i]);
-                    }
-                    return this;
-                };
-                /**
-                 * 从原数组中随机取出一个元素
-                 * @function Array#randomGet
-                 * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
-                 * @returns {any} 取出的元素
-                 */
-                Array.prototype.randomGet = function () {
-                    var arr = this.slice(0);
-                    for (var i = 0; i < arguments.length; i++) arr.remove(arguments[i]);
-                    return arr[Math.floor(Math.random() * arr.length)];
-                };
-                /**
-                 * 返回一个新的数组，随机删除指定数量的元素
-                 * @function Array#randomRemove
-                 * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
-                 * @param {number} [num=undefined] - 要删除的元素数量；默认移除一个
-                 * @returns {(Array|any)} 被删除元素的数组；当无参调用该函数时，返回被删除的元素而非数组
-                 */
-                Array.prototype.randomRemove = function (num) {
-                    if (typeof num == 'number') {
+                        this.splice(pos, 1);
+                        return this;
+                    };
+                    /**
+                     * 删除元素，如果原数组中可以找到要删除的元素，就会移除该元素；如果原数组有多个元素与要删除的元素等值（==），仅删除第一个
+                     * <ul>
+                     *   <li>注意，该函数要删除的元素不能是数组类型，因为数组类型会被当做要删除元素组成的数组</li>
+                     *   <li>对`arr`中的每个元素会调用{@link Array#remove|Array.prototype.remove}</li>
+                     * </ul>
+                     * @function Array#removeArray
+                     * @deprecated [performance warning] {@link Array#remove}
+                     * @param {!Array} arr - 要删除元素的数组
+                     * @returns {Array} this self
+                     */
+                    Array.prototype.removeArray = function (arr) {
+                        for (var i = 0; i < arr.length; i++) {
+                            this.remove(arr[i]);
+                        }
+                        return this;
+                    };
+                    /**
+                     * 从原数组中随机取出一个元素
+                     * @function Array#randomGet
+                     * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
+                     * @returns {any} 取出的元素
+                     */
+                    Array.prototype.randomGet = function () {
+                        var arr = this.slice(0);
+                        for (var i = 0; i < arguments.length; i++) arr.remove(arguments[i]);
+                        return arr[Math.floor(Math.random() * arr.length)];
+                    };
+                    /**
+                     * 返回一个新的数组，随机删除指定数量的元素
+                     * @function Array#randomRemove
+                     * @deprecated [performance warning] 该函数内部通过迭代删除每个元素，每多一个要删除的元素，就会多一次迭代
+                     * @param {number} [num=undefined] - 要删除的元素数量；默认移除一个
+                     * @returns {(Array|any)} 被删除元素的数组；当无参调用该函数时，返回被删除的元素而非数组
+                     */
+                    Array.prototype.randomRemove = function (num) {
+                        if (typeof num == 'number') {
+                            var list = [];
+                            for (var i = 0; i < num; i++) {
+                                if (this.length) {
+                                    list.push(this.randomRemove());
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                            return list;
+                        }
+                        else {
+                            return this.splice(Math.floor(Math.random() * this.length), 1)[0];
+                        }
+                    };
+                    /**
+                     * 对原数组随机排序
+                     * @function Array#randomSort
+                     * @returns {Array} this self
+                     */
+                    Array.prototype.randomSort = function () {
+                        var list = [];
+                        while (this.length) {
+                            list.push(this.randomRemove());
+                        }
+                        for (var i = 0; i < list.length; i++) {
+                            this.push(list[i]);
+                        }
+                        return this;
+                    };
+                    /**
+                     * 从原数组中随机取出指定数量的元素
+                     * @function Array#randomGet
+                     * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
+                     * @returns {!Array<any>} 随机取出的元素数组
+                     */
+                    Array.prototype.randomGets = function (num) {
+                        if (num > this.length) {
+                            num = this.length;
+                        }
+                        var arr = this.slice(0);
                         var list = [];
                         for (var i = 0; i < num; i++) {
-                            if (this.length) {
-                                list.push(this.randomRemove());
-                            }
-                            else {
-                                break;
-                            }
+                            list.push(arr.splice(Math.floor(Math.random() * arr.length), 1)[0]);
                         }
                         return list;
-                    }
-                    else {
-                        return this.splice(Math.floor(Math.random() * this.length), 1)[0];
-                    }
-                };
-                /**
-                 * 对原数组随机排序
-                 * @function Array#randomSort
-                 * @returns {Array} this self
-                 */
-                Array.prototype.randomSort = function () {
-                    var list = [];
-                    while (this.length) {
-                        list.push(this.randomRemove());
-                    }
-                    for (var i = 0; i < list.length; i++) {
-                        this.push(list[i]);
-                    }
-                    return this;
-                };
-                /**
-                 * 从原数组中随机取出指定数量的元素
-                 * @function Array#randomGet
-                 * @param {...any} elements - 任意元素，不包含在随机选择的元素中；实质对`elements`中的每个元素调用了{@link Array#remove|Array.prototype.remove}
-                 * @returns {!Array<any>} 随机取出的元素数组
-                 */
-                Array.prototype.randomGets = function (num) {
-                    if (num > this.length) {
-                        num = this.length;
-                    }
-                    var arr = this.slice(0);
-                    var list = [];
-                    for (var i = 0; i < num; i++) {
-                        list.push(arr.splice(Math.floor(Math.random() * arr.length), 1)[0]);
-                    }
-                    return list;
-                };
-                /**
-                 * 角色数组排序；以给定角色/当前事件角色为参考，对角色数组排序。- TODO
-                 * @function Array#sortBySeat
-                 * @param {GameCores.GameObjects.Player} target 给定的参考角色
-                 * @returns {Array} this self
-                 */
-                Array.prototype.sortBySeat = function (target) {
-                    lib.tempSortSeat = target;
-                    this.sort(lib.sort.seat);
-                    delete lib.tempSortSeat;
-                    return this;
-                };
-                if (!Array.from) {
+                    };
                     /**
-                     * 由参数数组生成新的数组（浅复制）
-                     * @function Array#from
-                     * @param {...any} args - 参数数组
-                     * @returns {!Array} 生成的数组；如果`args`为虚值或为空则返回空数组
+                     * 角色数组排序；以给定角色/当前事件角色为参考，对角色数组排序。- TODO
+                     * @function Array#sortBySeat
+                     * @param {GameCores.GameObjects.Player} target 给定的参考角色
+                     * @returns {Array} this self
                      */
-                    Array.from = function (args) {
-                        var list = [];
-                        if (args && args.length) {
-                            for (var i = 0; i < args.length; i++) {
-                                list.push(args[i]);
+                    Array.prototype.sortBySeat = function (target) {
+                        lib.tempSortSeat = target;
+                        this.sort(lib.sort.seat);
+                        delete lib.tempSortSeat;
+                        return this;
+                    };
+                    if (!Array.from) {
+                        /**
+                         * 由参数数组生成新的数组（浅复制）
+                         * @function Array#from
+                         * @param {...any} args - 参数数组
+                         * @returns {!Array} 生成的数组；如果`args`为虚值或为空则返回空数组
+                         */
+                        Array.from = function (args) {
+                            var list = [];
+                            if (args && args.length) {
+                                for (var i = 0; i < args.length; i++) {
+                                    list.push(args[i]);
+                                }
                             }
+                            return list;
                         }
-                        return list;
                     }
                 }
-                //导入资源
-                lib.init.js(lib.assetURL + 'game/data/output', 'data',function () {
-                    let list = ['translate','group','groupnature','card']
-                    for(let i of list){
-                        let v = 'data_'+i
-                        if(window[v]){
-                            if(lib[i] instanceof Array) lib[i] = [...lib[i],...window[v]];
-                            else if(lib[i] instanceof Object) lib[i] = {...lib[i],...window[v]};
-                            else    lib[i] = window[v];
-                            delete window[v];
-                        }
-                    }
-                });
-                lib.init.js(lib.assetURL + 'game/methods/output', 'methods',function () {
-                    let list = ['filter','sort']
-                    for(let i of list){
-                        let v = 'methods_'+i
-                        if(window[v]){
-                            if(lib[i] instanceof Array) lib[i] = [...lib[i],...window[v]];
-                            else if(lib[i] instanceof Object) lib[i] = {...lib[i],...window[v]};
-                            else    lib[i] = window[v];
-                            delete window[v];
-                        }
-                    }
-                });
-                //part: 设置全局window.onkeydown, window.onload, window.onerror，直到关闭网页（退出游戏）
-                /**
-                 * 监听键盘按下事件
-                 * @function
-                 * @global
-                 * @param {KeyboardEvent} e - 键盘事件
-                 * @listens KeyboardEvent
-                 */
-                window.onkeydown = function (e) {
-                    if (!ui.menuContainer || !ui.menuContainer.classList.contains('hidden')) {
-                        if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
-                            if (e.shiftKey) {
-                                if (confirm('是否重置游戏？')) {
-                                    var noname_inited = localStorage.getItem('noname_inited');
-                                    var onlineKey = localStorage.getItem(lib.configprefix + 'key');
-                                    localStorage.clear();
-                                    if (noname_inited) {
-                                        localStorage.setItem('noname_inited', noname_inited);
+                {
+                    //part: 设置全局window.onkeydown, window.onload, window.onerror，直到关闭网页（退出游戏）
+                    /**
+                     * 监听键盘按下事件
+                     * @function
+                     * @global
+                     * @param {KeyboardEvent} e - 键盘事件
+                     * @listens KeyboardEvent
+                     */
+                    window.onkeydown = function (e) {
+                        if (!ui.menuContainer || !ui.menuContainer.classList.contains('hidden')) {
+                            if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
+                                if (e.shiftKey) {
+                                    if (confirm('是否重置游戏？')) {
+                                        var noname_inited = localStorage.getItem('noname_inited');
+                                        var onlineKey = localStorage.getItem(lib.configprefix + 'key');
+                                        localStorage.clear();
+                                        if (noname_inited) {
+                                            localStorage.setItem('noname_inited', noname_inited);
+                                        }
+                                        if (onlineKey) {
+                                            localStorage.setItem(lib.configprefix + 'key', onlineKey);
+                                        }
+                                        if (indexedDB) indexedDB.deleteDatabase(lib.configprefix + 'data');
+                                        game.reload();
+                                        return;
                                     }
-                                    if (onlineKey) {
-                                        localStorage.setItem(lib.configprefix + 'key', onlineKey);
-                                    }
-                                    if (indexedDB) indexedDB.deleteDatabase(lib.configprefix + 'data');
+                                }
+                                else {
                                     game.reload();
-                                    return;
                                 }
                             }
-                            else {
-                                game.reload();
+                            else if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
+                                if (window.saveNonameInput) {
+                                    window.saveNonameInput();
+                                }
+                                e.preventDefault();
+                                e.stopPropagation();
+                                return false;
+                            }
+                            else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
+                                lib.node.debug();
                             }
                         }
-                        else if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
-                            if (window.saveNonameInput) {
-                                window.saveNonameInput();
+                        else {
+                            game.closePopped();
+                            var dialogs = document.querySelectorAll('#window>.dialog.popped:not(.static)');
+                            for (var i = 0; i < dialogs.length; i++) {
+                                dialogs[i].delete();
                             }
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        }
-                        else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
-                            lib.node.debug();
-                        }
-                    }
-                    else {
-                        game.closePopped();
-                        var dialogs = document.querySelectorAll('#window>.dialog.popped:not(.static)');
-                        for (var i = 0; i < dialogs.length; i++) {
-                            dialogs[i].delete();
-                        }
-                        if (e.keyCode == 32) {
-                            var node = ui.window.querySelector('pausedbg');
-                            if (node) {
-                                node.click();
-                            }
-                            else {
-                                ui.click.pause();
-                            }
-                        }
-                        else if (e.keyCode == 65) {
-                            if (ui.auto) ui.auto.click();
-                        }
-                        else if (e.keyCode == 87) {
-                            if (ui.wuxie && ui.wuxie.style.display != 'none') {
-                                ui.wuxie.classList.toggle('glow')
-                            }
-                            else if (ui.tempnowuxie) {
-                                ui.tempnowuxie.classList.toggle('glow')
-                            }
-                        }
-                        else if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
-                            if (e.shiftKey) {
-                                if (confirm('是否重置游戏？')) {
-                                    var noname_inited = localStorage.getItem('noname_inited');
-                                    var onlineKey = localStorage.getItem(lib.configprefix + 'key');
-                                    localStorage.clear();
-                                    if (noname_inited) {
-                                        localStorage.setItem('noname_inited', noname_inited);
-                                    }
-                                    if (onlineKey) {
-                                        localStorage.setItem(lib.configprefix + 'key', onlineKey);
-                                    }
-                                    if (indexedDB) indexedDB.deleteDatabase(lib.configprefix + 'data');
-                                    game.reload();
-                                    return;
+                            if (e.keyCode == 32) {
+                                var node = ui.window.querySelector('pausedbg');
+                                if (node) {
+                                    node.click();
+                                }
+                                else {
+                                    ui.click.pause();
                                 }
                             }
-                            else {
-                                game.reload();
+                            else if (e.keyCode == 65) {
+                                if (ui.auto) ui.auto.click();
+                            }
+                            else if (e.keyCode == 87) {
+                                if (ui.wuxie && ui.wuxie.style.display != 'none') {
+                                    ui.wuxie.classList.toggle('glow')
+                                }
+                                else if (ui.tempnowuxie) {
+                                    ui.tempnowuxie.classList.toggle('glow')
+                                }
+                            }
+                            else if (e.keyCode == 116 || ((e.ctrlKey || e.metaKey) && e.keyCode == 82)) {
+                                if (e.shiftKey) {
+                                    if (confirm('是否重置游戏？')) {
+                                        var noname_inited = localStorage.getItem('noname_inited');
+                                        var onlineKey = localStorage.getItem(lib.configprefix + 'key');
+                                        localStorage.clear();
+                                        if (noname_inited) {
+                                            localStorage.setItem('noname_inited', noname_inited);
+                                        }
+                                        if (onlineKey) {
+                                            localStorage.setItem(lib.configprefix + 'key', onlineKey);
+                                        }
+                                        if (indexedDB) indexedDB.deleteDatabase(lib.configprefix + 'data');
+                                        game.reload();
+                                        return;
+                                    }
+                                }
+                                else {
+                                    game.reload();
+                                }
+                            }
+                            else if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                return false;
+                            }
+                            else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
+                                lib.node.debug();
+                            }
+                            // else if(e.keyCode==27){
+                            //     if(!ui.arena.classList.contains('paused')) ui.click.config();
+                            // }
+                        }
+                    };
+                    /**
+                     * window加载结束时调用
+                     * @function
+                     * @global
+                     */
+                    window.onload = function () {
+                        if (lib.device) {
+                            var script = document.createElement('script');
+                            script.src = 'cordova.js';
+                            document.body.appendChild(script);
+                            document.addEventListener('deviceready', function () {
+                                if (lib.init.cordovaReady) {
+                                    lib.init.cordovaReady();
+                                    delete lib.init.cordovaReady;
+                                }
+                            });
+                        }
+                        if (_status.packLoaded) {
+                            delete _status.packLoaded;
+                            lib.init.onload();
+                        }
+                        else {
+                            /**
+                             * 当onload调用先于包的加载时，标志onload已经运行完毕，直至包全部加载完毕则删除该标志
+                             * @private
+                             * @default
+                             */
+                            _status.windowLoaded = true;
+                        }
+                    };
+                    /**
+                     * 触发错误时调用
+                     * @function
+                     * @global
+                     * @param {string} msg - 错误信息
+                     * @param {string} src - 引发错误的脚本URL
+                     * @param {string} line - 引发错误的行号
+                     * @param {string} column - 发生错误的行的列号
+                     * @param {Error} err - 错误对象
+                     */
+                    window.onerror = function (msg, src, line, column, err) {
+                        var str = msg;
+                        if (window._status && _status.event) {
+                            var evt = _status.event;
+                            str += ('\n' + evt.name + ': ' + evt.step);
+                            if (evt.parent) str += '\n' + evt.parent.name + ': ' + evt.parent.step;
+                            if (evt.parent && evt.parent.parent) str += '\n' + evt.parent.parent.name + ': ' + evt.parent.parent.step;
+                            if (evt.player || evt.target || evt.source || evt.skill || evt.card) {
+                                str += '\n-------------'
+                            }
+                            if (evt.player) {
+                                str += '\nplayer: ' + evt.player.name;
+                            }
+                            if (evt.target) {
+                                str += '\ntarget: ' + evt.target.name;
+                            }
+                            if (evt.source) {
+                                str += '\nsource: ' + evt.source.name;
+                            }
+                            if (evt.skill) {
+                                str += '\nskill: ' + evt.skill.name;
+                            }
+                            if (evt.card) {
+                                str += '\ncard: ' + evt.card.name;
                             }
                         }
-                        else if (e.keyCode == 83 && (e.ctrlKey || e.metaKey)) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
+                        str += '\n-------------';
+                        str += '\n' + line;
+                        str += '\n' + column;
+                        if (err && err.stack) str += '\n' + err.stack;
+                        alert(str);
+                        window.ea = Array.from(arguments);
+                        window.em = msg;
+                        window.el = line;
+                        window.ec = column;
+                        window.eo = err;
+                        game.print(msg);
+                        game.print(line);
+                        game.print(column);
+                        game.print(err.stack);
+                        if (!lib.config.errstop) {
+                            _status.withError = true;
+                            game.loop();
                         }
-                        else if (e.keyCode == 74 && (e.ctrlKey || e.metaKey) && lib.node) {
-                            lib.node.debug();
-                        }
-                        // else if(e.keyCode==27){
-                        //     if(!ui.arena.classList.contains('paused')) ui.click.config();
-                        // }
-                    }
-                };
-                /**
-                 * window加载结束时调用
-                 * @function
-                 * @global
-                 */
-                window.onload = function () {
-                    if (lib.device) {
-                        var script = document.createElement('script');
-                        script.src = 'cordova.js';
-                        document.body.appendChild(script);
-                        document.addEventListener('deviceready', function () {
-                            if (lib.init.cordovaReady) {
-                                lib.init.cordovaReady();
-                                delete lib.init.cordovaReady;
-                            }
-                        });
-                    }
-                    if (_status.packLoaded) {
-                        delete _status.packLoaded;
-                        lib.init.onload();
-                    }
-                    else {
-                        /**
-                         * 当onload调用先于包的加载时，标志onload已经运行完毕，直至包全部加载完毕则删除该标志
-                         * @private
-                         * @default
-                         */
-                        _status.windowLoaded = true;
-                    }
-                };
-                /**
-                 * 触发错误时调用
-                 * @function
-                 * @global
-                 * @param {string} msg - 错误信息
-                 * @param {string} src - 引发错误的脚本URL
-                 * @param {string} line - 引发错误的行号
-                 * @param {string} column - 发生错误的行的列号
-                 * @param {Error} err - 错误对象
-                 */
-                window.onerror = function (msg, src, line, column, err) {
-                    var str = msg;
-                    if (window._status && _status.event) {
-                        var evt = _status.event;
-                        str += ('\n' + evt.name + ': ' + evt.step);
-                        if (evt.parent) str += '\n' + evt.parent.name + ': ' + evt.parent.step;
-                        if (evt.parent && evt.parent.parent) str += '\n' + evt.parent.parent.name + ': ' + evt.parent.parent.step;
-                        if (evt.player || evt.target || evt.source || evt.skill || evt.card) {
-                            str += '\n-------------'
-                        }
-                        if (evt.player) {
-                            str += '\nplayer: ' + evt.player.name;
-                        }
-                        if (evt.target) {
-                            str += '\ntarget: ' + evt.target.name;
-                        }
-                        if (evt.source) {
-                            str += '\nsource: ' + evt.source.name;
-                        }
-                        if (evt.skill) {
-                            str += '\nskill: ' + evt.skill.name;
-                        }
-                        if (evt.card) {
-                            str += '\ncard: ' + evt.card.name;
-                        }
-                    }
-                    str += '\n-------------';
-                    str += '\n' + line;
-                    str += '\n' + column;
-                    if (err && err.stack) str += '\n' + err.stack;
-                    alert(str);
-                    window.ea = Array.from(arguments);
-                    window.em = msg;
-                    window.el = line;
-                    window.ec = column;
-                    window.eo = err;
-                    game.print(msg);
-                    game.print(line);
-                    game.print(column);
-                    game.print(err.stack);
-                    if (!lib.config.errstop) {
-                        _status.withError = true;
-                        game.loop();
-                    }
-                };
+                    };
+                }
                 //part: 更新内容，window.nogame_update，创建于config.js
                 if (window.noname_update) {
                     lib.version = window.noname_update.version;
@@ -3665,57 +3646,63 @@
                             lib.config.gameRecord.identity = { data: {} };
                         }
                     }
-                    if (pack.background) {
-                        for (i in pack.background) {
-                            if (lib.config.hiddenBackgroundPack.contains(i)) continue;
-                            lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
-                        }
-                        for (var i = 0; i < lib.config.customBackgroundPack.length; i++) {
-                            var link = lib.config.customBackgroundPack[i];
-                            lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
-                        }
-                        lib.configMenu.appearence.config.image_background.item.default = '默认';
-                    }
-                    if (pack.music) {
-                        if (lib.device || typeof window.require == 'function') {
-                            lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
-                        }
-                        lib.config.all.background_music = ['music_diaochan'];
-                        for (i in pack.music) {
-                            lib.config.all.background_music.push(i);
-                            lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
-                        }
-                        if (lib.config.customBackgroundMusic) {
-                            for (i in lib.config.customBackgroundMusic) {
-                                lib.config.all.background_music.push(i);
-                                lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                    if(!lib.copeData){
+                        lib.copeData = setTimeout(()=>{
+                            if (pack.background) {
+                                for (i in pack.background) {
+                                    if (lib.config.hiddenBackgroundPack.contains(i)) continue;
+                                    lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
+                                }
+                                for (var i = 0; i < lib.config.customBackgroundPack.length; i++) {
+                                    var link = lib.config.customBackgroundPack[i];
+                                    lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
+                                }
+                                lib.configMenu.appearence.config.image_background.item.default = '默认';
                             }
-                        }
-                        lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
-                        lib.configMenu.audio.config.background_music.item.music_off = '关闭';
-                    }
-                    if (pack.theme) {
-                        for (i in pack.theme) {
-                            lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
-                        }
-                    }
-                    if (lib.config.extension_sources) {
-                        for (i in lib.config.extension_sources) {
-                            lib.configMenu.general.config.extension_source.item[i] = i;
-                        }
-                    }
-
-                    if (pack.font) {
-                        ui.css.fontsheet = lib.init.sheet();
-                        for (i in pack.font) {
-                            lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
-                            lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
-                            lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
-                            lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
-                            ui.css.fontsheet.sheet.insertRule("@font-face {font-family: '" + i + "';src: url('" + lib.assetURL + "font/" + i + ".ttf');}", 0);
-                        }
-                        lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
-                        lib.configMenu.appearence.config.global_font.item.default = '默认';
+                            if (pack.music) {
+                                if (lib.device || typeof window.require == 'function') {
+                                    lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
+                                }
+                                lib.config.all.background_music = ['music_danji'];
+                                for (i in pack.music) {
+                                    lib.config.all.background_music.push(i);
+                                    lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
+                                }
+                                if (lib.config.customBackgroundMusic) {
+                                    for (i in lib.config.customBackgroundMusic) {
+                                        lib.config.all.background_music.push(i);
+                                        lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                                    }
+                                }
+                                lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
+                                lib.configMenu.audio.config.background_music.item.music_off = '关闭';
+                            }
+                            if (pack.theme) {
+                                for (i in pack.theme) {
+                                    lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
+                                }
+                            }
+                            if (lib.config.extension_sources) {
+                                for (i in lib.config.extension_sources) {
+                                    lib.configMenu.general.config.extension_source.item[i] = i;
+                                }
+                            }
+        
+                            if (pack.font) {
+                                ui.css.fontsheet = lib.init.sheet();
+                                for (i in pack.font) {
+                                    lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
+                                    lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
+                                    lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
+                                    lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
+                                    ui.css.fontsheet.sheet.insertRule("@font-face {font-family: '" + i + "';src: url('" + lib.assetURL + "font/" + i + ".ttf');}", 0);
+                                }
+                                lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
+                                lib.configMenu.appearence.config.global_font.item.default = '默认';
+                            }
+                            delete lib.copeData
+                            delete lib.loadData
+                        },lib.loadData?10:300)
                     }
                     //part: touch, layout, scroll config
                     var ua = navigator.userAgent.toLowerCase();
@@ -5725,18 +5712,17 @@
             },
             parse: function (func) {
                 let str = ''
-                if(Array.isArray(func)){
+                if (Array.isArray(func)) {
                     str += `if(event.step==${func.length}) {event.finish();return;}switch(step){`
-                    for(let i=0;i<func.length;i++){
-                        str += `case ${i}:{` + func[i].toString().replace(/(?!\.)galgame/g, 'game.galgame').slice(str.indexOf('{'))+'break;'
+                    for (let i = 0; i < func.length; i++) {
+                        str += `case ${i}:{` + func[i].toString().replace(/(?!\.)galgame\./g, 'game.galgame.').slice(str.indexOf('{')) + 'break;'
                     }
                     str += `}`
                 }
-                else{
+                else {
                     str += func.toString();
                     //galgame调整
-                    str = str.replace(/(?!\.)galgame/g, 'game.galgame');
-    
+                    str = str.replace(/(?!\.)galgame\./g, 'game.galgame.');
                     str = str.slice(str.indexOf('{') + 1);
                     if (str.indexOf('step 0') == -1) {
                         str = `{if(event.step==1) {event.finish();return;}${str}`;
@@ -11548,7 +11534,7 @@
                     if (info.round) {
                         var roundname = skill + '_roundcount';
                         player.storage[roundname] = info.round;
-                        if(!player.hasSkill(roundname))   player.addSkill(roundname)
+                        if (!player.hasSkill(roundname)) player.addSkill(roundname)
                         // player.storage[roundname] = game.roundNumber;
                         player.syncStorage(roundname);
                         player.markSkill(roundname);
@@ -18175,7 +18161,7 @@
                     if (info && info.round) {
                         var roundname = name + '_roundcount';
                         this.storage[roundname] = info.round;
-                        if(!this.hasSkill(roundname))   this.addSkill(roundname)
+                        if (!this.hasSkill(roundname)) this.addSkill(roundname)
                         // this.storage[roundname] = game.roundNumber;
                         this.syncStorage(roundname);
                         this.markSkill(roundname);
@@ -22835,7 +22821,7 @@
                  * @returns {GameCores.Bases.Event} this self
                  */
                 setContent: function (name) {
-                    if (typeof name == 'function'||Array.isArray(name)) {
+                    if (typeof name == 'function' || Array.isArray(name)) {
                         this.content = lib.init.parse(name);
                     }
                     else {
@@ -23797,11 +23783,9 @@
                 filter: function (event, player) {
                     return player.canShengjie(player.getCards('h'));
                 },
-                content:[
-                    function () {
+                content: [function () {
                         player.chooseShengjie(player.getCards('h'))
-                    },
-                    function(){
+                    },function () {
                         if (result.bool) {
                             player.lose(result.cards, ui.discardPile, 'visible');
                             player.$throw(result.cards);
@@ -23818,8 +23802,7 @@
                                 skill._shengjietried = 1;
                             }
                         }
-                    },
-                    function(){
+                    },function () {
                         if (event.star) {
                             player.gain(event.star, 'gain2').gaintag.add('_shengjie');
                         }
@@ -26365,7 +26348,7 @@
                             if (arr[1] == "none") {
                                 beijing.style.backgroundImage = "";
                             } else {
-                                beijing.setBackgroundImage('galgame/' + arr[1]);
+                                beijing.setBackgroundImage('extension/' + arr[1]);
                             }
                             num++;
                             bofang();
@@ -26465,7 +26448,7 @@
                                 if (!txt.classList.contains("txt2")) {
                                     txt.classList.add("txt2");
                                 }
-                                right.setBackgroundImage('galgame/' + arr[1]);
+                                right.setBackgroundImage('extension/' + arr[1]);
                                 if (arr[2] == "none") {
                                     name2.innerHTML = "";
                                 } else {
@@ -26558,14 +26541,14 @@
                                 window.addEventListener('keydown', skipfun0);
                                 window.addEventListener('keyup', skipfun1);
                                 if (window.status == 'skip') {
-                                    let t = setTimeout(show, 160);
+                                    let t = setTimeout(show, 100);
                                     drive.onclick = function () {
                                         clearTimeout(t);
                                         show();
                                     }
                                 }
                                 else {
-                                    let t = setTimeout(show, 900);
+                                    let t = setTimeout(show, 750);
                                     drive.onclick = function () {
                                         clearTimeout(t);
                                         show();
@@ -27448,8 +27431,8 @@
                 noeval = true;
             }
             {
-                function changeStep(content){
-                    if(content instanceof Function){
+                function changeStep(content) {
+                    if (content instanceof Function) {
                         let v = new Function('return ' + content.toString())()
                         content = [];
                         let str = v.toString();
@@ -27460,17 +27443,17 @@
                         else {
                             let keys = str.split('step ')
                             for (let k = 0; k < keys.length; k++) {
-                                content[k]  = new Function(keys[k].slice(1))
+                                content[k] = new Function(keys[k].slice(1))
                             }
                         }
                     }
                 }
-                for(let i in obj.skill){
+                for (let i in obj.skill) {
                     changeStep(obj.skill[i].content)
                     changeStep(obj.skill[i].callback)
                     changeStep(obj.skill[i].precontent)
                 }
-                for(let i in obj.card){
+                for (let i in obj.card) {
                     changeStep(obj.skill[i].content)
                 }
             }
@@ -33130,11 +33113,11 @@
                 }
                 lib.skill[k] = (function (round, name) {
                     return {
-                        init (player) {
-                            if (typeof player.storage[name] !== 'number')   player.storage[name] = 0;
+                        init(player) {
+                            if (typeof player.storage[name] !== 'number') player.storage[name] = 0;
                         },
                         intro: {
-                            content (storage, player) {
+                            content(storage, player) {
                                 let str = '';
                                 let info = get.info(name.slice(0, name.indexOf('_roundcount')));
                                 if (info && info.addintro) {
@@ -33150,7 +33133,7 @@
                                 }
                                 return str;
                             },
-                            markcount (storage, player) {
+                            markcount(storage, player) {
                                 let num = storage;
                                 if (num > 0) {
                                     return num;
@@ -33164,7 +33147,6 @@
                         silent: true,
                         content() {
                             var roundname = event.name;
-                            console.log(player,roundname)
                             if (player.storage[roundname] > 0) {
                                 player.storage[roundname]--
                             }
@@ -37340,7 +37322,7 @@
                             }
                         }
 
-                        node.update = function () {};
+                        node.update = function () { };
                     }());
                     var active = start.firstChild.querySelector('.active');
                     if (!active) {
@@ -38911,46 +38893,46 @@
             },
             groupControl: function (dialog) {
                 return ui.create.control(...lib.group2, function (link, node) {//'wei','shu','wu','western','key',
-                        if (link == '全部') {
-                            dialog.currentcapt = '';
-                            dialog.currentgroup = '';
+                    if (link == '全部') {
+                        dialog.currentcapt = '';
+                        dialog.currentgroup = '';
+                        for (var i = 0; i < dialog.buttons.length; i++) {
+                            dialog.buttons[i].style.display = '';
+                        }
+                    }
+                    else {
+                        if (node.classList.contains('thundertext')) {
+                            dialog.currentgroup = null;
+                            dialog.currentgroupnode = null;
+                            node.classList.remove('thundertext');
                             for (var i = 0; i < dialog.buttons.length; i++) {
-                                dialog.buttons[i].style.display = '';
+                                if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
+                                    dialog.buttons[i].classList.add('nodisplay');
+                                }
+                                else {
+                                    dialog.buttons[i].classList.remove('nodisplay');
+                                }
                             }
                         }
                         else {
-                            if (node.classList.contains('thundertext')) {
-                                dialog.currentgroup = null;
-                                dialog.currentgroupnode = null;
-                                node.classList.remove('thundertext');
-                                for (var i = 0; i < dialog.buttons.length; i++) {
-                                    if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
-                                        dialog.buttons[i].classList.add('nodisplay');
-                                    }
-                                    else {
-                                        dialog.buttons[i].classList.remove('nodisplay');
-                                    }
-                                }
+                            if (dialog.currentgroupnode) {
+                                dialog.currentgroupnode.classList.remove('thundertext');
                             }
-                            else {
-                                if (dialog.currentgroupnode) {
-                                    dialog.currentgroupnode.classList.remove('thundertext');
+                            dialog.currentgroup = link;
+                            dialog.currentgroupnode = node;
+                            node.classList.add('thundertext');
+                            for (var i = 0; i < dialog.buttons.length; i++) {
+                                if (dialog.buttons[i].group != link ||
+                                    (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt))) {
+                                    dialog.buttons[i].classList.add('nodisplay');
                                 }
-                                dialog.currentgroup = link;
-                                dialog.currentgroupnode = node;
-                                node.classList.add('thundertext');
-                                for (var i = 0; i < dialog.buttons.length; i++) {
-                                    if (dialog.buttons[i].group != link ||
-                                        (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt))) {
-                                        dialog.buttons[i].classList.add('nodisplay');
-                                    }
-                                    else {
-                                        dialog.buttons[i].classList.remove('nodisplay');
-                                    }
+                                else {
+                                    dialog.buttons[i].classList.remove('nodisplay');
                                 }
                             }
                         }
-                    });
+                    }
+                });
             },
             /**
              * 生成带有卡牌按钮的弹窗
@@ -45872,7 +45854,7 @@
              * 判断角色是否为多势力
              */
             double: function (name, array) {
-                if (!lib.character[name] || !lib.character[name][4] || name.indexOf('gz_') != 0) return false;
+                if (!lib.character[name] || !lib.character[name][4]) return false;
                 for (var i of lib.character[name][4]) {
                     if (i.indexOf('doublegroup:') == 0) {
                         if (!array) return true;
@@ -48048,7 +48030,7 @@
                         tra = tra.substring(0, tra.indexOf('('));
                     let reg = new RegExp(`『(${tra})』`, 'g');
                     str = str.replace(reg, `<span class="iText" data-introLink="${i}">
-                    <svg width="${tra.length*1.1+2}em" height="1.3em" style="vertical-align: bottom">
+                    <svg width="${tra.length * 1.1 + 2}em" height="1.3em" style="vertical-align: bottom">
                         <text x="0" y="80%" fill="white">『$1』</text>
                         <rect width="100%" height="100%" class="iRec"/>
                     </svg></span>`);
@@ -48062,7 +48044,7 @@
                         font-style: italic;
                         line-height: 1em;
                     }
-                `),lib.init.sheet(`
+                `), lib.init.sheet(`
                     .iRec{
                         fill:transparent;
                         stroke:aqua;
@@ -48071,7 +48053,7 @@
                         stroke-dashoffset: 230;
                         transition: 1.2s;
                     }
-                `),lib.init.sheet(`
+                `), lib.init.sheet(`
                     .iText:hover .iRec{
                         stroke-width: 4px;
                         stroke-dasharray: 600;
@@ -48843,7 +48825,7 @@
                     if (lib.skill[skills[i]] && (lib.skill[skills[i]].nopop || lib.skill[skills[i]].equipSkill)) continue;
                     if (lib.translate[skills[i] + '_info']) {
                         translation = lib.translate[skills[i] + '_ab'] || get.translation(skills[i]).slice(0, 5);
-                        let info = get.interoperableText(skills[i],node)
+                        let info = get.interoperableText(skills[i], node)
                         if (node.forbiddenSkills[skills[i]]) {
                             let forbidstr = '<div style="opacity:0.5"><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>';
                             if (node.forbiddenSkills[skills[i]].length) {
@@ -49756,7 +49738,7 @@
                 }
             }
             else if (node.classList.contains('iText')) {
-                if(node.curUiintro)    node.curUiintro.close();
+                if (node.curUiintro) node.curUiintro.close();
                 let name = node.link;
                 if (lib.translate[name + '_info']) {
                     node.curUiintro = uiintro
@@ -51030,7 +51012,6 @@
          */
         get: get
     };
-    
     window.vkCore = {
         game,
         ui,
@@ -51038,6 +51019,34 @@
         ai,
         lib,
         _status
+    }
+    {
+        //导入资源
+        lib.init.js(lib.assetURL + 'game/data/output', 'data', function () {
+            let list = ['translate', 'group', 'groupnature', 'card']
+            for (let i of list) {
+                let v = 'data_' + i
+                if (window[v]) {
+                    if (lib[i] instanceof Array) lib[i] = [...lib[i], ...window[v]];
+                    else if (lib[i] instanceof Object) lib[i] = { ...lib[i], ...window[v] };
+                    else lib[i] = window[v];
+                    delete window[v];
+                }
+            }
+            lib.loadData = true
+        });
+        lib.init.js(lib.assetURL + 'game/methods/output', 'methods', function () {
+            let list = ['filter', 'sort']
+            for (let i of list) {
+                let v = 'methods_' + i
+                if (window[v]) {
+                    if (lib[i] instanceof Array) lib[i] = [...lib[i], ...window[v]];
+                    else if (lib[i] instanceof Object) lib[i] = { ...lib[i], ...window[v] };
+                    else lib[i] = window[v];
+                    delete window[v];
+                }
+            }
+        });
     }
     game.galgameMod();
     lib.init.init();
