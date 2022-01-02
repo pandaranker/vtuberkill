@@ -12417,10 +12417,9 @@
                  * @name content.changeHp
                  * @type {GameCores.Bases.StateMachine}
                  */
-                changeHp: function () {
-                    //柚子：这里加了一个改变体力前时机
-                    'step 0'
-                    Evt.trigger('changeHpBegin');},function(){
+                changeHp: [function () {
+                    Evt.trigger('changeHpBegin');
+                },function(){
                     player.hp += num;
                     if (isNaN(player.hp)) player.hp = 0;
                     if (player.hp > player.maxHp) player.hp = player.maxHp;
@@ -12440,7 +12439,7 @@
                         if (evt && evt.finish) evt.finish()
                     }
                     Evt.trigger('changeHp');
-                },
+                }],
                 /**
                  * 令角色获得/失去护甲
                  * @name content.changeHujia
@@ -47338,7 +47337,7 @@
         type3: function (cards, method, player) {
             if (get.itemtype(cards) != 'cards') return;
             var types = [];
-            for (var i of cards) {
+            for (let i of cards) {
                 types.add(get.type(i, method, player));
             }
             return types;

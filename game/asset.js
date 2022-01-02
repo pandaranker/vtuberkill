@@ -15,6 +15,7 @@ window.vk_asset_list=[
 	'audio/background/music_diana.mp3',
 	'audio/background/music_kaitian.mp3',
 	'audio/background/music_Quite.mp3',
+	'audio/background/music_VTL.mp3',
 	'audio/card/default.mp3',
 	
 	'audio/card/female/caomu.mp3',
@@ -1394,6 +1395,7 @@ window.vk_asset_list=[
 	'image/character/Taffy.jpg',
 	'image/character/TakatsukiRitsu.jpg',
 	'audio/die/TakatsukiRitsu.mp3',
+	'image/character/tangjiuxia.jpg',
 	'image/character/TenkaiTsukasa.jpg',
 	'image/character/tianxixi.jpg',
 	'image/character/TokinoSora.jpg',

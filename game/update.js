@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.10',
+	version:'1.9.104.11',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.10小型更新：新增角色吉诺儿kino【乐元素/Nebula-Beat】，修复应变bug`,
+		`1.9.104.11小型更新：新增角色唐九夏【乐元素/Nebula-Beat】，修复bug`,
 		`增加一些BGM供选择`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
 		``,

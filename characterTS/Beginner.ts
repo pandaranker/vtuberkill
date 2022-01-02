@@ -691,7 +691,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 						return att;
 					});
 				},function(){
-					if(result.bool){
+					if(result.bool&&result?.targets?.length){
 						var target=result.targets[0];
 						player.line(target,'green');
 						if(target.countCards('h')<player.countCards('h')||target.isMinHandcard()){
@@ -711,7 +711,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 				},function(){
 					if(result.bool){
 						player.logSkill('dianyin');
-						Evt.goto(1);
+						Evt.goto(0);
 					}
 				}],
 				ai:{
@@ -5661,7 +5661,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 		dynamicTranslate:{
 			re_longdan(player: { storage: { re_longdan: boolean; }; }){
 				let str = lib.translate.re_longdan_info;
-                let result = /(阳：.*?)[；。].*(阴：.*?)[；。]/g.exec(str);
+                let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
                 let yang = result[1], yin = result[2];
 				if(player.storage.re_longdan===true) return str.replace(yang,lib.spanClass(yang,'changetext'));
 				return str.replace(yin,lib.spanClass(yin,'changetext'));
@@ -5783,7 +5783,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 		
 			re_MinamiNami: `新·美波七海`,
 			re_longdan: `龙胆雄心`,
-			re_longdan_info: `转换技 每回合限一次，阳：你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴：你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。`,
+			re_longdan_info: `转换技 每回合限一次，阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。`,
 		
 			re_SisterClearie: `新·克蕾雅`,
 			shenyou: `神佑`,

@@ -162,6 +162,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**吉诺儿kino */
 			Kino: ['female', 'HappyElements', 4, ['xiandu','yexi'], ['guoV']],
+			/**唐九夏 */
+			tangjiuxia: ['female', 'HappyElements', 4, ['jiuxian','yujian'], ['guoV']],
 			/**李清歌 */
 			liqingge: ['female', 'HappyElements', 4, ['tage'], ['guoV']],
 			/**神宫司玉藻 */
@@ -253,6 +255,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			liqingge: '#y战斗吧歌姬！',
 			JingujiTamamo: '#y战斗吧歌姬！',
+			Kino: '#yNebula-Beat',
+			tangjiuxia: '#yNebula-Beat',
 		},
 		skill: {
 			chisha: {
@@ -12029,6 +12033,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					let types = get.type3(_status.discarded);
 					let check = game.hasPlayer(cur => !trigger.getParent().targets.includes(cur) && get.damageEffect(cur, player, player) > 0);
 					player.chooseToDiscard(get.prompt2('tingzhu'), 'he', card => {
+						console.log(_status.event.types)
 						return !_status.event.types.includes(get.type(card));
 					}).set('ai', card => {
 						if (!_status.event.check) return -1;
@@ -17248,7 +17253,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 			},
-			//神宫司玉藻
+			//吉诺儿kino
 			xiandu:new toSkill('trigger',{
 				init(player, skill) {
 					if (!player.storage[skill]) player.storage[skill] = 0;
@@ -17303,6 +17308,94 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 			}),
+			//唐九夏
+			jiuxian:new toSkill('trigger',{
+				init(player, skill) {
+					if (!player.storage[skill]) player.storage[skill] = 0;
+				},
+				content:[() => {
+					player.storage.jiuxian++
+					player.markSkill('jiuxian')
+					if(player.storage.jiuxian%9===0){
+						player.chooseTarget(get.prompt2('jiuxian')).set('ai',tar => {
+							let player = _status.event.player, att = get.attitude(player,tar)
+							if(att)	return get.recoverEffect(tar, player, player)
+							else if(tar.hasSkillTag('maixie')) return -0.5*att
+							else return -1.5*att
+						})
+					}
+				},() => {
+					if(result.bool){
+						Evt.target = result.targets[0]
+						player.chooseControl('cancel2','recover_hp', 'lose_hp', function () {
+							if (_status.event.check) return 1;
+							return 2;
+						}).set('prompt', '令目标执行：').set('check', get.recoverEffect(Evt.target, player, player) > 0);
+					}else	Evt.finish();
+				},() => {
+					switch(result.index){
+						case 0:{
+							Evt.goto(0);
+							break;
+						}
+						case 1:{
+							player.logSkill('jiuxian',Evt.target)
+							Evt.target.recover()
+							break;
+						}
+						case 2:{
+							player.logSkill('jiuxian',Evt.target)
+							Evt.target.loseHp()
+							break;
+						}
+					}
+				}],
+				intro:{
+					content:'本局游戏内累计使用了#张牌'
+				},
+				ai:{
+					expose:0.2
+				}
+			},'direct').setT('useCard'),
+			yujian:new toSkill('trigger',{
+				init(player, skill) {
+					if (!player.storage[skill]) player.storage[skill] = true;
+				},
+				filter(Evt, player) {
+					if(get.type(Evt.card)==='equip'){
+						return (player.storage.yujian===true && player===Evt.player)
+						||(player.storage.yujian===false && player!==Evt.player);
+					}
+					return false;
+				},
+				log: false,
+				content:[()=>{
+					if(player.storage.yujian===true){
+						player.chooseTarget(get.prompt2('yujian'),function (card, player, target) {
+							return player!=target;
+						}).set('ai',tar => {
+							let player = _status.event.player
+							return get.effect(tar,_status.event.card,player,player)
+						}).set('card',trigger.card)
+					}
+					else if(player.storage.yujian===false){
+						Evt.target = trigger.player
+						player.logSkill('yujian',Evt.target)
+					}
+				},()=>{
+					if(player.storage.yujian===true&&result?.targets?.length){
+						Evt.target = result.targets[0]
+						player.logSkill('yujian',Evt.target)
+						trigger.targets = [Evt.target]
+					}
+					else if(player.storage.yujian===false){
+						trigger.finish()
+						player.gain(trigger.cards)
+					}else	Evt.finish();
+				},()=>{
+					player.storage.yujian = !player.storage.yujian
+				}],
+			}).setT({global:'useCard2'}),
 			yuenan: new toSkill('trigger', {
 				filter(Evt, player) {
 					return !Evt.numFixed;
@@ -17540,9 +17633,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			tuncai(player) {
 				let str = lib.translate.tuncai_info;
-				let result = /(阳：.*?)[；。].*(阴：.*?)[；。]/g.exec(str);
+				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
 				let yang = result[1], yin = result[2];
 				if (player.storage.tuncai === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
+				return str.replace(yin, lib.spanClass(yin, 'changetext'));
+			},
+			yujian(player) {
+				let str = lib.translate.yujian_info;
+				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
+				let yang = result[1], yin = result[2];
+				if (player.storage.yujian === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
 				return str.replace(yin, lib.spanClass(yin, 'changetext'));
 			},
 			yinxu(player) {
@@ -17647,8 +17747,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yuci: `欲词`,
 			yuci_info: `锁定技 若场上的其他角色均为同一性别，你每个阶段首次摸牌量+1。`,
 
-			Melody: `Melody`,
-			Melody_ab: `メロディ`,
+			Melody: `Projekt Melody`,
+			Melody_ab: `Mel`,
 			kuangbiao: `狂飙`,
 			kuangbiao_info: `锁定技 你的♥手牌视为【无中生有】。你使用的♥手牌结算后，你失去不为1的一点体力并将此牌置于武将牌上。你已受伤时，可以将『狂飙』牌如手牌般使用或打出。`,
 			leizhu: `磊诛`,
@@ -17970,6 +18070,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			xiandu_info: `锁定技 一局游戏内，你每使用十张牌，摸X张牌（X为此技能被发动的次数且至多为5）`,
 			yexi: `椰熙`,
 			yexi_info: `出牌阶段，你可以令一名其他角色弃置你的一张牌，若其弃置了【杀】或装备牌，其将牌堆顶牌当作【杀】对你使用，然后你获得其一张牌。`,
+
+			tangjiuxia: `唐九夏`,
+			jiuxian: `韭仙`,
+			jiuxian_info: `你每使用九张牌，你可以令一名角色回复或失去一点体力。`,
+			yujian: `御剑`,
+			yujian_info: `转换技 阳~你使用装备牌时，可以摸一张牌并令其他角色装备之；阴~其他角色使用装备牌时，你可以弃一张牌并令你获得之。`,
 
 			Bafuko: `晴步子`,
 			shangsheng: `能力上升`,
@@ -18376,7 +18482,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			HayamiSaki: `早见咲`,
 			tuncai: `屯财`,
-			tuncai_info: `轮次技 转换技 阳：其他角色摸牌后，你可以摸等量牌；阴：你弃牌后，可以令一名其他角色弃等量牌。`,
+			tuncai_info: `轮次技 转换技 阳~其他角色摸牌后，你可以摸等量牌；阴~你弃牌后，可以令一名其他角色弃等量牌。`,
 			zhidu: `值督`,
 			zhidu_info: `主公技 当同势力角色进入濒死状态或受到两点或以上伤害时，你可以重置并转换『屯财』。`,
 
