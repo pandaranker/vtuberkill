@@ -310,7 +310,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 								selectCard:[1,Infinity],
 								position:'h',
 								filterCard:true,
-								filterTarget(Evt: any,player: any,target: any){
+								filterTarget(Evt ,player ,target){
 									return target!=player;
 								},
 								ai2(target: { hasSkillTag: (arg0: string) => any; hasJudge: (arg0: string) => any; }){
@@ -339,10 +339,10 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 				audio:'jiajiupaidui',
 				enable:'chooseToUse',
 				usable:1,
-				filter(Evt: { filterCard: (arg0: { name: string; isCard: boolean; }, arg1: any, arg2: any) => any; },player: any){
+				filter(Evt,player){
 					return Evt.filterCard({name:'jiu',isCard:true},player,Evt);
 				},
-				filterTarget(card: any,player: any,target: { countCards: (arg0: string) => any; }){
+				filterTarget(card,player,target: { countCards: (arg0: string) => any; }){
 					return target.countCards('he');
 				},
 				content:[function(){
@@ -1474,26 +1474,7 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 			re_mozhaotuji:{
 				audio:true,
 				audioname:['jike'],
-				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_useCard','re_mozhaotuji_Ready','re_mozhaotuji_Judge','re_mozhaotuji_PhaseDraw','re_mozhaotuji_Discard','re_mozhaotuji_End'],
-				/**转化阶段 */
-				contentx:[function(trigger: { cancel: () => void; },player: { addTempSkill: (arg0: string) => void; phaseUse: () => void; getStat: () => any; }){
-					trigger.cancel();
-				},function(){
-					player.addTempSkill('re_mozhaotujiStop');
-					player.phaseUse();
-				},function(){
-					let stat=player.getStat();
-					stat.card={};
-					for(let i in stat.skill){
-						let bool=false;
-						let info=lib.skill[i];
-						if(info.enable!=undefined){
-							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
-							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
-						}
-						if(bool) stat.skill[i]=0;
-					}
-				}],
+				group:['re_mozhaotuji_DrawOrStop','re_mozhaotuji_useCard','re_mozhaotuji_change'],
 				subSkill:{
 					DrawOrStop:{
 						trigger:{global:['phaseZhunbeiEnd','phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd','phaseJieshuEnd']},
@@ -1527,80 +1508,40 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 							player.storage.re_mozhaotuji_useCard++;
 						},
 					},
-					Ready:{
-						audio:'re_mozhaotuji',
+					/**转化阶段 */
+					change:{
+						audio:'mozhaotuji',
 						trigger:{
-							player:'phaseZhunbeiBegin'
+							player:['phaseZhunbeiBegin','phaseJudgeBefore','phaseDrawBefore','phaseDiscardBefore','phaseJieshuBegin']
 						},
-						filter(Evt: any,player: { hasSkill: (arg0: string) => any; }){
+						filter(Evt, player){
 							return !player.hasSkill('re_mozhaotujiStop');
+						},
+						check(Evt, player){
+							return Evt.name==='phaseJudge'&&player.countCards('j')>1
+							||Evt.name==='phaseDiscard';
 						},
 						prompt(){
 							return '把准备阶段转换为出牌阶段';
 						},
-						content () {
-							lib.skill.re_mozhaotuji.contentx(trigger,player);
-						},
-					},
-					Judge:{
-						audio:'re_mozhaotuji',
-						trigger:{
-							player:'phaseJudgeBefore'
-						},
-						filter(Evt: any,player: { hasSkill: (arg0: string) => any; }){
-							return !player.hasSkill('re_mozhaotujiStop');
-						},
-						prompt(){
-							return '把判定阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.re_mozhaotuji.contentx(trigger,player);
-						},
-					},
-					PhaseDraw:{
-						audio:'re_mozhaotuji',
-						trigger:{
-							player:'phaseDrawBefore'
-						},
-						filter(Evt: any,player: { hasSkill: (arg0: string) => any; }){
-							return !player.hasSkill('re_mozhaotujiStop');
-						},
-						prompt(){
-							return '把摸牌阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.re_mozhaotuji.contentx(trigger,player);
-						},
-					},
-					Discard:{
-						audio:'re_mozhaotuji',
-						trigger:{
-							player:'phaseDiscardBefore'
-						},
-						filter(Evt: any,player: { hasSkill: (arg0: string) => any; }){
-							return !player.hasSkill('re_mozhaotujiStop');
-						},
-						prompt(){
-							return '把弃牌阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.re_mozhaotuji.contentx(trigger,player);
-						},
-					},
-					End:{
-						audio:'re_mozhaotuji',
-						trigger:{
-							player:'phaseJieshuBegin'
-						},
-						filter(Evt: any,player: { hasSkill: (arg0: string) => any; }){
-							return !player.hasSkill('re_mozhaotujiStop');
-						},
-						prompt(){
-							return '把结束阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.re_mozhaotuji.contentx(trigger,player);
-						},
+						content:[function(){
+							trigger.cancel();
+						},function(){
+							player.addTempSkill('re_mozhaotujiStop');
+							player.phaseUse();
+						},function(){
+							let stat=player.getStat();
+							stat.card={};
+							for(let i in stat.skill){
+								let bool=false;
+								let info=lib.skill[i];
+								if(info.enable!=undefined){
+									if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+									else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+								}
+								if(bool) stat.skill[i]=0;
+							}
+						}],
 					},
 				}
 			},
@@ -4167,17 +4108,17 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 					return null;
 				},
 				usable:1,
-				viewAsFilter(player: { countCards: (arg0: string, arg1: { suit: string; }) => number; }){
+				viewAsFilter(player){
 					if(player.countCards('h',{suit:'club'})==0) return false;
 				},
-				filterCard(card: any,player: any,Evt: { _backup: { filterCard: any; }; }){
+				filterCard(card, player, Evt){
 					Evt=Evt||_status.event;
 					var filter=Evt._backup.filterCard;
 					var name=get.suit(card,player);
 					if(name=='club') return true;
 					return false;
 				},
-				filter(Evt: { filterCard: any; },player: { getStorage: (arg0: string) => any; countCards: (arg0: string, arg1: { suit: string; }) => any; }){
+				filter(Evt, player){
 					var cards = player.getStorage('yingshi_cardsDis');
 					var card = cards[0];
 					var filter = Evt.filterCard;

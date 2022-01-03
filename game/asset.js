@@ -1410,6 +1410,7 @@ window.vk_asset_list=[
 	'image/character/Xiaorou.jpg',
 	'image/character/xiaoxiayu.jpg',
 	'image/character/XiaoxiXiaotao.jpg',
+	'image/character/xingtong.jpg',
 	'image/character/xinkeniang.jpg',
 	'audio/die/xinkeniang.mp3',
 	'image/character/xinyuelan.jpg',

@@ -1,7 +1,7 @@
 window.data_group = [
 	'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
 	'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-	'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'chidori', 'lucca', 'RedC',
+	'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'Tencent', 'lucca', 'RedC',
 	'vshojo',
 	'vtuber', 'clubs'
 ]
@@ -37,7 +37,7 @@ window.data_groupnature = {
 	NetEase: 'fire',
 	hunmiao: 'ocean',
 	ego: 'ocean',
-	chidori: 'wood',
+	Tencent: 'wood',
 	lucca: 'wood',
 	RedCircle: 'fire',
 

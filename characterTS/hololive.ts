@@ -1854,7 +1854,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				subSkill: {
 					juexing: {
 						mod: {
-							maxHandcardBase(player,num){
+							maxHandcard(player,num){
 								return num + player.storage.yong.length;
 							},
 							attackFrom(from,to,distance){

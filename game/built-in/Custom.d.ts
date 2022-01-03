@@ -42,7 +42,7 @@ declare global {
         juexingji?: true
         firstDo?: true
         mark?: true | string
-        intro?: {content?:MarkKey,onunmark?:MarkKey,name?:string,mark?:Function}
+        intro?: {content?:MarkKey,onunmark?:MarkKey,name?:string,mark?:Function,markcount?:(storage, player)=>number}
         chooseButton?: {dialog:(event?:EventModel,player?:PlayerModel)=>any,[propName: string]: any}
         [propName: string]: any
     }

@@ -9,7 +9,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			"re_zhaoyun","re_zhouyu","re_zhugeliang","ol_xiahouyuan","re_huangzhong","re_weiyan","dianwei","te_yanwen","re_pangde",
 			"re_zhurong","re_sunjian","jiaxu","dengai","re_jiangwei","re_sunben","wangji","wangping","guanqiujian","chendao","ol_yujin",
 			"re_caozhi","xin_masu","re_lingtong","xusheng","re_gaoshun","xunyou","guanzhang","madai","handang","caochong",
-			"re_guohuai","guanping","liufeng","re_zhuran","xin_liru","hanhaoshihuan","guyong","zhuhuan","caoxiu","liuchen","re_zhangyi",
+			"re_guohuai","guanping","liufeng","re_zhuran","xin_liru","hanhaoshihuan","zhuhuan","caoxiu","liuchen","re_zhangyi",
 			"re_quancong","sunxiu","sundeng","guohuanghou","re_jikang","xuezong","qinmi","lvdai","re_zhangliang","lingcao",
 			"sunru","zhuling","sp_caoren","fanchou","fuwan","sp_ganning","guanyinping","guosi","heqi","sp_jiangwei","litong",
 			"re_panfeng","sp_pangde","xf_sufei","xf_tangzi","xiahouba","xujing","yuejin","sp_zhangfei","zhangji","zhangyì","dongcheng",

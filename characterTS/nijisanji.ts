@@ -242,28 +242,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			mozhaotuji:{
-				group:['mozhaotuji_DrawOrStop','mozhaotuji_useCard','mozhaotuji_Ready','mozhaotuji_Judge','mozhaotuji_PhaseDraw','mozhaotuji_Discard','mozhaotuji_End'],
-				/**转化阶段 */
-				contentx(trigger,player){
-					'step 0'
-					if(!player.hasSkill('mozhaotujiStart'))
-						player.addTempSkill('mozhaotujiStart');
-					trigger.cancel();
-					'step 1'
-					player.phaseUse();
-					'step 2'
-					var stat=player.getStat();
-					//stat.card={};
-					for(var i in stat.skill){
-						var bool=false;
-						var info=lib.skill[i];
-						if(info.enable!=undefined){
-							if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
-							else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
-						}
-						if(bool) stat.skill[i]=0;
-					}
-				},
+				group:['mozhaotuji_DrawOrStop','mozhaotuji_useCard','mozhaotuji_change'],
 				subSkill:{
 					DrawOrStop:{
 						audio:true,
@@ -303,103 +282,39 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 							player.storage.mozhaotuji_useCard++;
 						},
 					},
-					/*Clear:{
-						trigger:{player:'phaseUseAfter'},
-						direct:true,
-						priority: 1,
-						filter(Evt,player){
-							return true;
-						},
-						forced:true,
-						content(){
-							player.getHistory('useCard').splice(0,player.getHistory('useCard').length);
-							player.getHistory('respond').splice(0,player.getHistory('respond').length);
-						},
-					},*/
-					Ready:{
+					/**转化阶段 */
+					change:{
+						audio:'mozhaotuji',
 						trigger:{
-							player:'phaseZhunbeiBegin'
+							player:['phaseZhunbeiBegin','phaseJudgeBefore','phaseDrawBefore','phaseDiscardBefore','phaseJieshuBegin']
 						},
-						check(Evt,player){
-							return player.countCards('h',card => player.hasUseTarget(card)).length>=3;
-						},
-						filter(Evt,player){
+						filter(Evt, player){
 							return !player.hasSkill('mozhaotujiStop');
 						},
-						prompt(){
-							return get.prompt('mozhaotuji')+'把准备阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.mozhaotuji.contentx(trigger,player);
-						},
-					},
-					Judge:{
-						trigger:{
-							player:'phaseJudgeBefore'
-						},
-						check(Evt,player){
-							return player.countCards('h',card => player.hasUseTarget(card)).length>=2;
-						},
-						filter(Evt,player){
-							return !player.hasSkill('mozhaotujiStop');
+						check(Evt, player){
+							return Evt.name==='phaseJudge'&&player.countCards('j')>1
+							||Evt.name==='phaseDiscard';
 						},
 						prompt(){
-							return get.prompt('mozhaotuji')+'把判定阶段转换为出牌阶段';
+							return '把准备阶段转换为出牌阶段';
 						},
-						content () {
-							lib.skill.mozhaotuji.contentx(trigger,player);
-						},
-					},
-					PhaseDraw:{
-						trigger:{
-							player:'phaseDrawBefore'
-						},
-						check(Evt,player){
-							return false;
-						},
-						filter(Evt,player){
-							return !player.hasSkill('mozhaotujiStop');
-						},
-						prompt(){
-							return get.prompt('mozhaotuji')+'把摸牌阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.mozhaotuji.contentx(trigger,player);
-						},
-					},
-					Discard:{
-						trigger:{
-							player:'phaseDiscardBefore'
-						},
-						check(Evt,player){
-							return true;
-						},
-						filter(Evt,player){
-							return !player.hasSkill('mozhaotujiStop');
-						},
-						prompt(){
-							return get.prompt('mozhaotuji')+'把弃牌阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.mozhaotuji.contentx(trigger,player);
-						},
-					},
-					End:{
-						trigger:{
-							player:'phaseJieshuBegin'
-						},
-						check(Evt,player){
-							return true;
-						},
-						filter(Evt,player){
-							return !player.hasSkill('mozhaotujiStop');
-						},
-						prompt(){
-							return get.prompt('mozhaotuji')+'把结束阶段转换为出牌阶段';
-						},
-						content () {
-							lib.skill.mozhaotuji.contentx(trigger,player);
-						},
+						content:[function(){
+							trigger.cancel();
+						},function(){
+							player.phaseUse();
+						},function(){
+							let stat=player.getStat();
+							stat.card={};
+							for(let i in stat.skill){
+								let bool=false;
+								let info=lib.skill[i];
+								if(info.enable!=undefined){
+									if(typeof info.enable=='string'&&info.enable=='phaseUse') bool=true;
+									else if(typeof info.enable=='object'&&info.enable.contains('phaseUse')) bool=true;
+								}
+								if(bool) stat.skill[i]=0;
+							}
+						}],
 					},
 				}
 			},

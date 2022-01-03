@@ -4042,7 +4042,7 @@
                             folder = lib.assetURL + folder;
                             if (onprogress) {
                                 fileTransfer.onprogress = function (progressEvent) {
-                                    onprogress(progressEvt.loaded, progressEvt.total);
+                                    onprogress(progressEvent.loaded, progressEvent.total);
                                 };
                             }
                             lib.config.brokenFile.add(folder);
@@ -4564,7 +4564,7 @@
                         if (!fileToLoad) return;
                         var fileReader = new FileReader();
                         fileReader.onload = function (fileLoadedEvent) {
-                            var data = fileLoadedEvt.target.result;
+                            var data = fileLoadedEvent.target.result;
                             ui.background.style.backgroundImage = 'url(' + data + ')';
                             if (lib.config.image_background_blur) {
                                 ui.background.style.filter = 'blur(8px)';
@@ -4583,7 +4583,7 @@
                             if (ui.css.card_stylesheet) {
                                 ui.css.card_stylesheet.remove();
                             }
-                            ui.css.card_stylesheet = lib.init.sheet('.card:not(*:empty){background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.card_stylesheet = lib.init.sheet('.card:not(*:empty){background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4596,7 +4596,7 @@
                             if (ui.css.cardback_stylesheet) {
                                 ui.css.cardback_stylesheet.remove();
                             }
-                            ui.css.cardback_stylesheet = lib.init.sheet('.card:empty,.card.infohidden{background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.cardback_stylesheet = lib.init.sheet('.card:empty,.card.infohidden{background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4607,7 +4607,7 @@
                             if (ui.css.cardback_stylesheet2) {
                                 ui.css.cardback_stylesheet2.remove();
                             }
-                            ui.css.cardback_stylesheet2 = lib.init.sheet('.card.infohidden:not(.infoflip){background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.cardback_stylesheet2 = lib.init.sheet('.card.infohidden:not(.infoflip){background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4620,7 +4620,7 @@
                             if (ui.css.hp_stylesheet1) {
                                 ui.css.hp_stylesheet1.remove();
                             }
-                            ui.css.hp_stylesheet1 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="high"]>div:not(.lost){background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.hp_stylesheet1 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="high"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4631,7 +4631,7 @@
                             if (ui.css.hp_stylesheet2) {
                                 ui.css.hp_stylesheet2.remove();
                             }
-                            ui.css.hp_stylesheet2 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="mid"]>div:not(.lost){background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.hp_stylesheet2 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="mid"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4642,7 +4642,7 @@
                             if (ui.css.hp_stylesheet3) {
                                 ui.css.hp_stylesheet3.remove();
                             }
-                            ui.css.hp_stylesheet3 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="low"]>div:not(.lost){background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.hp_stylesheet3 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="low"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4653,7 +4653,7 @@
                             if (ui.css.hp_stylesheet4) {
                                 ui.css.hp_stylesheet4.remove();
                             }
-                            ui.css.hp_stylesheet4 = lib.init.sheet('.hp:not(.text):not(.actcount)>.lost{background-image:url(' + fileLoadedEvt.target.result + ')}');
+                            ui.css.hp_stylesheet4 = lib.init.sheet('.hp:not(.text):not(.actcount)>.lost{background-image:url(' + fileLoadedEvent.target.result + ')}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4667,7 +4667,7 @@
                             if (ui.css.player_stylesheet) {
                                 ui.css.player_stylesheet.remove();
                             }
-                            ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:url("' + fileLoadedEvt.target.result + '");background-size:100% 100%;}');
+                            ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:url("' + fileLoadedEvent.target.result + '");background-size:100% 100%;}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4681,7 +4681,7 @@
                                 ui.css.border_stylesheet.remove();
                             }
                             ui.css.border_stylesheet = lib.init.sheet();
-                            ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg{display:block;background-image:url("' + fileLoadedEvt.target.result + '")}', 0);
+                            ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg{display:block;background-image:url("' + fileLoadedEvent.target.result + '")}', 0);
                             ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
@@ -4695,7 +4695,7 @@
                             if (ui.css.control_stylesheet) {
                                 ui.css.control_stylesheet.remove();
                             }
-                            ui.css.control_stylesheet = lib.init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:url("' + fileLoadedEvt.target.result + '")}');
+                            ui.css.control_stylesheet = lib.init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:url("' + fileLoadedEvent.target.result + '")}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -4708,7 +4708,7 @@
                             if (ui.css.menu_stylesheet) {
                                 ui.css.menu_stylesheet.remove();
                             }
-                            ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:url("' + fileLoadedEvt.target.result + '");background-size:cover}');
+                            ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:url("' + fileLoadedEvent.target.result + '");background-size:cover}');
                         };
                         fileReader.readAsDataURL(fileToLoad, "UTF-8");
                     });
@@ -6120,7 +6120,7 @@
                 //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
                 //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
                 //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-                //             case 'chidori': w++; if (lib.config.banned.contains(i)) sw++; break;
+                //             case 'Tencent': w++; if (lib.config.banned.contains(i)) sw++; break;
                 //         }
                 //     }
                 //     console.log('魏：' + (a - sa) + '/' + a);
@@ -23616,13 +23616,13 @@
                     }
                 },
                 onmessage: function (messageevent) {
-                    if (messageEvt.data == 'heartbeat') {
+                    if (messageevent.data == 'heartbeat') {
                         this.send('heartbeat');
                         return;
                     }
                     var message;
                     try {
-                        message = JSON.parse(messageEvt.data);
+                        message = JSON.parse(messageevent.data);
                         if (!Array.isArray(message) ||
                             typeof lib.message.client[message[0]] !== 'function') {
                             throw ('err');
@@ -23633,7 +23633,7 @@
                     }
                     catch (e) {
                         console.log(e);
-                        console.log('invalid message: ' + messageEvt.data);
+                        console.log('invalid message: ' + messageevent.data);
                         return;
                     }
                     lib.message.client[message.shift()].apply(null, message);
@@ -27744,7 +27744,7 @@
                                     var fileReader = new FileReader();
                                     fileReader.onload = (function (imgname) {
                                         return function (fileLoadedEvent) {
-                                            var data = fileLoadedEvt.target.result;
+                                            var data = fileLoadedEvent.target.result;
                                             game.putDB('image', 'extension-' + extname + ':' + imgname, data);
                                         };
                                     }(imgname))
@@ -35842,7 +35842,7 @@
                                         if (fileToLoad) {
                                             var fileReader = new FileReader();
                                             fileReader.onload = function (fileLoadedEvent) {
-                                                var data = fileLoadedEvt.target.result;
+                                                var data = fileLoadedEvent.target.result;
                                                 if (!data) return;
                                                 try {
                                                     data = JSON.parse(lib.init.decode(data));
@@ -37197,7 +37197,7 @@
                                             }, 1000);
                                         }, 1000);
                                     };
-                                    var data = fileLoadedEvt.target.result;
+                                    var data = fileLoadedEvent.target.result;
                                     if (game.importExtension(data, finishLoad) !== false) {
                                         importExtension.style.display = 'none';
                                     }
@@ -38532,7 +38532,7 @@
                                     var fileToLoad = importVideo.firstChild.files[0];
                                     var fileReader = new FileReader();
                                     fileReader.onload = function (fileLoadedEvent) {
-                                        var data = fileLoadedEvt.target.result;
+                                        var data = fileLoadedEvent.target.result;
                                         if (!data) return;
                                         try {
                                             data = JSON.parse(lib.init.decode(data));

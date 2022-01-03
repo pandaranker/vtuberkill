@@ -5736,7 +5736,7 @@ mixin(lib, /**@lends module:core.lib */ {
             //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
             //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
             //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-            //             case 'chidori': w++; if (lib.config.banned.contains(i)) sw++; break;
+            //             case 'Tencent': w++; if (lib.config.banned.contains(i)) sw++; break;
             //         }
             //     }
             //     console.log('魏：' + (a - sa) + '/' + a);

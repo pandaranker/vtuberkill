@@ -184,11 +184,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP', 'doublegroup:psp:qun']],
 
 			/**艾瑞思 */
-			airuisi: ['female', 'chidori', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
+			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
 			/**艾白 */
-			aibai: ['female', 'chidori', 3, ['bianyin', 'shabai'], ['guoV']],
+			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
 			/**文静 */
-			wenjing: ['female', 'chidori', 4, ['zaiying', 'zhengen'], ['guoV']],
+			wenjing: ['female', 'Tencent', 4, ['zaiying', 'zhengen'], ['guoV']],
+			/**星瞳 */
+			xingtong: ['female', 'Tencent', 4, ['jiezou', 'xtguyong'], ['guoV']],
 
 			/**乌拉の帝国 */
 			wula: ['female', 'lucca', 4, ['dizuo', 'hongtie'], ['guoV']],
@@ -314,7 +316,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return [player, Evt.source];
 				},
 				check(Evt, player) {
-					return player.hasSkill('chisha_cardDisable') && (player.countCards('h') - (player == Evt.source ? Evt.player : Evt.source).countCards('h')) >= -1;
+					return (player.countCards('h') - (player == Evt.source ? Evt.player : Evt.source).countCards('h')) <= 1;
 				},
 				filter(Evt, player) {
 					return Evt.source && player.countCards('h') > (player == Evt.source ? Evt.player : Evt.source).countCards('h');
@@ -2700,7 +2702,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									game.playAudio('skill', audio);
 								}, audio);
 							}
-							player.discardPlayerCard('###『鸟肌』###弃置' + get.translation(Evt.target) + get.cnNumber(Evt.num) + '张牌', Evt.target, Evt.num, true, 'he');
+							player.discardPlayerCard(`###『鸟肌』###弃置${get.translation(Evt.target)}${get.cnNumber(Evt.num)}张牌`, Evt.target, Evt.num, true, 'he');
 						} else if (result.suit == 'heart') {
 							if ([player.name, player.name1].includes('Yousa')) {
 								let audio = 'niaoji_heart' + Math.ceil(3 * Math.random());
@@ -3822,7 +3824,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					player.discardPlayerCard('###' + get.prompt('helesta') + '###可以弃置装备区的一张牌使伤害-1', player, 'e').set('ai', function () {
+					player.discardPlayerCard(`###${get.prompt('helesta')}###可以弃置装备区的一张牌使伤害-1`, player, 'e').set('ai', function () {
 						if (player.isDamaged() || player.countCards('e') == 1) return 5 + Math.random();
 						return Math.random() - 0.2;
 					});
@@ -7354,6 +7356,71 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 				},
 			},
+			//星瞳
+			jiezou:new toSkill('regard',{
+				mod: {
+					maxHandcardFinal(player, num) {
+						return num+game.countPlayer(cur => cur.inRangeOf(player));
+					}
+				},
+				intro:{
+					markcount(storage, player) {
+						return game.countPlayer(cur => cur.inRangeOf(player));
+					}
+				}
+			}),
+			xtguyong:new toSkill('trigger',{
+				filter(Evt, player) {
+					return game.hasPlayer(cur => cur.countCards('h')<player.countCards('h')
+					||cur.countCards('e')<player.countCards('e')
+					||cur.countCards('j')<player.countCards('j'))
+				},
+				content:[() => {
+					player.chooseTarget(get.prompt2('xtguyong'),(card,player,tar) => tar.countCards('h')<player.countCards('h')
+					||tar.countCards('e')<player.countCards('e')
+					||tar.countCards('j')<player.countCards('j'),tar => tar.countCards('j')<player.countCards('j'))
+				},() => {
+					if(result?.targets?.length){
+						Evt.target = result.targets[0]
+						player.logSkill('xtguyong',Evt.target)
+						Evt.position = ''
+						for(let i of ['h','e','j']){
+							if(Evt.target.countCards(i)<player.countCards(i)) Evt.position+=i
+						}
+						Evt.num = Evt.position.length
+						player.turnOver()
+					}
+					else Evt.finish()
+				},() => {
+					if(Evt.num === 0) Evt.finish()
+					else{
+						Evt.target.discardPlayerCard(player,Evt.num,Evt.position,true).set('filterButton',button => {
+							for(var i=0;i<ui.selected.buttons.length;i++){
+								if(get.position(button.link)==get.position(ui.selected.buttons[i].link)) return false;
+							}
+							return true;
+						})
+					}
+				},() => {
+					Evt.num = result.links.length
+					if(Evt.num === 0) Evt.finish()
+					else{
+						player.chooseTarget(`令攻击范围内至多${get.cnNumber(Evt.num)}名角色受到${Evt.num}点伤害`,[1,Evt.num],
+						(card,player,tar) => tar.inRangeOf(player),tar => -get.attitude2(tar))
+					}
+				},() => {
+					if(result?.targets?.length){
+						Evt.targets = result.targets.slice(0)
+					}
+				},() => {
+					if(Evt.targets.length){
+						let target=Evt.targets.shift();
+						player.line(target,'fire');
+						target.damage(Evt.num);
+						Evt.redo();
+					}
+				}],
+			},'direct').setT('phaseZhunbeiBegin'),
 			//乌拉の帝国
 			dizuo: {
 				trigger: { player: 'useCard' },
@@ -10386,7 +10453,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseCard('是否发动【不太准】，将一张手牌当做' + get.translation(Evt.name) + '打出？');
 					"step 1"
 					if (result.bool) {
-						;
 						player.logSkill('butaizhun_guess');
 						player.addTempSkill('butaizhun_used')
 						player.popup(Evt.name, 'metal');
@@ -18567,6 +18633,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhengen_info: `使命技 每名角色限一次，你对其造成伤害或受到其伤害时，你弃置一张手牌与其场上的一张牌。<br>
 			成功～若你以此技能弃置了四张同点数的牌：你调整手牌至上限，重置次技能。<br>
 			失败～你体力回复至上限时，若有手牌：你令X名角色横置并摸一张牌，然后你受到X点火焰伤害。（X为你手牌数）`,
+
+			xingtong: `星瞳`,
+			jiezou: `节奏`,
+			jiezou_info: `锁定技。你攻击范围内每有一名角色，你的手牌上限+1。`,
+			xtguyong: `孤勇`,
+			xtguyong_info: `准备阶段，你可以翻面并令一名手牌区/装备区/判定区牌数少于你的角色弃置你的对应区域各一张牌，
+			然后你对攻击范围内至多X名角色各造成X点伤害（X为此技能弃置的牌数）`,
 
 			wula: `乌拉の帝国`,
 			wula_ab: `乌拉`,
