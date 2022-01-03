@@ -5718,7 +5718,7 @@
                     str += `if(Evt.step==${func.length}) {Evt.finish();return;}switch(step){`
                     for (let i = 0; i < func.length; i++) {
                         // str += `case ${i}:{` + func[i].toString().replace(/(?<![\.'])galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt').slice(str.indexOf('{')) + 'break;'
-                        str += `case ${i}:{` + func[i].toString().replace(/galgame\./g, 'game.galgame.').slice(str.indexOf('{')) + 'break;'
+                        str += `case ${i}:{` + func[i].toString().replace(/galgame\./g, 'game.galgame.').replace(/event/g, 'Evt').replace(/([\.\w])Evt/g, '$1event').slice(str.indexOf('{')) + 'break;'
                     }
                     str += `}`
                 }
@@ -5726,7 +5726,7 @@
                     str += func.toString();
                     //galgame调整
                     // str = str.replace(/(?<!\.)galgame(?=\.)/g, 'game.galgame').replace(/(?<![\.'])event(?!:)/g, 'Evt');
-                    str = str.replace(/galgame\./g, 'game.galgame.').replace(/event/g, 'Evt').replace(/\.Evt/g, '.event');
+                    str = str.replace(/galgame\./g, 'game.galgame.').replace(/event/g, 'Evt').replace(/event/g, 'Evt').replace(/([\.\w])Evt/g, '$1event');
                     str = str.slice(str.indexOf('{') + 1);
                     if (str.indexOf('step 0') == -1) {
                         str = `{if(Evt.step==1) {Evt.finish();return;}${str}`;
@@ -7014,8 +7014,7 @@
                     }
                     else player.disableEquip(result.control);
                 }],
-                swapEquip: function () {
-                    "step 0"
+                swapEquip: [() => {
                     game.log(player, '和', target, '交换了装备区中的牌')
                     var e1 = player.getCards('e');
                     var todis1 = [];
@@ -7028,21 +7027,19 @@
                     for (var i = 0; i < e2.length; i++) {
                         if (player.isDisabled(get.subtype(e2[i]))) todis2.push(e2[i]);
                     }
-                    target.discard(todis2);
-                    "step 1"
+                    target.discard(todis2);}, () => {
                     Evt.cards = [player.getCards('e'), target.getCards('e')];
                     player.lose(Evt.cards[0], ui.ordering, 'visible');
                     target.lose(Evt.cards[1], ui.ordering, 'visible');
                     if (Evt.cards[0].length) player.$give(Evt.cards[0], target, false);
-                    if (Evt.cards[1].length) target.$give(Evt.cards[1], player, false);
-                    "step 2"
+                    if (Evt.cards[1].length) target.$give(Evt.cards[1], player, false);}, () => {
                     for (var i = 0; i < Evt.cards[1].length; i++) {
                         player.equip(Evt.cards[1][i]);
                     }
                     for (var i = 0; i < Evt.cards[0].length; i++) {
                         target.equip(Evt.cards[0][i]);
                     }
-                },
+                }],
                 disableEquip: function () {
                     if (!player.isDisabled(Evt.pos)) {
                         var cards = player.getCards('e', function (card) {
@@ -7319,10 +7316,8 @@
                  * @name content.reverseOrder
                  * @type {GameCores.Bases.StateMachine}
                  */
-                reverseOrder: function () {
-                    "step 0"
-                    game.delay();
-                    "step 1"
+                reverseOrder: [() => {
+                    game.delay();}, () => {
                     var choice;
                     if (get.tag(card, 'multineg')) {
                         choice = (player.previous.side == player.side) ? '逆时针' : '顺时针';
@@ -7332,8 +7327,7 @@
                     }
                     player.chooseControl('顺时针', '逆时针', function (Evt, player) {
                         return _status.event.choice || '逆时针';
-                    }).set('prompt', '选择' + get.translation(card) + '的结算方向').set('choice', choice).set('forceDie', true);
-                    "step 2"
+                    }).set('prompt', '选择' + get.translation(card) + '的结算方向').set('choice', choice).set('forceDie', true);}, () => {
                     if (result && result.control == '顺时针') {
                         var evt = Evt.getParent();
                         evt.fixedSeat = true;
@@ -7343,7 +7337,7 @@
                             evt.targets.unshift(evt.targets.pop());
                         }
                     }
-                },
+                }],
                 /**
                  * 使用判定牌
                  * @name content.addJudgeCard
@@ -7365,8 +7359,7 @@
                  * @name content.gameDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
-                gameDraw: function () {
-                    "step 0"
+                gameDraw: [() => {
                     if (_status.brawl && _status.brawl.noGameDraw) {
                         Evt.finish();
                         return;
@@ -7388,8 +7381,7 @@
                     Evt.changeCard = get.config('change_card');
                     if (_status.connectMode || (lib.config.mode == 'doudizhu' && _status.mode == 'online') || lib.config.mode != 'identity' && lib.config.mode != 'guozhan' && lib.config.mode != 'doudizhu' && lib.config.mode != 'longlaoguan') {
                         Evt.changeCard = 'disabled';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.changeCard != 'disabled' && !_status.auto) {
                         Evt.dialog = ui.create.dialog('是否使用手气卡？');
                         ui.create.confirm('oc');
@@ -7400,8 +7392,7 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 2"
+                    }}, () => {
                     if (Evt.changeCard == 'once') {
                         Evt.changeCard = 'disabled';
                     }
@@ -7417,8 +7408,7 @@
                         _status.event.bool = false;
                         game.resume();
                     }
-                    game.pause();
-                    "step 3"
+                    game.pause();}, () => {
                     _status.imchoosing = false;
                     if (Evt.bool) {
                         if (game.changeCoin) {
@@ -7443,19 +7433,17 @@
                         if (ui.confirm) ui.confirm.close();
                         Evt.finish();
                     }
-                },
+                }],
                 /**
                  * 阶段循环
                  * @name content.phaseLoop
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phaseLoop: function () {
-                    "step 0"
+                phaseLoop: [() => {
                     for (var i = 0; i < lib.onphase.length; i++) {
                         lib.onphase[i]();
                     }
-                    player.phase();
-                    "step 1"
+                    player.phase();}, () => {
                     if (!game.players.contains(Evt.player.next)) {
                         Evt.player = game.findNext(Evt.player.next);
                     }
@@ -7463,7 +7451,7 @@
                         Evt.player = Evt.player.next;
                     }
                     Evt.goto(0);
-                },
+                }],
                 /**
                  * 加载包
                  * @name content.loadPackage
@@ -7697,8 +7685,7 @@
                  * @name content.createTrigger
                  * @type {GameCores.Bases.StateMachine}
                  */
-                createTrigger: function () {
-                    "step 0"
+                createTrigger: [() => {
                     if (lib.filter.filterTrigger(trigger, player, Evt.triggername, Evt.skill)) {
                         var fullskills = game.expandSkills(player.getSkills().concat(lib.skill.global));
                         if (!fullskills.contains(Evt.skill)) {
@@ -7731,8 +7718,7 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.cancelled) {
                         Evt.finish();
                         return;
@@ -7810,8 +7796,7 @@
                                 next.set('createDialog', createDialog);
                             }
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     var info = get.info(Evt.skill);
                     if (result && result.bool != false) {
                         var autodelay = info.autodelay;
@@ -7826,8 +7811,7 @@
                                 game.delayx();
                             }
                         }
-                    }
-                    "step 3"
+                    }}, () => {
                     var info = get.info(Evt.skill);
                     if (result && result.bool == false) {
                         if (info.oncancel) info.oncancel(trigger, player);
@@ -7871,8 +7855,7 @@
                                 player.logSkill(Evt.skill, false, info.line);
                             }
                         }
-                    }
-                    "step 4"
+                    }}, () => {
                     if (player._hookTrigger) {
                         for (var i = 0; i < player._hookTrigger.length; i++) {
                             var info = lib.skill[player._hookTrigger[i]].hookTrigger;
@@ -7884,7 +7867,7 @@
                             }
                         }
                     }
-                },
+                }],
                 /**
                  * Play video
                  * @name content.playVideoContent
@@ -8143,13 +8126,10 @@
                  * @name content.phase
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phase: function () {
-                    "step 0"
+                phase: [() => {
                     if (!Evt.stageList || !Evt.stageList.length) Evt.stageList = lib.phaseName;
-                    Evt.stepNum = 0;
-                    "step 1"
-                    if (typeof player[Evt.stageList[Evt.stepNum]] == 'function') player[Evt.stageList[Evt.stepNum]]();
-                    "step 2"
+                    Evt.stepNum = 0;}, () => {
+                    if (typeof player[Evt.stageList[Evt.stepNum]] == 'function') player[Evt.stageList[Evt.stepNum]]();}, () => {
                     if (Evt.stageList[Evt.stepNum] == 'phaseDraw') {
                         if (!player.noPhaseDelay) {
                             if (player == game.me) {
@@ -8171,25 +8151,22 @@
                     if (Evt.stageList[Evt.stepNum] == 'phaseDiscard') {
                         if (!player.noPhaseDelay) game.delayx();
                         delete player._noSkill;
-                    }
-                    "step 3"
+                    }}, () => {
                     Evt.trigger('phaseNext');
                     if (Evt.stageList[++Evt.stepNum]) {
                         Evt.trigger('stepNext');
 
                         Evt.goto(1);
                     }
-                },
+                }],
                 /**
                  * 判定阶段
                  * @name content.phaseJudge
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phaseJudge: function () {
-                    "step 0"
+                phaseJudge: [() => {
                     Evt.cards = player.getCards('j');
-                    if (!Evt.cards.length) Evt.finish();
-                    "step 1"
+                    if (!Evt.cards.length) Evt.finish();}, () => {
                     if (cards.length && player.getCards('j').contains(cards[0])) {
                         Evt.card = cards.shift();
                         if (Evt.card.classList.contains('removing')) {
@@ -8218,10 +8195,8 @@
                             }
                         }
                     }
-                    else Evt.finish();
-                    "step 2"
-                    if (!Evt.cancelled && !Evt.nojudge) player.judge(Evt.card).set('type', 'phase');
-                    "step 3"
+                    else Evt.finish();}, () => {
+                    if (!Evt.cancelled && !Evt.nojudge) player.judge(Evt.card).set('type', 'phase');}, () => {
                     var name = Evt.card.viewAs || Evt.card.name;
                     if (Evt.cancelled && !Evt.direct) {
                         if (lib.card[name].cancel) {
@@ -8242,18 +8217,15 @@
                     }
                     ui.clear();
                     Evt.goto(1);
-                },
+                }],
                 /**
                  * 摸牌阶段
                  * @name content.phaseDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phaseDraw: function () {
-                    "step 0"
-                    Evt.trigger("phaseDrawBegin1");
-                    "step 1"
-                    Evt.trigger("phaseDrawBegin2");
-                    "step 2"
+                phaseDraw: [() => {
+                    Evt.trigger("phaseDrawBegin1");}, () => {
+                    Evt.trigger("phaseDrawBegin2");}, () => {
                     if (game.modPhaseDraw) {
                         game.modPhaseDraw(player, Evt.num);
                     }
@@ -8271,25 +8243,22 @@
                                 next.minnum = Evt.attachDraw.length;
                             }
                         }
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Array.isArray(result)) {
                         Evt.cards = result;
                     }
-                },
+                }],
                 /**
                  * 出牌阶段
                  * @name content.phaseUse
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phaseUse: function () {
-                    "step 0";
+                phaseUse: [() => {;
                     var next = player.chooseToUse();
                     if (!lib.config.show_phaseuse_prompt) {
                         next.set('prompt', false);
                     }
-                    next.set('type', 'phase');
-                    "step 1"
+                    next.set('type', 'phase');}, () => {
                     if (result.bool && !Evt.skipped) {
                         Evt.goto(0);
                     }
@@ -8298,8 +8267,7 @@
                             ui.tempnowuxie.close();
                             delete ui.tempnowuxie;
                         }
-                    });
-                    "step 2"
+                    });}, () => {
                     var stat = player.getStat();
                     for (var i in stat.skill) {
                         var bool = false;
@@ -8317,14 +8285,13 @@
                         if (!info) continue;
                         if (info.updateUsable == 'phaseUse') stat.card[i] = 0;
                     }
-                },
+                }],
                 /**
                  * 弃牌阶段
                  * @name content.phaseDiscard
                  * @type {GameCores.Bases.StateMachine}
                  */
-                phaseDiscard: function () {
-                    "step 0"
+                phaseDiscard: [() => {
                     if (!Evt.num) Evt.num = player.needsToDiscard();
                     if (Evt.num <= 0) Evt.finish();
                     else {
@@ -8332,12 +8299,10 @@
                             player.popup('弃牌阶段');
                         }
                     }
-                    Evt.trigger('phaseDiscard');
-                    "step 1"
-                    player.chooseToDiscard(num, true);
-                    "step 2"
+                    Evt.trigger('phaseDiscard');}, () => {
+                    player.chooseToDiscard(num, true);}, () => {
                     Evt.cards = result.cards;
-                },
+                }],
                 /**
                  * 选择以使用(牌|技能)
                  * @name content.chooseToUse
@@ -8345,8 +8310,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseToUse: function () {
-                    "step 0"
+                chooseToUse: [() => {
                     if (Evt.responded) return;
                     if (game.modeSwapPlayer && !_status.auto && player.isUnderControl() && !lib.filter.wuxieSwap(Evt)) {
                         game.modeSwapPlayer(player);
@@ -8467,8 +8431,7 @@
                     }
                     else {
                         Evt.result = 'ai';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         var ok = game.check();
                         if (ok) {
@@ -8519,8 +8482,7 @@
                         if (Evt.aidelay && Evt.result && Evt.result.bool) {
                             game.delayx();
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     if (Evt.endButton) {
                         Evt.endButton.close();
                         delete Evt.endButton;
@@ -8552,8 +8514,7 @@
                                 next.set('player', player);
                             }
                         }
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.buttoned) {
                         if (result.bool || result.control && result.control != 'cancel2') {
                             var info = get.info(Evt.buttoned).chooseButton;
@@ -8573,8 +8534,7 @@
                         }
                         Evt.goto(0);
                         delete Evt.buttoned;
-                    }
-                    "step 4"
+                    }}, () => {
                     if (Evt._aiexcludeclear) {
                         delete Evt._aiexcludeclear;
                         Evt._aiexclude.length = 0;
@@ -8592,12 +8552,11 @@
                     if (Evt.dialog && typeof Evt.dialog == 'object') Evt.dialog.close();
                     if (!_status.noclearcountdown) {
                         game.stopCountChoose();
-                    }
-                    "step 5"
+                    }}, () => {
                     if (Evt._result && Evt.result) {
                         Evt.result.result = Evt._result;
                     }
-                },
+                }],
                 /**
                  * 选择以响应(牌|技能)
                  * @name content.chooseToUse
@@ -8605,8 +8564,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseToRespond: function () {
-                    "step 0"
+                chooseToRespond: [() => {
                     if (Evt.responded) {
                         delete Evt.dialog;
                         return;
@@ -8652,8 +8610,7 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         var ok = game.check();
                         if (ok) {
@@ -8680,8 +8637,7 @@
                         if (Evt.aidelay && Evt.result && Evt.result.bool) {
                             game.delayx();
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     Evt.resume();
                     if (Evt.result) {
                         if (Evt.result.skill) {
@@ -8709,8 +8665,7 @@
                                 next.set('player', player);
                             }
                         }
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.buttoned) {
                         if (result.bool || result.control && result.control != 'cancel2') {
                             var info = get.info(Evt.buttoned).chooseButton;
@@ -8730,8 +8685,7 @@
                         }
                         Evt.goto(0);
                         delete Evt.buttoned;
-                    }
-                    "step 4"
+                    }}, () => {
                     delete _status.noclearcountdown;
                     if (Evt.skillDialog && get.objtype(Evt.skillDialog) == 'div') {
                         Evt.skillDialog.close();
@@ -8780,7 +8734,7 @@
                     if (!_status.noclearcountdown) {
                         game.stopCountChoose();
                     }
-                },
+                }],
                 /**
                  * 选择以弃置牌
                  * @name content.chooseToDiscard
@@ -8788,8 +8742,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseToDiscard: function () {
-                    "step 0"
+                chooseToDiscard: [() => {
                     if (Evt.autochoose()) {
                         Evt.result = {
                             bool: true,
@@ -8877,8 +8830,7 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseCard(Evt.ai) || forced) {
@@ -8899,13 +8851,11 @@
                         for (var i = 0; i < Evt.rangecards.length; i++) {
                             Evt.rangecards[i].recheck('chooseToDiscard');
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     Evt.resume();
                     if (Evt.promptdiscard) {
                         Evt.promptdiscard.close();
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.result.bool && Evt.result.cards && Evt.result.cards.length &&
                         !game.online && Evt.autodelay && !Evt.isMine()) {
                         if (typeof Evt.autodelay == 'number') {
@@ -8914,8 +8864,7 @@
                         else {
                             game.delayx();
                         }
-                    }
-                    "step 4"
+                    }}, () => {
                     if (Evt.logSkill && Evt.result.bool && !game.online) {
                         if (typeof Evt.logSkill == 'string') {
                             player.logSkill(Evt.logSkill);
@@ -8933,7 +8882,7 @@
                         }
                     }
                     if (Evt.dialog && Evt.dialog.close) Evt.dialog.close();
-                },
+                }],
                 /**
                  * 拼点失败
                  * @name content.chooseToCompareLose
@@ -8955,8 +8904,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseToCompareMultiple: function () {
-                    "step 0"
+                chooseToCompareMultiple: [() => {
                     if (player.countCards('h') == 0) {
                         Evt.result = { cancelled: true, bool: false }
                         Evt.finish();
@@ -8972,8 +8920,7 @@
                     if (!Evt.multitarget) {
                         targets.sort(lib.sort.seat);
                     }
-                    game.log(player, '对', targets, '发起拼点');
-                    "step 1"
+                    game.log(player, '对', targets, '发起拼点');}, () => {
                     Evt._result = [];
                     Evt.list = targets.filter(function (current) {
                         return !Evt.fixedResult || !Evt.fixedResult[current.playerid];
@@ -8990,8 +8937,7 @@
                             delete Evt.player;
                             return { bool: true, cards: [hs[0]] };
                         };
-                    }
-                    "step 2"
+                    }}, () => {
                     var cards = [];
                     var lose_list = [];
                     if (Evt.fixedResult && Evt.fixedResult[player.playerid]) {
@@ -9037,8 +8983,7 @@
                         num1: [],
                         num2: [],
                     };
-                    game.log(player, '的拼点牌为', Evt.card1);
-                    "step 3"
+                    game.log(player, '的拼点牌为', Evt.card1);}, () => {
                     if (Evt.iwhile < targets.length) {
                         Evt.target = targets[Evt.iwhile];
                         Evt.target.animate('target');
@@ -9053,8 +8998,7 @@
                     }
                     else {
                         Evt.goto(7);
-                    }
-                    "step 4"
+                    }}, () => {
                     Evt.result.num1[Evt.iwhile] = Evt.num1;
                     Evt.result.num2[Evt.iwhile] = Evt.num2;
                     var str;
@@ -9086,8 +9030,7 @@
                             dialog.close();
                         }, 1000);
                     }, str);
-                    game.delay(2);
-                    "step 5"
+                    game.delay(2);}, () => {
                     if (Evt.callback) {
                         game.broadcastAll(function (card1, card2) {
                             if (card1.clone) card1.clone.style.opacity = 0.5;
@@ -9102,14 +9045,12 @@
                         next.num2 = Evt.num2;
                         next.winner = Evt.result.winner;
                         next.setContent(Evt.callback);
-                    }
-                    "step 6"
+                    }}, () => {
                     game.broadcastAll(ui.clear);
                     Evt.iwhile++;
-                    Evt.goto(3);
-                    "step 7"
+                    Evt.goto(3);}, () => {
                     Evt.cards.add(Evt.card1);
-                },
+                }],
                 /**
                  * 两人拼点
                  * @name content.chooseToCompare
@@ -9117,16 +9058,14 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseToCompare: function () {
-                    "step 0"
+                chooseToCompare: [() => {
                     if (player.countCards('h') == 0 || target.countCards('h') == 0) {
                         Evt.result = { cancelled: true, bool: false }
                         Evt.finish();
                         return;
                     }
                     game.log(player, '对', target, '发起拼点');
-                    Evt.lose_list = [];
-                    "step 1"
+                    Evt.lose_list = [];}, () => {
                     var sendback = function () {
                         if (_status.event != Evt) {
                             return function () {
@@ -9164,8 +9103,7 @@
                     }
                     else {
                         Evt.localTarget = true;
-                    }
-                    "step 2"
+                    }}, () => {
                     if (Evt.localPlayer) {
                         if (result.skill && lib.skill[result.skill] && lib.skill[result.skill].onCompare) {
                             result.cards = lib.skill[result.skill].onCompare(player);
@@ -9176,8 +9114,7 @@
                     }
                     if (Evt.localTarget) {
                         target.chooseCard('请选择拼点牌', true).set('type', 'compare').set('glow_result', true).ai = Evt.ai;
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.localTarget) {
                         if (result.skill && lib.skill[result.skill] && lib.skill[result.skill].onCompare) {
                             target.logSkill(result.skill);
@@ -9188,8 +9125,7 @@
                     }
                     if (!Evt.resultOL && Evt.ol) {
                         game.pause();
-                    }
-                    "step 4"
+                    }}, () => {
                     try {
                         if (!Evt.card1) {
                             if (Evt.resultOL[player.playerid].skill && lib.skill[Evt.resultOL[player.playerid].skill] && lib.skill[Evt.resultOL[player.playerid].skill].onCompare) {
@@ -9226,8 +9162,7 @@
                         game.loseAsync({
                             lose_list: Evt.lose_list,
                         }).setContent('chooseToCompareLose');
-                    }
-                    "step 5"
+                    }}, () => {
                     game.broadcast(function () {
                         ui.arena.classList.add('thrownhighlight');
                     });
@@ -9239,8 +9174,7 @@
                     Evt.num1 = Evt.card1.number;
                     Evt.num2 = Evt.card2.number;
                     Evt.trigger('compare');
-                    game.delay(0, 1500);
-                    "step 6"
+                    game.delay(0, 1500);}, () => {
                     Evt.result = {
                         player: Evt.card1,
                         target: Evt.card2,
@@ -9278,8 +9212,7 @@
                             dialog.close();
                         }, 1000);
                     }, str);
-                    game.delay(2);
-                    "step 7"
+                    game.delay(2);}, () => {
                     if (typeof Evt.target.ai.shown == 'number' && Evt.target.ai.shown <= 0.85 && Evt.addToAI) {
                         Evt.target.ai.shown += 0.1;
                     }
@@ -9299,7 +9232,7 @@
                     else if (Evt.preserve == 'lose') {
                         Evt.preserve = !Evt.result.bool;
                     }
-                },
+                }],
                 /**
                  * 选择以获得一项技能
                  * @name content.discoverSkill
@@ -9532,8 +9465,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseButton: function () {
-                    "step 0"
+                chooseButton: [() => {
                     if (typeof Evt.dialog == 'number') {
                         Evt.dialog = get.idDialog(Evt.dialog);
                     }
@@ -9566,8 +9498,7 @@
                     }
                     if (Evt.onfree) {
                         lib.init.onfree();
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         if (Evt.processAI) {
                             Evt.result = Evt.processAI();
@@ -9585,7 +9516,7 @@
                         Evt.callback(Evt.player, Evt.result);
                     }
                     Evt.resume();
-                },
+                }],
                 /**
                  * 多人选择牌
                  * @name content.chooseCardOL
@@ -9733,8 +9664,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseCard: function () {
-                    "step 0"
+                chooseCard: [() => {
                     if (Evt.directresult) {
                         Evt.result = {
                             buttons: [],
@@ -9791,8 +9721,7 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseCard(Evt.ai) || forced) {
@@ -9808,8 +9737,7 @@
                         else {
                             ui.click.cancel();
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     Evt.resume();
                     if (Evt.glow_result && Evt.result.cards && !Evt.directresult) {
                         for (var i = 0; i < Evt.result.cards.length; i++) {
@@ -9817,7 +9745,7 @@
                         }
                     }
                     if (Evt.dialog) Evt.dialog.close();
-                },
+                }],
                 /**
                  * 选择角色对象
                  * @name content.chooseTarget
@@ -9825,8 +9753,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseTarget: function () {
-                    "step 0"
+                chooseTarget: [() => {
                     if (Evt.isMine()) {
                         if (Evt.hsskill && !Evt.forced && _status.prehidden_skills.contains(Evt.hsskill)) {
                             ui.click.cancel();
@@ -9869,8 +9796,7 @@
                     }
                     else {
                         Evt.result = 'ai';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseTarget(Evt.ai) || forced) {
@@ -9886,8 +9812,7 @@
                         }
                     }
                     if (Evt.dialog) Evt.dialog.close();
-                    Evt.resume();
-                    "step 2"
+                    Evt.resume();}, () => {
                     if (Evt.onresult) {
                         Evt.onresult(Evt.result);
                     }
@@ -9899,7 +9824,7 @@
                             game.delayx();
                         }
                     }
-                },
+                }],
                 /**
                  * 选择卡牌和目标角色
                  * @name content.chooseCardTarget
@@ -9907,8 +9832,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseCardTarget: function () {
-                    "step 0"
+                chooseCardTarget: [() => {
                     if (Evt.isMine()) {
                         if (Evt.hsskill && !Evt.forced && _status.prehidden_skills.contains(Evt.hsskill)) {
                             ui.click.cancel();
@@ -9928,8 +9852,7 @@
                     }
                     else {
                         Evt.result = 'ai';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseCard(Evt.ai1)) {
@@ -9947,8 +9870,7 @@
                         else {
                             ui.click.cancel();
                         }
-                    }
-                    "step 2"
+                    }}, () => {
                     Evt.resume();
                     if (Evt.result.bool && Evt.animate !== false) {
                         for (var i = 0; i < Evt.result.targets.length; i++) {
@@ -9956,7 +9878,7 @@
                         }
                     }
                     if (Evt.dialog) Evt.dialog.close();
-                },
+                }],
                 /**
                  * 选择项(列表项)
                  * @name content.chooseControl
@@ -9964,8 +9886,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseControl: function () {
-                    "step 0"
+                chooseControl: [() => {
                     if (Evt.controls.length == 0) {
                         if (Evt.sortcard) {
                             var sortnum = 2;
@@ -10113,8 +10034,7 @@
                     }
                     else {
                         Evt.result = 'ai';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         Evt.result = {};
                         if (Evt.ai) {
@@ -10135,7 +10055,7 @@
                         }
                     }
                     Evt.resume();
-                },
+                }],
                 /**
                  * 确认项(确认|取消)
                  * @name content.chooseBool
@@ -10143,8 +10063,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                chooseBool: function () {
-                    "step 0"
+                chooseBool: [() => {
                     if (Evt.isMine()) {
                         if (Evt.frequentSkill && !lib.config.autoskilllist.contains(Evt.frequentSkill)) {
                             ui.click.ok();
@@ -10183,8 +10102,7 @@
                     }
                     else {
                         Evt.result = 'ai';
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         if (Evt.ai) {
                             Evt.choice = Evt.ai(Evt.getParent(), player);
@@ -10195,7 +10113,7 @@
                     Evt.choosing = false;
                     if (Evt.dialog) Evt.dialog.close();
                     Evt.resume();
-                },
+                }],
                 /**
                  * 选择(摸牌|回血)
                  * @name content.chooseDrawRecover
@@ -10274,8 +10192,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                choosePlayerCard: function () {
-                    "step 0"
+                choosePlayerCard: [() => {
                     if (!Evt.dialog) Evt.dialog = ui.create.dialog('hidden');
                     else if (!Evt.isMine) {
                         Evt.dialog.style.display = 'none';
@@ -10330,8 +10247,7 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseButton(Evt.ai) || forced) ui.click.ok();
@@ -10342,7 +10258,7 @@
                         Evt.result.cards = Evt.result.links.slice(0);
                     }
                     Evt.resume();
-                },
+                }],
                 /**
                  * 从目标角色选择牌弃置
                  * @name content.discardPlayerCard
@@ -10350,8 +10266,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                discardPlayerCard: function () {
-                    "step 0"
+                discardPlayerCard: [() => {
                     if (Evt.directresult) {
                         Evt.result = {
                             buttons: [],
@@ -10424,15 +10339,13 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseButton(Evt.ai) || forced) ui.click.ok();
                         else ui.click.cancel();
                     }
-                    Evt.dialog.close();
-                    "step 2"
+                    Evt.dialog.close();}, () => {
                     Evt.resume();
                     if (Evt.result.bool && Evt.result.links && !game.online) {
                         if (Evt.logSkill) {
@@ -10450,8 +10363,7 @@
                         Evt.result.cards = Evt.result.links.slice(0);
                         Evt.cards = cards;
                         Evt.trigger("rewriteDiscardResult");
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.boolline) {
                         player.line(target, 'green');
                     }
@@ -10463,7 +10375,7 @@
                             next.set('delay', false);
                         }
                     }
-                },
+                }],
                 /**
                  * 从目标角色选择牌获得
                  * @name content.gainPlayerCard
@@ -10471,8 +10383,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {!Object} Evt.result 返回选择结果给父事件
                  */
-                gainPlayerCard: function () {
-                    "step 0"
+                gainPlayerCard: [() => {
                     if (Evt.directresult) {
                         Evt.result = {
                             buttons: [],
@@ -10546,20 +10457,17 @@
                         else {
                             Evt.result = 'ai';
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.result == 'ai') {
                         game.check();
                         if (ai.basic.chooseButton(Evt.ai) || forced) ui.click.ok();
                         else ui.click.cancel();
                     }
-                    Evt.dialog.close();
-                    "step 2"
+                    Evt.dialog.close();}, () => {
                     Evt.resume();
                     if (game.online || !Evt.result.bool) {
                         Evt.finish();
-                    }
-                    "step 3"
+                    }}, () => {
                     if (Evt.logSkill && Evt.result.bool && !game.online) {
                         if (typeof Evt.logSkill == 'string') {
                             player.logSkill(Evt.logSkill);
@@ -10574,8 +10482,7 @@
                     }
                     Evt.result.cards = Evt.result.links.slice(0);
                     Evt.cards = cards;
-                    Evt.trigger("rewriteGainResult");
-                    "step 4"
+                    Evt.trigger("rewriteGainResult");}, () => {
                     if (Evt.boolline) {
                         player.line(target, 'green');
                     }
@@ -10592,14 +10499,13 @@
                         }
                     }
                     else target[Evt.visibleMove ? '$give' : '$giveAuto'](cards, player);
-                },
+                }],
                 /**
                  * 展示角色手牌
                  * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
-                showHandcards: function () {
-                    "step 0"
+                showHandcards: [() => {
                     if (player.countCards('h') == 0) {
                         Evt.finish();
                         return;
@@ -10617,18 +10523,16 @@
                     }, str, cards, Evt.dialogid);
                     game.log(player, '展示了', cards);
                     game.addVideo('showCards', player, [str, get.cardsInfo(cards)]);
-                    game.delayx(2);
-                    "step 1"
+                    game.delayx(2);}, () => {
                     game.broadcast('closeDialog', Evt.dialogid);
                     Evt.dialog.close();
-                },
+                }],
                 /**
                  * 展示角色的牌
                  * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
-                showCards: function () {
-                    "step 0"
+                showCards: [() => {
                     if (get.itemtype(cards) != 'cards') {
                         Evt.finish();
                         return;
@@ -10672,18 +10576,16 @@
                         game.log(player, '展示了', cards);
                     }
                     game.delayx(2);
-                    game.addVideo('showCards', player, [Evt.str, get.cardsInfo(cards)]);
-                    "step 1"
+                    game.addVideo('showCards', player, [Evt.str, get.cardsInfo(cards)]);}, () => {
                     game.broadcast('closeDialog', Evt.dialogid);
                     Evt.dialog.close();
-                },
+                }],
                 /**
                  * 查看牌
                  * @name content.showHandcards
                  * @type {GameCores.Bases.StateMachine}
                  */
-                viewCards: function () {
-                    "step 0"
+                viewCards: [() => {
                     if (player == game.me) {
                         Evt.dialog = ui.create.dialog(Evt.str, Evt.cards);
                         if (Evt.isMine()) {
@@ -10706,13 +10608,12 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 1"
+                    }}, () => {
                     Evt.result = 'viewed';
                     _status.imchoosing = false;
                     Evt.choosing = false;
                     if (Evt.dialog) Evt.dialog.close();
-                },
+                }],
                 /**
                  * 移动牌位置
                  * @name content.moveCard
@@ -10879,8 +10780,7 @@
                  * @property {!Object} Evt 当前事件
                  * @property {?Object} Evt.result 返回选择使用结果(如果有)给父事件
                  */
-                useCard: function () {
-                    "step 0"
+                useCard: [() => {
                     if (!card) {
                         console.log('err: no card', get.translation(Evt.player));
                         Evt.finish();
@@ -11075,10 +10975,8 @@
                     else {
                         game.logv(player, [card, cards], targets);
                     }
-                    Evt.trigger('useCard1');
-                    "step 1"
-                    Evt.trigger('useCard2');
-                    "step 2"
+                    Evt.trigger('useCard1');}, () => {
+                    Evt.trigger('useCard2');}, () => {
                     Evt.trigger('useCard');
                     Evt._oncancel = function () {
                         game.broadcastAll(function (id) {
@@ -11087,8 +10985,7 @@
                                 delete ui.tempnowuxie;
                             }
                         }, Evt.id);
-                    };
-                    "step 3"
+                    };}, () => {
                     Evt.sortTarget = function (animate, sort) {
                         var info = get.info(card, false);
                         if (num == 0 && targets.length > 1) {
@@ -11126,8 +11023,7 @@
                                 game.delayx();
                             }
                         }
-                    }
-                    "step 4"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     if (!Evt.triggeredTargets1) Evt.triggeredTargets1 = [];
                     var target = Evt.getTriggerTarget(targets, Evt.triggeredTargets1);
@@ -11146,8 +11042,7 @@
                         next.customArgs = Evt.customArgs;
                         if (Evt.forceDie) next.forceDie = true;
                         Evt.redo();
-                    }
-                    "step 5"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     if (!Evt.triggeredTargets2) Evt.triggeredTargets2 = [];
                     var target = Evt.getTriggerTarget(targets, Evt.triggeredTargets2);
@@ -11166,8 +11061,7 @@
                         next.customArgs = Evt.customArgs;
                         if (Evt.forceDie) next.forceDie = true;
                         Evt.redo();
-                    }
-                    "step 6"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     if (!Evt.triggeredTargets3) Evt.triggeredTargets3 = [];
                     var target = Evt.getTriggerTarget(targets, Evt.triggeredTargets3);
@@ -11186,8 +11080,7 @@
                         next.customArgs = Evt.customArgs;
                         if (Evt.forceDie) next.forceDie = true;
                         Evt.redo();
-                    }
-                    "step 7"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     if (!Evt.triggeredTargets4) Evt.triggeredTargets4 = [];
                     var target = Evt.getTriggerTarget(targets, Evt.triggeredTargets4);
@@ -11209,8 +11102,7 @@
                             Evt.sortTarget();
                         }
                         Evt.redo();
-                    }
-                    "step 8"
+                    }}, () => {
                     var info = get.info(card, false);
                     if (info.contentBefore) {
                         var next = game.createEvent(card.name + 'ContentBefore');
@@ -11231,8 +11123,7 @@
                         next.player = player;
                         next.type = 'precard';
                         if (Evt.forceDie) next.forceDie = true;
-                    }
-                    "step 9"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     var info = get.info(card, false);
                     if (num == 0 && targets.length > 1) {
@@ -11295,14 +11186,12 @@
                         if (Evt.targetDelay !== false) {
                             game.delayx(0.5);
                         }
-                    }
-                    "step 10"
+                    }}, () => {
                     if (Evt.all_excluded) return;
                     if (!get.info(Evt.card, false).multitarget && num < targets.length - 1 && !Evt.cancelled) {
                         Evt.num++;
                         Evt.goto(9);
-                    }
-                    "step 11"
+                    }}, () => {
                     if (get.info(card, false).contentAfter) {
                         var next = game.createEvent(card.name + 'ContentAfter');
                         next.setContent(get.info(card, false).contentAfter);
@@ -11313,8 +11202,7 @@
                         next.preResult = Evt.preResult;
                         next.type = 'postcard';
                         if (Evt.forceDie) next.forceDie = true;
-                    }
-                    "step 12"
+                    }}, () => {
                     if (Evt.postAi) {
                         Evt.player.logAi(Evt.targets, Evt.card);
                     }
@@ -11327,17 +11215,15 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 13"
+                    }}, () => {
                     Evt._oncancel();
-                },
+                }],
                 /**
                  * 角色使用技能
                  * @name content.useSkill
                  * @type {GameCores.Bases.StateMachine}
                  */
-                useSkill: function () {
-                    "step 0"
+                useSkill: [() => {
                     var info = get.info(Evt.skill);
                     if (!info.noForceDie) Evt.forceDie = true;
                     Evt._skill = Evt.skill;
@@ -11452,8 +11338,7 @@
                         // player.storage[roundname] = game.roundNumber;
                         player.syncStorage(roundname);
                         player.markSkill(roundname);
-                    }
-                    "step 1"
+                    }}, () => {
                     var info = get.info(Evt.skill);
                     if (info && info.contentBefore) {
                         var next = game.createEvent(Evt.skill + 'ContentBefore');
@@ -11462,8 +11347,7 @@
                         next.cards = cards;
                         next.player = player;
                         if (Evt.forceDie) next.forceDie = true;
-                    }
-                    "step 2"
+                    }}, () => {
                     if (!Evt.skill) {
                         console.log('error: no skill', get.translation(Evt.player), Evt.player.getSkills());
                         if (Evt._skill) {
@@ -11529,8 +11413,7 @@
                     if (!info.multitarget && num < targets.length - 1) {
                         Evt.num++;
                         Evt.redo();
-                    }
-                    "step 3"
+                    }}, () => {
                     var info = get.info(Evt.skill);
                     if (info && info.contentAfter) {
                         var next = game.createEvent(Evt.skill + 'ContentAfter');
@@ -11539,8 +11422,7 @@
                         next.cards = cards;
                         next.player = player;
                         if (Evt.forceDie) next.forceDie = true;
-                    }
-                    "step 4"
+                    }}, () => {
                     if (player.getStat().allSkills > 200) {
                         player._noSkill = true;
                         console.log(player.name, Evt.skill);
@@ -11550,10 +11432,9 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 5"
+                    }}, () => {
                     ui.clear();
-                },
+                }],
                 /**
                  * 从(牌库|牌堆顶|牌堆底)摸牌
                  * @name content.useCard
@@ -11624,13 +11505,11 @@
                  * @name content.discard
                  * @type {GameCores.Bases.StateMachine}
                  */
-                discard: function () {
-                    "step 0"
+                discard: [() => {
                     game.log(player, '弃置了', cards);
-                    Evt.done = player.lose(cards, Evt.position, 'visible').type = 'discard';
-                    "step 1"
+                    Evt.done = player.lose(cards, Evt.position, 'visible').type = 'discard';}, () => {
                     Evt.trigger('discard');
-                },
+                }],
                 /**
                  * 角色打出牌
                  * @name content.respond
@@ -11771,8 +11650,7 @@
                  * @name content.lose
                  * @type {GameCores.Bases.StateMachine}
                  */
-                gain: function () {
-                    "step 0"
+                gain: [() => {
                     if (cards) {
                         var map = {};
                         for (var i of cards) {
@@ -11792,8 +11670,7 @@
                     }
                     else {
                         Evt.finish();
-                    }
-                    "step 1"
+                    }}, () => {
                     for (var i = 0; i < cards.length; i++) {
                         if (cards[i].destroyed) {
                             if (player.hasSkill(cards[i].destroyed)) {
@@ -11809,15 +11686,13 @@
                         return;
                     }
                     player.getHistory('gain').push(Evt);
-                    //if(Evt.source&&Evt.delay!==false) game.delayx();
-                    "step 2"
+                    //if(Evt.source&&Evt.delay!==false) game.delayx();}, () => {
                     if (player.getStat().gain == undefined) {
                         player.getStat().gain = cards.length;
                     }
                     else {
                         player.getStat().gain += cards.length;
-                    }
-                    "step 3"
+                    }}, () => {
                     var sort;
                     var frag1 = document.createDocumentFragment();
                     var frag2 = document.createDocumentFragment();
@@ -11933,17 +11808,15 @@
                     }
                     if (Evt.log) {
                         game.log(player, '获得了', cards);
-                    }
-                    "step 4"
+                    }}, () => {
                     game.delayx();
-                },
+                }],
                 /**
                  * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
                  * @name content.lose
                  * @type {GameCores.Bases.StateMachine}
                  */
-                lose: function () {
-                    "step 0"
+                lose: [() => {
                     var evt = Evt.getParent();
                     if (evt.name != 'discard' && Evt.type != 'discard') {
                         Evt.delay = false;
@@ -11986,8 +11859,7 @@
                                 });
                             }
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     Evt.gaintag_map = {};
                     var hs = [], es = [], js = [], ss = [];
                     if (Evt.insert_card && Evt.position == ui.cardPile) Evt.cards.reverse();
@@ -12107,8 +11979,7 @@
                     Evt.hs = hs;
                     Evt.es = es;
                     Evt.js = js;
-                    Evt.ss = ss;
-                    "step 2"
+                    Evt.ss = ss;}, () => {
                     if (num < cards.length) {
                         let evt = Evt.getParent();
                         if (Evt.es.contains(cards[num])) {
@@ -12131,8 +12002,7 @@
                             player.addEquipTrigger();
                         }
                         Evt.goto(4);
-                    }
-                    "step 3"
+                    }}, () => {
                     var info = get.info(cards[num]);
                     if (info.loseDelay != false && (player.isAlive() || info.forceDie)) {
                         player.popup(cards[num].name);
@@ -12155,8 +12025,7 @@
                         next.card = cards[num];
                     }
                     Evt.num++;
-                    Evt.goto(2);
-                    "step 4"
+                    Evt.goto(2);}, () => {
                     var evt = Evt.getParent();
                     if (evt.name != 'discard' && Evt.type != 'discard') return;
                     if (evt.delay != false) {
@@ -12168,23 +12037,18 @@
                             game.delayx();
                         }
                     }
-                },
+                }],
                 /**
                  * 令角色受到伤害
                  * @name content.damage
                  * @type {GameCores.Bases.StateMachine}
                  */
-                damage: function () {
-                    "step 0"
+                damage: [() => {
                     Evt.forceDie = true;
-                    Evt.trigger('damageBegin1');
-                    "step 1"
-                    Evt.trigger('damageBegin2');
-                    "step 2"
-                    Evt.trigger('damageBegin3');
-                    "step 3"
-                    Evt.trigger('damageBegin4');
-                    "step 4"
+                    Evt.trigger('damageBegin1');}, () => {
+                    Evt.trigger('damageBegin2');}, () => {
+                    Evt.trigger('damageBegin3');}, () => {
+                    Evt.trigger('damageBegin4');}, () => {
                     if (num > 0 && player.hujia && !player.hasSkillTag('nohujia') && !(source && source.hasSkillTag('overHujia', true, {
                         name: Evt.card ? Evt.card.name : null,
                         target: player,
@@ -12209,8 +12073,7 @@
                     }
                     if (num > 0) {
                         Evt.trigger('damageHit');
-                    }
-                    "step 5"
+                    }}, () => {
                     if (lib.config.background_audio) {
                         game.playAudio('effect', 'damage' + (num > 1 ? '2' : ''));
                     }
@@ -12269,8 +12132,7 @@
                         else {
                             Evt.trigger('damage');
                         }
-                    }
-                    "step 6"
+                    }}, () => {
                     if (player.hp <= 0 && player.isAlive()) {
                         game.delayx();
                         player.dying(Evt);
@@ -12314,10 +12176,9 @@
                                 case 'gold': if (dnum >= 12) source.node.framebg.dataset.decoration = 'gold'; break;
                             }
                         }
-                    }
-                    "step 7"
+                    }}, () => {
                     if (!Evt.notrigger) Evt.trigger('damageSource');
-                },
+                }],
                 /**
                  * 角色回复血量
                  * @name content.recover
@@ -12354,8 +12215,7 @@
                  * @name content.loseHp
                  * @type {GameCores.Bases.StateMachine}
                  */
-                loseHp: function () {
-                    "step 0"
+                loseHp: [() => {
                     if (lib.config.background_audio) {
                         game.playAudio('effect', 'loseHp');
                     }
@@ -12365,53 +12225,47 @@
                         }
                     });
                     game.log(player, '失去了' + get.cnNumber(num) + '点' + get.translation('hp'))
-                    player.changeHp(-num);
-                    "step 1"
+                    player.changeHp(-num);}, () => {
                     if (player.hp <= 0) {
                         game.delayx();
                         player.dying(Evt);
                     }
-                },
+                }],
                 /**
                  * 双将模式下，如果“双将体力设置”选择为“平均值”，因此向下取整体力的角色可以摸一张牌
                  * @name content.doubleDraw
                  * @type {GameCores.Bases.StateMachine}
                  */
-                doubleDraw: function () {
-                    "step 0"
-                    player.chooseBool('你的主副将体力上限之和是奇数，是否摸一张牌？');
-                    "step 1"
+                doubleDraw: [() => {
+                    player.chooseBool('你的主副将体力上限之和是奇数，是否摸一张牌？');}, () => {
                     if (result.bool) {
                         player.draw();
                     }
-                },
+                }],
                 /**
                  * 令角色减少血量上限
                  * @name content.loseMaxHp
                  * @type {GameCores.Bases.StateMachine}
                  */
-                loseMaxHp: function () {
-                    "step 0"
+                loseMaxHp: [() => {
                     game.log(player, '减少了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
                     player.maxHp -= num;
                     Evt.loseHp = Math.max(0, player.hp - player.maxHp);
-                    player.update();
-                    "step 1"
+                    player.update();}, () => {
                     if (player.maxHp <= 0) {
                         player.die(Evt);
                     }
-                },
+                }],
                 /**
                  * 令角色增加血量上限
                  * @name content.gainMaxHp
                  * @type {GameCores.Bases.StateMachine}
                  */
-                gainMaxHp: function () {
-                    "step 0"
+                gainMaxHp: [() => {
                     game.log(player, '增加了' + get.cnNumber(num) + '点' + get.translation('hp') + '上限');
                     player.maxHp += num;
                     player.update();
-                },
+                }],
                 /**
                  * 令角色改变血量(不能超过上限)
                  * @name content.changeHp
@@ -12473,8 +12327,7 @@
                  * @name content.dying
                  * @type {GameCores.Bases.StateMachine}
                  */
-                dying: function () {
-                    "step 0"
+                dying: [() => {
                     Evt.forceDie = true;
                     if (player.isDying() || player.hp > 0) {
                         Evt.finish();
@@ -12485,8 +12338,7 @@
                         _status.dying = list;
                     }, _status.dying);
                     Evt.trigger('dying');
-                    game.log(player, '濒死');
-                    "step 1"
+                    game.log(player, '濒死');}, () => {
                     delete Evt.filterStop;
                     if (player.hp > 0) {
                         _status.dying.remove(player);
@@ -12509,21 +12361,19 @@
                         next.triggername = '_save';
                         next.forceDie = true;
                         next.setContent(lib.skill._save.content);
-                    }
-                    "step 2"
+                    }}, () => {
                     _status.dying.remove(player);
                     game.broadcast(function (list) {
                         _status.dying = list;
                     }, _status.dying);
                     if (player.hp <= 0 && !player.nodying) player.die(Evt.reason);
-                },
+                }],
                 /**
                  * 角色死亡事件
                  * @name content.die
                  * @type {GameCores.Bases.StateMachine}
                  */
-                die: function () {
-                    "step 0"
+                die: [() => {
                     Evt.forceDie = true;
                     if (_status.roundStart == player) {
                         _status.roundStart = player.next || player.getNext() || game.players[0];
@@ -12601,12 +12451,9 @@
                     }
                     if (player.hp != 0) {
                         player.changeHp(0 - player.hp, false).forceDie = true;
-                    }
-                    "step 1"
-                    if (player.dieAfter) player.dieAfter(source);
-                    "step 2"
-                    Evt.trigger('die');
-                    "step 3"
+                    }}, () => {
+                    if (player.dieAfter) player.dieAfter(source);}, () => {
+                    Evt.trigger('die');}, () => {
                     if (player.isDead()) {
                         if (!game.reserveDead) {
                             for (var mark in player.marks) {
@@ -12640,10 +12487,8 @@
                             player.discard(Evt.cards).forceDie = true;
                             //player.$throw(Evt.cards,1000);
                         }
-                    }
-                    "step 4"
-                    if (player.dieAfter2) player.dieAfter2(source);
-                    "step 5"
+                    }}, () => {
+                    if (player.dieAfter2) player.dieAfter2(source);}, () => {
                     game.broadcastAll(function (player) {
                         if (game.online && player == game.me && !_status.over && !game.controlOver && !ui.exit) {
                             if (lib.mode[lib.configOL.mode].config.dierestart) {
@@ -12701,20 +12546,18 @@
                         }
                         source.classList.add('topcount');
                     }
-                },
+                }],
                 /**
                  * 角色使用装备牌
                  * @name content.equip
                  * @type {GameCores.Bases.StateMachine}
                  */
-                equip: function () {
-                    "step 0"
+                equip: [() => {
                     console.log(card, cards)
                     if (cards) {
                         var owner = get.owner(cards[0]);
                         if (owner) owner.lose(card, ui.special, 'visible').set('type', 'equip').set('getlx', false);
-                    }
-                    "step 1"
+                    }}, () => {
                     if (Evt.cancelled) {
                         Evt.finish();
                         return;
@@ -12741,8 +12584,7 @@
                         delete cards[0]._transform;
                         game.cardsDiscard(cards[0]);
                         Evt.finish();
-                    }
-                    "step 2"
+                    }}, () => {
                     game.broadcast(function (player, card, viewAs) {
                         if (card.clone && (card.clone.parentNode == player.parentNode || card.clone.parentNode == ui.arena)) {
                             card.clone.moveDelete(player);
@@ -12753,8 +12595,7 @@
                         cards[0].clone.moveDelete(player);
                         game.addVideo('gain2', player, get.cardsInfo(cards));
                     }
-                    player.equiping = true;
-                    "step 3"
+                    player.equiping = true;}, () => {
                     var info = get.info(card, false);
                     var current = player.getCards('e', function (card) {
                         if (info.customSwap) return info.customSwap(card);
@@ -12774,8 +12615,7 @@
                     }
                     else {
                         delete cards[0].viewAs;
-                    }
-                    "step 4"
+                    }}, () => {
                     if (player.isMin() || player.countCards('e', { subtype: get.subtype(Evt.viewAs) })) {
                         Evt.finish();
                         game.cardsDiscard(cards[0]);
@@ -12804,8 +12644,7 @@
                         player.$equip(cards[0]);
                         game.addVideo('equip', player, get.cardInfo(card));
                         game.log(player, '装备了', card);
-                    }
-                    "step 5"
+                    }}, () => {
                     var info = get.info(card, false);
                     if (info.onEquip && (!info.filterEquip || info.filterEquip(card, player))) {
                         if (Array.isArray(info.onEquip)) {
@@ -12828,21 +12667,19 @@
                     if (Evt.delay) {
                         game.delayx();
                     }
-                },
+                }],
                 /**
                  * 角色添加判定牌
                  * @name content.addJudge
                  * @type {GameCores.Bases.StateMachine}
                  */
-                addJudge: function () {
-                    "step 0"
+                addJudge: [() => {
                     if (cards) {
                         var owner = get.owner(cards[0]);
                         if (owner) {
                             Evt.relatedLose = owner.lose(cards, 'visible').set('getlx', false);
                         }
-                    }
-                    "step 1"
+                    }}, () => {
                     if (cards[0].destroyed) {
                         if (player.hasSkill(cards[0].destroyed)) {
                             delete cards[0].destroyed;
@@ -12913,7 +12750,7 @@
                         }
                         game.addVideo('addJudge', player, [get.cardInfo(cards[0]), cards[0].viewAs]);
                     }
-                },
+                }],
                 /**
                  * 角色进行判定
                  * @name content.judge
@@ -12921,8 +12758,7 @@
                  * @property {!Object} Evt 本事件
                  * @property {!Object} Evt.result 将判定牌信息返回给父事件
                  */
-                judge: function () {
-                    "step 0"
+                judge: [() => {
                     var judgestr = get.translation(player) + '的' + Evt.judgestr + '判定';
                     Evt.videoId = lib.status.videoId++;
                     var cardj = Evt.directresult;
@@ -12959,8 +12795,7 @@
 
                     game.log(player, '进行' + Evt.judgestr + '判定，亮出的判定牌为', player.judging[0]);
                     game.delay(2);
-                    if (!Evt.noJudgeTrigger) Evt.trigger('judge');
-                    "step 1"
+                    if (!Evt.noJudgeTrigger) Evt.trigger('judge');}, () => {
                     Evt.result = {
                         card: player.judging[0],
                         name: player.judging[0].name,
@@ -13012,7 +12847,7 @@
                             if (Evt.position != ui.discardPile) Evt.position.appendChild(Evt.result.card);
                         }
                     }
-                },
+                }],
                 /**
                  * 角色武将牌翻面
                  * @name content.turnOver
@@ -13078,8 +12913,7 @@
                     }, player, player.isLinked());
                     game.addVideo('link', player, player.isLinked());
                 },
-                chooseToGuanxing: function () {
-                    "step 0"
+                chooseToGuanxing: [() => {
                     if (player.isUnderControl()) {
                         game.swapPlayerAuto(player);
                     }
@@ -13198,8 +13032,7 @@
                     else {
                         Evt.switchToAuto();
                         Evt.finish();
-                    }
-                    "step 1"
+                    }}, () => {
                     var result = Evt.result || result;
                     if (!result || result == 'ai') {
                         Evt.switchToAuto();
@@ -13223,7 +13056,7 @@
                         game.updateRoundNumber();
                         game.delay(2);
                     }
-                },
+                }],
             },
             /**
              * 玩家方法，.player节点共用的方法（比如展示牌【showCard】）
@@ -13387,12 +13220,10 @@
                         toStorage: true,
                         target: target || this,
                     });
-                    next.setContent(function () {
-                        "step 0"
-                        player.lose(cards, ui.special).set('getlx', false);
-                        "step 1"
+                    next.setContent([() => {
+                        player.lose(cards, ui.special).set('getlx', false);}, () => {
                         target.directgains(cards, null, Evt.tag)
-                    });
+                    }]);
                     return next;
                 },
                 /**

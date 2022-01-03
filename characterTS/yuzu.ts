@@ -18636,7 +18636,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			xingtong: `星瞳`,
 			jiezou: `节奏`,
-			jiezou_info: `锁定技。你攻击范围内每有一名角色，你的手牌上限+1。`,
+			jiezou_info: `锁定技 你攻击范围内每有一名角色，你的手牌上限+1。`,
 			xtguyong: `孤勇`,
 			xtguyong_info: `准备阶段，你可以翻面并令一名手牌区/装备区/判定区牌数少于你的角色弃置你的对应区域各一张牌，
 			然后你对攻击范围内至多X名角色各造成X点伤害（X为此技能弃置的牌数）`,
