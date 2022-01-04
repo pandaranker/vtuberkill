@@ -9398,7 +9398,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseTarget(get.prompt2('gumei')).set('ai', function (target) {
 						let player = _status.event.player;
 						let att = get.attitude(player, target);
-						if (!target.countCards('he')) return 0;
 						if (target.hasCardAround()) return att - 1;
 						return -att;
 					});
@@ -9406,7 +9405,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						Evt.target = result.targets[0];
 						player.logSkill('gumei', Evt.target);
-						if (player.hasCardAround()) {
+						if (Evt.target.hasCardAround()) {
 							Evt.target.draw();
 						} else {
 							Evt.target.link();

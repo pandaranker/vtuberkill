@@ -1996,16 +1996,16 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 			//莉泽
 			yubing:{
 				audio:5,
-				init(player: { storage: { [x: string]: number; }; },skill: string | number){
+				init(player, skill){
 					if(!player.storage[skill]) player.storage[skill] = 0;
 				},
 				trigger: {player: 'useCardAfter'},
 				priority:14,
-				filter(Evt: { card: any; result: { bool: boolean; }; iswuxied: any; }, player: { getHandcardLimit: () => any; }) {
+				filter(Evt, player) {
 					return player.getHandcardLimit()&&(get.type(Evt.card)=='basic'||get.type(Evt.card)=='trick')
-						&&!(Evt.result.bool == false || Evt.iswuxied);
+						&&!(Evt.result?.bool === false || Evt.iswuxied);
 				},
-				check(Evt: any, player: { getHandcardLimit: () => number; countCards: (arg0: string) => number; }) {
+				check(Evt, player) {
 					return player!=_status.currentPhase||(player.getHandcardLimit()*2)>=player.countCards('h');
 				},
 				content(){

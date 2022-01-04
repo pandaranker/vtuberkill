@@ -24667,7 +24667,7 @@
                     if (mod != 'unchanged') return mod;
                     var info = get.info(card);
                     if (typeof info.chongzhu == 'function') {
-                        return info.chongzhu(Evt, player);
+                        return info.chongzhu(card, player);
                     }
                     return info.chongzhu;
                 },
