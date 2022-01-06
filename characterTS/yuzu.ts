@@ -17334,7 +17334,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				intro:{
 					content:'本局游戏内累计使用了#张牌'
 				}
-			},'direct').setT('useCard'),
+			},'forced').setT('useCard'),
 			yexi:new toSkill('active',{
 				filter(Evt, player) {
 					return player.countCards('he');
@@ -17433,34 +17433,40 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					return false;
 				},
-				log: false,
 				content:[()=>{
 					if(player.storage.yujian===true){
-						player.chooseTarget(get.prompt2('yujian'),function (card, player, target) {
+						player.chooseTarget(get.prompt2('yujian'),(card, player, target) => {
 							return player!=target;
 						}).set('ai',tar => {
 							let player = _status.event.player
-							return get.effect(tar,_status.event.card,player,player)
+							return get.effect(tar,_status.event.card,player,player)+0.1
 						}).set('card',trigger.card)
 					}
 					else if(player.storage.yujian===false){
-						Evt.target = trigger.player
-						player.logSkill('yujian',Evt.target)
+						player.chooseToDiscard(get.prompt2('yujian'),'he').set('ai',card => {
+							if(get.attitude2(_status.event.target)>0)	return -1
+							return get.unuseful2(card)
+						}).set('card',trigger.player)
 					}
 				},()=>{
 					if(player.storage.yujian===true&&result?.targets?.length){
 						Evt.target = result.targets[0]
 						player.logSkill('yujian',Evt.target)
+						game.delay(1)
+						player.draw()
 						trigger.targets = [Evt.target]
 					}
 					else if(player.storage.yujian===false){
+						Evt.target = trigger.player
+						player.logSkill('yujian',Evt.target)
+						game.delay(1)
 						trigger.finish()
 						player.gain(trigger.cards)
 					}else	Evt.finish();
 				},()=>{
 					player.storage.yujian = !player.storage.yujian
 				}],
-			}).setT({global:'useCard2'}),
+			},'direct').setT({global:'useCard2'}),
 			yuenan: new toSkill('trigger', {
 				filter(Evt, player) {
 					return !Evt.numFixed;
@@ -17849,18 +17855,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yuanyao_append: lib.figurer(`特性：制衡`),
 			gongni: `宫逆`,
 			gongni_info: `限定技 准备阶段开始时，或你于回合外使用或打出一张牌后，若所有角色均已受伤，你可以令所有角色依次交换体力值与已损失体力值。`,
-
-			ShikaiYue: `紫海由爱`,
-			lianyin: `联音`,
-			lianyin_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以与其各摸一张牌。（X为你的体力上限）`,
-			guixiang: `归乡`,
-			guixiang_info: `<font color=#caf>觉醒技</font> 准备阶段，若你发动『联音』的次数不少于存活角色数，你增加一点体力上限并回复一点体力，将『联音』的“使用”改为“使用或打出”。`,
-
-			KurokiriAria: `黑桐亚里亚`,
-			xuanying: `玄荫`,
-			xuanying_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数且至少为1）`,
-			houfan: `候返`,
-			houfan_info: `<font color=#b56>限定技</font> 出牌阶段，若你手牌数为全场最少，你可以减1点体力上限，从弃牌堆随机获得四张装备牌，并将『玄荫』的“使用”改为“使用或打出”。`,
 
 			shanbao: `扇宝`,
 			fengxu: `风许`,

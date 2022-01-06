@@ -131,7 +131,6 @@ window.game.import('character',function(lib:Record<string, any>,game:Record<stri
 		},
 		characterSort:{
 			Beginner:{
-		//		界限突破:[],
 				hololive:[
 					're_TokinoSora','re_AZKi','re_RobokoSan','re_ShirakamiFubuki','re_HoshimatiSuisei','re_AkiRosenthal','re_YozoraMel','re_MurasakiShion',
 					're_SakuraMiko','re_NatsuiroMatsuri','re_UsadaPekora','re_AkaiHaato','re_UruhaRushia','re_ŌokamiMio','re_NakiriAyame','re_ŌzoraSubaru','re_YukihanaLamy',
