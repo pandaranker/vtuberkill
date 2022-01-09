@@ -1424,7 +1424,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			qiti: `气嚏`,
 			qiti_info: `你受到属性伤害后，可以交给来源一张牌，令其交给你X张牌。（X为你已损失的体力+1）`,
 			miaoyu: `喵鱼`,
-			miaoyu_info: `转化技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的海【杀】。`,
+			miaoyu_info: `转换技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的海【杀】。`,
 
 			ShirakamiHaruka: `白神遥`,
 			baoxiao: `豹笑`,
