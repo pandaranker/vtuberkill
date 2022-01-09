@@ -34,11 +34,8 @@ window.noname_source_list=[
 
 	'game/asset.js',
 	'game/config.js',
-	'game/keyWords.js',
 	'game/directory.js',
 	'game/game.js',
-	'game/data/output/data.js',
-	'game/methods/output/methods.js',
 	'game/http.js',
 	'game/jszip.js',
 	'game/NoSleep.js',

@@ -5,7 +5,7 @@
      * @namespace
      * @type {!Object}
      */
-    let { game, ui, get, lib, _status } = window.vkCore
+    let { game, ui, get, ai, lib, _status } = vkCore
     lib.configMenu = {
         /**
          * 通用设置

@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.15',
+	version:'1.9.104.16',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.15微型更新：修复小bug`,
+		`1.9.104.16小型更新：新增角色西园千草【彩虹】（化鲸篇），尝试修复bug`,
 		`增加一些BGM供选择`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -53,14 +53,11 @@ window.noname_update={
 		'mode/versus.js',
 		'mode/boss.js',
 
-		// 'game/module.js',
 		'game/game.js',
 		// 'game/directory.js',
-		'game/data/output/data.js',
-		'game/methods/output/methods.js',
 
-		//'game/NoSleep.js',
-		'game/config.js',
+		// 'game/NoSleep.js',
+		// 'game/config.js',
 		'game/package.js',
 		'game/asset.js',
 		'game/source.js',

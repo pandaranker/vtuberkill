@@ -1340,6 +1340,7 @@ window.vk_asset_list=[
 	'image/character/NekomataOkayu.jpg',
 	'image/character/NekomiyaHinata.jpg',
 	'image/character/NinomaeInanis.jpg',
+	'image/character/NishizonoChigusa.jpg',
 	'image/character/Niuniuzi.jpg',
 	'image/character/NoiR.jpg',
 	'image/character/Nyanners.jpg',

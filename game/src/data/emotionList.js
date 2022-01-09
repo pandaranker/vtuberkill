@@ -3,7 +3,7 @@
      *表情基础设置 
      * @namespace
      */
-    let { lib } = window.vkCore
+	let { game, ui, get, ai, lib, _status } = vkCore
     lib.emotionList = {
         xiaowu_emotion: 14,
         shibing_emotion: 15,

@@ -4,7 +4,7 @@
    * @namespace
    */
   let { game, ui, get, ai, lib, _status } = window.vkCore
-  window.methods_filter = {
+  lib.filter = {
     all: function () {
       return true;
     },

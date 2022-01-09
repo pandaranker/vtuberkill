@@ -5081,7 +5081,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 				ai: {
-					combo: 'tuncai',
+					combo: 'huanxi',
 					threaten: 1.3
 				}
 			},
@@ -17435,7 +17435,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content:[()=>{
 					if(player.storage.yujian===true){
-						player.chooseTarget(get.prompt2('yujian'),(card, player, target) => {
+						player.chooseTarget(get.prompt2('yujian', null , player),(card, player, target) => {
 							return player!=target;
 						}).set('ai',tar => {
 							let player = _status.event.player
@@ -17443,7 +17443,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}).set('card',trigger.card)
 					}
 					else if(player.storage.yujian===false){
-						player.chooseToDiscard(get.prompt2('yujian'),'he').set('ai',card => {
+						player.chooseToDiscard(get.prompt2('yujian', null , player),'he').set('ai',card => {
 							if(get.attitude2(_status.event.target)>0)	return -1
 							return get.unuseful2(card)
 						}).set('card',trigger.player)

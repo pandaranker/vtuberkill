@@ -5,7 +5,7 @@
    * @namespace
    */
   let { game, ui, get, ai, lib, _status } = window.vkCore
-  window.methods_sort = {
+  lib.sort = {
     /**
      * 将角色按照势力排列
      * @name sort.character
