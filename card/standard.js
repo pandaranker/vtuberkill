@@ -2533,7 +2533,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 							id:id,
 							id2:id2
 						});
-						if(event.stateplayer&&event.statecard) next.set('respondTo',[event.stateplayer,event.statecard]);
+						if(_status.event.stateplayer&&_status.event.statecard) next.set('respondTo',[_status.event.stateplayer,_status.event.statecard]);
 						else if(!isJudge){
 							next.set('respondTo',[source,card]);
 						}

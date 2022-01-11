@@ -1378,7 +1378,7 @@ window.vk_asset_list=[
 	'image/character/ShirakamiFubuki.jpg',
 	'image/character/Shirako.jpg',
 	'image/character/Shiranekoyuki.jpg',
-	'image/character/shiranekoyuki1.jpg',
+	'image/character/Shiranekoyuki1.jpg',
 	'image/character/Shiratama.jpg',
 	'image/character/ShirayukiMishiro.jpg',
 	'image/character/ShirayukiTomoe.jpg',
