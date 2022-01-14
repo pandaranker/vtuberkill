@@ -18,16 +18,9 @@ window.noname_source_list=[
 	'card/zhulu.js',
 	'card/longlaoguan.js',
 	'card/remark.js',
-	'character/vtuber.js',
-	'character/hololive.js',
-	'character/clubs.js',
-	'character/Beginner.js',
-	'character/nijisanji.js',
-	'character/emperor.js',
-	'character/huajing.js',
-	'character/xingtian.js',
-	'character/sololive.js',
-	'character/yuzu.js',
+	
+	'character/character.js',
+
 	'character/sp.js',
 
 	'character/rank.js',

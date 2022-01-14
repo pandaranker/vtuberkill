@@ -1,4 +1,4 @@
-/// <reference path = "../game/built-in.d.ts" />
+/// <reference path = "../built-in.d.ts" />
 
 
 window.game.import('character',function(lib:Record<string, any>,game:Record<string, any>,ui:Record<string, any>,get:Record<string,any>,ai:Record<string, any>,_status){

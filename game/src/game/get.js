@@ -1412,16 +1412,17 @@ module.exports = {
          funcInfoOL: function (func) {
             if (typeof func == 'function') {
                if (func._filter_args) {
-                  return '_noname_func:' + JSON.stringify(get.stringifiedResult(func._filter_args, 3));
+                  return `_noname_func:${JSON.stringify(get.stringifiedResult(func._filter_args, 3))}`;
                }
-               return '_noname_func:' + func.toString();
+               let str = func.toString()
+               return `_noname_func:${str.slice(str.indexOf('('))}`;
             }
             return '';
          },
          infoFuncOL: function (info) {
             var func;
             try {
-               eval('func=(' + info.slice(13) + ');');
+               eval(`func=(function${info.slice(13)});`);
             }
             catch (e) {
                return function () { };

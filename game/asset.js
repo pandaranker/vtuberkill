@@ -1273,6 +1273,7 @@ window.vk_asset_list=[
 	'image/character/HisekiErio.jpg',
 	'image/character/HoshimatiSuisei.jpg',
 	'image/character/HosimiyaSio.jpg',
+	'image/character/HoureiTenten.jpg',
 	'image/character/hunmiaomiao.jpg',
 	'image/character/IenagaMugi.jpg',
 	'image/character/iiivan.jpg',

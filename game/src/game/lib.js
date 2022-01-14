@@ -3601,7 +3601,7 @@ module.exports = {
             }
             //用于加载包的函数
             var loadPack = function () {
-              var toLoad = lib.config.all.cards.length + lib.config.all.characters.length + 1;
+              var toLoad = lib.config.all.cards.length + 3;
               var packLoaded = function () {
                 toLoad--;
                 if (toLoad == 0) {
@@ -3630,10 +3630,8 @@ module.exports = {
               }
               lib.init.js(lib.assetURL + 'card', lib.config.all.cards, packLoaded, packLoaded);
               lib.init.js(lib.assetURL + 'character',
-                lib.config.all.characters.slice(0),
+                ['character','sp','rank'],
                 packLoaded, packLoaded);
-              lib.init.js(lib.assetURL + 'character', 'rank', packLoaded, packLoaded);
-              // if(lib.device!='ios'&&lib.config.enable_pressure) lib.init.js(lib.assetURL+'game','pressure');
             };
             //part: 检查layout并设置`game.layout = layout`
             var layout = lib.config.layout;
@@ -4323,201 +4321,205 @@ module.exports = {
           if (game.documentZoom != 1) {
             ui.updatez();
           }
-          ui.background = ui.create.div('.background');
-          ui.background.style.backgroundSize = "cover";
-          ui.background.style.backgroundPosition = '50% 50%';
-          if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
-            if (lib.config.image_background.indexOf('svg_') == 0) {
-              ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
-            }
-            else {
-              ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-
-              ui.backgroundSVG = ui.create.div('.background', ui.background);
-              ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
-              ui.backgroundSVG.style.opacity = '.3';
-            }
-            if (lib.config.image_background_blur) {
-              ui.background.style.filter = 'blur(8px)';
-              ui.background.style.webkitFilter = 'blur(8px)';
-              ui.background.style.transform = 'scale(1.05)';
-            }
-          }
-          document.documentElement.style.backgroundImage = '';
-          document.documentElement.style.backgroundSize = '';
-          document.documentElement.style.backgroundPosition = '';
-          document.body.insertBefore(ui.background, document.body.firstChild);
-          document.body.onresize = ui.updatexr;
-          if (lib.config.touchscreen) {
-            document.body.addEventListener('touchstart', function (e) {
-              this.startX = e.touches[0].clientX / game.documentZoom;
-              this.startY = e.touches[0].clientY / game.documentZoom;
-              _status.dragged = false;
-            });
-            document.body.addEventListener('touchmove', function (e) {
-              if (_status.dragged) return;
-              if (Math.abs(e.touches[0].clientX / game.documentZoom - this.startX) > 10 ||
-                Math.abs(e.touches[0].clientY / game.documentZoom - this.startY) > 10) {
-                _status.dragged = true;
+          {
+            ui.background = ui.create.div('.background');
+            ui.background.style.backgroundSize = "cover";
+            ui.background.style.backgroundPosition = '50% 50%';
+            if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
+              if (lib.config.image_background.indexOf('svg_') == 0) {
+                ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
               }
-            });
+              else {
+                ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+  
+                ui.backgroundSVG = ui.create.div('.background', ui.background);
+                ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
+                ui.backgroundSVG.style.opacity = '.3';
+              }
+              if (lib.config.image_background_blur) {
+                ui.background.style.filter = 'blur(8px)';
+                ui.background.style.webkitFilter = 'blur(8px)';
+                ui.background.style.transform = 'scale(1.05)';
+              }
+            }
+            document.documentElement.style.backgroundImage = '';
+            document.documentElement.style.backgroundSize = '';
+            document.documentElement.style.backgroundPosition = '';
+            document.body.insertBefore(ui.background, document.body.firstChild);
+            document.body.onresize = ui.updatexr;
+            if (lib.config.touchscreen) {
+              document.body.addEventListener('touchstart', function (e) {
+                this.startX = e.touches[0].clientX / game.documentZoom;
+                this.startY = e.touches[0].clientY / game.documentZoom;
+                _status.dragged = false;
+              });
+              document.body.addEventListener('touchmove', function (e) {
+                if (_status.dragged) return;
+                if (Math.abs(e.touches[0].clientX / game.documentZoom - this.startX) > 10 ||
+                  Math.abs(e.touches[0].clientY / game.documentZoom - this.startY) > 10) {
+                  _status.dragged = true;
+                }
+              });
+            }
+          }
+          {
+            if (lib.config.image_background.indexOf('custom_') == 0) {
+              ui.background.style.backgroundImage = "none";
+              game.getDB('image', lib.config.image_background, function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  var data = fileLoadedEvent.target.result;
+                  ui.background.style.backgroundImage = 'url(' + data + ')';
+                  if (lib.config.image_background_blur) {
+                    ui.background.style.filter = 'blur(8px)';
+                    ui.background.style.webkitFilter = 'blur(8px)';
+                    ui.background.style.transform = 'scale(1.05)';
+                  }
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.card_style == 'custom') {
+              game.getDB('image', 'card_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.card_stylesheet) {
+                    ui.css.card_stylesheet.remove();
+                  }
+                  ui.css.card_stylesheet = lib.init.sheet('.card:not(*:empty){background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.cardback_style == 'custom') {
+              game.getDB('image', 'cardback_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.cardback_stylesheet) {
+                    ui.css.cardback_stylesheet.remove();
+                  }
+                  ui.css.cardback_stylesheet = lib.init.sheet('.card:empty,.card.infohidden{background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+              game.getDB('image', 'cardback_style2', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.cardback_stylesheet2) {
+                    ui.css.cardback_stylesheet2.remove();
+                  }
+                  ui.css.cardback_stylesheet2 = lib.init.sheet('.card.infohidden:not(.infoflip){background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.hp_style == 'custom') {
+              game.getDB('image', 'hp_style1', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.hp_stylesheet1) {
+                    ui.css.hp_stylesheet1.remove();
+                  }
+                  ui.css.hp_stylesheet1 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="high"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+              game.getDB('image', 'hp_style2', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.hp_stylesheet2) {
+                    ui.css.hp_stylesheet2.remove();
+                  }
+                  ui.css.hp_stylesheet2 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="mid"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+              game.getDB('image', 'hp_style3', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.hp_stylesheet3) {
+                    ui.css.hp_stylesheet3.remove();
+                  }
+                  ui.css.hp_stylesheet3 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="low"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+              game.getDB('image', 'hp_style4', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.hp_stylesheet4) {
+                    ui.css.hp_stylesheet4.remove();
+                  }
+                  ui.css.hp_stylesheet4 = lib.init.sheet('.hp:not(.text):not(.actcount)>.lost{background-image:url(' + fileLoadedEvent.target.result + ')}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.player_style == 'custom') {
+              ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:none;background-size:100% 100%;}');
+              game.getDB('image', 'player_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.player_stylesheet) {
+                    ui.css.player_stylesheet.remove();
+                  }
+                  ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:url("' + fileLoadedEvent.target.result + '");background-size:100% 100%;}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.border_style == 'custom') {
+              game.getDB('image', 'border_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.border_stylesheet) {
+                    ui.css.border_stylesheet.remove();
+                  }
+                  ui.css.border_stylesheet = lib.init.sheet();
+                  ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg{display:block;background-image:url("' + fileLoadedEvent.target.result + '")}', 0);
+                  ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.control_style == 'custom') {
+              game.getDB('image', 'control_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.control_stylesheet) {
+                    ui.css.control_stylesheet.remove();
+                  }
+                  ui.css.control_stylesheet = lib.init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:url("' + fileLoadedEvent.target.result + '")}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
+            if (lib.config.menu_style == 'custom') {
+              game.getDB('image', 'menu_style', function (fileToLoad) {
+                if (!fileToLoad) return;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                  if (ui.css.menu_stylesheet) {
+                    ui.css.menu_stylesheet.remove();
+                  }
+                  ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:url("' + fileLoadedEvent.target.result + '");background-size:cover}');
+                };
+                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+              });
+            }
           }
 
-          if (lib.config.image_background.indexOf('custom_') == 0) {
-            ui.background.style.backgroundImage = "none";
-            game.getDB('image', lib.config.image_background, function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                var data = fileLoadedEvent.target.result;
-                ui.background.style.backgroundImage = 'url(' + data + ')';
-                if (lib.config.image_background_blur) {
-                  ui.background.style.filter = 'blur(8px)';
-                  ui.background.style.webkitFilter = 'blur(8px)';
-                  ui.background.style.transform = 'scale(1.05)';
-                }
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.card_style == 'custom') {
-            game.getDB('image', 'card_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.card_stylesheet) {
-                  ui.css.card_stylesheet.remove();
-                }
-                ui.css.card_stylesheet = lib.init.sheet('.card:not(*:empty){background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.cardback_style == 'custom') {
-            game.getDB('image', 'cardback_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.cardback_stylesheet) {
-                  ui.css.cardback_stylesheet.remove();
-                }
-                ui.css.cardback_stylesheet = lib.init.sheet('.card:empty,.card.infohidden{background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-            game.getDB('image', 'cardback_style2', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.cardback_stylesheet2) {
-                  ui.css.cardback_stylesheet2.remove();
-                }
-                ui.css.cardback_stylesheet2 = lib.init.sheet('.card.infohidden:not(.infoflip){background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.hp_style == 'custom') {
-            game.getDB('image', 'hp_style1', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.hp_stylesheet1) {
-                  ui.css.hp_stylesheet1.remove();
-                }
-                ui.css.hp_stylesheet1 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="high"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-            game.getDB('image', 'hp_style2', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.hp_stylesheet2) {
-                  ui.css.hp_stylesheet2.remove();
-                }
-                ui.css.hp_stylesheet2 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="mid"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-            game.getDB('image', 'hp_style3', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.hp_stylesheet3) {
-                  ui.css.hp_stylesheet3.remove();
-                }
-                ui.css.hp_stylesheet3 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="low"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-            game.getDB('image', 'hp_style4', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.hp_stylesheet4) {
-                  ui.css.hp_stylesheet4.remove();
-                }
-                ui.css.hp_stylesheet4 = lib.init.sheet('.hp:not(.text):not(.actcount)>.lost{background-image:url(' + fileLoadedEvent.target.result + ')}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.player_style == 'custom') {
-            ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:none;background-size:100% 100%;}');
-            game.getDB('image', 'player_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.player_stylesheet) {
-                  ui.css.player_stylesheet.remove();
-                }
-                ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:url("' + fileLoadedEvent.target.result + '");background-size:100% 100%;}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.border_style == 'custom') {
-            game.getDB('image', 'border_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.border_stylesheet) {
-                  ui.css.border_stylesheet.remove();
-                }
-                ui.css.border_stylesheet = lib.init.sheet();
-                ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg{display:block;background-image:url("' + fileLoadedEvent.target.result + '")}', 0);
-                ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.control_style == 'custom') {
-            game.getDB('image', 'control_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.control_stylesheet) {
-                  ui.css.control_stylesheet.remove();
-                }
-                ui.css.control_stylesheet = lib.init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:url("' + fileLoadedEvent.target.result + '")}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
-          if (lib.config.menu_style == 'custom') {
-            game.getDB('image', 'menu_style', function (fileToLoad) {
-              if (!fileToLoad) return;
-              var fileReader = new FileReader();
-              fileReader.onload = function (fileLoadedEvent) {
-                if (ui.css.menu_stylesheet) {
-                  ui.css.menu_stylesheet.remove();
-                }
-                ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:url("' + fileLoadedEvent.target.result + '");background-size:cover}');
-              };
-              fileReader.readAsDataURL(fileToLoad, "UTF-8");
-            });
-          }
 
           var proceed2 = function () {
             var mode = lib.imported.mode;

@@ -3223,7 +3223,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					game.delayx();
 					'step 3'
 					player.lose(Evt.shus,ui.special).set('getlx',false);
-					player.gain(Evt.shus,'giveAuto');
+					player.$giveAuto(Evt.shus, player);
+					'step 4'
+					player.gain(Evt.shus);
+					game.delay(1)
 				},
 				ai:{
 					combo:'maoge',
@@ -3252,7 +3255,6 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 						chooseButton:{
 							dialog(Evt,player){
 								var list = get.inpile('trick',card => {
-									var player = _status.event.player;
 									if(player.storage.futian_futian.contains(card))	return false;
 									return true;
 								});
@@ -3262,6 +3264,7 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 								if(list.length==0){
 									return ui.create.dialog('『覆天』已无可用牌');
 								}
+								console.log(player,ui.create.dialog)
 								return ui.create.dialog('『覆天』',[list,'vcard']);
 							},
 							filter(button,player){
