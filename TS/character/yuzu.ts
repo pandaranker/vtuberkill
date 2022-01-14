@@ -15510,7 +15510,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				position: 'h',
 				usable: 1,
 				filterTarget(card, player, target) {
-					return target.countCards('h') >= 2;
+					return target.countCards('h') >= 2 && target !== player;
 				},
 				content() {
 					'step 0'
