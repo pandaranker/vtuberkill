@@ -119,7 +119,7 @@ module.exports = {
              */
             blocked: function (skill, player) {
                if (!player.storage.skill_blocker || !player.storage.skill_blocker.length) return false;
-               for (var i of player.storage.skill_blocker) {
+               for (let i of player.storage.skill_blocker) {
                   if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player)) return true;
                }
                return false;
@@ -129,7 +129,7 @@ module.exports = {
              */
             double: function (name, array) {
                if (!lib.character[name] || !lib.character[name][4]) return false;
-               for (var i of lib.character[name][4]) {
+               for (let i of lib.character[name][4]) {
                   if (i.indexOf('doublegroup:') == 0) {
                      if (!array) return true;
                      return i.split(':').slice(1);
@@ -677,14 +677,7 @@ module.exports = {
             return arr;
          },
          zip: function (callback) {
-            if (!window.JSZip) {
-               lib.init.js(lib.assetURL + 'game', 'jszip', function () {
-                  callback(new JSZip());
-               });
-            }
-            else {
-               callback(new JSZip());
-            }
+            callback(new JSZip());
          },
          delayx: function (num, max) {
             if (typeof num != 'number') num = 1;

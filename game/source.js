@@ -5,33 +5,18 @@ window.noname_source_list=[
 
 	'audio/background/music_danji.mp3',
 	
-	'card/sp.js',
-	'card/standard.js',
-	'card/yingbian.js',
-	'card/huajing.js',
-	'card/xingtian.js',
-	'card/extra.js',
-	'card/guozhan.js',
-	
-	'card/yunchou.js',
-	'card/zhenfa.js',
-	'card/zhulu.js',
-	'card/longlaoguan.js',
-	'card/remark.js',
-	
-	'character/character.js',
+	'dist/card.js',
+	'dist/character.js',
 
-	'character/sp.js',
+	'dist/sp.js',
 
-	'character/rank.js',
+	'dist/rank.js',
 
 	'game/asset.js',
 	'game/config.js',
 	'game/directory.js',
 	'game/game.js',
 	'game/http.js',
-	'game/jszip.js',
-	'game/NoSleep.js',
 	'game/package.js',
 	'game/server.js',
 	'game/source.js',

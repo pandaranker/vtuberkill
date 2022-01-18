@@ -47,7 +47,7 @@ declare global {
         [propName: string]: any
     }
     interface Chara{
-        [propName: string]: [string, string, number | string, Array<string>, Array<string>?]
+        [propName: string]: [Gender, string, number | string, Array<string>, Array<string>?]
     }
     interface currentObject {
         character: Chara

@@ -5,10 +5,11 @@ const TerserPlugin  = require('terser-webpack-plugin');
 module.exports = {
   entry: {
     character:'./character/entry.js',
+    card:'./card/entry.js',
   },
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, '..', 'character')
+    path: resolve(__dirname, '..', 'dist')
   },
   module: {
     rules: [

@@ -1,6 +1,10 @@
-{
-	let { game, ui, get, ai, lib, _status } = vkCore
-	lib.translate = {
+module.exports = {
+	/**
+	 * 词汇翻译
+	 * 翻译文本
+	 * @type {!Object}
+	 */
+	translate: {
 		sc: '打钱',
 		ship: '上舰',
 		flower: '鲜花',

@@ -5678,14 +5678,13 @@ module.exports = {
                if (lib.config.keep_awake) {
                   if (window.plugins && window.plugins.insomnia) window.plugins.insomnia.keepAwake();
                   else {
-                     lib.init.js(lib.assetURL + 'game', 'NoSleep', function () {
-                        var noSleep = new NoSleep();
-                        document.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', function enableNoSleep() {
-                           document.removeEventListener(lib.config.touchscreen ? 'touchend' : 'click', enableNoSleep, false);
-                           noSleep.enable();
-                           window.noSleep = noSleep;
-                        }, false);
-                     });
+                     let NoSleep = require('@e/NoSleep.min')
+                     let noSleep = new NoSleep();
+                     document.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', function enableNoSleep() {
+                        document.removeEventListener(lib.config.touchscreen ? 'touchend' : 'click', enableNoSleep, false);
+                        noSleep.enable();
+                        window.noSleep = noSleep;
+                     }, false);
                   }
                }
                lib.init.js(lib.assetURL + 'game', 'keyWords', function () { });
@@ -6670,7 +6669,7 @@ module.exports = {
                node.stat = [{ card: {}, skill: {} }];
                node.actionHistory = [JSON.parse(JSON.stringify({ ...lib.historyRecorder }))];
                node.tempSkills = {};
-               node.storage = {};
+               node.$ = node.storage = {};
                node.marks = {};
                node.ai = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
                node.queueCount = 0;

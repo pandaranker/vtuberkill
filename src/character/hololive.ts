@@ -2437,64 +2437,55 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 				prepare:'give',
 				content(){
 					target.gain(cards,player);
-					target.storage.hangaohouxu = player;
-					target.storage.hangaohouxu.hangao = cards[0];
-					target.syncStorage('hangaohouxu');
-					target.addTempSkill('hangaohouxu',{player:'phaseAfter'});
+					target.storage.hangao_houxu = player;
+					target.storage.hangao = cards[0];
+					target.syncStorage('hangao_houxu');
+					target.addTempSkill('hangao_houxu',{player:'phaseAfter'});
 				},
-			},
-			hangaohouxu:{
-				init(player,skill){
-					if(!player.storage[skill]) player.storage[skill]=[];
-				},
-				onremove:true,
-				marktext:"♠",
-				locked:true,
-				intro:{
-					name:'函告',
-					content (storage,player,skill){
-						return '在回合结束时展示手牌';
+				subSkill:{
+					houxu:{
+						onremove:['hangao_houxu','hangao'],
+						marktext:"♠",
+						locked:true,
+						intro:{
+							name:'函告',
+							content (storage,player,skill){
+								return '在回合结束时展示手牌';
+							},
+						},
+						mark:'character',
+						forced:true,
+						priority:42,
+						trigger:{player:'phaseEnd'},
+						filter(Evt,player){
+							return player.storage.hangao_houxu.isIn();
+						},
+						content:[() => {
+							player.showCards(player.getCards('h'),'函告后续');
+							game.delay(0.5);
+						},() => {
+							let history=player.getHistory('useCard');
+							let heaG=1,diaG=1;
+							for(let i=0;i<history.length;i++){
+								if(history[i].cards[0]==player.storage.hangao)	diaG=0;
+								if(!history[i].targets) continue;
+								for(let j=0;j<history[i].targets.length;j++){
+									if(history[i].targets[j]==player.storage.hangao_houxu)	heaG=0;
+								}
+							}
+							if(heaG){
+								player.storage.hangao_houxu.gain(player,player.getCards('he').filter(ca => {
+									return get.suit(ca)=='heart';
+								}),'giveAuto');
+							}
+							if(diaG&&!player.getCards('h').contains(player.storage.hangao)){
+								player.storage.hangao_houxu.gain(player,player.getCards('he').filter(ca => {
+									return get.suit(ca)=='diamond';
+								}),'giveAuto');
+							}
+							player.removeSkill('hangao_houxu');
+						}]
 					},
-					markcount(storage,player){
-						return 0;
-					},
-					onunmark(storage,player){
-						if(storage&&storage.length){
-							storage.length=0;
-						}
-					},
-				},
-				mark:'character',
-				forced:true,
-				priority:42,
-				trigger:{player:'phaseEnd'},
-				filter(Evt,player){
-					return player.storage.hangaohouxu.isAlive()&&!player.storage.hangaohouxu.isOut();
-				},
-				content(){
-					player.showCards(player.getCards('h'),'函告后续');
-					game.delay(0.5);
-					var history=player.getHistory('useCard');
-					var heaG=1,diaG=1;
-					for(var i=0;i<history.length;i++){
-						console.log(history[i].cards[0]);
-						if(history[i].cards[0]==player.storage.hangaohouxu.hangao)	diaG=0;
-						if(!history[i].targets) continue;
-						for(var j=0;j<history[i].targets.length;j++){
-							if(history[i].targets[j]==player.storage.hangaohouxu)	heaG=0;
-						}
-					}
-					if(heaG){
-						player.storage.hangaohouxu.gain(player,player.getCards('he').filter(function(ca){
-							return get.suit(ca)=='heart';
-						}),'giveAuto');
-					}
-					if(diaG&&!player.getCards('h').contains(player.storage.hangaohouxu.hangao)){
-						player.storage.hangaohouxu.gain(player,player.getCards('he').filter(function(ca){
-							return get.suit(ca)=='diamond';
-						}),'giveAuto');
-					}
-					player.removeSkill('hangaohouxu');
 				}
 			},
 			yinglve:{

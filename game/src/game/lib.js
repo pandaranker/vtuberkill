@@ -2452,10 +2452,10 @@ module.exports = {
           //例如：`__dirname` 为 `'F:\\vtb\\test\\src'`，则`lib.configprefix`为`'noname_0.9_Fvts_'|'vtuberkill_1.9_Fvts_'`
           //BUG: [PC win10] 路径使用`\`时，只获取了盘符
           if (typeof global !== 'undefined' && __dirname.length) {
-            var dirsplit = __dirname.split('/');
-            for (var i = 0; i < dirsplit.length; i++) {
+            let dirsplit = __dirname.split('/');
+            for (let i = 0; i < dirsplit.length; i++) {
               if (dirsplit[i]) {
-                var c = dirsplit[i][0];
+                let c = dirsplit[i][0];
                 lib.configprefix += /[A-Z]|[a-z]/.test(c) ? c : '_';
               }
             }
@@ -2468,15 +2468,15 @@ module.exports = {
             delete window.cordovaLoadTimeout;
           }
           //part: 从html中，删除首次启动使用的样式（css）
-          var links = document.head.querySelectorAll('link');
-          for (var i = 0; i < links.length; i++) {
+          let links = document.head.querySelectorAll('link');
+          for (let i = 0; i < links.length; i++) {
             if (links[i].href.indexOf('app/color.css') != -1) {
               links[i].remove();
               break;
             }
           }
           //part: 如果是phantom，则禁用indexedDB
-          var index = window.location.href.indexOf('index.html?server=');
+          let index = window.location.href.indexOf('index.html?server=');
           if (index != -1) {
             /**
              * 服务器ID
@@ -3362,7 +3362,7 @@ module.exports = {
             //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
             if (config2.mode) lib.config.mode = config2.mode;
             if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
-            for (var i in lib.config.mode_config.global) {
+            for (let i in lib.config.mode_config.global) {
               if (lib.config.mode_config[lib.config.mode][i] == undefined) {
                 lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
               }
@@ -3376,7 +3376,7 @@ module.exports = {
               lib.config.defaultcards = lib.config.cards.slice(0);
             }
             //part: 从`config2`加载`lib.config`和`lib.mode_config`的数据
-            for (var i in config2) {
+            for (let i in config2) {
               if (i.indexOf('_mode_config') != -1) {
                 var thismode = i.substr(i.indexOf('_mode_config') + 13);
                 if (!lib.config.mode_config[thismode]) {
@@ -3389,7 +3389,7 @@ module.exports = {
               }
             }
             //part: 从`lib.config.translate`拷贝到`lib.translate`
-            for (var i in lib.config.translate) {
+            for (let i in lib.config.translate) {
               lib.translate[i] = lib.config.translate[i];
             }
 
@@ -3412,24 +3412,24 @@ module.exports = {
             //part: `window.vk_package`，创建于package.js
             var pack = window.vk_package;
             delete window.vk_package;
-            for (i in pack.character) {
+            for (let i in pack.character) {
               if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
                 lib.config.all.characters.push(i);
                 lib.translate[i + '_character_config'] = pack.character[i];
               }
             }
-            for (i in pack.card) {
+            for (let i in pack.card) {
               if (lib.config.hiddenCardPack.indexOf(i) == -1) {
                 lib.config.all.cards.push(i);
                 lib.translate[i + '_card_config'] = pack.card[i];
               }
             }
-            for (i in pack.play) {
+            for (let i in pack.play) {
               lib.config.all.plays.push(i);
               lib.translate[i + '_play_config'] = pack.play[i];
             }
-            for (i in pack.submode) {
-              for (var j in pack.submode[i]) {
+            for (let i in pack.submode) {
+              for (let j in pack.submode[i]) {
                 lib.translate[i + '|' + j] = pack.submode[i][j];
               }
             }
@@ -3437,7 +3437,7 @@ module.exports = {
             if (!lib.config.gameRecord) {
               lib.config.gameRecord = {};
             }
-            for (i in pack.mode) {
+            for (let i in pack.mode) {
               if (lib.config.hiddenModePack.indexOf(i) == -1) {
                 lib.config.all.mode.push(i);
                 lib.translate[i] = pack.mode[i];
@@ -3456,11 +3456,11 @@ module.exports = {
             }
             {
               if (pack.background) {
-                for (i in pack.background) {
+                for (let i in pack.background) {
                   if (lib.config.hiddenBackgroundPack.contains(i)) continue;
                   lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
                 }
-                for (var i = 0; i < lib.config.customBackgroundPack.length; i++) {
+                for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
                   var link = lib.config.customBackgroundPack[i];
                   lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
                 }
@@ -3471,12 +3471,12 @@ module.exports = {
                   lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
                 }
                 lib.config.all.background_music = ['music_danji'];
-                for (i in pack.music) {
+                for (let i in pack.music) {
                   lib.config.all.background_music.push(i);
                   lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
                 }
                 if (lib.config.customBackgroundMusic) {
-                  for (i in lib.config.customBackgroundMusic) {
+                  for (let i in lib.config.customBackgroundMusic) {
                     lib.config.all.background_music.push(i);
                     lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
                   }
@@ -3485,19 +3485,19 @@ module.exports = {
                 lib.configMenu.audio.config.background_music.item.music_off = '关闭';
               }
               if (pack.theme) {
-                for (i in pack.theme) {
+                for (let i in pack.theme) {
                   lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
                 }
               }
               if (lib.config.extension_sources) {
-                for (i in lib.config.extension_sources) {
+                for (let i in lib.config.extension_sources) {
                   lib.configMenu.general.config.extension_source.item[i] = i;
                 }
               }
 
               if (pack.font) {
                 ui.css.fontsheet = lib.init.sheet();
-                for (i in pack.font) {
+                for (let i in pack.font) {
                   lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
                   lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
                   lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
@@ -3564,18 +3564,18 @@ module.exports = {
             if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
               if (lib.config.extensions && lib.config.extensions.length) {
                 window.resetExtension = function () {
-                  for (var i = 0; i < lib.config.extensions.length; i++) {
+                  for (let i = 0; i < lib.config.extensions.length; i++) {
                     game.saveConfig('extension_' + lib.config.extensions[i] + '_enable', false);
                   }
                   localStorage.setItem(lib.configprefix + 'disable_extension', true);
                 }
               }
-              for (var i = 0; i < lib.config.plays.length; i++) {
+              for (let i = 0; i < lib.config.plays.length; i++) {
                 if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
                   extensionlist.push(lib.config.plays[i]);
                 }
               }
-              for (var i = 0; i < lib.config.extensions.length; i++) {
+              for (let i = 0; i < lib.config.extensions.length; i++) {
                 var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
                 if (extcontent) {
                   _status.evaluatingExtension = true;
@@ -3594,15 +3594,15 @@ module.exports = {
             }
             else {
               if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
-                for (var i = 0; i < lib.config.extensions.length; i++) {
+                for (let i = 0; i < lib.config.extensions.length; i++) {
                   game.import('extension', { name: lib.config.extensions[i] });
                 }
               }
             }
             //用于加载包的函数
-            var loadPack = function () {
-              var toLoad = lib.config.all.cards.length + 3;
-              var packLoaded = function () {
+            let loadPack = function () {
+              let toLoad = 4;
+              let packLoaded = function () {
                 toLoad--;
                 if (toLoad == 0) {
                   if (_status.windowLoaded) {
@@ -3628,13 +3628,10 @@ module.exports = {
                 toLoad++;
                 lib.init.js(lib.assetURL + 'mode', lib.config.mode, packLoaded, packLoaded);
               }
-              lib.init.js(lib.assetURL + 'card', lib.config.all.cards, packLoaded, packLoaded);
-              lib.init.js(lib.assetURL + 'character',
-                ['character','sp','rank'],
-                packLoaded, packLoaded);
+              lib.init.js(lib.assetURL + 'dist', ['card', 'character', 'sp', 'rank'], packLoaded, packLoaded);
             };
             //part: 检查layout并设置`game.layout = layout`
-            var layout = lib.config.layout;
+            let layout = lib.config.layout;
             if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
               layout = 'mobile';
             }
@@ -3651,8 +3648,8 @@ module.exports = {
               }
               else {
                 console.log(lib.configMenu.appearence.config.image_background.item)
-                var list = [];
-                for (var i in lib.configMenu.appearence.config.image_background.item) {
+                let list = [];
+                for (let i in lib.configMenu.appearence.config.image_background.item) {
                   if (i == 'default') continue;
                   list.push(i);
                 }
@@ -3664,19 +3661,19 @@ module.exports = {
             //part: game to window.game
             window.game = game;
             //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
-            var styleToLoad = 6;
-            var styleLoaded = function () {
+            let styleToLoad = 6;
+            let styleLoaded = function () {
               styleToLoad--;
               if (styleToLoad == 0) {
                 if (extensionlist.length && (lib.config.mode != 'connect' || show_splash)) {
-                  var extToLoad = extensionlist.length;
-                  var extLoaded = function () {
+                  let extToLoad = extensionlist.length;
+                  let extLoaded = function () {
                     extToLoad--;
                     if (extToLoad == 0) {
                       loadPack();
                     }
                   }
-                  for (var i = 0; i < extensionlist.length; i++) {
+                  for (let i = 0; i < extensionlist.length; i++) {
                     lib.init.js(lib.assetURL + 'extension/' + extensionlist[i], 'extension', extLoaded, (function (i) {
                       return function () {
                         game.removeExtension(i);
@@ -3719,7 +3716,7 @@ module.exports = {
             ui.css.hp_style = lib.init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
             //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
             if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
-              var str = '';
+              let str = '';
               switch (lib.config.player_style) {
                 case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
                 case 'music': str = 'linear-gradient(#4b4b4b, #464646)'; break;
@@ -3729,7 +3726,7 @@ module.exports = {
             }
             if (lib.config.border_style && lib.config.border_style != 'default' && lib.config.border_style != 'custom' && lib.config.border_style != 'auto') {
               ui.css.border_stylesheet = lib.init.sheet();
-              var bstyle = lib.config.border_style;
+              let bstyle = lib.config.border_style;
               if (bstyle.indexOf('dragon_') == 0) {
                 bstyle = bstyle.slice(7);
               }
@@ -3738,7 +3735,7 @@ module.exports = {
               ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
             }
             if (lib.config.control_style && lib.config.control_style != 'default' && lib.config.control_style != 'custom') {
-              var str = '';
+              let str = '';
               switch (lib.config.control_style) {
                 case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
                 case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
@@ -3752,7 +3749,7 @@ module.exports = {
               }
             }
             if (lib.config.menu_style && lib.config.menu_style != 'default' && lib.config.menu_style != 'custom') {
-              var str = '';
+              let str = '';
               switch (lib.config.menu_style) {
                 case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood2.png")'; break;
                 case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
@@ -3866,7 +3863,7 @@ module.exports = {
                       fileReader.onload = function (e) {
                         callback(e.target.result);
                       };
-                      fileReader.readAsArrayBuffer(fileToLoad, "UTF-8");
+                      fileReader.readAsArrayBuffer(fileToLoad);
                     }, onerror);
                   }, onerror);
                 }, onerror);
@@ -3878,7 +3875,7 @@ module.exports = {
                   fileReader.onload = function (e) {
                     game.writeFile(e.target.result, path, name, callback);
                   };
-                  fileReader.readAsArrayBuffer(data, "UTF-8");
+                  fileReader.readAsArrayBuffer(data);
                 }
                 else {
                   window.resolveLocalFileSystemURL(lib.assetURL + path, function (entry) {
@@ -4067,7 +4064,7 @@ module.exports = {
                 fileReader.onload = function (e) {
                   game.writeFile(e.target.result, path, name, callback);
                 };
-                fileReader.readAsArrayBuffer(data, "UTF-8");
+                fileReader.readAsArrayBuffer(data);
               }
               else {
                 get.zip(function (zip) {
@@ -4331,7 +4328,7 @@ module.exports = {
               }
               else {
                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-  
+
                 ui.backgroundSVG = ui.create.div('.background', ui.background);
                 ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
                 ui.backgroundSVG.style.opacity = '.3';
@@ -4377,7 +4374,7 @@ module.exports = {
                     ui.background.style.transform = 'scale(1.05)';
                   }
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.card_style == 'custom') {
@@ -4390,7 +4387,7 @@ module.exports = {
                   }
                   ui.css.card_stylesheet = lib.init.sheet('.card:not(*:empty){background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.cardback_style == 'custom') {
@@ -4403,7 +4400,7 @@ module.exports = {
                   }
                   ui.css.cardback_stylesheet = lib.init.sheet('.card:empty,.card.infohidden{background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
               game.getDB('image', 'cardback_style2', function (fileToLoad) {
                 if (!fileToLoad) return;
@@ -4414,7 +4411,7 @@ module.exports = {
                   }
                   ui.css.cardback_stylesheet2 = lib.init.sheet('.card.infohidden:not(.infoflip){background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.hp_style == 'custom') {
@@ -4427,7 +4424,7 @@ module.exports = {
                   }
                   ui.css.hp_stylesheet1 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="high"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
               game.getDB('image', 'hp_style2', function (fileToLoad) {
                 if (!fileToLoad) return;
@@ -4438,7 +4435,7 @@ module.exports = {
                   }
                   ui.css.hp_stylesheet2 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="mid"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
               game.getDB('image', 'hp_style3', function (fileToLoad) {
                 if (!fileToLoad) return;
@@ -4449,7 +4446,7 @@ module.exports = {
                   }
                   ui.css.hp_stylesheet3 = lib.init.sheet('.hp:not(.text):not(.actcount)[data-condition="low"]>div:not(.lost){background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
               game.getDB('image', 'hp_style4', function (fileToLoad) {
                 if (!fileToLoad) return;
@@ -4460,7 +4457,7 @@ module.exports = {
                   }
                   ui.css.hp_stylesheet4 = lib.init.sheet('.hp:not(.text):not(.actcount)>.lost{background-image:url(' + fileLoadedEvent.target.result + ')}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.player_style == 'custom') {
@@ -4474,7 +4471,7 @@ module.exports = {
                   }
                   ui.css.player_stylesheet = lib.init.sheet('#window .player{background-image:url("' + fileLoadedEvent.target.result + '");background-size:100% 100%;}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.border_style == 'custom') {
@@ -4489,7 +4486,7 @@ module.exports = {
                   ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg{display:block;background-image:url("' + fileLoadedEvent.target.result + '")}', 0);
                   ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.control_style == 'custom') {
@@ -4502,7 +4499,7 @@ module.exports = {
                   }
                   ui.css.control_stylesheet = lib.init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:url("' + fileLoadedEvent.target.result + '")}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
             if (lib.config.menu_style == 'custom') {
@@ -4515,7 +4512,7 @@ module.exports = {
                   }
                   ui.css.menu_stylesheet = lib.init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:url("' + fileLoadedEvent.target.result + '");background-size:cover}');
                 };
-                fileReader.readAsDataURL(fileToLoad, "UTF-8");
+                fileReader.readAsDataURL(fileToLoad);
               });
             }
           }
@@ -6350,12 +6347,6 @@ module.exports = {
           game.zhu.update();
         },
       },
-      /**
-       * 词汇翻译
-       * 翻译文本
-       * @type {!Object}
-       */
-      translate: {},
       /**
        * 游戏基础对象和状态机
        * @name element
@@ -25851,58 +25842,6 @@ module.exports = {
        */
       number: ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'],
       /**
-       * 武将牌势力
-       * |string|Group Name|
-       * |:----:|:--------:|
-       * |vtuber|企业|
-       * |clubs|社团|
-       * |wei|魏|
-       * |shu|蜀|
-       * |wu|吴|
-       * |qun|群|
-       * |jin|晋|
-       * |shen|神、特典|
-       * |holo|Hololive|
-       * |nijisanji|虹|
-       * |dotlive|点|
-       * |upd8|U|
-       * |eilene|艾琳|
-       * |paryi|帕里|
-       * |kagura|神楽|
-       * |nori|苔|
-       * |vwp|神椿|
-       * |nanashi|774 inc.|
-       * |VirtuaReal|VirtuaReal|
-       * |psp|psplive|
-       * |asoul|A-SOUL|
-       * |chaos|Chaos Live|
-       * |xuefeng|雪风军团|
-       * |vshojo|Vshojo|
-       * @type {string}
-       */
-      group: [],
-      /**
-       * shen势力可选的武将牌势力
-       * 较group去除了企业、社团、三国势力
-       * @type {string}
-       */
-      group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi', 'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng'],
-      /**
-       * 卡牌属性
-       * @type {('fire'|'thunder'|'poison'|'ocean'|'ice'|'kami'|'yami')}
-       */
-      nature: ['fire', 'thunder', 'poison', 'ocean', 'ice', 'kami', 'yami'],
-      /**
-       * 铁索属性 - TODO
-       * @type {string}
-       */
-      linked: ['fire', 'thunder', 'ocean', 'ice', 'kami', 'yami'],
-      /**
-       * 势力对应属性
-       * @constant
-       */
-      groupnature: {},
-      /**
        * 游戏阶段
        * 
        * @type {string[]}
@@ -25943,6 +25882,13 @@ module.exports = {
         '哥哥，交个朋友吧',
         '妹子，交个朋友吧',
       ],
+
+      group: require('@d/lib_groupList').group,
+      group2: require('@d/lib_groupList').group2,
+      groupnature: require('@d/lib_groupList').groupnature,
+      nature: require('@d/lib_natureList').nature,
+      linked: require('@d/lib_natureList').linked,
+      translate: require('@d/lib_translate').translate,
     }
   }
 }

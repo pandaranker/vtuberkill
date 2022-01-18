@@ -1182,8 +1182,8 @@ module.exports = {
                     (function redo() {
                         str += "/";
                         str += dir.shift();
-                        fs.exists(str, function (exists) {
-                            if (exists) {
+                        fs.access(str, function (err) {
+                            if (!err) {
                                 //已存在此目录
                                 if (dir.length) redo();
                                 else success();
@@ -1304,138 +1304,144 @@ module.exports = {
                     };
                     var zip = new JSZip();
                     try {
-                        zip.load(data);
-                        // alert(zip.file('文件夹/加扩展.js').asText())
-                        var str = zip.file('extension.js').asText();
-                        if (str === "" || undefined) throw ('你导入的不是扩展！请选择正确的文件');
-                        _status.importingExtension = true;
-                        eval(str);
-                        _status.importingExtension = false;
-                        if (!game.importedPack) throw ('err');
-                        var extname = game.importedPack.name;
-                        if (lib.config.all.plays.contains(extname)) {
-                            throw ('禁止安装游戏原生扩展');
-                        }
-                        if (lib.config.extensions.contains(extname)) {
-                            game.removeExtension(extname, true);
-                        }
-                        lib.config.extensions.add(extname);
-                        game.saveConfig('extensions', lib.config.extensions);
-                        game.saveConfig('extension_' + extname + '_enable', true);
-                        for (var i in game.importedPack.config) {
-                            if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
-                                game.saveConfig('extension_' + extname + '_' + i, game.importedPack.config[i].init);
-                            }
-                        }
-                        if (game.download) {
-                            var filelist = [];
-                            for (var i in zip.files) {
-                                //alert(zip.files[i].dir+i)
-                                if (!zip.files[i].dir && i[0] != '.' && i[0] != '_') {
-                                    filelist.push(i);
+                        zip.loadAsync(data).then(zip => {
+                            zip.file('extension.js').async("string").then(str => {
+                                _status.importingExtension = true;
+                                eval(str)
+                                _status.importingExtension = false;
+                                if (!game.importedPack) throw ('err');
+                                let extname = game.importedPack.name;
+                                if (lib.config.all.plays.contains(extname)) {
+                                    throw ('禁止安装游戏原生扩展');
                                 }
-                            }
-                            //alert(filelist)
-                            if (lib.node && lib.node.fs) {
-                                //电脑端
-                                //具备nodeJS环境
-                                game.ensureDirectory('extension/' + extname, function () {
-                                    var writeFile = function (e) {
-                                        if (e) {
-                                            finishLoad();
-                                            UHP();
-                                            return;
-                                        }
-                                        if (filelist.length) {
-                                            var filename = filelist.shift();
-                                            //filename 数组 ...dir+/+file
-                                            var zipdir = filename;
-                                            filename = filename.split("/");
-                                            var name = filename.pop();
-                                            if (filename.length) game.createDir('extension/' + extname + "/" + filename.join("/"), function () {
-                                                //这里需要个创文件夹的函数
-                                                Letgo(filename.join("/") + "/" + name);
-                                            }, UHP);
-                                            else Letgo(name);
-                                            function Letgo(name) {
-                                                lib.node.fs.writeFile(__dirname + '/extension/' + extname + "/" + name, zip.file(zipdir).asNodeBuffer(), null, writeFile);
-                                            }
-                                        }
-                                        else {
-                                            finishLoad();
+                                if (lib.config.extensions.contains(extname)) {
+                                    game.removeExtension(extname, true);
+                                }
+                                lib.config.extensions.add(extname);
+                                game.saveConfig('extensions', lib.config.extensions);
+                                game.saveConfig('extension_' + extname + '_enable', true);
+                                for (let i in game.importedPack.config) {
+                                    if (game.importedPack.config[i] && game.importedPack.config[i].hasOwnProperty('init')) {
+                                        game.saveConfig('extension_' + extname + '_' + i, game.importedPack.config[i].init);
+                                    }
+                                }
+                                if (game.download) {
+                                    let filelist = [];
+                                    for (let i in zip.files) {
+                                        //alert(zip.files[i].dir+i)
+                                        if (!zip.files[i].dir && i[0] != '.' && i[0] != '_') {
+                                            filelist.push(i);
                                         }
                                     }
-                                    writeFile();
-                                });
-                            }
-                            else {
-                                window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
-                                    entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
-                                        //扩展文件夹
-                                        writeFile();
-                                        function writeFile() {
-                                            if (filelist.length) {
-                                                var filename = filelist.shift();
-                                                //filename 数组 ...dir+/+file
-                                                var zipdir = filename;
-                                                filename = filename.split("/");
-                                                var name = filename.pop();
-                                                if (filename.length) game.createDir('extension/' + extname + "/" + filename.join("/"), function () {
-                                                    Letgo(filename.join("/") + "/" + name);
-                                                }, UHP);
-                                                else Letgo(name);
-                                                function Letgo(name) {
-                                                    dirEntry.getFile(name, { create: true }, function (fileEntry) {
-                                                        fileEntry.createWriter(function (fileWriter) {
-                                                            fileWriter.onwriteend = writeFile;
-                                                            fileWriter.write(zip.file(zipdir).asArrayBuffer());
-                                                        });
+                                    //alert(filelist)
+                                    if (lib.node && lib.node.fs) {
+                                        //电脑端
+                                        //具备nodeJS环境
+                                        game.ensureDirectory('extension/' + extname, function () {
+                                            let writeFile = function (e) {
+                                                if (e) {
+                                                    finishLoad();
+                                                    UHP();
+                                                    return;
+                                                }
+                                                if (filelist.length) {
+                                                    let filename = filelist.shift();
+                                                    //filename 数组 ...dir+/+file
+                                                    let zipdir = filename;
+                                                    filename = filename.split("/");
+                                                    let name = filename.pop();
+                                                    if (filename.length) game.createDir(`extension/${extname}/${filename.join("/")}`, function () {
+                                                        //这里需要个创文件夹的函数
+                                                        Letgo(`${filename.join("/")}/${name}`);
                                                     }, UHP);
+                                                    else Letgo(name);
+                                                    function Letgo(name) {
+                                                        zip.file(zipdir).async('nodebuffer').then(str => {
+                                                            lib.node.fs.writeFile(`${__dirname}/extension/${extname}/${name}`, str, null, writeFile);
+                                                        })
+                                                    }
+                                                }
+                                                else {
+                                                    finishLoad();
                                                 }
                                             }
-                                            else {
-                                                finishLoad();
+                                            writeFile();
+                                        });
+                                    }
+                                    else {
+                                        window.resolveLocalFileSystemURL(lib.assetURL, function (entry) {
+                                            entry.getDirectory('extension/' + extname, { create: true }, function (dirEntry) {
+                                                //扩展文件夹
+                                                writeFile();
+                                                function writeFile() {
+                                                    if (filelist.length) {
+                                                        let filename = filelist.shift();
+                                                        //filename 数组 ...dir+/+file
+                                                        let zipdir = filename;
+                                                        filename = filename.split("/");
+                                                        let name = filename.pop();
+                                                        if (filename.length) game.createDir(`extension/${extname}/${filename.join("/")}`, function () {
+                                                            Letgo(`${filename.join("/")}/${name}`);
+                                                        }, UHP);
+                                                        else Letgo(name);
+                                                        function Letgo(name) {
+                                                            dirEntry.getFile(name, { create: true }, function (fileEntry) {
+                                                                fileEntry.createWriter(function (fileWriter) {
+                                                                    fileWriter.onwriteend = writeFile;
+                                                                    zip.file(zipdir).async("arraybuffer").then(str => {
+                                                                        fileWriter.write(str);
+                                                                    })
+                                                                });
+                                                            }, UHP);
+                                                        }
+                                                    }
+                                                    else {
+                                                        finishLoad();
+                                                    }
+                                                };
+                
+                                            });
+                                        });
+                                    }
+                                }
+                                else {
+                                    localStorage.setItem(`${lib.configprefix}extension_${extname}`, str);
+                                    let imglist = [];
+                                    for (let i in zip.files) {
+                                        if (i[0] != '.' && i[0] != '_') {
+                                            if (i.indexOf('.jpg') != -1 || i.indexOf('.png') != -1) {
+                                                imglist.push(i);
                                             }
-                                        };
-        
-                                    });
-                                });
-                            }
-                        }
-                        else {
-                            localStorage.setItem(lib.configprefix + 'extension_' + extname, str);
-                            var imglist = [];
-                            for (var i in zip.files) {
-                                if (i[0] != '.' && i[0] != '_') {
-                                    if (i.indexOf('.jpg') != -1 || i.indexOf('.png') != -1) {
-                                        imglist.push(i);
+                                        }
                                     }
-                                }
-                            }
-                            if (imglist.length && lib.db) {
-                                lib.config.extensionInfo[extname] = {
-                                    image: imglist
-                                }
-                                game.saveConfig('extensionInfo', lib.config.extensionInfo);
-                                for (var i = 0; i < imglist.length; i++) {
-                                    var imgname = imglist[i];
-                                    var str = zip.file(imgname).asArrayBuffer();
-                                    if (str) {
-                                        var blob = new Blob([str]);
-                                        var fileReader = new FileReader();
-                                        fileReader.onload = (function (imgname) {
-                                            return function (fileLoadedEvent) {
-                                                var data = fileLoadedEvent.target.result;
-                                                game.putDB('image', 'extension-' + extname + ':' + imgname, data);
-                                            };
-                                        }(imgname))
-                                        fileReader.readAsDataURL(blob, "UTF-8");
+                                    if (imglist.length && lib.db) {
+                                        lib.config.extensionInfo[extname] = {
+                                            image: imglist
+                                        }
+                                        game.saveConfig('extensionInfo', lib.config.extensionInfo);
+                                        for (let i = 0; i < imglist.length; i++) {
+                                            let imgname = imglist[i];
+                                            zip.file(imgname).async("arraybuffer").then(str => {
+                                                let blob = new Blob([str]);
+                                                let fileReader = new FileReader();
+                                                console.log(imgname,str,blob)
+                                                fileReader.onload = (function (imgname) {
+                                                    return function (fileLoadedEvent) {
+                                                        let data = fileLoadedEvent.target.result;
+                                                        game.putDB('image', `extension-${extname}:${imgname}`, data);
+                                                    };
+                                                }(imgname))
+                                                fileReader.readAsDataURL(blob);
+                                            });
+                                        }
                                     }
+                                    finishLoad();
                                 }
-                            }
-                            finishLoad();
-                        }
-                        delete game.importedPack;
+                                delete game.importedPack;
+                            }).catch(reason => {
+                                if (!str) throw (`你导入的不是扩展！请选择正确的文件:\n ${reason}`);
+                            })
+                        })
                     }
                     catch (e) {
                         console.log(e);
@@ -1445,12 +1451,12 @@ module.exports = {
                 }
             },
             export: function (textToWrite, name) {
-                var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
-                var fileNameToSaveAs = name || 'noname';
+                let textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
+                let fileNameToSaveAs = name || 'noname';
                 fileNameToSaveAs = fileNameToSaveAs.replace(/\\|\/|\:|\?|\"|\*|<|>|\|/g, '.');
         
                 if (lib.device) {
-                    var directory;
+                    let directory;
                     if (lib.device == 'android') {
                         directory = cordova.file.externalDataDirectory;
                     }
@@ -1469,7 +1475,7 @@ module.exports = {
                     });
                 }
                 else {
-                    var downloadLink = document.createElement("a");
+                    let downloadLink = document.createElement("a");
                     downloadLink.download = fileNameToSaveAs;
                     downloadLink.innerHTML = "Download File";
                     downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
@@ -1478,10 +1484,10 @@ module.exports = {
             },
             multiDownload2: function (list, onsuccess, onerror, onfinish, process, dev) {
                 list = list.slice(0);
-                var download = function () {
+                let download = function () {
                     if (list.length) {
-                        var current = list.shift();
-                        var current2;
+                        let current = list.shift();
+                        let current2;
                         if (typeof process == 'function') {
                             current2 = process(current);
                         }
