@@ -1269,6 +1269,7 @@ window.vk_asset_list=[
 	'image/character/Hiiro.jpg',
 	'image/character/HIMEHINA.jpg',
 	'image/character/HinataCocomi.jpg',
+	'image/character/HinokumaRan.jpg',
 	'image/character/His_HoshinoNiya.jpg',
 	'image/character/HisekiErio.jpg',
 	'image/character/HoshimatiSuisei.jpg',
