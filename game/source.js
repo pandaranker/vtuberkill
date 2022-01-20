@@ -13,7 +13,6 @@ window.noname_source_list=[
 
 	'dist/rank.js',
 
-	'dist/game.js',
 
 	'game/asset.js',
 	'game/config.js',

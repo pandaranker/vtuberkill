@@ -1,8 +1,8 @@
 window.noname_update={
-	version:'1.9.104.20',
+	version:'1.9.104.21',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.20小型更新：新增角色日ノ隈兰【774Inc】`,
+		`1.9.104.21小型更新：新增角色海月シェル【独立运营/群】`,
 		`增加一些BGM供选择`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -20,8 +20,6 @@ window.noname_update={
 		'dist/sp.js',
 		'dist/rank.js',
 		'dist/mode.js',
-
-		'dist/game.js',
 		
 		//'extension/boss/extension.js',
 		'layout/default/layout.css',
