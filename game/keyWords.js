@@ -1,3 +1,0 @@
-window.bannedKeyWords=[
-'http',
-];

@@ -785,16 +785,16 @@ module.exports = {
             var indent = '';
             var str;
             for (var i = 0; i < level; i++) {
-               indent += '    ';
+               indent += '   ';
             }
             if (get.objtype(obj) == 'object') {
                str = '{\n';
                for (var i in obj) {
                   if (/[^a-zA-Z]/.test(i)) {
-                     str += indent + '    "' + i + '":' + get.stringify(obj[i], level + 1) + ',\n';
+                     str += indent + '   "' + i + '":' + get.stringify(obj[i], level + 1) + ',\n';
                   }
                   else {
-                     str += indent + '    ' + i + ':' + get.stringify(obj[i], level + 1) + ',\n';
+                     str += indent + '   ' + i + ':' + get.stringify(obj[i], level + 1) + ',\n';
                   }
                }
                str += indent + '}';

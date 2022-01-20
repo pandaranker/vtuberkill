@@ -7,10 +7,13 @@ window.noname_source_list=[
 	
 	'dist/card.js',
 	'dist/character.js',
+	'dist/mode.js',
 
 	'dist/sp.js',
 
 	'dist/rank.js',
+
+	'dist/game.js',
 
 	'game/asset.js',
 	'game/config.js',
@@ -38,20 +41,7 @@ window.noname_source_list=[
 	'layout/newlayout/layout.css',
 	'layout/nova/layout.css',
 	
-	'mode/boss.js',
-	'mode/chess.js',
-	'mode/doudizhu.js',
-	'mode/guozhan.js',
-	'mode/identity.js',
-	'mode/tafang.js',
-	'mode/single.js',
-	'mode/stone.js',
-	'mode/brawl.js',
-	'mode/versus.js',
-	'mode/connect.js',
-	'mode/longlaoguan.js',
-	// 'mode/yindao.js',
-	// 'mode/richer.js',
+	
 	'extension/boss/extension.js',
 	'extension/cardpile/extension.js',
 	'extension/coin/extension.js',

@@ -4669,7 +4669,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseAfter'},
 				prompt:function(){
 					var player=_status.event.player;
-					return '是否发动“阿库娅色☆超级梦想” \n （本回合所有角色回复体力之和为'+player.storage.boss_kuase_date+'点）';
+					return '是否发动『阿库娅色☆超级梦想』<br>（本回合所有角色回复体力之和为'+player.storage.boss_kuase_date+'点）';
 				},
 				filter:function(event,player){
 					return player.storage.boss_kuase_date;

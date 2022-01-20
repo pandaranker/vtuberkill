@@ -1325,42 +1325,28 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 					return player.countCards('he')>0;
 				},
 				filterTarget(card,player,target){
-					return player!=target;
+					return player!=target&&target.countCards('h')>0;
 				},
-				content(){
-					'step 0'
+				content:[() => {
 					player.viewHandcards(target);
 					game.delayx();
-					'step 1'
+				},() => {
 					Evt.nowHandCards=target.getCards('h');
 					player.chooseCard('he','###『近援』###选择给予的牌').set('ai',card => {
-						return 5-get.value(card);
+						return 6-get.value(card);
 					});
-					'step 2'
+				},() => {
 					if(result.cards&&result.cards.length){
-						Evt.cardUsable=true;
+						Evt.cardUsable=target.hasUseTarget(Evt.card);
 						Evt.card=result.cards[0];
-						if(Evt.nowHandCards.length>0)
-						Evt.nowHandCards.forEach(element => {
-							if(get.suit(element)==get.suit(result.cards[0])){
-								Evt.cardUsable=false;
-							}
-						});
-						if(Evt.cardUsable){
-							var bool=game.hasPlayer(cur => {
-								return target.canUse(result.cards[0],cur);
-							});
-							if(!bool){
-								Evt.cardUsable=false;
-							}
-						}
+						target.gain(Evt.card,player,'give');
+						game.delay(0.2);
 					}
-					'step 3'
-					target.gain(Evt.card,player,'give');
+				},() => {
 					if(Evt.cardUsable){
-						target.chooseUseTarget(Evt.card,'可选择一个目标直接使用该牌');
+						target.chooseUseTarget(Evt.card,`可选择一个目标直接使用${get.translation(Evt.card)}`);
 					}
-				},
+				}],
 				ai:{
 					order:6,
 					result:{
@@ -3345,10 +3331,10 @@ window.game.import('character',function(lib,game,ui,get,ai,_status){
 			huyanluanyu:`狐言乱语`,
 			huyanluanyu_info:`每当你受到1点伤害后，（记你此时手牌数为X）你可令手牌数多于X的角色各交给你一张牌，然后你交给手牌数少于X的角色各一张牌。`,
 			yuanlv:`远虑`,
-			yuanlv_info:`你使用过锦囊牌或受到过伤害的回合结束时，可以摸等同你体力上限的牌，然后将等同你体力值的牌以任意顺序置于牌堆顶。每轮每项限一次。`,
+			yuanlv_info:`每轮每项限一次。一个回合结束时，若你使用过锦囊牌或受到过伤害，你可以摸等同你体力上限的牌，并将等同你体力值的牌置于牌堆顶。`,
 			yuanlv_append:lib.figurer(`特性：卖血 控顶`),
 			jinyuan:`近援`,
-			jinyuan_info:`出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若为其原手牌中没有的花色，其可以立即使用之。`,
+			jinyuan_info:`出牌阶段限一次，你可以观看一名角色的手牌，然后你可交给其一张牌，若如此做，其可以立即使用之。`,
 			jinyuan_append:lib.figurer(`特性：传递关键牌`),
 			zhongjian:`中坚`,
 			zhongjian_info:`主公技 轮次技 当一张通常锦囊牌指定目标后，你可以选择同势力一名角色的一张手牌，此牌本回合视为【无懈可击】。`,

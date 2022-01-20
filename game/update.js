@@ -19,19 +19,14 @@ window.noname_update={
 		'dist/character.js',
 		'dist/sp.js',
 		'dist/rank.js',
+		'dist/mode.js',
+
+		'dist/game.js',
 		
 		//'extension/boss/extension.js',
 		'layout/default/layout.css',
 		'layout/default/menu.css',
 		// 'layout/nova/layout.css',
-		'mode/identity.js',
-		'mode/doudizhu.js',
-		'mode/guozhan.js',
-		'mode/single.js',
-		'mode/brawl.js',
-		'mode/longlaoguan.js',
-		'mode/versus.js',
-		'mode/boss.js',
 
 		'game/game.js',
 		// 'game/directory.js',

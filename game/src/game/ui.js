@@ -3917,12 +3917,6 @@ module.exports = {
                      lib.setScroll(pre);
                      page.appendChild(text);
 
-                     // var caption=ui.create.div('','输入命令',page);
-                     // caption.style.margin='6px';
-                     // caption.style.position='absolute';
-                     // caption.style.width='120px';
-                     // caption.style.top='129px';
-                     // caption.style.left='64px';
                      var text2 = document.createElement('input');
                      text2.style.width = '200px';
                      text2.style.height = '20px';
@@ -5678,7 +5672,7 @@ module.exports = {
                if (lib.config.keep_awake) {
                   if (window.plugins && window.plugins.insomnia) window.plugins.insomnia.keepAwake();
                   else {
-                     let NoSleep = require('@e/NoSleep.min')
+                     let NoSleep = require('nosleep.js/dist/Nosleep.min')
                      let noSleep = new NoSleep();
                      document.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', function enableNoSleep() {
                         document.removeEventListener(lib.config.touchscreen ? 'touchend' : 'click', enableNoSleep, false);

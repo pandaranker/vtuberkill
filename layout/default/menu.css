@@ -125,7 +125,6 @@
 }
 .menu-buttons .cardpiledelete,
 .toggle>.cardpiledelete{
-	display: inline-block;
 	position: relative;
 	float: right;
 	margin-right: 4px;

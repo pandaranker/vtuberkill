@@ -115,9 +115,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Shiratama: ['female', 'qun', 4, ['meihua', 'shentian'],],
 			/**琴吹梦 */
 			KotobukiYume: ['female', 'qun', 4, ['xuanquan', 'rusu'],],
+			/**海月シェル */
+			UmitsukiShell: ['female', 'qun', 4, ['beike', 'wenda'],],
 
 			/**凤玲天天 */
-			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'],],
+			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
 
 			/**扇宝 */
 			shanbao: ['female', 'qun', 4, ['test', 'fengxu'], ['guoV']],
@@ -560,7 +562,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				hiddenCard(player, name) {
 					if (!player.countCards('hs', { name: 'jiu' })) return false;
-					let list = get.inpile('trick', card => {
+					let list = get.inpile('trick2', card => {
 						if (player.$.songxing.contains(card)) return false;
 						return true;
 					});
@@ -843,80 +845,80 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			//日ノ隈兰
 			yixiang: new toSkill('trigger', {
 				filter(Evt, player) {
-					return game.countPlayer(cur => cur.getDamagedHp()>0)
+					return game.countPlayer(cur => cur.getDamagedHp() > 0)
 				},
-				content:[() => {
-					player.chooseTarget(get.prompt2('yixiang'),(card, player, tar) => {
-						return tar.getDamagedHp()>0;
-					},tar => {
+				content: [() => {
+					player.chooseTarget(get.prompt2('yixiang'), (card, player, tar) => {
+						return tar.getDamagedHp() > 0;
+					}, tar => {
 						let player = _status.event.player
-						if(get.type3(tar.getCards())<=1)	return get.recoverEffect(tar,player,player)*tar.getDamagedHp()-3*get.attitude(player,tar)-3
-						if(get.type3(tar.getCards())>=3)	return get.recoverEffect(tar,player,player)*tar.getDamagedHp()-3
-						if(tar===player && player.$.xianyu2?.isIn)	return get.recoverEffect(tar,player,player)*tar.getDamagedHp() + (player.$.xianyu2.getHandcardLimit()-player.$.xianyu2.countCards('h')) -3
+						if (get.type3(tar.getCards()) <= 1) return get.recoverEffect(tar, player, player) * tar.getDamagedHp() - 3 * get.attitude(player, tar) - 3
+						if (get.type3(tar.getCards()) >= 3) return get.recoverEffect(tar, player, player) * tar.getDamagedHp() - 3
+						if (tar === player && player.$.xianyu2?.isIn) return get.recoverEffect(tar, player, player) * tar.getDamagedHp() + (player.$.xianyu2.getHandcardLimit() - player.$.xianyu2.countCards('h')) - 3
 						return 0
 					})
-				},() => {
-					if(result.targets?.length){
+				}, () => {
+					if (result.targets?.length) {
 						Evt.target = result.targets[0]
 						player.logSkill('yixiang', Evt.target)
 						player.turnOver()
 						game.delay(0.8)
 					}
 					else Evt.finish()
-				},() => {
+				}, () => {
 					Evt.target.recover(Evt.target.getDamagedHp())
 					Evt.target.$.yixiang_houxu = player
 					Evt.target.addTempSkill('yixiang_houxu')
 				}],
-				subSkill:{
-					houxu:new toSkill('mark',{
-				mark:'character',
-						marktext:"🐻",
-						intro:{
-							name:'异想',
-							content (storage,player,skill){
+				subSkill: {
+					houxu: new toSkill('mark', {
+						mark: 'character',
+						marktext: "🐻",
+						intro: {
+							name: '异想',
+							content(storage, player, skill) {
 								return '在本回合结束时展示手牌';
 							},
 						},
-						priority:43,
-						filter(Evt,player){
+						priority: 43,
+						filter(Evt, player) {
 							return player.$.yixiang_houxu.isIn();
 						},
-						content:[() => {
-							player.showCards(player.getCards('h'),'异想后续');
+						content: [() => {
+							player.showCards(player.getCards('h'), '异想后续');
 							game.delay(0.5);
-						},() => {
-							let types = ['basic','trick','equip'];
+						}, () => {
+							let types = ['basic', 'trick', 'equip'];
 							let cards = player.getCards('h').slice(0);
-							for(let i=0;i<cards.length;i++){
-								let type = get.type(cards[i],'trick');
-								if(types.contains(type))	types.remove(type);
+							for (let i = 0; i < cards.length; i++) {
+								let type = get.type(cards[i], 'trick');
+								if (types.contains(type)) types.remove(type);
 							}
 							Evt.num = types.length;
 							player.loseHp(Evt.num)
-						},() => {
+						}, () => {
 							player.$.yixiang_houxu.draw(Evt.num)
 						}]
-					},'onremove','locked','forced','mark').setT({global:'phaseEnd'}),
+					}, 'onremove', 'locked', 'forced', 'mark').setT({ global: 'phaseEnd' }),
 				}
-			},'direct').setT('phaseZhunbei'),
+			}, 'direct').setT('phaseZhunbei'),
 			xianyu: new toSkill('trigger', {
 				filter(Evt, player) {
-					return game.countPlayer()>=2
+					return game.countPlayer() >= 2
 				},
 				content: [function () {
-					player.chooseTarget(get.prompt2('xianyu'),(card, player, tar) => {
+					player.chooseTarget(get.prompt2('xianyu'), (card, player, tar) => {
 						return tar.isIn()
-					},tar => {
+					}, tar => {
 						return get.attitude2(tar)
 					})
 				}, function () {
-					if(result.targets?.length){
+					if (result.targets?.length) {
 						Evt.target = result.targets[0]
 						player.logSkill('xianyu', Evt.target)
 						game.delay(0.5)
 					}
-					else{
+					else {
 						player.awakenSkill('xianyu')
 						Evt.finish()
 					}
@@ -924,49 +926,49 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.$.xianyu2 = Evt.target
 					player.addTempSkill('xianyu2')
 				}],
-			},'direct','onremove').setT({global: 'gameStart', player: 'enterGame'}),
-			xianyu2:new toSkill('mark',{
-				mark:'character',
-				intro:{
-					name:'衔鱼',
-					content:`你失去体力时，$摸牌至上限；
+			}, 'direct', 'onremove').setT({ global: 'gameStart', player: 'enterGame' }),
+			xianyu2: new toSkill('mark', {
+				mark: 'character',
+				intro: {
+					name: '衔鱼',
+					content: `你失去体力时，$摸牌至上限；
 					你或$死亡时，对方重置且翻至正面。`
 				},
 				filter(Evt, player) {
-					if(Evt.num<=0)	return false
+					if (Evt.num <= 0) return false
 					return player.$?.xianyu2?.isIn() && !player.$.xianyu2.needsToDiscard()
 				},
 				logTarget(Evt, player) {
 					return player.$?.xianyu2
 				},
-				content(){
+				content() {
 					player.$.xianyu2.drawTo(player.getHandcardLimit())
 				},
-				group:'xianyu2_going',
-				subSkill:{
-					going:new toSkill('trigger',{
+				group: 'xianyu2_going',
+				subSkill: {
+					going: new toSkill('trigger', {
 						filter(Evt, player) {
 							console.log(Evt.player)
 							return (player.$?.xianyu2?.isIn() || player.isIn())
-							&& [player.$.xianyu2, player].includes(Evt.player)
+								&& [player.$.xianyu2, player].includes(Evt.player)
 						},
 						logTarget(Evt, player) {
 							return player.$?.xianyu2
 						},
-						content:[() => {
-							if(player.$.xianyu2.isDead() && player.isIn()){
+						content: [() => {
+							if (player.$.xianyu2.isDead() && player.isIn()) {
 								player.turnOver(false)
 								player.link(false)
 							}
-						},() => {
-							if(trigger.player===player&& player.$.xianyu2.isIn()){
+						}, () => {
+							if (trigger.player === player && player.$.xianyu2.isIn()) {
 								player.$.xianyu2.turnOver(false)
 								player.$.xianyu2.link(false)
 							}
 						}]
-					},'forced').setT({global:'dieEnd',player:'dieBegin'})
+					}, 'forced').setT({ global: 'dieEnd', player: 'dieBegin' })
 				}
-			},'forced').setT('loseHpEnd'),
+			}, 'forced').setT('loseHpEnd'),
 			//雪团
 			chentu: {
 				enable: 'phaseUse',
@@ -4532,7 +4534,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				group: 'shenglang_drawBy',
 				subSkill: {
 					drawBy: {
-						trigger: { player: 'phaseEnd' },
+						trigger: { global: 'phaseEnd' },
 						priority: 7,
 						direct: true,
 						filter(Evt, player) {
@@ -6877,7 +6879,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return 7 - get.value(card);
 				},
 				content() {
-					player.addTempSkill('jingniang_addDam');
+					player.addTempSkill('jingniang_addDamBy');
 					player.addMark('jingniang');
 				},
 				intro: {
@@ -6887,9 +6889,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				position: 'he',
 				marktext: '酿',
 				subSkill: {
-					addDam: {
-						trigger: { player: 'useCard1' },
-						forced: true,
+					addDamBy: new toSkill('trigger',{
 						filter(Evt, player) {
 							return Evt.card && Evt.card.name == 'sha' && player.countMark('jingniang');
 						},
@@ -6905,7 +6905,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						onremove(player, skill) {
 							player.removeMark('jingniang', player.countMark('jingniang'), false);
 						},
-					},
+					},'forced').setT('useCard1'),
 				},
 				ai: {
 					order: 4,
@@ -9997,11 +9997,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 				subSkill: {
-					addDamBy: {
+					addDamBy: new toSkill('trigger',{
 						intro: {
 							content: '【杀】伤害+#'
 						},
-						trigger: { player: 'useCard' },
 						forced: true,
 						popup: false,
 						filter(Evt, player) {
@@ -10010,7 +10009,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							trigger.baseDamage += player.countMark('zhengmeng_addDamBy');
 						}
-					},
+					}).setT('useCard1'),
 				}
 			}, 'group:zhengmeng_addDamBy').setT('phaseDrawBegin1'),
 			wadao: new toSkill('trigger', {
@@ -16112,7 +16111,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//琴吹梦
 			xuanquan: {
-				derivation: 'zhihu',
 				enable: 'phaseUse',
 				usable: 1,
 				filter(Evt, player) {
@@ -16272,6 +16270,102 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 				}
 			},
+			//海月シェル
+			beike: new toSkill('trigger', {
+				init(player, skill) {
+					player.$[skill] ??= get.inpile('trick2')
+					player.$.beike2 = []
+				},
+				filter(Evt, player) {
+					return !player.$?.beike2?.contains(get.name(Evt.card))
+				},
+				onremove:['beike','beike2'],
+				content() {
+					player.$.beike.remove(get.name(trigger.card))
+					player.$.beike2.add(get.name(trigger.card))
+					player.draw()
+					player.markSkill('beike')
+				},
+				// mark:true,
+				// marktext:'贝',
+				intro: {
+					content: '本局游戏内尚未被使用的锦囊（原始牌堆）：<br>$'
+				},
+				group:'beike_addDam',
+				subSkill:{
+					addDam:new toSkill('trigger',{
+						filter(Evt, player) {
+							return player.$.beike.length === 0;
+						},
+						logTarget:'player',
+						content() {
+							trigger.num++;
+						}
+					},'forced').setT({source:'damageBegin'}),
+				}
+			}, 'forced').setT({global:'useCard'}),
+			wenda: new toSkill('regard', {
+				init(player, skill) {
+					if (!player.$[skill]) player.$[skill] = true;
+				},
+				filter(Evt, player) {
+					return (player.$.wenda === true && player.countCards('hs', {type:'equip'}))
+					|| (player.$.wenda === false && player.countCards('hs', {type:'basic'}));
+				},
+				hiddenCard(player, name) {
+					if (player.$.wenda === true && player.countCards('hs', {type:'equip'})) {
+						let list = get.inpile('trick2');
+						for (let i of list) {
+							if (i == name) return true;
+						}
+					}
+					else if (player.$.wenda === false && player.countCards('hs', {type:'basic'})) {
+						if ('wuxie' === name) return true
+					}
+				},
+				chooseButton: {
+					dialog(Evt, player) {
+						let list = player.$.wenda?get.inpile('trick2'):['wuxie'];
+						for (let i of list) {
+							list[i] = ['锦囊', '', list[i]];
+						}
+						if (list.length == 0) {
+							return ui.create.dialog('『一问一答』已无可用牌');
+						}
+						return ui.create.dialog('『一问一答』', [list, 'vcard']);
+					},
+					filter(button, player) {
+						return _status.event.getParent().filterCard({ name: button.link[2] }, player, _status.event.getParent());
+					},
+					check(button) {
+						let player = _status.event.player
+						if (button.link[2] == 'wugu') return 0;
+						let effect = player.getUseValue(button.link[2]);
+						if (effect > 0) return effect;
+						return 0;
+					},
+					backup(links, player) {
+						return {
+							filterCard(card) {
+								return player.$.wenda ? get.type(card) === 'equip' : get.type(card) === 'basic'
+							},
+							selectCard: 1,
+							popname: true,
+							check(card) {
+								return 6 - get.value(card);
+							},
+							position: 'hs',
+							viewAs: { name: links[0][2] },
+							onuse(result, player) {
+								player.$.wenda = !player.$.wenda
+							},
+						};
+					},
+					prompt(links, player) {
+						return `###『一问一答』###将一张【酒】当做【${get.translation(links[0][3]) || ''}${get.translation(links[0][2])}】使用`;
+					}
+				},
+			}, 'enable:chooseToUse'),
 			//hh
 			jichu: {
 				mod: {
@@ -17922,6 +18016,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				if (player.$.yujian === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
 				return str.replace(yin, lib.spanClass(yin, 'changetext'));
 			},
+			wenda(player) {
+				let str = lib.translate.wenda_info;
+				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
+				let yang = result[1], yin = result[2];
+				if (player.$.wenda === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
+				return str.replace(yin, lib.spanClass(yin, 'changetext'));
+			},
 			yinxu(player) {
 				if (player.$.yinxu === true) return `转换技 你可以将一张${lib.spanClass(`①锦囊牌`, 'changetext')}②装备牌当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。`;
 				return `转换技 你可以将一张①锦囊牌${lib.spanClass(`②装备牌`, 'changetext')}当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。`;
@@ -17960,9 +18061,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			AoiYui: `碧居结衣`,
 			suyuan: `溯愿`,
+			suyuan2: `溯愿`,
 			suyuan_info: `你的牌进入弃牌堆时，若这些牌包含三种或以上花色，
 			你可以令一名其他角色获得这些牌并受到一点无来源的伤害，你于下个准备阶段获得其等量牌。`,
 			mujian: `幕间`,
+			mujian2: `幕间`,
 			mujian_info: `锁定技 若你以体力为 0 的状态死亡，下个轮次开始时，你复活并发现一个主动技，获得之直到你下次死亡。`,
 
 			NachoNeko: `甘城なつき`,
@@ -17977,6 +18080,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yixiang: `异想`,
 			yixiang_info: `准备阶段，你可以翻面并令一名角色回复已损失的体力值，本回合结束时，其展示手牌，每缺少一种类型，其失去 1 点体力，你摸 1 张牌。`,
 			xianyu: `衔鱼`,
+			xianyu2: `衔鱼`,
 			xianyu_info: `游戏开始时，你可以指定一名角色，你失去体力时，其摸牌至上限；
 			你或其死亡时，对方重置且翻至正面。`,
 
@@ -18263,6 +18367,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			rusu: `入俗`,
 			rusu_info: `你判定/装备区的牌减少时，你可以将一张锦囊/装备牌置于场上同区域。`,
 
+			UmitsukiShell: `海月シェル`,
+			beike: `贝壳潮流`,
+			beike_info: `锁定技 一局游戏内，当一种锦囊首次被使用时，你摸一张牌；若原始牌堆中所有种类的锦囊均被使用过，你造成的伤害+1。`,
+			wenda: `一问一答`,
+			wenda_info: `转换技 阳~你可以将一张装备牌当作一张锦囊牌使用。阴~你可以将一张基本牌当作【无懈可击】使用。`,
+
 			HIMEHINA: `田中姬&铃木雏`,
 			HIMEHINA_ab: `姬&雏`,
 			jichu: `姬雏轮舞`,
@@ -18307,7 +18417,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			Umy: `呜米`,
 			naisi: `奶死`,
-			naisi_info: `你回复过多次体力的回合结束时，你可以对一名角色造成X点伤害。（X为你本回合回复体力的次数）`,
+			naisi_info: `一个回合结束时，若你于此回合内回复过多次体力，你可以对一名角色造成X点伤害。（X为你本回合回复体力的次数）`,
 			tuzai: `图崽`,
 			tuzai_info: `你对一名角色造成伤害后，可以获得其区域内一张可见牌，并令其回复一点体力。`,
 			wuneng: `呜能`,
@@ -18471,7 +18581,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			Mikawa: `三川`,
 			zhezhuan: `辙转`,
-			zhezhuan_info: `每回合限一次，你可以将一张非基本牌当作具有任意应变条件的应变标签同名牌或基本牌使用。`,
+			zhezhuan_info: `每回合限一次，你可以将一张非基本牌当作具有任意应变标签的同名牌或基本牌使用。`,
 			setu: `涩涂`,
 			setu_info: `出牌阶段限一次，你可以将任意张点数之和小于18的手牌置于武将牌上。然后若你武将牌上牌之乘积大于100，你将这些牌置入弃牌堆，摸等量的牌，并对一名角色造成1点伤害。`,
 
@@ -18549,7 +18659,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			qishi: `奇誓`,
 			qishi_info: `<font color=#f54>觉醒技</font> 你造成且受到伤害的轮次结束时，你减1体力上限，获得『系绊』，然后进行判定直到出现黑色并将这些牌置于武将牌上，称为「士」。`,
 			xiban: `系绊`,
-			xiban_info: `其他角色造成伤害的回合结束时，你可以弃置X张「士」令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）`,
+			xiban_info: `其他角色的回合结束时，若其造成了伤害，你可以弃置X张「士」令其选择一项：弃置等量的牌；或若你已受伤，令你回复1点体力。（X为你当前体力值）`,
 			yongtuan: `拥团`,
 			yongtuan_info: `主公技 <font color=#fa8>限定技</font> 你弃置「士」时，可以令一名同势力角色获得之。`,
 
@@ -18672,7 +18782,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			ap_Nana7mi: `天启·七海`,
 			ap_Nana7mi_ab: `界七海`,
 			niyou: `溺游`,
-			niyou_info: `锁定技 你受到了伤害的回合结束时，你进行一个额外的出牌阶段。若你于此阶段内没有使用牌，你翻面并摸两张牌；若使用了，你与其他角色距离+1。`,
+			niyou_info: `锁定技 一个回合结束时，若你受到了伤害，你进行一个额外的出牌阶段。若你于此阶段内没有使用牌，你翻面并摸两张牌；若使用了，你与其他角色距离+1。`,
 			shalu: `鲨戮`,
 			shalu_info: `出牌阶段限一次，你可以弃置所有手牌并对攻击范围外的一名角色造成一点伤害，然后摸其体力值的牌。`,
 
@@ -18729,7 +18839,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			huawen_info: `出牌阶段限一次，你可以选择一名其他女性角色，你与其互相展示手牌，然后交换花色、点数、种类相同的牌各一张，每交换一张便各摸一张牌。然后若交换不足三次，你与其各失去1点体力。`,
 			huawen_append: lib.figurer(`特性：难上手 爆发`),
 			liaohu: `逃杀疗护`,
-			liaohu_info: `你造成过伤害的回合结束时，若该回合未发动/发动了『花吻交染』，你可以令你/本轮『花吻交染』选择的其他角色回复1点体力。`,
+			liaohu_info: `一个回合结束时，若你造成了伤害且该回合未发动/发动了『花吻交染』，你可以令你/本轮『花吻交染』选择的其他角色回复1点体力。`,
 
 			ShirayukiTomoe: `白雪巴`,
 			gonggan: `奇癖共感`,
@@ -18750,7 +18860,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			KenmochiDouya: `剑持刀也`,
 			shenglang: `声浪燃烈`,
-			shenglang_info: `出牌阶段限一次，你可以将一张【杀】当【决斗】使用。你失去过牌的回合结束时，摸等同于该回合进入弃牌堆的♠【杀】数量的牌`,
+			shenglang_info: `出牌阶段限一次，你可以将一张【杀】当【决斗】使用。一个回合结束时，若你失去过牌，摸等同于该回合进入弃牌堆的♠【杀】数量的牌`,
 			nodao: `无刀之咎`,
 			nodao_info: `你没有装备武器时，可以于出牌阶段重铸【杀】，若你以此法获得武器牌，你可以立即装备之并回复1点体力。`,
 
