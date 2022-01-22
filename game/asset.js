@@ -1330,6 +1330,7 @@ window.vk_asset_list=[
 	'image/character/Moemi.jpg',
 	'image/character/MononobeAlice.jpg',
 	'image/character/MorinagaMiu.jpg',
+	'image/character/Myanna.jpg',
 	'image/character/Muri.jpg',
 	'image/character/NachoNeko.jpg',
 	'image/character/NanaseUnia.jpg',

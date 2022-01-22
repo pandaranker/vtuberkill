@@ -1,79 +1,5 @@
+import {toSkill} from './skilltype'
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
-	type skillType = 'active' | 'trigger' | 'regard' | 'mark' | 'rule'	//技能类型：主动、触发、半主动|视为、状态|纯标记、规则相关
-	class toSkill implements Skill {
-		readonly type: skillType
-		audio?: number | boolean
-		enable?: Keyword
-		usable?: number
-		group?: Keyword
-		trigger?: Keymap
-		content?: skillContent
-		subSkill?: { [propName: string]: Skill }
-		set(...arg) {
-			for (let i = 0; i < arg.length; i++) {
-				if (Array.isArray(arg[i])) this.set(...arg[i])
-				else if (typeof arg[i] === 'string' && arg[i + 1] !== undefined) {
-					this[arg[i]] = arg[i + 1]
-				}
-			}
-			return this
-		}
-		setT(tri: Keymap | Array<string> | string, method?: Array<string> | string) {
-			if (typeof tri === 'string') tri = [tri]
-			if (tri instanceof Array) tri = { player: tri }
-			for (let i in tri) {
-				if (!Array.isArray(tri[i])) {
-					tri[i] = [tri[i] as string]
-				}
-			}
-			if (method instanceof Array) {
-				for (let i in tri) {
-					let v = tri[i]
-					if (!Array.isArray(v)) {
-						tri[i] = [v]
-					}
-					let vb = tri[i]
-					if (vb instanceof Array) {
-						tri[i] = vb.map(t => {
-							return method.map(m => t + m)
-						}).vkflat()
-					}
-				}
-			} else if (typeof method === 'string') {
-				for (let i in tri) {
-					let v = tri[i]
-					if (!Array.isArray(v)) {
-						tri[i] = [v]
-					}
-					let vb = tri[i]
-					if (vb instanceof Array) {
-						tri[i] = vb.map(t => {
-							return t + method
-						})
-					}
-				}
-			}
-			return this.set('trigger', { ...this.trigger, ...tri })
-		}
-		constructor(type: skillType, obj?: Skill, ...arg) {
-			this.type = type
-			if (type === 'active') {
-				this.enable = 'phaseUse'
-			}
-			for (let i in obj) {
-				this[i] = obj[i]
-			}
-			for (let i of arg) {
-				if (typeof i === 'string') {
-					if (i.split(':').length == 2) {
-						let v = i.split(':')
-						this[v[0]] = v[1]
-					}
-					else this[i] = true
-				}
-			}
-		}
-	}
 	return <currentObject>{
 		name: "yuzu",
 		connect: true,
@@ -230,6 +156,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
 			/**七濑Unia */
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
+			/**玛安娜Myanna */
+			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
 			/**白桃shirako */
 			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:Providence:qun']],
 
@@ -6889,7 +6817,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				position: 'he',
 				marktext: '酿',
 				subSkill: {
-					addDamBy: new toSkill('trigger',{
+					addDamBy: new toSkill('trigger', {
 						filter(Evt, player) {
 							return Evt.card && Evt.card.name == 'sha' && player.countMark('jingniang');
 						},
@@ -6905,7 +6833,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						onremove(player, skill) {
 							player.removeMark('jingniang', player.countMark('jingniang'), false);
 						},
-					},'forced').setT('useCard1'),
+					}, 'forced').setT('useCard1'),
 				},
 				ai: {
 					order: 4,
@@ -9667,9 +9595,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			}).set('usable', 1),
 			//七濑Unia
 			qisui: new toSkill('trigger', {
-				init(player, skill) {
-					player.$[skill] = [];
-				},
 				filter(Evt, player) {
 					let targets = lib.skill.qisui.logTarget(Evt, player)
 					return targets.length
@@ -9695,7 +9620,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (!target.hasSkill('lingjun')) target.addTempSkill('lingjun', { player: 'juedouBegin' })
 						else trigger.num++
 					});
-					player.$.qisui.addArray(targets)
 				},
 				group: 'qisui_clear',
 				subSkill: {
@@ -9703,7 +9627,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							if (player.hasSkill('lingjun')) player.setAvatar('NanaseUnia', 'NanaseUnia1')
 							else player.setAvatar('NanaseUnia', 'NanaseUnia')
-							player.$.qisui = []
 						}
 					}, 'direct', 'silent').setT({ global: 'phaseAfter' }),
 				},
@@ -9718,6 +9641,94 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 			}, 'mark'),
+			//玛安娜Myanna
+			yemo: new toSkill('active', {
+				filter: function (event, player) {
+					return player.countDisabled() < 5;
+				},
+				chooseButton: {
+					dialog: function (event, player) {
+						return ui.create.dialog('###夜魔###' + lib.translate.yemo_info);
+					},
+					chooseControl: function (event, player) {
+						var list = [];
+						for (var i = 1; i < 6; i++) {
+							if (!player.isDisabled(i)) list.push('equip' + i);
+						}
+						list.push('cancel2');
+						return list;
+					},
+					check: function (event, player) {
+						for (var i = 5; i > 0; i--) {
+							if (player.isEmpty(i)) return ('equip' + i);
+						}
+						return 'cancel2';
+					},
+					backup: function (result) {
+						var next = get.copy(lib.skill.yemox);
+						next.position = result.control;
+						return next;
+					},
+				},
+				ai: {
+					order: 1,
+					result: {
+						player: function (player) {
+							if (game.hasPlayer(function (target) {
+								if (player == target) return false;
+								var hs = target.countCards('h');
+								return hs > 2 && get.attitude(player, target) <= 0 && !target.hasSkill('linghun');
+							})) return 1;
+							return 0;
+						},
+					},
+				},
+			}, 'derivation:linghun'),
+			yemox: {
+				audio: 'yemo',
+				content: [() => {
+					player.draw()
+				},() => {
+					player.disableEquip(lib.skill.yemo_backup.position);
+				},() => {
+					if (player.isAlive()) {
+						player.chooseTarget(true, '选择一名角色获得『灵昏』直到其下一次使用【决斗】，若其已有『灵昏』，改为弃置其区域内的一张牌').set('ai', (target) => {
+							let player = _status.event.player
+							if(!target.hasSkill('linghun'))	return get.attitude(player, target)<=0
+							return get.effect(target, { name: 'guohe_copy' }, player, player)
+						});
+					}
+					else
+						Evt.finish();
+				},() => {
+					if (result.bool && result.targets?.length) {
+						let target = Evt.target = result.targets[0]
+						if (!target.hasSkill('linghun')) target.addTempSkill('linghun', { player: 'juedouBegin' })
+						else player.discardPlayerCard('hej',true,target);
+					}
+					else
+						Evt.finish();
+				}],
+			},
+			linghun: new toSkill('mark', {
+				intro: {
+					content: '手牌中的【闪】视为【决斗】'
+				},
+				mod: {
+					cardname(card, player, name) {
+						if (get.position(card) === 'h' && name === 'shan') return 'juedou'
+					}
+				}
+			}, 'mark'),
+			jiaopin: new toSkill('trigger', {
+				filter(Evt, player) {
+					return player.isDamaged() && player.$.disableEquip != undefined && player.$.disableEquip.length > 0
+				},
+				logTarget: 'player',
+				content() {
+					player.chooseToEnable();
+				},
+			}).setT('phaseJieshuBegin'),
 			//白桃shirako
 			jufu: new toSkill('regard', {
 				chooseButton: {
@@ -9997,7 +10008,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 				subSkill: {
-					addDamBy: new toSkill('trigger',{
+					addDamBy: new toSkill('trigger', {
 						intro: {
 							content: '【杀】伤害+#'
 						},
@@ -16279,7 +16290,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filter(Evt, player) {
 					return !player.$?.beike2?.contains(get.name(Evt.card))
 				},
-				onremove:['beike','beike2'],
+				onremove: ['beike', 'beike2'],
 				content() {
 					player.$.beike.remove(get.name(trigger.card))
 					player.$.beike2.add(get.name(trigger.card))
@@ -16291,41 +16302,41 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				intro: {
 					content: '本局游戏内尚未被使用的锦囊（原始牌堆）：<br>$'
 				},
-				group:'beike_addDam',
-				subSkill:{
-					addDam:new toSkill('trigger',{
+				group: 'beike_addDam',
+				subSkill: {
+					addDam: new toSkill('trigger', {
 						filter(Evt, player) {
 							return player.$.beike.length === 0;
 						},
-						logTarget:'player',
+						logTarget: 'player',
 						content() {
 							trigger.num++;
 						}
-					},'forced').setT({source:'damageBegin'}),
+					}, 'forced').setT({ source: 'damageBegin' }),
 				}
-			}, 'forced').setT({global:'useCard'}),
+			}, 'forced').setT({ global: 'useCard' }),
 			wenda: new toSkill('regard', {
 				init(player, skill) {
 					if (!player.$[skill]) player.$[skill] = true;
 				},
 				filter(Evt, player) {
-					return (player.$.wenda === true && player.countCards('hs', {type:'equip'}))
-					|| (player.$.wenda === false && player.countCards('hs', {type:'basic'}));
+					return (player.$.wenda === true && player.countCards('hs', { type: 'equip' }))
+						|| (player.$.wenda === false && player.countCards('hs', { type: 'basic' }));
 				},
 				hiddenCard(player, name) {
-					if (player.$.wenda === true && player.countCards('hs', {type:'equip'})) {
+					if (player.$.wenda === true && player.countCards('hs', { type: 'equip' })) {
 						let list = get.inpile('trick2');
 						for (let i of list) {
 							if (i == name) return true;
 						}
 					}
-					else if (player.$.wenda === false && player.countCards('hs', {type:'basic'})) {
+					else if (player.$.wenda === false && player.countCards('hs', { type: 'basic' })) {
 						if ('wuxie' === name) return true
 					}
 				},
 				chooseButton: {
 					dialog(Evt, player) {
-						let list = player.$.wenda?get.inpile('trick2'):['wuxie'];
+						let list = player.$.wenda ? get.inpile('trick2') : ['wuxie'];
 						for (let i of list) {
 							list[i] = ['锦囊', '', list[i]];
 						}
@@ -17634,7 +17645,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				intro: {
 					content: '本局游戏内累计使用了#张牌'
 				}
-			}, 'forced').setT('useCard'),
+			}, 'direct').setT('useCard'),
 			yexi: new toSkill('active', {
 				filter(Evt, player) {
 					return player.countCards('he');
@@ -18825,6 +18836,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			qisui_info: `每回合每名角色限一次，一名角色于你的回合内摸牌或其他角色令你摸牌时，你可以令其获得『灵军』直到其下一次使用【决斗】，若其已拥有『灵军』，改为本次摸牌量+1。`,
 			lingjun: `灵军`,
 			lingjun_info: `锁定技 你手牌中的【杀】视为【决斗】。`,
+
+			Myanna: `玛安娜Myanna`,
+			Myanna_ab: `玛安娜`,
+			yemo: `夜魔`,
+			yemo_backup: `夜魔`,
+			yemo_info: `出牌阶段，你可以摸一张牌并废除一个装备栏，令一名角色获得『灵昏』直到其下一次使用【决斗】，若其已有『灵昏』，改为弃置其区域内的一张牌。`,
+			jiaopin: `校频`,
+			jiaopin_info: `结束阶段，若你已受伤，你可以恢复一个装备栏。`,
+			linghun: `灵昏`,
+			linghun_info: `锁定技 你手牌中的【闪】视为【决斗】。`,
 
 			Shirako: `白桃shirako`,
 			Shirako_ab: `白桃`,
