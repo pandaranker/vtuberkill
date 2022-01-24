@@ -1,6 +1,10 @@
 module.exports = {
     gameFun: (vkCore) => {
         let { game, ui, get, ai, lib, _status } = vkCore
+        /**
+         * dist 路径
+         */
+        const dist = () => lib.assetURL + 'dist'
         return {
             /**
              * 资源封装_事件相关_向弹窗中添加一名角色区域内满足要求的牌
@@ -5747,7 +5751,7 @@ module.exports = {
             },
             loadModeAsync: function (name, callback) {
                 window.game = game;
-                var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                var script = lib.init.js(dist(), 'mode', function () {
                     if (!lib.config.dev) delete window.game;
                     script.remove();
                     var content = lib.imported.mode[name];
@@ -5770,14 +5774,14 @@ module.exports = {
                     }
                 }
                 window.game = game;
-                var script = lib.init.js(lib.assetURL + 'mode', name, function () {
+                var script = lib.init.js(dist(), 'mode', function () {
                     if (!lib.config.dev) delete window.game;
                     script.remove();
                     var mode = lib.imported.mode;
                     _status.sourcemode = lib.config.mode;
                     lib.config.mode = name;
         
-                    var i, j, k;
+                    var i, j;
                     for (i in mode[lib.config.mode].element) {
                         if (!lib.element[i]) lib.element[i] = [];
                         for (j in mode[lib.config.mode].element[i]) {

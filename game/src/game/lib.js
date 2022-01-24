@@ -1195,7 +1195,7 @@ module.exports = {
             else if ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
               lib.config.all.mode.indexOf(lib.config.mode) != -1) {
               toLoad++;
-              init.js(lib.assetURL + 'mode', lib.config.mode, packLoaded, packLoaded);
+              init.js(dist(), 'mode', packLoaded, packLoaded);
             }
             init.js(dist(), ['card', 'character', 'sp', 'rank'], packLoaded, packLoaded);
           };
