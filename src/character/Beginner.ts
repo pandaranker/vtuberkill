@@ -15,7 +15,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**猫宫 */
 			re_NekomiyaHinata: ['female', 'qun', 4, ['yingdan', 'tianzhuo']],
 			/**狗妈 */
-			re_kaguraNaNa: ['female', 'qun', 4, ['re_DDzhanshou'], ['zhu']],
+			re_KaguraNana: ['female', 'qun', 4, ['re_DDzhanshou'], ['zhu']],
 			/**小白 */
 			re_Siro: ['female', 'dotlive', 3, ['lingsi']],
 			/**狐叔 */
@@ -5684,7 +5684,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			tianzhuo: `舔镯`,
 			tianzhuo_info: `当其他角色死亡时，你可以获得其装备区的牌，若该角色由你杀死，你摸三张牌。`,
 
-			re_kaguraNaNa: `新·神乐七奈`,
+			re_KaguraNana: `新·神乐七奈`,
 			re_DDzhanshou: `D斩`,
 			re_DDzhanshou_info: `一名角色的回合结束时，若本回合其对除你和其以外的角色使用过红色牌，你可以摸一张牌或对其使用一张【杀】。`,
 

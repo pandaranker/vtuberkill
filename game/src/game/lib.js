@@ -1188,12 +1188,9 @@ module.exports = {
                 }
               }
             };
-            if (localStorage.getItem(lib.configprefix + 'playback')) {
-              toLoad++;
-              init.js(dist(), 'mode', packLoaded, packLoaded);
-            }
-            else if ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
-              lib.config.all.mode.indexOf(lib.config.mode) != -1) {
+            if (localStorage.getItem(lib.configprefix + 'playback') 
+            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
+              lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
               toLoad++;
               init.js(dist(), 'mode', packLoaded, packLoaded);
             }

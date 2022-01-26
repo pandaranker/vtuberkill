@@ -1884,7 +1884,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var list=[['re_MurasakiShion','ShikaiYue'],
 						['Siro','XiaoxiXiaotao','XiaDi'],['ShizukuLulu','SuzuharaLulu'],
 						['Ciyana','Civia'],['ShirayukiTomoe','ShirayukiMishiro'],
-						['KaguraMea','kaguraNaNa']];
+						['KaguraMea','KaguraNana']];
 						list.randomSort();
 						var list2=[];
 						for(var i=0;i<list.length;i++){

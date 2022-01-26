@@ -399,7 +399,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			zhangjinghua:['bingtang','Paryi','CierraRunis'],
 			Paryi:['bingtang'],
 			Kano:['HanamaruHareru'],
-			kaguraNaNa:['SpadeEcho'],
+			KaguraNana:['SpadeEcho'],
 			TenkaiTsukasa:['Fairys'],
 			
 			KaguraMea:['InuyamaTamaki','InabaHaneru','MononobeAlice'],
@@ -516,7 +516,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_NekomiyaHinata: ['female', 'vtuber', 4, ['gz_yingdan','tianzhuo'],['doublegroup:vtuber:clubs']],
 
 				/**狗妈 */
-				gz_kaguraNaNa: ['female', 'clubs', 3, ['zhanni']],
+				gz_KaguraNana: ['female', 'clubs', 3, ['zhanni']],
 				/**狐叔 */
 				gz_Nekomasu: ['female', 'clubs', 3, ['milijianying', 're_dianyin']],
 				/**Noracat */

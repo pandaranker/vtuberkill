@@ -277,7 +277,7 @@ module.exports = {
 		group_key: "键势力",
 		group_holo: "杏势力",
 		group_nijisanji: "虹势力",
-		group_VirtuaReal: "维势力",
+		group_VirtuaReal: "维阿势力",
 		group_upd8: "U势力",
 		group_paryi: "帕势力",
 		group_kagura: "神楽势力",
@@ -287,9 +287,10 @@ module.exports = {
 		group_nori: "苔势力",
 		group_vwp: "神椿势力",
 		group_chaos: "混沌势力",
-		group_xuyan: "虚势力",
-		group_xuefeng: "雪风势力",
+		group_xuyan: "虚研社",
+		group_xuefeng: "雪风军团",
 		group_Providence: "普罗维登",
+		group_HappyElements: "乐元素",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
@@ -311,5 +312,6 @@ module.exports = {
 		group_xuyan_bg: "虚",
 		group_xuefeng_bg: "雪",
 		group_Providence_bg: "罗",
+		group_HappyElements_bg: "乐",
 	}
 }

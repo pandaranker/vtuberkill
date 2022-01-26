@@ -1596,7 +1596,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jiance: {
 				frequent: true,
 				trigger: { player: ['loseHpEnd', 'damageEnd'] },
-				content:[() => {
+				content: [() => {
 					player.chooseTarget(get.prompt2('jiance'), function (card, player, target) {
 						return target.countCards('h');
 					}).set('ai', function (target) {
@@ -1604,7 +1604,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (target.countCards('h') <= 4) return 2 - get.attitude(player, target);
 						return 0;
 					});
-				},() => {
+				}, () => {
 					if (result.bool && result.targets) {
 						Evt.target = result.targets[0];
 						Evt.target.showHandcards('监策');
@@ -1616,15 +1616,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 						Evt.num = types.length;
 					} else Evt.finish();
-				},() => {
+				}, () => {
 					if (Evt.num) {
 						player.chooseTarget('『监策』：选择令一名角色摸' + get.cnNumber(Evt.num) + '张牌', (card, player, target) => target != _status.event.source)
-						.set('ai', (target) => {
+							.set('ai', (target) => {
 								let player = _status.event.player;
 								return target.needsToDiscard() ? get.attitude(target, player) / 2 : get.attitude(target, player);
 							}).set('source', Evt.target)
 					} else Evt.finish();
-				},() => {
+				}, () => {
 					if (result.bool && result.targets) {
 						result.targets[0].draw(Evt.num);
 					}

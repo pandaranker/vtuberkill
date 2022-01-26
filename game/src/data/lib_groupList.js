@@ -41,8 +41,8 @@ module.exports = {
 	 * 较group去除了企业、社团、三国势力
 	 * @type {string}
 	 */
-	group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi',
-		'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng'],
+	group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi',
+		'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng', 'Providence'],
 	/**
 	 * 势力对应属性
 	 * @constant

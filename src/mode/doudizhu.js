@@ -2860,7 +2860,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			],
 			clubs:[
 				'KaguraMea','TakatsukiRitsu','MorinagaMiu','OtomeOto','HanazonoSerena','MashiroKanon',
-				'Nekomasu','Eilene','Yomemi','ShizukuLulu','re_MinamiNami','kaguraNaNa','Menherachan','ShikaiYue',
+				'Nekomasu','Eilene','Yomemi','ShizukuLulu','re_MinamiNami','KaguraNana','Menherachan','ShikaiYue',
 				'Ciyana','Pudding','AyanaNana','AkiRinco',
 			],
 		},

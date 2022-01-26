@@ -140,7 +140,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						huajing:1,
 						loseCard:0.5,
-						discard:0.5,
+						discard:0.2,
 						draw:0.5,
 						gainHujia:0.8,
 						multitarget:1,
@@ -268,7 +268,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						huajing:1,
 						loseCard:1,
-						discard:1,
+						discard:0.5,
 						damage:1,
 						natureDamage:1,
 						oceanDamage:1,
@@ -354,8 +354,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						huajing:1,
 						draw:1,
-						loseCard:1,
-						discard:1
+						loseCard:1
 					}
 				}
 			},
@@ -438,8 +437,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						huajing:1,
 						gainHujia:0.8,
-						loseCard:1,
-						discard:1
+						loseCard:1
 					}
 				}
 			},
@@ -486,7 +484,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					tag:{
 						huajing:1,
 						loseCard:1,
-						discard:1,
+						discard:0.5,
 					}
 				}
 			},
@@ -668,6 +666,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					'step 2'
 					let card = event.dis.result.cards[0]
 					if(card&&get.type(card)==='equip')	target.damage(event.baseDamage,'yami');
+					game.delayx();
 				},
 				ai:{
 					basic:{
@@ -724,7 +723,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					},
 					tag:{
 						huajing:1,
-						discard:1,
+						discard:0.5,
 						damage:0.2,
 						natureDamage:1,
 						oceanDamage:1,
@@ -910,6 +909,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						}
 						return list.randomGet();
 					});
+					game.delayx()
 					'step 1'
 					if(result.control!='cancel2'){
 						player.logSkill('qi');
@@ -917,6 +917,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						player.popup(get.translation(trigger.card).slice(0,2),result.control);
 						game.log('#y'+get.translation(get.name(trigger.card)),'被转为了',trigger.card);
 						player.removeSkill('qi_skill');
+						game.delayx()
 					}
 				},
 			},
@@ -1393,10 +1394,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['spade',3,'suansuyulei'],
 			['spade',4,'sha','ocean'],
 			['spade',4,'sha','yami'],
-			['spade',5,'langyong'],
+			['spade',5,'sha','ocean'],
 			['spade',5,'langyong'],
 			['spade',6,'sha','ocean'],
-			['spade',6,'sha','ocean'],
+			['spade',6,'langyong'],
 			['spade',7,'haixiao'],
 			['spade',7,'qi'],
 			['spade',8,'waiguge'],
@@ -1414,24 +1415,24 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 
 			['heart',1,'qi'],
 			['heart',1,'bowen'],
-			['heart',2,'shan'],
-			['heart',2,'sha'],
+			['heart',2,'shan',null,['yingbian_kongchao']],
+			['heart',2,'wuzhong','ocean'],
 			['heart',3,'sha','ocean'],
 			['heart',3,'lebu'],
 			['heart',4,'tao','ocean'],
-			['heart',4,'tao'],
+			['heart',4,'tao','ocean'],
 			['heart',5,'tao','ocean'],
 			['heart',5,'qi'],
 			['heart',6,'chenjing'],
-			['heart',6,'tao'],
+			['heart',6,'sha'],
 			['heart',7,'chenmo'],
 			['heart',7,'huiliu'],
 			['heart',8,'sha','ocean'],
 			['heart',8,'tao','ocean'],
-			['heart',9,'jiu'],
+			['heart',9,'jiu','ocean'],
 			['heart',9,'lebu'],
 			['heart',10,'yinghua'],
-			['heart',10,'shan'],
+			['heart',10,'shan',null,['yingbian_kongchao']],
 			['heart',11,'qi'],
 			['spade',11,'jiu','ocean'],
 			['heart',12,'wuxie',null,['yingbian_kongchao']],
@@ -1443,7 +1444,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['club',1,'shenshuizhadan'],
 			['club',2,'sha','yami'],
 			['club',2,'sha','thunder'],
-			['club',3,'jiu'],
+			['club',3,'jiu','ocean'],
 			['club',3,'sha','yami'],
 			['club',4,'sha','yami'],
 			['club',4,'tiesuo'],
@@ -1481,12 +1482,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			['diamond',7,'qi'],
 			['diamond',8,'qi'],
 			['diamond',8,'shan',null,['yingbian_kongchao']],
-			['diamond',9,'shan'],
-			['diamond',9,'jiu'],
+			['diamond',9,'shan',null,['yingbian_kongchao']],
+			['diamond',9,'jiu','ocean'],
 			['diamond',10,'waiguge'],
 			['diamond',11,'wuxie',null,['yingbian_kongchao']],
 			['diamond',11,'shan',null,['yingbian_kongchao']],
-			['diamond',12,'shan'],
+			['diamond',12,'shan',null,['yingbian_kongchao']],
 			['diamond',12,'wuxie'],
 			['diamond',13,'haidi'],
 			['diamond',13,'fanchuan'],

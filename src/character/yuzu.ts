@@ -1,4 +1,4 @@
-import {toSkill} from './skilltype'
+import { toSkill } from './skilltype'
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
 	return <currentObject>{
 		name: "yuzu",
@@ -43,6 +43,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			KotobukiYume: ['female', 'qun', 4, ['xuanquan', 'rusu'],],
 			/**海月シェル */
 			UmitsukiShell: ['female', 'qun', 4, ['beike', 'wenda'],],
+			/**羽澄照乌愈 */
+			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
 
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
@@ -158,6 +160,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
 			/**玛安娜Myanna */
 			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
+			/**花花Haya */
+			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
 			/**白桃shirako */
 			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:Providence:qun']],
 
@@ -394,11 +398,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				init(player, skill) {
 					player.$[skill] ??= [];
 				},
-				filter: function (Evt, player) {
+				filter(Evt, player) {
 					return game.countPlayer(cur => !player.getStorage('danqing')[0].includes(cur))
 				},
 				direct: true,
-				content: function () {
+				content() {
 					'step 0'
 					player.chooseTarget(get.prompt2('danqing'), function (card, player, target) {
 						return !player.getStorage('danqing')[0].includes(target);
@@ -446,10 +450,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			}).setT({ player: 'damageAfter', source: 'damageAfter' }),
 			gaiqu: new toSkill('trigger', {
-				filter: function (Evt, player) {
+				filter(Evt, player) {
 					return player.countCards('h') < player.$.gaiqu_count;
 				},
-				content: function () {
+				content() {
 					'step 0'
 					delete player.$.gaiqu_count;
 					player.awakenSkill('gaiqu');
@@ -507,9 +511,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							if (player.$.songxing.contains(card)) return false;
 							return true;
 						});
-						for (let i of list) {
-							list[i] = ['锦囊', '', list[i]];
-						}
 						if (list.length == 0) {
 							return ui.create.dialog('『松星』已无可用牌');
 						}
@@ -8836,10 +8837,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//莲汰
 			langfei: new toSkill('trigger', {
-				filter: function (Evt, player) {
+				filter(Evt, player) {
 					return get.type(Evt.card) === 'trick' && get.tag(Evt.card, 'damage');
 				},
-				content: function () {
+				content() {
 					trigger.baseDamage++;
 				},
 			}, 'usable').setT('useCard'),
@@ -9507,9 +9508,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				chooseButton: {
 					dialog(Evt, player) {
 						let list = lib.skill.duotian.computedCard();
-						for (let i of list) {
-							list[i] = ['锦囊', '', list[i]];
-						}
 						return ui.create.dialog('『堕天』选择转化的锦囊', [list, 'vcard']);
 					},
 					filter(button, player) {
@@ -9632,6 +9630,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			}, 'derivation:lingjun').setT({ global: 'drawBegin' }),
 			lingjun: new toSkill('mark', {
+				marktext: '军',
 				intro: {
 					content: '手牌中的【杀】视为【决斗】'
 				},
@@ -9643,14 +9642,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			}, 'mark'),
 			//玛安娜Myanna
 			yemo: new toSkill('active', {
-				filter: function (event, player) {
+				filter(event, player) {
 					return player.countDisabled() < 5;
 				},
 				chooseButton: {
-					dialog: function (event, player) {
+					dialog(event, player) {
 						return ui.create.dialog('###夜魔###' + lib.translate.yemo_info);
 					},
-					chooseControl: function (event, player) {
+					chooseControl(event, player) {
 						var list = [];
 						for (var i = 1; i < 6; i++) {
 							if (!player.isDisabled(i)) list.push('equip' + i);
@@ -9658,13 +9657,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						list.push('cancel2');
 						return list;
 					},
-					check: function (event, player) {
+					check(event, player) {
 						for (var i = 5; i > 0; i--) {
 							if (player.isEmpty(i)) return ('equip' + i);
 						}
 						return 'cancel2';
 					},
-					backup: function (result) {
+					backup(result) {
 						var next = get.copy(lib.skill.yemox);
 						next.position = result.control;
 						return next;
@@ -9673,7 +9672,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				ai: {
 					order: 1,
 					result: {
-						player: function (player) {
+						player(player) {
 							if (game.hasPlayer(function (target) {
 								if (player == target) return false;
 								var hs = target.countCards('h');
@@ -9688,29 +9687,30 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				audio: 'yemo',
 				content: [() => {
 					player.draw()
-				},() => {
+				}, () => {
 					player.disableEquip(lib.skill.yemo_backup.position);
-				},() => {
+				}, () => {
 					if (player.isAlive()) {
 						player.chooseTarget(true, '选择一名角色获得『灵昏』直到其下一次使用【决斗】，若其已有『灵昏』，改为弃置其区域内的一张牌').set('ai', (target) => {
 							let player = _status.event.player
-							if(!target.hasSkill('linghun'))	return get.attitude(player, target)<=0
+							if (!target.hasSkill('linghun')) return get.attitude(player, target) <= 0
 							return get.effect(target, { name: 'guohe_copy' }, player, player)
 						});
 					}
 					else
 						Evt.finish();
-				},() => {
+				}, () => {
 					if (result.bool && result.targets?.length) {
 						let target = Evt.target = result.targets[0]
 						if (!target.hasSkill('linghun')) target.addTempSkill('linghun', { player: 'juedouBegin' })
-						else player.discardPlayerCard('hej',true,target);
+						else player.discardPlayerCard('hej', true, target);
 					}
 					else
 						Evt.finish();
 				}],
 			},
 			linghun: new toSkill('mark', {
+				marktext: '昏',
 				intro: {
 					content: '手牌中的【闪】视为【决斗】'
 				},
@@ -9729,6 +9729,56 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseToEnable();
 				},
 			}).setT('phaseJieshuBegin'),
+			//花花Haya
+			shengping: new toSkill('trigger', {
+				filter(Evt, player) {
+					return Evt.player != player && Evt.result?.cards?.length
+				},
+				logTarget: 'player',
+				check(Evt, player) {
+					return get.attitude(player, Evt.player) > 0
+				},
+				content() {
+					Evt.target = trigger.player
+					game.asyncDraw([player, Evt.target])
+				},
+				ai: {
+					effect: {
+						target(card, player, target, cur) {
+							if (target.hp < 0) {
+								if (get.tag(card, 'discard') >= 1 && get.attitude(target, player) > 0) return [1, 1, 1, 1];
+							}
+						}
+					}
+				},
+			}).setT({ target: 'discardPlayerCardEnd' }),
+			jiushuang: new toSkill('trigger', {
+				filter(Evt, player) {
+					return player.countDiscardableCards(Evt.player, 'hej') > 0;
+				},
+				logTarget: 'player',
+				content: [() => {
+					Evt.target = trigger.player
+					Evt.target.discardPlayerCard('hej', true, player)
+				}, () => {
+					if (result.links?.length) {
+						let target = Evt.target
+						if (!target.hasSkill('lingxun')) target.addTempSkill('lingxun', { player: 'juedouBegin' })
+						else target.link();
+					}
+				}],
+			}, 'derivation:lingxun').setT({ global: 'phaseBegin' }),
+			lingxun: new toSkill('mark', {
+				marktext: '醺',
+				intro: {
+					content: '手牌中的【酒】视为【决斗】'
+				},
+				mod: {
+					cardname(card, player, name) {
+						if (get.position(card) === 'h' && name === 'jiu') return 'juedou'
+					}
+				}
+			}, 'mark'),
 			//白桃shirako
 			jufu: new toSkill('regard', {
 				chooseButton: {
@@ -10024,10 +10074,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			}, 'group:zhengmeng_addDamBy').setT('phaseDrawBegin1'),
 			wadao: new toSkill('trigger', {
-				filter: function (Evt, player) {
+				filter(Evt, player) {
 					return !player.isTurnedOver();
 				},
-				content: function () {
+				content() {
 					'step 0'
 					player.chooseTarget(get.prompt('wadao2'), function (card, player, target) {
 						return target !== player;
@@ -16288,7 +16338,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.$.beike2 = []
 				},
 				filter(Evt, player) {
-					return !player.$?.beike2?.contains(get.name(Evt.card))
+					return get.type2(Evt.card) === 'trick' && !player.$?.beike2?.contains(get.name(Evt.card))
 				},
 				onremove: ['beike', 'beike2'],
 				content() {
@@ -16297,8 +16347,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.draw()
 					player.markSkill('beike')
 				},
-				// mark:true,
-				// marktext:'贝',
 				intro: {
 					content: '本局游戏内尚未被使用的锦囊（原始牌堆）：<br>$'
 				},
@@ -16337,9 +16385,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				chooseButton: {
 					dialog(Evt, player) {
 						let list = player.$.wenda ? get.inpile('trick2') : ['wuxie'];
-						for (let i of list) {
-							list[i] = ['锦囊', '', list[i]];
-						}
 						if (list.length == 0) {
 							return ui.create.dialog('『一问一答』已无可用牌');
 						}
@@ -16377,6 +16422,63 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 			}, 'enable:chooseToUse'),
+			//羽澄照乌愈
+			chenming: new toSkill('trigger', {
+				filter(Evt, player) {
+					return true
+				},
+				content: [() => {
+					let list = trigger.stageList || lib.phaseName.slice(0);
+					player.chooseButton([get.prompt2('chenming'), [list, 'vcard'], 'hidden'])
+					.set('filterButton', button => !['phaseDiscard', 'phaseDraw'].includes(button.link[2]))
+					.set('ai', button => button.link[2]==='phaseJudge'?10:5);
+				}, () => {
+					if (result.links?.length) {
+						player.logSkill('chenming')
+						let stageList = (trigger.stageList || lib.phaseName).slice(0)
+						stageList.splice(stageList.indexOf(result.links[0][2]), 1, 'phaseDraw')
+						trigger.stageList = stageList;
+						game.delay(1)
+					}
+				}],
+			}, 'direct').setT('phaseBegin'),
+			xiantong: new toSkill('trigger', {
+				filter(Evt, player) {
+					return player.countCards('he');
+				},
+				content: [() => {
+					player.judge()
+				}, () => {
+					if (result.card && result.color) {
+						Evt.card = result.card
+						player.chooseToDiscard(`弃置颜色为${get.translation(result.color)}或类型为${get.translation(get.type2(Evt.card))}两张牌`,'he', 2)
+						.set('filterCard',(card, player) => get.color(card) === result.color || get.type2(card) === get.type2(Evt.card))
+						.set('ai',card => get.unuseful2(card))
+					}
+				}, () => {
+					if (result.cards?.length) {
+						trigger.num--
+						trigger.addedSkill ??= []
+						trigger.addedSkill.add('xiantong')
+						trigger.addedSkill.add({ 'xiantong': Evt.card })
+					}
+				}],
+				group: ['xiantong_gainBy'],
+				subSkill: {
+					gainBy: new toSkill('trigger', {
+						filter(Evt, player) {
+							return Evt.addedSkill?.includes('xiantong') && Evt.num > 0
+						},
+						content() {
+							for (let i of trigger.addedSkill) {
+								if (i instanceof Object && i.xiantong) {
+									player.gain(i.xiantong, 'gain2', 'log')
+								}
+							}
+						}
+					},'forced').setT('damageEnd'),
+				}
+			}).setT('damageBegin3'),
 			//hh
 			jichu: {
 				mod: {
@@ -16774,15 +16876,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseToDiscard(get.prompt2('qianqi', trigger.player), 'he', player.$.qianqi || 1).set('logSkill', ['qianqi', trigger.player]);
 					'step 1'
 					if (result.bool) {
+						game.delayx();
 						Evt.target = trigger.player;
-						game.delay();
-						let list = trigger.stageList || lib.phaseName.slice(0);
-						player.chooseButton(['『迁奇』：选择两个阶段调换位置（若不选则执行另一个效果）', [list, 'vcard'], 'hidden'], 2).set('prompt', get.prompt('tiangou'));
+						let list = (trigger.stageList || lib.phaseName).slice(0);
+						for (let i = 0; i < list.length; i++) {
+							list[i] = ['', i+1, list[i]];
+						}
+						player.chooseButton(['『迁奇』：选择两个阶段调换位置（若不选则执行另一个效果）', [list, 'vcard'], 'hidden'], 2);
 					} else Evt.finish();
 					'step 2'
 					if (result.bool && result.links) {
 						let steps = result.links.slice(0), stageList = (trigger.stageList || lib.phaseName).slice(0);
-						let index0 = stageList.indexOf(result.links[0][2]), index1 = stageList.indexOf(result.links[1][2]);
+						let index0 = steps[0][1]-1, index1 = steps[1][1]-1;
 						[stageList[index0], stageList[index1]] = [stageList[index1], stageList[index0]];
 						trigger.stageList = stageList;
 					} else {
@@ -18384,6 +18489,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			wenda: `一问一答`,
 			wenda_info: `转换技 阳~你可以将一张装备牌当作一张锦囊牌使用。阴~你可以将一张基本牌当作【无懈可击】使用。`,
 
+			PastelUyu: `羽澄照うゆ`,
+			PastelUyu_ab: `羽澄照乌愈`,
+			chenming: `晨鸣`,
+			chenming_info: `回合开始时，你可以将本回合除弃牌阶段外的一个阶段改为摸牌阶段。若为出牌阶段，你可以视为使用一张无视距离的【杀】。`,
+			xiantong: `衔桐`,
+			xiantong_info: `当你受到伤害时，你可以进行一次判定并弃置两张与结果颜色或类型相同的牌令伤害-1；若此伤害未被防止，你获得此判定牌。`,
+
 			HIMEHINA: `田中姬&铃木雏`,
 			HIMEHINA_ab: `姬&雏`,
 			jichu: `姬雏轮舞`,
@@ -18846,6 +18958,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jiaopin_info: `结束阶段，若你已受伤，你可以恢复一个装备栏。`,
 			linghun: `灵昏`,
 			linghun_info: `锁定技 你手牌中的【闪】视为【决斗】。`,
+
+			Haya: `花花Haya`,
+			Haya_ab: `花花`,
+			shengping: `升平`,
+			shengping_info: `其他角色弃置你的牌时，你可以与其各摸一张牌。`,
+			jiushuang: `酒霜`,
+			jiushuang_info: `一名角色的回合开始时，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置。`,
+			lingxun: `灵醺`,
+			lingxun_info: `锁定技 你手牌中的【酒】视为【决斗】。`,
 
 			Shirako: `白桃shirako`,
 			Shirako_ab: `白桃`,

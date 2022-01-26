@@ -30,7 +30,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			OtomeOto: ['female', 'paryi', 3, ['yuxia', 'lianjue', 'changxiang'], ['zhu']],
 			HisekiErio: ['female', 'paryi', 4, ['huange', 'qishi', 'yongtuan'], ['zhu']],
 			HanazonoSerena: ['female', 'paryi', 4, ['jiumao', 'enfan', 'shiqi'], ['zhu']],
-			kaguraNaNa: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu', 'doublegroup:qun:holo:paryi']],
+			KaguraNana: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu', 'doublegroup:qun:holo:paryi']],
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
@@ -57,7 +57,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**阳向心美 */
 			HinataCocomi: ['female', 'qun', 4, ['qijian', 'yizhan', 'jushi'], ['zhu']],
 			/**紫海由爱 */
-			ShikaiYue: ['female', 'qun', 3, ['lianyin', 'guixiang'],],
+			ShikaiYue: ['female', 'qun', 3, ['lianyin', 'guixiang'], ['doublegroup:qun:xuyan']],
 			/**纸木铗 */
 			KamikiHasami: ['female', 'qun', 4, ['quzhuan', 'yuanjiu'],],
 			/**黑桐亚里亚 */
@@ -108,7 +108,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		},
 		characterReplace: {
 			NekomiyaHinata: ['re_NekomiyaHinata', 'NekomiyaHinata'],
-			kaguraNaNa: ['re_kaguraNaNa', 'kaguraNaNa'],
+			KaguraNana: ['re_KaguraNana', 'KaguraNana'],
 			Siro: ['re_Siro', 'Siro'],
 			Nekomasu: ['re_Nekomasu', 'Nekomasu'],
 			XiaDi: ['re_XiaDi', 'XiaDi'],
@@ -126,7 +126,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			TakatsukiRitsu: '阿律者，帕里之衙内也，清楚三铳士之一，以超美丽3d与烂活闻名，常联动yyut，一日律问直播间观众爱者，众人皆曰yyut，律遂破防光速下播，杏溃败后，众v皆如终获青天，有欣欣向荣之势，独律未增半分，郁郁寡欢，此后毕业之，是矣，烂活可供一时，可供一世乎？',
 
 			KaguraMea: '神乐咩者，东瀛之歌女也，迫于生计西来中原，有《money》、《你好我很可爱》之名曲流传世间，咩性格直爽，以此获众拥簇，却亦因此惹祸上身，V始二十二年，西都陷落，咩于京畿聚众建国，国号曰咩，定元咩啊元年，与杏虹分庭抗礼。',
-			kaguraNaNa: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
+			KaguraNana: "神乐七奈（V始三年），蜀郡唐辛人也，尤善丹青，图写特妙，元昭重之，V始三年，诞女百鬼绫目，益州牧帕里既败，七奈自修同族聚众起兵，拥者百万。谚曰，多言必失，是矣！七奈失言为中原诸侯所恶，蜀地之人亦仇中原，如此至今。",
 			Siro: "siro（V始二年），字小白，别号电脑少女，母孕时梦海豚入怀，小白诞即能言，孩提之时即多识胡语，尤善海豚之言，既加冠，应召入宫，拜左将军V海豚候领幽州牧，善骑射，有神弓曰AKM，军中皆呼战神。",
 			HanazonoSerena: "花园sarena者（V始三年），青城之猫灵也，清楚三铳士之一，为报帕里之恩追随之，虽体弱多病然擅行刺，V始三年，以松饼鸩杀汉中太守，帕里pro遂建国巴蜀，花园猫不谙世事，常为好事者钓之。V始九年，朝廷出兵百万击巴蜀，大破蜀军，花园猫身中数刀，仍负帕里逃出益州，复还青城，人不知所踪。",
 			XiaDi: '下地者，V8之健将也，自群雄并起，囚人草莽之徒自成一国，名曰V8，V8奉绅宝为主，总领V8事宜，次年勒夫以鸩杀之，夺绅宝之权，下地作丹青《不要以为这样就赢了》缅之，领自家军离V8，后为勒夫击，大败，遁于江城。',
@@ -3065,7 +3065,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jushi: `聚识`,
 			jushi_info: `<font color=#fae>主公技</font> 锁定技 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。`,
 
-			kaguraNaNa: `神乐七奈`,
+			KaguraNana: `神乐七奈`,
 			DDzhanshou: `DD斩首`,
 			DDzhanshou_info: `当你使用牌指定目标后，你可选择其中一名目标角色，该角色每满足一项你便可将其一张牌移出游戏直到此回合结束：<br>
 			手牌数不少于你；体力值不少于你；装备区牌数不少于你。<br>然后若该角色没有手牌，其摸一张牌。`,
@@ -3074,7 +3074,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			xinluezhili_draw: `辛略之力`,
 			xinluezhili_info: `主公技 当其他角色因『DD斩首』失去最后一张手牌时，其可令你摸一张牌`,
 
-			HanazonoSerena: `花園セレナ`,
+			HanazonoSerena: `花园Serena`,
+			HanazonoSerena_ab: `花园セレナ`,
 			maoliang: `猫粮`,
 			jiumao: `啾猫`,
 			jiumao_info: `一名角色出牌阶段结束时，可将任意手牌置于你武将牌上，称为「猫粮」。每回合限一次，你可将「猫粮」如手牌般使用或打出。`,
@@ -3111,7 +3112,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yinliu_info: `出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。`,
 			yinliu_append: lib.figurer(`特性：赌狗`),
 			dunzou: `遁走`,
-			dunzou_info: `你于其他角色的回合被♣牌指定并结算后，你可以将你移出游戏直到回合结束。`,
+			dunzou_info: `你于其他角色的回合被♣牌指定并结算后，你可以将自己移出游戏直到回合结束。`,
 			dunzou_enable: `遁走`,
 
 			Nekomasu: `ねこます`,
