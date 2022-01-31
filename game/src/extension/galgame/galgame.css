@@ -28,6 +28,9 @@
 	height: 100%;
 	background-size: cover;
 }
+.sce>.yingyin{
+	opacity: .5;
+}
 .sce>.txt{
 	vertical-align: top;
 	width: calc(100% - 150px);

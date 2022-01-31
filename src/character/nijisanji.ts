@@ -518,7 +518,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player.storage.outPlayers = [];
 						}
 						player.storage.outPlayers.push(trigger.player);
-						trigger.player.addTempSkill('cangxiong_diao', { target: 'phaseBegin' });//移除游戏
+						trigger.player.addTempSkill('cangxiong_diao', 'none');//移除游戏
 						game.broadcastAll(function (splayer) {
 							splayer.out('cangxiong_diao');
 						}, trigger.player

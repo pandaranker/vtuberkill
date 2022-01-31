@@ -1,4 +1,4 @@
-window.vtuberkill_character_rank={
+module.exports={
 	s:[
 		'sp_Ava',
 	],

@@ -3,10 +3,10 @@ window.config={
 	forbidai_user:[],
 	forbidall:[],
 	forbidstone:[],
-	forbidchess:['hetaihou','swd_kangnalishi'],
-	forbidboss:['caiwenji','gjqt_aruan','pal_xuanxiao','swd_hupo'],
-	forbiddouble:['zhugedan','swd_kangnalishi','dongzhuo','wutugu','hs_siwangzhiyi','hs_ronghejuren','hs_shanlingjuren'],
-	forbidthreecard:['qiankunbiao','shenhuofeiya','gw_ciguhanshuang','gw_birinongwu','gw_qinpendayu','gw_poxiao'],
+	forbidchess:['hetaihou'],
+	forbidboss:['caiwenji'],
+	forbiddouble:['zhugedan','dongzhuo','wutugu'],
+	forbidthreecard:['qiankunbiao'],
 	all:{
 		sgscharacters:['Beginner'],
 		sgscards:['standard','extra'],
@@ -134,7 +134,7 @@ window.config={
 	customcardpile:{},
 	addedpile:{},
 
-	mode:'identity',
+	mode:'yindao',
 	mode_config:{
 		global:{
 			player_number:3,

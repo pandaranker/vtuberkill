@@ -3706,11 +3706,11 @@
                         }
                         node._clearing = true;
                         node.firstChild.innerHTML = '单击以确认 (3)';
-                        setTimeout(function () {
+                        setTimeout(() => {
                             node.firstChild.innerHTML = '单击以确认 (2)';
-                            setTimeout(function () {
+                            setTimeout(() => {
                                 node.firstChild.innerHTML = '单击以确认 (1)';
-                                setTimeout(function () {
+                                setTimeout(() => {
                                     node.firstChild.innerHTML = '重置游戏设置';
                                     delete node._clearing;
                                 }, 1000);
@@ -3729,10 +3729,9 @@
                             game.saveConfig('hiddenCardPack', []);
                             game.saveConfig('hiddenPlayPack', []);
                             game.saveConfig('hiddenBackgroundPack', []);
-                            var that = this;
-                            setTimeout(function () {
-                                that.firstChild.innerHTML = '重置隐藏内容';
-                                setTimeout(function () {
+                            setTimeout(() => {
+                                this.firstChild.innerHTML = '重置隐藏内容';
+                                setTimeout(() => {
                                     if (confirm('是否重新启动使改变生效？')) {
                                         game.reload();
                                     }
@@ -3743,16 +3742,15 @@
                     clear: true
                 },
                 reset_tutorial: {
-                    name: '重置新手向导',
+                    name: '重置身份模式的新手向导',
                     onclick: function () {
                         if (this.firstChild.innerHTML != '已重置') {
                             this.firstChild.innerHTML = '已重置'
                             game.saveConfig('new_tutorial', false);
                             game.saveConfig('prompt_hidebg');
                             game.saveConfig('prompt_hidepack');
-                            var that = this;
-                            setTimeout(function () {
-                                that.firstChild.innerHTML = '重置新手向导';
+                            setTimeout(() => {
+                                this.firstChild.innerHTML = '重置新手向导';
                             }, 500);
                         }
                     },
@@ -3833,58 +3831,6 @@
                         map.redownload_game.hide();
                     }
                 }
-                // trim_game:{
-                //     name:'隐藏非官方扩展包',
-                //     onclick:function(){
-                //         if(this.innerHTML!='已隐藏'){
-                //             this.innerHTML='已隐藏';
-                //                               var pack=lib.config.all.cards.slice(0);
-                //                               if(Array.isArray(lib.config.hiddenCardPack)){
-                //                                            for(var i=0;i<lib.config.hiddenCardPack.length;i++){
-                //                                                                  pack.add(lib.config.hiddenCardPack[i]);
-                //                                            }
-                //                               }
-                //                               for(var i=0;i<pack.length;i++){
-                //                                            if(lib.config.all.sgscards.contains(pack[i])){
-                //                                                                  pack.splice(i--,1);
-                //                                            }
-                //                               }
-                //             game.saveConfig('hiddenCardPack',pack);
-                //
-                //                               var pack=lib.config.all.characters.slice(0);
-                //                               if(Array.isArray(lib.config.hiddenCharacterPack)){
-                //                                            for(var i=0;i<lib.config.hiddenCharacterPack.length;i++){
-                //                                                                  pack.add(lib.config.hiddenCharacterPack[i]);
-                //                                            }
-                //                               }
-                //                               for(var i=0;i<pack.length;i++){
-                //                                            if(lib.config.all.sgscharacters.contains(pack[i])){
-                //                                                                  pack.splice(i--,1);
-                //                                            }
-                //                               }
-                //             game.saveConfig('hiddenCharacterPack',pack);
-                //
-                //                               var pack=lib.config.all.mode.slice(0);
-                //                               if(Array.isArray(lib.config.hiddenModePack)){
-                //                                            for(var i=0;i<lib.config.hiddenModePack.length;i++){
-                //                                                                  pack.add(lib.config.hiddenModePack[i]);
-                //                                            }
-                //                               }
-                //                               for(var i=0;i<pack.length;i++){
-                //                                            if(lib.config.all.sgsmodes.contains(pack[i])){
-                //                                                                  pack.splice(i--,1);
-                //                                            }
-                //                               }
-                //             game.saveConfig('hiddenModePack',pack);
-                //
-                //             var that=this;
-                //             setTimeout(function(){
-                //                 that.innerHTML='隐藏非官方扩展包';
-                //             },500);
-                //         }
-                //     },
-                //     clear:true
-                // }
             }
         }
     }
@@ -3892,7 +3838,7 @@
      * 拓展菜单
      * @name configMenu.extensionMenu
      */
-     lib.extensionMenu = {
+    lib.extensionMenu = {
         cardpile: {
             enable: {
                 name: '开启',

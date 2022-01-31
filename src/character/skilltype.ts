@@ -1,5 +1,9 @@
 
 type skillType = 'active' | 'trigger' | 'regard' | 'mark' | 'rule'	//技能类型：主动、触发、半主动|视为、状态|纯标记、规则相关
+type skillAttribute = 'direct' | 'forced' | 'silent' | 'unique' | 'forceunique' | 'limited' | 'juexingji' | 'skillAnimation' | 'firstDo' | skillMark | skillAlwaysTrue
+type skillMark = 'mark' | 'onremove' | 'cardAround'
+type skillAlwaysTrue = 'locked' | 'filterCard' | 'filterTarget' | 'multitarget' | 'frequent'
+type skillStringcombine = 'enable:chooseToUse' | 'logTarget:player' | 'logTarget:target' | 'mark:character' | 'mark:card'
 class toSkill implements Skill {
 	readonly type: skillType
 	audio?: number | boolean
@@ -26,27 +30,18 @@ class toSkill implements Skill {
 				tri[i] = [tri[i] as string]
 			}
 		}
-		if (method instanceof Array) {
-			for (let i in tri) {
-				let v = tri[i]
-				if (!Array.isArray(v)) {
-					tri[i] = [v]
-				}
-				let vb = tri[i]
-				if (vb instanceof Array) {
+		for (let i in tri) {
+			let v = tri[i]
+			if (!Array.isArray(v)) {
+				tri[i] = [v]
+			}
+			let vb = tri[i]
+			if (vb instanceof Array) {
+				if (method instanceof Array) {
 					tri[i] = vb.map(t => {
 						return method.map(m => t + m)
 					}).vkflat()
-				}
-			}
-		} else if (typeof method === 'string') {
-			for (let i in tri) {
-				let v = tri[i]
-				if (!Array.isArray(v)) {
-					tri[i] = [v]
-				}
-				let vb = tri[i]
-				if (vb instanceof Array) {
+				} else if (typeof method === 'string') {
 					tri[i] = vb.map(t => {
 						return t + method
 					})
@@ -55,7 +50,7 @@ class toSkill implements Skill {
 		}
 		return this.set('trigger', { ...this.trigger, ...tri })
 	}
-	constructor(type: skillType, obj?: Skill, ...arg) {
+	constructor(type: skillType, obj?: Skill, ...arg: Array<skillAttribute | skillStringcombine>) {
 		this.type = type
 		if (type === 'active') {
 			this.enable = 'phaseUse'

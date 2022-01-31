@@ -41177,7 +41177,7 @@
                             }
                             else {
                                 var func = function () {
-                                    if (confirm('是否下载图片和字体素材？（约275MB）')) {
+                                    if (confirm('是否下载图片和字体素材？（约745MB）')) {
                                         if (!ui.arena.classList.contains('menupaused')) {
                                             ui.click.configMenu();
                                             ui.click.menuTab('其它');

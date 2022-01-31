@@ -4046,9 +4046,8 @@ module.exports = {
                      var reset = function () {
                         if (this.innerHTML == '重置') {
                            this.innerHTML = '确定';
-                           var that = this;
-                           setTimeout(function () {
-                              that.innerHTML = '重置';
+                           setTimeout(() => {
+                              this.innerHTML = '重置';
                            }, 1000);
                         }
                         else {
@@ -4861,12 +4860,13 @@ module.exports = {
                   }
                }
                if (!thisiscard) {
-                  var groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key']);
+                  var groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
                   if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                   var bool1 = false;
                   var bool2 = false;
                   var bool3 = (get.mode() == 'guozhan' && _status.forceKey != true && get.config('onlyguozhan'));
                   var bool4 = false;
+                  var boolVC = false;
                   for (var i in lib.character) {
                      if (lib.character[i][1] == 'shen') {
                         bool1 = true;
@@ -4875,11 +4875,13 @@ module.exports = {
                         bool2 = true;
                      }
                      if (!bool4 && get.is.double(i)) bool4 = true;
+                     if (['vtuber', 'clubs'].includes(lib.character[i][1])) boolVC = true
                      if (bool1 && bool2 && bool4) break;
                   }
                   if (bool1) groups.add('shen');
                   if (bool2 && !bool3) groups.add('key');
                   if (bool4) groups.add('double');
+                  if (boolVC) groups.addArray(['vtuber', 'clubs'])
                   var natures = ['water', 'soil', 'wood', 'metal'];
                   var span = document.createElement('span');
                   newlined.appendChild(span);
@@ -5340,15 +5342,6 @@ module.exports = {
              */
             control: function () {
                var nc = !ui.control.querySelector('div:not(.removing):not(.stayleft)');
-               // for(var i=0;i<ui.control.childNodes.length;i++){
-               //     if(ui.control.childNodes[i].classList.contains('removing')){
-               //         var that=ui.control.childNodes[i];
-               //         var width=that.offsetWidth;
-               //         that.style.marginLeft=(-width/2)+'px';
-               //         that.style.marginRight=(-width/2)+'px';
-               //         that.style.transitionDuration=0.8*parseFloat(getComputedStyle(that).opacity)+'s';
-               //     }
-               // }
                var i, controls;
                var nozoom = false;
                if (Array.isArray(arguments[0])) controls = arguments[0];
@@ -6156,18 +6149,18 @@ module.exports = {
                }
                delete lib.arenaReady;
                if (lib.config.auto_check_update) {
-                  setTimeout(function () {
+                  setTimeout(() => {
                      game.checkForUpdate(false);
                   }, 3000);
                }
                if (!lib.config.asset_version) {
                   lib.onfree.push(function () {
-                     setTimeout(function () {
+                     setTimeout(() => {
                         if (!game.download) {
                            game.saveConfig('asset_version', '无');
                         }
                         else {
-                           var func = function () {
+                           var func = () => {
                               if (confirm('是否下载图片和字体素材？（约275MB）')) {
                                  if (!ui.arena.classList.contains('menupaused')) {
                                     ui.click.configMenu();
@@ -6178,7 +6171,7 @@ module.exports = {
                               else {
                                  game.saveConfig('asset_version', '无');
                               }
-                           }
+                           };
                            if (_status.new_tutorial) {
                               _status.new_tutorial = func;
                            }
@@ -7075,16 +7068,15 @@ module.exports = {
                         }
                         if (get.is.banWords(button.input.value)) {
                            var eventnode = ui.create.div('.menubutton.videotext.onlineEvt.pointerdiv', function () {
-                              var that = this;
-                              setTimeout(function () {
-                                 if (that.classList.contains('active')) {
-                                    if (confirm('确定要离开' + that.info.content + '？')) {
-                                       that.classList.remove('active');
+                              setTimeout(() => {
+                                 if (this.classList.contains('active')) {
+                                    if (confirm('确定要离开' + this.info.content + '？')) {
+                                       this.classList.remove('active');
                                     }
                                  }
                                  else {
-                                    if (confirm('确定要加入' + that.info.content + '？')) {
-                                       that.classList.add('active');
+                                    if (confirm('确定要加入' + this.info.content + '？')) {
+                                       this.classList.add('active');
                                     }
                                  }
                               });
@@ -7162,17 +7154,16 @@ module.exports = {
                            num++;
                         }
                         var eventnode = ui.create.div('.menubutton.videotext.onlineEvt.pointerdiv', function () {
-                           var that = this;
-                           if (typeof that.info.creator != 'string') return;
-                           setTimeout(function () {
-                              if (that.classList.contains('active')) {
-                                 if (confirm('确定要离开' + that.info.content + '？')) {
-                                    game.send('server', 'events', that.info.id, game.onlineKey, 'leave');
+                           if (typeof this.info.creator != 'string') return;
+                           setTimeout(() => {
+                              if (this.classList.contains('active')) {
+                                 if (confirm('确定要离开' + this.info.content + '？')) {
+                                    game.send('server', 'events', this.info.id, game.onlineKey, 'leave');
                                  }
                               }
                               else {
-                                 if (confirm('确定要加入' + that.info.content + '？')) {
-                                    game.send('server', 'events', that.info.id, game.onlineKey, 'join');
+                                 if (confirm('确定要加入' + this.info.content + '？')) {
+                                    game.send('server', 'events', this.info.id, game.onlineKey, 'join');
                                  }
                               }
                            });
@@ -7309,11 +7300,10 @@ module.exports = {
                            button.textnode.innerHTML = '发状态(10)';
                            button.intervaltext = button.textnode.innerHTML;
                            var num = 10;
-                           var that = this;
                            button.input.disabled = true;
                            button.input.style.opacity = 0.6;
                            this.value = '';
-                           button.interval = setInterval(function () {
+                           button.interval = setInterval(() => {
                               num--;
                               if (num > 0) {
                                  button.textnode.innerHTML = '发状态(' + num + ')';
@@ -7588,12 +7578,11 @@ module.exports = {
                }
                var node = this.node.name;
                if (node.offsetHeight < node.scrollHeight) {
-                  var that = this;
                   var num = 40;
-                  that.buttonscrollinterval = setInterval(function () {
+                  this.buttonscrollinterval = setInterval(() => {
                      if (node.scrollTop + node.offsetHeight >= node.scrollHeight) {
-                        clearInterval(that.buttonscrollinterval);
-                        delete that.buttonscrollinterval;
+                        clearInterval(this.buttonscrollinterval);
+                        delete this.buttonscrollinterval;
                      }
                      else {
                         if (num > 0) {
@@ -7612,11 +7601,10 @@ module.exports = {
                }
                var node = this.node.name;
                if (node.offsetHeight < node.scrollHeight) {
-                  var that = this;
-                  that.buttonscrollinterval = setInterval(function () {
+                  this.buttonscrollinterval = setInterval(() => {
                      if (node.scrollTop == 0) {
-                        clearInterval(that.buttonscrollinterval);
-                        delete that.buttonscrollinterval;
+                        clearInterval(this.buttonscrollinterval);
+                        delete this.buttonscrollinterval;
                      }
                      else {
                         node.scrollTop -= 2;
@@ -9888,11 +9876,10 @@ module.exports = {
                   if (_status.logvtimeout) {
                      clearTimeout(_status.logvtimeout);
                   }
-                  var that = this;
-                  _status.logvtimeout = setTimeout(function () {
+                  _status.logvtimeout = setTimeout(() => {
                      if (!_status.currentlogv) {
-                        _status.currentlogv = that;
-                        ui.click.intro.call(that, e);
+                        _status.currentlogv = this;
+                        ui.click.intro.call(this, e);
                      }
                   }, 200);
                   this.logvtimeout = _status.logvtimeout;
@@ -10170,16 +10157,15 @@ module.exports = {
                         info = lib.skill[audioname];
                      }
                      var audioinfo = info.audio;
-                     var that = this;
-                     var getIndex = function (i) {
-                        if (typeof that.audioindex != 'number') {
-                           that.audioindex = i;
+                     var getIndex = (i) => {
+                        if (typeof this.audioindex != 'number') {
+                           this.audioindex = i;
                         }
-                        that.audioindex++;
-                        if (that.audioindex > i) {
-                           that.audioindex = 1;
+                        this.audioindex++;
+                        if (this.audioindex > i) {
+                           this.audioindex = 1;
                         }
-                        return that.audioindex;
+                        return this.audioindex;
                      };
                      if (typeof audioinfo == 'string') {
                         if (audioinfo.indexOf('ext:') == 0) {

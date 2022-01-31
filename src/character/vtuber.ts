@@ -1404,7 +1404,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 				},
 				group: 'yueyao_addDam',
-				// global:'yueyao_useStop',
 				subSkill: {
 					addDam: {
 						trigger: { source: 'damageBegin' },
@@ -1416,18 +1415,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							trigger.num++;
 						}
 					},
-					useStop: {
-						mod: {
-							playerEnabled(card, player, target) {
-								var players = game.filterPlayer(cur => {
-									return cur != player && cur.hasSkill('yueyao');
-								})
-								for (var i of players) {
-									if (target == player && i.storage.yueyao == player.countCards('h')) return false;
-								}
-							},
-						}
-					}
 				}
 			},
 			kongling: {
@@ -2058,7 +2045,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			Reine: `兰音`,
 			yueyao: `月谣`,
-			yueyao_info: `锁定技 游戏或回合开始时，你记录当前的手牌数为X。你手牌数为X时，造成的伤害+1；一名角色的手牌数为X时，其不能对你使用牌。`,
+			yueyao_info: `锁定技 游戏或回合开始时，你记录当前的手牌数为X。<br>
+			一名角色的手牌数为X时，其不能对你使用牌。<br>
+			你手牌数等于X时，造成的伤害+1。`,
 			yueyao_append: lib.figurer(`特性：爆发`),
 			kongling: `空灵`,
 			kongling_info: `你受到伤害后，可以令一名角色将手牌调整至X。`,

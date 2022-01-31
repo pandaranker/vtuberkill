@@ -116,7 +116,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			OtomeOto: ['re_OtomeOto', 'OtomeOto'],
 			HisekiErio: ['re_HisekiErio', 'HisekiErio'],
 			HanazonoSerena: ['re_HanazonoSerena', 'HanazonoSerena', 'old_HanazonoSerena'],
-			HosimiyaSio: ['HosimiyaSio', 'sea_HosimiyaSio'],
+			HosimiyaSio: ['HosimiyaSio', 'sea_HosimiyaSio','star_HosimiyaSio'],
 
 			Eilene: ['Eilene', 'old_Eilene'],
 		},
@@ -337,7 +337,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 2'
 					player.storage.changsheng = 'over';
 					player.awakenSkill('changsheng');
-					trigger.player.addTempSkill('changsheng_diao', { target: 'phaseBegin' });
+					trigger.player.addTempSkill('changsheng_diao', 'none');
 					game.broadcastAll(function (splayer) {
 						splayer.out('changsheng_diao');
 					}, trigger.player
@@ -1360,7 +1360,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.targets.contains(player);
 				},
 				content() {
-					player.addTempSkill('dunzou_enable', { target: 'phaseBegin' });//移除游戏
+					player.addTempSkill('dunzou_enable', 'none');//移除游戏
 					game.broadcastAll(function (splayer) {
 						splayer.out('dunzou_enable');
 					}, player)

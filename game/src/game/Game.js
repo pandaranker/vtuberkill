@@ -51,7 +51,7 @@ export default {
     const ai = {};
     const vkCore  = window.vkCore = { game, ui, get, ai, lib, _status }
     function vkExtends(target, source) {
-      for (var k in source) {
+      for (let k in source) {
         if (source.hasOwnProperty(k) === true) {
           target[k] = source[k];
         }
@@ -65,7 +65,8 @@ export default {
     //导入资源
     require('@d/entry')
     require('@m/entry')
-    game.galgameMod();
+    //galgame相关功能
+    require('@e/galgame/galgame')()
     lib.init.init();
   }
 }

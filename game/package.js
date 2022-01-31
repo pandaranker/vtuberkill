@@ -46,7 +46,7 @@ window.vk_package={
 		longlaoguan:'龙牢关',
 		single:'单挑',
 		brawl:'乱斗',
-		// yindao:'引导',
+		yindao:'引导',
 	},
 	submode:{
 		identity:{

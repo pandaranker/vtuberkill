@@ -1170,7 +1170,7 @@ module.exports = {
           }
           //用于加载包的函数
           let loadPack = function () {
-            let toLoad = 4;
+            let toLoad = 3;
             let packLoaded = function () {
               toLoad--;
               if (toLoad == 0) {
@@ -1188,13 +1188,13 @@ module.exports = {
                 }
               }
             };
-            if (localStorage.getItem(lib.configprefix + 'playback') 
-            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
-              lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
+            if (localStorage.getItem(lib.configprefix + 'playback')
+              || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
+                lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
               toLoad++;
               init.js(dist(), 'mode', packLoaded, packLoaded);
             }
-            init.js(dist(), ['card', 'character', 'sp', 'rank'], packLoaded, packLoaded);
+            init.js(dist(), ['card', 'character', 'sp'], packLoaded, packLoaded);
           };
           //part: 检查layout并设置`game.layout = layout`
           let layout = lib.config.layout;
@@ -2144,8 +2144,7 @@ module.exports = {
           lib.config.banned = lib.config[lib.config.mode + '_banned'] || [];
           lib.config.bannedcards = lib.config[lib.config.mode + '_bannedcards'] || [];
 
-          lib.rank = window.vtuberkill_character_rank;
-          delete window.vtuberkill_character_rank;
+          lib.rank = require('@d/rank');
           for (i in mode[lib.config.mode]) {
             if (i == 'element') continue;
             if (i == 'game') continue;
@@ -2594,7 +2593,7 @@ module.exports = {
               delete window.inSplash;
               window.resetGameTimeout = setTimeout(init.reset, 5000);
 
-              this.listenTransition(function () {
+              this.listenTransition(() => {
                 init.js(dist(), 'mode', proceed);
               }, 500);
             }
@@ -2650,7 +2649,7 @@ module.exports = {
           proceed();
         }
         localStorage.removeItem(lib.configprefix + 'directstart');
-        delete init.init;//??
+        delete init.init;
       },
       startOnline: [function () {
         Evt._resultid = null;
@@ -3239,6 +3238,47 @@ module.exports = {
      * @type {!Object}
      */
     const _mode = {
+      connect: {
+        name: '联机',
+        config: {
+          connect_nickname: {
+            name: '联机昵称',
+            input: true,
+            frequent: true,
+          },
+          connect_avatar: {
+            name: '联机头像',
+            init: 'KizunaAI',
+            item: {},
+            frequent: true,
+            onclick: function (item) {
+              game.saveConfig('connect_avatar', item);
+              game.saveConfig('connect_avatar', item, 'connect');
+            }
+          },
+          hall_ip: {
+            name: '联机大厅',
+            input: true,
+            frequent: true,
+          },
+          hall_button: {
+            name: '联机大厅按钮',
+            init: true,
+            frequent: true,
+            onclick: function (bool) {
+              game.saveConfig('hall_button', bool, 'connect');
+              if (ui.hall_button) {
+                if (bool) {
+                  ui.hall_button.style.display = '';
+                }
+                else {
+                  ui.hall_button.style.display = 'none';
+                }
+              }
+            }
+          },
+        }
+      },
       //引导
       yindao: {
         name: '引导',
@@ -4686,47 +4726,6 @@ module.exports = {
               }, 1000);
             },
             clear: true,
-          },
-        }
-      },
-      connect: {
-        name: '联机',
-        config: {
-          connect_nickname: {
-            name: '联机昵称',
-            input: true,
-            frequent: true,
-          },
-          connect_avatar: {
-            name: '联机头像',
-            init: 'KizunaAI',
-            item: {},
-            frequent: true,
-            onclick: function (item) {
-              game.saveConfig('connect_avatar', item);
-              game.saveConfig('connect_avatar', item, 'connect');
-            }
-          },
-          hall_ip: {
-            name: '联机大厅',
-            input: true,
-            frequent: true,
-          },
-          hall_button: {
-            name: '联机大厅按钮',
-            init: true,
-            frequent: true,
-            onclick: function (bool) {
-              game.saveConfig('hall_button', bool, 'connect');
-              if (ui.hall_button) {
-                if (bool) {
-                  ui.hall_button.style.display = '';
-                }
-                else {
-                  ui.hall_button.style.display = 'none';
-                }
-              }
-            }
           },
         }
       },
@@ -6932,7 +6931,7 @@ module.exports = {
             }
           }
           if (!cards.length) {
-            cards.push(game.createCard('qilin'));
+            cards.push(game.createCard('qinglong'));
             cards.push(game.createCard('bagua'));
             cards.push(game.createCard('dilu'));
             cards.push(game.createCard('chitu'));
@@ -6949,51 +6948,6 @@ module.exports = {
           }
         },
         c: function () {
-          // (function () {
-          //     var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0;
-          //     var sa = 0, sb = 0, sc = 0, sd = 0, se = 0, sf = 0, sg = 0, sh = 0, si = 0, sj = 0, sk = 0, sl = 0, sm = 0;
-          //     for (var i in lib.character) {
-          //         switch (lib.character[i][1]) {
-          //             case 'wei': a++; if (lib.config.banned.contains(i)) sa++; break;
-          //             case 'shu': b++; if (lib.config.banned.contains(i)) sb++; break;
-          //             case 'wu': c++; if (lib.config.banned.contains(i)) sc++; break;
-          //             case 'qun': d++; if (lib.config.banned.contains(i)) sd++; break;
-          //             case 'western': e++; if (lib.config.banned.contains(i)) se++; break;
-          //             case 'key': f++; if (lib.config.banned.contains(i)) sf++; break;
-          //             case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
-          //             case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
-          //             case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
-          //             case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
-          //             case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
-          //             case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
-          //             case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;
-          //             case 'paryi': m++; if (lib.config.banned.contains(i)) sm++; break;
-          //             case 'kagura': n++; if (lib.config.banned.contains(i)) sn++; break;
-          //             case 'nanashi': o++; if (lib.config.banned.contains(i)) so++; break;
-          //             case 'psp': p++; if (lib.config.banned.contains(i)) sp++; break;
-          //             case 'asoul': q++; if (lib.config.banned.contains(i)) sq++; break;
-          //             case 'nori': r++; if (lib.config.banned.contains(i)) sr++; break;
-          //             case 'vwp': s++; if (lib.config.banned.contains(i)) ss++; break;
-          //             case 'vshojo': t++; if (lib.config.banned.contains(i)) st++; break;
-          //             case 'xuyan': u++; if (lib.config.banned.contains(i)) su++; break;
-          //             case 'chaos': v++; if (lib.config.banned.contains(i)) sv++; break;
-          //             case 'xuefeng': w++; if (lib.config.banned.contains(i)) sw++; break;
-          //             case 'ego': w++; if (lib.config.banned.contains(i)) sw++; break;
-          //             case 'Tencent': w++; if (lib.config.banned.contains(i)) sw++; break;
-          //         }
-          //     }
-          //     console.log('魏：' + (a - sa) + '/' + a);
-          //     console.log('蜀：' + (b - sb) + '/' + b);
-          //     console.log('吴：' + (c - sc) + '/' + c);
-          //     console.log('群：' + (d - sd) + '/' + d);
-          //     console.log('西：' + (e - se) + '/' + e);
-          //     console.log('键：' + (f - sf) + '/' + f);
-          //     console.log('杏：' + (g - sg) + '/' + g);
-          //     console.log('虹：' + (h - sh) + '/' + h);
-          //     console.log('U：' + (j - sj) + '/' + j);
-          //     console.log('点：' + (k - sk) + '/' + k);
-          //     console.log('已启用：' + ((a + b + c + d + e + f + g + h + i + j + k + l + m) - (sa + sb + sc + sd + se + sf + sg + sh + hi + sj + sk + sl + sm)) + '/' + (a + b + c + d + e + f + g + h + i + j + k + l + m));
-          // }());
           (function () {
             var a = 0, b = 0, c = 0, d = 0;
             var aa = 0, bb = 0, cc = 0, dd = 0;
@@ -7079,39 +7033,6 @@ module.exports = {
           for (var i = 0; i < Math.min(arguments.length, ui.dialog.buttons.length); i++) {
             ui.dialog.buttons[i].link = arguments[i];
           }
-        },
-        uy: function (me) {
-          if (me) {
-            game.me.useCard({ name: 'spell_yexinglanghun' }, game.me);
-          }
-          else {
-            var enemy = game.me.getEnemy();
-            enemy.useCard({ name: 'spell_yexinglanghun' }, enemy);
-          }
-        },
-        gs: function (name, act) {
-          var card = game.createCard('spell_' + (name || 'yexinglanghun'));
-          game.me.node.handcards1.appendChild(card);
-          if (!act) {
-            game.me.actused = -99;
-          }
-          ui.updatehl();
-          delete _status.event._cardChoice;
-          delete _status.event._targetChoice;
-          delete _status.event._skillChoice;
-          setTimeout(game.check, 300);
-        },
-        gc: function (name, act) {
-          var card = game.createCard('stone_' + (name || 'falifulong') + '_stonecharacter');
-          game.me.node.handcards1.appendChild(card);
-          if (!act) {
-            game.me.actused = -99;
-          }
-          ui.updatehl();
-          delete _status.event._cardChoice;
-          delete _status.event._targetChoice;
-          delete _status.event._skillChoice;
-          setTimeout(game.check, 300);
         },
         a: function (bool) {
           if (lib.config.test_game) {
@@ -8688,8 +8609,8 @@ module.exports = {
       character: {},
       init,
       element,
-      mode:_mode,
-      message:_message,
+      mode: _mode,
+      message: _message,
       /**
        * 珠联璧合映射
        * @type {!Object}

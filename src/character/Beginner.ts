@@ -186,10 +186,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { countCards: (arg0: string) => number; }) {
 					return player.countCards('h') > 0;
 				},
-				content: [function () {
+				content: [() => {
 					Evt.num = player.storage.re_ailian_clear;
 					targets[0].gain(cards, player, 'giveAuto');
-				}, function () {
+				}, () => {
 					player.storage.re_ailian_clear += cards.length;
 					if (player.storage.re_ailian_clear >= 2 && Evt.num < 2) {
 						let list = [];
@@ -237,7 +237,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 					}
 					else Evt.finish();
-				}, function () {
+				}, () => {
 					if (result?.bool && result.links?.length) {
 						let card = { name: result.links[0][2], nature: result.links[0][3] };
 						player.chooseUseTarget(card, true);
@@ -303,7 +303,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player.countCards('h') > 0;
 						},
 						direct: true,
-						content: [function () {
+						content: [() => {
 							player.chooseCardTarget({
 								prompt: get.prompt2('re_ailian'),
 								selectCard: [1, Infinity],
@@ -325,7 +325,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									return 8 - get.value(card);
 								},
 							}).set('logSkill', 're_ailian');
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets?.length) {
 								player.useSkill('re_ailian', result.cards, result.targets);
 							}
@@ -344,17 +344,17 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterTarget(card, player, target: { countCards: (arg0: string) => any; }) {
 					return target.countCards('he');
 				},
-				content: [function () {
+				content: [() => {
 					var att = get.sgnAttitude(target, player)
 					target.chooseToDiscard('he', '弃置一张牌(若其中有♠或点数9，则视为' + get.translation(player) + '使用了一张酒)', true).set('ai', (card: any) => {
 						if (att > 1) return (get.suit(card) == 'spade' || get.number(card) == 9);
 					}).set('att', att);
-				}, function () {
+				}, () => {
 					if (result.bool && result.cards) {
 						Evt.discardCards = result.cards.slice(0);
 					}
 					else Evt.finish()
-				}, function () {
+				}, () => {
 					Evt.discardCards.forEach((discard: any) => {
 						if (get.suit(discard) == 'spade' || get.number(discard) == 9)
 							Evt.isJiu = true;
@@ -369,7 +369,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					player.getStat().card.jiu--;
 				}],
 				ai: { order: 10, result: { target: -1 } },
@@ -388,9 +388,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { countCards: (arg0: string) => any; }) {
 					return player.countCards('h');
 				},
-				content: [function () {
+				content: [() => {
 					player.storage.duanli = player.countCards('h');
-				}, function () {
+				}, () => {
 					var cards = player.getCards('h');
 					player.discard(cards);
 				}],
@@ -412,9 +412,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						filter(Evt: any, player: { storage: { duanli: any; }; }) {
 							return player.storage.duanli;
 						},
-						content: [function () {
+						content: [() => {
 							player.draw(player.storage.duanli);
-						}, function () {
+						}, () => {
 							player.storage.duanli = 0;
 						}]
 					}
@@ -428,9 +428,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.card.name == 'tao'
 						&& Evt.player != player;
 				},
-				content: [function () {
+				content: [() => {
 					trigger.player.chooseBool('是否让' + get.translation(player) + '摸一张牌').set('choice', get.attitude(trigger.player, player) > 0);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.logSkill('qingmi');
 						player.draw(trigger.player);
@@ -501,9 +501,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						direct: true,
 						firstDo: true,
-						content: [function () {
+						content: [() => {
 							player.chooseUseTarget(trigger.cards[0], true, false, trigger.cards);
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								trigger.card.cards = [];
 								trigger.cards = [];
@@ -574,10 +574,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.player.countCards('e') > 0;
 				},
 				logTarget: 'player',
-				content: [function () {
+				content: [() => {
 					Evt.togain = trigger.player.getCards('e');
 					player.gain(Evt.togain, trigger.player, 'giveAuto');
-				}, function () {
+				}, () => {
 					if (trigger.source == player) {
 						player.draw(3);
 					}
@@ -645,7 +645,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return prompt2;
 						},
 						priority: 22,
-						content: [function () {
+						content: [() => {
 							var num1 = 0, num2 = 0;
 							trigger.cards.forEach((card: any) => {
 								if (get.type(card) == 'basic') {
@@ -661,7 +661,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								});
 							}
 							if (num2 >= 2) Evt.change = true;
-						}, function () {
+						}, () => {
 							if (Evt.change) {
 								player.chooseTarget('令一名角色回复一点体力', function (card: any, player: any, target: { hp: number; maxHp: number; }) {
 									return target.hp < target.maxHp;
@@ -672,7 +672,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							} else {
 								Evt.finish();
 							}
-						}, function () {
+						}, () => {
 							if (result.targets?.length) {
 								result.targets[0].recover();
 							}
@@ -683,7 +683,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			//re狐叔
 			re_dianyin: {
 				trigger: { player: 'damageEnd' },
-				content: [function () {
+				content: [() => {
 					Evt.num ??= trigger.num;
 					var next = player.chooseTarget('令一名角色摸两张牌');
 					next.set('prompt2', '（若其手牌数少于你或为全场最少，改为摸三张牌）');
@@ -692,7 +692,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						var att = get.attitude(player, target);
 						return att;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool && result?.targets?.length) {
 						var target = result.targets[0];
 						player.line(target, 'green');
@@ -703,14 +703,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							target.draw(2);
 						}
 					}
-				}, function () {
+				}, () => {
 					if (--Evt.num > 0) {
 						player.chooseBool(get.prompt2('dianyin'));
 					}
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.logSkill('dianyin');
 						Evt.goto(0);
@@ -771,11 +771,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						return player.canCompare(cur);
 					});
 				},
-				content: [function () {
+				content: [() => {
 					player.chooseTarget(true, '『直球』：与一名角色拼点', function (card: any, player: { canCompare: (arg0: any) => any; }, target: any) {
 						return player.canCompare(target);
 					})
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						var target = result.targets[0];
 						Evt.target = target;
@@ -785,7 +785,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.chooseTarget(true, '『直球』：对一名角色造成一点伤害').set('ai', function (target: any) {
 							var player = _status.event.player;
@@ -796,7 +796,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						player.damage(Evt.target);
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets && result.targets[0]) {
 						result.targets[0].damage(player);
 					}
@@ -877,7 +877,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			ruantang: {
 				trigger: { player: 'phaseJudgeBefore' },
 				direct: true,
-				content: [function () {
+				content: [() => {
 					var check = player.countCards('h') >= 2 && player.hp < player.maxHp;
 					player.chooseTarget(get.prompt('ruantang'), '令至多一名异性角色与自己各回复一点体力（选择自己则表示仅为自己回复体力）', function (card: any, player: { sex: any; }, target: { sex: any; isDamaged: () => any; }) {
 						return target == player || (target.sex != player.sex && target.isDamaged());
@@ -886,7 +886,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						var att = get.attitude(_status.event.player, target);
 						return att;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.target = result.targets[0];
 						var target = result.targets[0];
@@ -902,10 +902,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (Evt.recover1 && Evt.target.hp == Evt.target.maxHp) Evt.target.draw();
 					if (Evt.recover2 && player.hp == player.maxHp) player.draw();
-				}, function () {
+				}, () => {
 					trigger.cancel();
 					player.skip('phaseDraw');
 				}],
@@ -914,7 +914,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			yaozhan: {
 				trigger: { player: ['phaseDrawBefore', 'phaseUseBefore'] },
 				direct: true,
-				content: [function () {
+				content: [() => {
 					var check = player.countCards('h') > 2;
 					if (trigger.name == 'phaseUse' && player.getHandcardLimit() > 2) check = player.countCards('h') <= player.getHandcardLimit();
 					player.chooseTarget('###是否发动『邀战』？###跳过' + get.translation(trigger.name) + '，视为对一名其他角色使用一张【决斗】', function (card: any, player: { canUse: (arg0: { name: string; }, arg1: any) => any; }, target: any) {
@@ -924,7 +924,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (!_status.event.check) return 0;
 						return get.effect(target, { name: 'juedou' }, _status.event.player);
 					});
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets?.length) {
 						player.logSkill('yaozhan', result.targets);
 						player.useCard({ name: 'juedou' }, result.targets[0]);
@@ -956,7 +956,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player.countCards('he', { suit: suit0 }) > 0;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					player.chooseCard(get.translation(trigger.player) + '的' + (trigger.judgestr || '') + '判定为' +
 						get.translation(trigger.player.judging[0]) + '，' + get.prompt('chongxin'), 'he', (card: any) => {
 							var judging = _status.event.judging;
@@ -981,14 +981,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								return -result;
 							}
 						}).set('judging', trigger.player.judging[0]);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.respond(result.cards, 'highlight', 'noOrdering');
 					}
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.card = trigger.player.judging[0];
 						player.gain(Evt.card, 'gain2');
@@ -998,9 +998,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					player.chooseBool('是否将' + get.translation(Evt.card) + '置于武将牌上')
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						var card = Evt.card;
 						player.lose(card, ui.special, 'toStorage');
@@ -1060,27 +1060,27 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					console.log('Outter')
 					var next = game.createEvent('laohuji');
 					next.player = player;
-					next.setContent([function () {
+					next.setContent([() => {
 						var audio = [player.name, player.name1, player.name2].contains('re_NijikawaRaki');
 						player.logSkill('yayun', true, true, true, audio);
 						Evt.discards = player.getDiscardableCards(player, 'h');
 						player.discard(Evt.discards);
 						if (Evt.discards.length == 0) Evt.finish();
 						else Evt.cards = [];
-					}, function () {
+					}, () => {
 						var suits = get.suit3(Evt.discards);
 						var next = player.judge((card: any) => {
 							var suits = _status.event.suits;
 							if (suits.contains(get.suit(card))) return 1;
 							return -1;
 						});
-						next.set('callback', function () {
+						next.set('callback', () => {
 							//Evt.getParent().orderingCards.remove(card);
 						});
 						next.set('suits', suits);
 						if (!Evt.num) Evt.num = 1;
 						else Evt.num++;
-					}, function () {
+					}, () => {
 						console.log(Evt.num)
 						if (result.bool) {
 							player.draw();
@@ -1092,7 +1092,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						else {
 							Evt.cards.push(result.card);
 						}
-					}, function () {
+					}, () => {
 						if (Evt.cards.length == 3) {
 							var suits = get.suit3(Evt.cards);
 							if (suits.length == 1) {
@@ -1118,7 +1118,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							if (_status.gameStarted) {
 								if (player.storage.yayun) {
 									if (!player.getDiscardableCards(player, 'h')) dialog.addText('不可发动');
-									else dialog.add(ui.create.div('.menubutton.pointerdiv', '点击发动', function () {
+									else dialog.add(ui.create.div('.menubutton.pointerdiv', '点击发动', () => {
 										if (!this.disabled) {
 											this.disabled = true;
 											this.classList.add('disabled');
@@ -1170,10 +1170,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						|| (Evt.player.countCards('h') > 4 && get.attitude(player, Evt.player) < 0);
 				},
 				logTarget: 'player',
-				content: [function () {
+				content: [() => {
 					Evt.target = trigger.player;
 					trigger.changeToZero();
-				}, function () {
+				}, () => {
 					lib.skill.yayun.laohuji(Evt.target);
 				}],
 			},
@@ -1215,7 +1215,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 					return false;
 				},
-				content: [function () {
+				content: [() => {
 					var num = player.storage.yinni_record - trigger.targets.length;
 					if (num > 0) {
 						var prompt2 = '为' + get.translation(trigger.card) + '增加目标至' + get.cnNumber(player.storage.yinni_record) + '个';
@@ -1235,7 +1235,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return -get.effect(target, _status.event.getTrigger().card, player, player)
 						});
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (!Evt.isMine()) game.delayx();
 						Evt.targets = result.targets;
@@ -1243,7 +1243,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (Evt.targets) {
 						player.logSkill('yinni', Evt.targets);
 						if (trigger.targets.contains(Evt.targets[0])) {
@@ -1308,13 +1308,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						filter(Evt: any, player: { storage: { re_pojie: number; }; }) {
 							return player.storage.re_pojie > 0;
 						},
-						content: [function () {
+						content: [() => {
 							if (trigger.name == 'phaseUse') {
 								player.logSkill('re_pojie');
 								player.chooseToDiscard(player.storage.re_pojie, true, 'h');
 								trigger.cancel();
 							}
-						}, function () {
+						}, () => {
 							player.storage.re_pojie = 0;
 							player.unmarkSkill('re_pojie');
 						}],
@@ -1336,13 +1336,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterTarget(card: any, player: any, target: any) {
 					return target != player;
 				},
-				content: [function () {
+				content: [() => {
 					player.$give(cards, target);
 					target.equip(cards[0]);
-				}, function () {
+				}, () => {
 					Evt.num = Math.abs(player.getHandcardLimit() - player.countCards('h'));
 					target.chooseToDiscard('『大振』：弃置' + get.cnNumber(Evt.num) + '张牌，否则受到' + get.translation(player) + '造成的1点伤害', Evt.num, 'he');
-				}, function () {
+				}, () => {
 					if (result.bool && result.cards) {
 						Evt.finish();
 					} else {
@@ -1382,7 +1382,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					});
 					return DD;
 				},
-				content: [function () {
+				content: [() => {
 					if (trigger.player == player) {
 						player.draw();
 						Evt.finish();
@@ -1400,7 +1400,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							prompt: 'DD斩首！(若不出【杀】则摸一张牌）',
 						}).set('logSkill', ['re_DDzhanshou', trigger.player]);
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.finish();
 					} else {
@@ -1416,7 +1416,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return get.number(Evt.card) > 10;
 				},
 				priority: 1,
-				content: [function () {
+				content: [() => {
 					var list = [['无法响应'], ['额外目标'], ['摸一张牌']];
 					if (!game.hasPlayer(cur => lib.filter.targetEnabled2(trigger.card, player, cur)
 						&& player.inRange(cur)
@@ -1432,9 +1432,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						})
 						dialog.videoId = id;
 					}, Evt.videoId, list, 1);
-				}, function () {
+				}, () => {
 					player.chooseButton(1).set('dialog', Evt.videoId).set('prompt', get.prompt('re_taiyangzhiyin'));
-				}, function () {
+				}, () => {
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
 						result.links.forEach((element: string[]) => {
@@ -1462,7 +1462,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							}
 						});
 					}
-				}, function () {
+				}, () => {
 					if (result?.bool) {
 						if (!Evt.isMine()) game.delayx();
 						Evt.target = result.targets[0];
@@ -1490,7 +1490,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						priority: 14,
 						direct: true,
-						content: [function () {
+						content: [() => {
 							if ((player.storage.re_mozhaotuji_useCard) >= 2) {
 								player.logSkill('re_mozhaotuji');
 								player.draw(1);
@@ -1514,7 +1514,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					change: {
 						audio: 'mozhaotuji',
 						trigger: {
-							player: ['phaseZhunbeiBegin', 'phaseJudgeBefore', 'phaseDrawBefore', 'phaseDiscardBefore', 'phaseJieshuBegin']
+							player: ['phaseZhunbeiBefore', 'phaseJudgeBefore', 'phaseDrawBefore', 'phaseDiscardBefore', 'phaseJieshuBegin']
 						},
 						filter(Evt, player) {
 							return !player.hasSkill('re_mozhaotujiStop');
@@ -1526,12 +1526,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						prompt() {
 							return '把准备阶段转换为出牌阶段';
 						},
-						content: [function () {
+						content: [() => {
 							trigger.cancel();
-						}, function () {
+						}, () => {
 							player.addTempSkill('re_mozhaotujiStop');
 							player.phaseUse();
-						}, function () {
+						}, () => {
 							let stat = player.getStat();
 							stat.card = {};
 							for (let i in stat.skill) {
@@ -1547,9 +1547,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					},
 				}
 			},
-			re_mozhaotujiStop: {
-
-			},
+			re_mozhaotujiStop: {},
 			//re兔头
 			re_bingdielei: {
 				audio: 'bingdielei',
@@ -1607,11 +1605,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						&& get.color(Evt.card) == 'black';
 
 				},
-				content: [function () {
+				content: [() => {
 					player.chooseTarget('选择『震音』的目标', function (card: any, player: any, target: any) {
 						return _status.event.targets.contains(target);
 					}).set('targets', trigger.targets);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.A = result.targets[0];
 						Evt.B = Evt.A.next;
@@ -1637,7 +1635,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish()
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.links?.length) {
 						let card = result.links[0];
 						let dam = false;
@@ -1699,11 +1697,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return game.hasPlayer((cur: any) => !Evt.targets.contains(cur) && player.canUse(Evt.card, cur));
 						},
 						direct: true,
-						content: [function () {
+						content: [() => {
 							player.chooseTarget(get.prompt('re_shuangren'), '为' + get.translation(trigger.card) + '增加一个目标', function (card: any, player: { canUse: (arg0: any, arg1: any) => any; }, target: any) {
 								return !_status.event.sourcex.contains(target) && player.canUse(_status.event.card, target);
 							}).set('sourcex', trigger.targets).set('card', trigger.card);
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								if (!Evt.isMine() && !_status.connectMode) game.delayx();
 								Evt.target = result.targets[0];
@@ -1711,7 +1709,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							else {
 								Evt.finish();
 							}
-						}, function () {
+						}, () => {
 							player.logSkill('re_shuangren', Evt.target);
 							trigger.targets.push(Evt.target);
 						}],
@@ -1742,9 +1740,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { canMoveCard: (arg0: null, arg1: boolean) => any; }) {
 					return player.canMoveCard(null, true);
 				},
-				content: [function () {
+				content: [() => {
 					player.loseHp(1);
-				}, function () {
+				}, () => {
 					player.moveCard(true).set('nojudge', true).set('ai', function (target: { countCards: (arg0: string, arg1: (card: any) => any) => number; getCards: (arg0: string) => any; isEmpty: (arg0: any) => any; }) {
 						var player = _status.event.player;
 						var att = get.attitude(player, target);
@@ -1786,7 +1784,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						return -att * get.attitude(player, ui.selected.targets[0]);
 					});
-				}, function () {
+				}, () => {
 					if (result.targets[0] == player) {
 						player.chooseUseTarget({ name: 'sha', nature: 'thunder' }, '是否视为使用一张雷【杀】？', false);
 					}
@@ -1960,9 +1958,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.cards.length && Evt.hs.length;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					Evt.num = trigger.cards.length;
-				}, function () {
+				}, () => {
 					var next = player.chooseTarget('令一名其他角色获得『神佑』直到回合结束');
 					next.set('filterTarget', function (card: any, player: any, target: { hasSkill: (arg0: string) => any; }) {
 						return !target.hasSkill('shenyou');
@@ -1980,7 +1978,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						return get.attitude(player, target);
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.logSkill('shenfa', result.targets[0])
 						result.targets[0].addTempSkill('shenyou');
@@ -2052,7 +2050,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				direct: true,
 				lastDo: true,
-				content: [function () {
+				content: [() => {
 					player.chooseCardButton('###' + get.prompt('akxiaoqiao') + '###展示任意张类型不同的手牌', player.getCards('h'), [1, 3]).set('filterButton', function (button: string) {
 						let type = get.type(button.link, 'trick');
 						for (let i of ui.selected.buttons) {
@@ -2060,7 +2058,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						return true;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool && result.links) {
 						player.logSkill('akxiaoqiao');
 						let cards = result.links;
@@ -2099,7 +2097,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (player.storage.liancheng && player.storage.liancheng == 2) return false;
 					return player.countCards('h');
 				},
-				content: [function () {
+				content: [() => {
 					player.chooseCardButton('###『链成』###重铸任意张类型不同的手牌', player.getCards('h'), [1, 3]).set('filterButton', function (button: string) {
 						let type = get.type(button.link, 'trick');
 						for (let i of ui.selected.buttons) {
@@ -2107,7 +2105,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						return true;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.storage.liancheng++;
 						var cards = result.links;
@@ -2119,20 +2117,20 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					Evt.diff = player.countCards('h') - _status.currentPhase.countCards('h');
 					if (Evt.diff == 0) {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					var check = (Evt.diff > 0) ? (get.attitude(player, _status.currentPhase) > 0) : (get.attitude(player, _status.currentPhase) < 0);
 					var next = player.chooseBool('###『链成』###是否令当前回合角色调整手牌与你相同？');
-					next.set('ai', function () {
+					next.set('ai', () => {
 						if (!_status.event.check) return 0;
 						return 1;
 					});
 					next.set('check', check)
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (Evt.diff > 0) {
 							_status.currentPhase.gain(get.cards(Evt.diff), 'draw');
@@ -2183,11 +2181,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterCard: true,
 				position: 'he',
 				selectCard: [1, 3],
-				content: [function () {
+				content: [() => {
 					game.delayx();
-				}, function () {
+				}, () => {
 					player.draw();
-				}, function () {
+				}, () => {
 					if (get.itemtype(result) == 'cards') {
 						player.showCards(result);
 						cards.forEach(cur => {
@@ -2302,11 +2300,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 					else return false;
 				},
-				content: [function () {
+				content: [() => {
 					player.draw(3);
-				}, function () {
+				}, () => {
 					player.chooseCard(2, 'he', '选择放置到牌堆顶部的牌', true);
-				}, function () {
+				}, () => {
 					if (result.bool == true && result.cards != null) {
 						Evt.cards = result.cards
 					}
@@ -2324,15 +2322,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return next.getUseValue(card) * att;
 						});
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.links?.length) Evt.linkcards = result.links.slice(0);
 					else Evt.finish();
 					game.delay();
-				}, function () {
+				}, () => {
 					var cards = Evt.linkcards;
 					player.lose(cards, ui.special);
 					game.delay();
-				}, function () {
+				}, () => {
 					var cards = Evt.linkcards;
 					while (cards.length > 0) {
 						var card = cards.pop();
@@ -2357,9 +2355,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterTarget(card: any, player: any, target: any) {
 					return player != target;
 				},
-				content: [function () {
+				content: [() => {
 					target.draw();
-				}, function () {
+				}, () => {
 					Evt.card = result[0];
 					if (target.hasUseTarget(Evt.card)) {
 						target.chooseUseTarget(Evt.card, '是否立即使用该牌（' + get.translation(Evt.card) + '）？');
@@ -2414,20 +2412,20 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (player.countCards('h') == player.countCards('h', { color: 'red' })) return get.recoverEffect(Evt.player, player, player) > 0;
 					return true;
 				},
-				content: [function () {
+				content: [() => {
 					player.showHandcards();
 					Evt.chk = player.countCards('h') == player.countCards('h', { color: 'red' });
-				}, function () {
+				}, () => {
 					if (Evt.chk) {
 						trigger.player.recover();
 					}
-				}, function () {
+				}, () => {
 					if (!Evt.chk) {
 						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]).set('ai', (card: any) => {
 							return 6.5 - get.value(card);
 						});
 					}
-				}, function () {
+				}, () => {
 					if (!Evt.chk && result.bool && result.cards.length) {
 						player.lose(result.cards, ui.discardPile).set('visible', true);
 						player.$throw(result.cards, 1000);
@@ -2463,9 +2461,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: { card: any; }, player: { hasSkill: (arg0: string) => any; }) {
 					return Evt.card && get.name(Evt.card) == 'sha' && !player.hasSkill('xihun_used');
 				},
-				content: [function () {
+				content: [() => {
 					player.draw();
-				}, function () {
+				}, () => {
 					if (player.getHandcardLimit() < player.countCards('h')) {
 						player.addTempSkill('xihun_used', 'roundStart');
 					}
@@ -2483,21 +2481,21 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { countCards: (arg0: string, arg1: { color: string; }) => number; hasSkill: (arg0: string) => any; }) {
 					return player.countCards('he', { color: 'red' }) > 1 && !player.hasSkill('huangyou_used');
 				},
-				content: [function () {
+				content: [() => {
 					if (player.hp == player.maxHp) {
 						player.draw(3);
 						Evt.goto(4);
 					}
-				}, function () {
+				}, () => {
 					var list = ['摸三张牌', '回复体力'];
 					Evt.videoId = lib.status.videoId++;
 					game.broadcastAll(function (id: any, list: any) {
 						var dialog = ui.create.dialog('选择一项', [list, 'vcard']);
 						dialog.videoId = id;
 					}, Evt.videoId, list);
-				}, function () {
+				}, () => {
 					player.chooseButton(true).set('dialog', Evt.videoId);
-				}, function () {
+				}, () => {
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.buttons[0].link[2] == '摸三张牌') {
 						player.draw(3);
@@ -2505,7 +2503,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.buttons[0].link[2] == '回复体力') {
 						player.recover();
 					}
-				}, function () {
+				}, () => {
 					player.judge((card: any) => {
 						if (get.suit(card, player) == 'heart') return 4;
 						else {
@@ -2533,7 +2531,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				direct: true,
 				priority: 1,
-				content: [function () {
+				content: [() => {
 					player.chooseToDiscard(get.translation(trigger.player) + '的' + (trigger.judgestr || '') + '判定为' +
 						get.translation(trigger.player.judging[0]) + '，' + get.prompt('qidao'), 'he', (card: any) => {
 							return true;
@@ -2551,14 +2549,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								return result - get.value(card);
 							}
 						}).set('judging', trigger.player.judging[0]);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						trigger.player.judge();
 					}
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (trigger.player.judging[0].clone) {
 						trigger.player.judging[0].clone.classList.remove('thrownhighlight');
 						game.broadcast((card: { clone: { classList: any[]; }; }) => {
@@ -2585,13 +2583,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						return !player.storage.huxiGroup.contains(cur) && cur != player;
 					}) && Evt.getParent().skill != 're_huxi1' && Evt.getParent(2).skill != 're_huxi1' && Evt.getParent(3).skill != 're_huxi1';
 				},
-				content: [function () {
+				content: [() => {
 					var next = player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌', true).set('type', 'compare');
 					next.set('filterTarget', function (card: any, player: { storage: { huxiGroup: any[]; }; countCards: (arg0: string) => any; }, target: { countCards: (arg0: string) => any; }) {
 						if (player.storage.huxiGroup && player.storage.huxiGroup.contains(target)) return false;
 						return target != player && player.countCards('h') && target.countCards('h');
 					})
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.target = result.targets[0];
 						game.log(player, '想要呼吸', Evt.target);
@@ -2600,16 +2598,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					Evt.card2 = result.cards[0];
 					if (!Evt.resultOL && Evt.ol) {
 						game.pause();
 					}
-				}, function () {
+				}, () => {
 					player.lose(Evt.card1, ui.ordering);
 					Evt.target.lose(Evt.card2, ui.ordering);
-				}, function () {
-					game.broadcast(function () {
+				}, () => {
+					game.broadcast(() => {
 						ui.arena.classList.add('thrownhighlight');
 					});
 					ui.arena.classList.add('thrownhighlight');
@@ -2621,7 +2619,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					Evt.num2 = Evt.card2.number;
 					Evt.trigger('compare');
 					game.delay(0, 1500);
-				}, function () {
+				}, () => {
 					Evt.result = {
 						getC: Evt.card2,
 					}
@@ -2630,12 +2628,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					game.broadcastAll(function (str: any) {
 						var dialog = ui.create.dialog(str);
 						dialog.classList.add('center');
-						setTimeout(function () {
+						setTimeout(() => {
 							dialog.close();
 						}, 1000);
 					}, str);
 					game.delay(2);
-				}, function () {
+				}, () => {
 					if (typeof Evt.target.ai.shown == 'number' && Evt.target.ai.shown <= 0.85 && Evt.addToAI) {
 						Evt.target.ai.shown += 0.1;
 					}
@@ -2644,7 +2642,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					game.delay(1);
 					target.gain(Evt.card1, 'visible');
 					target.$gain2(Evt.card1);
-					game.broadcastAll(function () {
+					game.broadcastAll(() => {
 						ui.arena.classList.remove('thrownhighlight');
 					});
 					game.addVideo('thrownhighlight2');
@@ -2654,7 +2652,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (typeof Evt.preserve == 'function') {
 						Evt.preserve = Evt.preserve(Evt.result);
 					}
-				}, function () {
+				}, () => {
 					if (get.color(Evt.result.getC) == 'red') {
 						player.draw(1);
 						if (!player.hasSkill('re_huxi2')) {
@@ -2712,9 +2710,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return list.length > 0;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					Evt.cards = trigger.cards.filterInD('d');
-				}, function () {
+				}, () => {
 					Evt.videoId = lib.status.videoId++;
 					var dialogx = ['###『赤心』：进入弃牌堆的牌###获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶（先选择的在上）'];
 					dialogx.push(Evt.cards);
@@ -2729,7 +2727,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						Evt.dialog.style.display = 'none';
 					}
 					var next = player.chooseButton();
-					next.set('selectButton', function () {
+					next.set('selectButton', () => {
 						if (ui.selected.buttons.length == 0) return 2;
 						else if (get.color(ui.selected.buttons[0].link) == 'red' && ui.dialog.buttons.length == 1) return 1;
 						return [1, Infinity];
@@ -2738,10 +2736,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					next.set('ai', function (button: string) {
 						return get.value(button.link) && ui.selected.buttons.length == 1;
 					});
-					next.set('forceAuto', function () {
+					next.set('forceAuto', () => {
 						return ui.selected.buttons.length == ui.dialog.buttons.length || ui.dialog.buttons.length == 1;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.links = result.links;
 						var controls = ['取消选择', '将这些牌置于牌堆顶', '获得这张牌'];
@@ -2779,7 +2777,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						Evt.dialog.close();
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					switch (result.index) {
 						case 0: {
 							Evt.goto(1);
@@ -2801,7 +2799,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							break;
 						}
 					}
-				}, function () {
+				}, () => {
 					if (player.isOnline2()) {
 						player.send('closeDialog', Evt.videoId);
 					}
@@ -2863,11 +2861,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						forced: true,
 						silent: true,
 						popup: false,
-						content: [function () {
-							player.chooseBool('###『绝壁』###是否令本次造成的伤害+1', function () {
+						content: [() => {
+							player.chooseBool('###『绝壁』###是否令本次造成的伤害+1', () => {
 								return get.attitude(player, trigger.player) < 0;
 							});
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								player.logSkill('juebi', trigger.player);
 								trigger.num++;
@@ -2890,9 +2888,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player.getCardUsable('shunshou') && player.hp > 1;
 						},
 						prompt2: '『战吼』出牌阶段开始时，你可以受到1点伤害，视为使用一张【顺手牵羊】。',
-						content: [function () {
+						content: [() => {
 							player.damage('nosource');
-						}, function () {
+						}, () => {
 							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】', { name: 'shunshou' }, true);
 						}],
 					},
@@ -2903,9 +2901,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player.hp < player.maxHp;
 						},
 						prompt2: '『战吼』其他角色阵亡时，你可以回复1点体力，视为使用一张【顺手牵羊】。',
-						content: [function () {
+						content: [() => {
 							player.recover();
-						}, function () {
+						}, () => {
 							player.chooseUseTarget('###『战吼』###视为使用一张【顺手牵羊】', { name: 'shunshou' }, true);
 						}],
 					}
@@ -2919,7 +2917,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				direct: true,
 				priority: 2,
-				content: [function () {
+				content: [() => {
 					player.chooseCard(get.translation(trigger.player) + '的' + (trigger.judgestr || '') + '判定为' +
 						get.translation(trigger.player.judging[0]) + '，' + get.prompt('qiangyun'), 'he', (card: any) => {
 							return true;
@@ -2937,7 +2935,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								return -result;
 							}
 						}).set('judging', trigger.player.judging[0]);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.card = result.cards[0];
 						player.addTempSkill('qiangyun2');
@@ -2947,7 +2945,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (trigger.player.judging[0].clone) {
 							trigger.player.judging[0].clone.classList.remove('thrownhighlight');
@@ -2969,7 +2967,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					game.delay(2.5);
 				}],
 			},
@@ -3015,7 +3013,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				audio: 4,
 				trigger: { player: 'shaMiss' },
 				forced: true,
-				content: [function () {
+				content: [() => {
 					player.judge((card: any) => {
 						if (get.suit(card) == 'spade') {
 							return 1;
@@ -3025,7 +3023,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						return 0;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (result.suit == 'spade') {
 							player.discardPlayerCard('结果为♠，请弃置对方一张牌', trigger.target, 'he', true);
@@ -3045,9 +3043,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { countCards: (arg0: string) => number; }) {
 					return player.countCards('h') > 0;
 				},
-				content: [function () {
+				content: [() => {
 					player.chooseToCompare(target).set('small', get.recoverEffect(player, target, target) > 0);
-				}, function () {
+				}, () => {
 					Evt.resultWinner = result.winner;
 					if (Evt.resultWinner == player) {
 						player.draw(2);
@@ -3055,25 +3053,25 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else if (Evt.resultWinner == target) {
 						target.draw(2);
 					}
-				}, function () {
+				}, () => {
 					if (Evt.resultWinner != player) {
-						player.chooseBool('是否使对方回复一点体力').set('ai', function () {
+						player.chooseBool('是否使对方回复一点体力').set('ai', () => {
 							return _status.event.check;
 						}).set('check', get.recoverEffect(target, player, player) > 0);
 					}
 					else Evt.goto(5);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						target.recover(player);
 					}
-				}, function () {
+				}, () => {
 					if (Evt.resultWinner != target) {
-						target.chooseBool('是否使对方回复一点体力').set('ai', function () {
+						target.chooseBool('是否使对方回复一点体力').set('ai', () => {
 							return _status.event.check;
 						}).set('check', get.recoverEffect(player, target, target) > 0);
 					}
 					else Evt.finish();
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.recover(target);
 					}
@@ -3088,11 +3086,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			re_xuyan: {
 				trigger: { player: 'phaseJieshuBegin' },
-				content: [function () {
+				content: [() => {
 					player.chooseTarget(1, '选择观察目标', function (card: any, player: any, target: any) {
 						return player != target;
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						result.targets[0].addSkill('re_xuyan_mark');
 					}
@@ -3117,7 +3115,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									return false;
 							}).length > 0
 						},
-						content: [function () {
+						content: [() => {
 							game.filterPlayer((cur: { hasSkill: (arg0: string) => any; removeSkill: (arg0: string) => void; }) => {
 								if (cur.hasSkill('re_xuyan_mark')) {
 									cur.removeSkill('re_xuyan_mark');
@@ -3126,7 +3124,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								else
 									return false;
 							});
-						}, function () {
+						}, () => {
 							if (player.hasSkill('re_xuyan_damaged')) {
 								player.draw(1);
 								player.removeSkill('re_xuyan_damaged');
@@ -3136,7 +3134,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									return 2 - get.attitude(player, target);
 								});
 							}
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								player.loseHp();
 								result.targets[0].loseHp();
@@ -3211,9 +3209,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				selectTarget: -1,
 				multitarget: false,
-				content: [function () {
+				content: [() => {
 					target.chooseCard('he', '『奉纳』：将一张牌交给' + get.translation(player), true);
-				}, function () {
+				}, () => {
 					player.gain(result.cards[0], target, 'giveAuto');
 					player.addTempSkill('fengna_used', 'phaseUseEnd')
 				}],
@@ -3320,14 +3318,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						filter(Evt: { cards: string | any[]; skill: string; }, player: any) {
 							return Evt.cards.length == 3 && Evt.skill == 're_yuxia_backup' && get.position(Evt.cards[0]) == 'd';
 						},
-						content: [function () {
+						content: [() => {
 							Evt.cards = trigger.cards.filterInD();
 							game.broadcastAll(function (player: { chooseCardButton: (arg0: number[], arg1: boolean, arg2: any, arg3: string) => { (): any; new(): any; set: { (arg0: string, arg1: (button: any) => any): void; new(): any; }; }; }, cards: any) {
 								player.chooseCardButton([0, 1], true, cards, '『龙箱』：可以将其中一张牌置于牌堆顶').set('ai', function (button: string) {
 									return get.value(button.link) + Math.random();
 								});
 							}, player, Evt.cards);
-						}, function () {
+						}, () => {
 							if (result.bool && result.links) {
 								var list = result.links.slice(0);
 								Evt.cards.removeArray(list);
@@ -3396,7 +3394,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (Evt.player != player && get.attitude(Evt.player, player) < 0 && Evt.player.inRange(player)) return true;
 					return Evt.player == player && !player.hasJudge('lebu') && (!player.hasUnknown(2) || !player.needsToDiscard());
 				},
-				content: [function () {
+				content: [() => {
 					var next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌', true, function (card: any, player: any, target: { hp: number; }) {
 						return target.hp != Infinity;
 					});
@@ -3404,7 +3402,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (player.inRange(target)) return 2 - get.attitude(player, target);
 						else return target.hp - (get.attitude(player, target) / 2);
 					})
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets?.length) {
 						player.logSkill('re_huange', result.targets);
 						player.draw(result.targets[0].hp);
@@ -3427,17 +3425,17 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						filter(Evt: any, player: { countDiscardableCards: (arg0: any, arg1: string) => any; }) {
 							return player.countDiscardableCards(player, 'he');
 						},
-						content: [function () {
+						content: [() => {
 							if (player.storage.re_huange_disc.isIn() && player.countCards('he')) {
 								player.chooseCard('he', '###『幻歌』###弃置' + get.cnNumber(player.storage.re_huange_disc.hp) + '张牌', player.storage.re_huange_disc.hp, true, lib.filter.cardDiscardable);
 							} else {
 								Evt.goto(2);
 							}
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								player.discard(result.cards);
 							}
-						}, function () {
+						}, () => {
 							player.unmarkSkill('re_huange_disc');
 							delete player.storage.re_huange_disc;
 						}],
@@ -3457,7 +3455,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player != Evt.player;
 						},
 						frequent: true,
-						content: [function () {
+						content: [() => {
 							trigger.player.chooseCard('###' + get.prompt('re_jiumao', player) + '###将任意张手牌交给' + get.translation(player), 'he', [1, Infinity]).set('ai', (card: any) => {
 								var player = _status.event.player;
 								var source = _status.event.source;
@@ -3466,13 +3464,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								if (player.needsToDiscard() && ui.selected.cards.length < (player.countCards('h') - source.countCards('h')) / 2) return get.value(card, target) - get.value(card, player) + 1;
 								else return get.value(card, target) - get.value(card, player) - 2;
 							}).set('source', player);
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								trigger.player.logSkill('re_jiumao', player);
 								trigger.player.give(result.cards, player);
 							}
 							else Evt.finish();
-						}, function () {
+						}, () => {
 							if (player.countCards('h') == trigger.player.countCards('h')) {
 								trigger._re_jiumao = true;
 							}
@@ -3487,7 +3485,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player != Evt.player && Evt._re_jiumao == true;
 						},
 						direct: true,
-						content: [function () {
+						content: [() => {
 							player.chooseCardTarget({
 								position: 'hs',
 								filterCard: true,
@@ -3504,7 +3502,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									return get.effect(target, { name: 'sha' }, _status.event.player);
 								}
 							});
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets?.length) {
 								player.useCard(result.cards[0], result.targets, result.cards, false).set('addedSkill', 're_jiumao_use');
 							}
@@ -3533,12 +3531,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player.countCards('h') && Evt.player != player;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					player.chooseCard([1, Infinity], get.prompt2('re_enfan'), 'he').set('ai', (card: any) => {
 						if (!_status.event.check) return 0;
 						return 6 - get.value(card);
 					}).set('check', get.attitude(player, trigger.player) > 0);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.target = trigger.player;
 						player.logSkill('re_enfan', Evt.target);
@@ -3546,9 +3544,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (Evt.target.countCards('h')) {
-						Evt.target.chooseToDiscard([1, Infinity], true, 'he').set('complexCard', true).set('cardResult', function () {
+						let cardResult = () => {
 							var cards = Evt.target.getCards('he');
 							var l = cards.length;
 							var all = Math.pow(l, 2);
@@ -3582,7 +3580,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								return list[0];
 							}
 							return list;
-						}()).set('ai', (card: any) => {
+						}
+						Evt.target.chooseToDiscard([1, Infinity], true, 'he').set('complexCard', true).set('cardResult', cardResult()).set('ai', (card: any) => {
 							if (!_status.event.cardResult.length) return 0 - get.value(card);
 							if (!_status.event.cardResult.contains(card)) return 0;
 							return 10;
@@ -3590,7 +3589,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (get.type3(result.cards).length >= 3) {
 							Evt.target.recover();
@@ -3606,7 +3605,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				audio: 'xuanxu',
 				enable: 'phaseUse',
 				usable: 1,
-				content: [function () {
+				content: [() => {
 					var cards = get.cards(4);
 					Evt.cards = cards;
 					var rednum = 0, blacknum = 0;
@@ -3635,7 +3634,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 						player.chooseToGuanxing(Evt.cards.length);
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.links?.length) {
 						var player2 = _status.currentPhase;
 						Evt.cards.remove(result.links[0]);
@@ -3649,7 +3648,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (_status.currentPhase == player && Evt.cards.length) {
 						for (var i = Evt.cards.length - 1; i >= 0; i--) {
 							ui.cardPile.insertBefore(Evt.cards[i], ui.cardPile.firstChild);
@@ -3673,13 +3672,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				check(Evt: { player: any; }, player: any) {
 					return get.attitude(player, Evt.player) > 0;
 				},
-				content: [function () {
+				content: [() => {
 					var next = player.chooseCard(get.prompt2('re_bizuo'), 'h', [1, player.countCards('h')]);
 					next.set('ai', (card: any) => {
 						if (['shan', 'wuxie', 'jinchan'].contains(get.name(card)) || !_status.currentPhase.hasUseTarget(card)) return 0;
 						return 6 - get.value(card);
 					});
-				}, function () {
+				}, () => {
 					if (result.cards && result.cards.length) {
 						player.logSkill('re_bizuo', trigger.player);
 						player.lose(result.cards, ui.special);
@@ -3688,7 +3687,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.cards && result.cards.length) {
 						for (var i = 0; i < result.cards.length; i++) {
 							result.cards[i].fix();
@@ -3718,16 +3717,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return false;
 						},
 						prompt: '弼佐:是否发动一次【预占】？',
-						content: [function () {
+						content: [() => {
 							if (player.isOnline()) {
-								player.send(function () {
+								player.send(() => {
 									player.useSkill('re_yuzhan', false, false);
 								});
 							}
 							else {
 								player.useSkill('re_yuzhan', false, false);
 							}
-						}, function () {
+						}, () => {
 							if (trigger.card && trigger.card.storage && trigger.card.storage.bizuo == true) delete trigger.card.storage.bizuo;
 							if (trigger.cards && trigger.cards.length) {
 								for (var i = 0; i < trigger.cards.length; i++) {
@@ -3783,7 +3782,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (ui.selected.cards.length && get.type(card, 'trick') != get.type(ui.selected.cards[0], 'trick')) return 10 - get.value(card);
 					return 4 - get.value(card);
 				},
-				precontent: [function () {
+				precontent: [() => {
 					var cards = Evt.result.cards.slice(0);
 					var types: any[] = [];
 					for (var i = 0; i < cards.length; i++) {
@@ -3792,12 +3791,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					Evt.types = types;
 					Evt.targets = Evt.result.targets.slice(0);
 					Evt.getParent().addCount = false;
-				}, function () {
+				}, () => {
 					if (Evt.types.contains('basic')) {
 						var list = get.info(Evt.result.card).nature.slice(0);
 						list.remove('kami');
 						list.push('cancel2');
-						player.chooseControl(list).set('prompt', get.prompt('guiren')).set('prompt2', '将' + get.translation(Evt.result.card) + '转换为以下属性之一').set('ai', function () {
+						player.chooseControl(list).set('prompt', get.prompt('guiren')).set('prompt2', '将' + get.translation(Evt.result.card) + '转换为以下属性之一').set('ai', () => {
 							var player = _status.event.player;
 							var card = _status.event.card;
 							if (get.name(card) == 'tao' && get.nature(card) == 'ocean') return 'cancel2';
@@ -3818,13 +3817,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					} else {
 						Evt.goto(3);
 					}
-				}, function () {
+				}, () => {
 					if (result.control != 'cancel2') {
 						Evt.result.card.nature = result.control;
 						player.popup(get.translation(Evt.result.card).slice(0, 2), result.control);
 						game.log('#y' + get.translation(get.name(Evt.result.card)), '被转为了', Evt.result.card);
 					}
-				}, function () {
+				}, () => {
 					if (Evt.types.contains('trick')) {
 						var target = Evt.targets.shift();
 						if (target.countGainableCards(player, 'he') > 0) player.gainPlayerCard(target, 'he');
@@ -3913,7 +3912,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				check(Evt: any, player: any) {
 					return true;
 				},
-				content: [function () {
+				content: [() => {
 					if (player.countCards('h') > player.getHandcardLimit()) {
 						player.chooseCardTarget({
 							position: 'h',
@@ -3935,7 +3934,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						player.addTempSkill('xingchi_used');
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets?.length) {
 						player.useCard({ name: 'sha' }, result.targets, result.cards, false);
 					}
@@ -3971,7 +3970,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.player.isIn() && !Evt.player.getStat('damage') && player.countDiscardableCards('he') >= 1;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					var target = trigger.player;
 					Evt.target = target;
 					var check = (get.attitude(player, target) > 0) || (get.attitude(player, target) < 0 && target.countCards('h') - target.getHandcardLimit() >= 2);
@@ -3979,7 +3978,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (_status.event.check) return 6 - get.value(card);
 						return -1;
 					}).set('check', check)
-				}, function () {
+				}, () => {
 					if (result.bool && result.cards) {
 						var att = get.attitude(player, Evt.target);
 						var list0 = lib.phaseName;
@@ -4000,7 +3999,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						});
 						next.set('att', att);
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.links) {
 						player.logSkill('cejing', Evt.target)
 						var phase = result.links[0][2];
@@ -4017,7 +4016,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return Evt.getParent().name == 'cejing';
 						},
 						direct: true,
-						content: [function () {
+						content: [() => {
 							var num = 0;
 							var name = trigger.name;
 							trigger.player.getHistory('sourceDamage', (evt: { getParent: (arg0: any) => any; num: number; }) => {
@@ -4025,7 +4024,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								if (phase && phase.getParent && phase.getParent().name == 'cejing') num += evt.num;
 							});
 							Evt.num = num;
-						}, function () {
+						}, () => {
 							if (Evt.num > 0) {
 								var list = [player];
 								list.add(trigger.player);
@@ -4058,12 +4057,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				filterCard: () => false,
 				selectCard: -1,
-				precontent: [function () {
+				precontent: [() => {
 					var list = ['equip1', 'equip2', 'equip3', 'equip4', 'equip5'];
 					for (var i = 0; i < list.length; i++) {
 						if (player.isDisabled(list[i])) list.splice(i--, 1);
 					}
-					player.chooseControl(list).set('prompt', '请选择废除一个装备栏').ai = function () {
+					player.chooseControl(list).set('prompt', '请选择废除一个装备栏').ai = () => {
 						if (list.contains('equip1') && player.isEmpty('equip1') && player.countCards('h', (card: { name: string; }) => card.name == 'sha' && player.getUseValue(card) > 0)) return 'equip1';
 						if (list.contains('equip3') && player.isEmpty('equip3')) return 'equip3';
 						if (list.contains('equip4') && player.isEmpty('equip4')) return 'equip4';
@@ -4071,7 +4070,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (list.contains('equip2') && player.isEmpty('equip2')) return 'equip2';
 						return list.randomGet();
 					};
-				}, function () {
+				}, () => {
 					Evt.pos = result.control;
 					player.disableEquip(Evt.pos);
 				}],
@@ -4183,7 +4182,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return true;
 				},
 				usable: 1,
-				content: [function () {
+				content: [() => {
 					if (trigger.cards.length && trigger.cards.length == 1) {
 						player.gain(trigger.cards, 'gain2');
 						if (player.storage.re_meici == true) {
@@ -4214,7 +4213,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							Evt.finish();
 						}
 					}
-				}, function () {
+				}, () => {
 					if (result.bool && result.links?.length) {
 						player.gain(result.links, 'gain2');
 						if (player.storage.re_meici == true) {
@@ -4242,14 +4241,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return false;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					var list = ['heart', 'spade', 'diamond'];
 					var cards = [];
 					for (var i = 0; i < trigger.cards.length; i++) {
 						if (list.contains(get.suit(trigger.cards[i]))) cards.push(trigger.cards[i]);
 					}
 					Evt.cards = cards.slice(0);
-				}, function () {
+				}, () => {
 					if (Evt.cards.length) {
 						Evt.cards2 = Evt.cards.shift();
 						var prompt3 = "###『耽恋』###你可以将" + get.translation(Evt.cards2) + '置入一名角色合理的区域';
@@ -4265,7 +4264,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						if (get.type(Evt.cards2, false) == 'delay') {
 							player.logSkill('re_danlian', result.targets); result.targets[0].addJudge(Evt.cards2);
@@ -4461,19 +4460,19 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player == Evt.source && get.attitude(player, Evt.player) < 0 || player == Evt.player;
 				},
 				logTarget: 'player',
-				content: [function () {
+				content: [() => {
 					if (player.countCards('he', { subtype: 'equip1' }) && player == trigger.source) {
 						player.chooseToDiscard(get.prompt('kangding'), true, 'he', { subtype: 'equip1' });
 					} else {
 						player.chooseToDiscard(get.prompt('kangding'), true, 'he', { subtype: 'equip2' });
 						Evt.goto(2);
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						trigger.num++;
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						trigger.num--;
 					}
@@ -4490,11 +4489,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterCard(card: any, player: any) {
 					return get.type(card) == 'basic';
 				},
-				content: [function () {
+				content: [() => {
 					var cards = [ui.cardPile.firstChild];
 					Evt.cards = cards;
 					player.showCards(Evt.cards, '『龙蛇笔走』展示牌')
-				}, function () {
+				}, () => {
 					if (get.type(Evt.cards[0]) == 'basic') {
 						game.log(Evt.cards, '被置入了弃牌堆');
 						game.cardsDiscard(Evt.cards);
@@ -4579,7 +4578,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									&& Evt.cards.filter((card: any) => get.color(card) == 'black' && get.position(card) == 'd').length;
 							}
 						},
-						content: [function () {
+						content: [() => {
 							Evt.card = trigger.cards.filter((card: any) => get.color(card) == 'black' && get.position(card) == 'd')[0];
 							player.chooseTarget(function (card: any, player: any, target: any) {
 								return player != target;
@@ -4587,7 +4586,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								var player = _status.event.player;
 								return get.attitude(player, target) * get.value(_status.event.card, target);
 							}).set('prompt2', '『花吻』：其他角色获得' + get.translation(Evt.card));
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets[0]) {
 								player.logSkill('re_huawen_give', result.targets[0]);
 								result.targets[0].gain(Evt.card, 'log', 'gain2');
@@ -4604,33 +4603,33 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player.getStat('damage');
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					console.log(player.getStat('skill'))
 					if (player.getStat('skill').re_huawen) {
 						Evt.change = true;
 					}
-				}, function () {
+				}, () => {
 					var str = '###' + get.prompt('re_liaohu') + '###令一名角色摸两张牌';
 					if (Evt.change) str += '或回复1点体力';
 					player.chooseTarget(str).set('ai', function (target: any) {
 						return get.attitude(_status.event.player, target);
 					});
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.target = result.targets[0]
 						Evt.target.classList.add('glow');
 					} else {
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (Evt.change) {
 						var controls = ['摸两张牌', '回复一点体力', '取消选择'];
-						player.chooseControl(controls).set('ai', function () {
+						player.chooseControl(controls).set('ai', () => {
 							return _status.event.index;
 						}).set('index', (get.recoverEffect(Evt.target, player, player) > 2) ? 1 : 0);
 					}
 					else Evt._result = { index: 0 };
-				}, function () {
+				}, () => {
 					Evt.target.classList.remove('glow');
 					switch (result.index) {
 						case 0: {
@@ -4708,7 +4707,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return Evt.targets?.length
 								&& evt?.logSkill == 're_gonggan_useBy';
 						},
-						content: [function () {
+						content: [() => {
 							let prompt2 = '为' + get.translation(trigger.card) + '增加或减少一个目标'
 							player.chooseTarget(get.prompt('re_gonggan'), function (card: any, player: any, target: any) {
 								var player = _status.event.player;
@@ -4720,10 +4719,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									= [_status.event.getTrigger(), _status.event.player, _status.event.source];
 								return get.effect(target, trigger.card, source, player) * (_status.event.targets.contains(target) ? -1 : 1);
 							}).set('targets', trigger.targets).set('card', trigger.card).set('source', trigger.player);
-						}, function () {
+						}, () => {
 							if (!Evt.isMine()) game.delayx();
 							Evt.targets = result.targets;
-						}, function () {
+						}, () => {
 							if (Evt.targets) {
 								player.logSkill('re_gonggan', Evt.targets);
 								if (trigger.targets.contains(Evt.targets[0])) trigger.targets.removeArray(Evt.targets);
@@ -4744,7 +4743,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									&& Evt.cards.filter((card: any) => get.color(card) == 'red' && get.position(card) == 'd').length;
 							}
 						},
-						content: [function () {
+						content: [() => {
 							Evt.card = trigger.cards.filter((card: any) => get.color(card) == 'red' && get.position(card) == 'd')[0];
 							player.chooseTarget(function (card: any, player: any, target: any) {
 								return player != target;
@@ -4752,7 +4751,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								var player = _status.event.player;
 								return get.attitude(player, target) * get.value(_status.event.card, target);
 							}).set('prompt2', '『共感』：令其他角色获得' + get.translation(Evt.card));
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets[0]) {
 								player.logSkill('re_gonggan_give', result.targets[0]);
 								result.targets[0].gain(Evt.card, 'log', 'gain2');
@@ -4770,13 +4769,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return (get.name(Evt.card) == 'sha') && player.countDiscardableCards(player, 'he', (card: any) => get.number(card, player) > _status.event.num);
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					var next = player.chooseToDiscard('he', get.prompt2('yejing')).set('logSkill', ['yejing', trigger.player]);
 					next.set('filterCard', function (card: any, player: any) {
 						return get.number(card, player) > _status.event.num;
 					});
 					next.set('num', get.number(trigger.card));
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						player.addTempSkill('yejing_used');
 						trigger.cancel();
@@ -4802,12 +4801,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				hiddenCard(player: { storage: { shengfu: { wuxie: undefined; }; }; }, name: string) {
 					return player.storage.shengfu.wuxie == undefined && name == 'wuxie';
 				},
-				content: [function () {
+				content: [() => {
 					Evt.p1 = Evt.getParent().respondTo[0];
 					player.chooseToCompare(Evt.p1);
 					player.storage.shengfu.wuxie = true;
 					player.syncStorage('shengfu');
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						//赢
 						Evt.getParent().result = { wuxied: true };
@@ -4853,7 +4852,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						check(Evt: { card1: { number: number; }; card2: { number: number; }; }, player: any) {
 							return Evt.card1.number <= Evt.card2.number;
 						},
-						content: [function () {
+						content: [() => {
 							//令一方收回黑色拼点牌，改用牌堆顶牌代替
 							player.chooseTarget('选择一方收回黑色拼点牌，改用牌堆顶牌代替', function (card: any, player: any, target: any) {
 								if (!_status.event.compareData) return false;
@@ -4880,7 +4879,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								card1: player == trigger.target ? trigger.card2 : trigger.card1,
 								card2: player == trigger.target ? trigger.card1 : trigger.card2
 							});
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets[0]) {
 								Evt.chosePlayer = result.targets[0];
 								if (Evt.chosePlayer == player) {
@@ -4897,7 +4896,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							} else {
 								Evt.finish();
 							}
-						}, function () {
+						}, () => {
 							if (Evt.chosePlayer == player) {
 								trigger.card1 = Evt.pileCard;
 								trigger.num1 = Evt.pileCard.number;
@@ -4919,12 +4918,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						filterTarget(card: any, player: { canCompare: (arg0: any) => any; }, target: any) {
 							return player.canCompare(target);
 						},
-						content: [function () {
+						content: [() => {
 							player.storage.shengfu.juedou = true;
 							player.syncStorage('shengfu');
 							Evt.juedouTarget = target;
 							player.chooseToCompare(Evt.juedouTarget);
-						}, function () {
+						}, () => {
 							if (result.bool) {
 								//赢
 								player.useCard({ name: 'juedou', isCard: true }, Evt.juedouTarget);
@@ -5092,9 +5091,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				prepare: 'give',
 				discard: false,
 				lose: false,
-				content: [function () {
+				content: [() => {
 					target.gain(cards, player);
-				}, function () {
+				}, () => {
 					var list = target.getCards('e', (card: any) => get.equiptype(card) != 5 && !player.getEquip(get.subtype(card)));
 					player.choosePlayerCard(Evt.target, 'e', true).set('filterButton', function (button: string) {
 						return get.equiptype(button.link) != 5;
@@ -5103,7 +5102,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (_status.event.list.contains(link)) return get.value(link, player, 'raw');
 						return 1;
 					}).set('list', list);
-				}, function () {
+				}, () => {
 					if (result.links?.length) {
 						Evt.cardname = get.name(result.links[0]);
 						if (!player.getEquip(get.subtype(Evt.cardname))) {
@@ -5127,13 +5126,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								return cur != player && lib.skill.huixiang.filterTarget(true, player, cur);
 							});
 						},
-						content: [function () {
+						content: [() => {
 							player.chooseCardTarget('he', function (card: any, player: any) {
 								return true;
 							}, function (card: any, player: any, target: any) {
 								return target != player && lib.skill.huixiang.filterTarget.apply(this, arguments);
 							}).set('prompt', get.prompt2('huixiang'))
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets && result.cards) {
 								if (player.hasSkill('huixiang_equip')) player.removeSkill('huixiang_equip');
 								Evt.target = result.targets[0];
@@ -5141,7 +5140,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							} else {
 								Evt.finish();
 							}
-						}, function () {
+						}, () => {
 							console.log(Evt.target)
 							var list = Evt.target.getCards('e', (card: any) => get.equiptype(card) != 5 && !player.getEquip(get.subtype(card)));
 							player.choosePlayerCard(Evt.target, 'e', true).set('filterButton', function (button: string) {
@@ -5151,7 +5150,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								if (_status.event.list.contains(link)) return get.value(link, player, 'raw');
 								return 1;
 							}).set('list', list);
-						}, function () {
+						}, () => {
 							if (result.links?.length) {
 								Evt.cardname = get.name(result.links[0]);
 								if (!player.getEquip(get.subtype(Evt.cardname))) {
@@ -5186,10 +5185,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						&& Evt.cards.filter((card: any) => get.position(card, true) == 'd' && get.type(card) == 'equip' && player.storage.huixiang_equip.contains(card)).length > 0;
 				},
 				forced: true,
-				content: [function () {
+				content: [() => {
 					if (trigger.delay == false) game.delay();
 					player.draw();
-				}, function () {
+				}, () => {
 					player.unmarkAuto('huixiang_equip', trigger.cards);
 				}],
 				mod: {
@@ -5233,15 +5232,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.source != undefined;
 				},
 				logTarget: 'source',
-				content: [function () {
+				content: [() => {
 					player.viewHandcards(trigger.source);
-				}, function () {
-					player.chooseControl(lib.suit).set('prompt', '『WHiTE』：请选择一个花色').ai = function () { return lib.suit.randomGet() };
-				}, function () {
+				}, () => {
+					player.chooseControl(lib.suit).set('prompt', '『WHiTE』：请选择一个花色').ai = () => { return lib.suit.randomGet() };
+				}, () => {
 					Evt.suit = result.control;
 					player.popup(Evt.suit + 2);
 					game.log(player, '声明了', Evt.suit + 2);
-				}, function () {
+				}, () => {
 					if (!trigger.source.storage.WHiTE_suit) trigger.source.storage.WHiTE_suit = [];
 					trigger.source.storage.WHiTE_suit.add(Evt.suit);
 					if (trigger.source.hasSkill('WHiTE_suit')) trigger.source.markSkill('WHiTE_suit')
@@ -5276,11 +5275,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filterTarget(card: any, player: { canCompare: (arg0: any) => any; }, target: any) {
 					return player.canCompare(target)
 				},
-				content: [function () {
+				content: [() => {
 					var cards = get.cards(target.hp);
 					Evt.cards = cards;
 					player.chooseCardButton('『BLacK』：选择一张牌', cards, true);
-				}, function () {
+				}, () => {
 					if (result.bool && player.canCompare(target)) {
 						for (let i = Evt.cards.length - 1; i >= 0; i--) {
 							if (Evt.cards[i] == result.links[0]) continue;
@@ -5298,7 +5297,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						game.delay();
 						Evt.finish();
 					}
-				}, function () {
+				}, () => {
 					if (result.winner) {
 						if (Evt.cards.length) {
 							if (result.winner == player) {
@@ -5340,7 +5339,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.num > 0;
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					Evt.num = trigger.num;
 					var next = player.chooseTarget('###' + get.prompt('shiguang') + '###令一名角色受到' + get.cnNumber(Evt.num) + '点伤害', function (card: any, player: any, target: any) {
 						return target != _status.event.another;
@@ -5358,7 +5357,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return -att;
 						}
 					});
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets[0]) {
 						result.targets[0].damage(Evt.num, trigger.source || 'nosource');
 						if (!result.targets[0].storage.shiguang_lose) result.targets[0].storage.shiguang_lose = 0;
@@ -5375,7 +5374,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return Evt.num > 0;
 						},
 						direct: true,
-						content: [function () {
+						content: [() => {
 							Evt.num = trigger.num;
 							var next = player.chooseTarget('###' + get.prompt('shiguang') + '###令一名角色回复' + get.cnNumber(Evt.num) + '点体力', function (card: any, player: any, target: any) {
 								return target != _status.event.another;
@@ -5392,7 +5391,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									return att * num;
 								}
 							});
-						}, function () {
+						}, () => {
 							if (result.bool && result.targets?.length) {
 								player.logSkill('shiguang', result.targets);
 								result.targets[0].recover(Evt.num);
@@ -5448,7 +5447,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					});
 				},
 				direct: true,
-				content: [function () {
+				content: [() => {
 					console.log(player.storage.rangran)
 					var next = player.chooseTarget(get.prompt2('rangran'), [1, Infinity], function (card: any, player: { storage: { rangran: any[]; }; }, target: { isMaxHp: () => any; }) {
 						return target.isMaxHp() && !player.storage.rangran.contains(target) && !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target)
@@ -5456,7 +5455,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						var evt = _status.event;
 						return get.effect(target, evt.card, evt.source, evt.player);
 					}).set('card', trigger.card).set('targets', trigger.targets);
-				}, function () {
+				}, () => {
 					if (result.bool && result.targets[0]) {
 						player.logSkill('rangran');
 						var targets = result.targets.slice(0);
@@ -5539,7 +5538,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				priority: 22,
 				direct: true,
-				content: [function () {
+				content: [() => {
 					Evt.cards = trigger.cards;
 					player.chooseTarget(function (card: any, player: any, target: { countCards: (arg0: string) => any; }) {
 						return !target.countCards('j');
@@ -5547,14 +5546,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						var player = _status.event.player;
 						return -get.attitude(player, target);
 					}).set('prompt', get.prompt2('zhenbao'));
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.target = result.targets[0];
 						player.logSkill('zhenbao', Evt.target);
 					} else Evt.finish();
-				}, function () {
+				}, () => {
 					Evt.target.chooseCardButton(cards, '选择一张牌置于判定区', true);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						var cards = result.links.slice(0);
 						player.$give(cards, Evt.target, false);
@@ -5573,7 +5572,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt: any, player: { countCards: (arg0: string) => any; }) {
 					return player.countCards('he');
 				},
-				content: [function () {
+				content: [() => {
 					Evt.targets = [player];
 					if (trigger.source && trigger.source.isIn()) {
 						Evt.damageBy = true;
@@ -5581,19 +5580,19 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					};
 					var next = player.chooseToDiscard('he', [1, Infinity], get.prompt2('heimo', Evt.targets));
 					next.set('logSkill', ['heimo', Evt.targets, 'fire']);
-				}, function () {
+				}, () => {
 					if (result.bool) {
 						Evt.num = result.cards.length;
 					}
 					else Evt.finish();
-				}, function () {
+				}, () => {
 					player.judge((card: any) => {
 						return 0;
 					}).callback = lib.skill.heimo.callback;
 					if (--Evt.num) Evt.redo();
-				}, function () {
+				}, () => {
 					if (Evt.black && Evt.targets[1]) Evt.targets[1].damage();
-				}, function () {
+				}, () => {
 					if (Evt.red) player.draw(2);
 				}],
 				callback() {

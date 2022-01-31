@@ -1,6 +1,4 @@
 window.noname_source_list=[
-	'galgame/galgame.css',
-	'galgame/galgame.json',
 	'image/background/simple1_bg.svg',
 
 	'audio/background/music_danji.mp3',
@@ -13,6 +11,29 @@ window.noname_source_list=[
 
 	'dist/rank.js',
 
+	'image/character/Kino.jpg',
+	'image/character/shanbao.jpg',
+	'image/character/dusongziGin.jpg',
+	'image/card/sha.png',
+	'image/card/shan.png',
+	'image/card/guohe.png',
+	'image/card/wuzhong.png',
+	'image/card/zhangba.png',
+	'image/card/qinglong.png',
+	'image/card/bagua.png',
+	'image/card/jueying.png',
+	'image/card/zixin.png',
+	'image/card/muniu.png',
+	'image/card/lebu.png',
+	'font/LuoLiTi2.ttf',
+	'extension/yindao/Bella.jpg',
+	'extension/yindao/dusongziGin.jpg',
+	'extension/yindao/Kaf.jpg',
+	'extension/yindao/LizeHelesta.jpg',
+	'extension/yindao/MiraiAkari.jpg',
+	'extension/yindao/shanbao.jpg',
+	'extension/yindao/ShirakamiHaruka.jpg',
+	'extension/yindao/path2.jpg',
 
 	'game/asset.js',
 	'game/config.js',

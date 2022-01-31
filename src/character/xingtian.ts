@@ -1,4 +1,80 @@
+import { toSkill } from './skilltype'
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
+	let cardSkill = {
+		g_ci: {
+			ruleSkill: true,
+			mod: {
+				cardname: function (card, player) {
+					if (card.name == 'ci') return 'sha';
+				},
+			},
+			trigger: { player: 'useCard1' },
+			forced: true,
+			filter: function (Evt, player) {
+				return Evt.card && Evt.card.name == 'sha' && Evt.addCount !== false && Evt.cards &&
+					Evt.cards.length == 1 && get.name(Evt.cards[0], null) == 'ci';
+			},
+			content: function () {
+				if (trigger.addCount !== false) {
+					trigger.addCount = false;
+					if (player.stat[player.stat.length - 1].card.sha > 0) {
+						player.stat[player.stat.length - 1].card.sha--;
+					}
+				}
+				player.addTempSkill('g_ci2', { player: 'useCardAfter' });
+			},
+		},
+		g_ci2: {
+			cardSkill: true,
+			trigger: { source: 'damageBegin4' },
+			forced: true,
+			logTarget: 'player',
+			filter: function (Evt, player) {
+				return Evt.player.hujia > 0 && player.hasSkillTag('overHujia', true, {
+					name: Evt.card.name,
+					target: Evt.player,
+					card: Evt.card
+				});
+			},
+			content: function () { },
+			ai: {
+				unequip: true,
+				overHujia: true,
+				skillTagFilter: function (player, tag, arg) {
+					if (!arg || !arg.card || arg.card.name != 'sha') {
+						return false;
+					}
+					var cards = arg.card.cards
+					if (!cards || cards.length != 1 || get.name(cards[0], null) != 'ci') {
+						return false;
+					}
+				},
+			}
+		},
+		g_wudaoqu: {
+			cardSkill: true,
+			trigger: { global: 'useCard' },
+			forced: true,
+			popup: false,
+			filter: function (Evt, player) {
+				if (!Evt.targets.contains(player) || !Evt.cards || !Evt.cards.length) return false;
+				if (Evt.getParent().directHit && Evt.getParent().directHit.contains(player)) return false;
+				return player.hasUsableCard('wudaoqu');
+			},
+			content: function () {
+				'step 0'
+				trigger.wudaoqu = true;
+				player.chooseToUse('是否对' + get.translation(trigger.card) + '使用【无刀取】？').set('ai1', function (card) {
+					return _status.event.bool;
+				}).set('bool', -get.effect(player, trigger.card, trigger.player, player)).set('respondTo', [trigger.player, trigger.card]).set('filterCard', function (card, player) {
+					if (get.name(card) != 'wudaoqu') return false;
+					return lib.filter.cardEnabled(card, player, 'forceEnable');
+				});
+				'step 1'
+				delete trigger.wudaoqu;
+			}
+		},
+	}
 	return <currentObject>{
 		name: 'xingtian',
 		connect: true,
@@ -186,6 +262,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 		},
 		character: {
+			/**☆星宫汐 */
+			star_HosimiyaSio: ['female', 'qun', 3, ['xuanyu', 'xingheng'],],
 		},
 		characterSort: {
 			xingtian: {
@@ -194,79 +272,76 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterIntro: {
 		},
 		skill: {
-			g_ci: {
-				ruleSkill: true,
-				mod: {
-					cardname: function (card, player) {
-						if (card.name == 'ci') return 'sha';
-					},
+			...cardSkill,
+			xuanyu: new toSkill('trigger', {
+				init(player, skill) {
+					return player.$[skill] = []
 				},
-				trigger: { player: 'useCard1' },
-				forced: true,
-				filter: function (Evt, player) {
-					return Evt.card && Evt.card.name == 'sha' && Evt.addCount !== false && Evt.cards &&
-						Evt.cards.length == 1 && get.name(Evt.cards[0], null) == 'ci';
-				},
-				content: function () {
-					if (trigger.addCount !== false) {
-						trigger.addCount = false;
-						if (player.stat[player.stat.length - 1].card.sha > 0) {
-							player.stat[player.stat.length - 1].card.sha--;
-						}
+				filter(Evt, player) {
+					if(Evt.getParent().target&&Evt.getParent().player===player){
+						let map = Evt.getl(Evt.getParent().target)
+						if(map?.hs?.length===0&&(map.js.length||map.es.length)) return Evt.cards.length === 1
 					}
-					player.addTempSkill('g_ci2', { player: 'useCardAfter' });
+					return (Evt.animate == 'gain2' || Evt.animate == 'give' || Evt.visible == true)&& Evt.cards.length === 1
 				},
-			},
-			g_ci2: {
-				cardSkill: true,
-				trigger: { source: 'damageBegin4' },
-				forced: true,
-				logTarget: 'player',
-				filter: function (Evt, player) {
-					return Evt.player.hujia > 0 && player.hasSkillTag('overHujia', true, {
-						name: Evt.card.name,
-						target: Evt.player,
-						card: Evt.card
-					});
+				content: [() => {
+					Evt.card = trigger.cards[0]
+					player.showCards(Evt.card, '『宣裕』记录牌')
+					if (player.$.xuanyu.length) {
+						Evt.num = get.number(Evt.card) + get.number(player.$.xuanyu[0])
+					}
+					else Evt.finish()
+					player.$.xuanyu.unshift(Evt.card)
+					if(!player.marks.xuanyu.number) player.unmarkSkill('xuanyu')
+					player.markSkill('xuanyu', null, player.$.xuanyu[0])
+				}, () => {
+					if (Evt.num % 4 === 0) {
+						player.recover()
+					}
+				}, () => {
+					if (Evt.num % 7 === 0) {
+						player.draw(2)
+					}
+				}],
+				intro: {
+					name: '宣裕',
+					content: 'cards',
 				},
-				content: function () { },
-				ai: {
-					unequip: true,
-					overHujia: true,
-					skillTagFilter: function (player, tag, arg) {
-						if (!arg || !arg.card || arg.card.name != 'sha') {
-							return false;
+			}, 'mark:card').setT('gainEnd'),
+			xingheng: new toSkill('trigger', {
+				usable:1,
+				filter(Evt, player) {
+					console.log(Evt)
+					if (['phaseJudge', 'phaseDiscard'].includes(Evt.name)) return player.$.xuanyu.length % 2 === 1
+					else return player.$.xuanyu.length % 2 === 0 && Evt.targets.length === 1
+				},
+				content: [() => {
+					console.log('A')
+					if (['phaseJudge', 'phaseDiscard'].includes(trigger.name)) {
+						trigger.cancel()
+					}
+					else {
+						Evt.target = trigger.player
+						player.gainPlayerCard(Evt.target, 'hej', true)
+						Evt.finish()
+					}
+				}, () => {
+					player.phaseUse();
+				}, () => {
+					let stat = player.getStat();
+					stat.card = {};
+					for (let i in stat.skill) {
+						let bool = false;
+						let info = lib.skill[i];
+						if (info.enable != undefined) {
+							if (typeof info.enable == 'string' && info.enable == 'phaseUse') bool = true;
+							else if (typeof info.enable == 'object' && info.enable.contains('phaseUse')) bool = true;
 						}
-						var cards = arg.card.cards
-						if (!cards || cards.length != 1 || get.name(cards[0], null) != 'ci') {
-							return false;
-						}
-					},
-				}
-			},
-			g_wudaoqu: {
-				cardSkill: true,
-				trigger: { global: 'useCard' },
-				forced: true,
-				popup: false,
-				filter: function (Evt, player) {
-					if (!Evt.targets.contains(player) || !Evt.cards || !Evt.cards.length) return false;
-					if (Evt.getParent().directHit && Evt.getParent().directHit.contains(player)) return false;
-					return player.hasUsableCard('wudaoqu');
-				},
-				content: function () {
-					'step 0'
-					trigger.wudaoqu = true;
-					player.chooseToUse('是否对' + get.translation(trigger.card) + '使用【无刀取】？').set('ai1', function (card) {
-						return _status.event.bool;
-					}).set('bool', -get.effect(player, trigger.card, trigger.player, player)).set('respondTo', [trigger.player, trigger.card]).set('filterCard', function (card, player) {
-						if (get.name(card) != 'wudaoqu') return false;
-						return lib.filter.cardEnabled(card, player, 'forceEnable');
-					});
-					'step 1'
-					delete trigger.wudaoqu;
-				}
-			},
+						if (bool) stat.skill[i] = 0;
+					}
+				}],
+				combo: 'xuanyu'
+			}, 'logTarget:player').setT({ player: ['phaseJudge', 'phaseDiscard'], target: 'useCardTo' }, 'Before'),
 		},
 		characterReplace: {
 		},
@@ -297,6 +372,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			daluandou: '大乱斗',
 			daluandou_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得对方每个区域各一张牌。',
 
+			star_HosimiyaSio: `☆星宫汐`,
+			xuanyu: `宣裕`,
+			xuanyu_info: `有且仅有一张牌正面朝上加入你的手牌时，你可以记录之，若其与此技能上一张记录牌的点数和为：<br>
+			4倍数～你回复一点体力；7倍数～你摸两张牌。`,
+			xingheng: `星恒`,
+			xingheng_info: `每回合限一次，若你『宣裕』记录过的牌数为：<br>
+			奇数～你可以将判定或弃牌阶段改为出牌阶段；偶数～一名角色使用牌指定你为唯一目标时，你可以获得其区域内一张牌。`,
 		},
 	}
 });
