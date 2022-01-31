@@ -18,7 +18,6 @@ window.noname_update={
 		'dist/card.js',
 		'dist/character.js',
 		'dist/sp.js',
-		'dist/rank.js',
 		'dist/mode.js',
 		
 		'layout/default/layout.css',
