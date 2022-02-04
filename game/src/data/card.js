@@ -60,5 +60,6 @@
 		group_xuyan: { fullskin: true, },
 		group_xuefeng: { fullskin: true, },
 		group_Providence: { fullskin: true, },
+		group_HappyEl: { fullskin: true, },
 	}
 }

@@ -32,7 +32,7 @@ module.exports = {
 	group: [
 		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-		'VirtuaReal', 'HappyElements', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'Tencent', 'lucca', 'RedC',
+		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'Tencent', 'lucca', 'RedC',
 		'vshojo',
 		'vtuber', 'clubs'
 	],
@@ -41,7 +41,7 @@ module.exports = {
 	 * 较group去除了企业、社团、三国势力
 	 * @type {string}
 	 */
-	group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyElements', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi',
+	group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyEl', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi',
 		'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng', 'Providence'],
 	/**
 	 * 势力对应属性
@@ -62,7 +62,7 @@ module.exports = {
 		dotlive: 'wood',
 		nijisanji: 'water',
 		VirtuaReal: 'ocean',
-		HappyElements: 'ocean',
+		HappyEl: 'ocean',
 		eilene: 'thunder',
 		paryi: 'ice',
 		kagura: 'ocean',

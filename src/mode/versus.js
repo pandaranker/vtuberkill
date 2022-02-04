@@ -41,7 +41,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 				else{
 					for(var j in lib.characterPack[i]){
-						if(['psp','xuefeng','VirtuaReal','HappyElements','asoul','dotlive'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
+						if(['psp','xuefeng','VirtuaReal','HappyEl','asoul','dotlive'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
 						else if(!['holo','nijisanji'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'clubs';
 					}
 				}

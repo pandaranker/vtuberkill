@@ -236,20 +236,26 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
-					target.chooseControl('dialogcontrol',['弃置装备区所有牌','受到海洋伤害']).set('ai',function(){
-						var evt=_status.event.getParent();
-						if(evt.player.hasSkillTag('notricksource')) return 1;
-						if(evt.player.hasSkillTag('noocean')) return 1;
-						if(evt.target.hasSkillTag('notrick')) return 1;
-						if(evt.target.hp==1)	return 0;
-						return Math.random()<0.5?1:0;
-					}).set('prompt',`【浪涌】：弃置装备区里所有的牌，或受到${get.translation(player)}造成的${get.cnNumber(event.baseDamage)}点海洋伤害。`);
+					if(typeof Evt.baseDamage!='number') Evt.baseDamage=1;
+					Evt.list = ['弃置装备区所有牌','受到海洋伤害'];
+					if(target.countCards('e')){
+						target.chooseControl('dialogcontrol',Evt.list).set('ai',function(){
+							var evt=_status.event.getParent();
+							if(evt.player.hasSkillTag('notricksource')) return 1;
+							if(evt.player.hasSkillTag('noocean')) return 1;
+							if(evt.target.hasSkillTag('notrick')) return 1;
+							if(evt.target.hp==1)	return 0;
+							return Math.random()<0.5?1:0;
+						}).set('prompt',`【浪涌】：弃置装备区里所有的牌，或受到${get.translation(player)}造成的${get.cnNumber(event.baseDamage)}点海洋伤害。`);
+					}
+					else{
+						Evt._result = { control: Evt.list[1] };
+					}
 					'step 1'
 					if(result.control=='弃置装备区所有牌'){
 						target.discard(target.getCards('e'))
 					}else{
-						target.damage(event.baseDamage,'ocean')
+						target.damage(Evt.baseDamage,'ocean')
 					}
 				},
 				ai:{

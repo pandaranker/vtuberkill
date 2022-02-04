@@ -2341,14 +2341,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				priority: 22,
 				frequent: true,
 				filter(Evt, player) {
-					// if(game.hasPlayer(cur => {
-					// 	return	cur.getHistory('damage',evt => {
-					// 		return evt.source==player;
-					// 	}).length>0
-					// }))
-					// {
-					// 	return false;
-					// }
 					var num = 0;
 					player.getHistory('sourceDamage', evt => {
 						num += evt.num;

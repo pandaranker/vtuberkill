@@ -2393,6 +2393,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			guangsuxiabo_info: `一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。`,
 
 			SisterClearie: `修女·克蕾雅`,
+			SisterClearie_ab: `修女克蕾雅`,
 			zhenxin: `真信之诚`,
 			zhenxin_info: `锁定技 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。`,
 			sczhuwei: `助危之心`,

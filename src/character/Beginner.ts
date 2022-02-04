@@ -1692,15 +1692,18 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					},
 					black: {
 						trigger: { player: 'useCard2' },
-						filter(Evt: { card: { name: string; }; targets: any[]; }, player: { canUse: (arg0: any, arg1: any) => any; }) {
+						filter(Evt, player) {
 							if (Evt.card.name != 'sha' || get.color(Evt.card) == 'red') return false;
-							return game.hasPlayer((cur: any) => !Evt.targets.contains(cur) && player.canUse(Evt.card, cur));
+							return game.hasPlayer((cur: any) => !Evt.targets.contains(cur) && lib.filter.targetEnabled2(Evt.card, player, target));
 						},
 						direct: true,
 						content: [() => {
-							player.chooseTarget(get.prompt('re_shuangren'), '为' + get.translation(trigger.card) + '增加一个目标', function (card: any, player: { canUse: (arg0: any, arg1: any) => any; }, target: any) {
-								return !_status.event.sourcex.contains(target) && player.canUse(_status.event.card, target);
-							}).set('sourcex', trigger.targets).set('card', trigger.card);
+							player.chooseTarget(get.prompt('re_shuangren'), `为${get.translation(trigger.card)}增加一个目标`, 
+							(card, player, target) => !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target))
+							.set('ai', target => {
+								let player = _status.event.player, source = _status.event.source;
+								return get.effect(target, _status.event.card, source, player) * (_status.event.targets.includes(target) ? -1 : 1);
+							}).set('targets', trigger.targets).set('card', trigger.card).set('source', player);
 						}, () => {
 							if (result.bool) {
 								if (!Evt.isMine() && !_status.connectMode) game.delayx();
@@ -4605,12 +4608,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				direct: true,
 				content: [() => {
 					console.log(player.getStat('skill'))
-					if (player.getStat('skill').re_huawen) {
+					if (player.getStat('skill').re_huawen || player.getStat('skill').re_huawen_useBy) {
 						Evt.change = true;
 					}
 				}, () => {
-					var str = '###' + get.prompt('re_liaohu') + '###令一名角色摸两张牌';
-					if (Evt.change) str += '或回复1点体力';
+					var str = '###' + get.prompt('re_liaohu') + '###令一名角色摸两张牌 ';
+					if (Evt.change) str += '或 摸一张牌并回复1点体力';
 					player.chooseTarget(str).set('ai', function (target: any) {
 						return get.attitude(_status.event.player, target);
 					});
@@ -4623,7 +4626,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (Evt.change) {
-						var controls = ['摸两张牌', '回复一点体力', '取消选择'];
+						var controls = ['摸两张牌', '摸一张牌并回复1点体力', '取消选择'];
 						player.chooseControl(controls).set('ai', () => {
 							return _status.event.index;
 						}).set('index', (get.recoverEffect(Evt.target, player, player) > 2) ? 1 : 0);
@@ -5786,7 +5789,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_huawen_info: `出牌阶段限一次，你可以弃置两张颜色不同的牌。<br>
 			当你弃置两张颜色不同的牌时，可以视为使用其中的红色牌且此牌额外结算一次。`,
 			re_liaohu: `疗护`,
-			re_liaohu_info: `一个回合结束时，若你造成了伤害，可以令一名角色摸两张牌。若本回合『花吻』已发动，改为摸一张牌并回复 1 点体力。`,
+			re_liaohu_info: `一个回合结束时，若你造成了伤害，可以令一名角色摸两张牌。若本回合『花吻』已发动，你可以改为摸一张牌并回复 1 点体力。`,
 
 			re_ShirayukiTomoe: `新·白雪巴`,
 			re_gonggan: `共感`,

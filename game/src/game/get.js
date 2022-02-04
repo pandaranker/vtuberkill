@@ -1655,6 +1655,7 @@ module.exports = {
          slimName: function (str) {
             var str2 = lib.translate[str];
             if (lib.translate[str + '_ab']) str2 = lib.translate[str + '_ab'];
+            if (str.indexOf('gz_') == 0 && lib.translate[str.slice(3) + '_ab']) str2 = lib.translate[str.slice(3) + '_ab'];
             if (!str2) return '';
             if (str2.indexOf('SP') == 0) {
                str2 = str2.slice(2);

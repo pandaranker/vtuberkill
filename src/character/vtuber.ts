@@ -2020,6 +2020,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			nveyu_append: lib.figurer(`特性：难上手 辅助`),
 
 			Siro: `电脑少女小白`,
+			Siro_ab: `小白`,
 			zhongxinghezou: `众星合奏`,
 			zhongxinghezou_info: `每回合限一次，你使用实体牌指定目标后，可令目标外的一名角色亮出一张牌。若两牌点数之和：小于12~你获得亮出牌令你使用的牌无效；不小于12~你使用的牌结算后，亮出牌的角色对同目标使用亮出牌；等于12~你摸一张牌并令亮出牌的角色回复1点体力。`,
 			zhongxinghezou_append: lib.figurer(`通过指定队友或自己，实现一回合出多次【杀】和摸牌`),

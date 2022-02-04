@@ -67,6 +67,12 @@ export default {
     require('@m/entry')
     //galgame相关功能
     require('@e/galgame/galgame')()
+    get.$t = get.translation
+    get.$a = get.attitude
+    get.$a2 = get.attitude2
+    get.$dis = get.distance
+    get.$pro = get.prompt
+    get.$pro2 = get.prompt2
     lib.init.init();
   }
 }

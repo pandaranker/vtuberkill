@@ -6104,7 +6104,7 @@
                 //             case 'holo': g++; if (lib.config.banned.contains(i)) sg++; break;
                 //             case 'nijisanji': h++; if (lib.config.banned.contains(i)) sh++; break;
                 //             case 'VirtuaReal': i++; if (lib.config.banned.contains(i)) si++; break;
-                //             case 'HappyElements': i++; if (lib.config.banned.contains(i)) si++; break;
+                //             case 'HappyEl': i++; if (lib.config.banned.contains(i)) si++; break;
                 //             case 'upd8': j++; if (lib.config.banned.contains(i)) sj++; break;
                 //             case 'dotlive': k++; if (lib.config.banned.contains(i)) sk++; break;
                 //             case 'eilene': l++; if (lib.config.banned.contains(i)) sl++; break;

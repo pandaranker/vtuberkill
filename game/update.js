@@ -1,11 +1,11 @@
 window.noname_update={
-	version:'1.9.104.24',
+	version:'2.0.0.1',
 	update:'1.9.101.1.1',
 	changeLog:[
-		`1.9.104.24中型更新：新增模式「引导」，将新手指引相关的内容移入其中；新增角色诸葛哀汐【个人势/群】(本游戏第233名角色)，星天篇增加专属角色☆星宫汐【群】`,
-		`增加一些BGM供选择`,
+		`2.0.0.1小型更新：新增角色茶冷【VR】、陆鳐LuLu【个人势/群】(本游戏第235名角色)`,
+		`秋蒂Q的『香诺』削弱、申䒕雅的『闻新』加强、加賀美隼人『重机织梦』加强`,
+		`修复了勾檀『勾魂』获得的【酒】计入使用次数的bug`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
-		``,
 		``,
 		``,
 		`化鲸篇新增机制可以在游戏内或者设置的“帮助”中查看`,
@@ -20,8 +20,8 @@ window.noname_update={
 		'dist/sp.js',
 		'dist/mode.js',
 		
-		'layout/default/layout.css',
-		'layout/default/menu.css',
+		// 'layout/default/layout.css',
+		// 'layout/default/menu.css',
 		// 'layout/nova/layout.css',
 
 		'game/game.js',

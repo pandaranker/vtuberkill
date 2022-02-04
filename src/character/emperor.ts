@@ -1211,23 +1211,27 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					var card = Evt.cards.shift();
 					Evt.filterCards = get.inpile('basic', i => {
-						let type = get.type(i);
 						if (player.storage.tangyan.contains(i)) return false;
 						if (lib.filter.filterCard({ name: i }, player, trigger) && player.hasUseTarget({ name: i, isCard: false })) {
-							list.push([type, '', i]);
-							var natures = get.info({ name: i }).nature;
-							if (natures && natures.length) {
-								for (let j = 0; j < natures.length; j++) {
-									if (natures[j] == 'kami') return false;
-									return true;
-								}
-							}
+							return true
 						}
 					});
+					Evt.filterCards = Evt.filterCards.map(i => {
+						let natures = get.info({ name: i }).nature;
+						let list = [[get.type(i), '', i]]
+						if (natures && natures.length) {
+							for (let j of natures) {
+								if (j !== 'kami') list.push([get.type(i), '', i, j])
+							}
+						}
+						console.log(i)
+						return list
+					}).vkflat()
 					if (Evt.xinjia) {
 						if (!Evt.allBy) Evt.allBy = 1;
 						Evt.goto(3);
 					}
+					console.log(Evt.filterCards)
 					'step 2'
 					Evt.list = ['令一名角色摸一张牌', '防止你下一次受到的伤害'];
 					if (Evt.filterCards.length) Evt.list.push('视为使用一张本回合未以此法使用过的基本牌');
@@ -1259,7 +1263,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							}; break;
 							case 3: {
 								player.logSkill('tangyan');
-								var list = Evt.filterCards;
+								let list = Evt.filterCards;
 								if (list.length)
 									player.chooseButton(true, ['『穿心糖言』：选择一张本回合未以此法使用过的基本牌并使用之' + str, [list, 'vcard'], 'hidden']).set('ai', function (button) {
 										return get.order({ name: button.link[2], nature: button.link[3] });
