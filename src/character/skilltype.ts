@@ -7,6 +7,7 @@ type skillStringcombine = 'enable:chooseToUse' | 'logTarget:player' | 'logTarget
 class toSkill implements Skill {
 	readonly type: skillType
 	audio?: number | boolean
+	init?: (PlayerModel,skill:string)=>void
 	enable?: Keyword
 	usable?: number
 	group?: Keyword
@@ -19,6 +20,12 @@ class toSkill implements Skill {
 			else if (typeof arg[i] === 'string' && arg[i + 1] !== undefined) {
 				this[arg[i]] = arg[i + 1]
 			}
+		}
+		return this
+	}
+	setI(stor) {
+		this.init = (player, skill) => {
+			player.$[skill] ??= JSON.parse(JSON.stringify(stor));
 		}
 		return this
 	}

@@ -1302,10 +1302,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					if (player.hasHistory('sourceDamage', evt => {
 						return evt.getParent('phaseUse') === trigger;
-					}) && player.$.changjie) {
+					}) && player.$.changjie>0) {
 						player.draw(player.$.changjie)
 					} else {
-						player.chooseToDiscard(true, player.$.changjie)
+						player.chooseToDiscard(true, player.$.changjie,'he')
 					}
 				},
 				group: 'changjie_mark',
@@ -7201,9 +7201,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					name: '已发动『政恩』的目标角色',
 					mark(dialog, storage, player) {
 						if (storage && storage.length) {
-							let name = storage.map(cur => {
-								return get.name(cur);
-							});
+							let name = storage.map(cur => get.name(cur));
 							dialog.addSmall([name, 'character']);
 						}
 					},
@@ -7231,7 +7229,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseToDiscard(true, '『政恩』：弃置一张手牌');
 				}, () => {
 					if (result.bool) {
-						player.$.zhengen.addArray(result.cards);
+						player.$.zhengen_achieve.addArray(result.cards);
 						player.discardPlayerCard(Evt.target, 'ej', true);
 					} else Evt.finish();
 				}, () => {
@@ -7244,16 +7242,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}],
 				group: ['zhengen_achieve', 'zhengen_fail'],
 				subSkill: {
-					achieve: {
-						init(player, skill) {
-							if (!player.$[skill]) player.$[skill] = [];
-						},
+					achieve: new toSkill('trigger',{
 						intro: {
 							name: '已发动『政恩』的弃置卡牌',
 							content: 'cards',
 						},
 						trigger: { global: 'gainAfter' },
-						forced: true,
 						filter(Evt, player) {
 							let cards = player.getStorage('zhengen_achieve');
 							let check = false;
@@ -7279,7 +7273,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player.$.zhengen_achieve = [];
 							player.markSkill('zhengen_achieve');
 						}],
-					},
+					},'forced').setI([]),
 					fail: {
 						trigger: { player: 'recoverAfter' },
 						direct: true,
@@ -7551,11 +7545,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				},
 			},
-			qitong: {
-				init(player, skill) {
-					if (!player.$[skill]) player.$[skill] = true;
-				},
-				trigger: { player: 'phaseJieshuBegin' },
+			qitong: new toSkill('trigger',{
 				filter(Evt, player) {
 					return player.getHistory('sourceDamage').length == 0;
 				},
@@ -7580,7 +7570,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				ai: {
 					threaten: 1.1,
 				},
-			},
+			}).setI(true).setT('phaseJieshuBegin'),
 
 			//步步
 			tianlve: {
@@ -8116,10 +8106,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 				},
 			},
-			luqiu: {
-				init(player, skill) {
-					if (!player.$[skill]) player.$[skill] = 1;
-				},
+			luqiu: new toSkill('trigger',{
 				trigger: { global: ['loseEnd', 'cardsDiscardEnd'] },
 				filter(Evt, player) {
 					let record = player.$.jiren_going;
@@ -8177,7 +8164,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 					result: { player: 1 },
 				},
-			},
+			}).setI([]),
 			canxin: {
 				audio: 2,
 				trigger: { player: 'phaseUseEnd' },
@@ -8372,12 +8359,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			},
 			//拉布里
-			yangyao: {
-				init(player, skill) {
-					if (!player.$[skill]) player.$[skill] = [];
-				},
+			yangyao: new toSkill('active',{
 				audio: false,
-				enable: 'phaseUse',
 				filter(Evt, player) {
 					let list = [];
 					if (!player.isAuto) return true;
@@ -8399,7 +8382,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (ui.selected.cards.length) return 2;
 					return [0, 2];
 				},
-				filterTarget: true,
 				position: 'he',
 				content: [() => {
 					if (!cards.length) player.loseHp();
@@ -8467,7 +8449,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 				},
-			},
+			},'filterTarget').setI([]),
 			shili: {
 				audio: true,
 				trigger: { global: 'phaseEnd' },
@@ -8954,10 +8936,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 
-			P_SP: {
-				init(player, skill) {
-					if (!player.$[skill]) player.$[skill] = [];
-				},
+			P_SP: new toSkill('mark',{
 				marktext: 'P',
 				intro: {
 					onunmark(storage, player) {
@@ -8978,7 +8957,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						return 0;
 					}
 				},
-			},
+			}).setI([]),
 			//机萪
 			qianjiwanbian: {
 				audio: 4,
@@ -9057,10 +9036,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					threaten: 3,
 				},
 				subSkill: {
-					change: {
-						init(player, skill) {
-							if (!player.$[skill]) player.$[skill] = 'thunder';
-						},
+					change: new toSkill('trigger',{
 						trigger: { source: 'damageBegin2' },
 						priority: 199,
 						prompt(Evt) {
@@ -9073,7 +9049,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							trigger.nature = player.$.qianjiwanbian_change;
 						}
-					},
+					}).setI([]),
 					clear: {
 						audio: 4,
 						trigger: { player: 'phaseBegin' },
@@ -9559,8 +9535,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					let targets = lib.skill.qisui.logTarget(trigger, player)
-					targets.forEach(target => {
-						if (!target.hasSkill('lingjun')) target.addTempSkill('lingjun', { player: 'juedouBegin' })
+					targets.forEach(tar => {
+						player.$.qisui.add(tar)
+						if (!tar.hasSkill('lingjun')) tar.addTempSkill('lingjun', { player: 'juedouBegin' })
 						else trigger.num++
 					});
 				},
@@ -9568,13 +9545,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				subSkill: {
 					clear: new toSkill('trigger', {
 						content() {
+							player.$.qisui.length = []
 							if (player.hasSkill('lingjun')) player.setAvatar('NanaseUnia', 'NanaseUnia1')
 							else player.setAvatar('NanaseUnia', 'NanaseUnia')
 						}
 					}, 'direct', 'silent').setT({ global: 'phaseAfter' }),
 				},
 				derivation: 'lingjun'
-			}).setT({ global: 'drawBegin' }),
+			}).setT({ global: 'drawBegin' }).setI([]),
 			lingjun: new toSkill('mark', {
 				marktext: '军',
 				intro: {
@@ -9958,18 +9936,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					},
 				}
 			},
-			fuyu: {
+			fuyu: new toSkill('trigger',{
 				marktext: "谕",
 				intro: {
 					content: '已通过『立影』给出了&张牌',
 				},
-				init(player, skill) {
-					if (!player.$[skill]) player.$[skill] = 0;
-				},
 				trigger: { player: 'phaseZhunbeiBegin' },
-				juexingji: true,
-				forced: true,
-				skillAnimation: true,
 				animationColor: 'thunder',
 				filter(Evt, player) {
 					return player.$.fuyu > 0 && player.$.fuyu % 4 == 0;
@@ -9982,7 +9954,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				ai: {
 					combo: 'liying'
 				}
-			},
+			},'juexingji','skillAnimation','forced').setI(0),
 			//山兔YamaUsagi
 			zhengmeng: new toSkill('trigger', {
 				filter(Evt, player) {
@@ -10041,14 +10013,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			}, 'direct').setT('turnOverAfter'),
 			//栗子酱
-			tieyu: {
-				init(player, skill) {
-					player.$[skill] = 0;
-				},
+			tieyu: new toSkill('trigger',{
 				intro: {
 					content: '『铁驭』（）值偏差#',
 				},
-				trigger: { player: 'useCard2' },
 				frequent(Evt, player) {
 					return get.type(Evt.card) == 'equip';
 				},
@@ -10110,7 +10078,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger.targets.addArray(Evt.targets);
 					}
 				}],
-			},
+			}).setT('useCard2').setI(0),
 
 			//新科娘
 			daimao: {
@@ -11998,17 +11966,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				involve: ['jiai', 'shengyin', 'quanyu']
 			},
 			//勾檀Mayumi
-			level: {
-				init(player, skill) {
-					if (!player.$.level) {
-						player.$.level = 1;
-					}
-				},
+			level: new toSkill('mark',{
 				marktext: '级',
 				intro: {
 					content: '等级：#'
 				}
-			},
+			}).setI(1),
 			jinzhou: {
 				group: ['level'],
 				trigger: { player: 'loseEnd' },

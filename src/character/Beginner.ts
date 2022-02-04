@@ -2044,7 +2044,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			//安啾
 			akxiaoqiao: {
-				init(player: PlayerModel, skill: number) {
+				init(player: PlayerModel, skill: string) {
 					if (!player.storage[skill]) player.storage[skill] = [];
 				},
 				trigger: { player: 'phaseDiscardBegin' },

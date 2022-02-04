@@ -29,7 +29,7 @@ declare global {
         group?: Keyword
         filter?: skillCheck
         check?: skillCheck
-        init?: (PlayerModel,string)=>void
+        init?: (PlayerModel,skill:string)=>void
         prompt2?: string | skillCheck
         logTarget?: string | ((event:EventModel, player?:PlayerModel) => boolean|number|string|string[])
         filterTarget?: boolean | targetCheck
