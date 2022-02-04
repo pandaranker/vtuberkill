@@ -1,5 +1,5 @@
 window.noname_update={
-	version:'2.0.0.1',
+	version:'1.10.0.1',
 	update:'1.9.101.1.1',
 	changeLog:[
 		`2.0.0.1小型更新：新增角色茶冷【VR】、陆鳐LuLu【个人势/群】(本游戏第235名角色)`,

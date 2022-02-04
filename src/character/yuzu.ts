@@ -1251,7 +1251,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//陆鳐
 			manyou: new toSkill('trigger', {
-				usable:1,
+				usable: 1,
 				filter(Evt, player) {
 					if (Evt.name == 'lose' && Evt.position != ui.discardPile) return false;
 					for (let i of (Evt.cards2 || Evt.cards).filterInD('d')) {
@@ -1291,8 +1291,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				ai: {
 					threaten: 1.1
 				}
-			}).setT({global: ['loseAfter', 'cardsDiscardAfter']}),
-			changjie: new toSkill('trigger',{
+			}).setT({ global: ['loseAfter', 'cardsDiscardAfter'] }),
+			changjie: new toSkill('trigger', {
 				init(player, skill) {
 					if (!player.$[skill]) player.$[skill] = 0;
 				},
@@ -1300,19 +1300,19 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					content: '本局游戏内累计使用了#张属性【杀】'
 				},
 				content() {
-					if(player.hasHistory('sourceDamage', evt => {
-						return evt.getParent('phaseUse')===trigger;
-					}) && player.$.changjie){
+					if (player.hasHistory('sourceDamage', evt => {
+						return evt.getParent('phaseUse') === trigger;
+					}) && player.$.changjie) {
 						player.draw(player.$.changjie)
-					}else{
-						player.chooseToDiscard(true,player.$.changjie)
+					} else {
+						player.chooseToDiscard(true, player.$.changjie)
 					}
 				},
 				group: 'changjie_mark',
-				subSkill:{
-					mark: new toSkill('trigger',{
+				subSkill: {
+					mark: new toSkill('trigger', {
 						filter(Evt, player) {
-							return Evt.card.name==='sha'&&Evt.card.nature;
+							return Evt.card.name === 'sha' && Evt.card.nature;
 						},
 						content() {
 							player.$.changjie++
@@ -4163,6 +4163,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						priority: 12,
 						forced: true,
+						logTarget: 'player',
 						content: [() => {
 							let evt = trigger.getParent();
 							if (evt.name == '_lianhuan') evt = trigger.getTrigger().getParent(2);
@@ -4171,9 +4172,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							evt.addedSkill.add('liebo');
 							player.draw();
 						}, () => {
-							game.broadcastAll(function (player, target) {
-								player.discardPlayerCard('e', target);
-							}, trigger.player, player)
+							if (player.countCards('e')) {
+								Evt.target = trigger.player
+								Evt.target.discardPlayerCard('e', player, true);
+							}
 						}],
 					},
 				},
@@ -4186,7 +4188,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filterCard: true,
 				position: 'he',
 				check(card) {
-					return 7 - get.value(card);
+					return 8 - get.value(card);
 				},
 				content: [() => {
 					let next = player.chooseCard('h', true, '『重机织梦』：展示一张手牌');
@@ -4216,7 +4218,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 				},
-				ai: { order: 10, player: 1 },
+				ai: {
+					order: 10,
+					player(player, target) {
+						if (player.countCards('h') >= 2) {
+							return 2;
+						}
+						else return 0
+					},
+				},
 				group: ['zhongjizhimeng_lose'],
 				subSkill: {
 					lose: {
@@ -7171,6 +7181,17 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						content() {
 							player.chooseToCompare([target]).callback = lib.skill.zaiying.callback;
+						},
+						ai:{
+							order:6,
+							result: {
+								player(player, target) {
+									if(!player.needsToDiscard()||player.isDamaged())	return 1
+								},
+								target(player,target) {
+									if(!target.needsToDiscard())	return 1
+								}
+							},
 						}
 					}
 				}
