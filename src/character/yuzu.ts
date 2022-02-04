@@ -18822,7 +18822,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Karon: `茶冷Karon`,
 			Karon_ab: `茶冷`,
 			huomo: `惑魔`,
-			huomo_info: `轮次技。你成为一张牌的目标时，可以弃置一张牌，令距离你为1的其他角色改变对于此牌的目标状态。`,
+			huomo_info: `轮次技 你成为一张牌的目标时，可以弃置一张牌，令距离你为1的其他角色改变对于此牌的目标状态。`,
 			huomo_append: lib.figurer(`特性：辅助`),
 			tuying: `涂映`,
 			tuying_info: `出牌阶段结束时，你可以将一张手牌当做本阶段使用的最后一张牌使用，然后可以将之目标数改为与本阶段使用的第一张牌相同。`,

@@ -290,7 +290,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				cur.player.group = curGroup;
 				cur.player.storage.ownedBuilding = [];
 				game.players.push(cur.player);
-				ui.chess.appendChild(cur.player.element);//[todo player]
+				ui.chess.appendChild(cur.player);//[todo player]
 				if(event.video){
 					ui.placeChess(cur.player,curlistmap.shift());
 				}
@@ -1775,7 +1775,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					// 	},300);
 					// }
 				}
-				ui.chess.appendChild(player.element);//[todo player]
+				ui.chess.appendChild(player);//[todo player]
 				if(_status.video||(pos&&!lib.posmap[pos])){
 					ui.placeChess(player,pos);
 				}
