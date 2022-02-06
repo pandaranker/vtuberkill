@@ -14,9 +14,9 @@
      */
     content: {
       resetRound: function () {
-        var skill = Evt.resetSkill || Evt.name.slice(0, Evt.name.indexOf('_roundcount'));
+        let skill = Evt.resetSkill || Evt.name.slice(0, Evt.name.indexOf('_roundcount'));
         if (!player || !lib.skill[skill]) return;
-        var roundname = skill + '_roundcount';
+        let roundname = skill + '_roundcount';
         if (player.storage[roundname] > 0) {
           player.storage[roundname]--
         }
@@ -28,48 +28,53 @@
         }
       },
       //崭新出炉
-      chooseShengjie: [function () {
-        var list = [];
-        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) Evt.finish();
-        for (var i = 0; i < lib.cardPack.mode_derivation.length; i++) {
-          var info = lib.card[lib.cardPack.mode_derivation[i]];
-          if (info && info.materials && (typeof info.materials == 'function' || Array.isArray(info.materials))) list.push(lib.cardPack.mode_derivation[i]);
+      choosePromotion: [() => {
+        let list = [];
+        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length)
+          Evt.finish();
+        for (let i of lib.cardPack.mode_derivation) {
+          let info = lib.card[i];
+          if (info && info.materials && (typeof info.materials == 'function' || Array.isArray(info.materials)))
+            list.push(i);
         }
-        if (Evt.filterProduct) list = list.filter(Evt.filterProduct);
+        if (Evt.filterProduct)
+          list = list.filter(Evt.filterProduct);
         Evt.list = list;
-      }, function () {
-        var next = player.chooseButton([Evt.prompt, [Evt.list, 'vcard'], '素材区', [Evt.materials, 'card'], 'hidden'], Evt.forced);
+      }, () => {
+        let next = player.chooseButton([Evt.prompt, '###额外区###（可以右键/长按查看合成路线）', [Evt.list, 'vcard'], '素材区', [Evt.materials, 'card'], 'hidden'], Evt.forced);
         next.set('filterButton', function (button) {
-          var ub = ui.selected.buttons;
+          let ub = ui.selected.buttons;
           if (get.itemtype(button.link) == 'card') {
-            if (!ub.length) return false;
-            var card = button.link;
-            var scards = ub.slice(1).map(function (scard) {
+            if (!ub.length)
+              return false;
+            let card = button.link;
+            let scards = ub.slice(1).map(function (scard) {
               return scard.link;
             });
-            var product = ub[0].link[2];
+            let product = ub[0].link[2];
             scards = scards.filter(function (scard) {
               return get.itemtype(scard) == 'card';
             });
-            if (_status.event.filterMaterial && !_status.event.filterMaterial(button.link, scards)) return false;
-            var filter = get.info({ name: product }).materials;
+            if (_status.event.filterMaterial && !_status.event.filterMaterial(button.link, scards))
+              return false;
+            let filter = get.info({ name: product }).materials;
             if (Array.isArray(filter)) {
               if (filter.length > scards.length) {
-                var mate = filter.slice(0);
-                var smate = [];
-                for (var j = 0; j < mate.length; j++) {
-                  for (var k of scards) {
+                let mate = filter.slice(0);
+                let smate = [];
+                for (let j = 0; j < mate.length; j++) {
+                  for (let k of scards) {
                     if (!smate.contains(k)) {
                       if (get.is.filterCardBy(k, mate[j])) {
-                        smate.push(k)
+                        smate.push(k);
                         mate.splice(j--, 1);
                       }
                     }
                   }
                 }
-                for (var j = 0; j < mate.length; j++) {
+                for (let j = 0; j < mate.length; j++) {
                   if (get.is.filterCardBy(card, mate[j])) {
-                    return true
+                    return true;
                   }
                 }
 
@@ -78,38 +83,75 @@
             }
             return true;
           }
-          if (ub.length) return false;
+          if (ub.length)
+            return false;
           return true;
         });
         next.set('selectButton', function () {
-          var ub = ui.selected.buttons;
+          let ub = ui.selected.buttons;
           if (ub.length) {
-            var scards = ub.slice(1).map(function (scard) {
+            let scards = ub.slice(1).map(function (scard) {
               return scard.link;
             });
-            var product = ub[0].link[2];
-            var filter = get.info({ name: product }).materials;
+            let product = ub[0].link[2];
+            let filter = get.info({ name: product }).materials;
             if (Array.isArray(filter)) {
               if (filter.length == scards.length) {
-                var mate = filter.slice(0);
-                for (var j = 0; j < mate.length; j++) {
-                  for (var k of scards) {
+                let mate = filter.slice(0);
+                for (let j = 0; j < mate.length; j++) {
+                  for (let k of scards) {
                     if (get.is.filterCardBy(k, mate[j])) {
                       mate.splice(j--, 1);
                     }
                   }
                 }
-                if (mate.length == 0) return ub.length;
+                if (mate.length == 0)
+                  return ub.length;
               }
             }
           }
           return [ub.length + 1, ub.length + 2];
         });
         next.set('filterMaterial', Evt.filterMaterial);
-      }, function () {
+        let fun = function () {
+          if (!ui.promotionbutton)
+            lib.init.sheet(`
+              .promotionbutton{
+                width: calc(90% - 100px);
+                left: calc(5% + 50px);
+              }`, `
+              .promotion{
+                transition: .5s;
+              }`)
+          return ui.create.control('切换弹窗大小', () => {
+            ui.dialog.classList.add('promotion')
+            ui.dialog.classList.toggle('promotionbutton')
+            if (ui.dialog.classList.contains('promotionbutton')) {
+              ui.dialog._heightset = 'calc(90% - 120px)'
+              ui.dialog.promotionbutton = true
+            }
+            else {
+              ui.dialog.style.height = ''
+              ui.dialog.promotionbutton = false
+            }
+            ui.update()
+          })
+        }
+        if (player.isOnline2()) {
+          player.send(fun);
+        }
+        Evt.control = fun();
+        if (player != game.me || _status.auto) {
+          Evt.control.style.display = 'none';
+        }
+      }, () => {
+        if (player.isOnline2()) {
+          player.send(function () { ui.controls[0].close() });
+        }
+        Evt.control.close()
         if (result.bool) {
-          var cards = result.links.slice(1);
-          var star = game.createCard2(result.links[0][2], get.suit3(cards).randomGet(), 14);
+          let cards = result.links.slice(1);
+          let star = game.createCard2(result.links[0][2], get.suit3(cards).randomGet(), 14);
           Evt.result = {
             bool: true,
             cards: cards,
@@ -117,7 +159,8 @@
             star: star,
           };
         }
-        else Evt.result = { bool: false };
+        else
+          Evt.result = { bool: false };
       }],
       emptyEvent: function () {
         Evt.trigger(Evt.name);
@@ -143,10 +186,10 @@
           Evt.finish();
           return;
         }
-        var info = get.info(card);
-        var range;
+        let info = get.info(card);
+        let range;
         if (!info.notarget) {
-          var select = get.copy(info.selectTarget);
+          let select = get.copy(info.selectTarget);
           if (select == undefined) {
             range = [1, 1];
           }
@@ -157,7 +200,7 @@
         }
         if (info.notarget || range[1] == -1) {
           if (!info.notarget && range[1] == -1) {
-            for (var i = 0; i < targets.length; i++) {
+            for (let i = 0; i < targets.length; i++) {
               if (!player.canUse(card, targets[i], Evt.nodistance ? false : null, Evt.addCount === false ? null : true)) {
                 targets.splice(i--, 1);
               }
@@ -175,21 +218,21 @@
             Evt._result = { bool: true };
           }
           else {
-            var next = player.chooseBool();
+            let next = player.chooseBool();
             next.set('prompt', Evt.prompt || ('是否' + (Evt.targets2.length ? '对' : '') + get.translation(Evt.targets2) + '使用' + get.translation(card) + '?'));
             if (Evt.hsskill) next.setHiddenSkill(Evt.hsskill);
             if (Evt.prompt2) next.set('prompt2', Evt.prompt2);
             next.ai = function () {
-              var eff = 0;
-              for (var i = 0; i < Evt.targets2.length; i++) {
-                eff += get.effect(Evt.targets2[i], card, player, player);
+              let eff = 0;
+              for (let i of Evt.targets2) {
+                eff += get.effect(i, card, player, player);
               }
               return eff > 0;
             };
           }
         }
         else {
-          var next = player.chooseTarget();
+          let next = player.chooseTarget();
           next.set('_get_card', card);
           next.set('filterTarget', function (card, player, target) {
             if (!_status.event.targets.contains(target)) return false;
@@ -212,7 +255,7 @@
             bool: true,
             targets: Evt.targets2 || result.targets,
           };
-          var next = player.useCard(card, Evt.targets2 || result.targets);
+          let next = player.useCard(card, Evt.targets2 || result.targets);
           next.oncard = Evt.oncard;
           if (cards) next.cards = cards.slice(0);
           if (Evt.nopopup) next.nopopup = true;
@@ -241,7 +284,7 @@
           ], function () { }, function () { return 1 + Math.random() }).set('switchToAuto', function () {
             _status.event.result = 'ai';
           }).set('processAI', function () {
-            var buttons = _status.event.dialog.buttons;
+            let buttons = _status.event.dialog.buttons;
             return {
               bool: true,
               links: [buttons.randomGet().link],
@@ -273,9 +316,9 @@
         game.log(player, '选择的防御对策为', '#g' + get.translation(Evt.mes));
         game.delay(0, 1500);
       }, function () {
-        var mes = Evt.mes.slice(6);
-        var tes = Evt.tes.slice(6);
-        var str;
+        let mes = Evt.mes.slice(6);
+        let tes = Evt.tes.slice(6);
+        let str;
         if (mes == tes) {
           str = get.translation(player) + '对策成功';
           player.popup('胜', 'wood');
@@ -291,12 +334,12 @@
           Evt.result = { bool: false };
         }
         game.broadcastAll(function (str) {
-          var dialog = ui.create.dialog(str);
-          dialog.classList.add('center');
-          setTimeout(function () {
-            dialog.close();
-          }, 1000);
-        }, str);
+            let dialog = ui.create.dialog(str);
+            dialog.classList.add('center');
+            setTimeout(() => {
+              dialog.close();
+            }, 1000);
+          }, str);
         game.delay(2);
       }, function () {
         game.broadcastAll(function () {
@@ -315,12 +358,12 @@
             [target, ['猜拳：请选择一种手势', [[['', '', 'pss_stone'], ['', '', 'pss_scissor'], ['', '', 'pss_paper']], 'vcard']], true]
           ], function () { }, function () { return 1 + Math.random() }).set('switchToAuto', function () {
             _status.event.result = 'ai';
-          }).set('processAI', function () {
-            var buttons = _status.event.dialog.buttons;
+          }).set('processAI', () => {
+            let buttons = _status.event.dialog.buttons;
             return {
               bool: true,
               links: [buttons.randomGet().link],
-            }
+            };
           });
         }
       }, function () {
@@ -348,9 +391,9 @@
         game.log(target, '选择的手势为', '#g' + get.translation(Evt.tes));
         game.delay(0, 1500);
       }, function () {
-        var mes = Evt.mes.slice(4);
-        var tes = Evt.tes.slice(4);
-        var str;
+        let mes = Evt.mes.slice(4);
+        let tes = Evt.tes.slice(4);
+        let str;
         if (mes == tes) {
           str = '二人平局';
           player.popup('平', 'metal');
@@ -375,7 +418,7 @@
           }
         }
         game.broadcastAll(function (str) {
-          var dialog = ui.create.dialog(str);
+          let dialog = ui.create.dialog(str);
           dialog.classList.add('center');
           setTimeout(function () {
             dialog.close();
@@ -393,28 +436,28 @@
       }],
       cardsDiscard: function () {
         game.getGlobalHistory().cardMove.push(Evt);
-        for (var i = 0; i < cards.length; i++) {
-          cards[i].discard();
+        for (let i of cards) {
+          i.discard();
         }
       },
       orderingDiscard: function () {
-        var cards = Evt.relatedEvent.orderingCards;
-        for (var i = 0; i < cards.length; i++) {
+        let cards = Evt.relatedEvent.orderingCards;
+        for (let i = 0; i < cards.length; i++) {
           if (get.position(cards[i], true) != 'o') cards.splice(i--, 1);
         }
         if (cards.length) game.cardsDiscard(cards);
       },
       cardsGotoOrdering: function () {
         game.getGlobalHistory().cardMove.push(Evt);
-        for (var i = 0; i < cards.length; i++) {
-          cards[i].fix();
-          ui.ordering.appendChild(cards[i]);
+        for (let i of cards) {
+          i.fix();
+          ui.ordering.appendChild(i);
         }
-        var evt = Evt.relatedEvent || Evt.getParent();
+        let evt = Evt.relatedEvent || Evt.getParent();
         if (!evt.orderingCards) evt.orderingCards = [];
         if (!Evt.noOrdering && !Evt.cardsOrdered) {
           Evt.cardsOrdered = true;
-          var next = game.createEvent('orderingDiscard', false, evt.getParent());
+          let next = game.createEvent('orderingDiscard', false, evt.getParent());
           next.relatedEvent = evt;
           next.setContent('orderingDiscard');
         }
@@ -422,22 +465,22 @@
       },
       cardsGotoSpecial: function () {
         game.getGlobalHistory().cardMove.push(Evt);
-        for (var i = 0; i < cards.length; i++) {
-          cards[i].fix();
-          ui.special.appendChild(cards[i]);
+        for (let i of cards) {
+          i.fix();
+          ui.special.appendChild(i);
         }
         if (Evt.notrigger !== true) Evt.trigger('addCardToStorage');
       },
       chooseToEnable: [function () {
-        var list = [];
-        for (var i = 1; i < 6; i++) {
+        let list = [];
+        for (let i = 1; i < 6; i++) {
           if (!player.isDisabled(i)) continue;
           list.push('equip' + i);
         }
         if (!list.length) Evt.finish();
         else {
           Evt.list = list;
-          var next = player.chooseControl(list);
+          let next = player.chooseControl(list);
           next.set('prompt', '请选择恢复一个装备栏');
           if (!Evt.ai) Evt.ai = function (Evt, player, list) {
             return list.randomGet();
@@ -452,8 +495,8 @@
         player.enableEquip(result.control);
       }],
       chooseToDisable: [function () {
-        var list = [];
-        for (var i = 1; i < 7; i++) {
+        let list = [];
+        for (let i = 1; i < 7; i++) {
           if ((i == 3 || i == 4) && Evt.horse) continue;
           if (i == 6 && !Evt.horse) continue;
           if (player.isDisabled(i)) continue;
@@ -462,7 +505,7 @@
         if (!list.length) Evt.finish();
         else {
           Evt.list = list;
-          var next = player.chooseControl(list);
+          let next = player.chooseControl(list);
           next.set('prompt', '请选择废除一个装备栏');
           if (!Evt.ai) Evt.ai = function (Evt, player, list) {
             return list.randomGet();
@@ -482,16 +525,16 @@
       }],
       swapEquip: [() => {
         game.log(player, '和', target, '交换了装备区中的牌')
-        var e1 = player.getCards('e');
-        var todis1 = [];
-        for (var i = 0; i < e1.length; i++) {
-          if (target.isDisabled(get.subtype(e1[i]))) todis1.push(e1[i]);
+        let e1 = player.getCards('e');
+        let todis1 = [];
+        for (let i of e1) {
+          if (target.isDisabled(get.subtype(i))) todis1.push(i);
         }
         player.discard(todis1);
-        var e2 = target.getCards('e');
-        var todis2 = [];
-        for (var i = 0; i < e2.length; i++) {
-          if (player.isDisabled(get.subtype(e2[i]))) todis2.push(e2[i]);
+        let e2 = target.getCards('e');
+        let todis2 = [];
+        for (let i of e2) {
+          if (player.isDisabled(get.subtype(i))) todis2.push(i);
         }
         target.discard(todis2);
       }, () => {
@@ -501,19 +544,21 @@
         if (Evt.cards[0].length) player.$give(Evt.cards[0], target, false);
         if (Evt.cards[1].length) target.$give(Evt.cards[1], player, false);
       }, () => {
-        for (var i = 0; i < Evt.cards[1].length; i++) {
+        for (let i = 0; i < Evt.cards[1].length; i++) {
           player.equip(Evt.cards[1][i]);
         }
-        for (var i = 0; i < Evt.cards[0].length; i++) {
+        for (let i = 0; i < Evt.cards[0].length; i++) {
           target.equip(Evt.cards[0][i]);
         }
       }],
       disableEquip: function () {
         if (!player.isDisabled(Evt.pos)) {
-          var cards = player.getCards('e', function (card) {
-            var subtype = get.subtype(card);
-            if (subtype == Evt.pos) return true;
-            if (subtype == 'equip6' && ['equip3', 'equip4'].contains(Evt.pos)) return true;
+          let cards = player.getCards('e', (card) => {
+            let subtype = get.subtype(card);
+            if (subtype == Evt.pos)
+              return true;
+            if (subtype == 'equip6' && ['equip3', 'equip4'].contains(Evt.pos))
+              return true;
             return false;
           });
           if (cards.length) player.discard(cards).delay = false;
@@ -530,7 +575,7 @@
       },
       disableJudge: [function () {
         game.log(player, '废除了判定区');
-        var js = player.getCards('j');
+        let js = player.getCards('j');
         if (js.length) player.discard(js);
         player.storage._disableJudge = true;
         //player.markSkill('_disableJudge');},function(){
@@ -579,7 +624,7 @@
         game.log(player, '的回合开始');
         player._noVibrate = true;
         if (get.config('identity_mode') != 'zhong' && get.config('identity_mode') != 'purple' && !_status.connectMode) {
-          var num;
+          let num;
           switch (get.config('auto_identity')) {
             case 'one': num = 1; break;
             case 'two': num = 2; break;
@@ -624,12 +669,12 @@
        * @type {GameCores.Bases.StateMachine}
        */
       toggleSubPlayer: [function () {
-        var list = Evt.list || player.storage.subplayer.skills.slice(0);
+        let list = Evt.list || player.storage.subplayer.skills.slice(0);
         list.remove(player.storage.subplayer.name2);
         Evt.list = list;
         if (!Evt.directresult) {
           if (list.length > 1) {
-            var dialog = ui.create.dialog('更换一个随从', 'hidden');
+            let dialog = ui.create.dialog('更换一个随从', 'hidden');
             dialog.add([list, 'character']);
             player.chooseButton(dialog, true);
           }
@@ -656,7 +701,7 @@
           }
         }
         if (player.storage.subplayer) {
-          var current = player.storage.subplayer.name2;
+          let current = player.storage.subplayer.name2;
           if (Evt.directresult == current) {
             Evt.finish();
             return;
@@ -667,7 +712,7 @@
           player.storage[current].es = player.getCards('e');
           player.lose(player.getCards('he'), ui.special)._triggered = null;
 
-          var cfg = player.storage[Evt.directresult];
+          let cfg = player.storage[Evt.directresult];
           player.storage.subplayer.name2 = Evt.directresult;
           player.reinit(current, Evt.directresult, [
             cfg.hp,
@@ -684,7 +729,7 @@
        */
       exitSubPlayer: [function () {
         if (player.storage.subplayer) {
-          var current = player.storage.subplayer.name2;
+          let current = player.storage.subplayer.name2;
           if (Evt.remove) {
             player.lose(player.getCards('he'), ui.discardPile)._triggered = null;
           }
@@ -730,11 +775,11 @@
        * @type {GameCores.Bases.StateMachine}
        */
       callSubPlayer: [function () {
-        var list = player.getSubPlayers(Evt.tag);
+        let list = player.getSubPlayers(Evt.tag);
         Evt.list = list;
         if (!Evt.directresult) {
           if (list.length > 1) {
-            var dialog = ui.create.dialog('调遣一个随从', 'hidden');
+            let dialog = ui.create.dialog('调遣一个随从', 'hidden');
             dialog.add([list, 'character']);
             player.chooseButton(dialog, true);
           }
@@ -761,9 +806,9 @@
           }
         }
         if (Evt.directresult) {
-          var cfg = player.storage[Evt.directresult];
-          var source = cfg.source || player.name;
-          var name = Evt.directresult;
+          let cfg = player.storage[Evt.directresult];
+          let source = cfg.source || player.name;
+          let name = Evt.directresult;
           game.log(player, '调遣了随从', '#g' + name);
           player.storage.subplayer = {
             name: source,
@@ -793,7 +838,7 @@
       reverseOrder: [() => {
         game.delay();
       }, () => {
-        var choice;
+        let choice;
         if (get.tag(card, 'multineg')) {
           choice = (player.previous.side == player.side) ? '逆时针' : '顺时针';
         }
@@ -805,7 +850,7 @@
         }).set('prompt', '选择' + get.translation(card) + '的结算方向').set('choice', choice).set('forceDie', true);
       }, () => {
         if (result && result.control == '顺时针') {
-          var evt = Evt.getParent();
+          let evt = Evt.getParent();
           evt.fixedSeat = true;
           evt.targets.sortBySeat();
           evt.targets.reverse();
@@ -840,8 +885,8 @@
           Evt.finish();
           return;
         }
-        var end = player;
-        var numx = num;
+        let end = player;
+        let numx = num;
         do {
           if (typeof num == 'function') {
             numx = num(player);
@@ -893,16 +938,16 @@
           if (game.changeCoin) {
             game.changeCoin(-3);
           }
-          var hs = game.me.getCards('h');
+          let hs = game.me.getCards('h');
           game.addVideo('lose', game.me, [get.cardsInfo(hs), [], [], []]);
-          for (var i = 0; i < hs.length; i++) {
-            hs[i].discard(false);
+          for (let i of hs) {
+            i.discard(false);
           }
           game.me.directgain(get.cards(hs.length));
-          var ss = game.me.getCards('s');
+          let ss = game.me.getCards('s');
           game.addVideo('lose', game.me, [get.cardsInfo(ss), [], [], []]);
-          for (var i = 0; i < ss.length; i++) {
-            ss[i].discard(false);
+          for (let i of ss) {
+            i.discard(false);
           }
           game.me.directgains(get.cards(ss.length));
           Evt.goto(2);
@@ -6765,8 +6810,8 @@
         return false;
       },
       //自创函数(升阶相关)
-      chooseShengjie: function () {
-        let next = game.createEvent('chooseShengjie');
+      choosePromotion: function () {
+        let next = game.createEvent('choosePromotion');
         next.player = this;
         for (var i = 0; i < arguments.length; i++) {
           if (get.itemtype(arguments[i]) == 'cards') next.materials = arguments[i];
@@ -6776,13 +6821,13 @@
           else if (typeof arguments[i] == 'function') next.filterProduct = arguments[i];
           else if (typeof arguments[i] == 'function') next.filterMaterial = arguments[i];
         }
-        if (!this.canShengjie.apply(this, arguments)) return;
-        if (next.prompt == undefined) next.prompt = '请选择升阶获得的卡牌';
+        if (!this.canPromotion.apply(this, arguments)) return;
+        if (next.prompt == undefined) next.prompt = '「普通升阶」（每个出牌阶段限一次）<br>请选择升阶获得的卡牌';
         if (next.select == undefined) next.select = [1, Infinity];
-        next.setContent('chooseShengjie');
+        next.setContent('choosePromotion');
         return next;
       },
-      canShengjie: function () {
+      canPromotion: function () {
         if (lib.configOL.protect_beginner) return false;
         let list = [];
         if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;

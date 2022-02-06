@@ -115,8 +115,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					var next = player.moveCard(true).set('nojudge', true);
-					next.set('ai', function (target) {
+					let next = player.moveCard(true).set('nojudge', true)
+					.set('ai', function (target) {
 						var player = _status.event.player;
 						var att = get.attitude(player, target);
 						var sgnatt = get.sgn(att);
@@ -169,8 +169,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							}
 						}
 						return -att * get.attitude(player, ui.selected.targets[0]);
-					});
-					next.set('forced', true);
+					})
+					.set('forced', true);
 					'step 2'
 					if (result.targets[0] != player) {
 						Evt.finish();
@@ -673,7 +673,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								Evt.finish();
 							}
 							'step 3'
-							var next = player.chooseButton(1, true);
+							let next = player.chooseButton(1, true);
 							next.set('dialog', Evt.videoId);
 							next.set('ai', function (button) {
 								var card = { name: button.link[2] };
@@ -845,7 +845,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								dialog.videoId = id;
 							}, Evt.videoId, list);
 							'step 4'
-							var next = player.chooseButton(1, true);
+							let next = player.chooseButton(1, true);
 							next.set('dialog', Evt.videoId);
 							'step 5'
 							game.broadcastAll('closeDialog', Evt.videoId);
@@ -1478,7 +1478,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							"step 0"
 							var att = (get.attitude(player, trigger.player) <= 0);
-							var next = player.chooseButton();
+							let next = player.chooseButton();
 							next.set('att', att);
 							next.set('createDialog', ['是否发动『狂暴双刃』，弃置' + get.translation(trigger.player) + '的一张坐骑牌？', trigger.player.getDiscardableCards(player, 'e', { subtype: ['equip3', 'equip4', 'equip6'] })]);
 							next.set('ai', button => {
@@ -1933,7 +1933,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							'step 0'
 							Evt.jmTarget = targets[0];
-							var next = Evt.jmTarget.chooseToUse(
+							let next = Evt.jmTarget.chooseToUse(
 								'对' + get.translation(player) + '使用一张【杀】；或失去1点体力并令' + get.translation(player) + '于本回合失去『骄名』。',
 								function (card, player) {
 									if (get.name(card) != 'sha') return false;

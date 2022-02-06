@@ -116,7 +116,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			OtomeOto: ['re_OtomeOto', 'OtomeOto'],
 			HisekiErio: ['re_HisekiErio', 'HisekiErio'],
 			HanazonoSerena: ['re_HanazonoSerena', 'HanazonoSerena', 'old_HanazonoSerena'],
-			HosimiyaSio: ['HosimiyaSio', 'sea_HosimiyaSio','star_HosimiyaSio'],
+			HosimiyaSio: ['HosimiyaSio', 'sea_HosimiyaSio', 'star_HosimiyaSio'],
 
 			Eilene: ['Eilene', 'old_Eilene'],
 		},
@@ -204,22 +204,22 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}, function () {
 					Evt.targ = Evt.targs.shift();
 					var suits = Evt.suits;
-					var next = Evt.targ.chooseToDiscard("弃置与亮出牌花色和数量（" + get.translation(suits) + "）相同的牌", 'he');
-					next.set('selectCard', suits.length);
-					next.set('complexCard', true);
-					next.set('suits', suits);
-					next.set('filterCard', card => {
-						var suits = _status.event.suits;
-						if (ui.selected.cards.length) {
-							return get.suit(card) == suits[ui.selected.cards.length];
-						}
-						else {
-							return get.suit(card) == suits[0];
-						}
-					});
-					next.set('ai', card => {
-						return 8 - get.useful(card);
-					});
+					let next = Evt.targ.chooseToDiscard("弃置与亮出牌花色和数量（" + get.translation(suits) + "）相同的牌", 'he')
+						.set('selectCard', suits.length)
+						.set('complexCard', true)
+						.set('suits', suits)
+						.set('filterCard', card => {
+							var suits = _status.event.suits;
+							if (ui.selected.cards.length) {
+								return get.suit(card) == suits[ui.selected.cards.length];
+							}
+							else {
+								return get.suit(card) == suits[0];
+							}
+						})
+						.set('ai', card => {
+							return 8 - get.useful(card);
+						});
 					next.autochoose = function () {
 						return this.player.countCards('he') == 0;
 					};
@@ -268,15 +268,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						dialog.videoId = id;
 					}, Evt.videoId, numberlist);
 					'step 1'
-					var next = player.chooseButton(true);
-					next.set('dialog', Evt.videoId);
-					next.set('filterButton', function (button) {
-						var now = button.link;
-						var player = _status.event.player;
-						return !game.hasPlayer(function (cur) {
-							return cur.countCards('h') >= (player.countCards('h') + now[1]);
+					let next = player.chooseButton(true)
+						.set('dialog', Evt.videoId)
+						.set('filterButton', function (button) {
+							var now = button.link;
+							var player = _status.event.player;
+							return !game.hasPlayer(function (cur) {
+								return cur.countCards('h') >= (player.countCards('h') + now[1]);
+							});
 						});
-					});
 					'step 2'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -327,7 +327,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.recover(3 - player.hp);
 					'step 1'
 					if (player.storage.daimeng.length != 4) {
-						var next = game.createEvent('resetSkill');
+						let next = game.createEvent('resetSkill');
 						[next.player, next.resetSkill] = [player, 'daimeng']
 						next.setContent(function () {
 							player.popup('重置');
@@ -606,7 +606,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					trigger.card.name = 'juedou';
 					if (get.itemtype(trigger.card) == 'card') {
-						var next = game.createEvent('duixian_clear');
+						let next = game.createEvent('duixian_clear');
 						next.card = trigger.card;
 						Evt.next.remove(next);
 						trigger.after.push(next);
@@ -1499,7 +1499,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.storage.shushi += result.index;
 						player.chooseCardButton(result.index, get.cards(result.index), true, '『书史』：按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai', function (button) {
 							var player = _status.event.player;
-							var next = _status.event.phase == 'phaseJudge' ? player : player.getNext();
+							let next = _status.event.phase == 'phaseJudge' ? player : player.getNext();
 							var att = get.attitude(player, next);
 							var card = button.link;
 							var judge = next.getCards('j')[ui.selected.buttons.length];
@@ -2097,7 +2097,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							lib.skill.zhengtibuming.addTishens(player, 3);
 							player.syncStorage('zhengtibuming');
 							player.markSkill('zhengtibuming');
-							var next = game.createEvent('zhengtibuming');
+							let next = game.createEvent('zhengtibuming');
 							next.player = player;
 							next._trigger = trigger;
 							next.triggername = 'zhengtibuming';
@@ -2179,7 +2179,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {//TODO
 					"step 0"
-					var next = player.chooseBool(
+					let next = player.chooseBool(
 						get.translation(trigger.player) + '的' + (trigger.judgestr || '') + '判定为'
 						+ get.translation(trigger.player.judging[0]) + '，' + get.prompt('mingyunniezao')).set('ai', () => {
 							return Math.random() > 0.7;
@@ -2188,9 +2188,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						var cards = get.cards(5);
 						Evt.cards = cards;
-						player.chooseCardButton('选择牌堆顶的一张牌替代' + get.translation(trigger.player.judging[0]), cards, true).set(
-							'ai',
-							(button) => {
+						player.chooseCardButton('选择牌堆顶的一张牌替代' + get.translation(trigger.player.judging[0]), cards, true)
+							.set('ai', (button) => {
 								if (!button || !button.link) return 0;
 								var trigger = _status.event.getTrigger();
 								var player = _status.event.player;
@@ -2203,8 +2202,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								} else {
 									return -result - trigger.judge(button.link) / 2;
 								}
-							}
-						).set('oriJudgeCard', trigger.player.judging[0]);//ai
+							})
+							.set('oriJudgeCard', trigger.player.judging[0]);//ai
 					}
 					else {
 						Evt.finish();
@@ -2394,13 +2393,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					list.push('cancel2');
 					//选择一个其他未废除的装备栏
-					var next = player.chooseControl(list);
-					next.set('prompt', '请选择一个其他未废除的装备栏<br>（若不选择，此技能进入冷却）');
-					next.set('ai', function (Evt, player, list) {
-						var list = _status.event.list;
-						if (list) return list.randomGet();
-						return 'cancel2';
-					}).set('list', list);
+					let next = player.chooseControl(list)
+						.set('prompt', '请选择一个其他未废除的装备栏<br>（若不选择，此技能进入冷却）')
+						.set('ai', function (Evt, player, list) {
+							var list = _status.event.list;
+							if (list) return list.randomGet();
+							return 'cancel2';
+						}).set('list', list);
 					'step 1'
 					if (!result.control || result.control == 'cancel2') {
 						Evt.finish();

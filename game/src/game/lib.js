@@ -2739,12 +2739,12 @@ module.exports = {
        * @param {...string} rules css rules
        * @returns {!HTMLStyleElement} 新的`<style>`
        */
-      sheet: function () {
+      sheet: function (...args) {
         var style = document.createElement('style');
         document.head.appendChild(style);
-        for (var i = 0; i < arguments.length; i++) {
-          if (typeof arguments[i] == 'string') {
-            style.sheet.insertRule(arguments[i], 0);
+        for (let v of args) {
+          if (typeof v == 'string') {
+            style.sheet.insertRule(v, 0);
           }
         }
         return style;
@@ -7332,10 +7332,10 @@ module.exports = {
           enable: 'phaseUse',
           usable: 1,
           filter: function (Evt, player) {
-            return player.canShengjie(player.getCards('h'));
+            return player.canPromotion(player.getCards('h'));
           },
           content: [function () {
-            player.chooseShengjie(player.getCards('h'))
+            player.choosePromotion(player.getCards('h'))
           }, function () {
             if (result.bool) {
               player.lose(result.cards, ui.discardPile, 'visible');

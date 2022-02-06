@@ -358,8 +358,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					var next = player.chooseTarget();
-					next.set('filterTarget', function (card, player, target) {
+					let next = player.chooseTarget()
+					.set('filterTarget', function (card, player, target) {
 						return target.group == player.group;
 					});
 					if (trigger._result?.length) {
@@ -458,7 +458,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								})
 								dialog.videoId = id;
 							}, Evt.targets, Evt.videoId);
-							var next = player.chooseButton([1, player.maxHp]);
+							let next = player.chooseButton([1, player.maxHp]);
 							next.set('dialog', Evt.videoId);
 							'step 1'
 							game.broadcastAll('closeDialog', Evt.videoId)
@@ -525,8 +525,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						})
 						dialog.videoId = id;
 					}, Evt.targets, Evt.videoId, trigger.player)
-					var next = player.chooseButton([1, player.maxHp]);
-					next.set('dialog', Evt.videoId);
+					let next = player.chooseButton([1, player.maxHp])
+					.set('dialog', Evt.videoId);
 					'step 1'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -902,7 +902,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					var next = player.moveCard(function (card, player, target) {
+					let next = player.moveCard(function (card, player, target) {
 						if (target == player) return true;
 						if (ui.selected.targets.length && ui.selected.targets[0] != player) return false;
 						if (player.inRange(target)) {

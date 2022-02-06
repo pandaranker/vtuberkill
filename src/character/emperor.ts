@@ -329,16 +329,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.gain(cards, 'gain2');
 					}
 					'step 4'
-					var next = player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】', function (card, player, target) {
+					let next = player.chooseTarget('###『刃斩』###指定一名角色，对其使用任意张【杀】', function (card, player, target) {
 						return player != target;
-					});
-					next.set('targetprompt', ['RUA']);
-					next.set('forced', false);
-					next.set('ai', function (target) {
-						var player = _status.event.player;
-						var att = get.attitude(player, target);
-						return 10 - att;
-					});
+					})
+						.set('targetprompt', ['RUA'])
+						.set('forced', false)
+						.set('ai', function (target) {
+							var player = _status.event.player;
+							var att = get.attitude(player, target);
+							return 10 - att;
+						});
 					'step 5'
 					if (result.bool) {
 						var target = result.targets[0];
@@ -493,7 +493,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					game.broadcastAll(function (player) {
-						var next = player.chooseTarget(function (card, player, target) {
+						let next = player.chooseTarget(function (card, player, target) {
 							return true;
 						});
 						next.set('targetprompt', ['JK']);
@@ -571,7 +571,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							'step 1'
 							if (result.index == 0) {
 								game.broadcastAll(function (player) {
-									var next = player.chooseTarget(function (card, player, target) {
+									let next = player.chooseTarget(function (card, player, target) {
 										return target != player && !target.hasSkill('xiaotuzi');
 									});
 									next.set('targetprompt', ['小兔子']);
@@ -615,7 +615,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					game.broadcastAll(function (player) {
-						var next = player.chooseTarget(function (card, player, target) {
+						let next = player.chooseTarget(function (card, player, target) {
 							return target != player && target.hasSkill('xiaotuzi');
 						});
 						next.set('prompt', '指定一名小兔子，令其出一张牌');
@@ -629,7 +629,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						_status.event.target = result.targets[0];
 						game.broadcastAll(function (target) {
-							var next = target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌');
+							let next = target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌');
 							next.set('forced', false);
 							next.set('ai', card => {
 								if (get.name(card) == 'shan') return 10;
@@ -694,7 +694,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					game.broadcastAll(function (player) {
-						var next = player.chooseTarget(function (card, player, target) {
+						let next = player.chooseTarget(function (card, player, target) {
 							return target != player && target.hasSkill('chahui');
 						});
 						next.set('prompt', '指定爱丽丝，令其出一张牌');
@@ -708,7 +708,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						_status.event.target = result.targets[0];
 						game.broadcastAll(function (target, trigger) {
-							var next = target.chooseCard('h', 1, '是否紧跟小兔子之后使用一张牌');
+							let next = target.chooseCard('h', 1, '是否紧跟小兔子之后使用一张牌');
 							next.set('forced', false);
 							next.set('ai', card => {
 								if (get.name(card) == 'shan') return 10;
@@ -961,7 +961,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (player != game.me || _status.auto) {
 							Evt.dialog.style.display = 'none';
 						}
-						var next = player.chooseButton();
+						let next = player.chooseButton();
 						next.set('dialog', Evt.videoId);
 						next.set('ai', function (button) {
 							if (get.number(button.link) == 7) return get.value(button.link) * 2 + Math.random();

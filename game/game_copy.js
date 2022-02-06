@@ -6580,7 +6580,7 @@
                     }
                 },
                 //崭新出炉
-                chooseShengjie: function () {
+                choosePromotion: function () {
                     'step 0'
                     var list = [];
                     if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) event.finish();
@@ -13394,8 +13394,8 @@
                     return false;
                 },
                 //自创函数(升阶相关)
-                chooseShengjie: function () {
-                    let next = game.createEvent('chooseShengjie');
+                choosePromotion: function () {
+                    let next = game.createEvent('choosePromotion');
                     next.player = this;
                     for (var i = 0; i < arguments.length; i++) {
                         if (get.itemtype(arguments[i]) == 'cards') next.materials = arguments[i];
@@ -13405,13 +13405,13 @@
                         else if (typeof arguments[i] == 'function') next.filterProduct = arguments[i];
                         else if (typeof arguments[i] == 'function') next.filterMaterial = arguments[i];
                     }
-                    if (!this.canShengjie.apply(this, arguments)) return;
+                    if (!this.canPromotion.apply(this, arguments)) return;
                     if (next.prompt == undefined) next.prompt = '请选择升阶获得的卡牌';
                     if (next.select == undefined) next.select = [1, Infinity];
-                    next.setContent('chooseShengjie');
+                    next.setContent('choosePromotion');
                     return next;
                 },
-                canShengjie: function () {
+                canPromotion: function () {
                     if (lib.configOL.protect_beginner) return false;
                     let list = [];
                     if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
@@ -23785,11 +23785,11 @@
                 enable: 'phaseUse',
                 usable: 1,
                 filter: function (event, player) {
-                    return player.canShengjie(player.getCards('h'));
+                    return player.canPromotion(player.getCards('h'));
                 },
                 content: function () {
                     'step 0'
-                    player.chooseShengjie(player.getCards('h'));
+                    player.choosePromotion(player.getCards('h'));
                     'step 1'
                     if (result.bool) {
                         player.lose(result.cards, ui.discardPile, 'visible');

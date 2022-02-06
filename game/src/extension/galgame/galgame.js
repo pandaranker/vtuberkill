@@ -6,7 +6,7 @@ module.exports = function () {
         game: game,
         sce(shijian) {
             var game = galgame.game;
-            var next = game.createEvent('sce', false);
+            let next = game.createEvent('sce', false);
             next.shijian = shijian;
             next.setContent(galgame.sces);
             return next;

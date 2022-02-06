@@ -201,7 +201,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (evt.wudaoqu) {
 						evt.cancel();
 						Evt.cards = evt.cards;
-						var next = game.createEvent('wudaoqu_gain');
+						let next = game.createEvent('wudaoqu_gain');
 						next.player = player;
 						next.setContent(function () {
 							var cards = Evt.getParent().cards.filterInD();

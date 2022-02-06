@@ -5228,28 +5228,26 @@ module.exports = {
                }
                return dialog;
             },
-            dialog: function () {
-               var i, small = null;
-               var hidden = false;
-               var notouchscroll = false;
-               var forcebutton = false;
-               var dialog = ui.create.div('.dialog');
+            dialog: function (...args) {
+               let small = null,hidden = notouchscroll = forcebutton = promotionbutton = false;
+               let dialog = ui.create.div('.dialog');
                dialog.contentContainer = ui.create.div('.content-container', dialog);
                dialog.content = ui.create.div('.content', dialog.contentContainer);
                dialog.bar1 = ui.create.div('.bar.top', dialog);
                dialog.bar2 = ui.create.div('.bar.bottom', dialog);
                dialog.buttons = [];
-               for (i in lib.element.dialog) {
+               for (let i in lib.element.dialog) {
                   dialog[i] = lib.element.dialog[i];
                }
-               for (i = 0; i < arguments.length; i++) {
-                  if (typeof arguments[i] == 'boolean') dialog.static = arguments[i];
-                  else if (arguments[i] == 'hidden') hidden = true;
-                  else if (arguments[i] == 'notouchscroll') notouchscroll = true;
-                  else if (arguments[i] == 'forcebutton') forcebutton = true;
-                  else if (arguments[i] == 'small') small = true;
+               for (let i of args) {
+                  if (typeof i == 'boolean') dialog.static = i;
+                  else if (i == 'hidden') hidden = true;
+                  else if (i == 'notouchscroll') notouchscroll = true;
+                  else if (i == 'forcebutton') forcebutton = true;
+                  else if (i == 'promotionbutton') promotionbutton = true;
+                  else if (i == 'small') small = true;
                   else {
-                     dialog.add(arguments[i], small, small);
+                     dialog.add(i, small, small);
                   }
                }
                if (!hidden) {
@@ -5265,6 +5263,10 @@ module.exports = {
                if (forcebutton) {
                   dialog.forcebutton = true;
                   dialog.classList.add('forcebutton');
+               }
+               if (promotionbutton) {
+                  dialog.promotionbutton = true;
+                  dialog.classList.add('promotionbutton');
                }
                return dialog;
             },
@@ -11124,7 +11126,7 @@ module.exports = {
                   else {
                      ui.dialog.classList.add('scroll1');
                      ui.dialog.classList.add('scroll2');
-                     if (game.layout != 'default') {
+                     if (game.layout != 'default' && !ui.dialog.promotionbutton) {
                         ui.dialog.style.height = Math.min(height1, ((game.layout == 'long2' || game.layout == 'nova') && ui.arena.classList.contains('choose-character')) ? 380 : 350) + 'px';
                         ui.dialog._scrollset = true;
                      }

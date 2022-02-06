@@ -522,8 +522,8 @@ class PlayerModel extends HTMLDivElementProxy {
         return false;
     }
     //自创函数(升阶相关)
-    chooseShengjie(...args) {
-        let next = game.createEvent('chooseShengjie');
+    choosePromotion(...args) {
+        let next = game.createEvent('choosePromotion');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'cards') next.materials = i;
@@ -533,13 +533,13 @@ class PlayerModel extends HTMLDivElementProxy {
             else if (typeof i == 'function') next.filterProduct = i;
             else if (typeof i == 'function') next.filterMaterial = i;
         }
-        if (!this.canShengjie.apply(this, arguments)) return;
+        if (!this.canPromotion.apply(this, arguments)) return;
         if (next.prompt == undefined) next.prompt = '请选择升阶获得的卡牌';
         if (next.select == undefined) next.select = [1, Infinity];
-        next.setContent('chooseShengjie');
+        next.setContent('choosePromotion');
         return next;
     }
-    canShengjie(...args) {
+    canPromotion(...args) {
         if (lib.configOL.protect_beginner) return false;
         let list = [];
         if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
@@ -611,7 +611,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * 将本角色的卡牌移入(目标角色)特殊区
      */
     loseToSpecial(cards, tag, target) {
-        var next = game.loseAsync({
+        let next = game.loseAsync({
             player: this,
             cards: cards,
             tag: tag,
@@ -680,7 +680,7 @@ class PlayerModel extends HTMLDivElementProxy {
         if ((num == 1 || num == 2) && this.isUnseen(1)) toShow.add(this.name2);
         if (!toShow.length) return;
         this.$showCharacter.apply(this, arguments as unknown as [number, any]);
-        var next = game.createEvent('showCharacter', false);
+        let next = game.createEvent('showCharacter', false);
         next.player = this;
         next.num = num;
         next.toShow = toShow;
@@ -772,7 +772,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {GameCores.Bases.Event}
      */
     chooseToGuanxing(num) {
-        var next = game.createEvent('chooseToGuanxing');
+        let next = game.createEvent('chooseToGuanxing');
         next.num = num || 1;
         next.player = this;
         next.setContent('chooseToGuanxing');
@@ -991,27 +991,27 @@ class PlayerModel extends HTMLDivElementProxy {
         if (log !== false) game.log(this, '将势力变为了', '#y' + get.translation(group + 2));
     }
     chooseToDuiben(target) {
-        var next = game.createEvent('chooseToDuiben');
+        let next = game.createEvent('chooseToDuiben');
         next.player = this;
         next.target = target;
         next.setContent('chooseToDuiben');
         return next;
     }
     chooseToPSS(target) {
-        var next = game.createEvent('chooseToPSS');
+        let next = game.createEvent('chooseToPSS');
         next.player = this;
         next.target = target;
         next.setContent('chooseToPSS');
         return next;
     }
     chooseToEnable() {
-        var next = game.createEvent('chooseToEnable');
+        let next = game.createEvent('chooseToEnable');
         next.player = this;
         next.setContent('chooseToEnable');
         return next;
     }
     chooseToDisable(horse) {
-        var next = game.createEvent('chooseToDisable');
+        let next = game.createEvent('chooseToDisable');
         next.player = this;
         if (horse) next.horse = true;
         next.setContent('chooseToDisable');
@@ -1026,7 +1026,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return _status.event.name == 'phaseUse' || _status.event.getParent('phaseUse').name == 'phaseUse';
     }
     swapEquip(target, subtype) {
-        var next = game.createEvent('swapEquip');
+        let next = game.createEvent('swapEquip');
         next.player = this;
         next.target = target;
         next.subtype = subtype;
@@ -1041,7 +1041,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     disableEquip(pos) {
         if (typeof pos == 'number') pos = 'equip' + pos;
-        var next = game.createEvent('disableEquip');
+        let next = game.createEvent('disableEquip');
         next.player = this;
         next.pos = pos;
         next.source = _status.event.player;
@@ -1083,7 +1083,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     enableEquip(pos) {
         if (typeof pos == 'number') pos = 'equip' + pos;
-        var next = game.createEvent('enableEquip');
+        let next = game.createEvent('enableEquip');
         next.player = this;
         next.pos = pos;
         next.source = _status.event.player;
@@ -1141,14 +1141,14 @@ class PlayerModel extends HTMLDivElementProxy {
         }
     }
     disableJudge() {
-        var next = game.createEvent('disableJudge');
+        let next = game.createEvent('disableJudge');
         next.player = this;
         next.source = _status.event.player;
         next.setContent('disableJudge');
         return next;
     }
     enableJudge() {
-        var next = game.createEvent('enableJudge');
+        let next = game.createEvent('enableJudge');
         next.player = this;
         next.source = _status.event.player;
         next.setContent('enableJudge');
@@ -2988,7 +2988,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     phase(skill:string, stageList?:string[]) {
-        var next = game.createEvent('phase');
+        let next = game.createEvent('phase');
         next.player = this;
         next.setContent('phase');
         if (!_status.roundStart) {
@@ -3003,19 +3003,19 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     phaseZhunbei() {
-        var next = game.createEvent('phaseZhunbei');
+        let next = game.createEvent('phaseZhunbei');
         next.player = this;
         next.setContent('emptyEvent');
         return next;
     }
     phaseJudge() {
-        var next = game.createEvent('phaseJudge');
+        let next = game.createEvent('phaseJudge');
         next.player = this;
         next.setContent('phaseJudge');
         return next;
     }
     phaseDraw() {
-        var next = game.createEvent('phaseDraw');
+        let next = game.createEvent('phaseDraw');
         next.player = this;
         next.num = 2;
         if ((get.config('first_less') || _status.connectMode || _status.first_less_forced) && game.phaseNumber == 1 && _status.first_less) {
@@ -3025,19 +3025,19 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     phaseUse() {
-        var next = game.createEvent('phaseUse');
+        let next = game.createEvent('phaseUse');
         next.player = this;
         next.setContent('phaseUse');
         return next;
     }
     phaseDiscard() {
-        var next = game.createEvent('phaseDiscard');
+        let next = game.createEvent('phaseDiscard');
         next.player = this;
         next.setContent('phaseDiscard');
         return next;
     }
     phaseJieshu() {
-        var next = game.createEvent('phaseJieshu');
+        let next = game.createEvent('phaseJieshu');
         next.player = this;
         next.setContent('emptyEvent');
         return next;
@@ -3095,7 +3095,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseToRespond(...args) {
-        var next = game.createEvent('chooseToRespond');
+        let next = game.createEvent('chooseToRespond');
         next.player = this;
         var filter;
         for (let i of args) {
@@ -3162,7 +3162,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseToDiscard(...args) {
-        var next = game.createEvent('chooseToDiscard');
+        let next = game.createEvent('chooseToDiscard');
         next.player = this;
         for (let i of args) {
             if (typeof i == 'number') {
@@ -3216,7 +3216,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseToCompare(target, check) {
-        var next = game.createEvent('chooseToCompare');
+        let next = game.createEvent('chooseToCompare');
         next.player = this;
         if (Array.isArray(target)) {
             next.targets = target;
@@ -3277,7 +3277,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     discoverSkill(list) {
-        var next = game.createEvent('discoverSkill');
+        let next = game.createEvent('discoverSkill');
         next.player = this;
         next.setContent('discoverSkill');
         next.list = list;
@@ -3297,7 +3297,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
     }
     chooseSkill(target) {
-        var next = game.createEvent('chooseSkill');
+        let next = game.createEvent('chooseSkill');
         next.player = this;
         next.setContent('chooseSkill');
         next.target = target;
@@ -3311,7 +3311,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
     }
     discoverCard(list) {
-        var next = game.createEvent('discoverCard');
+        let next = game.createEvent('discoverCard');
         next.player = this;
         next.setContent('discoverCard');
         next.list = list || lib.inpile.slice(0);
@@ -3367,7 +3367,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return this.chooseButton(forced, select, 'hidden', [prompt, [list, 'vcard'], 'hidden']);
     }
     chooseButton(...args) {
-        var next = game.createEvent('chooseButton');
+        let next = game.createEvent('chooseButton');
         for (let i of args) {
             if (typeof i == 'boolean') {
                 next.forced = i;
@@ -3402,7 +3402,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseButtonOL(list, callback, ai, ...args) {
-        var next = game.createEvent('chooseButtonOL');
+        let next = game.createEvent('chooseButtonOL');
         next.list = list;
         next.setContent('chooseButtonOL');
         next.ai = ai;
@@ -3411,7 +3411,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseCardOL(...args) {
-        var next = game.createEvent('chooseCardOL');
+        let next = game.createEvent('chooseCardOL');
         next._args = [];
         for (let i of args) {
             if (get.itemtype(i) == 'players') {
@@ -3426,7 +3426,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseCard(choose, ...args) {
-        var next = game.createEvent('chooseCard');
+        let next = game.createEvent('chooseCard');
         next.player = this;
         if (arguments.length == 1 && get.is.object(choose)) {
             for (var i in choose) {
@@ -3470,7 +3470,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseUseTarget(...args) {
-        var next = game.createEvent('chooseUseTarget');
+        let next = game.createEvent('chooseUseTarget');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'cards') {
@@ -3537,7 +3537,7 @@ class PlayerModel extends HTMLDivElementProxy {
         // Fully Online-Ready! Enjoy It!
     }
     chooseTarget(...args) {
-        var next = game.createEvent('chooseTarget');
+        let next = game.createEvent('chooseTarget');
         next.player = this;
         for (let i of args) {
             if (typeof i == 'number') {
@@ -3570,7 +3570,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseCardTarget(choose) {
-        var next = game.createEvent('chooseCardTarget');
+        let next = game.createEvent('chooseCardTarget');
         next.player = this;
         if (arguments.length == 1) {
             for (var i in choose) {
@@ -3628,7 +3628,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return this.chooseControl(forced, func).set('choiceList', list).set('prompt', prompt);
     }
     chooseControl(...args) {
-        var next = game.createEvent('chooseControl');
+        let next = game.createEvent('chooseControl');
         next.controls = [];
         for (let i of args) {
             if (typeof i == 'string') {
@@ -3663,7 +3663,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseBool(...args) {
-        var next = game.createEvent('chooseBool');
+        let next = game.createEvent('chooseBool');
         for (let i of args) {
             if (typeof i == 'boolean') {
                 next.choice = i;
@@ -3686,7 +3686,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     chooseDrawRecover(...args) {
-        var next = game.createEvent('chooseDrawRecover', false);
+        let next = game.createEvent('chooseDrawRecover', false);
         next.player = this;
         for (let i of args) {
             if (typeof i == 'number') {
@@ -3717,7 +3717,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     choosePlayerCard(...args) {
-        var next = game.createEvent('choosePlayerCard');
+        let next = game.createEvent('choosePlayerCard');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'player') {
@@ -3762,7 +3762,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     discardPlayerCard(...args) {
-        var next = game.createEvent('discardPlayerCard');
+        let next = game.createEvent('discardPlayerCard');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'player') {
@@ -3807,7 +3807,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     gainPlayerCard(...args) {
-        var next = game.createEvent('gainPlayerCard');
+        let next = game.createEvent('gainPlayerCard');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'player') {
@@ -3855,7 +3855,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     showHandcards(str) {
-        var next = game.createEvent('showHandcards');
+        let next = game.createEvent('showHandcards');
         next.player = this;
         if (typeof str == 'string') {
             next.prompt = str;
@@ -3865,7 +3865,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     showCards(cards, str) {
-        var next = game.createEvent('showCards');
+        let next = game.createEvent('showCards');
         next.player = this;
         next.str = str;
         if (typeof cards == 'string') {
@@ -3881,7 +3881,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     viewCards(str, cards) {
-        var next = game.createEvent('viewCards');
+        let next = game.createEvent('viewCards');
         next.player = this;
         next.str = str;
         next.cards = cards.slice(0);
@@ -3937,7 +3937,7 @@ class PlayerModel extends HTMLDivElementProxy {
         });
     }
     moveCard(...args) {
-        var next = game.createEvent('moveCard');
+        let next = game.createEvent('moveCard');
         next.player = this;
         for (let i of args) {
             if (typeof i == 'boolean') {
@@ -3996,7 +3996,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         if (result.card || !result.skill) {
             result.used = result.card || result.cards[0];
-            var next = this.useCard(result.card, result.cards, result.targets, result.skill);
+            let next = this.useCard(result.card, result.cards, result.targets, result.skill);
             next.oncard = event.oncard;
             next.respondTo = event.respondTo;
             if (event.addCount === false) {
@@ -4010,7 +4010,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
     }
     useCard(...args) {
-        var next = game.createEvent('useCard');
+        let next = game.createEvent('useCard');
         next.player = this;
         next.num = 0;
         for (let i of args) {
@@ -4096,7 +4096,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     useSkill(...args) {
-        var next = game.createEvent('useSkill');
+        let next = game.createEvent('useSkill');
         next.player = this;
         next.num = 0;
         for (let i of args) {
@@ -4142,7 +4142,7 @@ class PlayerModel extends HTMLDivElementProxy {
     drawTo(num, args) {
         var num2 = num - this.countCards('h');
         if (!num2) return;
-        var next = this.draw(num2);
+        let next = this.draw(num2);
         if (Array.isArray(args)) {
             for (var i = 0; i < args.length; i++) {
                 if (get.itemtype(args[i]) == 'player') {
@@ -4169,7 +4169,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     draw(...args) {
-        var next = game.createEvent('draw');
+        let next = game.createEvent('draw');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'player') {
@@ -4219,7 +4219,7 @@ class PlayerModel extends HTMLDivElementProxy {
         }
         var cards = this.getCards(position).randomGets(num);
         if (cards.length) {
-            var next = this.discard(cards, 'notBySelf');
+            let next = this.discard(cards, 'notBySelf');
             if (typeof delay == 'boolean') {
                 next.delay = delay;
             }
@@ -4256,7 +4256,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return [];
     }
     discard(...args) {
-        var next = game.createEvent('discard');
+        let next = game.createEvent('discard');
         next.player = this;
         next.num = 0;
         for (let i of args) {
@@ -4284,7 +4284,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     respond(...args) {
-        var next = game.createEvent('respond');
+        let next = game.createEvent('respond');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'cards') {
@@ -4324,7 +4324,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     swapHandcards(target, cards1?, cards2?) {
-        var next = game.createEvent('swapHandcards', false);
+        let next = game.createEvent('swapHandcards', false);
         next.player = this;
         next.target = target;
         if (cards1) next.cards1 = cards1;
@@ -4423,7 +4423,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return this;
     }
     gainMultiple(targets, position) {
-        var next = game.createEvent('gainMultiple', false);
+        let next = game.createEvent('gainMultiple', false);
         next.setContent('gainMultiple');
         next.player = this;
         next.targets = targets;
@@ -4431,7 +4431,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     gain(...args) {
-        var next = game.createEvent('gain');
+        let next = game.createEvent('gain');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'player') {
@@ -4492,11 +4492,11 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     give(cards, target, visible) {
-        var next = target.gain(cards, this);
+        let next = target.gain(cards, this);
         next.animate = visible ? 'give' : 'giveAuto';
     }
     lose(...args) {
-        var next = game.createEvent('lose');
+        let next = game.createEvent('lose');
         next.player = this;
         next.forceDie = true;
         for (let i of args) {
@@ -4544,7 +4544,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     damage(...args) {
-        var next = game.createEvent('damage');
+        let next = game.createEvent('damage');
         //next.forceDie=true;
         next.player = this;
         var nocard, nosource;
@@ -4599,7 +4599,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     recover(...args) {
-        var next = game.createEvent('recover');
+        let next = game.createEvent('recover');
         next.player = this;
         var nocard, nosource;
         var event = _status.event;
@@ -4636,13 +4636,13 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     doubleDraw() {
         if (get.is.changban()) return;
-        var next = game.createEvent('doubleDraw');
+        let next = game.createEvent('doubleDraw');
         next.player = this;
         next.setContent('doubleDraw');
         return next;
     }
     loseHp(num?) {
-        var next = game.createEvent('loseHp');
+        let next = game.createEvent('loseHp');
         next.num = num;
         next.player = this;
         if (next.num == undefined) next.num = 1;
@@ -4650,7 +4650,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     loseMaxHp(...args) {
-        var next = game.createEvent('loseMaxHp');
+        let next = game.createEvent('loseMaxHp');
         next.player = this;
         var nosource;
         var event = _status.event;
@@ -4674,7 +4674,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     gainMaxHp(...args) {
-        var next = game.createEvent('gainMaxHp');
+        let next = game.createEvent('gainMaxHp');
         next.player = this;
         var nosource;
         var event = _status.event;
@@ -4698,7 +4698,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     changeHp(num, popup) {
-        var next = game.createEvent('changeHp', false);
+        let next = game.createEvent('changeHp', false);
         next.num = num;
         if (popup != undefined) next.popup = popup;
         next.player = this;
@@ -4707,7 +4707,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
 
     changeHujia(num: number = 1, type?) {
-        var next = game.createEvent('changeHujia');
+        let next = game.createEvent('changeHujia');
         if (typeof num != 'number') {
             num = 1;
         }
@@ -4810,7 +4810,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     dying(reason) {
         if (this.nodying || this.hp > 0 || this.isDying()) return;
-        var next = game.createEvent('dying');
+        let next = game.createEvent('dying');
         next.player = this;
         next.reason = reason;
         if (reason && reason.source) next.source = reason.source;
@@ -4824,7 +4824,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     die(reason) {
-        var next = game.createEvent('die');
+        let next = game.createEvent('die');
         next.player = this;
         next.reason = reason;
         if (reason) next.source = reason.source;
@@ -4924,7 +4924,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     equip(card, arg2) {
         if (get.type(card) != 'equip') return;
-        var next = game.createEvent('equip');
+        let next = game.createEvent('equip');
         next.card = card;
         if (get.is.object(next.card) && get.itemtype(next.card.cards) == 'cards' && get.name(next.card.cards[0]) == next.card.name && next.card.cards.length == 1) next.card = next.card.cards[0];
         next.player = this;
@@ -4964,7 +4964,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     addJudge(card, cards?) {
-        var next = game.createEvent('addJudge');
+        let next = game.createEvent('addJudge');
         next.card = card;
         next.cards = cards;
         if (next.cards == undefined) next.cards = [card];
@@ -5044,7 +5044,7 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {!boolean}
      */
     judge(...args) {
-        var next = game.createEvent('judge');
+        let next = game.createEvent('judge');
         next.player = this;
         for (let i of args) {
             if (get.itemtype(i) == 'card') {
@@ -5091,7 +5091,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 if (!this.isTurnedOver()) return;
             }
         }
-        var next = game.createEvent('turnOver');
+        let next = game.createEvent('turnOver');
         next.player = this;
         var nosource;
         var event = _status.event;
@@ -5167,7 +5167,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 if (!this.isLinked()) return;
             }
         }
-        var next = game.createEvent('link');
+        let next = game.createEvent('link');
         next.player = this;
         var nosource;
         var event = _status.event;
@@ -5892,7 +5892,7 @@ class PlayerModel extends HTMLDivElementProxy {
      */
     callSubPlayer(...args) {
         if (this.hasSkill('subplayer')) return;
-        var next = game.createEvent('callSubPlayer');
+        let next = game.createEvent('callSubPlayer');
         next.player = this;
         for (let i of args) {
             if (typeof i == 'string') {
@@ -5908,7 +5908,7 @@ class PlayerModel extends HTMLDivElementProxy {
      */
     toggleSubPlayer(...args) {
         if (!this.hasSkill('subplayer')) return;
-        var next = game.createEvent('toggleSubPlayer');
+        let next = game.createEvent('toggleSubPlayer');
         next.player = this;
         for (let i of args) {
             if (typeof i == 'string') {
@@ -5924,7 +5924,7 @@ class PlayerModel extends HTMLDivElementProxy {
      */
     exitSubPlayer(remove) {
         if (!this.hasSkill('subplayer')) return;
-        var next = game.createEvent('exitSubPlayer');
+        let next = game.createEvent('exitSubPlayer');
         next.player = this;
         next.remove = remove;
         next.setContent('exitSubPlayer');
@@ -6301,7 +6301,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 }
             }
             if (info.clearLose && typeof info.onLose == 'function') {
-                var next = game.createEvent('lose_' + card.name);
+                let next = game.createEvent('lose_' + card.name);
                 next.setContent(info.onLose);
                 next.player = this;
                 next.card = card;

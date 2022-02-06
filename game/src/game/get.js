@@ -500,7 +500,7 @@ module.exports = {
             }
             else {
                if (card.isCard || get.itemtype(card) == 'card') {
-                  var next = {
+                  let next = {
                      name: get.name(card),
                      suit: get.suit(card),
                      number: get.number(card),
@@ -2305,7 +2305,7 @@ module.exports = {
                               </svg></span>`);
                }
             }
-            (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText = [
+            (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText =
                lib.init.sheet(`
                               .iText{
                                   position: relative;
@@ -2313,7 +2313,7 @@ module.exports = {
                                   font-style: italic;
                                   line-height: 1em;
                               }
-                          `), lib.init.sheet(`
+                          `, `
                               .iRec{
                                   fill:transparent;
                                   stroke:aqua;
@@ -2322,13 +2322,13 @@ module.exports = {
                                   stroke-dashoffset: 230;
                                   transition: 1.2s;
                               }
-                          `), lib.init.sheet(`
+                          `, `
                               .iText:hover .iRec{
                                   stroke-width: 4px;
                                   stroke-dasharray: 600;
                                   stroke-dashoffset: 0;
                               }
-                          `)]);
+                          `));
             return str;
          },
          skillInfoTranslation(name, player) {

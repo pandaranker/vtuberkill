@@ -1216,7 +1216,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.chooseButton(true, Evt.cards.length, ['按顺序将卡牌置于牌堆顶（先选择的在上）', Evt.cards]).set('ai', function (button) {
 							var player = _status.event.player;
 							var now = _status.currentPhase;
-							var next = now.getNext();
+							let next = now.getNext();
 							var att = get.attitude(player, next);
 							var card = button.link;
 							var judge = next.getCards('j')[ui.selected.buttons.length];
@@ -1559,22 +1559,22 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						dialog.videoId = id;
 					}, Evt.videoId, typelist, suitlist, numberlist);
 					'step 2'
-					var next = player.chooseButton(3, true);
-					next.set('dialog', Evt.videoId);
-					next.set('filterButton', function (button) {
+					let next = player.chooseButton(3, true)
+					.set('dialog', Evt.videoId)
+					.set('filterButton', function (button) {
 						for (var i = 0; i < ui.selected.buttons.length; i++) {
 							var now = button.link, pre = ui.selected.buttons[i].link;
 							if (now[now.length - 1] == pre[pre.length - 1]) return false;
 						}
 						return true;
-					});
-					next.set('ai', function (button) {
+					})
+					.set('ai', function (button) {
 						var card = _status.event.card;
 						var now = button.link;
 						if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
 						return 0;
-					});
-					next.set('card', cards[0]);
+					})
+					.set('card', cards[0]);
 					'step 3'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -1993,8 +1993,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					var next = player.chooseCard(get.prompt2('youyi'), 'he');
-					next.set('ai', card => {
+					let next = player.chooseCard(get.prompt2('youyi'), 'he')
+					.set('ai', card => {
 						if (get.name(card) == 'shan') return 9;
 						return 8 - get.value(card);
 					});
@@ -2355,12 +2355,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					Evt.cards = trigger.hs;
-					var next = player.chooseCardButton(1, '『弹言』：选择使用的牌', Evt.cards);
-					next.set('filterButton', function (button) {
+					let next = player.chooseCardButton(1, '『弹言』：选择使用的牌', Evt.cards)
+					.set('filterButton', function (button) {
 						var player = _status.event.player;
 						return player.hasUseTarget(button.link);
-					});
-					next.set('ai', function (button) {
+					})
+					.set('ai', function (button) {
 						var player = _status.event.player;
 						return player.getUseValue(button.link);
 					});
@@ -2589,12 +2589,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					var next = player.chooseTarget(2, function (card, player, target) {
+					let next = player.chooseTarget(2, function (card, player, target) {
 						return true;
-					});
-					next.set('targetprompt', ['失去体力', '回复体力']);
-					next.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力');
-					next.set('ai', function (target) {
+					})
+					.set('targetprompt', ['失去体力', '回复体力'])
+					.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力')
+					.set('ai', function (target) {
 						var player = _status.event.player;
 						var att = get.attitude(player, target);
 						var sgnatt = get.sgn(att);
@@ -2933,7 +2933,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							}
 							'step 2'
 							if(get.itemtype(trigger.card)=='card'){
-								var next = game.createEvent('sanchaji_clear');
+								let next = game.createEvent('sanchaji_clear');
 								next.card = trigger.card;
 								next.cardContent = player.storage.shisang_clear;
 								Evt.next.remove(next);

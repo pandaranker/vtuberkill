@@ -217,11 +217,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				direct: true,
 				content: [() => {
 					if (trigger.name == 'gain') {
-						player.chooseTarget(get.prompt2('miaoyu', null, player), (card, player, target) => {
-							return true
-						}).set('ai', tar => {
-							return get.attitude2(tar);
-						});
+						player.chooseTarget(get.prompt2('miaoyu', null, player))
+							.set('filterTarget', function (card, player, target) {
+								return true;
+							})
+							.set('ai', tar => {
+								return get.attitude2(tar);
+							});
 					} else {
 						player.chooseTarget(get.prompt2('miaoyu', null, player), function (card, player, target) {
 							return player.canUse({ name: 'sha' }, target, false);
@@ -1038,7 +1040,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								dialog.videoId = id;
 							}, Evt.videoId, list);
 							'step 2'
-							var next = player.chooseButton(1, true);
+							let next = player.chooseButton(1, true);
 							next.set('dialog', Evt.videoId);
 							next.set('ai', function (button) {
 								var value = player.getUseValue({ name: button.link[2], isCard: true });
@@ -1114,7 +1116,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					Evt.card = { name: player.storage.qiming_saycards[0] };
-					var next = player.chooseCardTarget({
+					let next = player.chooseCardTarget({
 						prompt: get.prompt('tulong'),
 						prompt2: "将一张牌当作【" + player.storage.qiming_saycards[0] + "】使用",
 						filterCard(card, player) {
@@ -1136,7 +1138,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.loseMaxHp();
 						Evt.cards = result.cards.slice(0);
 						Evt.targets = result.targets.slice(0);
-						var next = player.useCard(Evt.card, Evt.targets);
+						let next = player.useCard(Evt.card, Evt.targets);
 						next.cards = Evt.cards;
 					}
 				},

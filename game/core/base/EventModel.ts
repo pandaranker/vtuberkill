@@ -268,7 +268,7 @@ class EventModel{
     send () {
         this.player.send(function (name, args, set, event, skills) {
             game.me.applySkills(skills);
-            var next = game.me[name].apply(game.me, args);
+            let next = game.me[name].apply(game.me, args);
             for (var i = 0; i < set.length; i++) {
                 next.set(set[i][0], set[i][1]);
             }
@@ -365,7 +365,7 @@ class EventModel{
      * @returns {!GameCores.Bases.Event} 创建的事件
      */
     insert (func, map) {
-        var next = game.createEvent(this.name + 'Inserted', false, this);
+        let next = game.createEvent(this.name + 'Inserted', false, this);
         next.setContent(func);
         for (var i in map) {
             next.set(i, map[i]);
@@ -380,7 +380,7 @@ class EventModel{
      * @returns {!GameCores.Bases.Event} 创建的事件
      */
     insertAfter (func, map) {
-        var next = game.createEvent(this.name + 'Inserted', false, { next: [] });
+        let next = game.createEvent(this.name + 'Inserted', false, { next: [] });
         this.after.push(next);
         next.setContent(func);
         for (var i in map) {
@@ -804,7 +804,7 @@ class EventModel{
         }
 
         if (allbool) {
-            var next = game.createEvent('arrangeTrigger', false, event);
+            let next = game.createEvent('arrangeTrigger', false, event);
             next.setContent('arrangeTrigger');
             next.list = list;
             next.list2 = list2;

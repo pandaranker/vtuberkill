@@ -72,7 +72,7 @@ module.exports = {
                 return directh;
             },
             loseAsync: function (arg) {
-                var next = game.createEvent('loseAsync');
+                let next = game.createEvent('loseAsync');
                 next.getl = function (player) {
                     var that = this;
                     var map = {
@@ -125,7 +125,7 @@ module.exports = {
             cardsDiscard: function (cards) {
                 var type = get.itemtype(cards);
                 if (type != 'cards' && type != 'card') return;
-                var next = game.createEvent('cardsDiscard');
+                let next = game.createEvent('cardsDiscard');
                 next.cards = type == 'cards' ? cards.slice(0) : [cards];
                 next.setContent('cardsDiscard');
                 return next;
@@ -133,7 +133,7 @@ module.exports = {
             cardsGotoOrdering: function (cards) {
                 var type = get.itemtype(cards);
                 if (type != 'cards' && type != 'card') return;
-                var next = game.createEvent('cardsGotoOrdering');
+                let next = game.createEvent('cardsGotoOrdering');
                 next.cards = type == 'cards' ? cards.slice(0) : [cards];
                 next.setContent('cardsGotoOrdering');
                 return next;
@@ -141,7 +141,7 @@ module.exports = {
             cardsGotoSpecial: function (cards, bool) {
                 var type = get.itemtype(cards);
                 if (type != 'cards' && type != 'card') return;
-                var next = game.createEvent('cardsGotoSpecial');
+                let next = game.createEvent('cardsGotoSpecial');
                 next.cards = type == 'cards' ? cards.slice(0) : [cards];
                 if (bool === false) next.notrigger = true;
                 next.setContent('cardsGotoSpecial');
@@ -286,7 +286,7 @@ module.exports = {
                 }
             },
             replaceHandcards: function () {
-                var next = game.createEvent('replaceHandcards');
+                let next = game.createEvent('replaceHandcards');
                 if (Array.isArray(arguments[0])) {
                     next.players = arguments[0];
                 }
@@ -1248,7 +1248,7 @@ module.exports = {
                 game.reload();
             },
             playVideoContent: function (video) {
-                var next = game.createEvent('video', false);
+                let next = game.createEvent('video', false);
                 next.video = video;
                 ui.system.style.display = 'none';
                 ui.system.hide();
@@ -3271,7 +3271,7 @@ module.exports = {
             createTrigger: function (name, skill, player, Evt) {
                 if (player.isOut() || player.removed) return;
                 if (player.isDead() && !lib.skill[skill].forceDie) return;
-                var next = game.createEvent('trigger', false);
+                let next = game.createEvent('trigger', false);
                 next.skill = skill;
                 next.player = player;
                 next.triggername = name;
@@ -3292,7 +3292,7 @@ module.exports = {
                  * 创建事件，见{@link game.createEvent}
                  * @namespace GameCores.Bases.Event
                  */
-                var next =
+                let next =
                 /**@lends GameCores.Bases.Event */
                 {
                     /**
@@ -3765,7 +3765,7 @@ module.exports = {
             },
             forceOver: function (bool, callback) {
                 _status.event.next.length = 0;
-                var next = game.createEvent('finish_game');
+                let next = game.createEvent('finish_game');
                 next.bool = bool;
                 next.callback = callback;
                 next.setContent('forceOver');
@@ -4569,7 +4569,7 @@ module.exports = {
                     delete lib.status.dateDelaying;
                 }
                 if (Evt.next.length > 0) {
-                    var next = Evt.next.shift();
+                    let next = Evt.next.shift();
                     if (next.player && next.player.skipList.contains(next.name)) {
                         Evt.trigger(next.name + 'Skipped');
                         next.player.skipList.remove(next.name);
@@ -4613,7 +4613,7 @@ module.exports = {
                         Evt._triggered++;
                     }
                     else if (Evt.after && Evt.after.length) {
-                        var next = Evt.after.shift();
+                        let next = Evt.after.shift();
                         if (next.player && next.player.skipList.contains(next.name)) {
                             Evt.trigger(next.name + 'Skipped');
                             next.player.skipList.remove(next.name);
@@ -4645,7 +4645,7 @@ module.exports = {
                     else if (Evt._triggered == 1) {
                         if (Evt.type == 'card') Evt.trigger('useCardToBegin');
                         if (Evt.name == 'phase' && !Evt._begun) {
-                            var next = game.createEvent('phasing', false, Evt);
+                            let next = game.createEvent('phasing', false, Evt);
                             next.player = Evt.player;
                             next.skill = Evt.skill;
                             next.setContent('phasing');
@@ -5654,12 +5654,12 @@ module.exports = {
                 });
             },
             loadMode: function (mode) {
-                var next = game.createEvent('loadMode', false);
+                let next = game.createEvent('loadMode', false);
                 next.mode = mode;
                 next.setContent('loadMode');
             },
             loadPackage: function () {
-                var next = game.createEvent('loadPackage');
+                let next = game.createEvent('loadPackage');
                 next.packages = [];
                 for (var i = 0; i < arguments.length; i++) {
                     if (typeof arguments[i] == 'string') {
@@ -5669,12 +5669,12 @@ module.exports = {
                 next.setContent('loadPackage');
             },
             phaseLoop: function (player) {
-                var next = game.createEvent('phaseLoop');
+                let next = game.createEvent('phaseLoop');
                 next.player = player;
                 next.setContent('phaseLoop');
             },
             gameDraw: function (player, num) {
-                var next = game.createEvent('gameDraw');
+                let next = game.createEvent('gameDraw');
                 next.player = player || game.me;
                 if (num == undefined) next.num = 4;
                 else next.num = num;
@@ -5682,7 +5682,7 @@ module.exports = {
                 return next;
             },
             chooseCharacterDouble: function () {
-                var next = game.createEvent('chooseCharacter', false);
+                let next = game.createEvent('chooseCharacter', false);
                 var config, width, num, ratio, func, update, list, first;
                 for (var i = 0; i < arguments.length; i++) {
                     if (typeof arguments[i] == 'number') {
@@ -7347,7 +7347,7 @@ module.exports = {
                 return player;
             },
             triggerEnter: function (player) {
-                var next = game.createEvent('enterGame', false);
+                let next = game.createEvent('enterGame', false);
                 next.player = player;
                 next.setContent(function () {
                     Evt.trigger('enterGame');

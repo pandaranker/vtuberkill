@@ -400,7 +400,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					else if (Evt.current) {
 						//player.storage.qixuing=true;
-						var next = Evt.current.chooseCard(get.translation(player) + '声明使用一张杀，是否替弃置一张杀阻止',
+						let next = Evt.current.chooseCard(get.translation(player) + '声明使用一张杀，是否替弃置一张杀阻止',
 							function (card, player, Evt) {
 								Evt = Evt || _status.event;
 								return card.name == 'sha';
@@ -475,7 +475,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.finish();
 					}
 					else if (Evt.current) {
-						var next = Evt.current.chooseCard(get.translation(player) + '对' + get.translation(target) + '使用一张杀，是否替弃置一张杀阻止',
+						let next = Evt.current.chooseCard(get.translation(player) + '对' + get.translation(target) + '使用一张杀，是否替弃置一张杀阻止',
 							function (card, player, Evt) {
 								Evt = Evt || _status.event;
 								return card.name == 'sha';
@@ -582,7 +582,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						// 	Evt=Evt||_status.event;
 						// 	return card.name=='shan';
 						// },1);
-						var next = Evt.current.chooseCard(get.translation(player) + '声明使用一张闪，是否替弃置一张闪阻止', { name: 'shan' },
+						let next = Evt.current.chooseCard(get.translation(player) + '声明使用一张闪，是否替弃置一张闪阻止', { name: 'shan' },
 							// function(card,player,Evt){
 							// 	return card.name=='shan';
 							// },
@@ -1502,7 +1502,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						var roundname = 'jiajiupaidui_roundcount';
 						if (player.hasMark(roundname)) {
 							player.popup('重置');
-							var next = game.createEvent('resetSkill');
+							let next = game.createEvent('resetSkill');
 							[next.player, next.resetSkill] = [player, 'jiajiupaidui']
 							next.setContent('resetRound');
 						}
@@ -1605,7 +1605,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					} else Evt.finish();
 				}, () => {
 					if (Evt.num) {
-						player.chooseTarget('『监策』：选择令一名角色摸' + get.cnNumber(Evt.num) + '张牌', (card, player, target) => target != _status.event.source)
+						player.chooseTarget('『监策』：选择令一名角色摸' + get.cnNumber(Evt.num) + '张牌', function (card, player, target) {
+								return target != _status.event.source;
+							})
 							.set('ai', (target) => {
 								let player = _status.event.player;
 								return target.needsToDiscard() ? get.attitude(target, player) / 2 : get.attitude(target, player);
@@ -1635,12 +1637,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					for (var i = 0; i < player.storage.chanbing.length; i++) {
 						numbers.add(get.number(player.storage.chanbing[i]));
 					}
-					var next = player.judge(card => {
+					let next = player.judge(card => {
 						var numbers = _status.event.numbers;
 						if (numbers && numbers.contains(get.number(card))) return -1;
 						return 1;
-					});
-					next.set('numbers', numbers);
+					})
+					.set('numbers', numbers);
 					'step 1'
 					if (result.bool) {
 						var cards = [result.card];
@@ -1842,7 +1844,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						content() {
 							'step 0'
-							var next = player.chooseCardButton('###' + get.translation('liuhua') + '###获得一种颜色的『化羽』牌', player.storage.liuhua, true);
+							let next = player.chooseCardButton('###' + get.translation('liuhua') + '###获得一种颜色的『化羽』牌', player.storage.liuhua, true);
 							next.set('ai', function (button) {
 								return get.value(button.link);
 							});
