@@ -197,7 +197,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					game.broadcastAll(function(num1,num2,top,bonusNum){
 						if(ui.cardPileNumber){
 							var str=num1+'轮 公共牌堆: '+num2;
-							if(game.me&&game.me.storage.doudizhu_cardPile&&game.me.storage.doudizhu_cardPile.length) str+=(' 个人牌堆: '+game.me.storage.doudizhu_cardPile.length);
+							if(game.me&&game.me.$.doudizhu_cardPile&&game.me.$.doudizhu_cardPile.length) str+=(' 个人牌堆: '+game.me.$.doudizhu_cardPile.length);
 							if(bonusNum) str+=('<br>本场叫价: '+bonusNum*100);
 							ui.cardPileNumber.innerHTML=str;
 						}
@@ -316,13 +316,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var id=player.playerid;
 						player._group=groups.randomRemove(1)[0];
 						event.map[id]=chara[player._group].randomGets(3);
-						player.storage.doudizhu_cardPile=get.cards(20).sort(function(a,b){
+						player.$.doudizhu_cardPile=get.cards(20).sort(function(a,b){
 							if(a.name!=b.name) return lib.sort.card(a.name,b.name);
 							else if(a.suit!=b.suit) return lib.suit.indexOf(a)-lib.suit.indexOf(b);
 							else return a.number-b.number;
 						});
 					}
-					event.dialog=ui.create.dialog('你的选将框与底牌',[event.map[game.me.playerid],'character'],game.me.storage.doudizhu_cardPile);
+					event.dialog=ui.create.dialog('你的选将框与底牌',[event.map[game.me.playerid],'character'],game.me.$.doudizhu_cardPile);
 					event.start=game.players.randomGet();
 					event.current=event.start;
 					game.delay(7);
@@ -1518,7 +1518,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var id=player.playerid;
 						player._group=groups.randomRemove(1)[0];
 						event.map[id]=chara[player._group].randomGets(3);
-						player.storage.doudizhu_cardPile=get.cards(20).sort(function(a,b){
+						player.$.doudizhu_cardPile=get.cards(20).sort(function(a,b){
 							if(a.name!=b.name) return lib.sort.card(a.name,b.name);
 							else if(a.suit!=b.suit) return lib.suit.indexOf(a)-lib.suit.indexOf(b);
 							else return a.number-b.number;
@@ -1530,7 +1530,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					
 					event.videoId=lib.status.videoId++;
 					game.broadcastAll(function(map,id){
-						ui.create.dialog('你的选将框和底牌',[map[game.me.playerid],'character'],game.me.storage.doudizhu_cardPile).videoId=id;
+						ui.create.dialog('你的选将框和底牌',[map[game.me.playerid],'character'],game.me.$.doudizhu_cardPile).videoId=id;
 					},event.map,event.videoId);
 					game.delay(4);
 					"step 1"
@@ -1825,9 +1825,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(num<0) num=1;
 					var cards;
 					var player=this;
-					if(player.storage.doudizhu_cardPile&&player.storage.doudizhu_cardPile.length){
-						cards=player.storage.doudizhu_cardPile.randomRemove(num);
-						if(player.storage.doudizhu_cardPile.length) player.markSkill('doudizhu_cardPile');
+					if(player.$.doudizhu_cardPile&&player.$.doudizhu_cardPile.length){
+						cards=player.$.doudizhu_cardPile.randomRemove(num);
+						if(player.$.doudizhu_cardPile.length) player.markSkill('doudizhu_cardPile');
 						else player.unmarkSkill('doudizhu_cardPile');
 					}
 					else cards=[];
@@ -2135,12 +2135,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					});
 				},
 				filterTarget:function(card,player,target){
-					return player!=target&&!target.storage.kaihei&&target.countGainableCards(player,'he')>0;
+					return player!=target&&!target.$.kaihei&&target.countGainableCards(player,'he')>0;
 				},
 				content:function(){
 					'step 0'
 					player.gainPlayerCard(target,[1,2],'he',true);
-					target.storage.kaihei=true;
+					target.$.kaihei=true;
 					'step 1'
 					if(!result.bool||!result.cards.length){
 						event.finish();return;

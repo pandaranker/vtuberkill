@@ -67,6 +67,8 @@ export default {
     require('@m/entry')
     //galgame相关功能
     require('@e/galgame/galgame')()
+    //点击特效功能
+    game.clickCanvas = require('@e/clickCanvas')
     get.$t = get.translation
     get.$a = get.attitude
     get.$a2 = get.attitude2

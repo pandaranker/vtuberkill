@@ -508,7 +508,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					if (result.bool == true) {
 						player.draw(2);
 					} else {
-						player.storage.haidi = 2;
+						player.$.haidi = 2;
 						if (!player.hasSkill('haidi')) {
 							player.addTempSkill('haidi');
 						}
@@ -946,9 +946,9 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					},
 				},
 				content: function () {
-					if (player.storage.chen_card) {
-						player.gain(player.storage.chen_card, 'fromStorage');
-						delete player.storage.chen_card;
+					if (player.$.chen_card) {
+						player.gain(player.$.chen_card, 'fromStorage');
+						delete player.$.chen_card;
 					}
 					player.removeSkill('chen_card');
 				},
@@ -961,7 +961,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				mod: {
 					maxHandcard: function (player, num) {
-						return num + player.storage.haidi;
+						return num + player.$.haidi;
 					},
 				},
 			},
@@ -1185,7 +1185,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				filter: function (event, player) {
 					return player.countCards('e', function (i) {
 						var subtype = get.subtype(i)
-						if (player.storage.yatelandisi_skill2 && player.storage.yatelandisi_skill2.contains(subtype)) return false;
+						if (player.$.yatelandisi_skill2 && player.$.yatelandisi_skill2.contains(subtype)) return false;
 						return ['equip1', 'equip2'].contains(subtype);
 					});
 				},
@@ -1245,12 +1245,12 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 						var cardid = event[event.subtype].cardid;
 						event[event.subtype].viewAs = result.links[0][2];
 						event[event.subtype].name = result.links[0][2];
-						if (!player.storage.yatelandisi_skill2) player.storage.yatelandisi_skill2 = [];
-						player.storage.yatelandisi_skill2.add(event.subtype);
-						if (player.storage.yatelandisi_skill3 && player.storage.yatelandisi_skill3.length) {
+						if (!player.$.yatelandisi_skill2) player.$.yatelandisi_skill2 = [];
+						player.$.yatelandisi_skill2.add(event.subtype);
+						if (player.$.yatelandisi_skill3 && player.$.yatelandisi_skill3.length) {
 							player.removeSkill('yatelandisi_skill3');
 						}
-						player.storage.yatelandisi_skill3 = [cardid, name0, event[event.subtype]];
+						player.$.yatelandisi_skill3 = [cardid, name0, event[event.subtype]];
 						game.log(player, '的『', event.name, '』声明了【', event[event.subtype].viewAs, '】');
 						player.syncStorage('yatelandisi_skill3');
 						player.addTempSkill('yatelandisi_skill3');
@@ -1266,11 +1266,11 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				silent: true,
 				popup: false,
 				filter: function (event, player) {
-					return player.storage.yatelandisi_skill2;
+					return player.$.yatelandisi_skill2;
 				},
 				onremove: true,
 				content: function () {
-					player.storage.yatelandisi_skill2 = [];
+					player.$.yatelandisi_skill2 = [];
 				}
 			},
 			yatelandisi_skill3: {
@@ -1285,7 +1285,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				equipSkill: true,
 				onremove: function (player, skill) {
-					var args = player.storage.yatelandisi_skill3;
+					var args = player.$.yatelandisi_skill3;
 					var change = player.getCards('e', function (i) {
 						return i.cardid == args[0];
 					});
@@ -1299,7 +1299,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				trigger: { player: 'loseBegin' },
 				filter: function (event, player) {
-					var args = player.storage.yatelandisi_skill3;
+					var args = player.$.yatelandisi_skill3;
 					return args && event.cards.filter(function (i) {
 						return i.cardid == args[0];
 					}).length;

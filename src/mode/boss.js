@@ -458,7 +458,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			player: {
 				dieAfter: function () {
 					if (this != game.boss) {
-						this.storage.boss_chongzheng = 0;
+						this.$.boss_chongzheng = 0;
 					}
 					if (game.bossinfo.checkResult && game.bossinfo.checkResult(this) === false) {
 						return;
@@ -518,8 +518,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						if (get.info(skills[i]).charlotte) skills.splice(i--, 1);
 					}
 					if (skills.length) {
-						target.storage.gubuzifeng_disable.push(skills.randomGet());
-						target.disableSkill('gubuzifeng_disable', target.storage.gubuzifeng_disable);
+						target.$.gubuzifeng_disable.push(skills.randomGet());
+						target.disableSkill('gubuzifeng_disable', target.$.gubuzifeng_disable);
 					}
 				},
 				ai: {
@@ -1142,7 +1142,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 					else if (player.isDead()) {
 						if (player.hp < 0) player.hp = 0;
-						player.storage.boss_chongzheng++;
+						player.$.boss_chongzheng++;
 						if (player.maxHp > 0 && game.bossinfo.chongzheng) {
 							if (player.hp < player.maxHp) {
 								player.hp++;
@@ -1156,7 +1156,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 								position.insertBefore(card, position.firstChild);
 							}
 							player.update();
-							if (player.storage.boss_chongzheng >= game.bossinfo.chongzheng) {
+							if (player.$.boss_chongzheng >= game.bossinfo.chongzheng) {
 								player.revive(player.hp);
 							}
 						}
@@ -2232,7 +2232,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				popup: false,
 				content: function () {
 					player.gain(player.getStorage('lingsheji2'), 'gain2', 'log');
-					player.storage.lingsheji2.length = 0;
+					player.$.lingsheji2.length = 0;
 					player.removeSkill('lingsheji2');
 				},
 				intro: { content: 'cards' },
@@ -2931,7 +2931,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				content: function () {
 					var list = ['basic', 'trick', 'equip'].randomGet();
 					trigger.player.addTempSkill('boss_wangshi2');
-					trigger.player.storage.boss_wangshi2 = [list];
+					trigger.player.$.boss_wangshi2 = [list];
 					game.log(trigger.player, '本回合不能使用或打出', list, '牌');
 					trigger.player.markSkill('boss_wangshi2');
 				},
@@ -2951,7 +2951,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				onremove: true,
 				mod: {
 					cardEnabled2: function (card, player) {
-						if (player.storage.boss_wangshi2.contains(get.type(card, 'trick'))) return false;
+						if (player.$.boss_wangshi2.contains(get.type(card, 'trick'))) return false;
 					},
 				},
 			},
@@ -3237,7 +3237,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var list2=["boss_sdyl_playerlevel1","boss_sdyl_playerlevel2","boss_sdyl_playerlevel3","boss_sdyl_playerlevel4","boss_sdyl_playerlevel5"];
 			player.removeAdditionalSkill('boss_sdyl_level');
 			var num=list.randomGet();
-			player.storage.boss_sdyl_level=num;
+			player.$.boss_sdyl_level=num;
 				var list3=list2.concat();
 			list3.length=num;
 			player.addAdditionalSkill('boss_sdyl_level',list3);
@@ -3262,7 +3262,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var list2=["boss_sdyl_bosslevel1","boss_sdyl_bosslevel2","boss_sdyl_bosslevel3","boss_sdyl_bosslevel4","boss_sdyl_bosslevel5"];
 			boss.removeAdditionalSkill('boss_sdyl_level');
 			var num=list.randomGet();
-			boss.storage.boss_sdyl_level=num;
+			boss.$.boss_sdyl_level=num;
 				var list3=list2.concat();
 			list3.length=num;
 			boss.addAdditionalSkill('boss_sdyl_level',list3);
@@ -3335,7 +3335,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				"boss_sdyl_playerlevel5":{
 			init:function(player){
-					player.storage.boss_sdyl_playerlevel5=false;	
+					player.$.boss_sdyl_playerlevel5=false;	
 					player.maxHp++;
 					player.hp++;
 					player.update();
@@ -3349,7 +3349,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				limited:true,
 				animationColor:'orange',
 				filter:function(event,player){
-					if(player.storage.boss_sdyl_playerlevel5) return false;
+					if(player.$.boss_sdyl_playerlevel5) return false;
 					if(event.type=='dying'){
 						if(player!=event.dying) return false;
 						return true;
@@ -3359,7 +3359,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				content:function(){
 					'step 0'
 					player.awakenSkill('boss_sdyl_playerlevel5');
-					player.storage.boss_sdyl_playerlevel5=true;
+					player.$.boss_sdyl_playerlevel5=true;
 					player.discard(player.getCards('j'));
 					'step 1'
 					player.link(false);
@@ -3373,7 +3373,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ai:{
 					order:1,
 					skillTagFilter:function(player){
-						if(player.storage.boss_sdyl_playerlevel5) return false;
+						if(player.$.boss_sdyl_playerlevel5) return false;
 						if(player.hp>0) return false;
 					},
 					save:true,
@@ -3385,7 +3385,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 					threaten:function(player,target){
-						if(!target.storage.boss_sdyl_playerlevel5) return 0.6;
+						if(!target.$.boss_sdyl_playerlevel5) return 0.6;
 					}
 				},
 				intro:{
@@ -3484,13 +3484,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 								}
 		return false;
 		}
-		if(player.storage.boss_sdyl_bosslevel5) return false;
+		if(player.$.boss_sdyl_bosslevel5) return false;
 		if(name=='damageBegin4'){
 		if(!event.card||event.card.name!='nanman') return false;      
 		return true;
 		}else if(name=='useCardAfter'){
 		if(!event.card||event.card.name!='nanman') return false;      
-		player.storage.boss_sdyl_bosslevel5=true;
+		player.$.boss_sdyl_bosslevel5=true;
 		return false;
 		}                
 	},
@@ -3698,8 +3698,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					var target = trigger.source;
-					if (!target.storage.boss_shedu) target.storage.boss_shedu = 0;
-					target.storage.boss_shedu++;
+					if (!target.$.boss_shedu) target.$.boss_shedu = 0;
+					target.$.boss_shedu++;
 					target.markSkill('boss_shedu');
 				},
 				forced: true,
@@ -3716,11 +3716,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				intro: { content: 'mark' },
 				forced: true,
 				filter: function (event, player) {
-					return player.storage.boss_shedu && player.storage.boss_shedu > 0;
+					return player.$.boss_shedu && player.$.boss_shedu > 0;
 				},
 				content: function () {
 					'step 0'
-					var num = player.storage.boss_shedu;
+					var num = player.$.boss_shedu;
 					event.num = num;
 					var chs = get.cnNumber(num);
 					player.chooseToDiscard('he', num, '弃置' + chs + '张牌，或失去' + chs + '点体力').ai = function (card) {
@@ -3728,7 +3728,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					};
 					'step 1'
 					if (!result.bool) player.loseHp(num);
-					player.storage.boss_shedu--;
+					player.$.boss_shedu--;
 					if (num > 1) player.markSkill('boss_shedu');
 					else player.unmarkSkill('boss_shedu');
 				},
@@ -3784,8 +3784,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				content: function () {
 					var target = trigger.player;
 					player.line(target);
-					if (!target.storage.boss_shedu) target.storage.boss_shedu = 0;
-					target.storage.boss_shedu++;
+					if (!target.$.boss_shedu) target.$.boss_shedu = 0;
+					target.$.boss_shedu++;
 					target.markSkill('boss_shedu');
 				},
 			},
@@ -3808,13 +3808,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				silent: true,
 				popup: false,
 				content: function () {
-					player.storage.boss_juyuan = player.hp;
+					player.$.boss_juyuan = player.hp;
 				},
 				mod: {
 					selectTarget: function (card, player, range) {
 						if (card.name != 'sha') return;
 						if (range[1] == -1) return;
-						if (player.hp >= player.storage.boss_juyuan) return;
+						if (player.hp >= player.$.boss_juyuan) return;
 						range[1] += 2;
 					},
 				},
@@ -4183,13 +4183,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			},
 			boss_lingqu: {
 				init: function (player) {
-					player.storage.boss_lingqu = 0;
+					player.$.boss_lingqu = 0;
 				},
 				trigger: { player: 'damageEnd' },
 				forced: true,
 				content: function () {
 					player.draw();
-					player.storage.boss_lingqu++;
+					player.$.boss_lingqu++;
 					player.markSkill('boss_lingqu');
 				},
 				intro: {
@@ -4197,7 +4197,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				mod: {
 					maxHandcard: function (player, num) {
-						return num + player.storage.boss_lingqu;
+						return num + player.$.boss_lingqu;
 					}
 				},
 				group: 'boss_lingqu_cancel',
@@ -4363,21 +4363,21 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			},
 			boss_xingqiu: {
 				init: function (player) {
-					player.storage.boss_xingqiu = false;
+					player.$.boss_xingqiu = false;
 				},
 				trigger: { player: 'phaseDrawBegin' },
 				direct: true,
 				locked: true,
 				content: function () {
 					'step 0'
-					if (player.storage.boss_xingqiu) {
+					if (player.$.boss_xingqiu) {
 						player.logSkill('boss_xingqiu');
 						event.list = player.getEnemies().sortBySeat();
 					}
 					else {
 						event.finish();
 					}
-					player.storage.boss_xingqiu = !player.storage.boss_xingqiu;
+					player.$.boss_xingqiu = !player.$.boss_xingqiu;
 					'step 1'
 					if (event.list.length) {
 						var target = event.list.shift();
@@ -4695,14 +4695,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						trigger: { player: 'phaseAfter' },
 						silent: true,
 						content: function () {
-							delete player.storage.boss_minwan;
+							delete player.$.boss_minwan;
 						}
 					},
 					draw: {
 						trigger: { player: 'useCard' },
 						forced: true,
 						filter: function (event, player) {
-							return _status.currentPhase == player && Array.isArray(player.storage.boss_minwan);
+							return _status.currentPhase == player && Array.isArray(player.$.boss_minwan);
 						},
 						content: function () {
 							player.draw();
@@ -4715,16 +4715,16 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						},
 						forced: true,
 						content: function () {
-							if (!player.storage.boss_minwan) {
-								player.storage.boss_minwan = [player];
+							if (!player.$.boss_minwan) {
+								player.$.boss_minwan = [player];
 							}
-							player.storage.boss_minwan.add(trigger.player);
+							player.$.boss_minwan.add(trigger.player);
 						}
 					}
 				},
 				mod: {
 					playerEnabled: function (card, player, target) {
-						if (_status.currentPhase == player && Array.isArray(player.storage.boss_minwan) && !player.storage.boss_minwan.contains(target)) {
+						if (_status.currentPhase == player && Array.isArray(player.$.boss_minwan) && !player.$.boss_minwan.contains(target)) {
 							return false;
 						}
 					}
@@ -5813,7 +5813,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					})) {
 						return false;
 					}
-					return !player.storage.boss_xingxia || game.roundNumber - player.storage.boss_xingxia >= 2;
+					return !player.$.boss_xingxia || game.roundNumber - player.$.boss_xingxia >= 2;
 				},
 				unique: true,
 				filterTarget: function (card, player, target) {
@@ -5826,7 +5826,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				contentAfter: function () {
 					'step 0'
-					player.storage.boss_xingxia = game.roundNumber;
+					player.$.boss_xingxia = game.roundNumber;
 					player.chooseTarget(function (card, player, target) {
 						return target.side != player.side;
 					}).ai = function (target) {
@@ -6010,7 +6010,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					revive: {
 						enable: 'phaseUse',
 						filter: function (event, player) {
-							if (!player.storage.boss_buchun || game.roundNumber - player.storage.boss_buchun >= 2) {
+							if (!player.$.boss_buchun || game.roundNumber - player.$.boss_buchun >= 2) {
 								for (var i = 0; i < game.dead.length; i++) {
 									if (game.dead[i].parentNode == player.parentNode && game.dead[i].name == 'boss_shujing') {
 										return true;
@@ -6022,7 +6022,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						content: function () {
 							'step 0'
 							player.loseHp();
-							player.storage.boss_buchun = game.roundNumber;
+							player.$.boss_buchun = game.roundNumber;
 							'step 1'
 							event.targets = [];
 							var dead = game.dead.slice(0);
@@ -6073,7 +6073,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					recover: {
 						enable: 'phaseUse',
 						filter: function (event, player) {
-							if (!player.storage.boss_buchun || game.roundNumber - player.storage.boss_buchun >= 2) {
+							if (!player.$.boss_buchun || game.roundNumber - player.$.boss_buchun >= 2) {
 								for (var i = 0; i < game.dead.length; i++) {
 									if (game.dead[i].parentNode == player.parentNode && game.dead[i].name == 'boss_shujing') {
 										return false;
@@ -6089,7 +6089,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						},
 						content: function () {
 							target.recover(2);
-							player.storage.boss_buchun = game.roundNumber;
+							player.$.boss_buchun = game.roundNumber;
 						},
 						ai: {
 							order: 6,
@@ -6406,20 +6406,20 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				trigger: { player: 'phaseAfter' },
 				direct: true,
 				init: function (player) {
-					player.storage.xiongcai = [];
-					// player.storage.xiongcai2=0;
+					player.$.xiongcai = [];
+					// player.$.xiongcai2=0;
 				},
 				intro: {
 					content: 'characters'
 				},
 				content: function () {
 					'step 0'
-					// if(player.storage.xiongcai2<1){
-					//		player.storage.xiongcai2++;
+					// if(player.$.xiongcai2<1){
+					//		player.$.xiongcai2++;
 					//		event.finish();
 					// }
 					// else{
-					//		player.storage.xiongcai2=0;
+					//		player.$.xiongcai2=0;
 					// }
 					'step 1'
 					player.logSkill('xiongcai');
@@ -6435,12 +6435,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						if (lib.character[i][1] != 'wei') continue;
 						if (lib.character[i][4].contains('boss')) continue;
 						if (lib.character[i][4].contains('minskin')) continue;
-						if (player.storage.xiongcai.contains(i)) continue;
+						if (player.$.xiongcai.contains(i)) continue;
 						if (list2.contains(i)) continue;
 						list.push(i);
 					}
 					var name = list.randomGet();
-					player.storage.xiongcai.push(name);
+					player.$.xiongcai.push(name);
 					player.markSkill('xiongcai');
 					var skills = lib.character[name][3];
 					for (var i = 0; i < skills.length; i++) {
@@ -6546,12 +6546,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				mark: true,
 				intro: {
 					content: function (storage, player) {
-						var str = '扣减' + (7 - player.storage.xiangxing_count) + '点体力后失去下一枚星；';
-						str += '防上禳星伤害条件：' + lib.translate['xiangxing' + player.storage.xiangxing + '_info'];
+						var str = '扣减' + (7 - player.$.xiangxing_count) + '点体力后失去下一枚星；';
+						str += '防上禳星伤害条件：' + lib.translate['xiangxing' + player.$.xiangxing + '_info'];
 						return str;
 					},
 					markcount: function (storage, player) {
-						return Math.max(0, 7 - player.storage.xiangxing_count);
+						return Math.max(0, 7 - player.$.xiangxing_count);
 					}
 				},
 				skipDamage: {
@@ -6583,8 +6583,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			xiangxing: {
 				unique: true,
 				init: function (player) {
-					player.storage.xiangxing = 7;
-					player.storage.xiangxing_count = 0;
+					player.$.xiangxing = 7;
+					player.$.xiangxing_count = 0;
 					player.addSkill('xiangxing7');
 				},
 				mark: true,
@@ -6598,18 +6598,18 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					var num = trigger.num;
 					if (num) {
-						player.storage.xiangxing_count += num;
+						player.$.xiangxing_count += num;
 					}
-					if (player.storage.xiangxing_count >= 7) {
-						if (player.hasSkill('yueyin') && lib.skill.yueyin.skipDamage['x' + player.storage.xiangxing](player, trigger)) {
+					if (player.$.xiangxing_count >= 7) {
+						if (player.hasSkill('yueyin') && lib.skill.yueyin.skipDamage['x' + player.$.xiangxing](player, trigger)) {
 							event.goto(3);
 						}
-						player.removeSkill('xiangxing' + player.storage.xiangxing);
-						player.storage.xiangxing--;
-						player.storage.xiangxing_count = 0;
+						player.removeSkill('xiangxing' + player.$.xiangxing);
+						player.$.xiangxing--;
+						player.$.xiangxing_count = 0;
 						player.updateMarks();
-						if (player.storage.xiangxing) {
-							player.addSkill('xiangxing' + player.storage.xiangxing);
+						if (player.$.xiangxing) {
+							player.addSkill('xiangxing' + player.$.xiangxing);
 						}
 						else {
 							player.awakenSkill('xiangxing');
@@ -6642,7 +6642,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						event.redo();
 					}
 					'step 3'
-					if (player.storage.xiangxing == 0) {
+					if (player.$.xiangxing == 0) {
 						player.maxHp = 3;
 						player.update();
 					}
@@ -6679,7 +6679,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						var name = button.link[2];
 						if (player.hp <= 1) {
 							switch (name) {
-								case 'zhiliaobo': return 1;
 								case 'dunpaigedang': return 0.8;
 								case 'nanman': return 0.5;
 								default: return 0;
@@ -6907,9 +6906,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				discard: false,
 				prepare: 'give',
 				content: function () {
-					target.storage.mazui2 = cards[0];
+					target.$.mazui2 = cards[0];
 					target.addSkill('mazui2');
-					game.addVideo('storage', target, ['mazui2', get.cardInfo(target.storage.mazui2), 'card']);
+					game.addVideo('storage', target, ['mazui2', get.cardInfo(target.$.mazui2), 'card']);
 				},
 				ai: {
 					expose: 0.2,
@@ -6943,10 +6942,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				popup: false,
 				content: function () {
-					player.gain(player.storage.mazui2, 'gain2');
-					game.log(player, '获得了', player.storage.mazui2);
+					player.gain(player.$.mazui2, 'gain2');
+					game.log(player, '获得了', player.$.mazui2);
 					player.removeSkill('mazui3');
-					delete player.storage.mazui2;
+					delete player.$.mazui2;
 				}
 			},
 			yunshen: {
@@ -6956,10 +6955,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				frequent: true,
 				init: function (player) {
-					player.storage.yunshen = 0;
+					player.$.yunshen = 0;
 				},
 				content: function () {
-					player.storage.yunshen++;
+					player.$.yunshen++;
 					player.markSkill('yunshen');
 				},
 				ai: {
@@ -6988,16 +6987,16 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				trigger: { player: 'phaseZhunbeiBegin' },
 				forced: true,
 				filter: function (event, player) {
-					return player.storage.yunshen > 0;
+					return player.$.yunshen > 0;
 				},
 				content: function () {
-					player.draw(player.storage.yunshen);
-					player.storage.yunshen = 0;
+					player.draw(player.$.yunshen);
+					player.$.yunshen = 0;
 					player.unmarkSkill('yunshen');
 				},
 				mod: {
 					globalTo: function (from, to, distance) {
-						if (typeof to.storage.yunshen == 'number') return distance + to.storage.yunshen;
+						if (typeof to.$.yunshen == 'number') return distance + to.$.yunshen;
 					}
 				}
 			},
@@ -7165,8 +7164,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						popup: false,
 						content: function () {
-							player.storage.boss_mengtai_draw = true;
-							player.storage.boss_mengtai_use = true;
+							player.$.boss_mengtai_draw = true;
+							player.$.boss_mengtai_use = true;
 						}
 					},
 					draw: {
@@ -7174,7 +7173,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						popup: false,
 						content: function () {
-							player.storage.boss_mengtai_draw = false;
+							player.$.boss_mengtai_draw = false;
 						}
 					},
 					use: {
@@ -7182,14 +7181,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						popup: false,
 						content: function () {
-							player.storage.boss_mengtai_use = false;
+							player.$.boss_mengtai_use = false;
 						}
 					},
 					discard: {
 						trigger: { player: 'phaseDiscardBefore' },
 						forced: true,
 						filter: function (event, player) {
-							if (player.storage.boss_mengtai_use) return true;
+							if (player.$.boss_mengtai_use) return true;
 							return false;
 						},
 						content: function () {
@@ -7200,7 +7199,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						trigger: { player: 'phaseJieshuBegin' },
 						forced: true,
 						filter: function (event, player) {
-							if (player.storage.boss_mengtai_draw) return true;
+							if (player.$.boss_mengtai_draw) return true;
 							return false;
 						},
 						content: function () {
@@ -7216,28 +7215,28 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				priority: 25,
 				fixed: true,
 				filter: function (event, player) {
-					if (player.name == 'boss_nianshou_heti' || player.storage.boss_nbianshen) return true;
+					if (player.name == 'boss_nianshou_heti' || player.$.boss_nbianshen) return true;
 					return false;
 				},
 				content: function () {
-					if (player.storage.boss_nbianshen) {
+					if (player.$.boss_nbianshen) {
 						var hp = player.hp,
 							maxHp = player.maxHp,
 							hujia = player.hujia;
-						player.init('boss_nianshou_' + player.storage.boss_nbianshen_next);
-						player.storage.boss_nbianshen.remove(player.storage.boss_nbianshen_next);
-						if (!player.storage.boss_nbianshen.length) {
-							player.storage.boss_nbianshen = ['jingjue', 'renxing', 'ruizhi', 'baonu'];
+						player.init('boss_nianshou_' + player.$.boss_nbianshen_next);
+						player.$.boss_nbianshen.remove(player.$.boss_nbianshen_next);
+						if (!player.$.boss_nbianshen.length) {
+							player.$.boss_nbianshen = ['jingjue', 'renxing', 'ruizhi', 'baonu'];
 						}
-						player.storage.boss_nbianshen_next = player.storage.boss_nbianshen.randomGet(player.storage.boss_nbianshen_next);
+						player.$.boss_nbianshen_next = player.$.boss_nbianshen.randomGet(player.$.boss_nbianshen_next);
 						player.hp = hp;
 						player.maxHp = maxHp;
 						player.hujia = hujia;
 						player.update();
 					}
 					else {
-						player.storage.boss_nbianshen = ['jingjue', 'renxing', 'ruizhi', 'baonu'];
-						player.storage.boss_nbianshen_next = player.storage.boss_nbianshen.randomGet();
+						player.$.boss_nbianshen = ['jingjue', 'renxing', 'ruizhi', 'baonu'];
+						player.$.boss_nbianshen_next = player.$.boss_nbianshen.randomGet();
 						player.markSkill('boss_nbianshen');
 					}
 				},
@@ -7249,7 +7248,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							ruizhi: '睿智',
 							baonu: '暴怒'
 						};
-						return '下一个状态：' + map[player.storage.boss_nbianshen_next];
+						return '下一个状态：' + map[player.$.boss_nbianshen_next];
 					}
 				}
 			},
@@ -8261,7 +8260,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							return get.unuseful(card) + 9;
 						},
 						ai2: function (target) {
-							if (target.storage.boss_hujia) return Math.max(1, 10 - target.maxHp);
+							if (target.$.boss_hujia) return Math.max(1, 10 - target.maxHp);
 							return 1 / target.maxHp;
 						},
 						prompt: get.prompt('boss_hujia')
@@ -8270,12 +8269,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						var target = result.targets[0];
 						player.logSkill('boss_hujia', target);
-						if (target.storage.boss_hujia) {
+						if (target.$.boss_hujia) {
 							target.loseMaxHp();
 						}
 						else {
 							target.disableSkill('boss_hujia', lib.character[target.name][3]);
-							target.storage.boss_hujia = true;
+							target.$.boss_hujia = true;
 						}
 						player.discard(result.cards);
 					}
@@ -8291,19 +8290,19 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				mark: true,
 				derivation: ['tinqin', 'boss_huixin'],
 				init: function (player) {
-					player.storage.boss_guihan = false;
+					player.$.boss_guihan = false;
 				},
 				filter: function (event, player) {
 					if (event.type != 'dying') return false;
 					if (!player.isDying()) return false;
-					if (player.storage.boss_guihan) return false;
+					if (player.$.boss_guihan) return false;
 					return true;
 				},
 				content: function () {
 					"step 0"
 					player.removeSkill('boss_guihan');
 					player.recover(player.maxHp - player.hp);
-					player.storage.boss_guihan = true;
+					player.$.boss_guihan = true;
 					"step 1"
 					player.draw(4);
 					"step 2"
@@ -8322,7 +8321,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				},
 				ai: {
 					skillTagFilter: function (player) {
-						if (player.storage.boss_guihan) return false;
+						if (player.$.boss_guihan) return false;
 					},
 					save: true,
 					result: {
@@ -8978,7 +8977,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					player: "phaseZhunbeiBegin",
 				},
 				filter: function (event, player) {
-					return player.hp <= 2 && !player.storage.boss_hunzi;
+					return player.hp <= 2 && !player.$.boss_hunzi;
 				},
 				forced: true,
 				content: function () {
@@ -8991,7 +8990,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					game.log(player, '获得了技能', '#g【英姿】和【英魂】');
 					game.log(player, '', '#y【魂佑】')
 					player.awakenSkill('boss_hunzi');
-					player.storage.boss_hunzi = true;
+					player.$.boss_hunzi = true;
 				},
 				ai: {
 					threaten: function (player, target) {
@@ -9018,7 +9017,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				init: function (player) {
 					var a = window.setInterval(function () {
 						if (player.hasSkill('boss_jiang')) {
-							player.storage.boss_jiang = true;
+							player.$.boss_jiang = true;
 						}
 						else {
 							game.addGlobalSkill('boss_jiang');
@@ -9035,7 +9034,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					if (event.respondTo[1] && ['h', 'e', 'j'].contains(get.position(event.respondTo[1]))) return false;
 				},
 				filter: function (event, player) {
-					if (!player.storage.boss_jiang) return false;
+					if (!player.$.boss_jiang) return false;
 					if (!event.respondTo) return false;
 					if (get.color(event.card) != 'red') return false;
 					if (event.respondTo[0] != player) {
@@ -9063,7 +9062,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							global: ["useCard"],
 						},
 						filter: function (event, player) {
-							if (!player.storage.boss_jiang) return false;
+							if (!player.$.boss_jiang) return false;
 							if (get.color(event.card) != 'red') return false;
 							return player == event.player || event.targets.contains(player);
 						},
@@ -9080,8 +9079,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				init: function (player) {
 					player.hp = 1;
-					player.storage.hp = player.hp;
-					player.storage.maxHp = player.maxHp;
+					player.$.hp = player.hp;
+					player.$.maxHp = player.maxHp;
 					player.update();
 				},
 				trigger: {
@@ -9098,13 +9097,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						},
 						silent: true,
 						filter: function (event, player) {
-							if (player.hp != player.storage.hp && player.storage.hp > 0) return true;
+							if (player.hp != player.$.hp && player.$.hp > 0) return true;
 							return false;
 						},
 						content: function () {
 							trigger.cancel();
-							player.maxHp = player.storage.maxHp;
-							player.hp = player.storage.hp;
+							player.maxHp = player.$.maxHp;
+							player.hp = player.$.hp;
 							player.update();
 						},
 						sub: true,
@@ -9117,13 +9116,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						},
 						silent: true,
 						filter: function (event, player) {
-							if (player.maxHp != player.storage.maxHp && player.storage.maxHp > 0) return true;
+							if (player.maxHp != player.$.maxHp && player.$.maxHp > 0) return true;
 							return false;
 						},
 						content: function () {
 							trigger.cancel();
-							player.maxHp = player.storage.maxHp;
-							player.hp = player.storage.hp;
+							player.maxHp = player.$.maxHp;
+							player.hp = player.$.hp;
 							player.update();
 						},
 						sub: true,

@@ -143,7 +143,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					player.storage.hongtu = true;
+					player.$.hongtu = true;
 					player.awakenSkill('hongtu');
 					Evt.going = 1;
 					'step 1'
@@ -172,15 +172,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				filter(Evt, player) {
 					return game.countPlayer(cur => {
-						return !cur.storage.nohp && cur.maxHp != Infinity && cur != player;
+						return !cur.$.nohp && cur.maxHp != Infinity && cur != player;
 					});
 				},
 				audio: 6,
 				content() {
 					'step 0'
 					player.chooseTarget('请选择『颂恩』的目标', lib.translate.huangtu_info, true, function (card, player, target) {
-						if (target.storage.nohp || target.maxHp == Infinity) return false
-						return target != player && (!player.storage.huangtu2 || !player.storage.huangtu2.contains(target));
+						if (target.$.nohp || target.maxHp == Infinity) return false
+						return target != player && (!player.$.huangtu2 || !player.$.huangtu2.contains(target));
 					}).set('ai', function (target) {
 						var att = get.attitude(_status.event.player, target);
 						if (att > 0) return att + 1;
@@ -190,14 +190,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					if (result.bool) {
 						Evt.target = result.targets[0];
-						if (!player.storage.huangtu2) player.storage.huangtu2 = [];
-						player.storage.huangtu2.add(Evt.target);
+						if (!player.$.huangtu2) player.$.huangtu2 = [];
+						player.$.huangtu2.add(Evt.target);
 						player.addSkill('huangtu2');
 						player.addSkill('huangtu3');
 					}
 					'step 2'
 					var target = Evt.target;
-					target.storage.huangtu_mark = player;
+					target.$.huangtu_mark = player;
 					target.addSkill('huangtu_mark');
 					'step 3'
 					var target = Evt.target;
@@ -219,24 +219,24 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filter(Evt, player) {
 					if (player == _status.currentPhase && player == Evt.player) return true;
 					if (Evt.player.isDead() || Evt.num == 0) return false;
-					return player.storage.huangtu2 && player.storage.huangtu2.contains(Evt.player) && player != _status.currentPhase;
+					return player.$.huangtu2 && player.$.huangtu2.contains(Evt.player) && player != _status.currentPhase;
 				},
 				logTarget: 'player',
 				content() {
 					'step 0'
 					if (trigger.player == player) {
-						var target = player.storage.huangtu2[0];
+						var target = player.$.huangtu2[0];
 						target[trigger.name](trigger.num, 'nosource');
-						if (target.storage.huangtu_mark != player) {
-							target.storage.huangtu_mark = player;
+						if (target.$.huangtu_mark != player) {
+							target.$.huangtu_mark = player;
 						}
 						target.markSkill('huangtu_mark');
 						Evt.finish();
 					}
 					'step 1'
 					var target = trigger.player;
-					if (target.storage.huangtu_mark != player) {
-						target.storage.huangtu_mark = player;
+					if (target.$.huangtu_mark != player) {
+						target.$.huangtu_mark = player;
 					}
 					target.markSkill('huangtu_mark');
 					game.delayx();
@@ -244,21 +244,21 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player[trigger.name](trigger.num, 'nosource');
 				},
 				onremove(player) {
-					if (!player.storage.huangtu2) return;
-					var splayer = player.storage.huangtu2[0];
+					if (!player.$.huangtu2) return;
+					var splayer = player.$.huangtu2[0];
 					splayer.removeSkill('huangtu_mark');
-					delete player.storage.huangtu2;
+					delete player.$.huangtu2;
 				},
 			},
 			huangtu3: {
 				trigger: { global: 'dieBegin' },
 				silent: true,
 				filter(Evt, player) {
-					return Evt.player == player || player.storage.huangtu2 && player.storage.huangtu2.contains(player);
+					return Evt.player == player || player.$.huangtu2 && player.$.huangtu2.contains(player);
 				},
 				content() {
 					if (player == Evt.player) player.removeSkill('huangtu2');
-					else player.storage.huangtu2.remove(Evt.player);
+					else player.$.huangtu2.remove(Evt.player);
 				}
 			},
 			wudao: {
@@ -273,11 +273,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				enable: 'phaseUse',
 				filter(Evt, player) {
 					return player.countCards('h', function (card, player) {
-						return Evt.player.storage.wudao.contains(get.name(card));
+						return Evt.player.$.wudao.contains(get.name(card));
 					}) > 0;
 				},
 				filterCard(card, player, Evt) {
-					return player.storage.wudao.contains(get.name(card));
+					return player.$.wudao.contains(get.name(card));
 				},
 				prepare(cards, player) {
 					player.$throw(cards, 1000);
@@ -290,8 +290,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				delay: 0.5,
 				content() {
 					player.draw();
-					//					console.log(player.storage.wudao);
-					player.storage.wudao.remove(get.name(Evt.cards[0]));
+					//					console.log(player.$.wudao);
+					player.$.wudao.remove(get.name(Evt.cards[0]));
 				},
 				ai: {
 					basic: {
@@ -309,11 +309,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						silent: true,
 						popup: false,
 						filter(Evt, player) {
-							return player.storage.wudao.length == 0;
+							return player.$.wudao.length == 0;
 						},
 						content() {
 							'step 0'
-							if (player.storage.wudao.length) {
+							if (player.$.wudao.length) {
 								Evt.finish();
 							} else {
 								player.logSkill('wudao');
@@ -344,7 +344,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								var name = lib.inpile[i];
 								if (get.type(name) == 'basic') list.push(name);
 							}
-							player.storage.wudao = list;
+							player.$.wudao = list;
 						},
 					},
 				}
@@ -421,16 +421,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							if (result.bool) {
 								player.lose(result.cards, ui.special, 'visible', 'toStorage');
 								player.$give(result.cards, player, false);
-								if (player.storage.old_maoliang) {
-									player.storage.old_maoliang = player.storage.old_maoliang.concat(result.cards);
+								if (player.$.old_maoliang) {
+									player.$.old_maoliang = player.$.old_maoliang.concat(result.cards);
 								}
 								else {
-									player.storage.old_maoliang = result.cards;
+									player.$.old_maoliang = result.cards;
 								}
-								// game.addVideo('storage', player, ['old_maoliang',get.cardsInfo(player.storage.old_maoliang),'cards']);
+								// game.addVideo('storage', player, ['old_maoliang',get.cardsInfo(player.$.old_maoliang),'cards']);
 								player.addSkill('old_maoliang');
 								player.markSkill('old_maoliang');
-								player.showCards(player.storage.old_maoliang, "猫粮");
+								player.showCards(player.$.old_maoliang, "猫粮");
 							}
 							else Evt.finish();
 							'step 2'
@@ -451,9 +451,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							game.broadcastAll(function (targets, id) {
 								var dialog = ui.create.dialog('选择猫粮');
 								targets.forEach(function (p) {
-									if (p.storage.old_maoliang.length) {
+									if (p.$.old_maoliang.length) {
 										dialog.addText(get.translation(p));
-										dialog.add(p.storage.old_maoliang);
+										dialog.add(p.$.old_maoliang);
 									}
 								})
 								dialog.videoId = id;
@@ -466,16 +466,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								Evt.cards = result.links;
 								player.logSkill('old_jiumao');
 								Evt.targets.forEach(function (p) {
-									var all = p.storage.old_maoliang;
+									var all = p.$.old_maoliang;
 									var cho = [];
-									p.storage.old_maoliang = [];
+									p.$.old_maoliang = [];
 									all.forEach(card => {
 										if (Evt.cards.indexOf(card) != -1) {
 											cho.push(card);
 											p.addTempSkill('old_jiumao_cancel');
 										}
 										else {
-											p.storage.old_maoliang.push(card);
+											p.$.old_maoliang.push(card);
 										}
 									})
 									p.$give(cho, player, false);
@@ -518,9 +518,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					game.broadcastAll(function (targets, id, current) {
 						var dialog = ui.create.dialog('选择猫粮');
 						targets.forEach(function (p) {
-							if (p != current && p.storage.old_maoliang.length) {
+							if (p != current && p.$.old_maoliang.length) {
 								dialog.addText(get.translation(p));
-								dialog.add(p.storage.old_maoliang);
+								dialog.add(p.$.old_maoliang);
 							}
 						})
 						dialog.videoId = id;
@@ -534,8 +534,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						var targets = [];
 						var less = false;
 						Evt.targets.forEach(function (p) {
-							var temp = p.storage.old_maoliang;
-							p.storage.old_maoliang = [];
+							var temp = p.$.old_maoliang;
+							p.$.old_maoliang = [];
 							temp.forEach(card => {
 								if (Evt.cards.indexOf(card) != -1) {
 									p.$give(card, trigger.player, false);
@@ -543,7 +543,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									targets.push(p);
 								}
 								else {
-									p.storage.old_maoliang.push(card);
+									p.$.old_maoliang.push(card);
 									less = true;
 								}
 							})
@@ -608,7 +608,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			pekoyu: {
 				audio: 'tuquan',
 				init(player) {
-					player.storage.pekoyu = [];
+					player.$.pekoyu = [];
 				},
 				marktext: "peko",
 				intro: {
@@ -636,7 +636,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					player.draw(),
-						player.storage.pekoyu.add(get.suit(trigger.card));
+						player.$.pekoyu.add(get.suit(trigger.card));
 					'step 1'
 					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌', 'h', true).set('ai', card => {
 						var name = card.name;
@@ -678,7 +678,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						firstDo: true,
 						content() {
 							player.unmarkSkill('pekoyu');
-							player.storage.pekoyu = [];
+							player.$.pekoyu = [];
 						}
 					},
 				},
@@ -754,31 +754,31 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				trigger: { player: 'phaseBegin' },
 				usable: 1,
 				filter(Evt, player) {
-					if (player.storage.baitai_A !== 0) player.storage.baitai_A = 0;
-					if (player.storage.baitai_B !== 0) player.storage.baitai_B = 0;
-					if (player.storage.baitai_C !== 0) player.storage.baitai_C = 0;
-					if (player.storage.baitai_D !== 0) player.storage.baitai_D = 0;
-					if (player.storage.baitai_E !== 0) player.storage.baitai_E = 0;
+					if (player.$.baitai_A !== 0) player.$.baitai_A = 0;
+					if (player.$.baitai_B !== 0) player.$.baitai_B = 0;
+					if (player.$.baitai_C !== 0) player.$.baitai_C = 0;
+					if (player.$.baitai_D !== 0) player.$.baitai_D = 0;
+					if (player.$.baitai_E !== 0) player.$.baitai_E = 0;
 					return player.countCards('h');
 				},
 				content() {
 					'step 0'
 					player.showHandcards();
 					'step 1'
-					player.storage.baitai_A += player.countCards('h', { suit: 'diamond' });
+					player.$.baitai_A += player.countCards('h', { suit: 'diamond' });
 					player.markSkill('baitai_A');
 					'step 2'
-					player.storage.baitai_B += player.countCards('h', { suit: 'club' });
+					player.$.baitai_B += player.countCards('h', { suit: 'club' });
 					player.markSkill('baitai_B');
 					'step 3'
-					player.storage.baitai_C += player.countCards('h', { suit: 'heart' });
+					player.$.baitai_C += player.countCards('h', { suit: 'heart' });
 					player.markSkill('baitai_C');
 					'step 4'
-					player.storage.baitai_D += player.countCards('h', { suit: 'spade' });
+					player.$.baitai_D += player.countCards('h', { suit: 'spade' });
 					player.markSkill('baitai_D');
 					'step 5'
-					player.storage.baitai_E += Math.min(player.storage.baitai_A, player.storage.baitai_B, player.storage.baitai_C, player.storage.baitai_D);
-					if (player.storage.baitai_E > 0) player.markSkill('baitai_E');
+					player.$.baitai_E += Math.min(player.$.baitai_A, player.$.baitai_B, player.$.baitai_C, player.$.baitai_D);
+					if (player.$.baitai_E > 0) player.markSkill('baitai_E');
 				},
 				group: ['baitai_clear', 'baitai_A', 'baitai_B', 'baitai_C', 'baitai_D', 'baitai_E'],
 				subSkill: {
@@ -788,14 +788,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						silent: true,
 						firstDo: true,
 						filter(Evt, player) {
-							return player.storage.baitai_A || player.storage.baitai_B || player.storage.baitai_C || player.storage.baitai_D || player.storage.baitai_E;
+							return player.$.baitai_A || player.$.baitai_B || player.$.baitai_C || player.$.baitai_D || player.$.baitai_E;
 						},
 						content() {
-							if (player.storage.baitai_A !== 0) player.storage.baitai_A = 0;
-							if (player.storage.baitai_B !== 0) player.storage.baitai_B = 0;
-							if (player.storage.baitai_C !== 0) player.storage.baitai_C = 0;
-							if (player.storage.baitai_D !== 0) player.storage.baitai_D = 0;
-							if (player.storage.baitai_E !== 0) player.storage.baitai_E = 0;
+							if (player.$.baitai_A !== 0) player.$.baitai_A = 0;
+							if (player.$.baitai_B !== 0) player.$.baitai_B = 0;
+							if (player.$.baitai_C !== 0) player.$.baitai_C = 0;
+							if (player.$.baitai_D !== 0) player.$.baitai_D = 0;
+							if (player.$.baitai_E !== 0) player.$.baitai_E = 0;
 							player.unmarkSkill('baitai_A');
 							player.unmarkSkill('baitai_B');
 							player.unmarkSkill('baitai_C');
@@ -806,7 +806,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					A: {
 						mod: {
 							attackFrom(from, to, distance) {
-								return distance - from.storage.baitai_A;
+								return distance - from.$.baitai_A;
 							}
 						},
 						marktext: '歌',
@@ -816,10 +816,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger: { player: 'phaseDrawBegin2' },
 						forced: true,
 						filter(Evt, player) {
-							return !Evt.numFixed && player.storage.baitai_B;
+							return !Evt.numFixed && player.$.baitai_B;
 						},
 						content() {
-							var Buff = player.storage.baitai_B;
+							var Buff = player.$.baitai_B;
 							trigger.num += Buff;
 						},
 						marktext: '之',
@@ -828,7 +828,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					C: {
 						mod: {
 							maxHandcard(player, num) {
-								var Buff = player.storage.baitai_C;
+								var Buff = player.$.baitai_C;
 								return num += Buff;
 							},
 						},
@@ -838,7 +838,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					D: {
 						mod: {
 							cardUsable(card, player, num) {
-								var Buff = player.storage.baitai_D;
+								var Buff = player.$.baitai_D;
 								if (card.name == 'sha' && player.isPhaseUsing()) return num + Buff;
 							},
 						},
@@ -850,7 +850,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							selectTarget(card, player, range) {
 								console.log(card, range)
 								if (!Array.isArray(range) || range[1] == -1) return;
-								if (player.storage.baitai_E > 0) range[1] += player.storage.baitai_E;
+								if (player.$.baitai_E > 0) range[1] += player.$.baitai_E;
 							},
 						},
 						marktext: '🐚',
@@ -949,8 +949,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			gz_lianjin: {
 				trigger: { player: 'useCardAfter' },
 				filter(Evt, player) {
-					if (!player.storage.gz_lianjin_mark) player.storage.gz_lianjin_mark = [];
-					if (!player.storage.gz_lianjin_used) player.storage.gz_lianjin_used = [];
+					if (!player.$.gz_lianjin_mark) player.$.gz_lianjin_mark = [];
+					if (!player.$.gz_lianjin_used) player.$.gz_lianjin_used = [];
 					return Evt.card && player.countCards('h');
 				},
 				direct: true,
@@ -974,7 +974,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					'step 2'
 					var list = {};
-					player.storage.gz_lianjin_mark.filter(card => {
+					player.$.gz_lianjin_mark.filter(card => {
 						if (!list[get.suit(card)]) list[get.suit(card)] = 0;
 						list[get.suit(card)]++;
 					});
@@ -990,7 +990,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					'step 3'
 					if (Evt.chooseEquip) {
-						player.chooseCardButton(player.storage.gz_lianjin_mark, 3, true, '选择发动『炼金』的牌').set('filterButton', function (button) {
+						player.chooseCardButton(player.$.gz_lianjin_mark, 3, true, '选择发动『炼金』的牌').set('filterButton', function (button) {
 							var link = button.link;
 							if (_status.event.chosen !== true) return _status.event.chosen == get.suit(link);
 							else {
@@ -1073,11 +1073,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					'step 11'
 					if (Evt.useSha) {
-						player.storage.gz_lianjin_used.add('A');
+						player.$.gz_lianjin_used.add('A');
 						player.chooseUseTarget({ name: 'sha', nature: 'fire' }, '是否使用第一张火【杀】？', false);
 					}
 					else if (Evt.useWuzhong) {
-						player.storage.gz_lianjin_used.add('B');
+						player.$.gz_lianjin_used.add('B');
 						player.chooseUseTarget({ name: 'wuzhong' }, '是否使用第一张【无中生有】？', false);
 					}
 					'step 12'
@@ -1105,7 +1105,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						silent: true,
 						popup: false,
 						content() {
-							player.storage.gz_lianjin_used = [];
+							player.$.gz_lianjin_used = [];
 						},
 						cardAround: true
 					}
@@ -1427,14 +1427,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				trigger: { global: 'useCard' },
 				clickChange: '休眠',
 				clickable(player) {
-					if (player.storage.lingli_clickChange === undefined) player.storage.lingli_clickChange = false;
-					else player.storage.lingli_clickChange = !player.storage.lingli_clickChange;
+					if (player.$.lingli_clickChange === undefined) player.$.lingli_clickChange = false;
+					else player.$.lingli_clickChange = !player.$.lingli_clickChange;
 				},
 				clickableFilter(player) {
-					return player.storage.lingli_clickChange !== false;
+					return player.$.lingli_clickChange !== false;
 				},
 				filter(Evt, player) {
-					if (player.storage.lingli_clickChange === false) return false;
+					if (player.$.lingli_clickChange === false) return false;
 					return Evt.targets && Evt.targets.length == 1 && Evt.cards && Evt.cards.length;
 				},
 				check(Evt, player) {
@@ -1531,8 +1531,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return true;
 				},
 				onuse(result, player) {
-					if (!player.storage.chengfo_mark) player.storage.chengfo_mark = [];
-					player.storage.chengfo_mark.add(get.suit(result.card, player));
+					if (!player.$.chengfo_mark) player.$.chengfo_mark = [];
+					player.$.chengfo_mark.add(get.suit(result.card, player));
 					player.markSkill('chengfo_mark');
 				},
 				ai: {
@@ -1593,7 +1593,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player: ['phaseAfter']
 						},
 						content() {
-							delete player.storage.chengfo_mark;
+							delete player.$.chengfo_mark;
 							player.unmarkSkill('chengfo_mark');
 						}
 					}

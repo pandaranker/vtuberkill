@@ -517,11 +517,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					return grids;
 				},
-				chooseToMove:function(num,prompt){
-					var next=game.createEvent('chooseToMove');
+				chooseToMoveChess:function(num,prompt){
+					var next=game.createEvent('chooseToMoveChess');
 					next.num=num||1;
 					next.player=this;
-					next.setContent('chooseToMove');
+					next.setContent('chooseToMoveChess');
 					next.prompt=prompt;
 					return next;
 				},
@@ -1245,7 +1245,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.modeSwapPlayer(player);
 					}
 				},
-				chooseToMove:function(){
+				chooseToMoveChess:function(){
 					"step 0"
 					if(!player.movable(0,1)&&!player.movable(0,-1)&&
 						!player.movable(1,0)&&!player.movable(-1,0)){
@@ -4598,7 +4598,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				unique:true,
 				forbid:['guozhan'],
 				init:function(player){
-					player.storage.tongshuai={
+					player.$.tongshuai={
 						list:[],
 						owned:{},
 						player:player,
@@ -4606,7 +4606,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(typeof num!='number') num=1;
 							var player=this.player;
 							while(num--){
-								var name=player.storage.tongshuai.unowned.shift();
+								var name=player.$.tongshuai.unowned.shift();
 								if(!name) return;
 								var skills=lib.character[name][3].slice(0);
 								for(var i=0;i<skills.length;i++){
@@ -4615,8 +4615,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										skills.splice(i--,1);
 									}
 								}
-								player.storage.tongshuai.owned[name]=skills;
-								game.addVideo('chess_tongshuai',player,player.storage.tongshuai.owned);
+								player.$.tongshuai.owned[name]=skills;
+								game.addVideo('chess_tongshuai',player,player.$.tongshuai.owned);
 							}
 						}
 					}
@@ -4676,21 +4676,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							}
 						}
 						if(add){
-							player.storage.tongshuai.list.push(game.data.character[i]);
+							player.$.tongshuai.list.push(game.data.character[i]);
 						}
 					}
 					for(var i=0;i<game.players.length;i++){
-						player.storage.tongshuai.list.remove([game.players[i].name]);
-						player.storage.tongshuai.list.remove([game.players[i].name1]);
-						player.storage.tongshuai.list.remove([game.players[i].name2]);
+						player.$.tongshuai.list.remove([game.players[i].name]);
+						player.$.tongshuai.list.remove([game.players[i].name1]);
+						player.$.tongshuai.list.remove([game.players[i].name2]);
 					}
-					player.storage.tongshuai.unowned=player.storage.tongshuai.list.slice(0);
-					player.storage.tongshuai.unowned.sort(lib.sort.random);
-					if(player.storage.tongshuai.unowned.length>1){
-						player.storage.tongshuai.get(2);
+					player.$.tongshuai.unowned=player.$.tongshuai.list.slice(0);
+					player.$.tongshuai.unowned.sort(lib.sort.random);
+					if(player.$.tongshuai.unowned.length>1){
+						player.$.tongshuai.get(2);
 					}
-					else if(player.storage.tongshuai.unowned.length==1){
-						player.storage.tongshuai.get();
+					else if(player.$.tongshuai.unowned.length==1){
+						player.$.tongshuai.get();
 					}
 					else{
 						player.removeSkill('tongshuai');
@@ -4709,7 +4709,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				popup:false,
 				content:function(){
-					var slist=player.storage.tongshuai.owned;
+					var slist=player.$.tongshuai.owned;
 					var list=[];
 					for(var i in slist){
 						list.push(i);
@@ -4819,10 +4819,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseBegin'},
 				forced:true,
 				filter:function(event,player){
-					return player.storage.tongshuai&&player.storage.tongshuai.unowned&&player.storage.tongshuai.unowned.length>0;
+					return player.$.tongshuai&&player.$.tongshuai.unowned&&player.$.tongshuai.unowned.length>0;
 				},
 				content:function(){
-					player.storage.tongshuai.get();
+					player.$.tongshuai.get();
 				}
 			},
 			cangming:{
@@ -5104,7 +5104,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					player.chooseToMove(2,get.prompt('pianyi'));
+					player.chooseToMoveChess(2,get.prompt('pianyi'));
 					"step 1"
 					if(result.bool){
 						player.logSkill('pianyi');
@@ -5121,7 +5121,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					player.chooseToMove(player.getHistory('useCard',function(evt){
+					player.chooseToMoveChess(player.getHistory('useCard',function(evt){
 						return evt.card.name=='sha';
 					}).length,get.prompt('lingdong'));
 					"step 1"
@@ -5310,7 +5310,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					"step 0"
 					var move=2;
 					move=game.checkMod(player,move,'chessMove',player);
-					player.chooseToMove(move).phasing=true;
+					player.chooseToMoveChess(move).phasing=true;
 					"step 1"
 					if(ui.confirm){
 						ui.confirm.classList.add('removing');

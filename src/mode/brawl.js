@@ -555,7 +555,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								 },
 								 prompt:'是否消耗2点灵力获得一个技能？',
 								 filter:function(event,player){
-								 	return player.storage._lingli>1;
+								 	return player.$._lingli>1;
 								 },
 								 check:function(event,player){
 								 	return player.skillH.length<3;
@@ -573,7 +573,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								 		if(list.length==3) break;
 								 	}
 								 	if(!list.length){event.finish();return;}
-								 	if(player.storage._lingli>0)	list.push('刷新');
+								 	if(player.$._lingli>0)	list.push('刷新');
 								 	event.list=list;
 								 	var dialog=game.getSkillDialog(event.list,'选择获得一个技能');
 								 	player.chooseControl(event.list).set('ai',function(){
@@ -609,7 +609,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								_lingli_draw:{
 									enable:'phaseUse',
 									filter:function(event,player){
-										return player.storage._lingli>0;
+										return player.$._lingli>0;
 									},
 									content:function(){
 										player.changeLingli(-1);
@@ -620,7 +620,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 										order:10,
 										result:{
 											player:function(player){
-												return (player.storage._lingli-2*(3-player.skillH.length))>0?1:0;
+												return (player.$._lingli-2*(3-player.skillH.length))>0?1:0;
 											},
 										},
 									},
@@ -959,18 +959,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							hasZhuSkill:function(){return false},
 							changeLingli:function(num){
 								if(typeof num!='number') num=1;
-								if(typeof this.storage._lingli!='number') this.storage._lingli=0;
+								if(typeof this.$._lingli!='number') this.$._lingli=0;
 								if(num>0){
-									num=Math.min(num,5-this.storage._lingli);
+									num=Math.min(num,5-this.$._lingli);
 									if(num<1) return;
 									game.log(this,'获得了','#y'+get.cnNumber(num)+'点','灵力');
 								}
 								else{
-									if(-num>this.storage._lingli) num=-this.storage._lingli;
+									if(-num>this.$._lingli) num=-this.$._lingli;
 									if(num==0) return;
 									game.log(this,'失去了','#y'+get.cnNumber(-num)+'点','灵力');
 								}
-								this.storage._lingli+=num;
+								this.$._lingli+=num;
 								this.markSkill('_lingli');
 							},
 						},
@@ -1041,7 +1041,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 											current.init(_status.characterlist.randomRemove(1)[0]);
 											current.addSkillH(['xiandeng','shulv','xisheng'].randomGet());
 										}
-										current.storage._lingli=0;
+										current.$._lingli=0;
 										current.markSkill('_lingli');
 									});
 									game.showIdentity(true);

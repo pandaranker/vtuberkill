@@ -271,8 +271,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.over(false);
 					}
 				}
-				else if(game.zhu.storage.state!='second'){
-					game.zhu.storage.state='second'
+				else if(game.zhu.$.state!='second'){
+					game.zhu.$.state='second'
 				}
 				else {
 					if(game.me==game.zhu){
@@ -287,8 +287,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(game.zhu.isAlive()){
 					return player.identity=='zhu';
 				}
-				else if(game.zhu.storage.state!='second'){
-					game.zhu.storage.state='second';
+				else if(game.zhu.$.state!='second'){
+					game.zhu.$.state='second';
 					return false;
 				}
 				else return player.identity=='fan';
@@ -927,9 +927,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					else{
 						event.player=event.player.next;
 					}
-					if(game.zhu.storage.changeState){
+					if(game.zhu.$.changeState){
 						event.player=game.zhu;
-						game.zhu.storage.changeState=false;
+						game.zhu.$.changeState=false;
 					}
 					event.goto(0);
 				});
@@ -1098,7 +1098,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					useE:{
 						init:function(player){
-							player.storage.jierizhanbei=0;
+							player.$.jierizhanbei=0;
 						},
 						trigger:{player:'useCard'},
 						forced:true,
@@ -1108,31 +1108,31 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return get.type(event.card)=='equip';
 						},
 						content:function(){
-							player.storage.jierizhanbei++;
+							player.$.jierizhanbei++;
 						},
 						mod:{
 							maxHandcard:function(player,num){
-								if(player.storage.jierizhanbei>0)	return 5;
+								if(player.$.jierizhanbei>0)	return 5;
 							},
 						},
 					},
 					getE:{
 						init:function (player){
-							player.storage.jierizhanbei=0;
+							player.$.jierizhanbei=0;
 						},
 						trigger:{player:'phaseEnd'},
 						forced:true,
 						priority:13,
 						filter:function(event,player){
-							var num = player.storage.jierizhanbei
+							var num = player.$.jierizhanbei
 							if(num!=0){									
-								player.storage.jierizhanbei=0;
+								player.$.jierizhanbei=0;
 								return false;
 							}
 							return true;
 						},
 						content:function(){
-							console.log(player.storage.jierizhanbei);
+							console.log(player.$.jierizhanbei);
 								var getC = get.cardPile2(function(card){
 									return get.type(card)=='equip';
 								})
@@ -1213,7 +1213,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					if(event._trigger.reason=='nosource'){
-						player.storage.state='second';
+						player.$.state='second';
 						event.finish();
 					}
 					else{
@@ -1248,12 +1248,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						//}
 					},game.zhu,newPerson)
 					//player.init('AjatarCoco',newPerson);
-					player.storage.state='second';
+					player.$.state='second';
 					game.zhu.maxHp=1+Number(lib.character[newPerson][2]);
 					game.zhu.hp=1+Number(lib.character[newPerson][2]);
 					'step 3'
 					game.zhu.update();
-					game.zhu.storage.changeState=true;
+					game.zhu.$.changeState=true;
 					game.filterPlayer(function(current){
 						// if(current.isOut()){
 						// 	return false;
@@ -1342,16 +1342,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					event.card=get.cards()[0];
-					if(player.storage.yugaimizhang==undefined) player.storage.yugaimizhang=[];
-					if(player.storage.yugaimizhang.length>0){
-						game.cardsDiscard(player.storage.yugaimizhang);
-						player.storage.yugaimizhang=[];
+					if(player.$.yugaimizhang==undefined) player.$.yugaimizhang=[];
+					if(player.$.yugaimizhang.length>0){
+						game.cardsDiscard(player.$.yugaimizhang);
+						player.$.yugaimizhang=[];
 					}
-					player.storage.yugaimizhang=[event.card];
+					player.$.yugaimizhang=[event.card];
 					player.syncStorage('yugaimizhang');
 					//event.trigger("addCardToStorage");
 					game.cardsGotoSpecial(event.card);
-					player.showCards(player.storage.yugaimizhang,'欲盖弥彰')
+					player.showCards(player.$.yugaimizhang,'欲盖弥彰')
 					//player.markSkill('yugaimizhang');
 					'step 1'
 				},
@@ -1369,13 +1369,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						filter:function(event,player){
 							if(player.countCards('h')==0) return false;
-							if(!player.storage.yugaimizhang){
+							if(!player.$.yugaimizhang){
 								return false
 							}
-							if(player.storage.yugaimizhang.length==0){
+							if(player.$.yugaimizhang.length==0){
 								return false
 							}
-							if(event.targets&&event.targets[0]==player&&get.suit(event.cards)==get.suit(game.zhu.storage.yugaimizhang))
+							if(event.targets&&event.targets[0]==player&&get.suit(event.cards)==get.suit(game.zhu.$.yugaimizhang))
 								return true; 
 							else 
 								return false;
@@ -1436,15 +1436,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(storage&&storage.length){
 							player.$throw(storage,1000);
 							game.cardsDiscard(storage);
-							delete player.storage.yugaimizhang;
+							delete player.$.yugaimizhang;
 						}
 					}
 				}
 			},
 			zuoyututan:{
 				init:function (player){
-					player.storage.zuoyututan=1;
-					player.storage.zuoyututanUse=true;
+					player.$.zuoyututan=1;
+					player.$.zuoyututanUse=true;
 				},
 				mark:true,
 				locked:false,
@@ -1452,8 +1452,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				marktext:'碳',
 				intro:{
 					content:function(storage,player,skill){
-						if(player.storage.zuoyututan==1) return '随机废除一个装备栏';
-						else if(player.storage.zuoyututan==1) return '手牌上限-1';
+						if(player.$.zuoyututan==1) return '随机废除一个装备栏';
+						else if(player.$.zuoyututan==1) return '手牌上限-1';
 						else return '获得一张进入弃牌堆后即移出游戏的【毒】'
 					},
 				},
@@ -1462,7 +1462,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'1':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.zuoyututan!=1){
+							if(player.$.zuoyututan!=1){
 								return false;
 							}
 							return !player.hasSkill('zuoyututan_stop');
@@ -1491,8 +1491,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.zuoyututan=2;
-							player.storage.zuoyututanUse=false;
+							player.$.zuoyututan=2;
+							player.$.zuoyututanUse=false;
 							player.addTempSkill('zuoyututan_stop');
 							player.syncStorage('zuoyututan');
 						},
@@ -1500,7 +1500,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'2':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.zuoyututan!=2){
+							if(player.$.zuoyututan!=2){
 								return false;
 							}
 							return !player.hasSkill('zuoyututan_stop');
@@ -1524,7 +1524,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 								if(current.hasSkill('zuoyututanLimit')){
-									current.storage.zuoyututanLimit++;
+									current.$.zuoyututanLimit++;
 								}
 								else{
 									current.addSkill('zuoyututanLimit');
@@ -1532,8 +1532,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.zuoyututan=3;
-							player.storage.zuoyututanUse=false;
+							player.$.zuoyututan=3;
+							player.$.zuoyututanUse=false;
 							player.addTempSkill('zuoyututan_stop');
 							player.syncStorage('zuoyututan');
 						},
@@ -1541,7 +1541,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'3':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.zuoyututan!=3){
+							if(player.$.zuoyututan!=3){
 								return false;
 							}
 							return !player.hasSkill('zuoyututan_stop');
@@ -1570,8 +1570,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.zuoyututan=1;
-							player.storage.zuoyututanUse=false;
+							player.$.zuoyututan=1;
+							player.$.zuoyututanUse=false;
 							player.addTempSkill('zuoyututan_stop');
 							player.syncStorage('zuoyututan');
 						},
@@ -1612,18 +1612,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			zuoyututanLimit:{
 				init:function(player){
-					player.storage.zuoyututanLimit=1;
+					player.$.zuoyututanLimit=1;
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player,skill){
-						return '手牌上限减少'+player.storage.zuoyututanLimit;
+						return '手牌上限减少'+player.$.zuoyututanLimit;
 					}
 				},
 				marktext:'碳',
 				mod:{
 					maxHandcard:function(player,num){
-						return num-player.storage.zuoyututanLimit;
+						return num-player.$.zuoyututanLimit;
 					},
 				}
 			},
@@ -1661,11 +1661,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(_status.event.getParent('phase').skill){
 						return false;
 					}
-					if(game.zhu.storage.state=='second'){
+					if(game.zhu.$.state=='second'){
 						return false;
 					}
 					var trueNext=player.next
-					while(trueNext.storage.reviving&&trueNext.storage.reviving>0){
+					while(trueNext.$.reviving&&trueNext.$.reviving>0){
 						if(trueNext==game.zhu){
 							return false
 						}

@@ -868,11 +868,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				silent: true,
 				popup: false,
 				filter(event, player) {
-					return player == game.me && !player.storage.studyWuxie;
+					return player == game.me && !player.$.studyWuxie;
 				},
 				content() {
 					'step 0'
-					player.storage.studyWuxie = true;
+					player.$.studyWuxie = true;
 					galgame.sce("yindaoWuxie");
 				},
 			},
@@ -881,11 +881,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				silent: true,
 				popup: false,
 				filter(event, player) {
-					return player == game.me && !player.storage.studyRespond;
+					return player == game.me && !player.$.studyRespond;
 				},
 				content() {
 					'step 0'
-					player.storage.studyRespond = true;
+					player.$.studyRespond = true;
 				},
 			},
 			_yindaDraw: {

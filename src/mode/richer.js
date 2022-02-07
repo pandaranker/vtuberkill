@@ -278,17 +278,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				// 	event.friendViceZhu=cur.player;
 				// }
 				var curClass = _status['players'+cur.cur][1];
-				cur.player.storage.curClass = curClass;
+				cur.player.$.curClass = curClass;
 				cur.player.init(_status['players'+cur.cur][0]);
 				var side = lib.richer.teamList[i];
 				cur.player.side=side;
 				cur.player.setIdentity(side);
 				cur.player.identity=side;
 				cur.player.node.identity.dataset.color = get.translation(side+'Color');
-				cur.player._tempTranslate = get.translation(cur.player.storage.curClass)+get.translation(cur.player);
+				cur.player._tempTranslate = get.translation(cur.player.$.curClass)+get.translation(cur.player);
 				var curGroup = _status['players'+cur.cur][2];
 				cur.player.group = curGroup;
-				cur.player.storage.ownedBuilding = [];
+				cur.player.$.ownedBuilding = [];
 				game.players.push(cur.player);
 				ui.chess.appendChild(cur.player);//[todo player]
 				if(event.video){
@@ -659,11 +659,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					return grids;
 				},
-				chooseToMove:function(num,prompt){
-					var next=game.createEvent('chooseToMove');
+				chooseToMoveChess:function(num,prompt){
+					var next=game.createEvent('chooseToMoveChess');
 					next.num=num||1;
 					next.player=this;
-					next.setContent('chooseToMove');
+					next.setContent('chooseToMoveChess');
 					next.prompt=prompt;
 					return next;
 				},
@@ -1391,7 +1391,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.modeSwapPlayer(player);
 					}
 				},
-				chooseToMove:function(){
+				chooseToMoveChess:function(){
 					"step 0"
 					if(!player.movable(0,1)&&!player.movable(0,-1)&&
 						!player.movable(1,0)&&!player.movable(-1,0)){
@@ -4455,7 +4455,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					for(var i of list){
 						var neighbour = player.getNeighbour.apply(player,i);
 						if(neighbour&&neighbour.classList&&(neighbour.classList.contains('hO')||neighbour.classList.contains('sO'))){
-							if(neighbour.storage._owned||neighbour.identity)	continue;
+							if(neighbour.$._owned||neighbour.identity)	continue;
 							purchases.push(neighbour);
 						}
 					}
@@ -4523,7 +4523,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(obstacle.classList.contains('hO'))	type='h';
 						player.line(obstacle,'gray');
 						player.changeMi(-10);
-						obstacle.storage._owned = side;
+						obstacle.$._owned = side;
 
 						obstacle.identity = side;
 						obstacle.setIdentity();
@@ -4533,7 +4533,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							name:'所属队伍',
 							content:side,
 						});
-						player.storage.ownedBuilding.add(obstacle);
+						player.$.ownedBuilding.add(obstacle);
 					}
 				},
 				ai:{
@@ -4541,7 +4541,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:function(player){
 							if(player._Mi<20)	return -1;
-							if(player.storage.ownedBuilding.length<2)	return 2;
+							if(player.$.ownedBuilding.length<2)	return 2;
 							return 1;
 						}
 					}
@@ -4559,7 +4559,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					for(var i of list){
 						var neighbour = player.getNeighbour.apply(player,i);
 						if(neighbour&&neighbour.classList&&(neighbour.classList.contains('hO')||neighbour.classList.contains('sO'))){
-							if(neighbour.storage._owned==player.side||neighbour.side==player.side)	lands.push(neighbour);
+							if(neighbour.$._owned==player.side||neighbour.side==player.side)	lands.push(neighbour);
 						}
 					}
 					return lands;
@@ -4618,7 +4618,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(event.obstacle){
 						var obstacle = event.obstacle;
 						event.position = obstacle.dataset.position;
-						player.storage.ownedBuilding.remove(obstacle);
+						player.$.ownedBuilding.remove(obstacle);
 						var type = 's';
 						if(obstacle.classList.contains('hO'))	type='h';
 						player.line(event.obstacle,'wood');
@@ -4648,7 +4648,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					order:5,
 					result:{
 						player:function(player){
-							if(player.storage.ownedBuilding.length<2)	return 2;
+							if(player.$.ownedBuilding.length<2)	return 2;
 							return 1;
 						}
 					}
@@ -4707,7 +4707,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					order:5,
 					result:{
 						player:function(player){
-							if(player.storage.ownedBuilding.length<2)	return 2;
+							if(player.$.ownedBuilding.length<2)	return 2;
 							return 1;
 						}
 					}
@@ -4985,7 +4985,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		get:{
 			slimName2:function(player){
 				var name = get.slimName(player.name);
-				var transClass = get.translation(player.storage.curClass);
+				var transClass = get.translation(player.$.curClass);
 				return get.verticalStr(transClass+name);
 			},
 			//

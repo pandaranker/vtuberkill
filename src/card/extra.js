@@ -79,8 +79,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						if(cards&&cards.length){
 							card=cards[0];
 						}
-						if(!target.storage.jiu) target.storage.jiu=0;
-						target.storage.jiu+=event.baseDamage;
+						if(!target.$.jiu) target.$.jiu=0;
+						target.$.jiu+=event.baseDamage;
 						game.broadcastAll(function(target,card,gain2){
 							target.addSkill('jiu');
 							if(!target.node.jiu&&lib.config.jiu_effect){
@@ -640,9 +640,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				firstDo:true,
 				content:function(){
 					if(!trigger.baseDamage) trigger.baseDamage=1;
-					trigger.baseDamage+=player.storage.jiu;
+					trigger.baseDamage+=player.$.jiu;
 					trigger.jiu=true;
-					trigger.jiu_add=player.storage.jiu;
+					trigger.jiu_add=player.$.jiu;
 					game.addVideo('jiuNode',player,false);
 					game.broadcastAll(function(player){
 						player.removeSkill('jiu');
@@ -660,7 +660,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						delete player.node.jiu;
 						delete player.node.jiu2;
 					}
-					delete player.storage.jiu;
+					delete player.$.jiu;
 				},
 				ai:{
 					damageBonus:true
@@ -879,7 +879,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				popup:false,
 				content:function(){
-					delete player.storage.zhuque_skill.nature;
+					delete player.$.zhuque_skill.nature;
 				}
 			},
 			huogon2:{},
@@ -905,15 +905,15 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			zhuque_info:'你可以将一张普通【杀】当具火焰伤害的【杀】使用。',
 			zhuque_skill_info:'你可以将一张普通【杀】当具火焰伤害的【杀】使用。',
 			guding:'军刀',
-			guding_info:'锁定技，当你使用【杀】对目标角色造成伤害时，若其没有手牌，此伤害+1。',
+			guding_info:'锁定技 当你使用【杀】对目标角色造成伤害时，若其没有手牌，此伤害+1。',
 			guding_skill:'军刀',
 			tengjia:'初始服',
-			tengjia_info:'锁定技，【南蛮入侵】、【万箭齐发】和普通【杀】对你无效。你每次受到火焰伤害时，该伤害+1。',
+			tengjia_info:'锁定技 【南蛮入侵】、【万箭齐发】和普通【杀】对你无效。你每次受到火焰伤害时，该伤害+1。',
 			tengjia1:'初始服',
 			tengjia2:'初始服',
 			tengjia3:'初始服',
 			baiyin:'防毒面具',
-			baiyin_info:'锁定技，你每次受到伤害时，最多承受1点伤害（防止多余的伤害）；当你失去装备区里的【防毒面具】时，你回复1点体力。',
+			baiyin_info:'锁定技 你每次受到伤害时，最多承受1点伤害（防止多余的伤害）；当你失去装备区里的【防毒面具】时，你回复1点体力。',
 			baiyin_skill:'防毒面具',
 			
 			muniu:'拉普拉斯',

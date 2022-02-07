@@ -185,7 +185,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 					game.broadcastAll(function (player, skill) {
 						player.addSkill(skill);
-						player.storage.enhance_zhu = skill;
+						player.$.enhance_zhu = skill;
 					}, game.zhu, skill);
 				}
 			}
@@ -2458,9 +2458,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							}
 						}
 					}
-					if (game.zhu && game.zhu.storage.enhance_zhu && get.population('fan') < 3) {
-						game.zhu.removeSkill(game.zhu.storage.enhance_zhu);
-						delete game.zhu.storage.enhance_zhu;
+					if (game.zhu && game.zhu.$.enhance_zhu && get.population('fan') < 3) {
+						game.zhu.removeSkill(game.zhu.$.enhance_zhu);
+						delete game.zhu.$.enhance_zhu;
 					}
 					if (this == game.zhong) {
 						game.broadcastAll(function (player) {
@@ -2669,12 +2669,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				}
 				if (_status.mode == 'purple') {
 					var real = get.realAttitude(from, to);
-					if (from == to || to.identityShown || from.storage.zhibi && from.storage.zhibi.contains(to) || (_status.yeconfirm && ['rYe', 'bYe'].contains(to.identity) && ['rYe', 'bYe'].contains(to.identity))) return real * 1.1;
+					if (from == to || to.identityShown || from.$.zhibi && from.$.zhibi.contains(to) || (_status.yeconfirm && ['rYe', 'bYe'].contains(to.identity) && ['rYe', 'bYe'].contains(to.identity))) return real * 1.1;
 					return ((to.ai.shown + 0.1) * real + (from.identity.slice(0, 1) == to.identity.slice(0, 1) ? 3 : -3) * (1 - to.ai.shown))
 				}
 				var difficulty = 0;
 				if (to == game.me) difficulty = 2 - get.difficulty();
-				if (from == to || to.identityShown || (from.storage.dongcha == to) || to.identityShown || from.storage.zhibi && from.storage.zhibi.contains(to)) {
+				if (from == to || to.identityShown || (from.$.dongcha == to) || to.identityShown || from.$.zhibi && from.$.zhibi.contains(to)) {
 					return get.realAttitude(from, to) + difficulty * 1.5;
 				}
 				else {
@@ -3261,7 +3261,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 								}
 							}
 							var target = list.randomGet();
-							player.storage.dongcha = target;
+							player.$.dongcha = target;
 							if (!_status.connectMode) {
 								if (player == game.me) {
 									target.setIdentity('fan');
@@ -3281,7 +3281,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						popup: false,
 						filter: function (event, player) {
-							return event.targets.length == 1 && event.targets[0] == player.storage.dongcha && event.targets[0].ai.shown < 0.95;
+							return event.targets.length == 1 && event.targets[0] == player.$.dongcha && event.targets[0].ai.shown < 0.95;
 						},
 						content: function () {
 							trigger.targets[0].addExpose(0.2);

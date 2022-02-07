@@ -74,6 +74,43 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				delete trigger.wudaoqu;
 			}
 		},
+		pm_zhuge_skill: {
+			equipSkill: true,
+			audio: true,
+			firstDo: true,
+			trigger: { player: 'useCard1' },
+			forced: true,
+			filter: function (event, player) {
+				return !event.audioed && event.card.name == 'sha' && player.countUsed('sha', true) > 1 && event.getParent().type == 'phase';
+			},
+			content: function () {
+				trigger.audioed = true;
+			},
+			mod: {
+				cardUsable: function (card, player, num) {
+					var cardx = player.getEquip('promote_zhuge');
+					if (card.name == 'sha' && (!cardx || player.hasSkill('pm_zhuge_skill', null, false) || (!_status.pm_zhuge_temp && !ui.selected.cards.contains(cardx)))) {
+						return Infinity;
+					}
+				},
+				cardEnabled2: function (card, player) {
+					if (!_status.event.addCount_extra || player.hasSkill('pm_zhuge_skill', null, false)) return;
+					if (card && card == player.getEquip('promote_zhuge')) {
+						try {
+							var cardz = get.card();
+						}
+						catch (e) {
+							return;
+						}
+						if (!cardz || cardz.name != 'sha') return;
+						_status.pm_zhuge_temp = true;
+						var bool = lib.filter.cardUsable(get.autoViewAs({ name: 'sha' }, ui.selected.cards.concat([card])), player);
+						delete _status.pm_zhuge_temp;
+						if (!bool) return false;
+					}
+				},
+			},
+		},
 	}
 	return <currentObject>{
 		name: 'xingtian',
@@ -260,6 +297,42 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 
+			promote_zhuge: {
+				materials: [(card)=>get.subtype(card)==='equip1'&&!get.info(card).distance?.attackFrom, { number: 14 }],
+				materials_prompt: '攻击范围为1的武器牌+★牌',
+				derivation: true,
+				derivationpack: 'xingtian',
+				distance: {
+					attackFrom: -2,
+				},
+				fullskin: true,
+				type: "equip",
+				subtype: "equip1",
+				ai: {
+					equipValue: function (card, player) {
+						if (!game.hasPlayer(function (current) {
+							return player.canUse('sha', current) && get.effect(current, { name: 'sha' }, player, player) > 0;
+						})) {
+							return 1;
+						}
+						if (player.hasSha() && _status.currentPhase == player) {
+							if (player.getEquip('zhuge') || player.getCardUsable('sha') == 0) {
+								return 10;
+							}
+						}
+						var num = player.countCards('h', 'sha');
+						if (num > 1) return 6 + num;
+						return 3 + num;
+					},
+					basic: {
+						equipValue: 5,
+					},
+					tag: {
+						valueswap: 1,
+					},
+				},
+				skills: ["pm_zhuge_skill"],
+			},
 		},
 		character: {
 			/**☆星宫汐 */
@@ -278,11 +351,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return player.$[skill] = []
 				},
 				filter(Evt, player) {
-					if(Evt.getParent().target&&Evt.getParent().player===player){
+					if (Evt.getParent().target && Evt.getParent().player === player) {
 						let map = Evt.getl(Evt.getParent().target)
-						if(map?.hs?.length===0&&(map.js.length||map.es.length)) return Evt.cards.length === 1
+						if (map?.hs?.length === 0 && (map.js.length || map.es.length)) return Evt.cards.length === 1
 					}
-					return (Evt.animate == 'gain2' || Evt.animate == 'give' || Evt.visible == true)&& Evt.cards.length === 1
+					return (Evt.animate == 'gain2' || Evt.animate == 'give' || Evt.visible == true) && Evt.cards.length === 1
 				},
 				content: [() => {
 					Evt.card = trigger.cards[0]
@@ -292,7 +365,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					else Evt.finish()
 					player.$.xuanyu.unshift(Evt.card)
-					if(!player.marks.xuanyu.number) player.unmarkSkill('xuanyu')
+					if (!player.marks.xuanyu.number) player.unmarkSkill('xuanyu')
 					player.markSkill('xuanyu', null, player.$.xuanyu[0])
 				}, () => {
 					if (Evt.num % 4 === 0) {
@@ -309,7 +382,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			}, 'mark:card').setT('gainEnd'),
 			xingheng: new toSkill('trigger', {
-				usable:1,
+				usable: 1,
 				filter(Evt, player) {
 					console.log(Evt)
 					if (['phaseJudge', 'phaseDiscard'].includes(Evt.name)) return player.$.xuanyu.length % 2 === 1
@@ -347,7 +420,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		},
 		// dynamicTranslate:{
 		// 	tulong:function(player){
-		// 		if(player.storage.qiming_saycards&&player.storage.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【'+get.translation(player.storage.qiming_saycards)+'】</font>使用。';
+		// 		if(player.$.qiming_saycards&&player.$.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【'+get.translation(player.$.qiming_saycards)+'】</font>使用。';
 		// 		return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。';
 		// 	},
 		// },
@@ -371,6 +444,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			daluandou: '大乱斗',
 			daluandou_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得对方每个区域各一张牌。',
+
+
+			promote_zhuge: "键盘AK",
+			promote_zhuge_info: "锁定技 你于出牌阶段内使用【杀】无次数限制。",
+			pm_zhuge_skill: '连射',
+			pm_zhuge_skill_info: '锁定技 你于出牌阶段内使用【杀】无次数限制。',
 
 			star_HosimiyaSio: `☆星宫汐`,
 			xuanyu: `宣裕`,

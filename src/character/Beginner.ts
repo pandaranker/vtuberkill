@@ -163,7 +163,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (ui.selected.cards.length && ui.selected.cards[0].name == 'du') return 0;
 					if (!ui.selected.cards.length && card.name == 'du') return 20;
 					var player = get.owner(card);
-					if (player.hp == player.maxHp || player.storage.re_ailian_clear > 1 || player.countCards('h') <= 1) {
+					if (player.hp == player.maxHp || player.$.re_ailian_clear > 1 || player.countCards('h') <= 1) {
 						if (ui.selected.cards.length) {
 							return -1;
 						}
@@ -187,11 +187,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player.countCards('h') > 0;
 				},
 				content: [() => {
-					Evt.num = player.storage.re_ailian_clear;
+					Evt.num = player.$.re_ailian_clear;
 					targets[0].gain(cards, player, 'giveAuto');
 				}, () => {
-					player.storage.re_ailian_clear += cards.length;
-					if (player.storage.re_ailian_clear >= 2 && Evt.num < 2) {
+					player.$.re_ailian_clear += cards.length;
+					if (player.$.re_ailian_clear >= 2 && Evt.num < 2) {
 						let list = [];
 						for (let i of get.inpile('basic')) {
 							if (lib.filter.cardUsable({ name: i }, player) && player.hasUseTarget(i)) {
@@ -244,14 +244,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}],
 				ai: {
-					order(skill: any, player: { hp: number; maxHp: number; storage: { re_ailian_clear: number; }; countCards: (arg0: string) => number; }) {
-						if (player.hp < player.maxHp && player.storage.re_ailian_clear < 2 && player.countCards('h') > 1) {
+					order(skill: any, player) {
+						if (player.hp < player.maxHp && player.$.re_ailian_clear < 2 && player.countCards('h') > 1) {
 							return 10;
 						}
 						return 1;
 					},
 					result: {
-						target(player: { countCards: (arg0: string) => number; hp: number; maxHp: any; storage: { re_ailian_clear: number; }; }, target: { hasSkillTag: (arg0: string) => any; hasJudge: (arg0: string) => any; countCards: (arg0: string) => any; hasSkill: (arg0: string) => any; }) {
+						target(player: { countCards: (arg0: string) => number; hp: number; maxHp: any; $: { re_ailian_clear: number; }; }, target: { hasSkillTag: (arg0: string) => any; hasJudge: (arg0: string) => any; countCards: (arg0: string) => any; hasSkill: (arg0: string) => any; }) {
 							if (target.hasSkillTag('nogain')) return 0;
 							if (ui.selected.cards.length && ui.selected.cards[0].name == 'du') {
 								if (target.hasSkillTag('nodu')) return 0;
@@ -260,7 +260,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							if (target.hasJudge('lebu')) return 0;
 							var nh = target.countCards('h');
 							var np = player.countCards('h');
-							if (player.hp == player.maxHp || player.storage.re_ailian_clear < 0 || player.countCards('h') <= 1) {
+							if (player.hp == player.maxHp || player.$.re_ailian_clear < 0 || player.countCards('h') <= 1) {
 								if (nh >= np - 1 && np <= player.hp && !target.hasSkill('haoshi')) return 0;
 							}
 							return Math.max(1, 5 - nh);
@@ -285,8 +285,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				group: ['re_ailian_clear', 're_ailian_damage'],
 				subSkill: {
 					clear: {
-						init(player: { storage: { [x: string]: number; }; }, skill: string | number) {
-							if (!player.storage[skill]) player.storage[skill] = 0;
+						init(player: { $: { [x: string]: number; }; }, skill: string | number) {
+							if (!player.$[skill]) player.$[skill] = 0;
 						},
 						trigger: { global: 'phaseNext' },
 						direct: true,
@@ -294,7 +294,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						firstDo: true,
 						content() {
-							player.storage.re_ailian_clear = 0;
+							player.$.re_ailian_clear = 0;
 						}
 					},
 					damage: {
@@ -321,7 +321,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								ai1(card: any) {
 									if (ui.selected.cards && ui.selected.cards.length > 2) return 0
 									var player = _status.event.player;
-									if (player.getStorage('re_ailian_clear') > 2) return 0;
+									if (player.get$('re_ailian_clear') > 2) return 0;
 									return 8 - get.value(card);
 								},
 							}).set('logSkill', 're_ailian');
@@ -380,16 +380,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				group: ['duanli_draw'],
 				enable: 'phaseUse',
 				usable: 1,
-				init(player: { storage: { duanli: number | undefined; }; }) {
-					if (player.storage.duanli == undefined) {
-						player.storage.duanli = 0;
+				init(player: { $: { duanli: number | undefined; }; }) {
+					if (player.$.duanli == undefined) {
+						player.$.duanli = 0;
 					}
 				},
 				filter(Evt: any, player: { countCards: (arg0: string) => any; }) {
 					return player.countCards('h');
 				},
 				content: [() => {
-					player.storage.duanli = player.countCards('h');
+					player.$.duanli = player.countCards('h');
 				}, () => {
 					var cards = player.getCards('h');
 					player.discard(cards);
@@ -409,13 +409,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						trigger: {
 							player: 'phaseEnd'
 						},
-						filter(Evt: any, player: { storage: { duanli: any; }; }) {
-							return player.storage.duanli;
+						filter(Evt: any, player: { $: { duanli: any; }; }) {
+							return player.$.duanli;
 						},
 						content: [() => {
-							player.draw(player.storage.duanli);
+							player.draw(player.$.duanli);
 						}, () => {
-							player.storage.duanli = 0;
+							player.$.duanli = 0;
 						}]
 					}
 				}
@@ -869,7 +869,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				mark: true,
 				intro: {
-					content(storage: any, player: { sex: any; }) {
+					content($: any, player: { sex: any; }) {
 						return '当前性别：' + get.translation(player.sex);
 					},
 				},
@@ -934,18 +934,18 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			chongxin: {
 				init(player: PlayerModel, skill: string) {
-					player.storage[skill] ??= [];
+					player.$[skill] ??= [];
 				},
 				mark: true,
 				intro: {
 					name: '崇新',
 					content: 'cards',
-					onunmark(storage: any[], player: PlayerModel) {
-						if (storage && storage.length) {
-							player.$throw(storage, 1000);
-							game.cardsDiscard(storage);
-							game.log(storage, '被置入了弃牌堆');
-							storage.length = 0;
+					onunmark($: any[], player: PlayerModel) {
+						if ($ && $.length) {
+							player.$throw($, 1000);
+							game.cardsDiscard($);
+							game.log($, '被置入了弃牌堆');
+							$.length = 0;
 						}
 					},
 				},
@@ -1003,7 +1003,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}, () => {
 					if (result.bool) {
 						var card = Evt.card;
-						player.lose(card, ui.special, 'toStorage');
+						player.lose(card, ui.special, 'to$');
 						player.$give(card, player, false);
 						player.markAuto('chongxin', [card]);
 						game.log(player, '将', card, '置于武将牌上');
@@ -1023,8 +1023,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					cardEnabled(card: any, player: any, now: any) {
 						if (_status.event.type == 'wuxie' && _status.event.getParent().name == '_wuxie' && _status.event.getParent().card.name == 'juedou') {
 							let source = _status.event.getParent().player;
-							if (source != player && source.hasSkill('chongxin') && source.storage?.chongxin?.length) {
-								let suits = get.suit3(source.storage.chongxin);
+							if (source != player && source.hasSkill('chongxin') && source.$?.chongxin?.length) {
+								let suits = get.suit3(source.$.chongxin);
 								return !suits.contains(get.suit(card))
 							}
 						}
@@ -1032,8 +1032,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					cardRespondable(card: any, player: any, now: any) {
 						if (_status.event.name == 'chooseToRespond' && _status.event.getParent().name == 'juedou') {
 							let source = _status.event.getParent().player;
-							if (source != player && source.hasSkill('chongxin') && source.storage?.chongxin?.length) {
-								let suits = get.suit3(source.storage.chongxin);
+							if (source != player && source.hasSkill('chongxin') && source.$?.chongxin?.length) {
+								let suits = get.suit3(source.$.chongxin);
 								return !suits.contains(get.suit(card))
 							}
 						}
@@ -1043,8 +1043,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			//Laki
 			yayun: {
 				audio: true,
-				clickable(player: { storage: { yayun: boolean; }; updateMark: (arg0: string, arg1: boolean) => void; }) {
-					player.storage.yayun = false;
+				clickable(player: { $: { yayun: boolean; }; updateMark: (arg0: string, arg1: boolean) => void; }) {
+					player.$.yayun = false;
 					player.updateMark('yayun', true);
 					lib.skill.yayun.laohuji(player);
 					if (_status.imchoosing) {
@@ -1053,8 +1053,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						game.check();
 					}
 				},
-				clickableFilter(player: { storage: { yayun: boolean; }; countDiscardableCards: (arg0: any, arg1: string) => any; }) {
-					return player.storage.yayun == true && player.countDiscardableCards(player, 'h');
+				clickableFilter(player: { $: { yayun: boolean; }; countDiscardableCards: (arg0: any, arg1: string) => any; }) {
+					return player.$.yayun == true && player.countDiscardableCards(player, 'h');
 				},
 				laohuji(player: PlayerModel) {
 					console.log('Outter')
@@ -1102,21 +1102,21 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 					}]);
 				},
-				init(player: { storage: { yayun: boolean; }; }) {
-					player.storage.yayun = true;
+				init(player: { $: { yayun: boolean; }; }) {
+					player.$.yayun = true;
 				},
 				mark: true,
 				trigger: { global: 'roundStart' },
 				direct: true,
 				content() {
-					player.storage.yayun = true;
+					player.$.yayun = true;
 					player.updateMark('yayun', true);
 				},
 				intro: {
 					mark(dialog: { addText: (arg0: string) => void; add: (arg0: any) => void; }, content: any, player) {
 						if (player.isUnderControl(true)) {
 							if (_status.gameStarted) {
-								if (player.storage.yayun) {
+								if (player.$.yayun) {
 									if (!player.getDiscardableCards(player, 'h')) dialog.addText('不可发动');
 									else dialog.add(ui.create.div('.menubutton.pointerdiv', '点击发动', () => {
 										if (!this.disabled) {
@@ -1137,7 +1137,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							// dialog.addSmall(list);
 						}
 						else {
-							if (player.storage.yayun) dialog.addText('本轮未发动');
+							if (player.$.yayun) dialog.addText('本轮未发动');
 							else dialog.addText('本轮已发动');
 						}
 					},
@@ -1209,16 +1209,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					var info = get.info(card);
 					if (info.allowMultiple == false) return false;
 					if (Evt.targets && !info.multitarget) {
-						if (player.storage.yinni_record_color && player.storage.yinni_record_color != get.color(card)) {
-							return Evt.targets.length != player.storage.yinni_record;
+						if (player.$.yinni_record_color && player.$.yinni_record_color != get.color(card)) {
+							return Evt.targets.length != player.$.yinni_record;
 						}
 					}
 					return false;
 				},
 				content: [() => {
-					var num = player.storage.yinni_record - trigger.targets.length;
+					var num = player.$.yinni_record - trigger.targets.length;
 					if (num > 0) {
-						var prompt2 = '为' + get.translation(trigger.card) + '增加目标至' + get.cnNumber(player.storage.yinni_record) + '个';
+						var prompt2 = '为' + get.translation(trigger.card) + '增加目标至' + get.cnNumber(player.$.yinni_record) + '个';
 						player.chooseTarget(num, get.prompt('yinni'), function (card: any, player: any, target: any) {
 							var player = _status.event.player;
 							return !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target);
@@ -1228,7 +1228,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return get.effect(target, trigger.card, player, player);
 						}).set('card', trigger.card).set('targets', trigger.targets);
 					} else if (num < 0) {
-						player.chooseTarget(-num, get.prompt('yinni'), '为' + get.translation(trigger.card) + '减少目标至' + get.cnNumber(player.storage.yinni_record) + '个', function (card: any, player: any, target: any) {
+						player.chooseTarget(-num, get.prompt('yinni'), '为' + get.translation(trigger.card) + '减少目标至' + get.cnNumber(player.$.yinni_record) + '个', function (card: any, player: any, target: any) {
 							return _status.event.targets.contains(target)
 						}).set('targets', trigger.targets).set('ai', function (target: any) {
 							var player = _status.event.player;
@@ -1267,8 +1267,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return type != 'equip';
 						},
 						content() {
-							player.storage.yinni_record = trigger.targets.length;
-							player.storage.yinni_record_color = get.color(trigger.card);
+							player.$.yinni_record = trigger.targets.length;
+							player.$.yinni_record_color = get.color(trigger.card);
 							if (!player.isUnseen(1)) player.markSkill('yinni_record');
 						},
 						intro: {
@@ -1279,8 +1279,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			//开司
 			re_pojie: {
-				init(player: { storage: { [x: string]: number; }; }, skill: string | number) {
-					if (!player.storage[skill]) player.storage[skill] = 0;
+				init(player: { $: { [x: string]: number; }; }, skill: string | number) {
+					if (!player.$[skill]) player.$[skill] = 0;
 				},
 				trigger: {
 					global: ['loseAfter'],
@@ -1305,17 +1305,17 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						direct: true,
 						lastDo: true,
 						priority: 2,
-						filter(Evt: any, player: { storage: { re_pojie: number; }; }) {
-							return player.storage.re_pojie > 0;
+						filter(Evt: any, player: { $: { re_pojie: number; }; }) {
+							return player.$.re_pojie > 0;
 						},
 						content: [() => {
 							if (trigger.name == 'phaseUse') {
 								player.logSkill('re_pojie');
-								player.chooseToDiscard(player.storage.re_pojie, true, 'h');
+								player.chooseToDiscard(player.$.re_pojie, true, 'h');
 								trigger.cancel();
 							}
 						}, () => {
-							player.storage.re_pojie = 0;
+							player.$.re_pojie = 0;
 							player.unmarkSkill('re_pojie');
 						}],
 
@@ -1412,7 +1412,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_taiyangzhiyin: {
 				audio: 'taiyangzhiyin',
 				trigger: { player: 'useCard2' },
-				filter(Evt: { card: { cardid: any; }; }, player: { storage: { onlink: string | any[] | null; }; }) {
+				filter(Evt: { card: { cardid: any; }; }, player: { $: { onlink: string | any[] | null; }; }) {
 					return get.number(Evt.card) > 10;
 				},
 				priority: 1,
@@ -1480,10 +1480,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					DrawOrStop: {
 						trigger: { global: ['phaseZhunbeiEnd', 'phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd', 'phaseJieshuEnd'] },
-						filter(Evt: any, player: { storage: { re_mozhaotuji_useCard: any; }; }) {
-							if ((player.storage.re_mozhaotuji_useCard) >= 1)
+						filter(Evt: any, player: { $: { re_mozhaotuji_useCard: any; }; }) {
+							if ((player.$.re_mozhaotuji_useCard) >= 1)
 								return true;
-							else if ((player.storage.re_mozhaotuji_useCard) == 0)
+							else if ((player.$.re_mozhaotuji_useCard) == 0)
 								return player == _status.currentPhase;
 							else
 								return false;
@@ -1491,23 +1491,23 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						priority: 14,
 						direct: true,
 						content: [() => {
-							if ((player.storage.re_mozhaotuji_useCard) >= 2) {
+							if ((player.$.re_mozhaotuji_useCard) >= 2) {
 								player.logSkill('re_mozhaotuji');
 								player.draw(1);
 							}
-							player.storage.re_mozhaotuji_useCard = 0;
+							player.$.re_mozhaotuji_useCard = 0;
 						}],
 					},
 					useCard: {
-						init(player: { storage: { [x: string]: number; }; }, skill: string | number) {
-							if (!player.storage[skill]) player.storage[skill] = 0;
+						init(player: { $: { [x: string]: number; }; }, skill: string | number) {
+							if (!player.$[skill]) player.$[skill] = 0;
 						},
 						trigger: { player: 'useCardAfter' },
 						direct: true,
 						silent: true,
 						priority: 1,
 						content() {
-							player.storage.re_mozhaotuji_useCard++;
+							player.$.re_mozhaotuji_useCard++;
 						},
 					},
 					/**转化阶段 */
@@ -1523,8 +1523,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
 								|| Evt.name === 'phaseDiscard';
 						},
-						prompt() {
-							return '把准备阶段转换为出牌阶段';
+						prompt(Evt, player) {
+							return `把${get.$t(Evt.name)}转换为出牌阶段`;
 						},
 						content: [() => {
 							trigger.cancel();
@@ -1570,8 +1570,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						popup: false,
 						forced: true,
-						filter(Evt: { cards: string | any[]; }, player: { storage: { re_bingdielei_roundcount: any; }; }) {
-							return Evt.cards.length && !player.storage.re_bingdielei_roundcount;
+						filter(Evt: { cards: string | any[]; }, player: { $: { re_bingdielei_roundcount: any; }; }) {
+							return Evt.cards.length && !player.$.re_bingdielei_roundcount;
 						},
 						direct: true,
 						content() {
@@ -1816,31 +1816,31 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			//re373
 			re_longdan: {
-				init(player: { storage: { [x: string]: boolean; }; }, skill: string | number) {
-					if (!player.storage[skill]) player.storage[skill] = true;
+				init(player: { $: { [x: string]: boolean; }; }, skill: string | number) {
+					if (!player.$[skill]) player.$[skill] = true;
 				},
-				hiddenCard(player: { storage: { re_longdan: boolean; }; countCards: (arg0: string, arg1: { type?: string; name?: string; }) => number; }, name: string) {
-					if (player.storage.re_longdan == true && name == 'sha' && lib.inpile.contains(name)) return player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' });
-					if (player.storage.re_longdan == false && get.type(name) == 'basic' && lib.inpile.contains(name)) return player.countCards('h', { name: 'sha' });
+				hiddenCard(player: { $: { re_longdan: boolean; }; countCards: (arg0: string, arg1: { type?: string; name?: string; }) => number; }, name: string) {
+					if (player.$.re_longdan == true && name == 'sha' && lib.inpile.contains(name)) return player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' });
+					if (player.$.re_longdan == false && get.type(name) == 'basic' && lib.inpile.contains(name)) return player.countCards('h', { name: 'sha' });
 				},
 				enable: ['chooseToUse', 'chooseToRespond'],
 				usable: 1,
-				filter(Evt: any, player: { storage: { re_longdan: boolean; }; countCards: (arg0: string, arg1: { type?: string; name?: string; }) => number; }) {
-					return player.storage.re_longdan == true && player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' }) || player.storage.re_longdan == false && player.countCards('h', { name: 'sha' });
+				filter(Evt: any, player: { $: { re_longdan: boolean; }; countCards: (arg0: string, arg1: { type?: string; name?: string; }) => number; }) {
+					return player.$.re_longdan == true && player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' }) || player.$.re_longdan == false && player.countCards('h', { name: 'sha' });
 				},
 				chooseButton: {
-					dialog(Evt: any, player: { storage: { re_longdan: boolean; }; }) {
+					dialog(Evt: any, player: { $: { re_longdan: boolean; }; }) {
 						var list = [];
 						for (let i of lib.inpile) {
 							let name = i;
-							if (player.storage.re_longdan == true && name == 'sha') {
+							if (player.$.re_longdan == true && name == 'sha') {
 								list.push(['基本', '', 'sha']);
 								list.push(['基本', '', 'sha', 'fire']);
 								list.push(['基本', '', 'sha', 'thunder']);
 								list.push(['基本', '', 'sha', 'ice']);
 								list.push(['基本', '', 'sha', 'ocean']);
 							}
-							else if (player.storage.re_longdan == false && get.type(name) == 'basic' && name != 'sha') list.push(['基本', '', name]);
+							else if (player.$.re_longdan == false && get.type(name) == 'basic' && name != 'sha') list.push(['基本', '', name]);
 						}
 						return ui.create.dialog(get.translation('re_longdan'), [list, 'vcard']);
 					},
@@ -1856,8 +1856,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					},
 					backup(links: any[][], player: any) {
 						return {
-							filterCard(card: any, player: { storage: { re_longdan: boolean; }; }) {
-								if (player.storage.re_longdan == false) return get.name(card) == 'sha';
+							filterCard(card: any, player: { $: { re_longdan: boolean; }; }) {
+								if (player.$.re_longdan == false) return get.name(card) == 'sha';
 								if (get.type(card) == 'basic' && get.name(card) != 'sha') {
 									return true;
 								}
@@ -1871,14 +1871,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							position: 'hes',
 							viewAs: { name: links[0][2], nature: links[0][3], isCard: true },
 							onrespond() { return this.onuse.apply(this, arguments) },
-							onuse(result: any, player: { storage: { re_longdan: boolean; }; }) {
-								if (player.storage.re_longdan == false) player.storage.re_longdan = true;
-								else player.storage.re_longdan = false;
+							onuse(result: any, player) {
+								player.$.re_longdan = !player.$.re_longdan;
+								player.updateMarks('re_longdan')
 							},
 						}
 					},
-					prompt(links: any[][], player: { storage: { re_longdan: boolean; }; }) {
-						if (player.storage.re_longdan == false) return '将一张【杀】当作' + (get.translation(links[0][3]) || '') + get.translation(links[0][2]) + '使用或打出';
+					prompt(links: any[][], player: { $: { re_longdan: boolean; }; }) {
+						if (player.$.re_longdan == false) return '将一张【杀】当作' + (get.translation(links[0][3]) || '') + get.translation(links[0][2]) + '使用或打出';
 						return '将一张基本牌当作' + (get.translation(links[0][3]) || '') + get.translation(links[0][2]) + '使用或打出';
 					}
 				},
@@ -1900,15 +1900,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					skillTagFilter(player: PlayerModel, tag: any) {
 						switch (tag) {
 							case 'respondSha': {
-								if (player.storage.re_longdan != true || !player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' })) return false;
+								if (player.$.re_longdan != true || !player.countCards('h', { type: 'basic' }) > player.countCards('h', { name: 'sha' })) return false;
 								break;
 							}
 							case 'respondShan': {
-								if (player.storage.re_longdan != false || !player.countCards('h', { name: 'sha' })) return false;
+								if (player.$.re_longdan != false || !player.countCards('h', { name: 'sha' })) return false;
 								break;
 							}
 							case 'save': {
-								if (player.storage.re_longdan != false || !player.countCards('h', { name: 'sha' })) return false;
+								if (player.$.re_longdan != false || !player.countCards('h', { name: 'sha' })) return false;
 								break;
 							}
 						}
@@ -2003,7 +2003,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			yubing: {
 				audio: 5,
 				init(player, skill) {
-					if (!player.storage[skill]) player.storage[skill] = 0;
+					if (!player.$[skill]) player.$[skill] = 0;
 				},
 				trigger: { player: 'useCardAfter' },
 				priority: 14,
@@ -2015,7 +2015,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return player != _status.currentPhase || (player.getHandcardLimit() * 2) >= player.countCards('h');
 				},
 				content() {
-					player.storage.yubing++;
+					player.$.yubing++;
 					player.markSkill('yubing');
 					player.draw(2);
 				},
@@ -2025,8 +2025,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					content: '手牌上限-#',
 				},
 				mod: {
-					maxHandcard(player: { storage: { yubing: number; }; }, num: number) {
-						return num - player.storage.yubing;
+					maxHandcard(player: { $: { yubing: number; }; }, num: number) {
+						return num - player.$.yubing;
 					},
 				},
 				group: 'yubing_clear',
@@ -2040,7 +2040,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						content() {
 							player.unmarkSkill('yubing');
-							player.storage.yubing = 0;
+							player.$.yubing = 0;
 						}
 					},
 				},
@@ -2048,7 +2048,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			//安啾
 			akxiaoqiao: {
 				init(player: PlayerModel, skill: string) {
-					if (!player.storage[skill]) player.storage[skill] = [];
+					if (!player.$[skill]) player.$[skill] = [];
 				},
 				trigger: { player: 'phaseDiscardBegin' },
 				filter(Evt: any, player: { countCards: (arg0: string) => any; }) {
@@ -2069,17 +2069,17 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						player.logSkill('akxiaoqiao');
 						let cards = result.links;
 						player.showCards(cards, '『小巧』展示手牌');
-						player.storage.akxiaoqiao.addArray(cards);
+						player.$.akxiaoqiao.addArray(cards);
 					}
 				}],
 				mod: {
-					ignoredHandcard(card: any, player: { storage: { akxiaoqiao: any[]; }; }) {
-						if (player.storage.akxiaoqiao && player.storage.akxiaoqiao.contains(card)) {
+					ignoredHandcard(card: any, player: { $: { akxiaoqiao: any[]; }; }) {
+						if (player.$.akxiaoqiao && player.$.akxiaoqiao.contains(card)) {
 							return true;
 						}
 					},
-					cardDiscardable(card: any, player: { storage: { akxiaoqiao: any[]; }; }, name: string) {
-						if (name == 'phaseDiscard' && player.storage.akxiaoqiao && player.storage.akxiaoqiao.contains(card)) {
+					cardDiscardable(card: any, player: { $: { akxiaoqiao: any[]; }; }, name: string) {
+						if (name == 'phaseDiscard' && player.$.akxiaoqiao && player.$.akxiaoqiao.contains(card)) {
 							return false;
 						}
 					},
@@ -2092,15 +2092,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						popup: false,
 						content() {
-							player.storage.akxiaoqiao = [];
+							player.$.akxiaoqiao = [];
 						},
 					}
 				},
 			},
 			liancheng: {
 				trigger: { global: 'phaseEnd' },
-				filter(Evt: any, player: { storage: { liancheng: number; }; countCards: (arg0: string) => any; }) {
-					if (player.storage.liancheng && player.storage.liancheng == 2) return false;
+				filter(Evt: any, player: { $: { liancheng: number; }; countCards: (arg0: string) => any; }) {
+					if (player.$.liancheng && player.$.liancheng == 2) return false;
 					return player.countCards('h');
 				},
 				content: [() => {
@@ -2113,7 +2113,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					});
 				}, () => {
 					if (result.bool) {
-						player.storage.liancheng++;
+						player.$.liancheng++;
 						var cards = result.links;
 						player.lose(cards, ui.discardPile).set('visible', true);
 						player.$throw(cards, 1000);
@@ -2146,13 +2146,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}],
 				mod: {
-					ignoredHandcard(card: any, player: { storage: { akxiaoqiao: any[]; }; }) {
-						if (player.storage.akxiaoqiao && player.storage.akxiaoqiao.contains(card)) {
+					ignoredHandcard(card: any, player: { $: { akxiaoqiao: any[]; }; }) {
+						if (player.$.akxiaoqiao && player.$.akxiaoqiao.contains(card)) {
 							return true;
 						}
 					},
-					cardDiscardable(card: any, player: { storage: { akxiaoqiao: any[]; }; }, name: string) {
-						if (name == 'phaseDiscard' && player.storage.akxiaoqiao && player.storage.akxiaoqiao.contains(card)) {
+					cardDiscardable(card: any, player: { $: { akxiaoqiao: any[]; }; }, name: string) {
+						if (name == 'phaseDiscard' && player.$.akxiaoqiao && player.$.akxiaoqiao.contains(card)) {
 							return false;
 						}
 					},
@@ -2168,7 +2168,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						popup: false,
 						content() {
-							player.storage.liancheng = 0;
+							player.$.liancheng = 0;
 						},
 					}
 				},
@@ -2309,41 +2309,41 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				content: [() => {
 					player.draw(3);
 				}, () => {
-					player.chooseCard(2, 'he', '选择放置到牌堆顶部的牌', true);
-				}, () => {
-					if (result.bool == true && result.cards != null) {
-						Evt.cards = result.cards
-					}
-					if (Evt.cards.length > 0) {
-						player.chooseButton(true, Evt.cards.length, ['按顺序将卡牌置于牌堆顶（先选择的在上）', Evt.cards]).set('ai', function (button: string) {
-							var player = _status.event.player;
-							var now = _status.currentPhase;
-							let next = now.getNext();
-							var att = get.attitude(player, next);
-							var card = button.link;
-							var judge = next.getCards('j')[ui.selected.buttons.length];
-							if (judge) {
-								return get.judge(judge)(card) * att;
-							}
-							return next.getUseValue(card) * att;
+					player.chooseToMove('『狐虑』：选择放置到牌堆顶部的牌',true)
+						.set('list', [
+							['牌堆顶'],
+							['手牌&装备区', player.getCards('he')],
+						])
+						.set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
+						.set('processAI', function (list) {
+							var cards = list[0][1].slice(0);
+							cards.sort(function (a, b) {
+								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
+							});
+							return [cards];
+						})
+						.set('filterMove',function(from,to,moved){
+							if(to==0&&moved[0].length>=2) return false;
+							return true;
+						})
+						.set('filterOk',function(moved){
+							return moved[0].length==2;
 						});
+				}, () => {
+					if (result.bool && result.moved && result.moved[0].length) Evt.cards = result.moved[0].slice(0);
+					if (!Evt.cards) {
+						Evt.finish()
+						return
 					}
+					player.lose(Evt.cards, ui.special);
 				}, () => {
-					if (result.bool && result.links?.length) Evt.linkcards = result.links.slice(0);
-					else Evt.finish();
-					game.delay();
-				}, () => {
-					var cards = Evt.linkcards;
-					player.lose(cards, ui.special);
-					game.delay();
-				}, () => {
-					var cards = Evt.linkcards;
-					while (cards.length > 0) {
-						var card = cards.pop();
-						card.fix();
-						ui.cardPile.insertBefore(card, ui.cardPile.firstChild);
-						game.updateRoundNumber();
+					let tops = Evt.cards.slice(0)
+					game.log(player, `将${get.cnNumber(tops.length)}张牌放在牌堆顶`)
+					while (tops.length) {
+						ui.cardPile.insertBefore(tops.pop().fix(), ui.cardPile.firstChild);
 					}
+					game.updateRoundNumber();
+					game.delayx();
 				}],
 				ai: {
 					maixie: true,
@@ -2442,22 +2442,22 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			//re梅露
 			fuyi: {
-				init(player: { storage: { [x: string]: boolean; }; }, skill: string | number) {
-					if (!player.storage[skill]) player.storage[skill] = (game.roundNumber % 2 == 1);
+				init(player: { $: { [x: string]: boolean; }; }, skill: string | number) {
+					if (!player.$[skill]) player.$[skill] = (game.roundNumber % 2 == 1);
 				},
 				mod: {
-					globalFrom(from: { storage: { fuyi: any; }; }, to: any, current: number) {
-						if (from.storage.fuyi) return current - 1;
+					globalFrom(from: { $: { fuyi: any; }; }, to: any, current: number) {
+						if (from.$.fuyi) return current - 1;
 					},
-					globalTo(from: any, to: { storage: { fuyi: any; }; }, current: number) {
-						if (!to.storage.fuyi) return current + 1;
+					globalTo(from: any, to: { $: { fuyi: any; }; }, current: number) {
+						if (!to.$.fuyi) return current + 1;
 					},
 				},
 				trigger: { global: 'roundStart' },
 				locked: true,
 				direct: true,
 				content() {
-					player.storage.fuyi = (game.roundNumber % 2 == 1);
+					player.$.fuyi = (game.roundNumber % 2 == 1);
 				},
 			},
 			xihun: {
@@ -2585,14 +2585,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				trigger: { player: 'gainEnd' },
 				filter(Evt, player: PlayerModel) {
 					return game.hasPlayer((cur: any) => {
-						if (player.storage.huxiGroup == null) return true;
-						return !player.storage.huxiGroup.contains(cur) && cur != player;
+						if (player.$.huxiGroup == null) return true;
+						return !player.$.huxiGroup.contains(cur) && cur != player;
 					}) && Evt.getParent().skill != 're_huxi1' && Evt.getParent(2).skill != 're_huxi1' && Evt.getParent(3).skill != 're_huxi1';
 				},
 				content: [() => {
 					let next = player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌', true).set('type', 'compare')
-						.set('filterTarget', function (card: any, player: { storage: { huxiGroup: any[]; }; countCards: (arg0: string) => any; }, target: { countCards: (arg0: string) => any; }) {
-							if (player.storage.huxiGroup && player.storage.huxiGroup.contains(target)) return false;
+						.set('filterTarget', function (card: any, player: { $: { huxiGroup: any[]; }; countCards: (arg0: string) => any; }, target: { countCards: (arg0: string) => any; }) {
+							if (player.$.huxiGroup && player.$.huxiGroup.contains(target)) return false;
 							return target != player && player.countCards('h') && target.countCards('h');
 						})
 				}, () => {
@@ -2665,8 +2665,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							player.addTempSkill('re_huxi2');
 						}
 					}
-					if (player.storage.huxiGroup == null) player.storage.huxiGroup = [];
-					player.storage.huxiGroup.add(target);
+					if (player.$.huxiGroup == null) player.$.huxiGroup = [];
+					player.$.huxiGroup.add(target);
 				}],
 				group: 're_huxi1_clear',
 				subSkill: {
@@ -2678,7 +2678,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							player: ['phaseAfter']
 						},
 						content() {
-							delete player.storage.huxiGroup;
+							delete player.$.huxiGroup;
 						}
 					}
 				}
@@ -2706,11 +2706,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			//re赤心
 			xinchixin: {
 				trigger: { global: ['loseAfter', 'cardsDiscardAfter'] },
-				filter(Evt: { name: string; getParent: () => { (): any; new(): any; name: string; relatedEvent: { (): any; new(): any; name: string; }; }; position: any; cards: any[]; }, player: { storage: { xinchixin: any[]; }; }) {
+				filter(Evt: { name: string; getParent: () => { (): any; new(): any; name: string; relatedEvent: { (): any; new(): any; name: string; }; }; position: any; cards: any[]; }, player: { $: { xinchixin: any[]; }; }) {
 					if (Evt.name == 'cardsDiscard' && Evt.getParent().name == 'orderingDiscard' && Evt.getParent().relatedEvent.name == 'useCard') return false;
 					if (Evt.name == 'lose' && (Evt.getParent().name == 'useCard' || Evt.position != ui.discardPile)) return false;
 					var list = Evt.cards.filter((card: any) => {
-						if (player.storage.xinchixin && player.storage.xinchixin.contains(card)) return false;
+						if (player.$.xinchixin && player.$.xinchixin.contains(card)) return false;
 						return get.suit(card) == 'heart' && get.position(card) == 'd';
 					});
 					return list.length > 0;
@@ -2798,8 +2798,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							break;
 						}
 						case 2: {
-							if (!player.storage.xinchixin) player.storage.xinchixin = [];
-							player.storage.xinchixin.addArray(Evt.links)
+							if (!player.$.xinchixin) player.$.xinchixin = [];
+							player.$.xinchixin.addArray(Evt.links)
 							player.gain(Evt.links);
 							game.log(player, '获得了', Evt.links);
 							break;
@@ -2820,8 +2820,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						popup: false,
 						content() {
-							if (player.storage.xinchixin && player.storage.xinchixin.length) {
-								player.storage.xinchixin.length = 0;
+							if (player.$.xinchixin && player.$.xinchixin.length) {
+								player.$.xinchixin.length = 0;
 							}
 						}
 					}
@@ -2945,7 +2945,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.bool) {
 						Evt.card = result.cards[0];
 						player.addTempSkill('qiangyun2');
-						player.storage.qiangyun2 = [Evt.card];
+						player.$.qiangyun2 = [Evt.card];
 						player.respond(Evt.card, 'highlight');
 					}
 					else {
@@ -2979,40 +2979,40 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			qiangyun2: {
 				init(player: PlayerModel, skill: string) {
-					if (!player.storage[skill]) player.storage[skill] = [];
+					if (!player.$[skill]) player.$[skill] = [];
 				},
 				trigger: { global: 'judgeAfter' },
-				filter(Evt: any, player: { hasUseTarget: (arg0: any) => any; storage: { qiangyun2: any[]; }; }) {
-					return player.hasUseTarget(player.storage.qiangyun2[0]);
+				filter(Evt: any, player: { hasUseTarget: (arg0: any) => any; $: { qiangyun2: any[]; }; }) {
+					return player.hasUseTarget(player.$.qiangyun2[0]);
 				},
 				direct: true,
 				priority: 2,
 				content() {
-					Evt.card = player.storage.qiangyun2[0];
+					Evt.card = player.$.qiangyun2[0];
 					player.addTempSkill('qiangyun3', 'useCardAfter');
-					player.storage.qiangyun3 = [Evt.card];
+					player.$.qiangyun3 = [Evt.card];
 					player.chooseUseTarget('是否使用' + get.translation(Evt.card), Evt.card, false, 'noanimate');
 					if (player.hasSkill('qiangyun2')) player.removeSkill('qiangyun2');
 				},
-				onremove(player: { storage: { qiangyun2: any; }; }) {
-					delete player.storage.qiangyun2;
+				onremove(player: { $: { qiangyun2: any; }; }) {
+					delete player.$.qiangyun2;
 				}
 			},
 			qiangyun3: {
 				init(player: PlayerModel, skill: string) {
-					if (!player.storage[skill]) player.storage[skill] = [];
+					if (!player.$[skill]) player.$[skill] = [];
 				},
 				trigger: { source: 'damageEnd' },
-				filter(Evt: { cards: any[]; }, player: { storage: { qiangyun3: any[]; }; }) {
-					return Evt.cards && player.storage.qiangyun3.contains(Evt.cards[0]);
+				filter(Evt: { cards: any[]; }, player: { $: { qiangyun3: any[]; }; }) {
+					return Evt.cards && player.$.qiangyun3.contains(Evt.cards[0]);
 				},
 				direct: true,
 				priority: 2,
 				content() {
 					player.draw();
 				},
-				onremove(player: { storage: { qiangyun3: any; }; }) {
-					delete player.storage.qiangyun3;
+				onremove(player: { $: { qiangyun3: any; }; }) {
+					delete player.$.qiangyun3;
 				},
 			},
 			tuquan: {
@@ -3412,7 +3412,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.bool && result.targets?.length) {
 						player.logSkill('re_huange', result.targets);
 						player.draw(result.targets[0].hp);
-						player.storage.re_huange_disc = result.targets[0];
+						player.$.re_huange_disc = result.targets[0];
 						player.markSkill('re_huange_disc');
 						player.addTempSkill('re_huange_disc');
 					}
@@ -3432,8 +3432,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return player.countDiscardableCards(player, 'he');
 						},
 						content: [() => {
-							if (player.storage.re_huange_disc.isIn() && player.countCards('he')) {
-								player.chooseCard('he', '###『幻歌』###弃置' + get.cnNumber(player.storage.re_huange_disc.hp) + '张牌', player.storage.re_huange_disc.hp, true, lib.filter.cardDiscardable);
+							if (player.$.re_huange_disc.isIn() && player.countCards('he')) {
+								player.chooseCard('he', '###『幻歌』###弃置' + get.cnNumber(player.$.re_huange_disc.hp) + '张牌', player.$.re_huange_disc.hp, true, lib.filter.cardDiscardable);
 							} else {
 								Evt.goto(2);
 							}
@@ -3443,7 +3443,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							}
 						}, () => {
 							player.unmarkSkill('re_huange_disc');
-							delete player.storage.re_huange_disc;
+							delete player.$.re_huange_disc;
 						}],
 					}
 				},
@@ -3697,7 +3697,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.cards && result.cards.length) {
 						for (var i = 0; i < result.cards.length; i++) {
 							result.cards[i].fix();
-							result.cards[i].storage.bizuo = true;
+							result.cards[i].$.bizuo = true;
 							ui.cardPile.insertBefore(result.cards[i], ui.cardPile.firstChild);
 						}
 						game.log(player, '将' + get.cnNumber(result.cards.length) + '张牌置于牌堆顶');
@@ -3712,12 +3712,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						check(Evt: any, player: any) {
 							return true;
 						},
-						filter(Evt: { card: { storage: { bizuo: boolean; }; }; cards: string | any[]; }, player: any) {
+						filter(Evt: { card: { $: { bizuo: boolean; }; }; cards: string | any[]; }, player: any) {
 							//if(player!=_status.currentPhase)	return false;
-							if (Evt.card && Evt.card.storage && Evt.card.storage.bizuo == true) return true;
+							if (Evt.card && Evt.card.$ && Evt.card.$.bizuo == true) return true;
 							if (Evt.cards && Evt.cards.length) {
 								for (var i = 0; i < Evt.cards.length; i++) {
-									if (Evt.cards[i].storage && Evt.cards[i].storage.bizuo == true) return true;
+									if (Evt.cards[i].$ && Evt.cards[i].$.bizuo == true) return true;
 								}
 							}
 							return false;
@@ -3733,10 +3733,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								player.useSkill('re_yuzhan', false, false);
 							}
 						}, () => {
-							if (trigger.card && trigger.card.storage && trigger.card.storage.bizuo == true) delete trigger.card.storage.bizuo;
+							if (trigger.card && trigger.card.$ && trigger.card.$.bizuo == true) delete trigger.card.$.bizuo;
 							if (trigger.cards && trigger.cards.length) {
 								for (var i = 0; i < trigger.cards.length; i++) {
-									if (trigger.cards[i].storage && trigger.cards[i].storage.bizuo == true) delete trigger.cards[i].storage.bizuo;
+									if (trigger.cards[i].$ && trigger.cards[i].$.bizuo == true) delete trigger.cards[i].$.bizuo;
 								}
 							}
 						}]
@@ -3746,13 +3746,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						direct: true,
 						content() {
 							for (var i = 0; i < ui.cardPile.childElementCount; i++) {
-								if (ui.cardPile.childNodes[i].storage && ui.cardPile.childNodes[i].storage.bizuo == true) {
-									delete ui.cardPile.childNodes[i].storage.bizuo;
+								if (ui.cardPile.childNodes[i].$ && ui.cardPile.childNodes[i].$.bizuo == true) {
+									delete ui.cardPile.childNodes[i].$.bizuo;
 								}
 							}
 							for (var i = 0; i < ui.discardPile.childElementCount; i++) {
-								if (ui.discardPile.childNodes[i].storage && ui.discardPile.childNodes[i].storage.bizuo == true) {
-									delete ui.discardPile.childNodes[i].storage.bizuo;
+								if (ui.discardPile.childNodes[i].$ && ui.discardPile.childNodes[i].$.bizuo == true) {
+									delete ui.discardPile.childNodes[i].$.bizuo;
 								}
 							}
 							var cards: any[] = [];
@@ -3761,8 +3761,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								cards = cards.concat(cards2);
 							}
 							for (var i = 0; i < cards.length; i++) {
-								if (cards[i].storage && cards[i].storage.bizuo == true) {
-									delete cards[i].storage.bizuo;
+								if (cards[i].$ && cards[i].$.bizuo == true) {
+									delete cards[i].$.bizuo;
 								}
 							}
 						}
@@ -4046,7 +4046,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						marktext: "竞",
 						intro: {
 							name: '策竞失败',
-							content(storage: any, player: any, skill: any) {
+							content($: any, player: any, skill: any) {
 								return '失去『策竞』直到下个回合开始';
 							},
 						},
@@ -4111,7 +4111,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					var nature = null;
 					var suit = null;
 					var number = null;
-					var cards = player.getStorage('yingshi_cardsDis') as any[];
+					var cards = player.get$('yingshi_cardsDis') as any[];
 					if (cards[0]) {
 						name = get.name(cards[0]);
 						nature = get.nature(cards[0]);
@@ -4133,7 +4133,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return false;
 				},
 				filter(Evt, player) {
-					var cards = player.getStorage('yingshi_cardsDis');
+					var cards = player.get$('yingshi_cardsDis');
 					var card = cards[0];
 					var filter = Evt.filterCard;
 					if (card && filter(card, player, Evt) && player.countCards('h', { suit: 'club' })) return true;
@@ -4144,7 +4144,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					cardsDis: {
 						init(player: PlayerModel, skill: string) {
-							if (!player.storage[skill]) player.storage[skill] = [];
+							if (!player.$[skill]) player.$[skill] = [];
 						},
 						marktext: '♣',
 						intro: {
@@ -4158,7 +4158,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						content() {
 							let cards = trigger.cards.filter((card: any) => get.position(card, true) == 'd' && get.suit(card) != 'club' && get.type(card) == 'basic');
-							player.storage.yingshi_cardsDis = [cards.pop()];
+							player.$.yingshi_cardsDis = [cards.pop()];
 							if (!player.isUnseen(1)) player.markSkill('yingshi_cardsDis');
 						},
 					},
@@ -4169,14 +4169,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				zhuanhuanji: true,
 				audio: 2,
 				init(player: PlayerModel, skill: string) {
-					if (!player.storage[skill]) player.storage[skill] = true;
+					if (!player.$[skill]) player.$[skill] = true;
 				},
 				trigger: { global: ['loseAfter', 'cardsDiscardAfter'] },
-				filter(Evt: { name: string; getParent: () => { (): any; new(): any; name: string; relatedEvent: { (): any; new(): any; name: string; }; }; position: any; cards: string | any[]; }, player: { storage: { re_meici: boolean; }; }) {
+				filter(Evt: { name: string; getParent: () => { (): any; new(): any; name: string; relatedEvent: { (): any; new(): any; name: string; }; }; position: any; cards: string | any[]; }, player: { $: { re_meici: boolean; }; }) {
 					if (Evt.name == 'cardsDiscard' && Evt.getParent().name == 'orderingDiscard' && Evt.getParent().relatedEvent.name == 'useCard') return false;
 					if (Evt.name == 'lose' && (Evt.getParent().name == 'useCard' || Evt.position != ui.discardPile)) return false;
 					if (Evt.name == 'lose' && Evt.getParent().name == 'addJudge') return false;
-					var color = player.storage.re_meici == true ? 'red' : 'black';
+					var color = player.$.re_meici == true ? 'red' : 'black';
 					for (var i = 0; i < Evt.cards.length; i++) {
 						if (get.position(Evt.cards[i], true) == 'd') {
 							if (get.color(Evt.cards[i]) == color) return true;
@@ -4191,15 +4191,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				content: [() => {
 					if (trigger.cards.length && trigger.cards.length == 1) {
 						player.gain(trigger.cards, 'gain2');
-						if (player.storage.re_meici == true) {
-							player.storage.re_meici = false;
+						if (player.$.re_meici == true) {
+							player.$.re_meici = false;
 						}
 						else {
-							player.storage.re_meici = true;
+							player.$.re_meici = true;
 						}
 					}
 					else {
-						var color = player.storage.re_meici == true ? 'red' : 'black';
+						var color = player.$.re_meici == true ? 'red' : 'black';
 						var cards = [];
 						for (var i = 0; i < trigger.cards.length; i++) {
 							if (get.position(trigger.cards[i], true) == 'd') {
@@ -4222,11 +4222,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}, () => {
 					if (result.bool && result.links?.length) {
 						player.gain(result.links, 'gain2');
-						if (player.storage.re_meici == true) {
-							player.storage.re_meici = false;
+						if (player.$.re_meici == true) {
+							player.$.re_meici = false;
 						}
 						else {
-							player.storage.re_meici = true;
+							player.$.re_meici = true;
 						}
 					}
 					else {
@@ -4340,8 +4340,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			mark_tianqing: {
 				audio: 'tianqing',
 				trigger: { global: 'damageBegin3' },
-				filter(Evt: any, player: { storage: { mark_tianqing_record: any; }; }) {
-					return player.storage.mark_tianqing_record;
+				filter(Evt: any, player: { $: { mark_tianqing_record: any; }; }) {
+					return player.$.mark_tianqing_record;
 				},
 				round: 1,
 				check(Evt: { player: any; }, player: any) {
@@ -4355,7 +4355,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					record: {
 						init(player: PlayerModel, skill: string) {
-							if (!player.storage[skill]) player.storage[skill] = false;
+							if (!player.$[skill]) player.$[skill] = false;
 						},
 						trigger: { global: ['damageEnd', 'phaseAfter'] },
 						forced: true,
@@ -4366,10 +4366,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						content() {
 							if (trigger.name == 'damage' || trigger.numFixed == true) {
-								player.storage.mark_tianqing_record = true;
+								player.$.mark_tianqing_record = true;
 							}
 							else {
-								player.storage.mark_tianqing_record = false;
+								player.$.mark_tianqing_record = false;
 							}
 						}
 					}
@@ -4378,8 +4378,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			tianqing: {
 				audio: 6,
 				trigger: { global: 'damageBegin3' },
-				filter(Evt: any, player: { storage: { tianqing_record: any; }; }) {
-					return player.storage.tianqing_record;
+				filter(Evt: any, player: { $: { tianqing_record: any; }; }) {
+					return player.$.tianqing_record;
 				},
 				check(Evt: { player: any; }, player: any) {
 					return get.attitude(player, Evt.player) > 0;
@@ -4392,7 +4392,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					record: {
 						init(player: PlayerModel, skill: string) {
-							if (!player.storage[skill]) player.storage[skill] = true;
+							if (!player.$[skill]) player.$[skill] = true;
 						},
 						trigger: { global: ['damageZero', 'damageEnd', 'phaseAfter'] },
 						forced: true,
@@ -4404,10 +4404,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						content() {
 							console.log(trigger)
 							if (trigger.name == 'damageZero' || trigger.numFixed == true) {
-								player.storage.tianqing_record = false;
+								player.$.tianqing_record = false;
 							}
 							else {
-								player.storage.tianqing_record = true;
+								player.$.tianqing_record = true;
 							}
 						}
 					}
@@ -4416,13 +4416,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			kuiquan: {
 				audio: 3,
 				enable: 'chooseToUse',
-				filterCard(card: any, player: { storage: { kuiquan_record: any[]; }; }) {
-					return !player.storage.kuiquan_record.contains(get.type(card, 'trick'));
+				filterCard(card: any, player: { $: { kuiquan_record: any[]; }; }) {
+					return !player.$.kuiquan_record.contains(get.type(card, 'trick'));
 				},
 				viewAs: { name: 'huogong', nature: 'fire' },
 				position: 'hes',
-				viewAsFilter(player: { countCards: (arg0: string, arg1: (card: any) => boolean) => any; storage: { kuiquan_record: any[]; }; }) {
-					if (!player.countCards('h', (card: any) => !player.storage.kuiquan_record.contains(get.type(card, 'trick')))) return false;
+				viewAsFilter(player: { countCards: (arg0: string, arg1: (card: any) => boolean) => any; $: { kuiquan_record: any[]; }; }) {
+					if (!player.countCards('h', (card: any) => !player.$.kuiquan_record.contains(get.type(card, 'trick')))) return false;
 				},
 				check(card: { name: string; }) {
 					var player = _status.currentPhase;
@@ -4432,8 +4432,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 					return 3 - get.value(card)
 				},
-				onuse(result: { cards: any[]; }, player: { storage: { kuiquan_record: any[]; }; }) {
-					player.storage.kuiquan_record.add(get.type(result.cards[0], 'trick'));
+				onuse(result: { cards: any[]; }, player: { $: { kuiquan_record: any[]; }; }) {
+					player.$.kuiquan_record.add(get.type(result.cards[0], 'trick'));
 				},
 				ai: {
 					kuiquan: true,
@@ -4443,14 +4443,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					record: {
 						init(player: PlayerModel, skill: string) {
-							if (!player.storage[skill]) player.storage[skill] = [];
+							if (!player.$[skill]) player.$[skill] = [];
 						},
 						trigger: { global: 'phaseAfter' },
 						forced: true,
 						silent: true,
 						firstDo: true,
 						content() {
-							player.storage.kuiquan_record = [];
+							player.$.kuiquan_record = [];
 						}
 					}
 				}
@@ -4793,24 +4793,24 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			shengfu: {
 				enable: 'chooseToUse',
 				init(player: PlayerModel, skill: string) {
-					player.storage.shengfu = {};
+					player.$.shengfu = {};
 				},
-				filter(Evt: { type: string; respondTo: any[]; }, player: { storage: { shengfu: { wuxie: undefined; }; }; }) {
+				filter(Evt: { type: string; respondTo: any[]; }, player: { $: { shengfu: { wuxie: undefined; }; }; }) {
 					//每轮每项一次
 					//目标/来源不是自己时，才拼点
 					if (Evt.type == 'wuxie' && Evt.respondTo && Evt.respondTo[0] != player) {
-						if (player.storage.shengfu.wuxie != undefined) return false;
+						if (player.$.shengfu.wuxie != undefined) return false;
 						return true;
 					}
 					return false;
 				},
-				hiddenCard(player: { storage: { shengfu: { wuxie: undefined; }; }; }, name: string) {
-					return player.storage.shengfu.wuxie == undefined && name == 'wuxie';
+				hiddenCard(player: { $: { shengfu: { wuxie: undefined; }; }; }, name: string) {
+					return player.$.shengfu.wuxie == undefined && name == 'wuxie';
 				},
 				content: [() => {
 					Evt.p1 = Evt.getParent().respondTo[0];
 					player.chooseToCompare(Evt.p1);
-					player.storage.shengfu.wuxie = true;
+					player.$.shengfu.wuxie = true;
 					player.syncStorage('shengfu');
 				}, () => {
 					if (result.bool) {
@@ -4828,7 +4828,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						direct: true,
 						log: false,
 						content() {
-							player.storage.shengfu = {};
+							player.$.shengfu = {};
 							player.syncStorage('shengfu');
 						}
 					},
@@ -4916,16 +4916,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					},
 					onPhaseUse: {
 						enable: 'phaseUse',
-						filter(Evt: any, player: { storage: { shengfu: { juedou: undefined; }; }; }) {
+						filter(Evt: any, player: { $: { shengfu: { juedou: undefined; }; }; }) {
 							//每轮限一次
-							if (player.storage.shengfu.juedou != undefined) return false;
+							if (player.$.shengfu.juedou != undefined) return false;
 							return true;
 						},
 						filterTarget(card: any, player: { canCompare: (arg0: any) => any; }, target: any) {
 							return player.canCompare(target);
 						},
 						content: [() => {
-							player.storage.shengfu.juedou = true;
+							player.$.shengfu.juedou = true;
 							player.syncStorage('shengfu');
 							Evt.juedouTarget = target;
 							player.chooseToCompare(Evt.juedouTarget);
@@ -5054,12 +5054,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				selectCard() {
 					var player = _status.event.player;
 					if (!ui.selected.targets.length) return [1, 2];
-					if (ui.selected.targets.length && player.getStorage('uijieyuan_record').contains(ui.selected.targets[0])) return [1, 1];
+					if (ui.selected.targets.length && player.get$('uijieyuan_record').contains(ui.selected.targets[0])) return [1, 1];
 					return [2, 2];
 				},
 				filterCard(card: any, player: any) {
 					if (!ui.selected.targets.length) return get.type(card) != 'basic' || get.color(card) == 'red';
-					//else if(player.getStorage('uijieyuan_record').contains(ui.selected.targets[0])) return get.type(card)!='basic';
+					//else if(player.get$('uijieyuan_record').contains(ui.selected.targets[0])) return get.type(card)!='basic';
 					else if (ui.selected.cards.length && ui.selected.cards) return get.color(card) == 'red';
 				},
 				position: 'he',
@@ -5067,7 +5067,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				subSkill: {
 					record: {
 						init(player: PlayerModel, skill: string) {
-							if (!player.storage[skill]) player.storage[skill] = [];
+							if (!player.$[skill]) player.$[skill] = [];
 						},
 						trigger: { global: ['gainAfter', 'loseAfter', 'phaseAfter'] },
 						filter(Evt: { name: string; hs: string | any[]; }, player: any) {
@@ -5078,9 +5078,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						firstDo: true,
 						content() {
-							if (!player.storage.uijieyuan_record) player.storage.uijieyuan_record = [];
-							if (trigger.name == 'phase') player.storage.uijieyuan_record.length = 0;
-							else player.storage.uijieyuan_record.add(trigger.player);
+							if (!player.$.uijieyuan_record) player.$.uijieyuan_record = [];
+							if (trigger.name == 'phase') player.$.uijieyuan_record.length = 0;
+							else player.$.uijieyuan_record.add(trigger.player);
 						}
 					}
 				}
@@ -5116,7 +5116,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (!player.getEquip(get.subtype(Evt.cardname))) {
 							player.addTempSkill('huixiang_equip', { player: ['huixiangBegin'] });
 							var name = Evt.cardname;
-							player.storage.huixiang_equip2 = name;
+							player.$.huixiang_equip2 = name;
 							player.markAuto('huixiang_equip', result.links);
 							var info = lib.card[name].skills;
 							if (info && info.length) player.addAdditionalSkill('huixiang_equip', info);
@@ -5164,7 +5164,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								if (!player.getEquip(get.subtype(Evt.cardname))) {
 									player.addTempSkill('huixiang_equip', { player: ['huixiangBegin'] });
 									var name = Evt.cardname;
-									player.storage.huixiang_equip2 = name;
+									player.$.huixiang_equip2 = name;
 									player.markAuto('huixiang_equip', result.links);
 									var info = lib.card[name].skills;
 									if (info && info.length) player.addAdditionalSkill('huixiang_equip', info);
@@ -5188,9 +5188,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			huixiang_equip: {
 				trigger: { global: ['loseAfter', 'cardsDiscardAfter'] },
-				filter(Evt: { player: any; cards: { filter: (arg0: (card: any) => any) => { (): any; new(): any; length: number; }; }; }, player: { storage: { huixiang_equip: any[]; }; }) {
+				filter(Evt: { player: any; cards: { filter: (arg0: (card: any) => any) => { (): any; new(): any; length: number; }; }; }, player: { $: { huixiang_equip: any[]; }; }) {
 					return player != Evt.player && player != _status.currentPhase && Evt.cards
-						&& Evt.cards.filter((card: any) => get.position(card, true) == 'd' && get.type(card) == 'equip' && player.storage.huixiang_equip.contains(card)).length > 0;
+						&& Evt.cards.filter((card: any) => get.position(card, true) == 'd' && get.type(card) == 'equip' && player.$.huixiang_equip.contains(card)).length > 0;
 				},
 				forced: true,
 				content: [() => {
@@ -5200,29 +5200,29 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					player.unmarkAuto('huixiang_equip', trigger.cards);
 				}],
 				mod: {
-					globalFrom(from: { storage: { huixiang_equip2: string | number; }; }, to: any, distance: any) {
-						var info = lib.card[from.storage.huixiang_equip2];
+					globalFrom(from: { $: { huixiang_equip2: string | number; }; }, to: any, distance: any) {
+						var info = lib.card[from.$.huixiang_equip2];
 						if (info && info.distance && info.distance.globalFrom) return distance + info.distance.globalFrom;
 					},
-					globalTo(from: any, to: { storage: { huixiang_equip2: string | number; }; }, distance: any) {
-						var info = lib.card[to.storage.huixiang_equip2];
+					globalTo(from: any, to: { $: { huixiang_equip2: string | number; }; }, distance: any) {
+						var info = lib.card[to.$.huixiang_equip2];
 						if (info && info.distance && info.distance.globalTo) return distance + info.distance.globalTo;
 					},
-					attackFrom(from: { storage: { huixiang_equip2: string | number; }; }, to: any, distance: any) {
-						var info = lib.card[from.storage.huixiang_equip2];
+					attackFrom(from: { $: { huixiang_equip2: string | number; }; }, to: any, distance: any) {
+						var info = lib.card[from.$.huixiang_equip2];
 						if (info && info.distance && info.distance.attackFrom) return distance + info.distance.attackFrom;
 					},
-					attackTo(from: any, to: { storage: { huixiang_equip2: string | number; }; }, distance: any) {
-						var info = lib.card[to.storage.huixiang_equip2];
+					attackTo(from: any, to: { $: { huixiang_equip2: string | number; }; }, distance: any) {
+						var info = lib.card[to.$.huixiang_equip2];
 						if (info && info.distance && info.distance.attackTo) return distance + info.distance.attackTo;
 					},
 				},
 				onremove: true,
 				intro: {
-					mark(dialog, storage, player) {
-						dialog.add(storage);
-						dialog.addText('当前装备：' + get.translation(player.storage.huixiang_equip2));
-						var str2 = lib.translate[player.storage.huixiang_equip2 + '_info'];
+					mark(dialog, $, player) {
+						dialog.add($);
+						dialog.addText('当前装备：' + get.translation(player.$.huixiang_equip2));
+						var str2 = lib.translate[player.$.huixiang_equip2 + '_info'];
 						if (str2) {
 							if (str2.length >= 12) dialog.addText(str2, false);
 							else dialog.addText(str2);
@@ -5249,8 +5249,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					player.popup(Evt.suit + 2);
 					game.log(player, '声明了', Evt.suit + 2);
 				}, () => {
-					if (!trigger.source.storage.WHiTE_suit) trigger.source.storage.WHiTE_suit = [];
-					trigger.source.storage.WHiTE_suit.add(Evt.suit);
+					if (!trigger.source.$.WHiTE_suit) trigger.source.$.WHiTE_suit = [];
+					trigger.source.$.WHiTE_suit.add(Evt.suit);
 					if (trigger.source.hasSkill('WHiTE_suit')) trigger.source.markSkill('WHiTE_suit')
 					else trigger.source.addTempSkill('WHiTE_suit')
 				}],
@@ -5262,11 +5262,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							content: '不能使用、打出或弃置$牌',
 						},
 						mod: {
-							cardDiscardable(card: any, player: { getStorage: (arg0: string) => any[]; }) {
-								if (player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
+							cardDiscardable(card: any, player: { get$: (arg0: string) => any[]; }) {
+								if (player.get$('WHiTE_suit').contains(get.suit(card))) return false;
 							},
-							cardEnabled2(card: any, player: { getStorage: (arg0: string) => any[]; }) {
-								if (player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
+							cardEnabled2(card: any, player: { get$: (arg0: string) => any[]; }) {
+								if (player.get$('WHiTE_suit').contains(get.suit(card))) return false;
 							},
 						},
 					}
@@ -5294,7 +5294,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							Evt.cards[i].fix();
 							ui.cardPile.insertBefore(Evt.cards[i], ui.cardPile.firstChild);
 						}
-						player.storage.BLacK = result.links[0];
+						player.$.BLacK = result.links[0];
 						player.chooseToCompare(target);
 					}
 					else {
@@ -5309,7 +5309,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.winner) {
 						if (Evt.cards.length) {
 							if (result.winner == player) {
-								Evt.card = player.storage.BLacK;
+								Evt.card = player.$.BLacK;
 								if (Evt.card && player.canUse(Evt.card, target)) player.useCard(Evt.card, target);
 							}
 							else if (result.winner == target) {
@@ -5318,7 +5318,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							}
 						}
 					}
-					delete player.storage.BLacK;
+					delete player.$.BLacK;
 				}],
 				group: 'BLacK_compare',
 				subSkill: {
@@ -5326,15 +5326,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						trigger: { player: 'chooseToCompareBegin' },
 						firstDo: true,
 						direct: true,
-						filter(Evt: { getParent: () => { (): any; new(): any; name: string; }; fixedResult: any; }, player: { storage: { BLacK: any; }; }) {
-							if (Evt.getParent().name == 'BLacK' && player.storage.BLacK) {
+						filter(Evt: { getParent: () => { (): any; new(): any; name: string; }; fixedResult: any; }, player: { $: { BLacK: any; }; }) {
+							if (Evt.getParent().name == 'BLacK' && player.$.BLacK) {
 								return !Evt.fixedResult;
 							}
 							return false
 						},
 						content() {
 							if (!trigger.fixedResult) trigger.fixedResult = {};
-							trigger.fixedResult[player.playerid] = player.storage.BLacK;
+							trigger.fixedResult[player.playerid] = player.$.BLacK;
 						}
 					}
 				},
@@ -5368,8 +5368,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}, () => {
 					if (result.bool && result.targets[0]) {
 						result.targets[0].damage(Evt.num, trigger.source || 'nosource');
-						if (!result.targets[0].storage.shiguang_lose) result.targets[0].storage.shiguang_lose = 0;
-						result.targets[0].storage.shiguang_lose += Evt.num;
+						if (!result.targets[0].$.shiguang_lose) result.targets[0].$.shiguang_lose = 0;
+						result.targets[0].$.shiguang_lose += Evt.num;
 						result.targets[0].addTempSkill('shiguang_lose', 'phaseBegin');
 					}
 				}],
@@ -5403,8 +5403,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							if (result.bool && result.targets?.length) {
 								player.logSkill('shiguang', result.targets);
 								result.targets[0].recover(Evt.num);
-								if (!result.targets[0].storage.shiguang_gain) result.targets[0].storage.shiguang_gain = 0;
-								result.targets[0].storage.shiguang_gain += Evt.num;
+								if (!result.targets[0].$.shiguang_gain) result.targets[0].$.shiguang_gain = 0;
+								result.targets[0].$.shiguang_gain += Evt.num;
 								result.targets[0].addTempSkill('shiguang_gain', 'phaseBegin');
 							}
 						}],
@@ -5416,11 +5416,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							content: '在下个回合开始时失去&点体力',
 						},
 						mark: true,
-						onremove(player: { loseHp: (arg0: any) => void; storage: { shiguang_gain: any; }; }) {
+						onremove(player: { loseHp: (arg0: any) => void; $: { shiguang_gain: any; }; }) {
 							game.log('『失光』后续效果');
 							game.delayx(0.5);
-							player.loseHp(player.storage.shiguang_gain);
-							delete player.storage.shiguang_gain;
+							player.loseHp(player.$.shiguang_gain);
+							delete player.$.shiguang_gain;
 						},
 					},
 					lose: {
@@ -5430,13 +5430,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							content: '在下个回合开始时回复&点体力',
 						},
 						mark: true,
-						onremove(player: { isDamaged: () => any; recover: (arg0: any, arg1: string) => void; storage: { shiguang_lose: any; }; }) {
+						onremove(player: { isDamaged: () => any; recover: (arg0: any, arg1: string) => void; $: { shiguang_lose: any; }; }) {
 							if (player.isDamaged()) {
 								game.log('『失光』后续效果');
 							}
 							game.delayx(0.5);
-							player.recover(player.storage.shiguang_lose, 'nosource');
-							delete player.storage.shiguang_lose;
+							player.recover(player.$.shiguang_lose, 'nosource');
+							delete player.$.shiguang_lose;
 						},
 					},
 				}
@@ -5445,20 +5445,20 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			rangran: {
 				trigger: { player: 'useCard2' },
 				priority: 222,
-				filter(Evt: { card: any; targets: any[]; }, player: { storage: { rangran: any[]; }; }) {
+				filter(Evt: { card: any; targets: any[]; }, player: { $: { rangran: any[]; }; }) {
 					var card = Evt.card;
 					var info = get.info(card);
 					if (info.allowMultiple == false) return false;
-					if (!player.storage.rangran) player.storage.rangran = [];
+					if (!player.$.rangran) player.$.rangran = [];
 					return game.countPlayer((cur: { isMaxHp: () => any; }) => {
-						return cur.isMaxHp() && !player.storage.rangran.contains(cur) && !Evt.targets.contains(cur) && lib.filter.targetEnabled2(Evt.card, player, cur);
+						return cur.isMaxHp() && !player.$.rangran.contains(cur) && !Evt.targets.contains(cur) && lib.filter.targetEnabled2(Evt.card, player, cur);
 					});
 				},
 				direct: true,
 				content: [() => {
-					console.log(player.storage.rangran)
-					let next = player.chooseTarget(get.prompt2('rangran'), [1, Infinity], function (card: any, player: { storage: { rangran: any[]; }; }, target: { isMaxHp: () => any; }) {
-						return target.isMaxHp() && !player.storage.rangran.contains(target) && !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target)
+					console.log(player.$.rangran)
+					let next = player.chooseTarget(get.prompt2('rangran'), [1, Infinity], function (card: any, player: { $: { rangran: any[]; }; }, target: { isMaxHp: () => any; }) {
+						return target.isMaxHp() && !player.$.rangran.contains(target) && !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target)
 					}).set('ai', function (target: any) {
 						var evt = _status.event;
 						return get.effect(target, evt.card, evt.source, evt.player);
@@ -5468,7 +5468,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						player.logSkill('rangran');
 						var targets = result.targets.slice(0);
 						trigger.targets.addArray(targets);
-						player.storage.rangran.addArray(targets);
+						player.$.rangran.addArray(targets);
 						player.line(targets, { color: [255, 224, 172] });
 					}
 				}],
@@ -5488,14 +5488,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					clear: {
 						trigger: { global: 'phaseEnd' },
 						priority: 222,
-						filter(Evt: any, player: { storage: { rangran: any; }; }) {
-							return player.storage.rangran;
+						filter(Evt: any, player: { $: { rangran: any; }; }) {
+							return player.$.rangran;
 						},
 						forced: true,
 						silent: true,
 						popup: false,
 						content() {
-							delete player.storage.rangran;
+							delete player.$.rangran;
 						}
 					},
 				}
@@ -5618,11 +5618,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 		},
 		dynamicTranslate: {
-			re_longdan(player: { storage: { re_longdan: boolean; }; }) {
+			re_longdan(player) {
 				let str = lib.translate.re_longdan_info;
 				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
 				let yang = result[1], yin = result[2];
-				if (player.storage.re_longdan === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
+				if (player.$.re_longdan === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
 				return str.replace(yin, lib.spanClass(yin, 'changetext'));
 			},
 		},

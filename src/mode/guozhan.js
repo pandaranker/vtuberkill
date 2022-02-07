@@ -747,15 +747,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseUseBegin',source:'damageSource'},
 				filter:function(event,player){
 					return game.hasPlayer(function(cur){
-						if(player.storage.gz_huxiGroup==null) return true;
-						return !player.storage.gz_huxiGroup.contains(cur)&&cur!=player;
+						if(player.$.gz_huxiGroup==null) return true;
+						return !player.$.gz_huxiGroup.contains(cur)&&cur!=player;
 					});
 				},
 				content:function(){
 					'step 0'
 					var next = player.chooseCardTarget('请选择呼吸的对象与交换的牌',true).set('type','compare');
 					next.set('filterTarget',function(card,player,target){
-							if(player.storage.gz_huxiGroup&&player.storage.gz_huxiGroup.contains(target))	return false;
+							if(player.$.gz_huxiGroup&&player.$.gz_huxiGroup.contains(target))	return false;
 							return target!=player&&player.countCards('h')&&target.countCards('h');
 					});
 					'step 1'
@@ -829,11 +829,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.addTempSkill('gz_huxi2');
 						}
 					}
-					if(player.storage.gz_huxiGroup==null) player.storage.gz_huxiGroup=[];
-					player.storage.gz_huxiGroup.add(target);
+					if(player.$.gz_huxiGroup==null) player.$.gz_huxiGroup=[];
+					player.$.gz_huxiGroup.add(target);
 					switch(player.group){
 						case 'holo':{
-							if(get.name(event.card)=='sha')		player.storage.gz_huxi_clear.add(event.card);
+							if(get.name(event.card)=='sha')		player.$.gz_huxi_clear.add(event.card);
 							break;
 						}
 						case 'nijisanji':{
@@ -895,7 +895,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				mod:{
 					targetInRange:function(card,player,target){
-						if(player.storage.gz_huxi_clear&&player.storage.gz_huxi_clear.contains(card)) return true;
+						if(player.$.gz_huxi_clear&&player.$.gz_huxi_clear.contains(card)) return true;
 					},
 				},
 				group:'gz_huxi_clear',
@@ -911,8 +911,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player:['phaseAfter']
 						},
 						content:function(){
-							player.storage.gz_huxi_clear = [];
-							delete player.storage.gz_huxiGroup;
+							player.$.gz_huxi_clear = [];
+							delete player.$.gz_huxiGroup;
 						}
 					}
 				}
@@ -1299,19 +1299,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.storage.blackTargets=trigger.targets;
-							player.storage.card=trigger.card;
+							player.$.blackTargets=trigger.targets;
+							player.$.card=trigger.card;
 							player.chooseTarget(true, '额外指定一名'+get.translation(trigger.card)+'的目标',function(card,player,target){
-								if (player.storage.blackTargets.contains(target)) return false;
-								return lib.filter.targetEnabled2(player.storage.card, player, target)
+								if (player.$.blackTargets.contains(target)) return false;
+								return lib.filter.targetEnabled2(player.$.card, player, target)
 									&& player.inRange(target);
 							}).set('targets',trigger.targets).set('card',trigger.card).set('ai',function(target){
 								var player = _status.event.player;
 								return get.effect(target,_status.event.card,player,player);
 							});
 							'step 1'
-							delete player.storage.card;
-							delete player.storage.blackTargets;
+							delete player.$.card;
+							delete player.$.blackTargets;
 							if(result.bool && result.targets.length){
 								game.delayx();
 								player.logSkill('gz_kuangbaoshuangren', result.targets);
@@ -1371,8 +1371,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				enable: 'phaseUse',
 				usable: 1,
 				init: function(player) {
-					if(player.storage.gz_duanli==undefined) {
-						player.storage.gz_duanli = 0;
+					if(player.$.gz_duanli==undefined) {
+						player.$.gz_duanli = 0;
 					}
 				},
 				filter: function(event, player) {
@@ -1380,7 +1380,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function() {
 					'step 0'
-					player.storage.gz_duanli += player.countDiscardableCards(player,'h');
+					player.$.gz_duanli += player.countDiscardableCards(player,'h');
 					'step 1'
 					var cards=player.getDiscardableCards(player,'h');
 					player.discard(cards);
@@ -1407,7 +1407,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							'step 0'
-							player.storage.gz_duanli += player.countDiscardableCards(player,'h');
+							player.$.gz_duanli += player.countDiscardableCards(player,'h');
 							'step 1'
 							var cards=player.getDiscardableCards(player,'h');
 							player.discard(cards);
@@ -1418,14 +1418,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player: 'phaseEnd'
 						},
 						filter:function(event,player){
-							return player.storage.gz_duanli;
+							return player.$.gz_duanli;
 						},
 						forced:true,
 						content:function(){
 							'step 0'
-							player.draw(player.storage.gz_duanli);
+							player.draw(player.$.gz_duanli);
 							'step 1'
-							player.storage.gz_duanli = 0;
+							player.$.gz_duanli = 0;
 						}
 					}
 				}
@@ -1869,9 +1869,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						player.recover();
 					}else{
 						player.showCards(cards);
-						if(!player.storage.gz_baidao)	player.storage.gz_baidao = [];
-						player.storage.gz_baidao.addArray(cards);
-						player.storage.gz_baidao_times++;
+						if(!player.$.gz_baidao)	player.$.gz_baidao = [];
+						player.$.gz_baidao.addArray(cards);
+						player.$.gz_baidao_times++;
 					}
 				},
 				ai:{
@@ -1895,11 +1895,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						firstDo:true,
 						forced:true,
 						filter:function(event,player){
-							console.log(player.storage.gz_baidao_times)
-							return player.storage.gz_baidao_times>0&&player.hasSkill('liexing_used');
+							console.log(player.$.gz_baidao_times)
+							return player.$.gz_baidao_times>0&&player.hasSkill('liexing_used');
 						},
 						content:function(){
-							player.storage.gz_baidao_times--;
+							player.$.gz_baidao_times--;
 							player.removeSkill('liexing_used');
 						},
 					},
@@ -1909,11 +1909,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						popup:false,
 						filter:function(event,player){
-							return player.storage.gz_baidao;
+							return player.$.gz_baidao;
 						},
 						content:function(){
-							player.storage.gz_baidao.length = 0;
-							player.storage.gz_baidao_times = 0;
+							player.$.gz_baidao.length = 0;
+							player.$.gz_baidao_times = 0;
 						},
 					}
 				}
@@ -1939,26 +1939,26 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(!player.storage[skill]) player.storage[skill] = true;
 				},
 				hiddenCard:function(player,name){
-					if(player.storage.gz_longdan==true&&name=='sha'&&lib.inpile.contains(name))	return player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'});
-					if(player.storage.gz_longdan==false&&get.type(name)=='basic'&&lib.inpile.contains(name)) return player.countCards('h',{name:'sha'});
+					if(player.$.gz_longdan==true&&name=='sha'&&lib.inpile.contains(name))	return player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'});
+					if(player.$.gz_longdan==false&&get.type(name)=='basic'&&lib.inpile.contains(name)) return player.countCards('h',{name:'sha'});
 				},
 				enable:['chooseToUse','chooseToRespond'],
 				filter:function(event,player){
-					return player.storage.gz_longdan==true&&player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'})||player.storage.gz_longdan==false&&player.countCards('h',{name:'sha'});
+					return player.$.gz_longdan==true&&player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'})||player.$.gz_longdan==false&&player.countCards('h',{name:'sha'});
 				},
 				chooseButton:{
 					dialog:function(event,player){
 						var list=[];
 						for(var i=0;i<lib.inpile.length;i++){
 							var name=lib.inpile[i];
-							if(player.storage.gz_longdan==true&&name=='sha'){
+							if(player.$.gz_longdan==true&&name=='sha'){
 								list.push(['基本','','sha']);
 								list.push(['基本','','sha','fire']);
 								list.push(['基本','','sha','thunder']);
 								list.push(['基本','','sha','ice']);
 								list.push(['基本','','sha','ocean']);
 							}
-							else if(player.storage.gz_longdan==false&&get.type(name)=='basic'&&name!='sha') list.push(['基本','',name]);
+							else if(player.$.gz_longdan==false&&get.type(name)=='basic'&&name!='sha') list.push(['基本','',name]);
 						}
 						return ui.create.dialog(get.translation('gz_longdan'),[list,'vcard']);
 					},
@@ -1975,7 +1975,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					backup:function(links,player){
 						return {
 							filterCard:function(card,player){
-								if(player.storage.gz_longdan==false) return get.name(card)=='sha';
+								if(player.$.gz_longdan==false) return get.name(card)=='sha';
 								return get.type(card)=='basic'&&get.name(card)!='sha';
 							},
 							selectCard:1,
@@ -1987,8 +1987,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							viewAs:{name:links[0][2],nature:links[0][3],isCard:true},
 							onrespond:function(){return this.onuse.apply(this,arguments)},
 							onuse:function(result,player){
-								if(player.storage.gz_longdan==false)	player.storage.gz_longdan = true;
-								else	player.storage.gz_longdan = false;
+								player.$.gz_longdan = !player.$.gz_longdan;
+								player.updateMarks('gz_longdan')
 							},
 						}
 					},
@@ -2009,15 +2009,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					skillTagFilter:function(player,tag){
 						switch(tag){
 							case 'respondSha':{
-								if(player.storage.gz_longdan!=true||!player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'})) return false;
+								if(player.$.gz_longdan!=true||!player.countCards('h',{type:'basic'})>player.countCards('h',{name:'sha'})) return false;
 								break;
 							}
 							case 'respondShan':{
-								if(player.storage.gz_longdan!=false||!player.countCards('h',{name:'sha'})) return false;
+								if(player.$.gz_longdan!=false||!player.countCards('h',{name:'sha'})) return false;
 								break;
 							}
 							case 'save':{
-								if(player.storage.gz_longdan!=false||!player.countCards('h',{name:'sha'})) return false;
+								if(player.$.gz_longdan!=false||!player.countCards('h',{name:'sha'})) return false;
 								break;
 							}
 						}
@@ -2036,7 +2036,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{global: 'phaseBegin'},
 				priority:81,
 				filter:function(event,player){
-					if(player.countCards('he')<(player.storage.gz_tiantang||1))	return false;
+					if(player.countCards('he')<(player.$.gz_tiantang||1))	return false;
 					return true;
 				},
 				check:function(event,player){
@@ -2045,14 +2045,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					var num = player.storage.gz_tiantang||1;
+					var num = player.$.gz_tiantang||1;
 					player.chooseToDiscard(num,'he').set('ai',function(card){
 						return 6-get.value(card);
 					})
 					'step 1'
 					if(result.bool){
-						if(!player.storage.gz_tiantang)	player.storage.gz_tiantang = 1;
-						else	player.storage.gz_tiantang++;
+						if(!player.$.gz_tiantang)	player.$.gz_tiantang = 1;
+						else	player.$.gz_tiantang++;
 						event.videoId = lib.status.videoId++;
 						var suitlist = [
 							['heart', '', 'heart', 'heart'],
@@ -2120,7 +2120,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(element[2]=='摸两张牌'){
 								trigger.player.draw(2,player);
 								trigger.player.addTempSkill('gz_tiantangzhifei_xianzhi','phaseEnd');
-								trigger.player.storage.gz_tiantangzhifei_xianzhi = event.gz_tiantang;
+								trigger.player.$.gz_tiantangzhifei_xianzhi = event.gz_tiantang;
 								trigger.player.syncStorage('gz_tiantangzhifei_xianzhi');
 								event.finish();
 							}
@@ -2138,7 +2138,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						silent:true,
 						forced:true,
 						content:function(){
-							player.storage.gz_tiantang = 0;
+							player.$.gz_tiantang = 0;
 						}
 					},
 				}
@@ -2156,7 +2156,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				mod:{
 					cardEnabled:function(card,player,now){
-						if(player.storage.gz_tiantangzhifei_xianzhi)	return get.suit(card)==player.storage.gz_tiantangzhifei_xianzhi;
+						if(player.$.gz_tiantangzhifei_xianzhi)	return get.suit(card)==player.$.gz_tiantangzhifei_xianzhi;
 						
 					},
 				},
@@ -2215,8 +2215,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						//随机获得角色p的一张手牌
 						var card = p.getCards('h').randomGet();
 						if(!card) continue;//没有手牌则跳过
-						if(!p.storage.gz_xiemen_reset)p.storage.gz_xiemen_reset=[];
-						p.storage.gz_xiemen_reset.push(card);
+						if(!p.$.gz_xiemen_reset)p.$.gz_xiemen_reset=[];
+						p.$.gz_xiemen_reset.push(card);
 						p.lose(card, ui.special, 'toStorage');
 
 						//角色p添加临时技能gz_xiemen_reset，用于在回合结束时重新获得被移除的手牌
@@ -2231,9 +2231,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						direct: true,
 						content:function(){
-							if(player.storage.gz_xiemen_reset&&player.storage.gz_xiemen_reset.length){
-								player.gain(player.storage.gz_xiemen_reset, 'fromStorage');
-                                delete player.storage.gz_xiemen_reset;
+							if(player.$.gz_xiemen_reset&&player.$.gz_xiemen_reset.length){
+								player.gain(player.$.gz_xiemen_reset, 'fromStorage');
+                                delete player.$.gz_xiemen_reset;
 							}
 
 							player.removeSkill('gz_xiemen_reset');
@@ -2285,7 +2285,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							},
 							selectCard:function(){
 								var player = _status.event.player;
-								if(player.storage.gz_lianjue)	return [1,Infinity];
+								if(player.$.gz_lianjue)	return [1,Infinity];
 								return 3;
 							},
 							forceAuto:function(){
@@ -2293,7 +2293,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							},
 							popname:true,
 							check:function(card){
-								if(player.storage.gz_lianjue&&ui.selected.cards)	
+								if(player.$.gz_lianjue&&ui.selected.cards)	
 								return 5-get.value(card);
 							},
 							position:'he',
@@ -2341,12 +2341,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								if(event.clear!==false){
 									game.broadcastAll(ui.clear);
 								}
-								if(player.storage.gz_lianjue)		player.storage.gz_lianjue = false;
+								if(player.$.gz_lianjue)		player.$.gz_lianjue = false;
 							},
 						}
 					},
 					prompt:function(links,player){
-						if(player.storage.gz_lianjue)	return '###『龙箱』###将任意张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
+						if(player.$.gz_lianjue)	return '###『龙箱』###将任意张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 						return '###『龙箱』###将三张牌当做【'+(get.translation(links[0][3])||'')+get.translation(links[0][2])+'】使用';
 					}
 				},
@@ -2369,7 +2369,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				frequent:true,
 				prompt2: '你可以选择一项：令至多三名角色各摸一张牌；将下一次发动『玉箱』条件改为“任意张牌”。',
 				filter:function(event,player){
-					return (Math.abs(player.storage.gz_lianjue_start-player.countCards('h'))%3==0);
+					return (Math.abs(player.$.gz_lianjue_start-player.countCards('h'))%3==0);
 				},
 				content:function(){
 					'step 0'
@@ -2391,7 +2391,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 						case 1: {
 							player.chat('将下一次发动『玉箱』条件改为“任意张牌”');
-							player.storage.gz_lianjue = true;
+							player.$.gz_lianjue = true;
 							break;
 						}
 					}
@@ -2413,13 +2413,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						popup:false,
 						priority:66,
 						content:function(){
-							player.storage.gz_lianjue_start = player.countCards('h');
+							player.$.gz_lianjue_start = player.countCards('h');
 						},
 					},
 				},
 				mod:{
 					aiOrder:function(player,card,num){
-						if(typeof card=='object'&&player==_status.currentPhase&&!player.needsToDiscard()&&Math.abs(player.storage.gz_lianjue_start-player.countCards('h'))%3==0){
+						if(typeof card=='object'&&player==_status.currentPhase&&!player.needsToDiscard()&&Math.abs(player.$.gz_lianjue_start-player.countCards('h'))%3==0){
 							return num-10;
 						}
 					},
@@ -2669,7 +2669,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger.card.suit=map.suit;
 						if(map.nature=='普通') delete trigger.card.nature;
 						else trigger.card.nature=map.nature;
-						trigger.player.storage.gzmidao2=[trigger.card,map.nature];
+						trigger.player.$.gzmidao2=[trigger.card,map.nature];
 						player.popup(get.translation(map.suit+2)+get.translation(map.nature),'thunder');
 					}
 				},
@@ -2682,10 +2682,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				popup:false,
 				onremove:true,
 				filter:function(event,player){
-					return player.storage.gzmidao2&&event.card==player.storage.gzmidao2[0];
+					return player.$.gzmidao2&&event.card==player.$.gzmidao2[0];
 				},
 				content:function(){
-					var nature=player.storage.gzmidao2[1];
+					var nature=player.$.gzmidao2[1];
 					if(nature=='普通') delete trigger.nature;
 					else trigger.nature=nature;
 				},
@@ -2765,12 +2765,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 			yigui:{
 				hiddenCard:function(player,name){
-					var storage=player.storage.yigui;
+					var storage=player.$.yigui;
 					if(name=='shan'||name=='wuxie'||!storage||!storage.character.length||storage.used.contains(name)||!lib.inpile.contains(name)) return false;
 					return true;
 				},
 				init:function(player,skill){
-					if(!player.storage.skill) player.storage[skill]={
+					if(!player.$.skill) player.storage[skill]={
 						character:[],
 						used:[],
 					}
@@ -2778,7 +2778,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				enable:"chooseToUse",
 				filter:function(event,player){
 					if(event.type=='wuxie'||event.type=='respondShan') return false;
-					var storage=player.storage.yigui;
+					var storage=player.$.yigui;
 					if(!storage||!storage.character.length) return false;
 					if(event.type=='dying'){
 						if((!event.filterCard({name:'tao'},player,event)||storage.used.contains('tao'))&&
@@ -2799,7 +2799,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					select:2,
 					dialog:function(event,player){
 						var dialog=ui.create.dialog('役鬼','hidden');
-						dialog.add([player.storage.yigui.character,'character']);
+						dialog.add([player.$.yigui.character,'character']);
 						var list=lib.inpile;
 						var list2=[];
 						for(var i=0;i<list.length;i++){
@@ -2863,7 +2863,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(typeof ui.selected.buttons[0].link!='string') return false;
 							if(typeof button.link!='object') return false;
 							var name=button.link[2];
-							if(player.storage.yigui.used.contains(name)) return false;
+							if(player.$.yigui.used.contains(name)) return false;
 							var card={name:name};
 							if(button.link[3]) card.nature=button.link[3];
 							var info=get.info(card);
@@ -2941,12 +2941,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								player.logSkill('yigui');
 								var character=lib.skill.yigui_backup.character;
 								player.flashAvatar('yigui',character);
-								player.storage.yigui.character.remove(character);
+								player.$.yigui.character.remove(character);
 								_status.characterlist.add(character);
 								game.log(player,'从「魂」中移除了','#g'+get.translation(character));
 								player.syncStorage('yigui');
 								player.updateMarks('yigui');
-								player.storage.yigui.used.add(result.card.name);
+								player.$.yigui.used.add(result.card.name);
 							},
 						};
 						return next;
@@ -3003,14 +3003,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				forced:true,
 				filter:function(event,player){
-					return event.toShow.contains('gz_zuoci')&&!player.storage.yigui_init;
+					return event.toShow.contains('gz_zuoci')&&!player.$.yigui_init;
 				},
 				content:function(){
-					player.storage.yigui_init=true;
+					player.$.yigui_init=true;
 					var list=_status.characterlist.randomGets(2);
 					if(list.length){
 						_status.characterlist.removeArray(list);
-						player.storage.yigui.character.addArray(list);
+						player.$.yigui.character.addArray(list);
 						lib.skill.gzhuashen.drawCharacter(player,list);
 						player.syncStorage('yigui');
 						player.updateMarks('yigui');
@@ -3024,21 +3024,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				silent:true,
 				popup:false,
 				content:function(){
-					player.storage.yigui.used=[];
+					player.$.yigui.used=[];
 				},
 			},
 			yigui_shan:{
 				enable:"chooseToUse",
 				filter:function(event,player){
 					if(event.type!='respondShan') return false;
-					var storage=player.storage.yigui;
+					var storage=player.$.yigui;
 					if(!storage||!storage.character.length||storage.used.contains('shan')) return false;
 					return event.filterCard({name:'shan'},player,event);
 				},
 				chooseButton:{
 					dialog:function(event,player){
 						var dialog=ui.create.dialog('役鬼','hidden');
-						dialog.add([player.storage.yigui.character,'character']);
+						dialog.add([player.$.yigui.character,'character']);
 						return dialog;
 					},
 					check:function(button){
@@ -3066,12 +3066,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								player.logSkill('yigui');
 								var character=lib.skill.yigui_shan_backup.character;
 								player.flashAvatar('yigui',character);
-								player.storage.yigui.character.remove(character);
+								player.$.yigui.character.remove(character);
 								_status.characterlist.add(character);
 								game.log(player,'从「魂」中移除了','#g'+get.translation(character));
 								player.syncStorage('yigui');
 								player.updateMarks('yigui');
-								player.storage.yigui.used.add(result.card.name);
+								player.$.yigui.used.add(result.card.name);
 							},
 						};
 						return next;
@@ -3080,7 +3080,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ai:{
 					respondShan:true,
 					skillTagFilter:function(player){
-						var storage=player.storage.yigui;
+						var storage=player.$.yigui;
 						if(!storage||!storage.character.length||storage.used.contains('shan')) return false;
 					},
 					order:0.1,
@@ -3093,14 +3093,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				enable:"chooseToUse",
 				filter:function(event,player){
 					if(event.type!='wuxie') return false;
-					var storage=player.storage.yigui;
+					var storage=player.$.yigui;
 					if(!storage||!storage.character.length||storage.used.contains('wuxie')) return false;
 					return event.filterCard({name:'wuxie'},player,event);
 				},
 				chooseButton:{
 					dialog:function(event,player){
 						var dialog=ui.create.dialog('役鬼','hidden');
-						dialog.add([player.storage.yigui.character,'character']);
+						dialog.add([player.$.yigui.character,'character']);
 						return dialog;
 					},
 					check:function(button){
@@ -3128,12 +3128,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								player.logSkill('yigui');
 								var character=lib.skill.yigui_wuxie_backup.character;
 								player.flashAvatar('yigui',character);
-								player.storage.yigui.character.remove(character);
+								player.$.yigui.character.remove(character);
 								_status.characterlist.add(character);
 								game.log(player,'从「魂」中移除了','#g'+get.translation(character));
 								player.syncStorage('yigui');
 								player.updateMarks('yigui');
-								player.storage.yigui.used.add(result.card.name);
+								player.$.yigui.used.add(result.card.name);
 							},
 						};
 						return next;
@@ -3161,7 +3161,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=_status.characterlist.randomGets(1);
 					if(list.length){
 						_status.characterlist.removeArray(list);
-						player.storage.yigui.character.addArray(list);
+						player.$.yigui.character.addArray(list);
 						lib.skill.gzhuashen.drawCharacter(player,list);
 						player.syncStorage('yigui');
 						player.updateMarks('yigui');
@@ -3340,9 +3340,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var target=_status.currentPhase;
 						if(!target.hasSkill('zhuwei_eff')){
 							target.addTempSkill('zhuwei_eff');
-							target.storage.zhuwei_eff=1;
+							target.$.zhuwei_eff=1;
 						}
-						else target.storage.zhuwei_eff++;
+						else target.$.zhuwei_eff++;
 						target.updateMarks();
 					}
 				},
@@ -3351,9 +3351,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						sub:true,
 						mod:{
 							cardUsable:function(card,player,num){
-								if(card.name=='sha') return num+player.storage.zhuwei_eff;
+								if(card.name=='sha') return num+player.$.zhuwei_eff;
 							},
-							maxHandcard:function(player,num){return num+player.storage.zhuwei_eff}
+							maxHandcard:function(player,num){return num+player.$.zhuwei_eff}
 						},
 						mark:true,
 						intro:{
@@ -3363,13 +3363,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 			},
 			gzweidi:{
-				init:function(player){player.storage.gzweidi=[]},
+				init:function(player){player.$.gzweidi=[]},
 				enable:'phaseUse',
 				usable:1,
 				filter:function(event,player){
-					return player.storage.gzweidi.length>0
+					return player.$.gzweidi.length>0
 				},
-				filterTarget:function(card,player,target){return target!=player&&player.storage.gzweidi.contains(target)},
+				filterTarget:function(card,player,target){return target!=player&&player.$.gzweidi.contains(target)},
 				content:function(){
 					'step 0'
 					player.chooseJunlingFor(target);
@@ -3411,21 +3411,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'gainBefore'},
 						silent:true,
 						filter:function(event,player){
-							if(player==event.player||player.storage.gzweidi.contains(event.player)||_status.currentPhase!=player) return false;
+							if(player==event.player||player.$.gzweidi.contains(event.player)||_status.currentPhase!=player) return false;
 							if(event.cards.length){
 								if(event.getParent().name=='draw') return true;
 								for(var i=0;i<event.cards.length;i++) if(get.position(event.cards[i])=='c'||(!get.position(event.cards[i])&&event.cards[i].original=='c')) return true;
 							}
 							return false;
 						},
-						content:function(){player.storage.gzweidi.push(trigger.player)}
+						content:function(){player.$.gzweidi.push(trigger.player)}
 					},
 					ftc:{
 						sub:true,
 						trigger:{global:'phaseAfter'},
 						silent:true,
 						filter:function(event,player){return event.player==player},
-						content:function(){player.storage.gzweidi=[]},
+						content:function(){player.$.gzweidi=[]},
 					}
 				},
 				audio:['weidi',2]
@@ -3883,7 +3883,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						result.targets[0].gain(result.cards,player,'give');
 					}
 					else{
-						player.storage.gzzhengbi_eff1=result.targets[0];
+						player.$.gzzhengbi_eff1=result.targets[0];
 						player.addTempSkill('gzzhengbi_eff1','phaseUseAfter');
 						event.finish();
 					}
@@ -3923,15 +3923,15 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						charlotte:true,
 						filter:function(event,player){
-							var target=player.storage.gzzhengbi_eff1;
+							var target=player.$.gzzhengbi_eff1;
 							return target&&!target.isUnseen()&&target.countGainableCards(player,'he')>0;
 						},
 						logTarget:function(event,player){
-							return player.storage.gzzhengbi_eff1;
+							return player.$.gzzhengbi_eff1;
 						},
 						content:function(){
 							var num=0;
-							var target=player.storage.gzzhengbi_eff1;
+							var target=player.$.gzzhengbi_eff1;
 							if(target.countGainableCards(player,'h')) num++;
 							if(target.countGainableCards(player,'e')) num++;
 							if(num){
@@ -3954,7 +3954,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filterCard:true,
 				selectCard:-1,
 				filter:function(event,player){
-					return !player.storage.gzfengying&&player.countCards('h')>0;
+					return !player.$.gzfengying&&player.countCards('h')>0;
 				},
 				filterTarget:function(card,player,target){
 					return target==player;
@@ -3965,7 +3965,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.awakenSkill('gzfengying');
-					player.storage.gzfengying=true;
+					player.$.gzfengying=true;
 					player.useCard({name:'xietianzi'},cards,target);
 					'step 1'
 					var list=game.filterPlayer(function(current){
@@ -4174,7 +4174,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(event.num<event.players.length) event.goto(2);
 					'step 5'
 					event.num=0;
-					player.storage.jianglue_count=0;
+					player.$.jianglue_count=0;
 					'step 6'
 					if(event.list[num].isAlive()){
 						event.list[num].gainMaxHp(true);
@@ -4183,7 +4183,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.num++;
 					'step 7'
 					if(event.num<event.list.length) event.goto(6);
-					else if(player.storage.jianglue_count>0) player.draw(player.storage.jianglue_count);
+					else if(player.$.jianglue_count>0) player.draw(player.$.jianglue_count);
 				},
 				marktext:'略',
 				skillAnimation:'epic',
@@ -4206,7 +4206,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'recoverAfter'},
 						silent:true,
 						filter:function(event){return event.getParent('jianglue')},
-						content:function(){player.storage.jianglue_count++}
+						content:function(){player.$.jianglue_count++}
 					}
 				}
 			},
@@ -4351,7 +4351,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							player.draw();
-							//player.storage.fanghun2++;
+							//player.$.fanghun2++;
 						},
 						sub:true,
 					},
@@ -4590,14 +4590,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					name:"wanjian",
 				},
 				filterCard:function(card,player){
-					if(!player.storage.new_luanji) return true;
-					return !player.storage.new_luanji.contains(get.suit(card));
+					if(!player.$.new_luanji) return true;
+					return !player.$.new_luanji.contains(get.suit(card));
 				},
 				selectCard:2,
 				position:'hs',
 				filter:function(event,player){
 					return player.countCards('hs',function(card){
-						return !player.storage.new_luanji||!player.storage.new_luanji.contains(get.suit(card));
+						return !player.$.new_luanji||!player.$.new_luanji.contains(get.suit(card));
 					})>1;
 				},
 				check:function(card){
@@ -4631,10 +4631,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						silent:true,
 						filter:function(event,player){
-							return player.storage.new_luanji?true:false;
+							return player.$.new_luanji?true:false;
 						},
 						content:function(){
-							delete player.storage.new_luanji;
+							delete player.$.new_luanji;
 						},
 						sub:true,
 						forced:true,
@@ -4649,11 +4649,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return event.skill=='new_luanji';
 						},
 						content:function(){
-							if(!player.storage.new_luanji){
-								player.storage.new_luanji=[];
+							if(!player.$.new_luanji){
+								player.$.new_luanji=[];
 							}
 							for(var i=0;i<trigger.cards.length;i++){
-								player.storage.new_luanji.add(get.suit(trigger.cards[i]));
+								player.$.new_luanji.add(get.suit(trigger.cards[i]));
 							}
 						},
 						sub:true,
@@ -4768,7 +4768,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			"new_kongcheng":{
 				init:function(player){
-					if(player.storage.new_kongcheng==undefined) player.storage.new_kongcheng=[];
+					if(player.$.new_kongcheng==undefined) player.$.new_kongcheng=[];
 				},
 				fixedGain:function(){
 					'step 0'
@@ -4779,7 +4779,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(event.animate=='give'||event.visible==true) next.visible=true;
 							event.relatedLose=next;
 						}
-						player.storage.new_kongcheng.addArray(cards);
+						player.$.new_kongcheng.addArray(cards);
 						player.markSkill('new_kongcheng');
 					}
 					else{
@@ -4847,12 +4847,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player:"phaseDrawBegin1",
 						},
 						filter:function(event,player){
-							return player.storage.new_kongcheng.length>0;
+							return player.$.new_kongcheng.length>0;
 						},
 						content:function(){
-							player.gain(player.storage.new_kongcheng,'draw','fromStorage');
-							player.storage.new_kongcheng=[];
-							game.addVideo('storage',player,['new_kongcheng',get.cardsInfo(player.storage.new_kongcheng),'cards']);
+							player.gain(player.$.new_kongcheng,'draw','fromStorage');
+							player.$.new_kongcheng=[];
+							game.addVideo('storage',player,['new_kongcheng',get.cardsInfo(player.$.new_kongcheng),'cards']);
 							player.unmarkSkill('new_kongcheng');
 						},
 						sub:true,
@@ -5025,7 +5025,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 						content:function(){
 							player.draw();
-							//player.storage.fanghun2++;
+							//player.$.fanghun2++;
 						},
 						sub:true,
 					},
@@ -5693,7 +5693,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return player.countCards('hs',{suit:'spade'})>0;
 				},
 				init:function(player){
-					if(!player.storage.hmkguishu) player.storage.hmkguishu=0;
+					if(!player.$.hmkguishu) player.$.hmkguishu=0;
 				},
 				chooseButton:{
 					dialog:function(event,player){
@@ -5705,8 +5705,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},
 					filter:function(button,player){
 						var name=button.link[2];
-						if(player.storage.hmkguishu==1&&name=='yuanjiao') return false;
-						if(player.storage.hmkguishu==2&&name=='zhibi') return false;
+						if(player.$.hmkguishu==1&&name=='yuanjiao') return false;
+						if(player.$.hmkguishu==2&&name=='zhibi') return false;
 						return lib.filter.filterCard({name:name},player,_status.event.getParent());
 					},
 					check:function(button){
@@ -5734,8 +5734,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							viewAs:{name:links[0][2]},
 							onuse:function(result,player){
 								player.logSkill('hmkguishu');
-								if(result.card.name=='yuanjiao') player.storage.hmkguishu=1;
-								else player.storage.hmkguishu=2;
+								if(result.card.name=='yuanjiao') player.$.hmkguishu=1;
+								else player.$.hmkguishu=2;
 							},
 						}
 					},
@@ -6130,7 +6130,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			qianhuan:{
 				group:['qianhuan_add','qianhuan_use'],
 				init:function(player){
-					if(!player.storage.qianhuan) player.storage.qianhuan=[];
+					if(!player.$.qianhuan) player.$.qianhuan=[];
 				},
 				intro:{
 					content:'cards',
@@ -6153,8 +6153,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'damageEnd'},
 						filter:function(event,player){
 							var suits=[];
-							for(var i=0;i<player.storage.qianhuan.length;i++){
-								suits.add(get.suit(player.storage.qianhuan[i]));
+							for(var i=0;i<player.$.qianhuan.length;i++){
+								suits.add(get.suit(player.$.qianhuan[i]));
 							}
 							return player.isFriendOf(event.player)&&player.countCards('he',function(card){
 								return !suits.contains(get.suit(card));
@@ -6164,8 +6164,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							var suits=[];
-							for(var i=0;i<player.storage.qianhuan.length;i++){
-								suits.add(get.suit(player.storage.qianhuan[i]));
+							for(var i=0;i<player.$.qianhuan.length;i++){
+								suits.add(get.suit(player.$.qianhuan[i]));
 							}
 							player.chooseCard('he',get.prompt2('qianhuan'),function(card){
 								return !_status.event.suits.contains(get.suit(card));
@@ -6175,7 +6175,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							'step 1'
 							if(result.bool){
 								var card=result.cards[0]
-								player.storage.qianhuan.add(card);
+								player.$.qianhuan.add(card);
 								player.lose(card,ui.special,'toStorage');
 								player.$give(card,player,false);
 								player.markSkill('qianhuan',true);
@@ -6187,7 +6187,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'useCardToTarget'},
 						filter:function(event,player){
 							if(!['basic','trick'].contains(get.type(event.card,'trick'))) return false;
-							return event.target&&player.sameIdentityAs(event.target)&&event.targets.length==1&&player.storage.qianhuan.length;
+							return event.target&&player.sameIdentityAs(event.target)&&event.targets.length==1&&player.$.qianhuan.length;
 						},
 						direct:true,
 						content:function(){
@@ -6220,12 +6220,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								if(_status.event.goon) return 1;
 								return 0;
 							}).set('createDialog',[get.prompt('qianhuan'),'<div class="text center">移去一张“千幻”牌令'+
-							get.translation(trigger.player)+'对'+get.translation(trigger.target)+'的'+get.translation(trigger.card)+'失效</div>',player.storage.qianhuan]);
+							get.translation(trigger.player)+'对'+get.translation(trigger.target)+'的'+get.translation(trigger.card)+'失效</div>',player.$.qianhuan]);
 							'step 1'
 							if(result.bool){
 								var card=result.links[0];
-								player.storage.qianhuan.remove(card);
-								if(player.storage.qianhuan.length){
+								player.$.qianhuan.remove(card);
+								if(player.$.qianhuan.length){
 									player.updateMarks('qianhuan');
 								}
 								else{
@@ -6325,7 +6325,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(current.identity=='wu'){
 							return current.countCards('e');
 						}
-					})+player.storage.yuanjiangfenghuotu.length;
+					})+player.$.yuanjiangfenghuotu.length;
 					if(num>=5){
 						return 8-get.value(card);
 					}
@@ -6343,7 +6343,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(current.identity=='wu'){
 							return current.countCards('e');
 						}
-					})+player.storage.yuanjiangfenghuotu.length;
+					})+player.$.yuanjiangfenghuotu.length;
 					if(num){
 						event.shown=get.cards(num);
 						player.showCards(event.shown,get.translation('lianzi'));
@@ -6429,7 +6429,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				mark:true,
 				global:['jiahe_put','jiahe_skill'],
 				init:function(player){
-					if(!player.storage.yuanjiangfenghuotu) player.storage.yuanjiangfenghuotu=[];
+					if(!player.$.yuanjiangfenghuotu) player.$.yuanjiangfenghuotu=[];
 				},
 				ai:{
 					threaten:2
@@ -6437,17 +6437,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'damageEnd'},
 				forced:true,
 				filter:function(event,player){
-					return event.card&&(event.card.name=='sha'||get.type(event.card,'trick')=='trick')&&player.storage.yuanjiangfenghuotu.length>0;
+					return event.card&&(event.card.name=='sha'||get.type(event.card,'trick')=='trick')&&player.$.yuanjiangfenghuotu.length>0;
 				},
 				content:function(){
 					'step 0'
-					player.chooseCardButton('将一张“烽火”置入弃牌堆',player.storage.yuanjiangfenghuotu,true);
+					player.chooseCardButton('将一张“烽火”置入弃牌堆',player.$.yuanjiangfenghuotu,true);
 					'step 1'
 					if(result.bool){
 						var card=result.links[0];
 						player.$throw(card);
 						game.cardsDiscard(card);
-						player.storage.yuanjiangfenghuotu.remove(card);
+						player.$.yuanjiangfenghuotu.remove(card);
 						player.syncStorage('yuanjiangfenghuotu');
 						player.updateMarks('yuanjiangfenghuotu');
 						game.log(player,'将',card,'置入了弃牌堆');
@@ -6460,7 +6460,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forceaudio:true,
 				filter:function(event,player){
 					var zhu=get.zhu(player,'jiahe');
-					if(zhu&&zhu.storage.yuanjiangfenghuotu){
+					if(zhu&&zhu.$.yuanjiangfenghuotu){
 						return player.countCards('he',{type:'equip'})>0;
 					}
 					return false;
@@ -6473,7 +6473,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(!zhu) return 0;
 					var num=7-get.value(card);
 					if(get.position(card)=='h'){
-						if(zhu.storage.yuanjiangfenghuotu.length>=5){
+						if(zhu.$.yuanjiangfenghuotu.length>=5){
 							return num-3;
 						}
 						return num+3;
@@ -6485,7 +6485,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(player.countCards('h',function(card){
 							return get.type(card)=='equip'&&get.subtype(card)=='sub'&&player.hasValueTarget(card);
 						})) return num+4;
-						if(zhu.storage.yuanjiangfenghuotu.length>=5&&!player.hasSkillTag('noe')){
+						if(zhu.$.yuanjiangfenghuotu.length>=5&&!player.hasSkillTag('noe')){
 							return num-5;
 						}
 					}
@@ -6502,7 +6502,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					var zhu=get.zhu(player,'jiahe');
-					zhu.storage.yuanjiangfenghuotu.add(cards[0]);
+					zhu.$.yuanjiangfenghuotu.add(cards[0]);
 					zhu.syncStorage('yuanjiangfenghuotu');
 					zhu.updateMarks('yuanjiangfenghuotu');
 					//event.trigger('addCardToStorage');
@@ -6526,7 +6526,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forceaudio:true,
 				filter:function(event,player){
 					var zhu=get.zhu(player,'jiahe');
-					if(zhu&&zhu.storage.yuanjiangfenghuotu&&zhu.storage.yuanjiangfenghuotu.length){
+					if(zhu&&zhu.$.yuanjiangfenghuotu&&zhu.$.yuanjiangfenghuotu.length){
 						return true;
 					}
 					return false;
@@ -6534,7 +6534,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					var zhu=get.zhu(player,'jiahe');
-					event.num=zhu.storage.yuanjiangfenghuotu.length;
+					event.num=zhu.$.yuanjiangfenghuotu.length;
 					'step 1'
 					var list=[];
 					if(event.num>=1&&!player.hasSkill('reyingzi')) list.push('reyingzi');
@@ -6776,16 +6776,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				unique:true,
 				group:['gzhuashen_add','gzhuashen_swap','gzhuashen_remove','gzhuashen_disallow','gzhuashen_flash'],
 				init:function(player){
-					player.storage.gzhuashen=[];
-					player.storage.gzhuashen_removing=[];
-					player.storage.gzhuashen_trigger=[];
-					player.storage.gzhuashen_map={};
+					player.$.gzhuashen=[];
+					player.$.gzhuashen_removing=[];
+					player.$.gzhuashen_trigger=[];
+					player.$.gzhuashen_map={};
 				},
 				onremove:function(player){
-					delete player.storage.gzhuashen;
-					delete player.storage.gzhuashen_removing;
-					delete player.storage.gzhuashen_trigger;
-					delete player.storage.gzhuashen_map;
+					delete player.$.gzhuashen;
+					delete player.$.gzhuashen_removing;
+					delete player.$.gzhuashen_trigger;
+					delete player.$.gzhuashen_map;
 				},
 				ondisable:true,
 				mark:true,
@@ -6795,8 +6795,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(player.isUnderControl(true)){
 								dialog.addSmall([storage,'character']);
 								var skills=[];
-								for(var i in player.storage.gzhuashen_map){
-									skills.addArray(player.storage.gzhuashen_map[i]);
+								for(var i in player.$.gzhuashen_map){
+									skills.addArray(player.$.gzhuashen_map[i]);
 								}
 								dialog.addText('可用技能：'+(skills.length?get.translation(skills):'无'));
 							}
@@ -6811,8 +6811,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					content:function(storage,player){
 						if(player.isUnderControl(true)){
 							var skills=[];
-							for(var i in player.storage.gzhuashen_map){
-								skills.addArray(player.storage.gzhuashen_map[i]);
+							for(var i in player.$.gzhuashen_map){
+								skills.addArray(player.$.gzhuashen_map[i]);
 							}
 							return get.translation(storage)+'；可用技能：'+(skills.length?get.translation(skills):'无');
 						}
@@ -6834,12 +6834,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				addCharacter:function(player,name,show){
 					var skills=lib.skill.gzhuashen.filterSkill(name);
 					if(skills.length){
-						player.storage.gzhuashen_map[name]=skills;
+						player.$.gzhuashen_map[name]=skills;
 						for(var i=0;i<skills.length;i++){
 							player.addAdditionalSkill('hidden:gzhuashen',skills[i],true);
 						}
 					}
-					player.storage.gzhuashen.add(name);
+					player.$.gzhuashen.add(name);
 					player.updateMarks('gzhuashen');
 					_status.characterlist.remove(name);
 					if(show){
@@ -6866,29 +6866,29 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				removeCharacter:function(player,name){
 					var skills=lib.skill.gzhuashen.filterSkill(name);
 					if(skills.length){
-						delete player.storage.gzhuashen_map[name];
+						delete player.$.gzhuashen_map[name];
 						for(var i=0;i<skills.length;i++){
 							var remove=true;
-							for(var j in player.storage.gzhuashen_map){
-								if(j!=name&&game.expandSkills(player.storage.gzhuashen_map[j].slice(0)).contains(skills[i])){
+							for(var j in player.$.gzhuashen_map){
+								if(j!=name&&game.expandSkills(player.$.gzhuashen_map[j].slice(0)).contains(skills[i])){
 									remove=false;break;
 								}
 							}
 							if(remove){
 								player.removeAdditionalSkill('hidden:gzhuashen',skills[i]);
-								player.storage.gzhuashen_removing.remove(skills[i]);
+								player.$.gzhuashen_removing.remove(skills[i]);
 							}
 						}
 					}
-					player.storage.gzhuashen.remove(name);
+					player.$.gzhuashen.remove(name);
 					player.updateMarks('gzhuashen');
 					_status.characterlist.add(name);
 				},
 				getSkillSources:function(player,skill){
 					if(player.getStockSkills().contains(skill)) return [];
 					var sources=[];
-					for(var i in player.storage.gzhuashen_map){
-						if(game.expandSkills(player.storage.gzhuashen_map[i].slice(0)).contains(skill)) sources.push(i);
+					for(var i in player.$.gzhuashen_map){
+						if(game.expandSkills(player.$.gzhuashen_map[i].slice(0)).contains(skill)) sources.push(i);
 					}
 					return sources;
 				},
@@ -6898,7 +6898,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseBeginStart'},
 						frequent:true,
 						filter:function(event,player){
-							return player.storage.gzhuashen.length<2;
+							return player.$.gzhuashen.length<2;
 						},
 						content:function(){
 							'step 0'
@@ -6927,11 +6927,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						direct:true,
 						filter:function(event,player){
 							if(player.hasSkill('gzhuashen_triggered')) return false;
-							return player.storage.gzhuashen.length>=2;
+							return player.$.gzhuashen.length>=2;
 						},
 						content:function(){
 							'step 0'
-							var list=player.storage.gzhuashen.slice(0);
+							var list=player.$.gzhuashen.slice(0);
 							if(!list.length){
 								event.finish();
 								return;
@@ -6956,7 +6956,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								var sources=lib.skill.gzhuashen.getSkillSources(player,skill);
 								if(sources.length){
 									player.flashAvatar('gzhuashen',sources.randomGet());
-									player.storage.gzhuashen_removing.add(skill);
+									player.$.gzhuashen_removing.add(skill);
 								}
 							}
 						},
@@ -6973,14 +6973,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{player:'phaseAfter'},
 						silent:true,
 						content:function(){
-							player.storage.gzhuashen_trigger.length=0;
+							player.$.gzhuashen_trigger.length=0;
 						}
 					},
 					disallow:{
 						hookTrigger:{
 							block:function(event,player,name,skill){
-								for(var i=0;i<player.storage.gzhuashen_trigger.length;i++){
-									var info=player.storage.gzhuashen_trigger[i];
+								for(var i=0;i<player.$.gzhuashen_trigger.length;i++){
+									var info=player.$.gzhuashen_trigger[i];
 									if(info[0]==event&&info[1]==name&&
 									lib.skill.gzhuashen.getSkillSources(player,skill).length>0){
 										return true;
@@ -6994,7 +6994,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{player:['useSkillAfter','useCardAfter','respondAfter','triggerAfter','skillAfter']},
 						hookTrigger:{
 							after:function(event,player){
-								if(event._direct&&!player.storage.gzhuashen_removing.contains(event.skill)) return false;
+								if(event._direct&&!player.$.gzhuashen_removing.contains(event.skill)) return false;
 								if(lib.skill[event.skill].silent) return false;
 								return lib.skill.gzhuashen.getSkillSources(player,event.skill).length>0;
 							}
@@ -7006,7 +7006,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						content:function(){
 							'step 0'
 							if(trigger.name=='trigger'){
-								player.storage.gzhuashen_trigger.push([trigger._trigger,trigger.triggername]);
+								player.$.gzhuashen_trigger.push([trigger._trigger,trigger.triggername]);
 							}
 							var sources=lib.skill.gzhuashen.getSkillSources(player,trigger.skill);
 							if(sources.length==1){
@@ -7028,7 +7028,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ai:{
 					nofrequent:true,
 					skillTagFilter:function(player,tag,arg){
-						if(arg&&player.storage.gzhuashen){
+						if(arg&&player.$.gzhuashen){
 							if(lib.skill.gzhuashen.getSkillSources(player,arg).length>0){
 								return true;
 							}
@@ -7065,7 +7065,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					if(list.length==1){
-						target.storage.gzxiongsuan_restore=list[0];
+						target.$.gzxiongsuan_restore=list[0];
 						target.addTempSkill('gzxiongsuan_restore','phaseZhunbeiBegin');
 						event.finish();
 					}
@@ -7076,7 +7076,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.finish();
 					}
 					'step 2'
-					target.storage.gzxiongsuan_restore=result.control;
+					target.$.gzxiongsuan_restore=result.control;
 					target.addTempSkill('gzxiongsuan_restore','phaseZhunbeiBegin');
 				},
 				subSkill:{
@@ -7084,7 +7084,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseAfter'},
 						silent:true,
 						content:function(){
-							player.restoreSkill(player.storage.gzxiongsuan_restore);
+							player.restoreSkill(player.$.gzxiongsuan_restore);
 						}
 					}
 				},
@@ -7154,7 +7154,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(event.responded) return false;
 					if(!event.filterCard({name:'sha'})) return false;
 					var zhu=get.zhu(player,'hongfa');
-					if(zhu&&zhu.storage.huangjintianbingfu&&zhu.storage.huangjintianbingfu.length>0){
+					if(zhu&&zhu.$.huangjintianbingfu&&zhu.$.huangjintianbingfu.length>0){
 						return true;
 					}
 					return false;
@@ -7162,7 +7162,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					var zhu=get.zhu(player,'hongfa');
-					player.chooseCardButton(get.prompt('huangjintianbingfu'),zhu.storage.huangjintianbingfu).set('ai',function(){
+					player.chooseCardButton(get.prompt('huangjintianbingfu'),zhu.$.huangjintianbingfu).set('ai',function(){
 						if(_status.event.goon) return 1;
 						return 0;
 					}).set('goon',player.countCards('h','sha')==0);
@@ -7173,7 +7173,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger.responded=true;
 						trigger.result={bool:true,card:{name:'sha'},cards:[card]};
 						var zhu=get.zhu(player,'hongfa');
-						zhu.storage.huangjintianbingfu.remove(card);
+						zhu.$.huangjintianbingfu.remove(card);
 						zhu.syncStorage('huangjintianbingfu');
 						zhu.updateMarks('huangjintianbingfu');
 						player.logSkill('hongfa_respond');
@@ -7187,7 +7187,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				filter:function(event,player){
 					if(!event.filterCard({name:'sha'},player)) return false;
 					var zhu=get.zhu(player,'hongfa');
-					if(zhu&&zhu.storage.huangjintianbingfu&&zhu.storage.huangjintianbingfu.length>0){
+					if(zhu&&zhu.$.huangjintianbingfu&&zhu.$.huangjintianbingfu.length>0){
 						return true;
 					}
 					return false;
@@ -7195,7 +7195,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				chooseButton:{
 					dialog:function(event,player){
 						var zhu=get.zhu(player,'hongfa');
-						return ui.create.dialog('黄巾天兵符',zhu.storage.huangjintianbingfu,'hidden');
+						return ui.create.dialog('黄巾天兵符',zhu.$.huangjintianbingfu,'hidden');
 					},
 					backup:function(links,player){
 						return {
@@ -7207,7 +7207,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								result.cards=lib.skill[result.skill].cards;
 								var card=result.cards[0];
 								var zhu=get.zhu(player,'hongfa');
-								zhu.storage.huangjintianbingfu.remove(card);
+								zhu.$.huangjintianbingfu.remove(card);
 								zhu.syncStorage('huangjintianbingfu');
 								zhu.updateMarks('huangjintianbingfu');
 								player.logSkill('hongfa_use',result.targets);
@@ -7222,7 +7222,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					respondSha:true,
 					skillTagFilter:function(player){
 						var zhu=get.zhu(player,'hongfa');
-						if(zhu&&zhu.storage.huangjintianbingfu&&zhu.storage.huangjintianbingfu.length>0){
+						if(zhu&&zhu.$.huangjintianbingfu&&zhu.$.huangjintianbingfu.length>0){
 							return true;
 						}
 						return false;
@@ -7241,7 +7241,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			hongfa:{
 				audio:2,
 				init:function(player){
-					player.storage.huangjintianbingfu=[];
+					player.$.huangjintianbingfu=[];
 				},
 				derivation:'huangjintianbingfu',
 				unique:true,
@@ -7249,11 +7249,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseZhunbeiBegin'},
 				forced:true,
 				filter:function(event,player){
-					return player.storage.huangjintianbingfu.length==0&&get.population('qun')>0;
+					return player.$.huangjintianbingfu.length==0&&get.population('qun')>0;
 				},
 				content:function(){
 					var cards=get.cards(get.population('qun'));
-					player.storage.huangjintianbingfu.addArray(cards);
+					player.$.huangjintianbingfu.addArray(cards);
 					game.cardsGotoSpecial(cards);
 					player.syncStorage('huangjintianbingfu');
 					player.updateMarks('huangjintianbingfu');
@@ -7269,19 +7269,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						audio:true,
 						trigger:{player:'loseHpBefore'},
 						filter:function(event,player){
-							return player.storage.huangjintianbingfu.length>0;
+							return player.$.huangjintianbingfu.length>0;
 						},
 						direct:true,
 						content:function(){
 							'step 0'
-							player.chooseCardButton(get.prompt('hongfa'),player.storage.huangjintianbingfu).set('ai',function(){
+							player.chooseCardButton(get.prompt('hongfa'),player.$.huangjintianbingfu).set('ai',function(){
 								return 1;
 							});
 							'step 1'
 							if(result.bool){
 								var card=result.links[0];
 								game.cardsDiscard(card);
-								player.storage.huangjintianbingfu.remove(card);
+								player.$.huangjintianbingfu.remove(card);
 								player.$throw(card,1000);
 								player.updateMarks('huangjintianbingfu');
 								player.syncStorage('huangjintianbingfu');
@@ -7384,7 +7384,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				// check:function(event,player){
 				// 	var num=get.population('qun');
 				// 	if(player.hasSkill('huangjintianbingfu')){
-				// 		num+=player.storage.huangjintianbingfu.length;
+				// 		num+=player.$.huangjintianbingfu.length;
 				// 	}
 				// 	return num>event.num;
 				// },
@@ -7396,7 +7396,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					var num=get.population('qun');
 					if(player.hasSkill('huangjintianbingfu')){
-						num+=player.storage.huangjintianbingfu.length;
+						num+=player.$.huangjintianbingfu.length;
 					}
 					player.chooseCardButton(num,true,get.cards(num),'按顺序将卡牌置于牌堆顶（先选择的在上）').set('ai',function(button){
 						return get.value(button.link);
@@ -7426,10 +7426,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							'judgeAfter','useSkillAfter','phaseDrawBegin','phaseAfter']},
 						forced:true,
 						filter:function(event,player){
-							if(player.storage.zhangwu){
-								for(var i=0;i<player.storage.zhangwu.length;i++){
-									if(get.owner(player.storage.zhangwu[i])==player) continue;
-									var position=get.position(player.storage.zhangwu[i]);
+							if(player.$.zhangwu){
+								for(var i=0;i<player.$.zhangwu.length;i++){
+									if(get.owner(player.$.zhangwu[i])==player) continue;
+									var position=get.position(player.$.zhangwu[i]);
 									if(position&&position!='s'&&position!='c'){
 										return true;
 									}
@@ -7483,19 +7483,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								}
 							}
 							var list2=[];
-							if(player.storage.zhangwu){
+							if(player.$.zhangwu){
 								for(var i=0;i<list.length;i++){
-									if(player.storage.zhangwu.contains(list[i])){
-										player.storage.zhangwu.remove(list[i]);
+									if(player.$.zhangwu.contains(list[i])){
+										player.$.zhangwu.remove(list[i]);
 										list2.add(list[i]);
 										list.splice(i--,1);
 									}
 								}
-								for(var i=0;i<player.storage.zhangwu.length;i++){
-									if(get.owner(player.storage.zhangwu[i])==player) continue;
-									var position=get.position(player.storage.zhangwu[i]);
+								for(var i=0;i<player.$.zhangwu.length;i++){
+									if(get.owner(player.$.zhangwu[i])==player) continue;
+									var position=get.position(player.$.zhangwu[i]);
 									if(position&&position!='s'&&position!='c'){
-										list2.add(player.storage.zhangwu[i]);
+										list2.add(player.$.zhangwu[i]);
 									}
 								}
 							}
@@ -7546,12 +7546,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return false;
 						},
 						content:function(){
-							if(!player.storage.zhangwu){
-								player.storage.zhangwu=[];
+							if(!player.$.zhangwu){
+								player.$.zhangwu=[];
 							}
 							for(var i=0;i<trigger.stockcards.length;i++){
 								if(trigger.stockcards[i].name=='feilongduofeng'){
-									player.storage.zhangwu.add(trigger.stockcards[i]);
+									player.$.zhangwu.add(trigger.stockcards[i]);
 								}
 							}
 						}
@@ -7608,7 +7608,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						forced:true,
 						filter:function(event,player){
 							return event.card&&event.card.name=='feilongduofeng'&&event.player!=player&&
-								player.storage.zhangwu&&player.storage.zhangwu.contains(event.card);
+								player.$.zhangwu&&player.$.zhangwu.contains(event.card);
 						},
 						content:function(){
 							'step 0'
@@ -7619,7 +7619,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(owner){
 								owner.lose(trigger.card,ui.special);
 							}
-							player.storage.zhangwu.remove(trigger.card);
+							player.$.zhangwu.remove(trigger.card);
 							'step 1'
 							trigger.card.fix();
 							ui.cardPile.appendChild(trigger.card);
@@ -7631,7 +7631,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						trigger:{global:'phaseAfter'},
 						silent:true,
 						content:function(){
-							delete player.storage.zhangwu;
+							delete player.$.zhangwu;
 						}
 					}
 				}
@@ -7661,10 +7661,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				skillAnimation:true,
 				animationColor:'fire',
 				init:function(player){
-					player.storage.jizhao=false;
+					player.$.jizhao=false;
 				},
 				filter:function(event,player){
-					if(player.storage.jizhao) return false;
+					if(player.$.jizhao) return false;
 					if(event.type=='dying'){
 						if(player!=event.dying) return false;
 						return true;
@@ -7674,7 +7674,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					'step 0'
 					player.awakenSkill('jizhao');
-					player.storage.jizhao=true;
+					player.$.jizhao=true;
 					var num=player.maxHp-player.countCards('h');
 					if(num>0){
 						player.draw(num);
@@ -7691,7 +7691,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				ai:{
 					order:1,
 					skillTagFilter:function(player,arg,target){
-						if(player!=target||player.storage.jizhao) return false;
+						if(player!=target||player.$.jizhao) return false;
 					},
 					save:true,
 					result:{
@@ -7767,7 +7767,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				audio:2,
 				trigger:{global:'damageEnd'},
 				filter:function(event,player){
-					return event.player.isIn()&&event.player.isFriendOf(player)&&player.storage.tuntian&&player.storage.tuntian.length;
+					return event.player.isIn()&&event.player.isFriendOf(player)&&player.$.tuntian&&player.$.tuntian.length;
 				},
 				init:function(player){
 					player.checkViceSkill('ziliang');
@@ -7776,16 +7776,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					'step 0'
-					player.chooseCardButton(get.prompt('ziliang',trigger.player),player.storage.tuntian).set('ai',function(button){
+					player.chooseCardButton(get.prompt('ziliang',trigger.player),player.$.tuntian).set('ai',function(button){
 						return get.value(button.link);
 					});
 					'step 1'
 					if(result.bool){
 						var card=result.links[0];
 						player.logSkill('ziliang',trigger.player);
-						player.storage.tuntian.remove(card);
+						player.$.tuntian.remove(card);
 						player.syncStorage('tuntian');
-						if(!player.storage.tuntian.length){
+						if(!player.$.tuntian.length){
 							player.unmarkSkill('tuntian');
 						}
 						else{
@@ -8404,7 +8404,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					if(ui.selected.cards.length&&ui.selected.cards[0].name=='du') return 0;
 					if(!ui.selected.cards.length&&card.name=='du') return 20;
 					var player=get.owner(card);
-					if(player.hp==player.maxHp||player.storage.gzrende<0||player.countCards('h')+player.storage.gzrende<=2){
+					if(player.hp==player.maxHp||player.$.gzrende<0||player.countCards('h')+player.$.gzrende<=2){
 						if(ui.selected.cards.length){
 							return -1;
 						}
@@ -8426,20 +8426,20 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					target.gain(cards,player);
-					if(typeof player.storage.gzrende!='number'){
-						player.storage.gzrende=0;
+					if(typeof player.$.gzrende!='number'){
+						player.$.gzrende=0;
 					}
-					if(player.storage.gzrende>=0){
-						player.storage.gzrende+=cards.length;
-						if(player.storage.gzrende>=3){
+					if(player.$.gzrende>=0){
+						player.$.gzrende+=cards.length;
+						if(player.$.gzrende>=3){
 							player.recover();
-							player.storage.gzrende=-1;
+							player.$.gzrende=-1;
 						}
 					}
 				},
 				ai:{
 					order:function(skill,player){
-						if(player.hp==player.maxHp||player.storage.gzrende<0||player.countCards('h')+player.storage.gzrende<=2){
+						if(player.hp==player.maxHp||player.$.gzrende<0||player.countCards('h')+player.$.gzrende<=2){
 							return 1;
 						}
 						return 10;
@@ -8452,7 +8452,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(target.hasJudge('lebu')) return 0;
 							var nh=target.countCards('h');
 							var np=player.countCards('h');
-							if(player.hp==player.maxHp||player.storage.gzrende<0||player.countCards('h')+player.storage.gzrende<=2){
+							if(player.hp==player.maxHp||player.$.gzrende<0||player.countCards('h')+player.$.gzrende<=2){
 								if(nh>=np-1&&np<=player.hp&&!target.hasSkill('haoshi')) return 0;
 							}
 							return Math.max(1,5-nh);
@@ -8479,7 +8479,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'phaseUseBegin'},
 				silent:true,
 				content:function(){
-					player.storage.gzrende=0;
+					player.$.gzrende=0;
 				}
 			},
 			gzzhiheng:{
@@ -8739,7 +8739,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:true,
 				popup:false,
 				filter:function(event,player){
-					if(player.storage._mingzhi3) return false
+					if(player.$._mingzhi3) return false
 					if(_status.connectMode){
 						if(!lib.configOL.junzhu) return false;
 					}
@@ -8748,7 +8748,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					player.storage._mingzhi3=true;
+					player.$._mingzhi3=true;
 					var name=player.name1;
 					if(!player.isUnseen(0)||name.indexOf('gz_')!=0
 					||!lib.junList.contains(name.slice(3))||!lib.character['gz_jun_'+name.slice(3)]
@@ -8947,7 +8947,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var source=event.targets2.shift();
 					event.source=source;
 					var targets=game.filterPlayer(function(current){
-						return current.identity!='ye'&&current!=source&&!get.is.jun(current)&&!event.targets2.contains(current)&&!current.storage.yexinjia_friend;
+						return current.identity!='ye'&&current!=source&&!get.is.jun(current)&&!event.targets2.contains(current)&&!current.$.yexinjia_friend;
 					}).sortBySeat(source);
 					if(!targets.length){
 						delete _status.showYexings;
@@ -8976,7 +8976,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.say('加入');
 							player.identity='ye';
 							player.setIdentity('ye');
-							player.storage.yexinjia_friend=target;
+							player.$.yexinjia_friend=target;
 						},target,source);
 						target.markSkill('yexinjia_friend');
 						source.removeMark('yexinjia_mark',1);
@@ -10229,7 +10229,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		dynamicTranslate:{
 			gz_longdan:function(player){
-				if(player.storage.gz_longdan) return '转换技 <span class="changetext">阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。';
+				if(player.$.gz_longdan) return '转换技 <span class="changetext">阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；</span>阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。';
 				return '转换技 阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；<span class="changetext">阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。</span>你以此法转化点数大于7的牌无次数与距离限制。';
 			},
 		},
@@ -10886,7 +10886,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				differentIdentityFrom:function(target,self){
 					if(this==target) return false;
-					if(this.storage.yexinjia_friend==target||target.storage.yexinjia_friend==this) return false;
+					if(this.$.yexinjia_friend==target||target.$.yexinjia_friend==this) return false;
 					if(self){
 						if(target.identity=='unknown') return false;
 						if(target.identity=='ye'||this.identity=='ye') return true;
@@ -10903,7 +10903,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					return this.identity!=target.identity;
 				},
 				sameIdentityAs:function(target,shown){
-					if(this.storage.yexinjia_friend==target||target.storage.yexinjia_friend==this) return true;
+					if(this.$.yexinjia_friend==target||target.$.yexinjia_friend==this) return true;
 					if(shown){
 						if(this.identity=='ye'||this.identity=='unknown') return false;
 					}
@@ -11000,10 +11000,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					next.target=target;
 					next.num=num;
 					next.setContent(function(){
-						if(!player.storage.zhibi){
-							player.storage.zhibi=[];
+						if(!player.$.zhibi){
+							player.$.zhibi=[];
 						}
-						player.storage.zhibi.add(target);
+						player.$.zhibi.add(target);
 						var content,str=get.translation(target)+'的';
 						if(event.num==0||!target.isUnseen(1)){
 							content=[str+'主将',[[target.name1],'character']];
@@ -11619,7 +11619,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				if(to.identity=='unknown'&&game.players.length==2) return -5;
 				if(_status.currentPhase==from&&from.ai.tempIgnore&&
 					from.ai.tempIgnore.contains(to)&&to.identity=='unknown'&&
-					(!from.storage.zhibi||!from.storage.zhibi.contains(to))) return 0;
+					(!from.$.zhibi||!from.$.zhibi.contains(to))) return 0;
 				var difficulty=0;
 				if(to==game.me) difficulty=(2-get.difficulty())*1.5;
 				if(from==to) return 5+difficulty;
@@ -11635,7 +11635,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 				var att=get.realAttitude(from,to,difficulty,toidentity);
-				if(from.storage.zhibi&&from.storage.zhibi.contains(to)){
+				if(from.$.zhibi&&from.$.zhibi.contains(to)){
 					return att;
 				}
 				if(to.ai.shown>=0.5) return att*to.ai.shown;

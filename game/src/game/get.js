@@ -59,7 +59,7 @@ module.exports = {
           */
          is: {
             //“保护新手”模式的ban将
-            banForBeginner: function (current) {
+            banForBeginner(current) {
                if (current in lib.character) {
                   for (var i in lib.characterPack) {
                      if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
@@ -89,7 +89,7 @@ module.exports = {
                }
             },
             //检查卡牌是否符合要求的快捷方法(只要求满足至少一种条件，无条件时默认不满足)
-            filterCardBy: function (card, arg) {
+            filterCardBy(card, arg) {
                if (!card || !arg) return false;
                if (typeof arg == 'string') {
                   if (arg == get.name(card)) return true;
@@ -103,7 +103,7 @@ module.exports = {
                      else {
                         value = card[x];
                      }
-                     if ((typeof arg[x] == 'string' && value == arg[x]) ||
+                     if ((['string', 'number'].includes(typeof arg[x]) && value == arg[x]) ||
                         (Array.isArray(arg[x]) && arg[x].contains(value))) {
                         return true;
                      }
@@ -117,9 +117,9 @@ module.exports = {
             /**
              * 判断技能是否被封锁
              */
-            blocked: function (skill, player) {
-               if (!player.storage.skill_blocker || !player.storage.skill_blocker.length) return false;
-               for (let i of player.storage.skill_blocker) {
+            blocked(skill, player) {
+               if (!player.$.skill_blocker || !player.$.skill_blocker.length) return false;
+               for (let i of player.$.skill_blocker) {
                   if (lib.skill[i] && lib.skill[i].skillBlocker && lib.skill[i].skillBlocker(skill, player)) return true;
                }
                return false;
@@ -127,7 +127,7 @@ module.exports = {
             /**
              * 判断角色是否为多势力
              */
-            double: function (name, array) {
+            double(name, array) {
                if (!lib.character[name] || !lib.character[name][4]) return false;
                for (let i of lib.character[name][4]) {
                   if (i.indexOf('doublegroup:') == 0) {
@@ -140,10 +140,10 @@ module.exports = {
             /**
              * 判断卡牌是否携带应变标签
              */
-            yingbian: function (node) {
+            yingbian(node) {
                return get.cardtag(node, 'yingbian_zhuzhan') || get.cardtag(node, 'yingbian_fujia') || get.cardtag(node, 'yingbian_canqu') || get.cardtag(node, 'yingbian_kongchao');
             },
-            emoji: function (substring) {
+            emoji(substring) {
                if (substring) {
                   var reg = new RegExp("[~#^$@%&!?%*]", 'g');
                   if (substring.match(reg)) {
@@ -189,28 +189,28 @@ module.exports = {
                }
                return false;
             },
-            banWords: function (str) {
+            banWords(str) {
                if (get.is.emoji(str)) return true;
                for (let i of require('@e/keyWords').bannedKeyWords) {
                   if (str.indexOf(i) != -1) return true;
                }
                return false;
             },
-            converted: function (Evt) {
+            converted(Evt) {
                return !(Evt.card && Evt.card.isCard);
             },
-            safari: function () {
+            safari() {
                var ua = navigator.userAgent.toLowerCase();
                return ua.indexOf('safari' != -1) && ua.indexOf('chrome') == -1;
             },
-            freePosition: function (cards) {
+            freePosition(cards) {
                for (var i = 0; i < cards.length; i++) {
                   if (!cards[i].hasPosition) return false;
                   if (cards[i].hasPosition()) return false;
                }
                return true;
             },
-            nomenu: function (name, item) {
+            nomenu(name, item) {
                var menus = ['system', 'menu'];
                var configs = {
                   show_round_menu: lib.config.show_round_menu,
@@ -244,34 +244,34 @@ module.exports = {
                }
                return true;
             },
-            altered: function (skill) {
+            altered(skill) {
                return false;
                // if(_status.connectMode) return true;
                // return !lib.config.vintageSkills.contains(skill);
             },
-            node: function (obj) {
+            node(obj) {
                var str = Object.prototype.toString.call(obj);
                if (str && str.indexOf('[object HTML')) return true;
                return false;
             },
-            div: function (obj) {
+            div(obj) {
                return Object.prototype.toString.call(obj) === '[object HTMLDivElement]';
             },
-            map: function (obj) {
+            map(obj) {
                return Object.prototype.toString.call(obj) === '[object Map]';
             },
-            set: function (obj) {
+            set(obj) {
                return Object.prototype.toString.call(obj) === '[object Set]';
             },
-            object: function (obj) {
+            object(obj) {
                return Object.prototype.toString.call(obj) === '[object Object]';
             },
-            singleSelect: function (func) {
+            singleSelect(func) {
                if (typeof func == 'function') return false;
                var select = get.select(func);
                return select[0] == 1 && select[1] == 1;
             },
-            jun: function (name) {
+            jun(name) {
                if (get.mode() == 'guozhan') {
                   if (name && typeof name == 'object') {
                      if (name.isUnseen && name.isUnseen(0)) return false;
@@ -283,33 +283,33 @@ module.exports = {
                }
                return false;
             },
-            versus: function () {
+            versus() {
                return !_status.connectMode && get.mode() == 'versus' && _status.mode == 'three';
             },
-            changban: function () {
+            changban() {
                return get.mode() == 'single' && _status.mode == 'changban';
             },
-            single: function () {
+            single() {
                return get.mode() == 'single' && _status.mode == 'normal';
             },
-            mobileMe: function (player) {
+            mobileMe(player) {
                return (game.layout == 'mobile' || game.layout == 'long') && !game.chess && player.dataset.position == 0;
             },
-            newLayout: function () {
+            newLayout() {
                if (game.layout != 'default') return true;
                return false;
             },
-            phoneLayout: function () {
+            phoneLayout() {
                if (!lib.config.phonelayout) return false;
                return (game.layout == 'mobile' || game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova');
             },
-            singleHandcard: function () {
+            singleHandcard() {
                if (game.singleHandcard || game.layout == 'mobile' || game.layout == 'long' || game.layout == 'long2' || game.layout == 'nova') {
                   return true;
                }
                return false;
             },
-            linked2: function (player) {
+            linked2(player) {
                if (game.chess) return true;
                if (lib.config.link_style2 != 'rotate') return true;
                // if(game.chess) return false;
@@ -319,17 +319,17 @@ module.exports = {
                }
                return false;
             },
-            empty: function (obj) {
+            empty(obj) {
                for (var i in obj) return false;
                return true;
             },
-            pos: function (str) {
+            pos(str) {
                return (str == 'h' || str == 'e' || str == 'j' || str == 'he' || str == 'hj' || str == 'ej' || str == 'hej');
             },
             /**
              * 判断技能是否为锁定技
              */
-            locked: function (skill, player) {
+            locked(skill, player) {
                var info = lib.skill[skill];
                if (typeof info.locked == 'function') return info.locked(skill, player);
                if (info.locked == false) return false;
@@ -1808,11 +1808,12 @@ module.exports = {
             }
             return types;
          },
-         subtype: function (obj) {
+         subtype: function (obj, player) {
             if (typeof obj == 'string') obj = { name: obj };
             if (typeof obj != 'object') return;
-            if (!lib.card[obj.name]) return;
-            return lib.card[obj.name].subtype;
+            var name = get.name(obj, player);
+            if (!lib.card[name]) return;
+            return lib.card[name].subtype;
          },
          equiptype: function (card, player) {
             var subtype = get.subtype(card, player);
@@ -2115,7 +2116,8 @@ module.exports = {
                }
             }
             if (method == 'attack') return m;
-            return n;
+            if (method == 'unchecked') return n;
+            return Math.max(1, n);
          },
          /**
           * 返回技能模板
@@ -3262,7 +3264,7 @@ module.exports = {
                   tr.appendChild(td);
                   td = document.createElement('td');
                   if (game.chess) {
-                     if (node.storage.curClass) td.innerHTML = get.translation(node.storage.curClass);
+                     if (node.$.curClass) td.innerHTML = get.translation(node.$.curClass);
                      else td.innerHTML = '-';
                   } else {
                      (function () {
@@ -4928,47 +4930,31 @@ module.exports = {
                }
                result2 += temp02;
                result1 += temp01;
-               if (get.attitude(player, target) < 0) {
-                  result2 *= Math.sqrt(threaten);
-               }
-               else {
-                  result2 *= Math.sqrt(Math.sqrt(threaten));
-               }
-               // *** continue here ***
-               if (target.hp == 1) result2 *= 2.5;
-               if (target.hp == 2) result2 *= 1.8;
-               if (target.countCards('h') == 0) {
-                  if (get.tag(card, 'respondSha') || get.tag(card, 'respondShan')) {
-                     result2 *= 1.7;
+               if (typeof card == 'object') {
+                  if (get.attitude(player, target) < 0) {
+                     result2 *= Math.sqrt(threaten);
                   }
                   else {
-                     result2 *= 1.5;
+                     result2 *= Math.sqrt(Math.sqrt(threaten));
                   }
+                  // *** continue here ***
+                  if (target.hp == 1) result2 *= 2.5;
+                  if (target.hp == 2) result2 *= 1.8;
+                  if (target.countCards('h') == 0) {
+                     if (get.tag(card, 'respondSha') || get.tag(card, 'respondShan')) {
+                        result2 *= 1.7;
+                     }
+                     else {
+                        result2 *= 1.5;
+                     }
+                  }
+                  if (target.countCards('h') == 1) result2 *= 1.3;
+                  if (target.countCards('h') == 2) result2 *= 1.1;
+                  if (target.countCards('h') > 3) result2 *= 0.5;
+                  if (target.hp == 4) result2 *= 0.9;
+                  if (target.hp == 5) result2 *= 0.8;
+                  if (target.hp > 5) result2 *= 0.6;
                }
-               if (target.countCards('h') == 1) result2 *= 1.3;
-               if (target.countCards('h') == 2) result2 *= 1.1;
-               if (target.countCards('h') > 3) result2 *= 0.5;
-               if (target.hp == 4) result2 *= 0.9;
-               if (target.hp == 5) result2 *= 0.8;
-               if (target.hp > 5) result2 *= 0.6;
-               // if(get.attitude(player,target)<0){
-               //     result2*=threaten;
-               // }
-               // else{
-               //     result2*=Math.sqrt(threaten);
-               // }
-               // if(target.hp<=1) result2*=2;
-               // if(target.hp==2) result2*=1.1;
-               // if(target.countCards('h')==0){
-               //     result2*=1.1;
-               //     if(get.tag(card,'respondSha')||get.tag(card,'respondShan')) result2*=1.4;
-               // }
-               // if(target.countCards('h')==1) result2*=1.05;
-               // if(target.countCards('h')==2) result2*=1.02;
-               // if(target.countCards('h')>3) result2*=0.9;
-               // if(target.hp==4) result2*=0.9;
-               // if(target.hp==5) result2*=0.8;
-               // if(target.hp>5) result2*=0.6;
             }
             else {
                result2 += temp02;

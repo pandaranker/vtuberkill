@@ -327,10 +327,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			suijiyingbian_skill:{
 				mod:{
 					cardname:function(card,player){
-						if(card.name=='suijiyingbian'&&player.storage.suijiyingbian) return player.storage.suijiyingbian;
+						if(card.name=='suijiyingbian'&&player.$.suijiyingbian) return player.$.suijiyingbian;
 					},
 					cardnature:function(card,player){
-						if(card.name=='suijiyingbian'&&player.storage.suijiyingbian_nature) return player.storage.suijiyingbian_nature;
+						if(card.name=='suijiyingbian'&&player.$.suijiyingbian_nature) return player.$.suijiyingbian_nature;
 					},
 				},
 				trigger:{
@@ -346,12 +346,12 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					if(event.triggername=='phaseBeginStart'){
-						delete player.storage.suijiyingbian;
-						delete player.storage.suijiyingbian_nature;
+						delete player.$.suijiyingbian;
+						delete player.$.suijiyingbian_nature;
 					}
 					else{
-						player.storage.suijiyingbian=trigger.card.name;
-						player.storage.suijiyingbian_nature=trigger.card.nature;
+						player.$.suijiyingbian=trigger.card.name;
+						player.$.suijiyingbian_nature=trigger.card.nature;
 					}
 				},
 			},
@@ -549,16 +549,16 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			wuxinghelingshan_info:'当你声明使用不为神属性的属性【杀】时，你可将此【杀】的属性改为不为神属性的其他属性。',
 			wutiesuolian:'强盗衣装',
 			wutiesuolian_skill:'强盗衣装',
-			wutiesuolian_info:'锁定技，当你使用【杀】指定目标后，若其：已横置，你观看其手牌。未横置，其横置。',
+			wutiesuolian_info:'锁定技 当你使用【杀】指定目标后，若其：已横置，你观看其手牌。未横置，其横置。',
 			heiguangkai:'阻燃服',
 			heiguangkai_skill:'阻燃服',
-			heiguangkai_info:'锁定技，当你成为【杀】或黑色普通锦囊牌的目标后，若此牌的目标数大于1，则你令此牌对你无效。',
+			heiguangkai_info:'锁定技 当你成为【杀】或黑色普通锦囊牌的目标后，若此牌的目标数大于1，则你令此牌对你无效。',
 			tongque:'缪缪教授',
 			tongque_skill:'缪缪',
-			tongque_info:'锁定技，你于一回合内使用的第一张带有【应变】效果的牌无视条件直接生效。',
+			tongque_info:'锁定技 你于一回合内使用的第一张带有【应变】效果的牌无视条件直接生效。',
 			tianjitu:'大头菜',
 			tianjitu_skill:'大头菜',
-			tianjitu_info:'锁定技，当此牌进入你的装备区时，你弃置一张不为此【大头菜】的牌。当此牌离开你的装备区后，你将手牌摸至五张。',
+			tianjitu_info:'锁定技 当此牌进入你的装备区时，你弃置一张不为此【大头菜】的牌。当此牌离开你的装备区后，你将手牌摸至五张。',
 			taigongyinfu:'贝琳',
 			taigongyinfu_info:'出牌阶段开始时，你可以横置或重置一名角色。出牌阶段结束时，你可以重铸一张手牌。',
 			taigongyinfu_skill:'贝琳',

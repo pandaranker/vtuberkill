@@ -698,10 +698,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					if(!player.storage.zhibi){
-						player.storage.zhibi=[];
+					if(!player.$.zhibi){
+						player.$.zhibi=[];
 					}
-					player.storage.zhibi.add(target);
+					player.$.zhibi.add(target);
 					var controls=[];
 					if(target.countCards('h')) controls.push('手牌');
 					if(target.isUnseen(0)) controls.push('主将');
@@ -754,7 +754,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					result:{
 						player:function(player,target){
 							if(player.countCards('h')<=player.hp) return 0;
-							if(player.storage.zhibi&&player.storage.zhibi.contains(target)) return 0;
+							if(player.$.zhibi&&player.$.zhibi.contains(target)) return 0;
 							return target.isUnseen()?1:0;
 						}
 					}
@@ -1129,7 +1129,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				mod:{
 					maxHandcard:function(player,num){
 						if(player.hasSkill('huangjintianbingfu')){
-							num+=player.storage.huangjintianbingfu.length;
+							num+=player.$.huangjintianbingfu.length;
 						}
 						return num+game.countPlayer(function(current){
 							return current.isFriendOf(player);
@@ -1429,14 +1429,14 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 		},
 		translate:{
 			liulongcanjia:'高收益车',
-			liulongcanjia_info:'锁定技，你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技，当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
+			liulongcanjia_info:'锁定技 你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技 当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
 			minguangkai:'明光铠',
 			minguangkai_cancel:'明光铠',
 			minguangkai_link:'明光铠',
-			minguangkai_info:'锁定技，当你成为【火烧连营】、【火攻】或火【杀】的目标时，取消之；若你是小势力角色，你不会被横置。',
+			minguangkai_info:'锁定技 当你成为【火烧连营】、【火攻】或火【杀】的目标时，取消之；若你是小势力角色，你不会被横置。',
 			dinglanyemingzhu:'定澜夜明珠',
 			dinglanyemingzhu_bg:'珠',
-			dinglanyemingzhu_info:'锁定技，你视为拥有技能“制衡”，若你已经有“制衡”，则改为取消弃置牌数的限制。',
+			dinglanyemingzhu_info:'锁定技 你视为拥有技能“制衡”，若你已经有“制衡”，则改为取消弃置牌数的限制。',
 			dinglanyemingzhu_skill:'制衡',
 			dinglanyemingzhu_skill_info:'出牌阶段限一次，你可以弃置至多X张牌（X为你的体力上限），然后摸等量的牌',
 			feilongduofeng:'卡祖笛',
@@ -1444,11 +1444,11 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			feilongduofeng3:'卡祖笛',
 			feilongduofeng_info:'当你使用【杀】指定一名角色为目标后，你可令该角色弃置一张牌。当你使用【杀】令其他角色进入濒死状态时，你可以获得其一张手牌。',
 			taipingyaoshu:'太平要术',
-			taipingyaoshu_info:'锁定技，防止你受到的所有属性伤害；全场每有一名与你势力相同的角色存活，你的手牌上限便+1；当你失去装备区里的【太平要术】时，你摸两张牌，然后若你的体力值大于1，你失去1点体力。',
+			taipingyaoshu_info:'锁定技 防止你受到的所有属性伤害；全场每有一名与你势力相同的角色存活，你的手牌上限便+1；当你失去装备区里的【太平要术】时，你摸两张牌，然后若你的体力值大于1，你失去1点体力。',
 			yuxi_skill:'玉玺',
 			yuxi_skill2:'玉玺',
 			yuxi:'玉玺',
-			yuxi_info:'锁定技，若你有明置的武将牌，你的势力视为唯一的大势力；锁定技，摸牌阶段，若你有明置的武将牌，你多摸一张牌；锁定技，出牌阶段开始时，若你有明置的武将牌，你视为使用【知己知彼】',
+			yuxi_info:'锁定技 若你有明置的武将牌，你的势力视为唯一的大势力；锁定技 摸牌阶段，若你有明置的武将牌，你多摸一张牌；锁定技 出牌阶段开始时，若你有明置的武将牌，你视为使用【知己知彼】',
 			xietianzi:'挟令',
 			xietianzi_info:'出牌阶段，对自己使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',
 			xietianzi_info_guozhan:'出牌阶段，对为大势力角色的你使用。你结束出牌阶段，若如此做，弃牌阶段结束时，你可以弃置一张手牌，获得一个额外的回合',

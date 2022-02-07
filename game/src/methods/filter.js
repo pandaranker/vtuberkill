@@ -76,7 +76,7 @@
         return false;
       }
       if (typeof info.usable == 'number' && player.hasSkill('counttrigger') &&
-        player.storage.counttrigger && player.storage.counttrigger[skill] >= info.usable) {
+        player.$.counttrigger && player.$.counttrigger[skill] >= info.usable) {
         return false;
       }
       if (info.round && player.storage[skill + '_roundcount'] > 0) {

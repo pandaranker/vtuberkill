@@ -596,15 +596,15 @@ class PlayerModel extends HTMLDivElementProxy {
      * 将技能移入本角色的封锁列表
      */
     addSkillBlocker(skill) {
-        this.storage.skill_blocker.push(skill);
+        this.$.skill_blocker.push(skill);
     }
     /**
      * 将技能移出本角色的封锁列表
      */
     removeSkillBlocker(skill) {
-        if (this.storage.skill_blocker) {
-            this.storage.skill_blocker.remove(skill);
-            if (!this.storage.skill_blocker.length) delete this.storage.skill_blocker;
+        if (this.$.skill_blocker) {
+            this.$.skill_blocker.remove(skill);
+            if (!this.$.skill_blocker.length) delete this.$.skill_blocker;
         }
     }
     /**
@@ -736,9 +736,9 @@ class PlayerModel extends HTMLDivElementProxy {
                 break;
         }
         if (!this.isUnseen(2)) {
-            delete this.storage.nohp;
-            this.hp = this.storage.rawHp + this.maxHp - 1;
-            this.maxHp = this.storage.rawMaxHp + this.maxHp - 1;
+            delete this.$.nohp;
+            this.hp = this.$.rawHp + this.maxHp - 1;
+            this.maxHp = this.$.rawMaxHp + this.maxHp - 1;
             this.node.hp.show();
             this.update();
         }
@@ -752,7 +752,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 case 2: player.classList.remove('unseen'); player.classList.remove('unseen2'); break;
             }
             if (!player.isUnseen(2)) {
-                delete player.storage.nohp;
+                delete player.$.nohp;
                 player.node.hp.show();
                 player.update();
             }
@@ -1018,8 +1018,8 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     countDisabled() {
-        if (!this.storage.disableEquip) return 0;
-        return this.storage.disableEquip.length;
+        if (!this.$.disableEquip) return 0;
+        return this.$.disableEquip.length;
     }
     isPhaseUsing(notmeisok) {
         if (!notmeisok && _status.currentPhase != this) return false;
@@ -1053,9 +1053,9 @@ class PlayerModel extends HTMLDivElementProxy {
             player.$disableEquip(skill);
         }, this, skill);
         var player = this;
-        if (!player.storage.disableEquip) player.storage.disableEquip = [];
-        player.storage.disableEquip.add(skill);
-        player.storage.disableEquip.sort();
+        if (!player.$.disableEquip) player.$.disableEquip = [];
+        player.$.disableEquip.add(skill);
+        player.$.disableEquip.sort();
         var pos = { equip1: '武器栏', equip2: '防具栏', equip3: '+1马栏', equip4: '-1马栏', equip5: '宝物栏' }[skill];
         if (!pos) return;
         var card = game.createCard('feichu_' + skill, pos, '');
@@ -1095,7 +1095,7 @@ class PlayerModel extends HTMLDivElementProxy {
             player.$enableEquip(skill);
         }, this, skill);
         var player = this;
-        if (player.storage.disableEquip) player.storage.disableEquip.remove(skill);
+        if (player.$.disableEquip) player.$.disableEquip.remove(skill);
         for (var i = 0; i < player.node.equips.childNodes.length; i++) {
             if (player.node.equips.childNodes[i].name == 'feichu_' + skill) {
                 player.node.equips.removeChild(player.node.equips.childNodes[i]);
@@ -1106,8 +1106,8 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     isDisabled(arg) {
         if (typeof arg == 'number') arg = 'equip' + arg;
-        if (arg == 'equip6' && this.storage.disableEquip && (this.storage.disableEquip.contains('equip3') || this.storage.disableEquip.contains('equip4'))) return true;
-        if (this.storage.disableEquip && this.storage.disableEquip.contains(arg)) return true;
+        if (arg == 'equip6' && this.$.disableEquip && (this.$.disableEquip.contains('equip3') || this.$.disableEquip.contains('equip4'))) return true;
+        if (this.$.disableEquip && this.$.disableEquip.contains(arg)) return true;
         return false;
     }
     isEmpty(num) {
@@ -1122,7 +1122,7 @@ class PlayerModel extends HTMLDivElementProxy {
     $disableJudge() {
         var player = this;
         var card = game.createCard('disable_judge', '', '');
-        player.storage._disableJudge = true;
+        player.$._disableJudge = true;
         card.fix();
         card.classList.add('feichu');
         card.style.transform = '';
@@ -1132,7 +1132,7 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     $enableJudge() {
         var player = this;
-        player.storage._disableJudge = false;
+        player.$._disableJudge = false;
         for (var i = 0; i < player.node.judges.childNodes.length; i++) {
             if (player.node.judges.childNodes[i].name == 'disable_judge') {
                 player.node.judges.removeChild(player.node.judges.childNodes[i]);
@@ -1238,7 +1238,7 @@ class PlayerModel extends HTMLDivElementProxy {
             }
             this.sex = 'male';
             //this.group='unknown';
-            this.storage.nohp = true;
+            this.$.nohp = true;
             skills.add('g_hidden_ai');
         }
         if (character2 && lib.character[character2]) {
@@ -1295,16 +1295,16 @@ class PlayerModel extends HTMLDivElementProxy {
                 if (!this.hiddenSkills) this.hiddenSkills = [];
                 this.hiddenSkills.addArray(info2[3]);
                 this.classList.add(_status.video ? 'unseen2_v' : 'unseen2');
-                this.storage.nohp = true;
+                this.$.nohp = true;
                 skills.add('g_hidden_ai');
             }
             else skills = skills.concat(info2[3]);
 
             this.node.name2.innerHTML = get.slimName(character2);
         }
-        if (this.storage.nohp) {
-            this.storage.rawHp = this.hp;
-            this.storage.rawMaxHp = this.maxHp;
+        if (this.$.nohp) {
+            this.$.rawHp = this.hp;
+            this.$.rawMaxHp = this.maxHp;
             this.hp = 1;
             this.maxHp = 1;
             this.node.hp.hide();
@@ -1539,9 +1539,9 @@ class PlayerModel extends HTMLDivElementProxy {
         for (var i = 1; i < 6; i++) {
             if (this.isDisabled(i)) this.$enableEquip('equip' + i);
         }
-        if (this.storage._disableJudge) {
+        if (this.$._disableJudge) {
             game.broadcastAll(function (player) {
-                player.storage._disableJudge = false;
+                player.$._disableJudge = false;
                 for (var i = 0; i < player.node.judges.childNodes.length; i++) {
                     if (player.node.judges.childNodes[i].name == 'disable_judge') {
                         player.node.judges.removeChild(player.node.judges.childNodes[i]);
@@ -1559,7 +1559,7 @@ class PlayerModel extends HTMLDivElementProxy {
             this.node.name_seat.remove();
             delete this.node.name_seat;
         }
-        if (this.storage.nohp) this.node.hp.show();
+        if (this.$.nohp) this.node.hp.show();
         this.classList.remove('unseen');
         this.classList.remove('unseen2');
         delete this.name;
@@ -1898,8 +1898,8 @@ class PlayerModel extends HTMLDivElementProxy {
             equips: this.getCards('e'),
             judges: this.getCards('j'),
             specials: this.getCards('s'),
-            disableJudge: this.storage._disableJudge,
-            disableEquip: this.storage.disableEquip,
+            disableJudge: this.$._disableJudge,
+            disableEquip: this.$.disableEquip,
             views: [],
             position: parseInt(this.dataset.position),
             hujia: this.hujia,
@@ -2090,7 +2090,7 @@ class PlayerModel extends HTMLDivElementProxy {
                 this.unmarkSkill('ghujia');
             }
         }
-        if (!this.storage.nohp) {
+        if (!this.$.nohp) {
             var libHp = lib.character[(this.name && this.name.indexOf('unknown') == 0) ? this.name1 : this.name];
             if (this.maxHp == Infinity) {
                 hp.innerHTML = '∞';
@@ -4997,7 +4997,7 @@ class PlayerModel extends HTMLDivElementProxy {
         return next;
     }
     canAddJudge(card) {
-        if (this.storage._disableJudge) return false;
+        if (this.$._disableJudge) return false;
         var name;
         if (typeof card == 'string') {
             name = card;
@@ -7012,7 +7012,7 @@ class PlayerModel extends HTMLDivElementProxy {
     isFriendOf(player) {
         if (get.mode() == 'guozhan') {
             if (this == player) return true;
-            if (this.storage.yexinjia_friend == player || player.storage.yexinjia_friend == this) return true;
+            if (this.$.yexinjia_friend == player || player.$.yexinjia_friend == this) return true;
             if (this.identity == 'unknown' || this.identity == 'ye') return false;
             if (player.identity == 'unknown' || player.identity == 'ye') return false;
             return this.identity == player.identity;
@@ -7067,14 +7067,14 @@ class PlayerModel extends HTMLDivElementProxy {
      * @returns {!boolean}
      */
     isDamaged() {
-        return this.hp < this.maxHp && !this.storage.nohp;
+        return this.hp < this.maxHp && !this.$.nohp;
     }
     /**
      * 返回本角色是否当前血量等于最大血量，如果本角色处于**无HP状态**，返回true
      * @returns {!boolean}
      */
     isHealthy() {
-        return this.hp == this.maxHp || this.storage.nohp;
+        return this.hp == this.maxHp || this.$.nohp;
     }
     /**
      * 返回本角色的血量是否是局中最多
@@ -8574,11 +8574,11 @@ class PlayerModel extends HTMLDivElementProxy {
     }
     $equip(card, viewAs?) {
         var originalName = card.originalName;
-        if (viewAs && this.storage.disableEquip != undefined && this.storage.disableEquip.contains(get.subtype(viewAs))) {
+        if (viewAs && this.$.disableEquip != undefined && this.$.disableEquip.contains(get.subtype(viewAs))) {
             this.gain(card, 'gain2');
             game.log(this, '装备失败');
         }
-        else if (this.storage.disableEquip != undefined && this.storage.disableEquip.contains(get.subtype(card))) {
+        else if (this.$.disableEquip != undefined && this.$.disableEquip.contains(get.subtype(card))) {
             this.gain(card, 'gain2');
             game.log(this, '装备失败');
         }

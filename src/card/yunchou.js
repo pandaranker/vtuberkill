@@ -432,7 +432,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					info.evt.cancel();
 					event.source=info.source;
-					event.source.storage.youdishenru=player;
+					event.source.$.youdishenru=player;
 					event.source.addSkill('youdishenru');
 					'step 1'
 					var next=event.source.chooseToUse({name:'sha'},player,-1,'对'+get.translation(player)+'使用一张杀，或受到一点伤害').set('addCount',false);
@@ -441,7 +441,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					};
 					'step 2'
 					if(result.bool){
-						if(event.source.storage.youdishenru){
+						if(event.source.$.youdishenru){
 							event.goto(1);
 						}
 						else{
@@ -854,10 +854,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				silent:true,
 				onremove:true,
 				filter:function(event,player){
-					return event.card&&event.card.name=='sha'&&event.player==player.storage.youdishenru;
+					return event.card&&event.card.name=='sha'&&event.player==player.$.youdishenru;
 				},
 				content:function(){
-					delete player.storage.youdishenru;
+					delete player.$.youdishenru;
 				}
 			},
 			g_youdishenru:{
@@ -907,7 +907,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			youdishenru:'诱敌深入',
 			youdishenru_info:'当以你为目标的【杀】生效前，对此【杀】使用。抵消此【杀】，然后此【杀】的使用者需对你使用【杀】（在此【杀】结算结束之后，若此【杀】未对你造成伤害，其重复此流程），否则受到你造成的1点伤害',
 			suolianjia:'锁链甲',
-			suolianjia_info:'锁定技，你防止即将受到的属性伤害，当装备时进入连环状态，当卸下时解除连环状态',
+			suolianjia_info:'锁定技 你防止即将受到的属性伤害，当装备时进入连环状态，当卸下时解除连环状态',
 			suolianjia_bg:'链',
 			geanguanhuo:'隔岸观火',
 			geanguanhuo_info:'出牌阶段对一名其他角色使用，令目标与一名你指定的另一名角色拼点，赢的角色获得对方的一张牌；若点数相同，目标可弃置你一张牌（存活角色不超过2时可重铸）',

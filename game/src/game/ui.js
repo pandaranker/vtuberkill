@@ -5229,7 +5229,7 @@ module.exports = {
                return dialog;
             },
             dialog: function (...args) {
-               let small = null,hidden = notouchscroll = forcebutton = promotionbutton = false;
+               let small = null, hidden = notouchscroll = forcebutton = promotionbutton = false;
                let dialog = ui.create.div('.dialog');
                dialog.contentContainer = ui.create.div('.content-container', dialog);
                dialog.content = ui.create.div('.content', dialog.contentContainer);
@@ -5558,6 +5558,7 @@ module.exports = {
                return ui.skills3;
             },
             arena: function () {
+               game.clickCanvas.changeCanvas({ size: [4, 10], particles: 10 })
                ui.window = ui.create.div('#window.hidden', document.body);
                ui.create.div('#statusbg', document.body);
                ui.refresh(ui.window);
@@ -7722,8 +7723,8 @@ module.exports = {
                   };
                   ui.click.touchpop();
                   ui.click.intro.call(this, {
-                     clientX: (rect.left + rect.width) * game.documentZoom,
-                     clientY: (rect.top) * game.documentZoom
+                     clientX: (rect.left + rect.width),
+                     clientY: (rect.top)
                   });
                   // var nodes=[];
                   // _status.clickingidentity=[this.parentNode,nodes];
@@ -9277,7 +9278,7 @@ module.exports = {
                      game.resume2();
                   }
                   else if ((_status.event.isMine() || _status.event.forceMine) && !dialogtouched) {
-                     if (_status.event.custom.replace.window) {
+                     if (_status.event.custom && _status.event.custom.replace.window) {
                         _status.event.custom.replace.window();
                      }
                      else {
@@ -9386,7 +9387,7 @@ module.exports = {
                if (_status.justdragged) return;
                _status.clicked = true;
                var custom = _status.event.custom;
-               if (custom.replace.button) {
+               if (custom && custom.replace.button) {
                   custom.replace.button(this);
                   return;
                }
@@ -9439,7 +9440,7 @@ module.exports = {
                   return;
                }
                var custom = _status.event.custom;
-               if (custom.replace.card) {
+               if (custom && custom.replace.card) {
                   custom.replace.card(this);
                   return;
                }
@@ -9618,7 +9619,7 @@ module.exports = {
                }
                _status.clicked = true;
                var custom = _status.event.custom;
-               if (custom.replace.target) {
+               if (custom && custom.replace.target) {
                   custom.replace.target(this, e);
                   return;
                }
@@ -9783,7 +9784,7 @@ module.exports = {
              */
             ok: function (node) {
                var Evt = _status.event;
-               if (Evt.custom.replace.confirm) {
+               if (Evt.custom && Evt.custom.replace.confirm) {
                   Evt.custom.replace.confirm(true); return;
                }
                Evt.result = {
@@ -10429,15 +10430,16 @@ module.exports = {
                }
             },
             pause: function () {
-               if (_status.paused2) return;
-               if (_status.nopause) return;
+               if (_status.paused2 || _status.pausing || _status.nopause) return;
                if (!_status.video) {
                   if (ui.pause.classList.contains('hidden')) return;
                   if (!_status.gameStarted) return;
                }
                ui.system.hide();
                game.pause2();
-               var node = ui.create.pause().animate('start');
+               var node = ui.create.pause();
+               if (!node) return;
+               node.animate('start');
                ui.sidebar3.innerHTML = '';
                if (lib.config.show_discardpile) {
                   for (var i = 0; i < ui.discardPile.childNodes.length; i++) {

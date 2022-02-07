@@ -1137,7 +1137,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						var map={holo:0,nijisanji:0,vtuber:0,clubs:0};
 						for(var i=0;i<game.players.length;i++){
 							var current=game.players[i];
-							map[current.side]+=current.storage.longchuanzhibao;
+							map[current.side]+=current.$.longchuanzhibao;
 						}
 						var uiintro=ui.create.dialog('hidden');
 						for(var i in map){
@@ -3266,8 +3266,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					_status.firstChoose=event.choosing;
 					event.num=(parseInt(lib.configOL.replace_number)+1)*2;
 					_status.onreconnect=[createDialog,list,event.videoId,
-						_status.firstChoose.storage.versuslist,
-						_status.firstChoose.next.storage.versuslist];
+						_status.firstChoose.$.versuslist,
+						_status.firstChoose.next.$.versuslist];
 					game.broadcastAll(function(player){
 						player.setIdentity('truezhu');
 						player.next.setIdentity('falsezhu');
@@ -3283,7 +3283,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						return Math.random();
 					});
 					'step 2'
-					event.choosing.storage.versuslist.push(result.links[0]);
+					event.choosing.$.versuslist.push(result.links[0]);
 					game.broadcastAll(function(link,choosing,first,id){
 						var dialog=get.idDialog(id);
 						if(dialog){
@@ -4441,7 +4441,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			boss_shenghuang:{
 				locked:true,
 				init:function(player){
-					player.storage.boss_shenghuang=0;
+					player.$.boss_shenghuang=0;
 				},
 				global:['boss_shenghuang_put'],
 				group:['boss_shenghuang_draw', 'boss_shenghuang_lose', 'boss_shenghuang_ret', 'boss_shenghuang_rec'],
@@ -4456,12 +4456,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return player.hp;
 						},
 						content:function(){
-							player.storage.boss_shenghuang_put = player.hp;
+							player.$.boss_shenghuang_put = player.hp;
 						}
 					},
 					draw:{
 						init:function(player){
-							player.storage.boss_shenghuang_draw=4;
+							player.$.boss_shenghuang_draw=4;
 							if(player.hasSkill('boss_shenghuang_draw'))  player.markSkill('boss_shenghuang_draw');
 						},
 						marktext: '圣',
@@ -4478,14 +4478,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player:"dying",
 						},
 						filter:function (event,player){
-							return player.storage.boss_shenghuang_draw>0
+							return player.$.boss_shenghuang_draw>0
 						},
 						content:function(){
 							player.maxHp=2;
 							player.recover(player.maxHp-player.hp);
-							player.storage.boss_shenghuang_draw--;
+							player.$.boss_shenghuang_draw--;
 							player.syncStorage('boss_shenghuang_draw');
-							if(!player.storage.boss_shenghuang_draw){
+							if(!player.$.boss_shenghuang_draw){
 								player.unmarkSkill('boss_shenghuang_draw');
 								player.removeSkill('boss_shenghuang_draw');
 							}
@@ -4510,7 +4510,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return bc;
 						},
 						content:function(){
-							player.storage.boss_shenghuang++;
+							player.$.boss_shenghuang++;
 							player.markSkill('boss_shenghuang_lose');
 						},
 					},
@@ -4521,10 +4521,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						priority:888,
 						trigger:{global:'phaseAfter'},
 						filter:function(event,player){
-							return player.storage.boss_shenghuang;
+							return player.$.boss_shenghuang;
 						},
 						content:function(){
-							player.storage.boss_shenghuang=0;
+							player.$.boss_shenghuang=0;
 							player.unmarkSkill('boss_shenghuang_lose');
 						}
 					},
@@ -4533,21 +4533,21 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						priority:777,
 						trigger:{global:'phaseEnd'},
 						filter:function(event,player){
-							if(!player.hasSkill('boss_shenghuang')||!player.storage.boss_shenghuang>0)	return false;
+							if(!player.hasSkill('boss_shenghuang')||!player.$.boss_shenghuang>0)	return false;
 							if(!game.hasPlayer(function(cur){
-								return cur.isAlive()&&cur.isFriendOf(player)&&cur.storage.boss_shenghuang_put;
+								return cur.isAlive()&&cur.isFriendOf(player)&&cur.$.boss_shenghuang_put;
 							}))	return false;
 							return true;
 						},
 						content:function(){
 							'step 0'
 							event.targets = game.filterPlayer(function(cur){
-								return cur.isAlive()&&cur.isFriendOf(player)&&cur!=player&&cur.storage.boss_shenghuang_put;
+								return cur.isAlive()&&cur.isFriendOf(player)&&cur!=player&&cur.$.boss_shenghuang_put;
 							})
 							'step 1'
 							if(event.targets.length){
 								var target=event.targets.shift();
-								var vq=target.storage.boss_shenghuang_put-target.hp;
+								var vq=target.$.boss_shenghuang_put-target.hp;
 								if(vq>0){
 									target.recover(vq);
 								}
@@ -4564,7 +4564,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				forced:false,
 				usable:1,
 				check:function(event,player){
-					if(player.storage.boss_shenghuang_draw==0&&player.hp==1)		return false;
+					if(player.$.boss_shenghuang_draw==0&&player.hp==1)		return false;
 					return player.getUseValue({name:'sha'})>0;
 				},
 				filter:function(event,player){
@@ -4607,7 +4607,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.target = target;
 						game.log(player,'刃斩的目标为',target);
 						target.addTempSkill('boss_renzhan2','phaseEnd');
-						target.storage.boss_renzhan2 = true;
+						target.$.boss_renzhan2 = true;
 						player.logSkill('renzhan',target);
 						player.chooseToUse('对'+get.translation(target)+'使用杀',{name:'sha'},target ,-1);
 					}
@@ -4617,7 +4617,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 6'
 					if(result.bool){
 						var target = event.target;
-						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
+						if(target.$.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
 							player.chooseToUse('对'+get.translation(target)+'继续使用杀',{name:'sha'},target ,-1);
 						}}
 					else{
@@ -4626,7 +4626,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 7'
 					var target = event.target;
 					if(result.bool){
-						if(target.storage.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
+						if(target.$.boss_renzhan2&&player.canUse({name:'sha'},target,false)){
 							event.goto(6);
 						}
 					}
@@ -4657,7 +4657,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				},
 				onremove:true,
 				content:function(){
-					player.storage.boss_renzhan2 = false;
+					player.$.boss_renzhan2 = false;
 				},
 			},
 			boss_kuase:{
@@ -4669,27 +4669,27 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'phaseAfter'},
 				prompt:function(){
 					var player=_status.event.player;
-					return '是否发动『阿库娅色☆超级梦想』<br>（本回合所有角色回复体力之和为'+player.storage.boss_kuase_date+'点）';
+					return '是否发动『阿库娅色☆超级梦想』<br>（本回合所有角色回复体力之和为'+player.$.boss_kuase_date+'点）';
 				},
 				filter:function(event,player){
-					return player.storage.boss_kuase_date;
+					return player.$.boss_kuase_date;
 				},
 				check:function(event,player){
-					return !player.storage.boss_shenghuang_draw||player.storage.boss_kuase_date>=player.storage.boss_shenghuang_draw;
+					return !player.$.boss_shenghuang_draw||player.$.boss_kuase_date>=player.$.boss_shenghuang_draw;
 				},
 				content:function(){
-					var dream = player.storage.boss_kuase_date;
+					var dream = player.$.boss_kuase_date;
 					player.draw(dream);
 					player.getStat().card.sha=0;
 					player.phaseUse();
-					player.storage.boss_kuase = true;
+					player.$.boss_kuase = true;
 					player.awakenSkill('boss_kuase');
 				},
 				group:['boss_kuase_date','boss_kuase_ret'],
 				subSkill:{
 					date:{
 						init:function(player){
-							player.storage.boss_kuase_date = 0;
+							player.$.boss_kuase_date = 0;
 						},
 						forced:true,
 						silent:true,
@@ -4700,7 +4700,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return true;
 						},
 						content:function(){
-							player.storage.boss_kuase_date += trigger.num;
+							player.$.boss_kuase_date += trigger.num;
 						},
 					},
 					ret:{
@@ -4710,10 +4710,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						priority:666,
 						trigger:{global:'phaseAfter'},
 						filter:function(event,player){
-							return player.storage.boss_kuase_date;
+							return player.$.boss_kuase_date;
 						},
 						content:function(){
-							player.storage.boss_kuase_date=0;
+							player.$.boss_kuase_date=0;
 						}
 					}
 				}
@@ -4761,7 +4761,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				subSkill:{
 					useE:{
 						init:function(player){
-							player.storage.boss_jierizhanbei=0;
+							player.$.boss_jierizhanbei=0;
 						},
 						trigger:{player:'useCard'},
 						forced:true,
@@ -4771,31 +4771,31 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							return get.type(event.card)=='equip';
 						},
 						content:function(){
-							player.storage.boss_jierizhanbei++;
+							player.$.boss_jierizhanbei++;
 						},
 						mod:{
 							maxHandcard:function(player,num){
-								if(player.storage.boss_jierizhanbei>0)	return 5;
+								if(player.$.boss_jierizhanbei>0)	return 5;
 							},
 						},
 					},
 					getE:{
 						init:function (player){
-							player.storage.boss_jierizhanbei=0;
+							player.$.boss_jierizhanbei=0;
 						},
 						trigger:{player:'phaseEnd'},
 						forced:true,
 						priority:13,
 						filter:function(event,player){
-							var num = player.storage.boss_jierizhanbei
+							var num = player.$.boss_jierizhanbei
 							if(num!=0){									
-								player.storage.boss_jierizhanbei=0;
+								player.$.boss_jierizhanbei=0;
 								return false;
 							}
 							return true;
 						},
 						content:function(){
-							console.log(player.storage.boss_jierizhanbei);
+							console.log(player.$.boss_jierizhanbei);
 								var getC = get.cardPile2(function(card){
 									return get.type(card)=='equip';
 								})
@@ -4863,8 +4863,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			boss_zuoyututan:{
 				init:function (player){
-					player.storage.boss_zuoyututan=1;
-					player.storage.boss_zuoyututanUse=true;
+					player.$.boss_zuoyututan=1;
+					player.$.boss_zuoyututanUse=true;
 				},
 				mark:true,
 				locked:false,
@@ -4872,8 +4872,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				marktext:'碳',
 				intro:{
 					content:function(storage,player,skill){
-						if(player.storage.boss_zuoyututan==1) return '随机废除一个装备栏';
-						else if(player.storage.boss_zuoyututan==1) return '手牌上限-1';
+						if(player.$.boss_zuoyututan==1) return '随机废除一个装备栏';
+						else if(player.$.boss_zuoyututan==1) return '手牌上限-1';
 						else return '获得一张进入弃牌堆后即移出游戏的【毒】'
 					},
 				},
@@ -4882,7 +4882,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'1':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.boss_zuoyututan!=1){
+							if(player.$.boss_zuoyututan!=1){
 								return false;
 							}
 							return !player.hasSkill('boss_zuoyututan_stop');
@@ -4908,8 +4908,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.boss_zuoyututan=2;
-							player.storage.boss_zuoyututanUse=false;
+							player.$.boss_zuoyututan=2;
+							player.$.boss_zuoyututanUse=false;
 							player.addTempSkill('boss_zuoyututan_stop');
 							player.syncStorage('boss_zuoyututan');
 						},
@@ -4917,7 +4917,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'2':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.boss_zuoyututan!=2){
+							if(player.$.boss_zuoyututan!=2){
 								return false;
 							}
 							return !player.hasSkill('boss_zuoyututan_stop');
@@ -4938,7 +4938,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									return false;
 								}
 								if(current.hasSkill('boss_zuoyututanLimit')){
-									current.storage.boss_zuoyututanLimit++;
+									current.$.boss_zuoyututanLimit++;
 								}
 								else{
 									current.addSkill('boss_zuoyututanLimit');
@@ -4946,8 +4946,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.boss_zuoyututan=3;
-							player.storage.boss_zuoyututanUse=false;
+							player.$.boss_zuoyututan=3;
+							player.$.boss_zuoyututanUse=false;
 							player.addTempSkill('boss_zuoyututan_stop');
 							player.syncStorage('boss_zuoyututan');
 						},
@@ -4955,7 +4955,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'3':{
 						trigger:{global:'roundStart'},
 						filter:function(event,player){
-							if(player.storage.boss_zuoyututan!=3){
+							if(player.$.boss_zuoyututan!=3){
 								return false;
 							}
 							return !player.hasSkill('boss_zuoyututan_stop');
@@ -4981,8 +4981,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							})
 							game.delayx();
 							'step 2'
-							player.storage.boss_zuoyututan=1;
-							player.storage.boss_zuoyututanUse=false;
+							player.$.boss_zuoyututan=1;
+							player.$.boss_zuoyututanUse=false;
 							player.addTempSkill('boss_zuoyututan_stop');
 							player.syncStorage('boss_zuoyututan');
 						},
@@ -5021,18 +5021,18 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			},
 			boss_zuoyututanLimit:{
 				init:function(player){
-					player.storage.boss_zuoyututanLimit=1;
+					player.$.boss_zuoyututanLimit=1;
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player,skill){
-						return '手牌上限减少'+player.storage.boss_zuoyututanLimit;
+						return '手牌上限减少'+player.$.boss_zuoyututanLimit;
 					}
 				},
 				marktext:'碳',
 				mod:{
 					maxHandcard:function(player,num){
-						return num-player.storage.boss_zuoyututanLimit;
+						return num-player.$.boss_zuoyututanLimit;
 					},
 				}
 			},
@@ -5413,7 +5413,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			xionghuangjiu:{
 				trigger:{source:'damageBegin1'},
 				filter:function(event,player){
-					return event.card&&event.card==player.storage.xionghuangjiu&&event.notLink();
+					return event.card&&event.card==player.$.xionghuangjiu&&event.notLink();
 				},
 				forced:true,
 				content:function(){
@@ -5429,7 +5429,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						delete player.node.jiu;
 						delete player.node.jiu2;
 					}
-					delete player.storage.xionghuangjiu;
+					delete player.$.xionghuangjiu;
 				},
 				group:['xionghuangjiu2','xionghuangjiu3']
 			},
@@ -5437,7 +5437,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCardAfter',global:'phaseAfter'},
 				priority:2,
 				filter:function(event,player){
-					if(event.name=='useCard') return (event.card&&event.card==player.storage.xionghuangjiu);
+					if(event.name=='useCard') return (event.card&&event.card==player.$.xionghuangjiu);
 					return true;
 				},
 				forced:true,
@@ -5453,17 +5453,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{player:'useCard'},
 				silent:true,
 				filter:function(event,player){
-					return !player.storage.xionghuangjiu;
+					return !player.$.xionghuangjiu;
 				},
 				content:function(){
-					player.storage.xionghuangjiu=trigger.card;
+					player.$.xionghuangjiu=trigger.card;
 				}
 			},
 			longchuanzhibao:{
 				mark:'auto',
 				nopop:true,
 				init:function(player){
-					player.storage.longchuanzhibao=0;
+					player.$.longchuanzhibao=0;
 				},
 				intro:{
 					content:function(storage,player){
@@ -5481,7 +5481,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				trigger:{source:'damageEnd'},
 				silent:true,
 				filter:function(event,player){
-					return event.player.storage.longchuanzhibao>0;
+					return event.player.$.longchuanzhibao>0;
 				},
 				content:function(){
 					player.gainZhibao(1,trigger.player);
@@ -5496,7 +5496,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							var map={holo:0,nijisanji:0,vtuber:0,clubs:0};
 							for(var i=0;i<game.players.length;i++){
 								var current=game.players[i];
-								map[current.side]+=current.storage.longchuanzhibao;
+								map[current.side]+=current.$.longchuanzhibao;
 								if(map[current.side]>=4){
 									_status.winside=current.side;
 									return true;
@@ -6856,8 +6856,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								target.addSkill('xionghuangjiu');
 							}
 							else{
-								if(!target.storage.jiu) target.storage.jiu=0;
-								target.storage.jiu++;
+								if(!target.$.jiu) target.$.jiu=0;
+								target.$.jiu++;
 								target.addSkill('jiu');
 							}
 							game.addVideo('jiuNode',target,true);
@@ -7323,8 +7323,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			player:{
 				gainZhibao:function(num,source){
 					if(source){
-						if(num===true||num>source.storage.longchuanzhibao){
-							num=source.storage.longchuanzhibao;
+						if(num===true||num>source.$.longchuanzhibao){
+							num=source.$.longchuanzhibao;
 						}
 					}
 					else{
@@ -7334,11 +7334,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					if(!num||typeof num!='number') return this;
 
-					this.storage.longchuanzhibao+=num;
+					this.$.longchuanzhibao+=num;
 					this.updateMark('longchuanzhibao');
 
 					if(source){
-						source.storage.longchuanzhibao-=num;
+						source.$.longchuanzhibao-=num;
 						source.updateMark('longchuanzhibao');
 						game.log(this,'从',source,'处获得了'+get.cnNumber(num)+'个','#y龙船至宝');
 					}
@@ -7360,7 +7360,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var map={holo:0,nijisanji:0,vtuber:0,clubs:0};
 					for(var i=0;i<game.players.length;i++){
 						var current=game.players[i];
-						map[current.side]+=current.storage.longchuanzhibao;
+						map[current.side]+=current.$.longchuanzhibao;
 					}
 					for(var i=0;i<game.players.length;i++){
 						var current=game.players[i];
@@ -7705,11 +7705,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								for(var i=0;i<arguments.length;i++){
 									for(var j=0;j<arguments[i].storage.longchuanzhibao;j++){
 										var current=list2.randomGet();
-										if(!current.storage._longchuanzhibao){
-											current.storage._longchuanzhibao=1;
+										if(!current.$._longchuanzhibao){
+											current.$._longchuanzhibao=1;
 										}
 										else{
-											current.storage._longchuanzhibao++;
+											current.$._longchuanzhibao++;
 										}
 									}
 									for(var j=0;j<list2.length;j++){
@@ -7726,7 +7726,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 									assignzhibao(this,source);
 								}
 								else{
-									if(this.storage.longchuanzhibao){
+									if(this.$.longchuanzhibao){
 										source.gainZhibao(true,this);
 									}
 								}
@@ -7816,7 +7816,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						for(var i=0;i<game.players.length;i++){
 							var current=game.players[i];
 							map[current.side]+=get.condition(current)*get.threaten(current,false,false);
-							map2[current.side]+=current.storage.longchuanzhibao;
+							map2[current.side]+=current.$.longchuanzhibao;
 						}
 						var allin=false;
 						for(var i in map){
@@ -7875,7 +7875,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						else if(map2[to.side]==2){
 							att-=0.5;
 						}
-						if(to.storage.longchuanzhibao){
+						if(to.$.longchuanzhibao){
 							return att*1.2;
 						}
 						return att;

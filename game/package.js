@@ -116,7 +116,7 @@ window.vk_package={
 		music_minatoAqua:'凑阿库娅',
 		music_usadaPekora:'兔田佩克拉',
 		music_VTL:'Virtual to LIVE',
-		music_Quite:'Quite',
+		music_Quiet:'Quiet',
 		music_kaitian:'开天',
 		music_phliosophy:'Philosophy of ours',
 		music_shezhan:'舌战群儒',

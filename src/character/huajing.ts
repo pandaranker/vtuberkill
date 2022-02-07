@@ -65,11 +65,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						if (!trigger.addedSkill) trigger.addedSkill = [];
 						trigger.addedSkill.add('nkfumo');
-						if (player.storage.nkfumo2) delete player.storage.nkfumo2;
+						if (player.$.nkfumo2) delete player.$.nkfumo2;
 						lib.skill.nkfumo2.trigger = { player: [get.name(trigger.card) + 'Begin'] };
 					}
 					'step 2'
-					player.storage.nkfumo2 = trigger.card;
+					player.$.nkfumo2 = trigger.card;
 					game.log(player, '将', trigger.card, '的效果改为【浪涌】')
 					player.addTempSkill('nkfumo2', { player: 'useCardAfter' });
 				},
@@ -96,7 +96,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				silent: true,
 				popup: false,
 				filter(Evt, player) {
-					return Evt.card == player.storage.nkfumo2;
+					return Evt.card == player.$.nkfumo2;
 				},
 				content() {
 					var fun = lib.card.langyong.content;
@@ -211,8 +211,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player: ['gainAfter', 'loseAfter'],
 				},
 				filter(Evt, player) {
-					if (Evt.name == 'gain') return player.storage.miaoyu && Evt.getParent().name !== 'draw'
-					else return !player.storage.miaoyu && Evt.getParent().name !== 'discard'
+					if (Evt.name == 'gain') return player.$.miaoyu && Evt.getParent().name !== 'draw'
+					else return !player.$.miaoyu && Evt.getParent().name !== 'discard'
 				},
 				direct: true,
 				content: [() => {
@@ -233,7 +233,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				}, () => {
 					if (result.targets?.length) {
-						player.storage.miaoyu = !player.storage.miaoyu;
+						player.$.miaoyu = !player.$.miaoyu;
+						player.updateMarks('miaoyu')
 						Evt.tar = result.targets[0];
 						player.logSkill('miaoyu', Evt.tar);
 						if (trigger.name == 'gain') {
@@ -378,7 +379,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.gainMaxHp();
 					// if(player.getHandcardLimit()>player.countCards('h'))	player.draw(player.getHandcardLimit()-player.countCards('h'));
 					player.drawTo(player.maxHp);
-					player.storage.juzu = true;
+					player.$.juzu = true;
 					player.awakenSkill('juzu');
 					player.addSkill('haigou');
 				},
@@ -922,13 +923,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					game.hasPlayer(cur => {
-						if (cur.hasSkill('zhuiguang_chehai') && cur.storage.zhuiguang_chehai == player) cur.removeSkill('zhuiguang_chehai');
+						if (cur.hasSkill('zhuiguang_chehai') && cur.$.zhuiguang_chehai == player) cur.removeSkill('zhuiguang_chehai');
 					});
 					'step 1'
 					target.gain(cards, player);
 					target.changeHujia();
 					'step 2'
-					target.storage.zhuiguang_chehai = player;
+					target.$.zhuiguang_chehai = player;
 					target.addSkill('zhuiguang_chehai');
 				},
 				subSkill: {
@@ -942,19 +943,19 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						filter(Evt, player) {
 							var ava = Evt.name == 'useCardToTarget' ? Evt.target : Evt.player;
-							return player.storage.zhuiguang_chehai && ava == player.storage.zhuiguang_chehai
+							return player.$.zhuiguang_chehai && ava == player.$.zhuiguang_chehai
 								&& player.countCards('he') > 0 && get.type(Evt.card) != 'equip';
 						},
 						content() {
 							'step 0'
-							player.chooseCard('he', true, '###『追光澈海』###将一张牌交给' + get.translation(player.storage.zhuiguang_chehai)).set('ai', function (card) {
+							player.chooseCard('he', true, '###『追光澈海』###将一张牌交给' + get.translation(player.$.zhuiguang_chehai)).set('ai', function (card) {
 								var player = _status.event.player;
-								var ava = player.storage.zhuiguang_chehai
+								var ava = player.$.zhuiguang_chehai
 								return get.value(card, ava, 'raw') * get.attitude(player, ava)
 							});
 							'step 1'
 							if (result.bool) {
-								player.give(result.cards, player.storage.zhuiguang_chehai, 'giveAuto');
+								player.give(result.cards, player.$.zhuiguang_chehai, 'giveAuto');
 							};
 						},
 					},
@@ -969,7 +970,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							return -0.1;
 						},
 						target(player, target) {
-							if (target.storage.zhuiguang_chehai == player) return player.countCards('h') / 3 - player.hp + 1;
+							if (target.$.zhuiguang_chehai == player) return player.countCards('h') / 3 - player.hp + 1;
 							return player.countCards('h') / 3 - player.hp + target.countCards('he') / 5 - 1;
 						}
 					},
@@ -1026,7 +1027,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							'step 0'
 							if (player.hasMark('qiming_saycards')) player.unmarkSkill('qiming_saycards');
-							player.storage.qiming_saycards.length = 0;
+							player.$.qiming_saycards.length = 0;
 							'step 1'
 							Evt.videoId = lib.status.videoId++;
 							var list = [];
@@ -1051,8 +1052,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							game.broadcastAll('closeDialog', Evt.videoId);
 							if (result.bool) {
 								player.logSkill('qiming');
-								player.storage.qiming_saycards.add(result.links[0][2]);
-								game.log(player, '的『启明星辰』声明了【', player.storage.qiming_saycards, '】');
+								player.$.qiming_saycards.add(result.links[0][2]);
+								game.log(player, '的『启明星辰』声明了【', player.$.qiming_saycards, '】');
 								player.syncStorage('qiming_saycards');
 								player.markSkill('qiming_saycards');
 							}
@@ -1076,7 +1077,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						forced: true,
 						firstDo: true,
 						filter(Evt, player) {
-							return get.name(Evt.card) == player.storage.qiming_saycards;
+							return get.name(Evt.card) == player.$.qiming_saycards;
 						},
 						content() {
 							trigger.player.draw();
@@ -1109,16 +1110,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tulong: {
 				trigger: { player: 'dyingBegin' },
 				filter(Evt, player) {
-					return player.storage.qiming_saycards && player.storage.qiming_saycards[0] && get.info({ name: player.storage.qiming_saycards[0] }).notarget !== true && player.countCards('h') && player.hasUseTarget(player.storage.qiming_saycards[0]);
+					return player.$.qiming_saycards && player.$.qiming_saycards[0] && get.info({ name: player.$.qiming_saycards[0] }).notarget !== true && player.countCards('h') && player.hasUseTarget(player.$.qiming_saycards[0]);
 				},
 				lastDo: true,
 				direct: true,
 				content() {
 					'step 0'
-					Evt.card = { name: player.storage.qiming_saycards[0] };
+					Evt.card = { name: player.$.qiming_saycards[0] };
 					let next = player.chooseCardTarget({
 						prompt: get.prompt('tulong'),
-						prompt2: "将一张牌当作【" + player.storage.qiming_saycards[0] + "】使用",
+						prompt2: "将一张牌当作【" + player.$.qiming_saycards[0] + "】使用",
 						filterCard(card, player) {
 							return get.type(card) == 'equip' && lib.filter.cardDiscardable(card, player)
 						},
@@ -1149,18 +1150,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				trigger: { global: 'damageBegin1' },
 				priority: -10,
 				init(player) {
-					player.storage.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
-					//player.storage.guaishengMap={1:false,2:false,3:false,12:false,13:false,23:false,123:false};
+					player.$.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
+					//player.$.guaishengMap={1:false,2:false,3:false,12:false,13:false,23:false,123:false};
 				},
 				onremove(player) {
-					delete player.storage.sp_guaisheng;
+					delete player.$.sp_guaisheng;
 				},
 				direct: true,
 				filter(Evt, player) {
-					if (player.storage.sp_guaisheng) {
+					if (player.$.sp_guaisheng) {
 						var num = 0;
-						for (var i in player.storage.sp_guaisheng) {
-							if (player.storage.sp_guaisheng[i] == false) num++;
+						for (var i in player.$.sp_guaisheng) {
+							if (player.$.sp_guaisheng[i] == false) num++;
 						}
 					}
 					return num >= 1 && Evt.nature == 'ocean';
@@ -1170,8 +1171,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					Evt.num = 2;
 					Evt.list = { one: '选项一', two: '选项二', three: '选项三', four: '选项四', five: '选项五', six: '选项六', seven: '选项七' };
 					'step 1'
-					for (var i in player.storage.sp_guaisheng) {
-						if (player.storage.sp_guaisheng[i] == true) {
+					for (var i in player.$.sp_guaisheng) {
+						if (player.$.sp_guaisheng[i] == true) {
 							Evt.list[i] = '';
 						}
 					}
@@ -1198,14 +1199,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.num--;
 						switch (result.control) {
 							case '选项一': {
-								player.storage.sp_guaisheng['one'] = true;
+								player.$.sp_guaisheng['one'] = true;
 								// Evt.one=true;				   
 								break;
 							}
 							case '选项二': {
 								// Evt.two=true;
 								if (trigger.source && trigger.source.num('he')) player.discardPlayerCard('he', true, trigger.source); player.logSkill('sp_guaisheng', trigger.source);
-								player.storage.sp_guaisheng['two'] = true;
+								player.$.sp_guaisheng['two'] = true;
 								Evt.goto(4);
 								break;
 							}
@@ -1213,27 +1214,27 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								// Evt.three=true;
 								trigger.nature = 'ice';
 								player.logSkill('sp_guaisheng');
-								player.storage.sp_guaisheng['three'] = true;
+								player.$.sp_guaisheng['three'] = true;
 								Evt.goto(4);
 								break;
 							}
 							case '选项四': {
 								// Evt.three=true;
 								if (trigger.source && trigger.source.num('he')) player.discardPlayerCard('he', true, trigger.source); player.logSkill('sp_guaisheng', trigger.source);
-								player.storage.sp_guaisheng['four'] = true;
+								player.$.sp_guaisheng['four'] = true;
 								break;
 							}
 							case '选项五': {
 								//Evt.three=true;
 								trigger.nature = 'ice';
-								player.storage.sp_guaisheng['five'] = true;
+								player.$.sp_guaisheng['five'] = true;
 								break;
 							}
 							case '选项六': {
 								// Evt.three=true;
 								if (trigger.source && trigger.source.num('he')) player.discardPlayerCard('he', true, trigger.source); player.logSkill('sp_guaisheng', trigger.source);
 								trigger.nature = 'ice';
-								player.storage.sp_guaisheng['six'] = true;
+								player.$.sp_guaisheng['six'] = true;
 								Evt.goto(4);
 								break;
 							}
@@ -1241,7 +1242,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								// Evt.three=true;
 								if (trigger.source && trigger.source.num('he')) player.discardPlayerCard('he', true, trigger.source); player.logSkill('sp_guaisheng', trigger.source);
 								trigger.nature = 'ice';
-								player.storage.sp_guaisheng['seven'] = true;
+								player.$.sp_guaisheng['seven'] = true;
 								break;
 							}
 						}
@@ -1262,13 +1263,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						result.targets[0].draw();
 					}
 					var uncomplete = false;
-					for (var i in player.storage.sp_guaisheng) {
-						if (player.storage.sp_guaisheng[i] != true) {
+					for (var i in player.$.sp_guaisheng) {
+						if (player.$.sp_guaisheng[i] != true) {
 							uncomplete = true; break;
 						}
 					}
 					if (!uncomplete) {
-						player.storage.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
+						player.$.sp_guaisheng = { one: false, two: false, three: false, four: false, five: false, six: false, seven: false };
 						player.changeHujia();
 					}
 				},
@@ -1371,14 +1372,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		},
 		dynamicTranslate: {
 			tulong(player) {
-				if (player.storage.qiming_saycards && player.storage.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【' + get.translation(player.storage.qiming_saycards) + '】</font>使用。';
+				if (player.$.qiming_saycards && player.$.qiming_saycards.length) return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作<font color=#fcd>【' + get.translation(player.$.qiming_saycards) + '】</font>使用。';
 				return '你进入濒死状态时，可以扣减1点体力上限，将一张手牌当作本轮『启明星辰』中声明的牌使用。';
 			},
 			miaoyu(player) {
 				let str = lib.translate.miaoyu_info;
 				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
 				let yang = result[1], yin = result[2];
-				if (player.storage.miaoyu === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
+				if (player.$.miaoyu === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
 				return str.replace(yin, lib.spanClass(yin, 'changetext'));
 			},
 		},

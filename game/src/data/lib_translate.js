@@ -14,14 +14,14 @@ module.exports = {
 		yuxisx: '玉玺',
 		shoukao: '枷锁',
 		junk: '平凡',
-	
+
 		common: '普通',
 		rare: '精品',
 		epic: '史诗',
 		legend: '传说',
-	
+
 		beginner: '简单',
-	
+
 		default: "默认",
 		special: '特殊',
 		zhenfa: '阵法',
@@ -45,10 +45,10 @@ module.exports = {
 		red: '红色',
 		black: '黑色',
 		none: '无色',
-	
+
 		number: '点数',
 		cardname: '牌名',
-	
+
 		ok: "确定",
 		ok2: "确定",
 		cancel: "取消",
@@ -67,18 +67,18 @@ module.exports = {
 		ocean: '海',
 		ice: '冰',
 		yami: '暗',
-	
+
 		fire_ab: '火焰',
 		thunder_ab: '雷电',
 		ocean_ab: '海洋',
 		ice_ab: '冰冻',
 		yami_ab: '暗影',
-	
+
 		vtuber: '企',
 		clubs: '社',
 		vtuber2: '企业联合',
 		clubs2: '社团联合',
-	
+
 		wei: '魏',
 		shu: '蜀',
 		wu: '吴',
@@ -149,9 +149,9 @@ module.exports = {
 		female: '女',
 		mad: '混乱',
 		mad_bg: '疯',
-	
+
 		hp: '体力',
-	
+
 		draw_card: '摸牌',
 		discard_card: '弃牌',
 		take_damage: '受伤害',
@@ -219,7 +219,7 @@ module.exports = {
 		_disableJudge: "判定区",
 		pileTop: '牌堆顶',
 		pileBottom: '牌堆底',
-	
+
 		xiaowu_emotion: '小无表情',
 		guojia_emotion: '郭嘉表情',
 		zhenji_emotion: '甄姬表情',
@@ -228,11 +228,11 @@ module.exports = {
 		xiaotao_emotion: '小桃表情',
 		xiaojiu_emotion: '小酒表情',
 		Diana_emotion: '嘉然表情',
-	
+
 		pause: '暂停',
 		config: '选项',
 		auto: '托管',
-	
+
 		unknown: '未知',
 		unknown0: '一号位',
 		unknown1: '二号位',
@@ -242,7 +242,7 @@ module.exports = {
 		unknown5: '六号位',
 		unknown6: '七号位',
 		unknown7: '八号位',
-	
+
 		feichu_equip1: "已废除",
 		feichu_equip1_info: "武器栏已废除",
 		feichu_equip2: "已废除",
@@ -268,7 +268,14 @@ module.exports = {
 		pss_paper_info: '石头剪刀布时的一种手势。克制石头，但被剪刀克制。',
 		pss_scissor_info: '石头剪刀布时的一种手势。克制布，但被石头克制。',
 		pss_stone_info: '石头剪刀布时的一种手势。克制剪刀，但被布克制。',
-	
+
+		phaseZhunbei: `准备阶段`,
+		phaseJudge: `判定阶段`,
+		phaseDraw: `摸牌阶段`,
+		phaseUse: `出牌阶段`,
+		phaseDiscard: `弃牌阶段`,
+		phaseJieshu: `结束阶段`,
+
 		group_wei: "魏势力",
 		group_shu: "蜀势力",
 		group_wu: "吴势力",
