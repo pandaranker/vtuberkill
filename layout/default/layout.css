@@ -3541,9 +3541,11 @@ div:not(.handcards)>.card>.info>span,
 }
 
 .unselectable:not(.selected):not(.removing) {
+	cursor:not-allowed;
 	opacity: 0.6 !important
 }
 .unselectable2 {
+	cursor:not-allowed;
 	opacity: 0.4 !important
 }
 .mark>.background {

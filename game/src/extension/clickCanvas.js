@@ -41,6 +41,7 @@ Particle.prototype = {
 };
 module.exports = {
     init: function () {
+        if ('ontouchstart' in document) return
         let div = document.createElement('div')
         div.setAttribute("id", "clickCanvas");
         div.setAttribute("style", " position:fixed;left:0;top:0;z-index:999999999;pointer-events:none;");
@@ -86,6 +87,8 @@ module.exports = {
             };
             let callback = (e) => {
                 var max, j;
+                console.log(e.clientX, e.clientY)
+                console.log(e)
                 //排除一些元素
                 !["TEXTAREA", "INPUT", "A", "I", "IMG"].includes(e.target.nodeName)
                     && function () {
@@ -95,6 +98,8 @@ module.exports = {
             }
             //按下时显示效果，mousedown 换成 click 为点击时显示效果（我用的 click）
             document.addEventListener("click", callback);
+            // document.addEventListener("touchstart", callback);
+            // document.addEventListener("mousedown", callback);
             this.clickparticle = clickparticle
         }
     },
