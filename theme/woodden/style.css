@@ -118,6 +118,7 @@ html{
 }
 #arena:not(.chess).textequip .player[data-position='0'] .equips>.card.selected{
 	-webkit-filter: sepia(0.8) !important;
+	filter: sepia(0.8) !important;
 	background-image: url('wood.jpg') !important;
 	/*background-image: linear-gradient(rgba(47,101,150,1), rgba(43, 90, 132,1)) !important;*/
 	/*color: white !important;
@@ -233,6 +234,7 @@ html{
 }
 .player .marks>div:first-child>div{
 	-webkit-filter: invert(0.8) sepia(1);
+	filter: invert(0.8) sepia(1);
 }
 
 #roundmenu.clock>div:nth-of-type(15){

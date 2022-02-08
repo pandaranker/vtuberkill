@@ -321,7 +321,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								ai1(card: any) {
 									if (ui.selected.cards && ui.selected.cards.length > 2) return 0
 									var player = _status.event.player;
-									if (player.get$('re_ailian_clear') > 2) return 0;
+									if (player.getStorage('re_ailian_clear') > 2) return 0;
 									return 8 - get.value(card);
 								},
 							}).set('logSkill', 're_ailian');
@@ -4111,7 +4111,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					var nature = null;
 					var suit = null;
 					var number = null;
-					var cards = player.get$('yingshi_cardsDis') as any[];
+					var cards = player.getStorage('yingshi_cardsDis') as any[];
 					if (cards[0]) {
 						name = get.name(cards[0]);
 						nature = get.nature(cards[0]);
@@ -4133,7 +4133,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return false;
 				},
 				filter(Evt, player) {
-					var cards = player.get$('yingshi_cardsDis');
+					var cards = player.getStorage('yingshi_cardsDis');
 					var card = cards[0];
 					var filter = Evt.filterCard;
 					if (card && filter(card, player, Evt) && player.countCards('h', { suit: 'club' })) return true;
@@ -4795,7 +4795,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				init(player: PlayerModel, skill: string) {
 					player.$.shengfu = {};
 				},
-				filter(Evt: { type: string; respondTo: any[]; }, player: { $: { shengfu: { wuxie: undefined; }; }; }) {
+				filter(Evt: { type: string; respondTo: any[]; }, player) {
 					//每轮每项一次
 					//目标/来源不是自己时，才拼点
 					if (Evt.type == 'wuxie' && Evt.respondTo && Evt.respondTo[0] != player) {
@@ -4804,8 +4804,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 					return false;
 				},
-				hiddenCard(player: { $: { shengfu: { wuxie: undefined; }; }; }, name: string) {
+				hiddenCard(player, name: string) {
 					return player.$.shengfu.wuxie == undefined && name == 'wuxie';
+				},
+				check(Evt,player){
+					return get.$a(player,Evt.respondTo[0])<=0;
 				},
 				content: [() => {
 					Evt.p1 = Evt.getParent().respondTo[0];
@@ -5054,12 +5057,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				selectCard() {
 					var player = _status.event.player;
 					if (!ui.selected.targets.length) return [1, 2];
-					if (ui.selected.targets.length && player.get$('uijieyuan_record').contains(ui.selected.targets[0])) return [1, 1];
+					if (ui.selected.targets.length && player.getStorage('uijieyuan_record').contains(ui.selected.targets[0])) return [1, 1];
 					return [2, 2];
 				},
 				filterCard(card: any, player: any) {
 					if (!ui.selected.targets.length) return get.type(card) != 'basic' || get.color(card) == 'red';
-					//else if(player.get$('uijieyuan_record').contains(ui.selected.targets[0])) return get.type(card)!='basic';
+					//else if(player.getStorage('uijieyuan_record').contains(ui.selected.targets[0])) return get.type(card)!='basic';
 					else if (ui.selected.cards.length && ui.selected.cards) return get.color(card) == 'red';
 				},
 				position: 'he',
@@ -5262,11 +5265,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							content: '不能使用、打出或弃置$牌',
 						},
 						mod: {
-							cardDiscardable(card: any, player: { get$: (arg0: string) => any[]; }) {
-								if (player.get$('WHiTE_suit').contains(get.suit(card))) return false;
+							cardDiscardable(card: any, player: { getStorage: (arg0: string) => any[]; }) {
+								if (player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
 							},
-							cardEnabled2(card: any, player: { get$: (arg0: string) => any[]; }) {
-								if (player.get$('WHiTE_suit').contains(get.suit(card))) return false;
+							cardEnabled2(card: any, player: { getStorage: (arg0: string) => any[]; }) {
+								if (player.getStorage('WHiTE_suit').contains(get.suit(card))) return false;
 							},
 						},
 					}

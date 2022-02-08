@@ -187,9 +187,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			},
 			renjiazhizhu: {
-				audio: 2,
 				unique: true,
-				trigger: { player: 'phaseBefore' },
+				trigger: { player: 'phaseBegin' },
 				zhuSkill: true,
 				forced: true,
 				filter(Evt, player) {

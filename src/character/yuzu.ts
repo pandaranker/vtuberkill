@@ -1090,6 +1090,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//扇宝
 			fengxu: {
+				audio: 2,
 				trigger: {
 					player: 'useCardToPlayered',
 				},
@@ -4019,10 +4020,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					} else {
 						player.addTempSkill('xinhuo_chuanhuo');
 						player.$.xinhuo_chuanhuo = 1;
-						let buff = '.player_buff';
-						game.broadcastAll(function (player, buff) {
-							player.node.xinhuo = ui.create.div(buff, player.node.avatar);
-						}, player, buff);
+						game.putBuff(player, 'xinhuo', '.player_buff')
 					}
 				}],
 				mod: {
@@ -4057,10 +4055,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger: { player: 'useCard' },
 						forced: true,
 						onremove(player) {
-							if (player.node.xinhuo) {
-								player.node.xinhuo.delete();
-								delete player.node.xinhuo;
-							}
+							game.clearBuff(player, 'xinhuo')
 							player.unmarkSkill('xinhuo_chuanhuo');
 							delete player.$.xinhuo_chuanhuo;
 						},
@@ -5458,7 +5453,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 			//贝海王
-			aswusheng: new toSkill('trigger',{
+			aswusheng: new toSkill('trigger', {
 				init(player, skill) {
 					player.$[skill] = 0;
 				},
@@ -5543,7 +5538,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						return player.countCards('hs', { name: 'sha' }) > 1 && [0, 2].includes(player.$.aswusheng);
 					}
 				}
-			},'mark','frequent'),
+			}, 'mark', 'frequent'),
 			gunxun: {
 				enable: 'phaseUse',
 				init(player, skill) {
@@ -6102,39 +6097,39 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					combo: 'yiqu',
 				},
 			},
-			zouhun: new toSkill('active',{
-				usable:1,
-				content:function(){
+			zouhun: new toSkill('active', {
+				usable: 1,
+				content: function () {
 					'step 0'
 					player.chooseToPlayBeatmap({
 						//歌曲名称
-						name:'Quiet',
+						name: 'Quiet',
 						//歌曲文件名（默认在audio/effect文件夹下 若要重定向到扩展 请写为'ext:扩展名称'的格式 并将文件名重命名为和上面的歌曲名称相同）
-						filename:'music_Quiet',
+						filename: 'music_Quiet',
 						//每个音符的开始时间点（毫秒，相对未偏移的开始播放时间）
-						timeleap:[1047,3012,4978,5469,5961,6452,6698,7435,8909,10875,12840],
+						timeleap: [1047, 3012, 4978, 5469, 5961, 6452, 6698, 7435, 8909, 10875, 12840],
 						//开始播放时间的偏移量（毫秒）
-						current:-546,
+						current: -546,
 						//判定栏高度（相对整个对话框高度比例）
-						judgebar_height:0.14,
+						judgebar_height: 0.14,
 						//Good/Great/Prefect的位置判定范围（百分比，相对于整个对话框。以滑条的底部作为判定基准）
-						range1:[86,110],
-						range2:[92,104],
-						range3:[96,100],
+						range1: [86, 110],
+						range2: [92, 104],
+						range3: [96, 100],
 						//滑条每相对于整个对话框下落1%所需的时间（毫秒）
-						speed:30,
+						speed: 30,
 					});
 					'step 1'
 					console.log(result)
-					var score=Math.floor(Math.min(4,result.accuracy/25));
-					Evt.score=score;
-					game.log(player,'的演奏评级为','#y'+result.rank[0],'，获得积分点数','#y'+score,'分');
+					var score = Math.floor(Math.min(4, result.accuracy / 25));
+					Evt.score = score;
+					game.log(player, '的演奏评级为', '#y' + result.rank[0], '，获得积分点数', '#y' + score, '分');
 					player.draw(score)
 				},
-				ai:{
-					order:10,
-					result:{
-						player:1,
+				ai: {
+					order: 10,
+					result: {
+						player: 1,
 					},
 				},
 			}),
@@ -7164,6 +7159,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//文静
 			zaiying: {
+				audio:4,
 				trigger: {
 					global: "gainAfter",
 				},
@@ -7218,6 +7214,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			},
 			zhengen: new toSkill('trigger', {
+				audio:4,
 				intro: {
 					name: '已发动『政恩』的目标角色',
 					mark(dialog, storage, player) {
@@ -7230,10 +7227,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						return `已『政恩』${get.cnNumber(storage.length)}名角色`
 					},
 				},
-				logTarget(Evt, player) {
-					if (player == Evt.source) return [player, Evt.player];
-					return [player, Evt.source];
-				},
 				filter(Evt, player) {
 					let characters = player.getStorage('zhengen');
 					if (player == Evt.source) return player.countCards('h') && Evt.player.countDiscardableCards(player, 'hej') && !characters.includes(Evt.player);
@@ -7243,20 +7236,21 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (!player.$.zhengen) player.$.zhengen = [];
 					if (player == trigger.source) Evt.target = trigger.player;
 					else Evt.target = trigger.source;
-					player.chooseToDiscard('『政恩』：弃置一张手牌')
+					player.chooseToDiscard(`###${get.prompt('zhengen')}###弃置一张手牌`)
 						.set('ai', card => (_status.event.check ? 5 : -1) + get.unuseful(card))
 						.set('check', get.attitude(player, Evt.target) < 0);
 				}, () => {
 					if (result.bool) {
+						player.logSkill('zhengen', Evt.target)
 						player.$.zhengen_achieve.addArray(result.cards);
-						player.discardPlayerCard(Evt.target, 'hej', true, '『政恩』：弃置一张手牌');
+						player.discardPlayerCard(Evt.target, 'hej', true, '『政恩』：弃置对方一张牌');
 					} else Evt.finish();
 				}, () => {
 					if (result.bool && result.links) {
 						player.$.zhengen.add(Evt.target);
 						player.markSkill('zhengen');
 						player.$.zhengen_achieve.addArray(result.links);
-						player.markSkill('zhengen_achieve');
+						player.markSkill('zhengen_achieve')
 					}
 				}],
 				group: ['zhengen_achieve', 'zhengen_fail'],
@@ -7275,7 +7269,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							});
 							return check
 						},
-						skillAnimation: true,
 						animationColor: 'wood',
 						content: [() => {
 							game.log(player, '成功完成使命');
@@ -7289,7 +7282,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}, () => {
 							player.addAdditionalSkill('zhengen', 'wjbenxi')
 						}],
-					}, 'forced').setI([]).setT({ global: 'gainAfter' }),
+					}, 'forced', 'audio', 'skillAnimation').setI([]).setT({ player: 'zhengenAfter' }),
 					fail: new toSkill('trigger', {
 						filter(Evt, player) {
 							return Evt.result && player.isHealthy() && player.countCards('h') > 0;
@@ -7321,7 +7314,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}, () => {
 							player.damage(player.countCards('h'), 'fire');
 						}],
-					}, 'direct', 'forceDie').setT('recoverAfter'),
+					}, 'direct', 'forceDie', 'audio').setT('recoverAfter'),
 				},
 				derivation: 'wjbenxi'
 			}, 'direct', 'dutySkill').setT({ source: 'damageAfter', player: 'damageAfter' }),
@@ -9622,14 +9615,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			}, 'mark'),
 			//玛安娜Myanna
 			yemo: new toSkill('active', {
-				filter(event, player) {
+				filter(Evt, player) {
 					return player.countDisabled() < 5;
 				},
 				chooseButton: {
-					dialog(event, player) {
+					dialog(Evt, player) {
 						return ui.create.dialog('###夜魔###' + lib.translate.yemo_info);
 					},
-					chooseControl(event, player) {
+					chooseControl(Evt, player) {
 						var list = [];
 						for (var i = 1; i < 6; i++) {
 							if (!player.isDisabled(i)) list.push('equip' + i);
@@ -9637,7 +9630,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						list.push('cancel2');
 						return list;
 					},
-					check(event, player) {
+					check(Evt, player) {
 						for (var i = 5; i > 0; i--) {
 							if (player.isEmpty(i)) return ('equip' + i);
 						}
@@ -9653,10 +9646,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					order: 1,
 					result: {
 						player(player) {
-							if (game.hasPlayer(function (target) {
-								if (player == target) return false;
-								var hs = target.countCards('h');
-								return hs > 2 && get.$a(player, target) <= 0 && !target.hasSkill('linghun');
+							if (game.hasPlayer(tar => {
+								if (player == tar) return false;
+								var hs = tar.countCards('h');
+								return hs > 2 && get.$a(player, tar) <= 0;
 							})) return 1;
 							return 0;
 						},
@@ -11247,28 +11240,28 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}, () => {
 					Evt.num--;
 					Evt.cards = get.cards(4);
-					Evt.target.chooseToMove(`『柔情』：获得至多(${get.cnNumber(Evt.max)})张牌`,true)
+					Evt.target.chooseToMove(`『柔情』：获得至多(${get.cnNumber(Evt.max)})张牌`, true)
 						.set('list', [
-							['牌堆顶',Evt.cards],
+							['牌堆顶', Evt.cards],
 							['牌堆底'],
 							['获得'],
 						])
 						.set('processAI', function (list) {
-							var cards = list[0][1].slice(0).sort(function(a,b){
-								return get.value(b)-get.value(a);
+							var cards = list[0][1].slice(0).sort(function (a, b) {
+								return get.value(b) - get.value(a);
 							})
-							return [[],cards.splice(Evt.max),cards];
+							return [[], cards.splice(Evt.max), cards];
 						})
-						.set('filterMove',function(from,to,moved){
-							if(to==0||(to==2&&moved[2].length>=_status.event.max)) return false;
+						.set('filterMove', function (from, to, moved) {
+							if (to == 0 || (to == 2 && moved[2].length >= _status.event.max)) return false;
 							return true;
 						})
-						.set('filterOk',function(moved){
-							return moved[0].length==0 && moved[2].length<=_status.event.max;
+						.set('filterOk', function (moved) {
+							return moved[0].length == 0 && moved[2].length <= _status.event.max;
 						})
 						.set('max', Evt.max)
 				}, () => {
-					if (result.bool && result.moved){
+					if (result.bool && result.moved) {
 						Evt.bottoms = result.moved[1].slice(0)
 						Evt.cards = result.moved[2].slice(0)
 					}
@@ -18274,7 +18267,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			shanbao: `扇宝`,
 			fengxu: `风许`,
-			fengxu_info: `你使用牌指定唯一目标时，可以将其区域内的一张牌移至其下家（可替换），若未发生替换，则对其下家重复此流程，直到发生替换或重复了五次。<br>若你的牌因此发生了替换，此技能结算后你摸重复次数的牌，然后不能发动此技能直到你下一次弃置手牌。`,
+			fengxu_info: `你使用牌指定唯一目标时，可以将其区域内的一张牌移至其下家（可替换），若未发生替换，则对其下家重复此流程（强制），至多重复五次。<br>若你的牌因此发生了替换，此技能结算后你摸重复次数的牌。`,
 			fengxu_append: lib.figurer(`特性：捡瓶子`),
 
 			qiudi: `秋蒂Q`,

@@ -87,8 +87,6 @@ module.exports = {
             };
             let callback = (e) => {
                 var max, j;
-                console.log(e.clientX, e.clientY)
-                console.log(e)
                 //排除一些元素
                 !["TEXTAREA", "INPUT", "A", "I", "IMG"].includes(e.target.nodeName)
                     && function () {

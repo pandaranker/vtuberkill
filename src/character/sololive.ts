@@ -359,9 +359,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					let next = player.chooseTarget()
-					.set('filterTarget', function (card, player, target) {
-						return target.group == player.group;
-					});
+						.set('filterTarget', function (card, player, target) {
+							return target.group == player.group;
+						});
 					if (trigger._result?.length) {
 						next.set('prompt2', '失去一点体力上限，令其回复一点体力');
 					} else if (trigger._result?.links && trigger._result.links[0][3] == '回复体力') {
@@ -441,6 +441,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						popup: false,
 						trigger: {
 							player: 'phaseBegin',
+						},
+						filter(Evt, player) {
+							return game.countPlayer(cur => {
+								return cur.hasSkill('old_maoliang');
+							});
 						},
 						content() {
 							'step 0'
@@ -526,7 +531,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						dialog.videoId = id;
 					}, Evt.targets, Evt.videoId, trigger.player)
 					let next = player.chooseButton([1, player.maxHp])
-					.set('dialog', Evt.videoId);
+						.set('dialog', Evt.videoId);
 					'step 1'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -573,11 +578,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					player.addTempSkill('old_shiqi_addDam');
-					let buff = '.player_buff';
-					game.broadcastAll(function (player, buff) {
-						player.node.old_shiqi = ui.create.div(buff, player.node.avatar);
-						player.node.old_shiqi2 = ui.create.div(buff, player.node.avatar2);
-					}, player, buff);
+					game.putBuff(player, 'old_shiqi', '.player_buff')
 				},
 				subSkill: {
 					addDam: {
@@ -591,12 +592,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							trigger.num++;
 						},
 						onremove(player, skill) {
-							game.broadcastAll(function (player) {
-								player.node.old_shiqi.delete();
-								player.node.old_shiqi2.delete();
-								delete player.node.old_shiqi;
-								delete player.node.old_shiqi2;
-							}, player);
+							game.clearBuff(player, 'old_shiqi')
 						},
 						ai: {
 							damageBonus: true,
@@ -695,10 +691,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.addMark('hongshaoturou', 1, false);
 					player.addTempSkill('hongshaoturou_viewAs');
 					player.addTempSkill('hongshaoturou_shao');
-					let buff = '.player_buff';
-					game.broadcastAll(function (player, buff) {
-						player.node.hongshaoturou = ui.create.div(buff, player.node.avatar);
-					}, player, buff);
+					game.putBuff(player, 'hongshaoturou', '.player_buff')
 				},
 				onremove(player, skill) {
 					player.removeSkill('hongshaoturou_shao');
@@ -731,12 +724,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							name: '自煲自足',
 						},
 						onremove(player, skill) {
-							game.broadcastAll(function (player) {
-								if (player.node.hongshaoturou) {
-									player.node.hongshaoturou.delete();
-									delete player.node.hongshaoturou;
-								}
-							}, player);
+							game.clearBuff(player, 'hongshaoturou')
 						},
 						filter(Evt, player) {
 							return true;

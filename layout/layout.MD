@@ -8,3 +8,5 @@ newlayout: '对称',
 nova: '新版'
 ## 模式样式
 mode: '模式'
+## 模式样式
+cursor: '鼠标'

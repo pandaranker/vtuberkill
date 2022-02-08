@@ -1684,7 +1684,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								else dialog.addText('没有「●标记」');
 							},
 							markcount(storage, player) {
-								return storage.point;
+								return storage&&storage.point;
 							}
 						},
 

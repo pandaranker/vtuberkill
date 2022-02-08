@@ -111,6 +111,43 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 		},
+		pm_kouqin_skill: new toSkill('active',{
+			equipSkill: true,
+			usable:1,
+			content:function(){
+				'step 0'
+				player.chooseToPlayBeatmap({
+					//歌曲名称
+					name:'美しきもの',
+					//歌曲文件名（默认在audio/effect文件夹下 若要重定向到扩展 请写为'ext:扩展名称'的格式 并将文件名重命名为和上面的歌曲名称相同）
+					filename:'music_beauty',
+					//每个音符的开始时间点（毫秒，相对未偏移的开始播放时间）
+					timeleap:[0,368,690,1342,2072,2724,4080,4771,5173,5475,6131,6831,8183,8412,9554,10214,10605,10921,11577,12277,13631,15007,15673,16377,17732,18400,19081],
+					//开始播放时间的偏移量（毫秒）
+					current:-8932,
+					//判定栏高度（相对整个对话框高度比例）
+					judgebar_height:0.14,
+					//Good/Great/Prefect的位置判定范围（百分比，相对于整个对话框。以滑条的底部作为判定基准）
+					range1:[86,110],
+					range2:[92,104],
+					range3:[96,100],
+					//滑条每相对于整个对话框下落1%所需的时间（毫秒）
+					speed:20,
+				});
+				'step 1'
+				console.log(result)
+				var score=Math.floor(Math.min(3,result.accuracy/35));
+				Evt.score=score;
+				game.log(player,'的演奏评级为','#y'+result.rank[0],'，获得积分点数','#y'+score,'分');
+				player.draw(score)
+			},
+			ai:{
+				order:10,
+				result:{
+					player:1,
+				},
+			},
+		}),
 	}
 	return <currentObject>{
 		name: 'xingtian',
@@ -333,6 +370,37 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				skills: ["pm_zhuge_skill"],
 			},
+			promote_kouqin: {
+				materials: ['shan', { type: ['trick','delay'] },{type:'equip'}],
+				materials_prompt: '【闪】+锦囊牌+装备牌',
+				derivation: true,
+				derivationpack: 'xingtian',
+				distance: {
+					attackFrom: +1,
+				},
+				fullskin: true,
+				type: "equip",
+				subtype: "equip1",
+				ai: {
+					equipValue: function (card, player) {
+						if (!game.hasPlayer(function (current) {
+							return player.canUse('sha', current) && get.effect(current, { name: 'sha' }, player, player) > 0;
+						})) {
+							return 6;
+						}
+						var num = player.countCards('h', 'sha');
+						if (num > 1) return 3 - num;
+						return 6 - num;
+					},
+					basic: {
+						equipValue: 5,
+					},
+					tag: {
+						valueswap: 1,
+					},
+				},
+				skills: ["pm_kouqin_skill"],
+			},
 		},
 		character: {
 			/**☆星宫汐 */
@@ -450,6 +518,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			promote_zhuge_info: "锁定技 你于出牌阶段内使用【杀】无次数限制。",
 			pm_zhuge_skill: '连射',
 			pm_zhuge_skill_info: '锁定技 你于出牌阶段内使用【杀】无次数限制。',
+
+			promote_kouqin: "半音口琴",
+			promote_kouqin_info: "出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0～3张牌。",
+			pm_kouqin_skill: '琴奏',
+			pm_kouqin_skill_info: '出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0～3张牌。',
 
 			star_HosimiyaSio: `☆星宫汐`,
 			xuanyu: `宣裕`,

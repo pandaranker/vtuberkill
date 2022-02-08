@@ -944,7 +944,7 @@ input.fileinput::-webkit-file-upload-button {
 	color: white;
 	text-shadow: black 0px 0px 2px;
 	transform: translateX(0px);
-	background-image: url("image/card/hslingjian_jinjilengdong.jpg");
+	background-image: url("../../image/card/du.png");
 	background-size: cover;
 }
 .menu-buttons>.new_character>.avatar>input,

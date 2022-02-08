@@ -49,7 +49,7 @@ export default {
      * @global
      */
     const ai = {};
-    const vkCore  = window.vkCore = { game, ui, get, ai, lib, _status }
+    const vkCore = window.vkCore = { game, ui, get, ai, lib, _status }
     function vkExtends(target, source) {
       for (let k in source) {
         if (source.hasOwnProperty(k) === true) {
@@ -69,12 +69,34 @@ export default {
     require('@e/galgame/galgame')()
     //点击特效功能
     game.clickCanvas = require('@e/clickCanvas')
+    //引入自定义样式
+    require('@l/custom.css')
+    lib.init.sheet(`*{
+      cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
+    }`)
     get.$t = get.translation
     get.$a = get.attitude
     get.$a2 = get.attitude2
     get.$dis = get.distance
     get.$pro = get.prompt
     get.$pro2 = get.prompt2
+    game.putBuff = (player, skill, buff) => {
+      game.broadcastAll(function (player, skill, buff) {
+        if (!player.node[skill + '_buff']) {
+          player.node[skill + '_buff'] = [ui.create.div(buff, player.node.avatar), ui.create.div(buff, player.node.avatar2)];
+        }
+      }, player, skill, buff);
+    }
+    game.clearBuff = (player, skill) => {
+      game.broadcastAll(function (player, skill) {
+        if (player.node[skill + '_buff']) {
+          player.node[skill + '_buff'][0].delete();
+          player.node[skill + '_buff'][1].delete();
+          delete player.node[skill + '_buff'][0]
+          delete player.node[skill + '_buff'][1]
+        }
+      }, player, skill);
+    }
     lib.init.init();
   }
 }

@@ -694,6 +694,19 @@ window.vk_asset_list=[
 	'audio/skill/zuodun1.mp3',
 	'audio/skill/zuodun2.mp3',
 
+	//2022年新增的技能语音
+	'audio/skill/fengxu1.mp3',
+	'audio/skill/fengxu2.mp3',
+	'audio/skill/zaiying1.mp3',
+	'audio/skill/zaiying2.mp3',
+	'audio/skill/zaiying3.mp3',
+	'audio/skill/zaiying4.mp3',
+	'audio/skill/zhengen1.mp3',
+	'audio/skill/zhengen2.mp3',
+	'audio/skill/zhengen3.mp3',
+	'audio/skill/zhengen4.mp3',
+	'audio/skill/zhengen_achieve.mp3',
+	'audio/skill/zhengen_fail.mp3',
 	//语音
 	'audio/voice/male/0.mp3',
 	'audio/voice/male/1.mp3',
@@ -1071,6 +1084,8 @@ window.vk_asset_list=[
 	'image/card/peng.png',
 	'image/card/wudaoqu.png',
 	'image/card/promote_zhuge.png',
+	'image/card/promote_kouqin.png',
+	'audio/effect/music_beauty.mp3',
 
 	
 	'image/replace/bagua.png',

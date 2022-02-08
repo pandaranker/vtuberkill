@@ -19,10 +19,30 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
+        test: /\.less$/i,
+        use: [
+          "style-loader",
+          "css-loader",
+          "less-loader",
+        ],
+      },
+      {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
       },
+      {
+        test: /\.(jpg|png|gif|bmp|jpeg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 30000,
+              name: '[name][hash:4].[ext]'
+            }
+          }
+        ]
+      }
       // {
       //   test: /\.js$/,
       //   exclude: /(node_modules|bower_components)/,
@@ -70,6 +90,7 @@ module.exports = {
       '@d': resolve('data'),
       '@m': resolve('methods'),
       '@e': resolve('extension'),
+      '@l': resolve('layout'),
     }
   },
   target: 'node'

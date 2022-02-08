@@ -67,6 +67,7 @@ window.noname_source_list=[
 	'extension/coin/extension.js',
 	'extension/wuxing/extension.js',
 
+	'theme/cursor/aero_arrow_glow.cur',
 	'theme/music/grid.png',
 	'theme/music/style.css',
 	'theme/music/wood.png',
@@ -83,7 +84,6 @@ window.noname_source_list=[
 	'theme/woodden/wood.png',
 	'theme/woodden/wood2.jpg',
 	'theme/woodden/wood2.png',
-	'theme/style/card/cardSpecialEffects.css',
 	'theme/style/card/custom.css',
 	'theme/style/card/default.css',
 	'theme/style/card/music.css',

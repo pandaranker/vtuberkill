@@ -1171,10 +1171,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(get.type(getC) =='equip'){
 							player.logSkill('esuyingye');
 							player.addTempSkill('esuyingye_addDam');
-							var buff = '.player_buff';
-							game.broadcastAll(function(player, buff){
-								player.node.esuyingye= ui.create.div(buff ,player.node.avatar);
-							}, player, buff);
+							game.putBuff(player, 'esuyingye', '.player_buff')
 						}
 					}
 				},
@@ -1190,10 +1187,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							player.removeSkill('esuyingye_addDam');						
 						},
 						onremove: function(player, skill) {
-							game.broadcastAll(function(player){
-								player.node.esuyingye.delete();
-								delete player.node.esuyingye;
-							}, player);
+							game.clearBuff(player, 'esuyingye')
 						}
 					}
 				}

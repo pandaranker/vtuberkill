@@ -1,10 +1,10 @@
 window.noname_update={
-	version:'1.10.0.4',
-	update:'1.9.101.1.1',
+	version:'1.10.0.5',
+	update:'1.9.102.1.1',
 	changeLog:[
-		`1.10.0.4微型更新：修复大量bug，优化控顶控底的操作界面，优化点击特效`,
+		`1.10.0.5小型型更新：修复大量bug，优化鼠标样式，星天篇新增可合成装备牌【半音口琴】和【键盘AK】`,
 		'新增角色茶冷【VR】、陆鳐LuLu【个人势/群】(本游戏第235名角色)',
-		`秋蒂Q的『香诺』削弱、申䒕雅的『闻新』加强、加賀美隼人『重机织梦』加强`,
+		`文静『政恩』调整、扇宝『闻新』，文静和扇宝增加技能语音`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
 		``,
 		``,
@@ -30,5 +30,9 @@ window.noname_update={
 		'game/package.js',
 		'game/asset.js',
 		'game/source.js',
+
+		
+		'theme/style/card/default.css',
+		'theme/woodden/style.css',
 	]
 };

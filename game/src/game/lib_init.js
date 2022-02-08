@@ -1348,6 +1348,7 @@ module.exports = function(element,_mode,_message){
           config3 = true;
         }
       };
+      require('@l/basis.less')
       //part: 初始化ui.css.menu和ui.css.default样式
       ui.css = {
         menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
@@ -2617,6 +2618,7 @@ module.exports = function(element,_mode,_message){
         for (var i = 0; i < lib.config.all.mode.length; i++) {
           var node = ui.create.div('.hidden', splash, clickNode);
           node.link = lib.config.all.mode[i];
+          node.dataset.cursor_style = "pointer";
           ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
           if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
             ui.create.div(node, '.avatar').setBackgroundImage('image/splash/' + lib.config.all.mode[i] + '.jpg');

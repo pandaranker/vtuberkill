@@ -1821,7 +1821,7 @@
                 },
                 border_style: {
                     name: '角色边框',
-                    init: 'default',
+                    init: 'auto',
                     intro: '设置角色边框的样式，当设为自动时，样式将随着一局游戏中伤害或击杀的数量自动改变',
                     item: {
                         gold: '金框',
@@ -1954,7 +1954,7 @@
                 autoborder_count: {
                     name: '边框升级方式',
                     intro: '<strong>击杀</strong> 每击杀一人，边框提升两级<br><strong>伤害</strong> 每造成两点伤害，边框提升一级<br><strong>混合</strong> 击杀量决定边框颜色，伤害量决定边框装饰',
-                    init: 'kill',
+                    init: 'mix',
                     item: {
                         kill: '击杀',
                         damage: '伤害',

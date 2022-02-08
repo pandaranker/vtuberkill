@@ -880,12 +880,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							return chk;
 						},
 						content() {
-							var buff = trigger.player == player ? '.player_buff' : '.player_nerf';
-							game.broadcastAll(function (player, buff) {
-								player.node.xiaoyan = ui.create.div(buff, player.node.avatar);
-								player.node.xiaoyan2 = ui.create.div(buff, player.node.avatar2);
-							}, player, buff);
-							game.delayx();
+							game.putBuff(player, 'xiaoyan', trigger.player == player ? '.player_buff' : '.player_nerf')
 						}
 					},
 					clear: {
@@ -895,14 +890,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							global: ['useCardAfter', 'respondAfter'],
 						},
 						content() {
-							if (player.node.xiaoyan) {
-								game.broadcastAll(function (player) {
-									player.node.xiaoyan.delete();
-									player.node.xiaoyan2.delete();
-									delete player.node.xiaoyan;
-									delete player.node.xiaoyan2;
-								}, player);
-							}
+							game.clearBuff(player, 'xiaoyan')
 						}
 					}
 				}
