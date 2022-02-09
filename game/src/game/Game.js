@@ -72,7 +72,7 @@ export default {
     //引入自定义样式
     require('@l/custom.css')
     lib.init.sheet(`*{
-      cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
+      cursor: url('./layout/cursor/aero_arrow_glow.png'),auto;
     }`)
     get.$t = get.translation
     get.$a = get.attitude

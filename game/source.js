@@ -67,7 +67,7 @@ window.noname_source_list=[
 	'extension/coin/extension.js',
 	'extension/wuxing/extension.js',
 
-	'layout/cursor/aero_arrow_glow.cur',
+	'layout/cursor/aero_arrow_glow.png',
 	'theme/music/grid.png',
 	'theme/music/style.css',
 	'theme/music/wood.png',

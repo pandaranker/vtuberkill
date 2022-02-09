@@ -3,6 +3,7 @@
 const path = require('path');
 const resolve = dir => path.resolve(__dirname, dir);
 const TerserPlugin = require('terser-webpack-plugin');
+let commonCssLoader = ["style-loader", "css-loader"]
 module.exports = {
   entry: {
     game: './main.js'
@@ -15,34 +16,37 @@ module.exports = {
     unknownContextCritical: false,
     rules: [
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
-      },
-      {
-        test: /\.less$/i,
-        use: [
-          "style-loader",
-          "css-loader",
-          "less-loader",
-        ],
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(jpg|png|gif|bmp|jpeg)$/,
-        use: [
+        oneOf:[
           {
-            loader: 'url-loader',
-            options: {
-              limit: 30000,
-              name: '[name][hash:4].[ext]'
-            }
+            test: /\.css$/i,
+            use: [...commonCssLoader],
+          },
+          {
+            test: /\.less$/i,
+            use: [
+              ...commonCssLoader,
+              "less-loader",
+            ],
+          },
+          {
+            test: /\.tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/
+          },
+          {
+            test: /\.(jpg|png|gif|bmp|jpeg)$/,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  limit: 30000,
+                  name: '[name][hash:4].[ext]'
+                }
+              }
+            ]
           }
         ]
-      }
+      },
       // {
       //   test: /\.js$/,
       //   exclude: /(node_modules|bower_components)/,
