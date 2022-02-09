@@ -71,9 +71,11 @@ export default {
     game.clickCanvas = require('@e/clickCanvas')
     //引入自定义样式
     require('@l/custom.css')
-    lib.init.sheet(`*{
-      cursor: url('./layout/cursor/aero_arrow_glow.png'),auto;
-    }`)
+    if (typeof global === 'undefined' || !__dirname.length) {
+      lib.init.sheet(`*{
+        cursor: url('./layout/cursor/aero_arrow_glow.png'),auto;
+      }`)
+    }
     get.$t = get.translation
     get.$a = get.attitude
     get.$a2 = get.attitude2
