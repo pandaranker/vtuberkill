@@ -33,12 +33,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**狮白牡丹 */
 			ShishiroBotan: ['female', 'holo', 4, ['sbliedan', 'buqiang']],
+			/**天音彼方 */
+			AmaneKanata: ['female', 'holo', 3, ['yuyi', 'renjian']],
 
 			/**pph */
 			PinkyPopHepburn: ['female', 'qun', 4, ['pphpanfeng', 'lanyue']],
 
-			/**白玉 */
-			Shiratama: ['female', 'qun', 4, ['meihua', 'shentian'],],
 			/**琴吹梦 */
 			KotobukiYume: ['female', 'qun', 4, ['xuanquan', 'rusu'],],
 			/**海月シェル */
@@ -49,8 +49,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
 
-			/**扇宝 */
-			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
 			/**秋蒂 */
 			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
 			/**陆鳐 */
@@ -68,9 +66,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			lanre: ['female', 'hunmiao', 3, ['daoyi', 'shengyin'], ['guoV']],
 			/**魂喵喵 */
 			hunmiaomiao: ['female', 'hunmiao', 3, ['xiuyou', 'jiyuan'], ['guoV']],
-
-			/**菜菜姐 */
-			caicai: ['female', 'qun', 5, ['tibing', 'guangtui'], ['guoV']],
 
 			/**白夜真宵 */
 			ByakuyaMayoi: ['female', 'chaos', 4, ['bykuangxin'], ['guoV']],
@@ -139,8 +134,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
 			/**无理 */
 			Muri: ['female', 'VirtuaReal', 3, ['lique', 'zhangdeng'], ['guoV']],
-			/**小可 */
-			xiaoke: ['female', 'VirtuaReal', '3/4', ['dianying', 'ganfen'], ['guoV']],
 			/**Hanser */
 			Hanser: ['female', 'VirtuaReal', 3, ['naiwei', 'cishan'], ['guoV']],
 			/**勾檀Mayumi */
@@ -2280,7 +2273,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								])
 								.set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
 								.set('processAI', function (list) {
-									var cards = list[0][1].slice(0);
+									var cards = list[1][1].slice(0);
 									cards.sort(function (a, b) {
 										return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 									});
@@ -2848,7 +2841,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}, () => {
 					if (result.bool && result.targets?.length) {
 						player.line(result.targets);
-						result.targets[0][[...Evt.map].reverse()[Evt.type]]();
+						result.targets[0][Evt.map.reverse()[Evt.type]]();
 					}
 				}],
 				ai: {
@@ -5393,7 +5386,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						])
 						.set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
 						.set('processAI', function (list) {
-							var cards = list[0][1].slice(0);
+							var cards = list[1][1].slice(0);
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
@@ -7159,7 +7152,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			//文静
 			zaiying: {
-				audio:4,
+				audio: 4,
 				trigger: {
 					global: "gainAfter",
 				},
@@ -7214,7 +7207,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}
 			},
 			zhengen: new toSkill('trigger', {
-				audio:4,
+				audio: 4,
 				intro: {
 					name: '已发动『政恩』的目标角色',
 					mark(dialog, storage, player) {
@@ -12341,7 +12334,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					intro: {
 						content: '受到的伤害-#'
 					}
-				}, 'forced', 'onremove', 'mark')
+				}, 'forced', 'onremove', 'mark').setI(1)
 			}).setT('damageAfter').setI(1),
 			//茶冷
 			huomo: new toSkill('trigger', {
@@ -14835,6 +14828,89 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}, Evt.target, -1).set('addCount', false).set('logSkill', 'buqiang');
 				},
 			},
+			//天音彼方
+			yuyi: new toSkill('trigger', {
+				filter(Evt, player) {
+					return true
+				},
+				content: [() => {
+					Evt.num = 0
+					let judge = player.getHistory('judge',evt => evt.getParent('phaseJudge')&&evt.getParent('phaseJudge').name === 'phaseJudge')
+					let use = player.getHistory('useCard',evt => evt.getParent('phaseUse')&&evt.getParent('phaseUse').name === 'phaseUse')
+					console.log(use)
+					if(judge.length<2) Evt.num++
+					if(use.length<2) Evt.num++
+					if(player.storage.yuyi_record<2) Evt.num++
+					player.storage.yuyi_record = 0
+					player.draw(Evt.num)
+				}, () => {
+					if (Evt.num===3) {
+						Evt.recover = player.recover()
+					}
+				}, () => {
+					if (Evt.num<3 || !Evt.recover?.result) {
+						player.chooseTarget(`###${get.prompt('yuyi')}###令一名角色获得『愈翼』`)
+						.set('filterTarget',function (card, player, target) {
+							return !target.hasSkill('yuyi');
+						})
+						.set('ai',get.attitude2)
+					}
+				}, () => {
+					if (result.bool && result.targets?.length) {
+						Evt.target = result.targets[0]
+						player.logSkill('yuyi',Evt.target)
+						if(!Evt.target.hasSkill('yuyi')){
+							Evt.target.addTempSkill('yuyi',{player:'phaseAfter'})
+						}
+					}
+				}],
+				ai:{
+					threaten:1.1
+				},
+				group:'yuyi_record',
+				subSkill:{
+					record:new toSkill('rule',{
+						filter(Evt, player) {
+							if(Evt.getParent('phaseDiscard')===player.storage.yuyi)	return true
+							player.storage.yuyi_record = 0
+							return Evt.getParent('phaseDiscard')&&Evt.getParent('phaseDiscard').name==='phaseDiscard'
+						},
+						content:[() => {
+							player.storage.yuyi = trigger.getParent('phaseDiscard')
+							player.storage.yuyi_record += trigger.cards.length
+						}]
+					},'onremove','silent','direct').setT('discard', 'End'),
+				}
+			}, 'frequent').setT('phase', 'End'),
+			renjian: new toSkill('trigger', {
+				filter(Evt, player) {
+					return player.countCards('he')
+				},
+				content: [() => {
+					player.chooseToDiscard('he', get.prompt2('renjian')).set('logSkill', 'renjian')
+				}, () => {
+					if (result.bool) {
+						player.judge(card => {
+							if (get.color(card) == 'black'||get.suit(card) == 'diamond') return 2;
+							return 0;
+						}).callback = lib.skill.renjian.callback;
+					}
+				}],
+				callback: [() => {
+					if (Evt.judgeResult.color == 'black' ||Evt.judgeResult.suit == 'diamond') {
+						Evt.num = player.getDamagedHp() + 1
+						player.chooseTarget(`视为使用了一张目标数最大为${Evt.num}的暗【杀】`, [1, Evt.num], function (card, player, target) {
+							if (player == target) return false;
+							return player.canUse({ name: 'sha' }, target, false);
+						}).set('ai', (target) => get.effect(target, { name: 'sha' }, _status.event.player))
+					}
+				}, () => {
+					if (result.bool && result.targets) {
+						player.logSkill('renjian', result.targets);
+						player.useCard({ name: 'sha', nature: 'yami', isCard: true }, result.targets, false);
+					}
+				}],
+			}, 'direct').setT('phaseJudge', 'Begin'),
 			//PPH
 			pphpanfeng: {
 				trigger: { player: ['phaseUseBegin', 'damageAfter'] },
@@ -17128,17 +17204,19 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				direct: true,
 				filter(Evt, player) {
 					if (Evt.cards && get.name(Evt.card) == 'huogong'
-						&& !Evt.player.hasHistory('sourceDamage', evt => Evt == evt.getParent('useCard'))) return true;
+						&& !Evt.player.hasHistory('sourceDamage', evt => evt.getParent && Evt === evt.getParent('useCard'))) return true;
 				},
 				content: [() => {
 					player.chooseTarget(function (card, player, target) {
 						return target != _status.event.source;
-					}).set('ai', function (target) {
-						let att = get.$a(_status.event.player, target);
-						if (target.hasSkillTag('nogain')) att /= 10;
-						if (target.hasJudge('lebu')) att /= 2;
-						return get.value(_status.event.cardx, target, 'raw') * att;
-					}).set('cardx', trigger.cards).set('source', trigger.player).set('createDialog',
+					}).set('ai', (target) => {
+							let att = get.$a(_status.event.player, target);
+							if (target.hasSkillTag('nogain'))
+								att /= 10;
+							if (target.hasJudge('lebu'))
+								att /= 2;
+							return get.value(_status.event.cardx, target, 'raw') * att;
+						}).set('cardx', trigger.cards).set('source', trigger.player).set('createDialog',
 						[get.$pro('qinhuo'),
 							'small', get.skillInfoTranslation('qinhuo', player), '令一名角色获得这些牌',
 						[trigger.cards, 'card']]);
@@ -18243,6 +18321,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			buqiang: `补枪`,
 			buqiang_info: `当其他角色体力值改变为1时，你可以对其使用一张【杀】。`,
 
+			AmaneKanata: `天音彼方`,
+			yuyi: `愈翼`,
+			yuyi_info: `回合结束时，你每满足下列一项便摸一张牌，若均满足，你回复一点体力：<br>
+			&nbsp;1.判定阶段判定次数<2<br>&nbsp;2.出牌阶段使用牌数<2<br>&nbsp;3.弃牌阶段弃置牌数<2<br>
+			若你没有因此恢复体力，你可令一名角色获得『愈翼』直到其下个回合结束。`,
+			yuyi_append: lib.figurer(`特性：辅助`),
+			renjian: `忍剑`,
+			renjian_info: `判定阶段开始时，你可弃置一张牌并进行一次判定，若结果为黑色或♦，你视为使用了一张目标数最大为X的暗【杀】（X为你已损失的体力值+1）`,
+
 			PinkyPopHepburn: `PinkyPopHepburn`,
 			PinkyPopHepburn_ab: `PPH`,
 			pphpanfeng: `攀峰`,
@@ -18639,7 +18726,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yehua: `夜话`,
 			yehua_info: `回合开始时，你可以将手牌调整至场上唯一最多并翻面。`,
 			fengqing: `风情`,
-			fengqing_info: `转换技 当你的武将牌状态发生变化时，你可以选择一名角色，其在其下个准备阶段①视为使用了【酒】②视为使用了【桃】③跳过本回合的判定和弃牌阶段。`,
+			fengqing_info: `转换技 当你的武将牌状态发生变化时，你可以选择一名角色，其在自己的下个准备阶段①视为使用了一张【酒】②视为使用了一张【桃】③跳过本回合的判定和弃牌阶段。`,
 			fengqing_jiu: `风情-酒`,
 			fengqing_tao: `风情-桃`,
 
@@ -18648,9 +18735,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shixi: `时隙`,
 			shixi_info: `锁定技 游戏开始时，记录你的初始手牌。当（你）的牌进入弃牌堆时，你可以选定一张花色与之相同的记录牌。一个阶段结束时，每有两个选定你便摸一张牌，然后重置选定。`,
 			xueta: `靴匿`,
-			xueta_info: `你响应其他角色的牌后，可以弃一张牌，令其摸两张牌，并令其成为<皇珈骑士>。`,
+			xueta_info: `你响应其他角色的牌后，可以弃一张牌，令其摸两张牌并成为 <皇珈骑士> 。`,
 			yuezhi: `乐治`,
-			yuezhi_info: `<font color=#a7f>觉醒技</font> 回合开始时，若场上<皇珈骑士>的数量不少于你的体力值或手牌数，你增加一点体力上限并从弃牌堆获得你的初始手牌，每有一张无法获得，你回复1点体力并摸两张牌，然后修改『时隙』（）内容为“你或一名<皇珈骑士>”。`,
+			yuezhi_info: `<font color=#a7f>觉醒技</font> 回合开始时，若场上 <皇珈骑士> 的数量不少于你的体力值或手牌数，你增加一点体力上限并从弃牌堆获得你的初始手牌，每有一张无法获得，你回复1点体力并摸两张牌，然后修改『时隙』（）内容为（你或一名 <皇珈骑士> ）。`,
 
 			Ava: `向晚`,
 			yiqu: `亦趋`,
@@ -18658,7 +18745,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			wanxian: `挽弦`,
 			wanxian_info: `锁定技 你令其他角色进入濒死状态时，你失去来自『亦趋』额外技能并摸等量的牌。`,
 			zouhun: `奏魂`,
-			zouhun_info: `出牌阶段限一次，你可以演奏一次《Quiet》，根据得分摸0~4张牌`,
+			zouhun_info: `出牌阶段限一次，你可以使用吉他演奏一次乐曲，根据得分摸0~4张牌（乐曲从《说爱你》、《花海》、《下雨了是我在想你》、《水母之歌》、《甜美过滤》中随机抽取）`,
 
 			Diana: `嘉然`,
 			quanyu: `全域`,
@@ -19062,8 +19149,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			UsakiNono: `宇佐纪诺诺`,
 			tuhui: `兔烩`,
-			tuhuiA: `兔烩(伤害)`,
-			tuhuiB: `兔烩(受伤害)`,
+			tuhuiA: `兔烩(伤)`,
+			tuhuiB: `兔烩(受)`,
 			tuhui_info: `每轮每项限一次。你对其他角色造成伤害或其他角色对你造成伤害后，你可以与其各回复（1）点体力；无法回复体力的角色摸（1）张牌。`,
 			fuyou: `复幼`,
 			fuyou_info: `限定技 出牌阶段，你可以令所有角色无法回复体力直到回合结束，重置『兔烩』并使之的（）值+1。`,

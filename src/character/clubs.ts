@@ -22,6 +22,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			NatsumiMoe: ['female', 'eilene', 4, ['moemanyi', 'cuchuan'], ['yingV']],
 			/**雫るる */
 			ShizukuLulu: ['female', 'qun', 3, ['duixian', 'gutai']],
+			/**白玉 */
+			Shiratama: ['female', 'qun', 4, ['meihua', 'shentian'],],
 
 			/**P家诸人 */
 			Paryi: ['male', 'paryi', 4, ['tiantang', 'haoren'], ['doublegroup:paryi:qun']],
@@ -90,6 +92,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Froot: ['female', 'vshojo', 4, ['exiao', 'jinmei'], ['yingV']],
 			/**Silvervale */
 			Silvervale: ['female', 'vshojo', 4, ['yingling', 'duchun'], ['yingV']],
+
+			/**菜菜姐 */
+			caicai: ['female', 'qun', 5, ['tibing', 'guangtui'], ['guoV']],
 		},
 		characterSort: {
 			clubs: {

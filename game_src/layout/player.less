@@ -1,0 +1,304 @@
+
+/*--------角色--------*/
+
+.player:not(.treasure).playerfocus {
+    transform: scale(1.1);
+}
+
+.player.linked:not(.treasure).playerfocus {
+    transform: scale(1.1) rotate(-90deg);
+}
+
+.player.connect> {
+    div {
+        &:not(.avatar):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {
+            display: none !important;
+        }
+    }
+
+    .gaming {
+        left: 16px;
+        top: auto;
+        bottom: 16px;
+        font-family: 'xinwei'
+    }
+}
+
+.player.connect[data-cursor_style="forbidden"] {
+    opacity: 0.5;
+}
+
+.player {
+    .playerjiu {
+        animation: game_start 0.5s;
+        -webkit-animation: game_start 0.5s;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: 4;
+        pointer-events: none;
+        background: rgba(255, 0, 0, 0.3);
+    }
+
+    >.avatar>.action {
+        margin: 5px;
+        font-family: 'xinwei';
+        font-size: 20px;
+        letter-spacing: -2px;
+        right: 5px;
+        text-align: right;
+
+        &:not(.freecolor) {
+            text-shadow: black 0 0 1px, rgba(10, 155, 67, 1) 0 0 5px, rgba(10, 155, 67, 1) 0 0 10px;
+        }
+    }
+
+    >.avatar.hidden,
+    >.avatar2.hidden {
+        pointer-events: none !important;
+    }
+
+    >.avatar.disabled,
+    >.avatar2.disabled {
+        filter: grayscale(1);
+        -webkit-filter: grayscale(1);
+        opacity: 0.8;
+    }
+
+    &:not(.current_action) .avatar>.action {
+        opacity: 0
+    }
+
+    z-index: 2;
+    width: 240px;
+    height: 120px;
+
+    >div {
+        z-index: 2;
+    }
+
+    >.nameol {
+        left: 0;
+        top: 13px;
+        width: 100%;
+        font-size: 12px;
+        text-align: center;
+        white-space: nowrap;
+        /*opacity: 0;*/
+    }
+
+    &:hover>.nameol {
+        opacity: 1;
+    }
+
+    >.name {
+        left: 16px;
+        top: 24px;
+        font-size: 20px;
+        font-family: 'xinwei';
+    }
+
+    >.name.name2 {
+        left: 81px
+    }
+
+    >.intro {
+        top: 87px;
+        left: 18px;
+    }
+
+    >.turned {
+        font-family: 'xinwei';
+        width: 100%;
+        height: 100%;
+        line-height: 50px;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-size: 50px;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: none;
+        background: black;
+        top: 0;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: none;
+
+        >div {
+            top: calc(50% - 50px);
+            width: 100%;
+            left: 0;
+        }
+    }
+
+    >.chain {
+        top: calc(50% - 10px);
+        left: 0;
+        height: 20px;
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: visible;
+        white-space: nowrap;
+        padding: 0;
+        margin: 0;
+        z-index: 3;
+        pointer-events: none;
+
+        >div {
+            overflow: visible;
+            left: 0;
+            top: 0;
+            margin: 0;
+            padding: 0;
+            >div{
+                position: absolute;
+                margin: 0;
+                padding: 0;
+                left: 0;
+                box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px,rgba(0, 0, 0, 0.4) 0 0 2px;
+                &:nth-child(odd){
+                    height: 8px;
+                    width: 10px;
+                    border-radius: 2px;
+                    top: 6px;
+                }
+                &:nth-child(even){
+                    width: 10px;
+                    height: 2px;
+                    top: 9px;
+                    z-index: 1;
+                    border-radius: 2px;
+                }
+            }
+        }
+        
+    }
+
+    &:not(.linked2)>.chain>div {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+}
+
+.player.playerbright {
+    filter: brightness(1.2);
+    -webkit-filter: brightness(1.2);
+}
+
+.player.playerflip {
+    animation: playerflip 0.3s ease-out;
+    -webkit-animation: playerflip 0.3s ease-out;
+}
+
+#arena.chess:not(.selecting) .player.current_action .avatar>.action {
+    opacity: 0
+}
+
+.player.controlfakeme {
+    width: 100px;
+    height: 120px;
+    top: calc(100% - 140px);
+
+    >.avatar {
+        width: 100%;
+        height: 100%;
+        box-shadow: none;
+        left: 0;
+        top: 0
+    }
+}
+
+.player.minskin {
+    width: 120px;
+}
+
+.player.replaceme {
+    animation: replaceme 0.5s;
+    -webkit-animation: replaceme 0.5s
+}
+
+.player.replaceenemy {
+    animation: replaceenemy 0.5s;
+    -webkit-animation: replaceenemy 0.5s
+}
+
+.player.dead,
+.player.likedead,
+.grayscale1 {
+    z-index: 1;
+    filter: grayscale(1);
+    -webkit-filter: grayscale(1);
+}
+
+.grayscale {
+    filter: grayscale(1);
+    -webkit-filter: grayscale(1);
+}
+
+
+#arena.slim_player {
+    .player {
+        >.name {
+            left: 13px;
+            top: 21px;
+        }
+
+        >.name.name2 {
+            left: 78px
+        }
+    }
+
+    .player.minskin {
+        >.name {
+            font-size: 18px;
+            line-height: 120%;
+            top: 15px;
+        }
+
+        >.name.long {
+            transform: scale(0.9);
+            transform-origin: top left;
+            top: 13px;
+        }
+    }
+
+    .player.linked.minskin>.name {
+        transform: rotate(90deg) translate(81px, -66px);
+    }
+}
+
+#arena {
+    .player.minskin {
+        >.name {
+            font-size: 18px;
+            line-height: 120%;
+            top: 15px;
+        }
+
+        >.name.long {
+            transform: scale(0.9);
+            transform-origin: top left;
+            top: 13px;
+        }
+    }
+
+    .player.linked.minskin>.name {
+        transform: rotate(90deg) translate(81px, -66px);
+    }
+    
+    &:not(.hide_turned):not(.oldlayout){
+        .player.turnedover>.turned{
+            opacity: 0.2;
+        }
+    }
+}
+
+#arena.nolink {
+    .player>.chain {
+        display: none;
+    }
+}

@@ -1,7 +1,4 @@
 'use strict';
-
-const { event, player } = require("../../game/src/game/lib_element");
-
 game.import('mode', function (lib, game, ui, get, ai, _status) {
 	return {
 		name: 'yindao',

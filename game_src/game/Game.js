@@ -73,7 +73,7 @@ export default {
     require('@l/custom.css')
     if (typeof global === 'undefined' || !__dirname.length) {
       lib.init.sheet(`*{
-        cursor: url('./layout/cursor/aero_arrow_glow.png'),auto;
+        cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
       }`)
     }
     get.$t = get.translation
@@ -92,10 +92,11 @@ export default {
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
         if (player.node[skill + '_buff']) {
-          player.node[skill + '_buff'][0].delete();
-          player.node[skill + '_buff'][1].delete();
-          delete player.node[skill + '_buff'][0]
-          delete player.node[skill + '_buff'][1]
+          if(player.node[skill + '_buff'][0].delete){
+            player.node[skill + '_buff'][0].delete();
+            player.node[skill + '_buff'][1].delete();
+          }
+          delete player.node[skill + '_buff']
         }
       }, player, skill);
     }

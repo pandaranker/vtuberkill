@@ -1,7 +1,7 @@
 /**webpack配置文件 */
 
 const path = require('path');
-const resolve = dir => path.resolve(__dirname, dir);
+const resolve = (...dirs) => path.resolve(__dirname, ...dirs);
 const TerserPlugin = require('terser-webpack-plugin');
 let commonCssLoader = ["style-loader", "css-loader"]
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: resolve('..')
+    path: resolve('..','game')
   },
   module: {
     unknownContextCritical: false,
@@ -34,7 +34,7 @@ module.exports = {
             exclude: /node_modules/
           },
           {
-            test: /\.(jpg|png|gif|bmp|jpeg)$/,
+            test: /\.(jpg|png|gif|bmp|jpeg|cur)$/,
             use: [
               {
                 loader: 'url-loader',

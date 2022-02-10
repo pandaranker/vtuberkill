@@ -1,0 +1,30 @@
+#window {
+
+    &:not(.low_performance) #arena #arenalog>div {
+        animation: game_start 0.5s;
+        -webkit-animation: game_start 0.5s;
+    }
+}
+
+#splash.low_performance> {
+    div.hidden {
+        transform: scale(0.8);
+    }
+
+    div {
+        transition: all 0.5s;
+    }
+}
+
+#window.low_performance {
+
+    #arena {
+        .player {
+
+            .equips,
+            .name {
+                transition: all 0s
+            }
+        }
+    }
+}

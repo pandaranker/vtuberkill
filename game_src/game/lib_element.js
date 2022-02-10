@@ -6322,12 +6322,14 @@
        * @name content.changeHp
        * @type {GameCores.Bases.StateMachine}
        */
-      changeHp: [function () {
+      changeHp: [() => {
         Evt.trigger('changeHpBegin');
-      }, function () {
+      }, () => {
         player.hp += num;
-        if (isNaN(player.hp)) player.hp = 0;
-        if (player.hp > player.maxHp) player.hp = player.maxHp;
+        if (isNaN(player.hp))
+          player.hp = 0;
+        if (player.hp > player.maxHp)
+          player.hp = player.maxHp;
         player.update();
         if (Evt.popup !== false) {
           player.$damagepop(num, 'water');
@@ -6339,9 +6341,11 @@
             _status.dying = list;
           }, _status.dying);
           var evt = Evt.getParent('_save');
-          if (evt && evt.finish) evt.finish();
+          if (evt && evt.finish)
+            evt.finish();
           evt = Evt.getParent('dying');
-          if (evt && evt.finish) evt.finish()
+          if (evt && evt.finish)
+            evt.finish();
         }
         Evt.trigger('changeHp');
       }],
@@ -6350,7 +6354,7 @@
        * @name content.changeHujia
        * @type {GameCores.Bases.StateMachine}
        */
-      changeHujia: function () {
+      changeHujia: () => {
         if (lib.config.background_audio) {
           game.playAudio('effect', 'hujia');
         }
@@ -6364,14 +6368,16 @@
         if (num > 0) {
           game.log(player, '获得了' + get.cnNumber(num) + '点护甲');
         } else if (num < 0) {
-          if (Evt.type == 'damage') game.log(player, '的护甲抵挡了' + get.cnNumber(-num) + '点伤害');
-          //else if(Evt.type=='lose')	game.log(player,'失去了'+get.cnNumber(-num)+'点护甲');
-          else game.log(player, '失去了' + get.cnNumber(-num) + '点护甲');
+          if (Evt.type == 'damage')
+            game.log(player, '的护甲抵挡了' + get.cnNumber(-num) + '点伤害');
+          else
+            game.log(player, '失去了' + get.cnNumber(-num) + '点护甲');
         }
         if (player.hujia < 0) {
           player.hujia = 0;
         }
         player.update();
+        player.getHistory('changeHujia').push(Evt);
       },
       /**
        * 角色濒死事件
@@ -6912,6 +6918,7 @@
             if (Evt.position != ui.discardPile) Evt.position.appendChild(Evt.result.card);
           }
         }
+        player.getHistory('judge').push(Evt);
       }],
       /**
        * 角色武将牌翻面

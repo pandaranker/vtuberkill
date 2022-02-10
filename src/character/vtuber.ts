@@ -70,8 +70,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**泠鸢 */
 			Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
-			/**阿梓 */
-			Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
 			/**勺宝 */
 			Shaun: ['female', 'VirtuaReal', 3, ['juxiao', 'shshenyan'], ['guoV']],
 			/**阿萨Aza */
@@ -84,6 +82,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Miki: ['female', 'VirtuaReal', 4, ['xingxu', 'qingsui'], ['guoV']],
 			/**真绯瑠mahiru */
 			Mahiru: ['female', 'VirtuaReal', 4, ['jusheng', 'xingqu'], ['guoV']],
+			/**阿梓 */
+			Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
+			/**小可 */
+			xiaoke: ['female', 'VirtuaReal', '3/4', ['dianying', 'ganfen'], ['guoV']],
 
 			/**胡桃 */
 			Menherachan: ['female', 'NetEase', 4, ['shangbei', 'qianqing'], ['guoV']],
@@ -99,6 +101,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**机萪 */
 			jike: ['female', 'qun', 3, ['qianjiwanbian'], ['guoV']],
+			/**扇宝 */
+			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {

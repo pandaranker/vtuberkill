@@ -3672,7 +3672,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_bizuo: {
 				trigger: { global: 'phaseBegin' },
 				round: 1,
-				filter(Evt: any, player: { countCards: (arg0: string) => any; }) {
+				filter(Evt: any, player) {
 					return _status.currentPhase && player.countCards('h');
 				},
 				check(Evt: { player: any; }, player: any) {
@@ -3697,7 +3697,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					if (result.cards && result.cards.length) {
 						for (var i = 0; i < result.cards.length; i++) {
 							result.cards[i].fix();
-							result.cards[i].$.bizuo = true;
+							result.cards[i].storage.bizuo = true;
 							ui.cardPile.insertBefore(result.cards[i], ui.cardPile.firstChild);
 						}
 						game.log(player, '将' + get.cnNumber(result.cards.length) + '张牌置于牌堆顶');
@@ -3712,12 +3712,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						check(Evt: any, player: any) {
 							return true;
 						},
-						filter(Evt: { card: { $: { bizuo: boolean; }; }; cards: string | any[]; }, player: any) {
+						filter(Evt: { card; cards: string | any[]; }, player: any) {
 							//if(player!=_status.currentPhase)	return false;
-							if (Evt.card && Evt.card.$ && Evt.card.$.bizuo == true) return true;
+							if (Evt.card && Evt.card.storage && Evt.card.storage.bizuo == true) return true;
 							if (Evt.cards && Evt.cards.length) {
 								for (var i = 0; i < Evt.cards.length; i++) {
-									if (Evt.cards[i].$ && Evt.cards[i].$.bizuo == true) return true;
+									if (Evt.cards[i].storage && Evt.cards[i].storage.bizuo == true) return true;
 								}
 							}
 							return false;
@@ -3733,10 +3733,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								player.useSkill('re_yuzhan', false, false);
 							}
 						}, () => {
-							if (trigger.card && trigger.card.$ && trigger.card.$.bizuo == true) delete trigger.card.$.bizuo;
-							if (trigger.cards && trigger.cards.length) {
+							if (trigger.card?.storage?.bizuo) delete trigger.card.storage.bizuo;
+							if (trigger.cards?.length) {
 								for (var i = 0; i < trigger.cards.length; i++) {
-									if (trigger.cards[i].$ && trigger.cards[i].$.bizuo == true) delete trigger.cards[i].$.bizuo;
+									if (trigger.cards[i].storage?.bizuo) delete trigger.cards[i].storage.bizuo;
 								}
 							}
 						}]
@@ -3746,13 +3746,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						direct: true,
 						content() {
 							for (var i = 0; i < ui.cardPile.childElementCount; i++) {
-								if (ui.cardPile.childNodes[i].$ && ui.cardPile.childNodes[i].$.bizuo == true) {
-									delete ui.cardPile.childNodes[i].$.bizuo;
+								if (ui.cardPile.childNodes[i].storage?.bizuo) {
+									delete ui.cardPile.childNodes[i].storage.bizuo;
 								}
 							}
 							for (var i = 0; i < ui.discardPile.childElementCount; i++) {
-								if (ui.discardPile.childNodes[i].$ && ui.discardPile.childNodes[i].$.bizuo == true) {
-									delete ui.discardPile.childNodes[i].$.bizuo;
+								if (ui.cardPile.childNodes[i].storage?.bizuo) {
+									delete ui.discardPile.childNodes[i].storage.bizuo;
 								}
 							}
 							var cards: any[] = [];
@@ -3761,8 +3761,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								cards = cards.concat(cards2);
 							}
 							for (var i = 0; i < cards.length; i++) {
-								if (cards[i].$ && cards[i].$.bizuo == true) {
-									delete cards[i].$.bizuo;
+								if (cards[i].storage && cards[i].storage.bizuo == true) {
+									delete cards[i].storage.bizuo;
 								}
 							}
 						}

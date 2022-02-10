@@ -68,14 +68,6 @@
   }
 }
 
-#window {
-
-  &:not(.low_performance) #arena #arenalog>div {
-    animation: game_start 0.5s;
-    -webkit-animation: game_start 0.5s;
-  }
-}
-
 /*#arena[data-font_size='14']{
 	font-size:14px;
 }
@@ -100,16 +92,25 @@
     pointer-events: none;
     position: absolute;
   }
+
+  #me>div>div>.card {
+    position: absolute;
+    left: 8px;
+  }
 }
 
-#arena.right:not(.noleft) {
-  left: 240px;
-  opacity: 0.6;
+#arena.right {
+  &:not(.noleft) {
+    left: 240px;
+    opacity: 0.6;
+  }
 }
 
-#arena.left:not(.noleft) {
-  left: calc(10% - 240px);
-  opacity: 0.6;
+#arena.left {
+  &:not(.noleft) {
+    left: calc(10% - 240px);
+    opacity: 0.6;
+  }
 }
 
 #window.leftbar #arena:not(.chess) {

@@ -1,0 +1,104 @@
+#historybar {
+    left: 1.5%;
+    width: 50px;
+    height: calc(90% - 20px);
+    top: calc(5% + 25px);
+    border-radius: 4px;
+    visibility: hidden;
+    opacity: 0;
+    overflow: hidden;
+    z-index: 2;
+    transition-property: opacity, visibility;
+
+    >div {
+        width: 42px;
+        height: 42px;
+        margin: 0;
+        padding: 4px;
+        display: block;
+        position: absolute;
+
+        >.card {
+            transform: scale(0.403846);
+            transform-origin: top left;
+            margin: 0;
+            left: 4px;
+            top: 4px;
+            position: absolute;
+        }
+
+        >.avatar {
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            width: 42px;
+            height: 42px;
+            border-radius: 3.230768px;
+
+            >div {
+                position: absolute;
+                margin: 0;
+                padding: 0;
+                left: 0;
+                bottom: 2px;
+                height: auto;
+                font-family: 'xinwei';
+                font-size: 18px;
+                text-align: center;
+                width: 100%;
+            }
+
+            >.avatarbg {
+                bottom: 0;
+                height: 100%;
+                background-size: cover;
+            }
+        }
+
+        >.avatar2 {
+            width: 20px;
+            height: 20px;
+            left: 28px;
+            top: 28px;
+            border-radius: 100%;
+            font-family: 'xinwei';
+            font-size: 20px;
+            line-height: 20px;
+            z-index: 1;
+        }
+
+        >.avatar2.avatar3 {
+            left: 12px;
+            top: 31px;
+            transform: scale(0.7);
+            transform-origin: top left;
+        }
+    }
+}
+
+#historybar.hidden {
+    pointer-events: none;
+}
+
+#window.rightbar {
+    #historybar {
+        left: calc(98.5% - 50px);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+#window.rightbar2:not(.leftbar) {
+    #historybar {
+        left: calc(98.5% - 50px);
+    }
+}
+
+#window.leftbar {
+    #historyba {
+        opacity: 1;
+        visibility: visible;
+    }
+}

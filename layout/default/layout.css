@@ -1,91 +1,4 @@
 
-#historybar {
-	left: 1.5%;
-	width: 50px;
-	height: calc(90% - 20px);
-	top: calc(5% + 25px);
-	border-radius: 4px;
-	visibility: hidden;
-	opacity: 0;
-	overflow: hidden;
-	z-index: 2;
-	transition-property: opacity,visibility;
-}
-#historybar.hidden {
-	pointer-events: none;
-}
-#historybar>div {
-	width: 42px;
-	height: 42px;
-	margin: 0;
-	padding: 4px;
-	display: block;
-	position: absolute;
-}
-#historybar>div>.card {
-	transform: scale(0.403846);
-	transform-origin: top left;
-	margin: 0;
-	left: 4px;
-	top: 4px;
-	position: absolute;
-}
-#historybar>div>.avatar {
-	padding: 0;
-	margin: 0;
-	position: absolute;
-	left: 4px;
-	top: 4px;
-	width: 42px;
-	height: 42px;
-	border-radius: 3.230768px;
-}
-#historybar>div>.avatar>div {
-	position: absolute;
-	margin: 0;
-	padding: 0;
-	left: 0;
-	bottom: 2px;
-	height: auto;
-	font-family: 'xinwei';
-	font-size: 18px;
-	text-align: center;
-	width: 100%;
-}
-#historybar>div>.avatar>.avatarbg {
-	bottom: 0;
-	height: 100%;
-	background-size: cover;
-}
-#historybar>div>.avatar2 {
-	width: 20px;
-	height: 20px;
-	left: 28px;
-	top: 28px;
-	border-radius: 100%;
-	font-family: 'xinwei';
-	font-size: 20px;
-	line-height: 20px;
-	z-index: 1;
-}
-#historybar>div>.avatar2.avatar3{
-	left: 12px;
-	top: 31px;
-	transform: scale(0.7);
-	transform-origin: top left;
-}
-
-#window.rightbar #historybar,
-#window.rightbar2:not(.leftbar) #historybar {
-	left: calc(98.5% - 50px);
-}
-
-#window.leftbar #historybar,
-#window.rightbar #historybar {
-	opacity: 1;
-	visibility: visible;
-}
-
 .dialog .button.character.cardbg>.avatar_name {
 	font-family: 'xinwei';
 	font-size: 20px;
@@ -96,28 +9,7 @@
 	left: 0;
 	text-align: center;
 }
-.player:not(.treasure).playerfocus {
-	transform: scale(1.1);
-}
-.player.linked:not(.treasure).playerfocus {
-	transform: scale(1.1) rotate(-90deg);
-}
-.player.connect>div:not(.avatar):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {
-	display: none !important;
-}
-.player.connect>.gaming {
-	left: 16px;
-	top: auto;
-	bottom: 16px;
-	font-family: 'xinwei'
-}
-.player.connect[data-cursor_style="forbidden"]{
-	opacity: 0.5;
-}
-#arena #me>div>div>.card {
-	position: absolute;
-	left: 8px;
-}
+
 
 .touchinfo{
 	padding: 6px;
@@ -874,26 +766,6 @@ div:not(.handcards)>.card>.info>span,
 	-webkit-animation: cardflip 0.3s ease-out;
 	-webkit-animation-fill-mode: none;
 }
-.player .playerjiu {
-	animation: game_start 0.5s;
-	-webkit-animation: game_start 0.5s;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
-	z-index: 4;
-	pointer-events: none;
-	background: rgba(255, 0, 0, 0.3);
-}
-.player.playerbright {
-	filter: brightness(1.2);
-	-webkit-filter: brightness(1.2);
-}
-.player.playerflip {
-	animation: playerflip 0.3s ease-out;
-	-webkit-animation: playerflip 0.3s ease-out;
-}
 
 .button.card.button>.intro {
 	top: 69px;
@@ -985,10 +857,6 @@ div:not(.handcards)>.card>.info>span,
 	font-size: 36px;
 	height: 36px;
 	padding-top: 3px;
-}
-#window.low_performance #arena .player .equips,
-#window.low_performance #arena .player .name {
-	transition: all 0s
 }
 
 .judges>.card>.background,.marks>.card>.background {
@@ -1526,206 +1394,12 @@ div:not(.handcards)>.card>.info>span,
 	position: absolute;
 	left: 50%;
 }
-/*--------角色--------*/
-.player>.avatar>.action {
-	margin: 5px;
-	font-family: 'xinwei';
-	font-size: 20px;
-	letter-spacing: -2px;
-	right: 5px;
-	text-align: right;
-}
-.player>.avatar.hidden,
-.player>.avatar2.hidden {
-	pointer-events: none !important;
-}
-.player>.avatar.disabled,
-.player>.avatar2.disabled{
-	filter: grayscale(1);
-	-webkit-filter: grayscale(1);
-	opacity: 0.8;
-}
-.player>.avatar>.action:not(.freecolor) {
-	text-shadow: black 0 0 1px, rgba(10, 155, 67, 1) 0 0 5px, rgba(10, 155, 67, 1) 0 0 10px;
-}
-.player:not(.current_action) .avatar>.action {
-	opacity: 0
-}
-#arena.chess:not(.selecting) .player.current_action .avatar>.action {
-	opacity: 0
-}
-.player.controlfakeme {
-	width: 100px;
-	height: 120px;
-	top: calc(100% - 140px)
-}
-.player.controlfakeme>.avatar {
-	width: 100%;
-	height: 100%;
-	box-shadow: none;
-	left: 0;
-	top: 0
-}
-.player {
-	z-index: 2;
-	width: 240px;
-	height: 120px;
-}
-.player.minskin {
-	width: 120px;
-}
-.player.replaceme {
-	animation: replaceme 0.5s;
-	-webkit-animation: replaceme 0.5s
-}
-.player.replaceenemy {
-	animation: replaceenemy 0.5s;
-	-webkit-animation: replaceenemy 0.5s
-}
 
-.player>div {
-	z-index: 2;
-}
-.player.dead,.player.likedead,.grayscale1 {
-	z-index: 1;
-	filter: grayscale(1);
-	-webkit-filter: grayscale(1);
-}
-.grayscale{
-	filter: grayscale(1);
-	-webkit-filter: grayscale(1);
-}
-
-.player>.nameol {
-	left: 0;
-	top: 13px;
-	width: 100%;
-	font-size: 12px;
-	text-align: center;
-	white-space: nowrap;
-	/*opacity: 0;*/
-}
-.player:hover>.nameol {
-	opacity: 1;
-}
-.player>.name {
-	left: 16px;
-	top: 24px;
-	font-size: 20px;
-	font-family: 'xinwei';
-}
-.player>.name.name2 {
-	left: 81px
-}
-
-#arena.slim_player .player>.name {
-	left: 13px;
-	top: 21px;
-}
-#arena.slim_player .player>.name.name2 {
-	left: 78px
-}
-
-#arena .player.minskin>.name,
-#arena.slim_player .player.minskin>.name {
-	font-size: 18px;
-	line-height: 120%;
-	top: 15px;
-}
-
-#arena .player.minskin>.name.long,
-#arena.slim_player .player.minskin>.name.long {
-	transform: scale(0.9);
-	transform-origin: top left;
-	top: 13px;
-}
-
-#arena .player.linked.minskin>.name,
-#arena.slim_player .player.linked.minskin>.name {
-	transform: rotate(90deg) translate(81px,-66px);
-}
 
 .button.character>.name {
 	font-family: 'xinwei'
 }
-.player>.intro {
-	top: 87px;
-	left: 18px;
-}
-.player>.turned{
-	font-family: 'xinwei';
-	width: 100%;
-	height: 100%;
-	line-height: 50px;
-	left: 0;
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	font-size: 50px;
-	opacity: 0;
-	pointer-events: none;
-	text-shadow: none;
-	background: black;
-	top: 0;
-	border-radius: 8px;
-	color: rgba(255,255,255,0.8);
-	text-shadow: none;
-}
-.player>.turned>div{
-	top:calc(50% - 50px);
-    width: 100%;
-    left: 0;
-}
-.player>.chain{
-	top: calc(50% - 10px);
-	left: 0;
-	height: 20px;
-	width: 100%;
-	overflow-x: hidden;
-	overflow-y: visible;
-	white-space: nowrap;
-	padding: 0;
-	margin: 0;
-	z-index: 3;
-	pointer-events: none;
-}
-.player>.chain>div{
-	overflow: visible;
-	left: 0;
-	top: 0;
-	margin: 0;
-	padding: 0;
-}
-.player:not(.linked2)>.chain>div{
-	opacity: 0;
-	transform: translateX(-40px);
-}
-#arena.nolink .player>.chain{
-	display: none;
-}
-.player>.chain>div>div{
-	position: absolute;
-	margin: 0;
-	padding: 0;
-	left: 0;
-	box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px,rgba(0, 0, 0, 0.4) 0 0 2px;
-}
-.player>.chain>div>div:nth-child(odd){
-	height: 8px;
-	width: 10px;
-	border-radius: 2px;
-	top: 6px;
-}
-.player>.chain>div>div:nth-child(even){
-	width: 10px;
-	height: 2px;
-	top: 9px;
-	z-index: 1;
-	border-radius: 2px;
-}
-#arena:not(.hide_turned):not(.oldlayout) .player.turnedover>.turned{
-	opacity: 0.2;
-}
+
 #window>.damage.fullscreenavatar{
 	text-align: center;
 	font-family: 'xinwei';
@@ -2898,6 +2572,10 @@ div:not(.handcards)>.card>.info>span,
 .flash {
 	animation: flash 1s;
 	-webkit-animation: flash 1s;
+}
+.slow_flash {
+	animation: slow_flash 5s infinite;
+	-webkit-animation: slow_flash 5s infinite;
 }
 .flip {
 	animation: flip 1s;
@@ -4846,6 +4524,32 @@ div[data-decoration="bronze"]::after{
 
 	50% {
 		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes slow_flash {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.4;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+@-webkit-keyframes slow_flash {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.4;
 	}
 
 	100% {

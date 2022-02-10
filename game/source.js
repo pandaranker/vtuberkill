@@ -11,6 +11,7 @@ window.noname_source_list=[
 
 	'dist/rank.js',
 
+	'image/loading.gif',
 	'image/character/Kino.jpg',
 	'image/character/shanbao.jpg',
 	'image/character/dusongziGin.jpg',
@@ -45,6 +46,7 @@ window.noname_source_list=[
 	'game/source.js',
 	'game/update.js',
 	
+	'layout/cursor/aero_arrow_glow.cur',
 	'layout/default/layout.css',
 	'layout/default/menu.css',
 	'layout/default/phone.css',
@@ -67,7 +69,6 @@ window.noname_source_list=[
 	'extension/coin/extension.js',
 	'extension/wuxing/extension.js',
 
-	'layout/cursor/aero_arrow_glow.png',
 	'theme/music/grid.png',
 	'theme/music/style.css',
 	'theme/music/wood.png',

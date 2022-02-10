@@ -3140,7 +3140,7 @@ module.exports = {
      * 初始化
      * @namespace
      */
-    const init= require('./lib_init')(element,_mode,_message)
+    const init = require('./lib_init')(element, _mode, _message)
     return {
       figure: '<span style="font-family: LuoLiTi2;color: #dbb">',
       figurer: (text) => ` ${lib.figure}${text}</span> `,
@@ -5426,7 +5426,19 @@ module.exports = {
        * 
        * @type {Object}
        */
-      historyRecorder: { useCard: [], respond: [], skipped: [], lose: [], gain: [], sourceDamage: [], damage: [], recover: [], changeHujia: [], custom: [] },
+      historyRecorder: {
+        useCard: [],
+        respond: [],
+        skipped: [],
+        lose: [],
+        gain: [],
+        sourceDamage: [],
+        damage: [],
+        recover: [],
+        changeHujia: [],
+        judge: [],
+        custom: []
+      },
       /**
        * 快捷语音 - TODO
        * @type {string[]}

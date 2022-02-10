@@ -320,7 +320,7 @@ module.exports = function(element,_mode,_message){
           else {
             src = 'image/' + name + ext;
           }
-          this.setBackgroundImage(src);
+          this.setBackgroundImage(src,type === 'character'?'loading':null);
           this.style.backgroundSize = "cover";
           return this;
         };
@@ -332,7 +332,7 @@ module.exports = function(element,_mode,_message){
         HTMLDivElement.prototype.setBackgroundDB = function (img) {
           var node = this;
           game.getDB('image', img, function (src) {
-            node.style.backgroundImage = "url('" + src + "')";
+            node.style.backgroundImage = `url('${src}')`;
             node.style.backgroundSize = "cover";
           });
         };
@@ -340,9 +340,10 @@ module.exports = function(element,_mode,_message){
          * 设置本元素的背景图片
          * @function HTMLDivElement#setBackgroundImage
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
+         * @param {boolean} loading - 是否显示加载中图片
          */
-        HTMLDivElement.prototype.setBackgroundImage = function (img) {
-          this.style.backgroundImage = 'url("' + lib.assetURL + img + '")';
+        HTMLDivElement.prototype.setBackgroundImage = function (img,loading) {
+          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading?`,url("${lib.assetURL}/image/loading.gif")`:``}`;
         },
           /**
            * {@link HTMLDivElement#listen|listen}（click）的回调函数
@@ -1897,9 +1898,11 @@ module.exports = function(element,_mode,_message){
           else {
             ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
 
-            ui.backgroundSVG = ui.create.div('.background', ui.background);
-            ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
-            ui.backgroundSVG.style.opacity = '.3';
+            ui.backgroundFlash = ui.create.div('.background', ui.background);
+            ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+            ui.backgroundFlash.style.mixBlendMode= 'overlay';
+            ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+            ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
           }
           if (lib.config.image_background_blur) {
             ui.background.style.filter = 'blur(8px)';
