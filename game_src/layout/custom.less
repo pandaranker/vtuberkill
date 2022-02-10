@@ -1,0 +1,80 @@
+/* *{
+    cursor: url('./cursor/aero_arrow_glow.cur'),auto;
+} */
+.card_hightlight {
+    animation: pulse 5s infinite;
+}
+
+.player_buff {
+    animation: game_start 0.2s;
+    -webkit-animation: game_start 0.2s;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: rgba(255, 150, 0, 0.45);
+}
+.player_nerf {
+    animation: game_start 0.2s;
+    -webkit-animation: game_start 0.2s;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: rgba(10, 155, 70, 0.5);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 8px 6px #fff;
+    }
+    50% {
+        box-shadow: 0 0 8px 6px #faf607;
+    }
+    100% {
+        box-shadow: 0 0 8px 6px #fff;
+    }
+}
+.player.fullskin.glow_phase{
+    &::before{
+        position: absolute;
+        pointer-events: none;
+        z-index: 4;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(#1a98ca, #1a98ca),
+          linear-gradient(90deg, #ffffff33 1px, transparent 0, transparent 19px),
+          linear-gradient(#ffffff33 1px, transparent 0, transparent 19px),
+          linear-gradient(transparent, #1a98ca);
+        background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;
+        background-repeat: no-repeat, repeat, repeat, no-repeat;
+        background-position: 0% 0%, 0 0, 0 0, 0 0;
+        /* 初始位置 */
+        clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);
+        /* 添加动画效果 */
+        animation: move-wrapper 3s infinite linear;
+    }
+}
+@keyframes move-wrapper {
+    from {
+      opacity:0.2;
+    }
+    85% {
+      opacity:0.9;
+      background-position: 0 100%, 0 0, 0 0, 0 0;
+      /* 终止位置 */
+      clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);
+    }
+    to {
+      opacity:0.1;
+      background-position: 0 100%, 0 0, 0 0, 0 0;
+      /* 终止位置 */
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
+  }

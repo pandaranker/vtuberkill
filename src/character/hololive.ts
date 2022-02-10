@@ -92,9 +92,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		skill: {
 			taiyangzhiyin: {
 				audio: 2,
-				trigger: { player: ['useCard2'] },
+				trigger: { player: 'useCard2' },
 				filter(Evt, player) {
-					//console.log(Evt.card,1)
 					//console.log(player.$.onlink,Evt.card.cardid)
 					return get.number(Evt.card) > 10 && (player.$.onlink == null || player.$.onlink.indexOf(Evt.card.cardid) == -1);
 				},
@@ -108,7 +107,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.$.onlink = [];
 					}//处理正处于连锁中的卡牌
 					'step 0'
-					Evt.Dvalue = get.number(trigger.card) - 10;
+					Evt.Dvalue = Math.min(3, get.number(trigger.card) - 10);
 					var list = [['无法响应'], ['额外目标'], ['摸一张牌']];
 					if (!game.hasPlayer(cur => {
 						return lib.filter.targetEnabled2(trigger.card, player, cur)
@@ -1200,10 +1199,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					else
 						return false;
 				},
-				content:[() => {
+				content: [() => {
 					player.draw(player.maxHp);
 				}, () => {
-					player.chooseToMove('『远虑』：选择放置到牌堆顶部的牌',true)
+					player.chooseToMove('『远虑』：选择放置到牌堆顶部的牌', true)
 						.set('list', [
 							['牌堆顶'],
 							['手牌&装备区', player.getCards('he')],
@@ -1216,14 +1215,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							});
 							return [cards];
 						})
-						.set('filterMove',function(from,to,moved){
-							if(to==0&&moved[0].length>=_status.event.puts) return false;
+						.set('filterMove', function (from, to, moved) {
+							if (to == 0 && moved[0].length >= _status.event.puts) return false;
 							return true;
 						})
-						.set('filterOk',function(moved){
-							return moved[0].length==_status.event.puts;
+						.set('filterOk', function (moved) {
+							return moved[0].length == _status.event.puts;
 						})
-						.set('puts',player.hp)
+						.set('puts', player.hp)
 				}, () => {
 					if (result.bool && result.moved && result.moved[0].length) Evt.cards = result.moved[0].slice(0);
 					if (!Evt.cards) {
@@ -1326,8 +1325,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					});
 				}, () => {
 					if (result.cards && result.cards.length) {
-						Evt.cardUsable = target.hasUseTarget(Evt.card);
 						Evt.card = result.cards[0];
+						Evt.cardUsable = target.hasUseTarget(Evt.card);
 						target.gain(Evt.card, player, 'give');
 						game.delay(0.2);
 					}
@@ -1549,21 +1548,21 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}, Evt.videoId, typelist, suitlist, numberlist);
 					'step 2'
 					let next = player.chooseButton(3, true)
-					.set('dialog', Evt.videoId)
-					.set('filterButton', function (button) {
-						for (var i = 0; i < ui.selected.buttons.length; i++) {
-							var now = button.link, pre = ui.selected.buttons[i].link;
-							if (now[now.length - 1] == pre[pre.length - 1]) return false;
-						}
-						return true;
-					})
-					.set('ai', function (button) {
-						var card = _status.event.card;
-						var now = button.link;
-						if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
-						return 0;
-					})
-					.set('card', cards[0]);
+						.set('dialog', Evt.videoId)
+						.set('filterButton', function (button) {
+							for (var i = 0; i < ui.selected.buttons.length; i++) {
+								var now = button.link, pre = ui.selected.buttons[i].link;
+								if (now[now.length - 1] == pre[pre.length - 1]) return false;
+							}
+							return true;
+						})
+						.set('ai', function (button) {
+							var card = _status.event.card;
+							var now = button.link;
+							if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
+							return 0;
+						})
+						.set('card', cards[0]);
 					'step 3'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -1983,10 +1982,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					let next = player.chooseCard(get.prompt2('youyi'), 'he')
-					.set('ai', card => {
-						if (get.name(card) == 'shan') return 9;
-						return 8 - get.value(card);
-					});
+						.set('ai', card => {
+							if (get.name(card) == 'shan') return 9;
+							return 8 - get.value(card);
+						});
 					'step 1'
 					if (result.bool) {
 						player.logSkill('youyi');
@@ -2345,14 +2344,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					Evt.cards = trigger.hs;
 					let next = player.chooseCardButton(1, '『弹言』：选择使用的牌', Evt.cards)
-					.set('filterButton', function (button) {
-						var player = _status.event.player;
-						return player.hasUseTarget(button.link);
-					})
-					.set('ai', function (button) {
-						var player = _status.event.player;
-						return player.getUseValue(button.link);
-					});
+						.set('filterButton', function (button) {
+							var player = _status.event.player;
+							return player.hasUseTarget(button.link);
+						})
+						.set('ai', function (button) {
+							var player = _status.event.player;
+							return player.getUseValue(button.link);
+						});
 					'step 1'
 					if (result.bool) {
 						player.chooseUseTarget(result.links[0], true, 'nopopup');
@@ -2581,32 +2580,32 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					let next = player.chooseTarget(2, function (card, player, target) {
 						return true;
 					})
-					.set('targetprompt', ['失去体力', '回复体力'])
-					.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力')
-					.set('ai', function (target) {
-						var player = _status.event.player;
-						var att = get.attitude(player, target);
-						var sgnatt = get.sgn(att);
-						if (ui.selected.targets.length == 0) {
-							if (target.hp == 1 && sgnatt <= 0) {
-								return 9;
-							} else if (target.hp == 1 && sgnatt >= 1) {
-								return -10;
+						.set('targetprompt', ['失去体力', '回复体力'])
+						.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力')
+						.set('ai', function (target) {
+							var player = _status.event.player;
+							var att = get.attitude(player, target);
+							var sgnatt = get.sgn(att);
+							if (ui.selected.targets.length == 0) {
+								if (target.hp == 1 && sgnatt <= 0) {
+									return 9;
+								} else if (target.hp == 1 && sgnatt >= 1) {
+									return -10;
+								} else {
+									return 9 - att
+								}
 							} else {
-								return 9 - att
+								if (target.hp == target.maxHp && sgnatt <= 0) {
+									return 9;
+								} else if (target.hp < target.maxHp && sgnatt >= 1) {
+									return 7;
+								} else if (target.hp < target.maxHp && sgnatt <= 0) {
+									return -10;
+								} else {
+									return 9 - att;
+								}
 							}
-						} else {
-							if (target.hp == target.maxHp && sgnatt <= 0) {
-								return 9;
-							} else if (target.hp < target.maxHp && sgnatt >= 1) {
-								return 7;
-							} else if (target.hp < target.maxHp && sgnatt <= 0) {
-								return -10;
-							} else {
-								return 9 - att;
-							}
-						}
-					});
+						});
 					'step 1'
 					if (result.bool && result.targets?.length) {
 						player.logSkill('xiwo', result.targets);
@@ -3330,7 +3329,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			HoshimatiSuisei: `星街彗星`,
 			yemuxingyong: `夜幕星咏`,
-			yemuxingyong_info: `每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为「咏」。然后其他角色也可将一张黑色牌置于你武将牌上。出牌阶段，你可获得一张「咏」，然后立即将两张手牌当【过河拆桥】或【酒】使用。`,
+			yemuxingyong_info: `每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为「咏」。然后其他角色也可将一张黑色牌置于你武将牌上。<br>出牌阶段，你可获得一张「咏」，然后立即将两张手牌当【过河拆桥】或【酒】使用。`,
 			yong: `咏`,
 			xinghejianduei: `星河舰队`,
 			xinghejianduei_info: `<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加「咏」的数量。`,

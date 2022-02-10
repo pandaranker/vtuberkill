@@ -6659,7 +6659,8 @@ module.exports = {
                node.stat = [{ card: {}, skill: {} }];
                node.actionHistory = [JSON.parse(JSON.stringify({ ...lib.historyRecorder }))];
                node.tempSkills = {};
-               node.$ = node.storage = {};
+               let storage = {}
+               node.$ = node.storage = storage;
                node.marks = {};
                node.ai = { friend: [], enemy: [], neutral: [], handcards: { global: [], source: [], viewed: [] } };
                node.queueCount = 0;

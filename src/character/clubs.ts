@@ -2372,7 +2372,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (!player.isDisabled(player.$.yutuo)) ++cntDisabled;
 
 					if (cntDisabled < 5 && !player.getCards('e', { subtype: 'equip' + player.$.yutuo }).length) {
-						//player.disableEquip(player.$.yutuo);
 					} else {
 						Evt.finish();
 						return;
@@ -2386,7 +2385,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					list.push('cancel2');
 					//选择一个其他未废除的装备栏
-					let next = player.chooseControl(list)
+					player.chooseControl(list)
 						.set('prompt', '请选择一个其他未废除的装备栏<br>（若不选择，此技能进入冷却）')
 						.set('ai', function (Evt, player, list) {
 							var list = _status.event.list;
@@ -3043,7 +3042,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			KurokiriAria: `黑桐亚里亚`,
 			xuanying: `玄荫`,
-			xuanying_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数且至少为1）`,
+			xuanying_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数+1）`,
 			xuanying_append: lib.figurer(`特性：联动`),
 			houfan: `候返`,
 			houfan_info: `<font color=#b56>限定技</font> 出牌阶段，若你手牌数为全场最少，你可以减1点体力上限，从弃牌堆随机获得四张装备牌，并将『玄荫』的“使用”改为“使用或打出”。`,
@@ -3080,9 +3079,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			MashiroKanon: `真白花音`,
 			chenzhu: `辰铸`,
-			chenzhu_info: `有武器牌被使用时，你将牌堆顶牌置于你的武将牌上。装备武器的角色的回合开始时，你可获得武将牌上的一张牌，改变其武器牌名直到回合结束。`,
+			chenzhu_info: `当武器牌被使用时，你将牌堆顶牌置于你的武将牌上。装备武器的角色的回合开始时，你可获得武将牌上的一张牌，改变其武器牌名直到回合结束。`,
 			yutuo: `玉托`,
-			yutuo_info: `每轮限一次，你可以令你受到的伤害-1，然后若你的<防具栏>没有牌，你可废除<>并以一个未废除的装备栏修改<>，重置此技能。`,
+			yutuo_info: `每轮限一次，你可以令你受到的伤害-1，然后若你的<防具栏>没有牌，你可废除<防具栏>并以一个未废除的装备栏修改<>，重置此技能。`,
 			yutuo_append: lib.figurer(`特性：减伤`),
 
 			bingtang: `进击的冰糖`,

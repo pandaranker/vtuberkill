@@ -6791,7 +6791,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					threaten: 1.6,
 					effect: {
 						player(card, player, target, current) {
-							if (get.tag(card, 'damage') == 1 && !player.hasMark('tuhui_roundname') && !target.hujia && target.hp > 1 && get.$a(player, target) > 0) {
+							if (get.tag(card, 'damage') == 1 && !player.hasMark('tuhuiA_roundcount') && !target.hujia && target.hp > 1 && get.$a(player, target) > 0) {
 								if (target != player) {
 									if (target.hasSkillTag('maixie'))
 										return [1, 1, 0, 3];
@@ -13886,16 +13886,17 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.give(result.cards, Evt.target, true);
 					} else Evt.finish();
 				}, () => {
-					player.chooseTarget(`『玄荫』：令你或其摸${get.cnNumber(Evt.drawNum == 'equip' ? player.countCards('e') + 1 : 1)}张牌`, function (card, player, target) {
+					Evt.drawNum = Evt.drawNum == 'equip' ? player.countCards('e') + 1 : 1
+					player.chooseTarget(`『玄荫』：令你或其摸${get.cnNumber(Evt.drawNum)}张牌`, function (card, player, target) {
 						return player == target || target == _status.event.target;
-					}).set('target', Evt.target).ai = function (target) {
-						if (target != player && target.hasSkillTag('nogain')) return 0;
+					}).set('target', Evt.target).set('ai', (target) => {
+						if (target != player && target.hasSkillTag('nogain'))
+							return 0;
 						return get.$a(player, target);
-					};
+					});
 				}, () => {
 					if (result.bool && result.targets?.length) {
-						if (Evt.drawNum == 'equip') result.targets[0].draw(player.countCards('e') + 1 || 1);
-						else result.targets[0].draw();
+						result.targets[0].draw(Evt.drawNum);
 					}
 				}],
 				group: 'xuanying_clear',
@@ -14835,51 +14836,51 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content: [() => {
 					Evt.num = 0
-					let judge = player.getHistory('judge',evt => evt.getParent('phaseJudge')&&evt.getParent('phaseJudge').name === 'phaseJudge')
-					let use = player.getHistory('useCard',evt => evt.getParent('phaseUse')&&evt.getParent('phaseUse').name === 'phaseUse')
+					let judge = player.getHistory('judge', evt => evt.getParent('phaseJudge') && evt.getParent('phaseJudge').name === 'phaseJudge')
+					let use = player.getHistory('useCard', evt => evt.getParent('phaseUse') && evt.getParent('phaseUse').name === 'phaseUse')
 					console.log(use)
-					if(judge.length<2) Evt.num++
-					if(use.length<2) Evt.num++
-					if(player.storage.yuyi_record<2) Evt.num++
+					if (judge.length < 2) Evt.num++
+					if (use.length < 2) Evt.num++
+					if (player.storage.yuyi_record < 2) Evt.num++
 					player.storage.yuyi_record = 0
 					player.draw(Evt.num)
 				}, () => {
-					if (Evt.num===3) {
+					if (Evt.num === 3) {
 						Evt.recover = player.recover()
 					}
 				}, () => {
-					if (Evt.num<3 || !Evt.recover?.result) {
+					if (Evt.num < 3 || !Evt.recover?.result) {
 						player.chooseTarget(`###${get.prompt('yuyi')}###令一名角色获得『愈翼』`)
-						.set('filterTarget',function (card, player, target) {
-							return !target.hasSkill('yuyi');
-						})
-						.set('ai',get.attitude2)
+							.set('filterTarget', function (card, player, target) {
+								return !target.hasSkill('yuyi');
+							})
+							.set('ai', get.attitude2)
 					}
 				}, () => {
 					if (result.bool && result.targets?.length) {
 						Evt.target = result.targets[0]
-						player.logSkill('yuyi',Evt.target)
-						if(!Evt.target.hasSkill('yuyi')){
-							Evt.target.addTempSkill('yuyi',{player:'phaseAfter'})
+						player.logSkill('yuyi', Evt.target)
+						if (!Evt.target.hasSkill('yuyi')) {
+							Evt.target.addTempSkill('yuyi', { player: 'phaseAfter' })
 						}
 					}
 				}],
-				ai:{
-					threaten:1.1
+				ai: {
+					threaten: 1.1
 				},
-				group:'yuyi_record',
-				subSkill:{
-					record:new toSkill('rule',{
+				group: 'yuyi_record',
+				subSkill: {
+					record: new toSkill('rule', {
 						filter(Evt, player) {
-							if(Evt.getParent('phaseDiscard')===player.storage.yuyi)	return true
+							if (Evt.getParent('phaseDiscard') === player.storage.yuyi) return true
 							player.storage.yuyi_record = 0
-							return Evt.getParent('phaseDiscard')&&Evt.getParent('phaseDiscard').name==='phaseDiscard'
+							return Evt.getParent('phaseDiscard') && Evt.getParent('phaseDiscard').name === 'phaseDiscard'
 						},
-						content:[() => {
+						content: [() => {
 							player.storage.yuyi = trigger.getParent('phaseDiscard')
 							player.storage.yuyi_record += trigger.cards.length
 						}]
-					},'onremove','silent','direct').setT('discard', 'End'),
+					}, 'onremove', 'silent', 'direct').setT('discard', 'End'),
 				}
 			}, 'frequent').setT('phase', 'End'),
 			renjian: new toSkill('trigger', {
@@ -14891,13 +14892,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}, () => {
 					if (result.bool) {
 						player.judge(card => {
-							if (get.color(card) == 'black'||get.suit(card) == 'diamond') return 2;
+							if (get.color(card) == 'black' || get.suit(card) == 'diamond') return 2;
 							return 0;
 						}).callback = lib.skill.renjian.callback;
 					}
 				}],
 				callback: [() => {
-					if (Evt.judgeResult.color == 'black' ||Evt.judgeResult.suit == 'diamond') {
+					if (Evt.judgeResult.color == 'black' || Evt.judgeResult.suit == 'diamond') {
 						Evt.num = player.getDamagedHp() + 1
 						player.chooseTarget(`视为使用了一张目标数最大为${Evt.num}的暗【杀】`, [1, Evt.num], function (card, player, target) {
 							if (player == target) return false;
@@ -17210,13 +17211,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.chooseTarget(function (card, player, target) {
 						return target != _status.event.source;
 					}).set('ai', (target) => {
-							let att = get.$a(_status.event.player, target);
-							if (target.hasSkillTag('nogain'))
-								att /= 10;
-							if (target.hasJudge('lebu'))
-								att /= 2;
-							return get.value(_status.event.cardx, target, 'raw') * att;
-						}).set('cardx', trigger.cards).set('source', trigger.player).set('createDialog',
+						let att = get.$a(_status.event.player, target);
+						if (target.hasSkillTag('nogain'))
+							att /= 10;
+						if (target.hasJudge('lebu'))
+							att /= 2;
+						return get.value(_status.event.cardx, target, 'raw') * att;
+					}).set('cardx', trigger.cards).set('source', trigger.player).set('createDialog',
 						[get.$pro('qinhuo'),
 							'small', get.skillInfoTranslation('qinhuo', player), '令一名角色获得这些牌',
 						[trigger.cards, 'card']]);

@@ -1413,7 +1413,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				audio: 'taiyangzhiyin',
 				trigger: { player: 'useCard2' },
 				filter(Evt: { card: { cardid: any; }; }, player: { $: { onlink: string | any[] | null; }; }) {
-					return get.number(Evt.card) > 10;
+					return get.number(Evt.card) >= 10;
 				},
 				priority: 1,
 				content: [() => {
@@ -3775,7 +3775,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			//re狗狗
 			guiren: {
 				audio: 2,
-				enable: ['chooseToUse'],
+				enable: 'chooseToUse',
 				viewAs: { name: 'sha' },
 				selectCard: 2,
 				complexCard: true,
@@ -3836,7 +3836,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (Evt.targets.length) Evt.redo();
 					}
 				}],
-				group: ['guiren_num', 'guiren_redraw'],//
+				group: ['guiren_num' ],//'guiren_redraw'
 				subSkill: {
 					num: {
 						trigger: { player: 'useCard' },
@@ -5700,7 +5700,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_Siro: `新·小白`,
 			lingsi: `灵思`,
-			lingsi_info: `出牌阶段限一次，你可以摸两张牌然后弃两张牌。你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。`,
+			lingsi_info: `出牌阶段限一次，你可以摸两张牌并弃两张牌。你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。`,
 			lingsi_append: lib.figurer(`特性：制衡`),
 
 			re_Nekomasu: `新·ねこます`,
@@ -5745,7 +5745,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_MinamiNami: `新·美波七海`,
 			re_longdan: `龙胆雄心`,
-			re_longdan_info: `转换技 每回合限一次，阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。你以此法转化点数大于7的牌无次数与距离限制。`,
+			re_longdan_info: `转换技 每回合限一次，阳~你可以将你任意一张不为【杀】的基本牌当作一张【杀】使用或打出；阴~你可以将一张【杀】当作任意一张不为【杀】的基本牌使用或打出。<br>
+			你以此法转化点数大于7的牌无次数与距离限制。`,
 
 			re_SisterClearie: `新·克蕾雅`,
 			shenyou: `神佑`,
@@ -5808,7 +5809,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_TokinoSora: `新·时乃空`,
 			re_taiyangzhiyin: `阳语`,
-			re_taiyangzhiyin_info: `你使用牌指定目标时，若此牌点数大于10，你可选择一项：<br>令之无法响应；为之额外指定一名目标；或摸一张牌。`,
+			re_taiyangzhiyin_info: `你使用牌指定目标时，若此牌点数不小于10，你可选择一项：<br>令之无法响应；为之额外指定一名目标；或摸一张牌。`,
 			re_taiyangzhiyin_append: lib.figurer(`特性：易上手`),
 
 			re_RobokoSan: `新·萝卜子`,
@@ -5856,7 +5857,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_NakiriAyame: `新·百鬼绫目`,
 			guiren: `鬼刃`,
-			guiren_info: `你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，若被抵消，你可以收回之并结束此阶段；若造成伤害，根据你转化牌包含的类型获得对应效果：基本~指定此伤害的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。`,
+			guiren_info: `你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，根据你转化牌的类型获得对应效果：<br>基本~指定此【杀】的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。`,
 			guiren_append: lib.figurer(`特性：易上手`),
 
 			re_MurasakiShion: `新·紫咲诗音`,
@@ -5934,7 +5935,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_DoumyoujiHaruto: `新·道明寺晴翔`,
 			shengfu: `胜负`,
-			shengfu_info: `每轮每项限一次，当你需要使用【决斗】/【无懈可击】时，你可以与目标/来源拼点，赢则视为使用之，没赢则不能使用牌直到回合结束。你的拼点牌亮出后，你可以令一方收回黑色拼点牌，改用牌堆顶牌代替。`,
+			shengfu_info: `每轮每项限一次，当你需要使用【决斗】/【无懈可击】时，你可以与目标/来源拼点，赢则视为使用之，没赢则不能使用牌直到回合结束。<br>
+			你的拼点牌亮出后，你可以令一方收回黑色拼点牌，改用牌堆顶牌代替。`,
 			shengfu_append: lib.figurer(`特性：无损拼点`),
 			wanbi: `完璧`,
 			wanbi_info: `当你抵消其他角色的牌后，若其手牌数不小于你，你可以获得被抵消的牌。`,
@@ -5961,7 +5963,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			rangran: `昂然`,
 			rangran_info: `你使用牌可指定本回合未以此法指定过的场上体力最多角色为额外目标。场上体力最多的角色受到属性伤害后，你摸一张牌。`,
 			jiazhao: `佳朝`,
-			jiazhao_info: `当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸一张。然后其回合开始时弃置因此获得的牌。`,
+			jiazhao_info: `当一名角色受到伤害后，你可以令其摸一张牌，若其体力值为全场最少，额外摸一张。其回合开始时弃置因此获得的牌。`,
 
 			re_ShirakamiHaruka: `新·白神遥`,
 			zhenbao: `心灵震豹`,

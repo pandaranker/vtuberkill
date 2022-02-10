@@ -70,7 +70,7 @@ export default {
     //点击特效功能
     game.clickCanvas = require('@e/clickCanvas')
     //引入自定义样式
-    require('@l/custom.css')
+    require('@l/custom.less')
     if (typeof global === 'undefined' || !__dirname.length) {
       lib.init.sheet(`*{
         cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
