@@ -1210,7 +1210,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						])
 						.set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
 						.set('processAI', function (list) {
-							var cards = list[0][1].slice(0);
+							var cards = list[1][1].slice(0);
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
