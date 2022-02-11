@@ -30,7 +30,7 @@ window.noname_source_list=[
 	'extension/yindao/MiraiAkari.jpg',
 	'extension/yindao/shanbao.jpg',
 	'extension/yindao/ShirakamiHaruka.jpg',
-	'extension/yindao/path2.jpg',
+	'extension/yindao/path2.png',
 
 	'game/asset.js',
 	'game/config.js',
