@@ -5082,6 +5082,25 @@ module.exports = {
          attitude2: function (to) {
             return get.attitude(_status.event.player, to);
          },
+         get $t(){
+           return this.translation
+         },
+         get $a(){
+           return this.attitude
+         },
+         get $a2(){
+           return this.attitude2
+         },
+         get $dis(){
+           return this.distance
+         },
+         get $pro(){
+           return this.prompt
+         },
+         get $pro2(){
+           return this.prompt2
+         }
       }
+      
    }
 }

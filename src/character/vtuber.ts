@@ -103,6 +103,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jike: ['female', 'qun', 3, ['qianjiwanbian'], ['guoV']],
 			/**扇宝 */
 			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
+			/**秋蒂 */
+			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {

@@ -1499,7 +1499,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}],
 					},
 					useCard: {
-						init(player: { $: { [x: string]: number; }; }, skill: string | number) {
+						init(player, skill) {
 							if (!player.$[skill]) player.$[skill] = 0;
 						},
 						trigger: { player: 'useCardAfter' },
@@ -1517,7 +1517,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							player: ['phaseZhunbeiBefore', 'phaseJudgeBefore', 'phaseDrawBefore', 'phaseDiscardBefore', 'phaseJieshuBegin']
 						},
 						filter(Evt, player) {
-							return !player.hasSkill('re_mozhaotujiStop');
+							return true;
 						},
 						check(Evt, player) {
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
@@ -1526,10 +1526,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
 						},
+						usable:1,
 						content: [() => {
 							trigger.cancel();
 						}, () => {
-							player.addTempSkill('re_mozhaotujiStop');
 							player.phaseUse();
 						}, () => {
 							let stat = player.getStat();
@@ -1547,7 +1547,6 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					},
 				}
 			},
-			re_mozhaotujiStop: {},
 			//re兔头
 			re_bingdielei: {
 				audio: 'bingdielei',
@@ -5700,7 +5699,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_Siro: `新·小白`,
 			lingsi: `灵思`,
-			lingsi_info: `出牌阶段限一次，你可以摸两张牌并弃两张牌。你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。`,
+			lingsi_info: `出牌阶段限一次，你可以摸两张牌并弃两张牌。<br>你一次性弃置至少两张基本牌后，可以视为使用一张【杀】；一次性弃置至少两张非基本牌后，可以令一名角色回复1点体力。`,
 			lingsi_append: lib.figurer(`特性：制衡`),
 
 			re_Nekomasu: `新·ねこます`,
@@ -5722,7 +5721,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_ShizukaRin: `新·静凛`,
 			re_mozhaotuji: `夜杰`,
 			re_mozhaotuji_DrawOrStop: `夜杰`,
-			re_mozhaotuji_info: `每回合限一次，你可以将你的一个阶段变为出牌阶段。你使用过至少两张牌的出牌阶段结束时，摸一张牌。`,
+			re_mozhaotuji_info: `每回合限一次，你可以将你的一个阶段变为出牌阶段。你使用过至少一张牌的阶段结束时，摸一张牌。`,
 
 			re_MitoTsukino: `新·月之美兔`,
 			re_MitoTsukino_info: `月之美兔`,

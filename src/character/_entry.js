@@ -8,3 +8,5 @@ import {} from './sololive'
 import {} from './vtuber'
 import {} from './xingtian'
 import {} from './yuzu'
+
+import {} from './noname/sp'

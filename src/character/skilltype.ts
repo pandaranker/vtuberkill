@@ -1,7 +1,7 @@
 
 type skillType = 'active' | 'trigger' | 'regard' | 'mark' | 'rule'	//技能类型：主动、触发、半主动|视为、状态|纯标记、规则相关
 type skillAttribute = 'direct' | 'forced' | 'silent' | 'unique' | 'forceunique' | 'limited' | 'juexingji' | 'dutySkill' | 'skillAnimation' | 'firstDo' | skillMark | skillAlwaysTrue
-type skillMark = 'mark' | 'onremove' | 'cardAround'
+type skillMark = 'mark' | 'onremove' | 'cardAround' | 'notemp'
 type skillAlwaysTrue = 'locked' | 'filterCard' | 'filterTarget' | 'multitarget' | 'frequent' | 'forceDie' | 'audio'
 type skillStringcombine = 'enable:chooseToUse' | 'logTarget:player' | 'logTarget:target' | 'mark:character' | 'mark:card'
 class toSkill implements Skill {

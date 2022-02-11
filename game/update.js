@@ -1,9 +1,8 @@
 window.noname_update={
-	version:'1.10.0.8',
+	version:'1.10.0.9',
 	update:'1.9.102.1.1',
 	changeLog:[
-		`1.10.0.8微型更新：修复一些bug，调整初心包一些角色的技能，增加当前回合角色的扫描特效`,
-		'新增角色天音彼方【木口】，替换部分角色的卡图，部分角色移出测试包',
+		`1.10.0.9小型更新：新增角色伊莎贝拉·霍利【乐元素】，加强一些老角色的技能，增加了联机头像的显示效果`,
 		`星天篇新增可合成装备牌【半音口琴】和【键盘AK】`,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
 		``,
@@ -20,7 +19,6 @@ window.noname_update={
 
 		'dist/card.js',
 		'dist/character.js',
-		'dist/sp.js',
 		'dist/mode.js',
 		
 		'layout/default/layout.css',

@@ -2451,7 +2451,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						if (get.population('zhong') + get.population('nei') == 0 ||
 							get.population('zhong') + get.population('fan') == 0) {
 							game.broadcastAll(game.showIdentity);
-							if(game.zhu && game.zhu.isAlive()){
+							if (game.zhu && game.zhu.isAlive()) {
 								game.broadcastAll(function () {
 									if (get.population('nei') == 1 && get.config('nei_fullscreenpop')) game.me.$fullscreenpop('<span style="font-family:xinwei"><span data-nature="fire">主公</span><span data-nature="soil"> vs </span><span data-nature="thunder">内奸</span></span>', null, null, false);
 								});
@@ -2634,7 +2634,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					this.ai.shown = 1;
 					this.setIdentity();
 					if (this.special_identity) {
-						this.node.identity.firstChild.innerHTML = get.translation(game.players[i].special_identity + '_bg');
+						this.node.identity.firstChild.innerHTML = get.translation(this.special_identity + '_bg');
 					}
 					if (this.identity == 'zhu') {
 						this.isZhu = true;

@@ -1819,7 +1819,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				content() {
 					player.loseMaxHp();
-					player.draw(Evt.num = game.countPlayer());
+					player.draw(8);
 					// player.draw(10 - player.countCards('h'));
 					player.addSkill('xinghejianduei_juexing');
 					player.awakenSkill(Evt.name);
@@ -3322,7 +3322,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			AkiRosenthal: `亚琦·罗森塔尔`,
 			AkiRosenthal_ab: `亚琦`,
 			meiwu: `魅舞`,
-			meiwu_info: `当你于一回合内首次成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。`,
+			meiwu_info: `每回合限一次，当你成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。`,
 			huichu: `慧厨`,
 			huichu_info: `体力值最少的角色回合开始时，你可以展示所有手牌，若均为♥，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。`,
 
@@ -3332,7 +3332,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yemuxingyong_info: `每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为「咏」。然后其他角色也可将一张黑色牌置于你武将牌上。<br>出牌阶段，你可获得一张「咏」，然后立即将两张手牌当【过河拆桥】或【酒】使用。`,
 			yong: `咏`,
 			xinghejianduei: `星河舰队`,
-			xinghejianduei_info: `<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加「咏」的数量。`,
+			xinghejianduei_info: `<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你扣减 1 点体力上限并摸八张牌，然后你的攻击范围和手牌上限始终增加「咏」的数量。`,
 
 			SakuraMiko: `樱巫女`,
 			haodu: `豪赌`,

@@ -76,12 +76,7 @@ export default {
         cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
       }`)
     }
-    get.$t = get.translation
-    get.$a = get.attitude
-    get.$a2 = get.attitude2
-    get.$dis = get.distance
-    get.$pro = get.prompt
-    get.$pro2 = get.prompt2
+    
     game.putBuff = (player, skill, buff) => {
       game.broadcastAll(function (player, skill, buff) {
         if (!player.node[skill + '_buff']) {

@@ -7,10 +7,6 @@ window.noname_source_list=[
 	'dist/character.js',
 	'dist/mode.js',
 
-	'dist/sp.js',
-
-	'dist/rank.js',
-
 	'image/loading.gif',
 	'image/character/Kino.jpg',
 	'image/character/shanbao.jpg',

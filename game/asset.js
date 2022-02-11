@@ -1424,10 +1424,11 @@ window.vk_asset_list=[
 	'image/character/AmaneKanata.jpg',
 	'image/skin/AmaneKanata/1.jpg',
 	'image/skin/AmaneKanata/2.jpg',
+	'image/character/IsabellaHolly.jpg',
 	//天启系列
 	'image/character/ap_Azusa.jpg',
 	'image/character/ap_Nana7mi.jpg',
-	
+	//化鲸系列
 	'image/character/sp_Ava.jpg',
 	'audio/die/Ava.mp3',
 	'image/character/sp_Diana.jpg',

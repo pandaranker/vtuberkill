@@ -32,7 +32,14 @@ module.exports = {
             onclick: function (item) {
               game.saveConfig('connect_avatar', item);
               game.saveConfig('connect_avatar', item, 'connect');
-            }
+            },
+						visualMenu:function(node,link,name,config){
+							node.className='button character themebutton';
+              if (!node.chara) {
+                node.chara = true
+                node.setBackground(link, 'character')
+              }
+            },
           },
           hall_ip: {
             name: '联机大厅',

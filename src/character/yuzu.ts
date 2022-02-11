@@ -49,8 +49,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
 
-			/**秋蒂 */
-			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
 			/**陆鳐 */
 			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
 
@@ -101,6 +99,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			liqingge: ['female', 'HappyEl', 4, ['tage'], ['guoV']],
 			/**神宫司玉藻 */
 			JingujiTamamo: ['female', 'HappyEl', 3, ['aowei', 'meizhan'], ['zhu', 'guoV']],
+			/**伊莎贝拉·霍利 */
+			IsabellaHolly: ['female', 'HappyEl', 4, ['youchu', 'yuanhua'], ['guoV']],
 
 			/**伊万 */
 			iiivan: ['female', 'xuefeng', 4, ['shuipo', 'pianchao'], ['guoV']],
@@ -2668,7 +2668,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						});
 				}, () => {
 					if (result.bool) {
-						result.targets[0].gain(trigger.cards);
+						result.targets[0].gain(trigger.cards, 'fromStorage');
 						player.$.yongtuan = true;
 						player.awakenSkill('yongtuan');
 					}
@@ -6331,7 +6331,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.$.juehuo.ans.removeArray(result.links);
 						player.$.juehuo.ms.removeArray(result.links);
 						player.$give(result.links, Evt.target);
-						Evt.target.gain(result.links);
+						Evt.target.gain(result.links, 'fromStorage');
 						player.updateMarks();
 					}
 				}],
@@ -9130,8 +9130,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content: [() => {
 					Evt.cards = trigger.name == 'judge' ? [trigger.result.card] : get.cards();
 					game.cardsGotoSpecial(Evt.cards)
+					player.$gain2(Evt.cards, false);
 					player.markAuto('ze', Evt.cards);
-					player.$gain2(Evt.cards);
 				}, () => {
 					if (player.getStorage('ze').length > 6) {
 						let discard = player.getStorage('ze').splice(0, 1);
@@ -9261,22 +9261,20 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				process(player, card, method) {
 					let storage = player.getStorage('di');
 					if (storage.left && storage.right) {
-						let num = 0, left = [], right = [];
+						let num = 0, left = [], right = [], gains = [];
 						switch (method) {
 							case 'use':
 								for (let i of storage.left) {
 									if (get.type(card) == get.type(i)) {
 										left.push(i);
-										player.$give(i, player, false);
-										player.gain(i, 'log');
+										gains.push(i)
 										num++;
 									}
 								}
 								for (let i of storage.right) {
 									if (get.type(card) == get.type(i)) {
 										right.push(i);
-										player.$give(i, player, false);
-										player.gain(i, 'log');
+										gains.push(i)
 										num++;
 									}
 								}
@@ -9287,8 +9285,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								for (let i of storage.right) {
 									if (get.color(card) == get.color(i)) {
 										right.push(i);
-										player.$give(i, player, false);
-										player.gain(i, 'log');
+										gains.push(i)
 										num++;
 									}
 								}
@@ -9299,8 +9296,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								for (let i of storage.left) {
 									if (get.color(card) == get.color(i)) {
 										left.push(i);
-										player.$give(i, player, false);
-										player.gain(i, 'log');
+										gains.push(i)
 										num++;
 									}
 								}
@@ -9308,6 +9304,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 						storage.left.removeArray(left);
 						storage.right.removeArray(right);
+						player.$give(gains, player, false);
+						player.gain(gains, 'log', 'fromStorage');
 						player.markSkill('di');
 						if (num >= 3) player.useSkill('dixian');
 					}
@@ -10204,7 +10202,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							if (!player.$.daimao_mark) player.$.daimao_mark = [];
 							let cards = get.cards();
 							game.cardsGotoSpecial(cards);
-							player.$gain2(cards);
+							player.$gain2(cards, false);
 							player.markAuto('daimao_mark', cards);
 						},
 					}
@@ -10365,7 +10363,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					let cards = get.cards();
 					game.cardsGotoSpecial(cards);
-					player.$gain2(cards);
+					player.$gain2(cards, false);
 					player.markAuto('tianqi_mark', cards);
 					player.addSkill('tianqi_mark');
 				},
@@ -10563,7 +10561,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.guessers[0].popup('质疑错误', 'fire');
 						let cards = get.cards();
 						game.cardsGotoSpecial(cards);
-						Evt.guessers[0].$gain2(cards);
+						Evt.guessers[0].$gain2(cards, false);
 						Evt.guessers[0].markAuto('tianqi_mark', cards);
 						Evt.guessers[0].addSkill('tianqi_mark');
 						game.log(Evt.guessers[0], '获得了', '#g「天气」');
@@ -10673,7 +10671,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.guessers[0].popup('质疑错误', 'fire');
 						let cards = get.cards();
 						game.cardsGotoSpecial(cards);
-						Evt.guessers[0].$gain2(cards);
+						Evt.guessers[0].$gain2(cards, false);
 						Evt.guessers[0].markAuto('tianqi_mark', cards);
 						Evt.guessers[0].addSkill('tianqi_mark');
 						game.log(Evt.guessers[0], '获得了', '#g「天气」牌');
@@ -11368,8 +11366,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			}, 'filterCard'),
 			lunao: new toSkill('trigger', {
-				trigger: { source: 'damageBegin2' },
 				priority: 199,
+				filter(Evt, player) {
+					return Evt.player.hp <= player;
+				},
 				content: [() => {
 					let list = lib.linked.slice(0);
 					list.remove('kami');
@@ -11404,7 +11404,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.finish();
 					}
 				}]
-			}, 'direct'),
+			}, 'direct').setT({ source: 'damageBegin2' }),
 			//蜜球兔
 			zhazong: {
 				trigger: { player: 'phaseUseEnd' },
@@ -12340,7 +12340,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			huomo: new toSkill('trigger', {
 				round: 1,
 				filter(Evt, player) {
-					return get.type(Evt.card) !== 'equip' && game.countPlayer(cur => cur !== player && get.$dis(cur, player) <= 1) && player.countCards('he')
+					return get.type(Evt.card) !== 'equip' && game.countPlayer(cur => get.$dis(cur, player) === 1) && player.countCards('he')
 				},
 				content: [() => {
 					player.chooseToDiscard('he', get.$pro2('huomo')).set('ai', card => {
@@ -12542,7 +12542,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player.$.mian.ans.removeArray(Evt.cards);
 							player.updateMarks();
 							player.$give(Evt.cards, Evt.source);
-							Evt.source.gain(Evt.cards, 'log');
+							Evt.source.gain(Evt.cards, 'log', 'fromStorage');
 						}
 					}
 				},
@@ -13181,7 +13181,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									let cards = Evt.target.getCards('h');
 									player.unmarkAuto('hun', Evt.cards);
 									Evt.target.lose(cards, ui.special);
-									Evt.target.gain(Evt.cards);
+									Evt.target.gain(Evt.cards,'fromStorage');
 									Evt.target.$give(cards, player);
 									player.markAuto('hun', cards);
 									break;
@@ -13210,8 +13210,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						content() {
 							Evt.cards = trigger.name == 'judge' ? [trigger.result.card] : get.cards();
 							game.cardsGotoSpecial(Evt.cards)
+							player.$gain2(Evt.cards, false);
 							player.markAuto('hun', Evt.cards);
-							player.$gain2(Evt.cards);
 						}
 					}
 				}
@@ -13458,7 +13458,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					game.cardsGotoSpecial(trigger.cards);
-					player.$gain2(trigger.cards);
+					player.$gain2(trigger.cards, false);
 					player.markAuto('sujian_su', trigger.cards);
 				},
 				group: ['sujian_su', 'sujian_chooseBy', 'sujian_changeBy'],
@@ -13496,7 +13496,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}, () => {
 							if (result.bool && result.cards) {
 								player.lose(result.cards, 'toStorage');
-								player.$gain2(result.cards);
+								player.$gain2(result.cards, false);
 								player.markAuto('sujian_su', result.cards);
 							}
 						}],
@@ -14392,7 +14392,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								Evt.cards = Evt.cards.filter(card => get.type2(card) == type);
 								player.unmarkAuto('shang', Evt.cards);
 								player.$give(Evt.cards, Evt.target);
-								Evt.target.gain(Evt.cards, 'giveAuto');
+								Evt.target.gain(Evt.cards, 'log', 'fromStorage');
 								if (Evt.target != player) player.recover();
 							} else {
 								for (let i = 0; i < ui.dialog.buttons.length; i++) {
@@ -15641,8 +15641,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.logSkill('jiace', Evt.target);
 						player.give(result.cards, Evt.target, true);
 						if (!player.hasSkill('jiace_used')) {
-							if (!trigger.getParent().addedSkill) trigger.getParent().addedSkill = [];
-							trigger.getParent().addedSkill.add('jiace');
+							let evt = trigger.getParent()
+							evt.addedSkill ??= [];
+							evt.addedSkill.add('jiace');
 						}
 					} else {
 						Evt.finish();
@@ -17205,7 +17206,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				direct: true,
 				filter(Evt, player) {
 					if (Evt.cards && get.name(Evt.card) == 'huogong'
-						&& !Evt.player.hasHistory('sourceDamage', evt => evt.getParent && Evt === evt.getParent('useCard'))) return true;
+						&& !Evt.player.hasHistory('sourceDamage', evt => evt.getParent('useCard').name === 'useCard')) return true;
 				},
 				content: [() => {
 					player.chooseTarget(function (card, player, target) {
@@ -17247,7 +17248,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger: { global: 'linkEnd' },
 						filter(Evt, player) {
 							let evt = Evt.getParent('useCard');
-							if (evt.getParent('chooseUseTarget').addedSkill && evt.getParent('chooseUseTarget').addedSkill.includes('lvecao')) {
+							if (evt?.name === 'useCard' && evt.getParent('chooseUseTarget')?.addedSkill.includes('lvecao')) {
 								return evt.card.name == 'tiesuo' && evt.player == player && !Evt.player.isLinked()
 									&& Evt.player.countGainableCards(player, 'hej', card => {
 										if (get.position(card) != 'e' && get.position(card) != 'j' && !card.hasGaintag('ming_')) return false;
@@ -17265,7 +17266,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						ai: {
 							effect: {
 								player(card, player, target, current) {
-									if (_status.event.name == 'chooseUseTarget' && _status.event.addedSkill.includes('lvecao')) {
+									if (_status.event.name == 'chooseUseTarget' && _status.event.addedSkill?.includes('lvecao')) {
 										if (card.name == 'tiesuo' && target && target.isLinked() && target.countCards('hej', card => {
 											if (get.position(card) != 'e' && get.position(card) != 'j' && !card.hasGaintag('ming_')) return false;
 											return true;
@@ -17617,8 +17618,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content: [() => {
 					Evt.precard = trigger.cards.slice(0);
 					let num = get.number(trigger.card);
-					player.chooseToRespond('『踏歌』：是否打出一张牌替换' + get.$t(Evt.precard), card => {
-						if (!get.number(card)) return false;
+					player.chooseToRespond('『踏歌』：是否打出一张牌替换' + get.$t(Evt.precard), function (card) {
+						if (!get.number(card))
+							return false;
 						let num = _status.event.num;
 						return [1, -1].includes(get.number(card) - num);
 					}).set('num', num).set('ai', card => {
@@ -17701,8 +17703,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					Evt.precard = cards.slice(0);
 					Evt.change = !precard.nature;
 
-					player.chooseToRespond('『傲尾』：是否打出一张牌替换' + get.$t(Evt.precard), card => {
-						if (!get.suit(card) && !get.number(card)) return false;
+					player.chooseToRespond('『傲尾』：是否打出一张牌替换' + get.$t(Evt.precard), function (card) {
+						if (!get.suit(card) && !get.number(card))
+							return false;
 						let precard = _status.event.precard;
 						return get.suit(card) == get.suit(precard)
 							|| get.number(card) == get.number(precard);
@@ -17764,6 +17767,126 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 				}],
 			},
+			//伊莎贝拉·霍利
+			ya: new toSkill('mark', {
+				marktext: '芽',
+				intro: {
+					content: 'cards',
+					onunmark: 'throw',
+				},
+			}, 'locked', 'notemp', 'cardAround').setI([]),
+			youchu: new toSkill('trigger', {
+				filter(Evt, player) {
+					if(get.name(Evt.card)!=='sha'&&get.type(Evt.card)==='basic')	return false
+					return Evt.target.inRangeOf(player)&&![player, Evt.target].includes(Evt.player) && Evt.targets.length == 1;
+				},
+				logTarget: 'target',
+				content: [() => {
+					let evt = trigger.getParent();
+					let pretarget = trigger.target
+					evt.triggeredTargets2.remove(pretarget);
+					evt.targets.remove(pretarget);
+					evt.targets.push(player);
+					evt.addedSkill ??= []
+					evt.addedSkill.add('youchu')
+				}],
+				mod: {
+					attackFrom(from, to, distance) {
+						return distance - from.getStorage('ya').length;
+					},
+				},
+				group: ['ya', 'youchu_addYa'],
+				subSkill: {
+					addYa: new toSkill('trigger', {
+						filter(Evt, player) {
+							if (Evt.targets.includes(player) && Evt.addedSkill?.includes('youchu') && Evt.cards.length)
+								return !player.hasHistory('damage', evt => evt.getParent('useCard').name === 'useCard' && evt.getParent('useCard') === Evt)
+						},
+						content: [() => {
+							Evt.cards = trigger.cards
+							game.cardsGotoSpecial(Evt.cards)
+							player.$gain2(Evt.cards, false)
+							player.markAuto('ya', Evt.cards)
+						}],
+					}, 'direct').setT({ global: 'useCardAfter' }),
+				}
+			}).setT({ global: 'useCardToTarget' }),
+			yuanhua: new toSkill('trigger', {
+				combo: 'youchu',
+				filter(Evt, player) {
+					return player.countCards('hs')&&player.getStorage('ya').length;
+				},
+				content: [() => {
+					Evt.yas = player.getStorage('ya')
+					player.chooseToRespond(get.prompt2('yuanhua'), function (card) {
+						if (!get.number(card))
+							return false;
+						let yas = _status.event.yas;
+						for (let v of yas) {
+							if ([1, -1].includes(get.number(card) - get.number(v))) return true
+						}
+					})
+						.set('yas', Evt.yas)
+						.set('ai', card => {
+							if (player.countCards('h') === 1 && get.position(card) === 'h') return 9 - get.value(card)
+							if (!_status.event.check) return 3 - get.value(card);
+							return 8 - get.value(card);
+						})
+						.set('check', Evt.yas.length === 1)
+				}, () => {
+					if (result.bool && result.cards) {
+						player.logSkill('yuanhua');
+						Evt.prenum = get.number(result.cards[0])
+						game.delayx()
+					}
+					else Evt.finish()
+				}, () => {
+					player.chooseButton(['选择获得一张「芽」', Evt.yas], true)
+						.set('filterButton', function (button) {
+							return [1, -1].includes(get.number(button.link) - _status.event.prenum)
+						})
+						.set('ai', (button) => get.value(button.link, player))
+						.set('prenum', Evt.prenum);
+				}, () => {
+					if (result.bool && result.links) {
+						Evt.ya = result.links[0]
+						player.unmarkAuto('ya', [Evt.ya]);
+						if (player.getStorage('ya').length === 0) {
+							player.draw(2)
+						}
+					}
+					else Evt.finish()
+				}, () => {
+					player.$give(Evt.ya, player, false)
+					player.gain(Evt.ya, 'log', 'fromStorage')
+				}, () => {
+					if (lib.filter.filterCard(Evt.ya, player)) {
+						player.chooseToUse()
+							.set('filterCard', function (card) {
+								return card == _status.event.ya;
+							})
+							.set('ya', Evt.ya)
+							.set('prompt','是否使用【' + get.$t(Evt.ya) + '】？')
+					}
+				}],
+				group: ['ya', 'yuanhua_drawBy'],
+				subSkill: {
+					drawBy: new toSkill('trigger', {
+						trigger: {
+							player: 'loseAfter',
+						},
+						frequent: true,
+						filter: function (Evt, player) {
+							if (player.countCards('h')) return false;
+							let evt = Evt.getParent('respond')
+							return evt.name === 'respond' && evt.getParent('yuanhua').name === 'yuanhua'
+						},
+						content: function () {
+							player.draw(2);
+						},
+					})
+				}
+			}, 'direct').setT(['phaseZhunbei', 'phaseJudge', 'phaseDraw', 'phaseUse', 'phaseDiscard', 'phaseJieshu'], 'Begin'),
 			//吉诺儿kino
 			xiandu: new toSkill('trigger', {
 				init(player, skill) {
@@ -18639,6 +18762,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			meizhan: `魅绽`,
 			meizhan_info: `主公技 每回合限一次，与你同势力的角色不因摸牌获得牌时，可以与你各摸一张牌。`,
 
+			IsabellaHolly: `伊莎贝拉·霍利`,
+			IsabellaHolly_ab: `伊莎贝拉`,
+			ya: `芽`,
+			youchu: `佑雏`,
+			youchu_info: `当一名你攻击范围内的角色成为除你以外的其他角色的【杀】或非基本牌的唯一目标时，你可令此牌目标为你。若你不因此牌而受伤，你将之置于你的武将牌上，称为「芽」。你每有一张「芽」，攻击范围+1。`,
+			yuanhua: `元华`,
+			yuanhua_info: `你的回合内，每个阶段开始时，你可以打出一张点数为一张「芽」点数±1的牌，获得对应的「芽」且可以立即使用之；若你以此法失去了最后的手牌或「芽」，你摸一张牌。`,
+
 			Kino: `吉诺儿kino`,
 			Kino_ab: `吉诺儿`,
 			xiandu: `显渡`,
@@ -18948,7 +19079,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Karon: `茶冷Karon`,
 			Karon_ab: `茶冷`,
 			huomo: `惑魔`,
-			huomo_info: `轮次技 你成为一张牌的目标时，可以弃置一张牌，令距离你为1的其他角色改变对于此牌的目标状态。`,
+			huomo_info: `轮次技 你成为一张牌的目标时，可以弃置一张牌，令距离你为1的所有角色改变对于此牌的目标状态。`,
 			huomo_append: lib.figurer(`特性：辅助`),
 			tuying: `涂映`,
 			tuying_info: `出牌阶段结束时，你可以将一张手牌当做本阶段使用的最后一张牌使用，然后可以将之目标数改为与本阶段使用的第一张牌相同。`,

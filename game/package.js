@@ -18,15 +18,15 @@ window.vk_package={
 	card:{
 		standard:'标准',
 		extra:'军争',
-		yingbian:'应变篇',
 		huajing:'化鲸篇',
 		xingtian:'星天篇',
-		sp:'SP',
+		sp:'忠胆英杰',
 		guozhan:'国战',
+		yingbian:'应变篇',
 		zhulu:'逐鹿天下',
 		// zhenfa:'阵法',
 		yunchou:'运筹帷幄',
-		longlaoguan:'龙牢关',
+		// longlaoguan:'龙牢关',
 		remark:'回调牌堆',
 	},
 	play:{

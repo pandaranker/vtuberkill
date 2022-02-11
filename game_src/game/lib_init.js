@@ -320,7 +320,7 @@ module.exports = function(element,_mode,_message){
           else {
             src = 'image/' + name + ext;
           }
-          this.setBackgroundImage(src,type === 'character'?'loading':null);
+          this.setBackgroundImage(src,type === 'character'?'true':null);
           this.style.backgroundSize = "cover";
           return this;
         };
@@ -1171,7 +1171,7 @@ module.exports = function(element,_mode,_message){
         }
         //用于加载包的函数
         let loadPack = function () {
-          let toLoad = 3;
+          let toLoad = 2;
           let packLoaded = function () {
             toLoad--;
             if (toLoad == 0) {
@@ -1195,7 +1195,7 @@ module.exports = function(element,_mode,_message){
             toLoad++;
             init.js(dist(), 'mode', packLoaded, packLoaded);
           }
-          init.js(dist(), ['card', 'character', 'sp'], packLoaded, packLoaded);
+          init.js(dist(), ['card', 'character'], packLoaded, packLoaded);
         };
         //part: 检查layout并设置`game.layout = layout`
         let layout = lib.config.layout;
@@ -2624,7 +2624,7 @@ module.exports = function(element,_mode,_message){
           node.dataset.cursor_style = "pointer";
           ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
           if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage('image/splash/' + lib.config.all.mode[i] + '.jpg');
+            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`,true);
           }
           else {
             var avatarnode = ui.create.div(node, '.avatar');

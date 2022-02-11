@@ -3,7 +3,21 @@
 const path = require('path');
 const resolve = (...dirs) => path.resolve(__dirname, ...dirs);
 const TerserPlugin = require('terser-webpack-plugin');
-let commonCssLoader = ["style-loader", "css-loader"]
+let commonCssLoader = [
+  'style-loader',
+  'css-loader',
+  {
+    loader: "postcss-loader",
+    options: {
+      postcssOptions: {
+
+        plugins: [
+          require('postcss-preset-env')(),
+        ]
+      }
+    }
+  }
+]
 module.exports = {
   entry: {
     game: './main.js'
