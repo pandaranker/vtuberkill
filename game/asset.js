@@ -1425,6 +1425,8 @@ window.vk_asset_list=[
 	'image/skin/AmaneKanata/1.jpg',
 	'image/skin/AmaneKanata/2.jpg',
 	'image/character/IsabellaHolly.jpg',
+	'layout/uiImg/pindian.jpg',
+
 	//天启系列
 	'image/character/ap_Azusa.jpg',
 	'image/character/ap_Nana7mi.jpg',

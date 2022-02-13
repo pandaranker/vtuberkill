@@ -8190,7 +8190,8 @@
         this.phaseNumber = 0;
         this.stat = [{ card: {}, skill: {} }];
         this.tempSkills = {};
-        this.storage = {};
+        let storage = {}
+        this.$ = this.storage = storage;
         this.marks = {};
         this.ai = { friend: [], enemy: [], neutral: [] };
 

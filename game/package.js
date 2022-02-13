@@ -11,7 +11,7 @@ window.vk_package={
 		yuzu: '测试中可选',
 		emperor:'Emperor',
 		sololive:'特殊角色',
-		sp:'技能库',
+		// sp:'技能库',
 		// extra:'神将',
 		// mobile:'移动版',
 	},

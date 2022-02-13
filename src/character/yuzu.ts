@@ -18448,7 +18448,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			AmaneKanata: `天音彼方`,
 			yuyi: `愈翼`,
 			yuyi_info: `回合结束时，你每满足下列一项便摸一张牌，若均满足，你回复一点体力：<br>
-			&nbsp;1.判定阶段判定次数<2<br>&nbsp;2.出牌阶段使用牌数<2<br>&nbsp;3.弃牌阶段弃置牌数<2<br>
+			&nbsp;1.判定阶段判定次数<2<br>
+			&nbsp;2.出牌阶段使用牌数<2<br>
+			&nbsp;3.弃牌阶段弃置牌数<2<br>
 			若你没有因此恢复体力，你可令一名角色获得『愈翼』直到其下个回合结束。`,
 			yuyi_append: lib.figurer(`特性：辅助`),
 			renjian: `忍剑`,
@@ -18766,7 +18768,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			IsabellaHolly_ab: `伊莎贝拉`,
 			ya: `芽`,
 			youchu: `佑雏`,
-			youchu_info: `当一名你攻击范围内的角色成为除你以外的其他角色的【杀】或非基本牌的唯一目标时，你可令此牌目标为你。若你不因此牌而受伤，你将之置于你的武将牌上，称为「芽」。你每有一张「芽」，攻击范围+1。`,
+			youchu_info: `当一名你攻击范围内的角色成为除你以外的其他角色的【杀】或非基本牌的唯一目标时，你可令此牌目标为你。<br>
+			若你不因此牌而受伤，你将之置于你的武将牌上，称为「芽」。你每有一张「芽」，攻击范围+1。`,
 			yuanhua: `元华`,
 			yuanhua_info: `你的回合内，每个阶段开始时，你可以打出一张点数为一张「芽」点数±1的牌，获得对应的「芽」且可以立即使用之；若你以此法失去了最后的手牌或「芽」，你摸一张牌。`,
 
@@ -19033,6 +19036,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jusheng: `剧生`,
 			jusheng_info: `轮次技 其他角色的准备阶段，你可以与其交换装备区，若其装备区的牌数因此：<br>减少~你令你或其调整手牌至与对方相同；增加~其本回合使用牌指定你或其为目标时，你可以视为使用一张【杀】。`,
 			xingqu: `星取`,
+			xingqu2: `星取`,
 			xingqu_info: `限定技 你令其他角色进入濒死状态时，你可以扣减1点体力上限令其回复1点体力，然后你们同时发现一组技能，若你们选择的技能相同，你本局游戏内造成的伤害+1；若不同，你获得对方选择的技能。`,
 
 			Miki: `弥希Miki`,

@@ -1526,7 +1526,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
 						},
-						usable:1,
+						usable: 1,
 						content: [() => {
 							trigger.cancel();
 						}, () => {
@@ -2308,7 +2308,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				content: [() => {
 					player.draw(3);
 				}, () => {
-					player.chooseToMove('『狐虑』：选择放置到牌堆顶部的牌',true)
+					player.chooseToMove('『狐虑』：选择放置到牌堆顶部的牌', true)
 						.set('list', [
 							['牌堆顶'],
 							['手牌&装备区', player.getCards('he')],
@@ -2321,12 +2321,12 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							});
 							return [cards];
 						})
-						.set('filterMove',function(from,to,moved){
-							if(to==0&&moved[0].length>=2) return false;
+						.set('filterMove', function (from, to, moved) {
+							if (to == 0 && moved[0].length >= 2) return false;
 							return true;
 						})
-						.set('filterOk',function(moved){
-							return moved[0].length==2;
+						.set('filterOk', function (moved) {
+							return moved[0].length == 2;
 						});
 				}, () => {
 					if (result.bool && result.moved && result.moved[0].length) Evt.cards = result.moved[0].slice(0);
@@ -3100,7 +3100,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						result.targets[0].addSkill('re_xuyan_mark');
 					}
 				}],
-				group: ['re_xuyan_phaseStart', 're_xuyan_damage'],
+				group: ['re_xuyan_damage'],//'re_xuyan_phaseStart',
 				subSkill: {
 					mark: {
 						mark: true,
@@ -3108,65 +3108,62 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							content: '造成伤害被列入了观察项目'
 						},
 					},
-					phaseStart: {
-						trigger: { player: 'phaseBegin' },
-						forced: true,
-						filter(Evt: any, player: { hasSkill: (arg0: string) => any; }) {
-							return player.hasSkill('re_xuyan_damaged') || player.hasSkill('re_xuyan_dead') || game.filterPlayer((cur: { hasSkill: (arg0: string) => any; }) => {
-								if (cur.hasSkill('re_xuyan_mark')) {
-									return true;
-								}
-								else
-									return false;
-							}).length > 0
-						},
-						content: [() => {
-							game.filterPlayer((cur: { hasSkill: (arg0: string) => any; removeSkill: (arg0: string) => void; }) => {
-								if (cur.hasSkill('re_xuyan_mark')) {
-									cur.removeSkill('re_xuyan_mark');
-									return true;
-								}
-								else
-									return false;
-							});
-						}, () => {
-							if (player.hasSkill('re_xuyan_damaged')) {
-								player.draw(1);
-								player.removeSkill('re_xuyan_damaged');
-							} else {
-								player.chooseTarget(true, '令一名角色与你各失去1点体力').set('ai', function (target: any) {
-									var player = _status.event.player;
-									return 2 - get.attitude(player, target);
-								});
-							}
-						}, () => {
-							if (result.bool) {
-								player.loseHp();
-								result.targets[0].loseHp();
-							}
-						}]
-					},
 					damage: {
 						trigger: { global: 'damageAfter' },
 						forced: true,
-						filter(Evt: { source: { hasSkill: (arg0: string) => any; }; }, player: any) {
-							if (Evt.source) {
-								return Evt.source.hasSkill('re_xuyan_mark');
-							}
-							else
-								return false;
+						filter(Evt, player) {
+							return Evt.source && Evt.source.hasSkill('re_xuyan_mark');
 						},
 						content() {
-							player.addSkill('re_xuyan_damaged');
+							player.draw()
+							// player.addSkill('re_xuyan_damaged');
 						}
 					},
-					damaged: {
-						mark: true,
-						marktext: '伤',
-						intro: {
-							content: '观察目标造成了伤害'
-						},
-					},
+					// damaged: {
+					// 	mark: true,
+					// 	marktext: '伤',
+					// 	intro: {
+					// 		content: '观察目标造成了伤害'
+					// 	},
+					// },
+					// phaseStart: {
+					// 	trigger: { player: 'phaseBegin' },
+					// 	forced: true,
+					// 	filter(Evt: any, player: { hasSkill: (arg0: string) => any; }) {
+					// 		return player.hasSkill('re_xuyan_damaged') || player.hasSkill('re_xuyan_dead') || game.filterPlayer((cur: { hasSkill: (arg0: string) => any; }) => {
+					// 			if (cur.hasSkill('re_xuyan_mark')) {
+					// 				return true;
+					// 			}
+					// 			else
+					// 				return false;
+					// 		}).length > 0
+					// 	},
+					// 	content: [() => {
+					// 		game.filterPlayer((cur: { hasSkill: (arg0: string) => any; removeSkill: (arg0: string) => void; }) => {
+					// 			if (cur.hasSkill('re_xuyan_mark')) {
+					// 				cur.removeSkill('re_xuyan_mark');
+					// 				return true;
+					// 			}
+					// 			else
+					// 				return false;
+					// 		});
+					// 	}, () => {
+					// 		if (player.hasSkill('re_xuyan_damaged')) {
+					// 			player.draw(1);
+					// 			player.removeSkill('re_xuyan_damaged');
+					// 		} else {
+					// 			player.chooseTarget(true, '令一名角色与你各失去1点体力').set('ai', function (target: any) {
+					// 				var player = _status.event.player;
+					// 				return 2 - get.attitude(player, target);
+					// 			});
+					// 		}
+					// 	}, () => {
+					// 		if (result.bool) {
+					// 			player.loseHp();
+					// 			result.targets[0].loseHp();
+					// 		}
+					// 	}]
+					// },
 				}
 			},
 			//re犬山
@@ -3835,7 +3832,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (Evt.targets.length) Evt.redo();
 					}
 				}],
-				group: ['guiren_num' ],//'guiren_redraw'
+				group: ['guiren_num'],//'guiren_redraw'
 				subSkill: {
 					num: {
 						trigger: { player: 'useCard' },
@@ -4806,8 +4803,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				hiddenCard(player, name: string) {
 					return player.$.shengfu.wuxie == undefined && name == 'wuxie';
 				},
-				check(Evt,player){
-					return get.$a(player,Evt.respondTo[0])<=0;
+				check(Evt, player) {
+					return get.$a(player, Evt.respondTo[0]) <= 0;
 				},
 				content: [() => {
 					Evt.p1 = Evt.getParent().respondTo[0];
@@ -5893,9 +5890,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_XiaoxiXiaotao: `新·小希小桃`,
 			re_doupeng: `逗捧`,
-			re_doupeng_info: `出牌阶段限一次，你可以与一名其他角色拼点，赢的角色摸两张牌，没赢的角色可以令赢的角色回复1点体力。`,
+			re_doupeng_info: `出牌阶段限一次，你可以与一名其他角色拼点，赢的角色摸两张牌，没赢的角色可以令对方回复1点体力。`,
 			re_xuyan: `虚研`,
-			re_xuyan_info: `结束阶段，你可以选择一名其他角色；你下个回合开始时，若该角色在此期间造成过伤害，你摸一张牌。否则你与一名角色各失去1点体力。`,
+			re_xuyan_info: `结束阶段，你可以选择一名其他角色：<br>直到你下个回合开始前，该角色造成过伤害时，你摸一张牌，若未造成伤害，你失去1点体力。`,
 
 			re_InuyamaTamaki: `新·犬山玉姬`,
 			re_hundunliandong: `混联`,

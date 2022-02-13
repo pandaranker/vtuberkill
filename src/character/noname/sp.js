@@ -2,7 +2,7 @@
 game.import('character',function(lib,game,ui,get,ai,_status){
 	return {
 		name:'sp',
-		connect:true,
+		// connect:true,
 		characterSort:{
 			sp:{
 				sp_tianji:["sunhao","liuxie","caoang","hetaihou","sunluyu",'ol_wangrong',"zuofen","ganfuren","ol_bianfuren"],

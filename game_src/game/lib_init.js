@@ -343,7 +343,7 @@ module.exports = function(element,_mode,_message){
          * @param {boolean} loading - 是否显示加载中图片
          */
         HTMLDivElement.prototype.setBackgroundImage = function (img,loading) {
-          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading?`,url("${lib.assetURL}/image/loading.gif")`:``}`;
+          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading?`,url("${lib.assetURL}image/loading.gif")`:``}`;
         },
           /**
            * {@link HTMLDivElement#listen|listen}（click）的回调函数

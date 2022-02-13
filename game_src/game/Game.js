@@ -76,7 +76,7 @@ export default {
         cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
       }`)
     }
-    
+
     game.putBuff = (player, skill, buff) => {
       game.broadcastAll(function (player, skill, buff) {
         if (!player.node[skill + '_buff']) {
@@ -87,13 +87,69 @@ export default {
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
         if (player.node[skill + '_buff']) {
-          if(player.node[skill + '_buff'][0].delete){
+          if (player.node[skill + '_buff'][0].delete) {
             player.node[skill + '_buff'][0].delete();
             player.node[skill + '_buff'][1].delete();
           }
           delete player.node[skill + '_buff']
         }
       }, player, skill);
+    }
+    ui.putImgDialog = (str) => {
+      if (str && !ui[`imgDialog_${str}`]) {
+        let dialog = ui.create.dialog('hidden');
+        dialog.classList.add('static');
+        ui.window.appendChild(dialog);
+        dialog.style.left = 'calc(50% - 270px)';
+        dialog.style.top = 'calc(50% - 160px)';
+        dialog.style.height = '55%';
+        dialog.style.width = '60%';
+        dialog.style.zIndex = 2;
+        dialog.style.backgroundRepeat = 'no-repeat';
+        dialog.setBackgroundImage(`layout/uiImg/${str}.png`)
+        ui[`imgDialog_${str}`] = dialog
+
+        game.broadcastAll(function (str) {
+          ui.putImgDialog(str);
+        }, str);
+      }
+    },
+      ui.clearImgDialog = (str) => {
+        if (ui[`imgDialog_${str}`]) {
+          let dialog = ui[`imgDialog_${str}`]
+          delete ui[`imgDialog_${str}`];
+          setTimeout(() => {
+            dialog.style.opacity = 0.05;
+            setTimeout(() => {
+              dialog.delete();
+            }, 500);
+          }, 1000);
+          game.broadcastAll(function (str) {
+            ui.clearImgDialog(str);
+          }, str);
+        }
+      }
+    lib.skill._pindiankuang = {
+      trigger: {
+        player: "chooseToCompareBefore",
+      },
+      forced: true,
+      popup: false,
+      content: function () {
+        let str = 'pindian'
+        ui.putImgDialog(str);
+      }
+    }
+    lib.skill._pindiankuangAfter = {
+      trigger: {
+        player: "chooseToCompareAfter"
+      },
+      forced: true,
+      popup: false,
+      content: function () {
+        let str = 'pindian'
+        ui.clearImgDialog(str);
+      }
     }
     lib.init.init();
   }
