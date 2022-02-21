@@ -6425,7 +6425,7 @@
         game.broadcast(function (list) {
           _status.dying = list;
         }, _status.dying);
-        if (player.hp <= 0 && !player.nodying) player.die(Evt.reason);
+        if (player.hp <= 0 && !player.nodying && !(Evt.reason && Evt.reason.nofatal)) player.die(Evt.reason);
       }],
       /**
        * 角色死亡事件
@@ -7913,7 +7913,9 @@
           }
           this.checkConflict();
         }
-        lib.group.add(this.group);
+        if(this.group){
+          lib.group.add(this.group);
+        }
         if (this.inits) {
           for (var i = 0; i < lib.element.player.inits.length; i++) {
             lib.element.player.inits[i](this);
@@ -11142,40 +11144,43 @@
         };
         return next;
       },
-      damage: function () {
-        var next = game.createEvent('damage');
+      damage: function (...args) {
+        let next = game.createEvent('damage');
         //next.forceDie=true;
         next.player = this;
-        var nocard, nosource;
-        var Evt = _status.event;
-        for (var i = 0; i < arguments.length; i++) {
-          if (get.itemtype(arguments[i]) == 'cards') {
-            next.cards = arguments[i].slice(0);
+        let nocard, nosource;
+        let Evt = _status.event;
+        for (let v of args) {
+          if (get.itemtype(v) == 'cards') {
+            next.cards = v.slice(0);
           }
-          else if (get.itemtype(arguments[i]) == 'card') {
-            next.card = arguments[i];
+          else if (get.itemtype(v) == 'card') {
+            next.card = v;
           }
-          else if (typeof arguments[i] == 'number') {
-            next.num = arguments[i];
+          else if (typeof v == 'number') {
+            next.num = v;
           }
-          else if (get.itemtype(arguments[i]) == 'player') {
-            next.source = arguments[i];
+          else if (get.itemtype(v) == 'player') {
+            next.source = v;
           }
-          else if (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name) {
-            next.card = arguments[i];
+          else if (typeof v == 'object' && v && v.name) {
+            next.card = v;
           }
-          else if (arguments[i] == 'nocard') {
+          else if (v == 'nocard') {
             nocard = true;
           }
-          else if (arguments[i] == 'nosource') {
+          else if (v == 'nosource') {
             nosource = true;
           }
-          else if (arguments[i] == 'notrigger') {
+          else if (v == 'notrigger') {
             next._triggered = null;
             next.notrigger = true;
           }
-          else if (get.itemtype(arguments[i]) == 'nature') {
-            next.nature = arguments[i];
+          else if (v === 'nofatal'){
+            next.nofatal = true
+          }
+          else if (get.itemtype(v) == 'nature') {
+            next.nature = v;
           }
         }
         if (next.card == undefined && !nocard) next.card = Evt.card;
@@ -15951,7 +15956,7 @@
         this.dataset.cardMultitarget = info.multitarget ? '1' : '0';
         this.node.name.dataset.nature = '';
         this.node.info.classList.remove('red');
-        if (!lib.config.hide_card_image && lib.card[bg].fullskin) {
+        if (lib.card[bg].fullskin) {
           this.classList.add('fullskin');
           if (img) {
             if (img.indexOf('ext:') == 0) {

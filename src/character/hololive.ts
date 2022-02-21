@@ -993,38 +993,27 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			gaonengzhanxie: {
 				priority: 15,
-				firstDo: true,
 				mod: {
 					cardUsable(card, player, num) {
 						if (card.name == 'sha') {
 							return num + player.countCards('e');
 						}
-					},
-					cardEnabled(card, player) {
-						if (card.name == 'sha' && (player.getStat().card.sha > player.countCards('e')))
-							return false
 					}
 				},
-				group: ['gaonengzhanxie_draw'],
-				subSkill: {
-					draw: {
-						trigger: {
-							player: 'useCardAfter'
-						},
-						firstDo: true,
-						direct: true,
-						filter(Evt, player) {
-							if (Evt.card.name == 'sha') return true;
-							else return false;
-						},
-						content() {
-							'step 0'
-							player.draw(player.getStat().card.sha);
-							'step 1'
-							if (player.getCardUsable({ name: 'sha' }) !== 0 && lib.filter.cardEnabled({ name: 'sha' }, player)) {
-								player.chooseToDiscard('he', '弃置' + player.getStat().card.sha.toString() + '张牌', player.getStat().card.sha, true)
-							}
-						}
+				trigger: {
+					player: 'useCardAfter'
+				},
+				forced: true,
+				filter(Evt, player) {
+					if (Evt.card.name == 'sha') return true;
+					else return false;
+				},
+				content() {
+					'step 0'
+					player.draw(player.getStat().card.sha);
+					'step 1'
+					if (player.getCardUsable({ name: 'sha' }) !== 0 && lib.filter.cardEnabled({ name: 'sha' }, player)) {
+						player.chooseToDiscard('he', '弃置' + player.getStat().card.sha.toString() + '张牌', player.getStat().card.sha, true)
 					}
 				}
 			},
@@ -1039,7 +1028,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					if (trigger.source) {
 						var list = [
-							'令' + get.translation(player) + '回复' + trigger.num + '点生命',
+							'取消此伤害，令' + get.translation(player) + '回复' + trigger.num + '点生命',
 							'将' + get.translation(trigger.cards) + '交给' + get.translation(player),
 						];
 						if (!trigger.cards || trigger.cards.length == 0) list.pop();
@@ -1213,7 +1202,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards];
+							return [cards.slice(0,player._status.event.puts),cards.slice(player._status.event.puts)];
 						})
 						.set('filterMove', function (from, to, moved) {
 							if (to == 0 && moved[0].length >= _status.event.puts) return false;
@@ -2147,7 +2136,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 			binzhan: {
-				audio: true,
+				audio: 'hongshaoturou',
 				filter(Evt, player) {
 					return player.countCards('h') != player.getHandcardLimit();
 				},
@@ -3299,10 +3288,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			RobokoSan: `萝卜子`,
 			gaonengzhanxie: `高能战械`,
-			gaonengzhanxie_info: `锁定技 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)`,
+			gaonengzhanxie_info: `锁定技 你使用【杀】的次数上限加上你装备区牌数。当你于回合内使用【杀】后，你摸X张牌，若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)`,
 			gaonengzhanxie_append: lib.figurer(`特性：多次出杀`),
 			ranyouxielou: `燃油泄漏`,
-			ranyouxielou_info: `锁定技 你受到属性伤害时，来源选择一项：<br>改为令你回复等量体力；或令你获得来源牌。<br>你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。`,
+			ranyouxielou_info: `锁定技 你受到属性伤害时，令来源选择一项：<br>
+			取消之并你回复等量体力；令你获得伤害来源牌。<br>
+			你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。`,
 			ranyouxielou_append: lib.figurer(`特性：属性伤害减免`),
 
 			ShirakamiFubuki: `白上吹雪`,
@@ -3356,7 +3347,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhonggong: `重工`,
 			zhonggong_info: `准备阶段，若你装备区牌数为全场唯一最少/唯一最多，你令手牌上限永久+1/两名角色横置。`,
 			binzhan: `缤绽`,
-			binzhan_info: `出牌阶段限一次，你可以调整手牌至上限，若你因此弃牌，你可以对攻击范围内的X名角色各造成1点火焰伤害（X为你弃置的牌数）。`,
+			binzhan_info: `出牌阶段限一次，你可以调整手牌至上限，若你因此弃牌，你可以对攻击范围内至多X名角色各造成1点火焰伤害（X为你弃置的牌数）。`,
 
 			NekomataOkayu: `猫又小粥`,
 			fantuan: `安心饭团`,

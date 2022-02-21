@@ -1967,6 +1967,7 @@ module.exports = {
                      _status.maxShuffle--;
                   }
                   game.shuffleNumber++;
+                  if (_status.event.trigger) _status.event.trigger('washCard');
                   var cards = [], i;
                   for (var i = 0; i < lib.onwash.length; i++) {
                      if (lib.onwash[i]() == 'remove') {
@@ -3246,8 +3247,8 @@ module.exports = {
                      td.innerHTML = '-';
                   }
                   else {
-                     var dist1 = get.numStr(Math.max(1, game.me.distanceTo(node)));
-                     var dist2 = get.numStr(Math.max(1, node.distanceTo(game.me)));
+                     let dist1 = get.numStr(Math.max(1, game.me.distanceTo(node)));
+                     let dist2 = get.numStr(Math.max(1, node.distanceTo(game.me)));
                      if (dist1 == dist2) {
                         td.innerHTML = dist1;
                      }
@@ -3257,7 +3258,19 @@ module.exports = {
                   }
                   tr.appendChild(td);
                   td = document.createElement('td');
-                  td.innerHTML = node.countCards('h');
+                  if (node.needsToDiscard()) {
+                     td.classList.add('warnning_flash')
+                  }
+                  {
+                     let card1 = node.countCards('h');
+                     let card2 = node.getHandcardLimit();
+                     if (!card2 || card2 == Infinity) {
+                        td.innerHTML = card1;
+                     }
+                     else {
+                        td.innerHTML = card1 + '/' + card2;
+                     }
+                  }
                   tr.appendChild(td);
                   td = document.createElement('td');
                   td.innerHTML = node.phaseNumber;
@@ -3269,7 +3282,7 @@ module.exports = {
                   } else {
                      (function () {
                         num = 0;
-                        for (var j = 0; j < node.stat.length; j++) {
+                        for (let j = 0; j < node.stat.length; j++) {
                            if (typeof node.stat[j].damage == 'number') num += node.stat[j].damage;
                         }
                         td.innerHTML = num;
@@ -3727,7 +3740,7 @@ module.exports = {
                               uiintro.add('<div class="text center">特殊' + get.translation(lib.card[name].type) + '牌</div>');
                            }
                            else {
-                              if (lib.card[name].type && lib.translate[lib.card[name].type]) uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
+                              if (lib.card[name].type && lib.translate[lib.card[name].type] && lib.translate[lib.card[name].type] != ' ') uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
                            }
                         }
                         if (lib.card[name].unique && lib.card[name].type == 'equip') {
@@ -5082,25 +5095,25 @@ module.exports = {
          attitude2: function (to) {
             return get.attitude(_status.event.player, to);
          },
-         get $t(){
-           return this.translation
+         get $t() {
+            return this.translation
          },
-         get $a(){
-           return this.attitude
+         get $a() {
+            return this.attitude
          },
-         get $a2(){
-           return this.attitude2
+         get $a2() {
+            return this.attitude2
          },
-         get $dis(){
-           return this.distance
+         get $dis() {
+            return this.distance
          },
-         get $pro(){
-           return this.prompt
+         get $pro() {
+            return this.prompt
          },
-         get $pro2(){
-           return this.prompt2
+         get $pro2() {
+            return this.prompt2
          }
       }
-      
+
    }
 }

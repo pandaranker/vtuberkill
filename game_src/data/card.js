@@ -1,6 +1,10 @@
 {
 	/**全局卡牌 */
 	let { game, ui, get, ai, lib, _status } = vkCore
+	let groupCard = {
+		type: 'faction',
+		fullskin: true
+	}
 	lib.card = {
 		list: [],
 		//石头剪刀布
@@ -39,27 +43,28 @@
 		},
 		disable_judge: {},
 		//势力卡牌
-		group_wei: { fullskin: true },
-		group_shu: { fullskin: true },
-		group_wu: { fullskin: true },
-		group_qun: { fullskin: true },
-		group_key: { fullskin: true },
-		group_jin: { fullskin: true },
-		group_holo: { fullskin: true, },
-		group_nijisanji: { fullskin: true, },
-		group_VirtuaReal: { fullskin: true, },
-		group_upd8: { fullskin: true, },
-		group_paryi: { fullskin: true, },
-		group_kagura: { fullskin: true, },
-		group_nanashi: { fullskin: true, },
-		group_psp: { fullskin: true, },
-		group_asoul: { fullskin: true, },
-		group_nori: { fullskin: true, },
-		group_vwp: { fullskin: true, },
-		group_chaos: { fullskin: true, },
-		group_xuyan: { fullskin: true, },
-		group_xuefeng: { fullskin: true, },
-		group_Providence: { fullskin: true, },
-		group_HappyEl: { fullskin: true, },
+		group_wei: { ...groupCard },
+		group_shu: { ...groupCard },
+		group_wu: { ...groupCard },
+		group_qun: { ...groupCard },
+		group_key: { ...groupCard },
+		group_jin: { ...groupCard },
+		group_holo: { ...groupCard, },
+		group_nijisanji: { ...groupCard, },
+		group_VirtuaReal: { ...groupCard, },
+		group_upd8: { ...groupCard, },
+		group_paryi: { ...groupCard, },
+		group_kagura: { ...groupCard, },
+		group_nanashi: { ...groupCard, },
+		group_psp: { ...groupCard, },
+		group_asoul: { ...groupCard, },
+		group_nori: { ...groupCard, },
+		group_vwp: { ...groupCard, },
+		group_chaos: { ...groupCard, },
+		group_xuyan: { ...groupCard, },
+		group_xuefeng: { ...groupCard, },
+		group_Providence: { ...groupCard, },
+		group_HappyEl: { ...groupCard, },
+		group_RedC: { ...groupCard, },
 	}
 }

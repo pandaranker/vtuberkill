@@ -1,60 +1,4 @@
-.menu-container{
-	z-index:8;
-}
-.menu-container div{
-    position: relative;
-}
-.menu-container.hidden{
-    pointer-events: none;
-}
-#menu-button{
-	z-index:6;
-}
-.popup-container{
-	z-index:10;
-}
-.popup-container.filter-character{
-	text-align: center;
-	overflow: scroll;
-	opacity: 0;
-	transition: all 0.3s;
-}
-.popup-container.filter-character.shown{
-	opacity: 1;
-}
-.popup-container.filter-character.removing>div{
-	pointer-events: none;
-}
-.popup-container.filter-character>div{
-	left: 0;
-	top:0;
-	left: 0;
-	width: 100%;
-	height: auto;
-	margin: 0;
-	padding: 0;
-	transition: all 0s;
-	position: relative;
-}
-.popup-container.filter-character>div>div{
-	position: relative;
-	margin: 10px;
-}
-.popup-container.filter-character>div>.capt{
-	width: 80px;
-	height: 80px;
-	padding: 0;
-	font-size: 60px;
-	line-height: 90px;
-}
 
-.menu-container,.popup-container{
-	width:100%;
-	height:100%;
-	left:0;
-	top:0;
-	position: absolute;
-}
 .menu-buttons,.menu-sym{
 	padding-bottom: 5px !important;
 	width: calc(100% - 10px) !important;
@@ -138,9 +82,6 @@
 }
 .menu-buttons .menuplaceholder.slim{
 	height: 5px;
-}
-#window:not(.nopointer) .cardpiledelete{
-	cursor: pointer;
 }
 .menu-help{
 	width: calc(100% - 30px) !important;
@@ -228,11 +169,6 @@
 	pointer-events: none;
 	opacity: 0.6;
 }
-#window:not(.nopointer) .menubg.charactercard .menubutton:not(.ava):not(.intro):not(.unselectable),
-#window:not(.nopointer) .menubg.charactercard>.ava>.avatars>div{
-	cursor: pointer;
-}
-
 .menubg.charactercard .charactercontainer{
 	display: flex;
 	flex-direction: column;
@@ -628,27 +564,6 @@
 	background: rgba(57, 123, 4,1);
     border: 1px solid rgba(39, 79, 7, 1);
 }
-.themebutton>div{
-	width:50px;
-	height:76px;
-	top:7px;
-	right:7px;
-	border-radius:4px;
-}
-.themebutton>div>div{
-	width:calc(100% - 10px);
-	height:12px;
-	display:block;
-	margin-left:5px;
-	margin-top:6px;
-	position:relative;
-	border-radius:2px;
-	box-shadow:rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(0, 0, 0, 0.3) 0 0 5px;
-	transition: all 0s;
-}
-.themebutton>div:first-child{
-	z-index: 2;
-}
 .themebutton.woodden{
 	background:url('../../theme/woodden/grid.png'),linear-gradient(#6c7989, #434b55) fixed;
 }
@@ -701,57 +616,23 @@
 .themebutton.music>div>div.active{
 	background-image: linear-gradient(rgba(47,101,150,1), rgba(43, 90, 132,1));
 }
-.themebutton>div>div:first-child{
-	margin-top:5px;
-}
-.themebutton>.fakeplayer>.avatar{
-	width: calc(100% - 2px);
-	height: calc(100% - 2px);
-	left: 1px;
-	top: 1px;
-	border-radius: 2px;
-	position: absolute;
-	margin: 0 !important;
-	padding: 0;
-	box-shadow: rgba(0,0,0,0.2) 0 0 0 1px inset;
-}
-.themebutton>.fakeplayer.oldlayout>.avatar{
-	width: calc(50% - 2px);
-}
-.themebutton>.fakeplayer.me>.avatar{
-	width: 22px;
-	height: 22px;
-	left: 3px;
-	top: 0;
-	box-shadow: none;
-	border-radius: 0px;
-}
-.themebutton>.fakeplayer.me{
-	clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
-	-webkit-clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
-}
-.themebutton>div>div>div{
-	width: 200%;
-	height: 200%;
-	left: 0;
-	top: 0;
-	transform: scale(0.5);
-	color: white;
-	box-shadow: black 0 0 2px;
-	transform-origin: top left;
-	line-height: 24px;
-	text-align: center;
-	box-shadow: none !important;
-}
 .themebutton.woodden>div>div>div{
 	color: rgba(77, 60, 51, 0.8);
 	text-shadow: none;
 }
-
-
-#window:not(.nopointer) .popup-container>.menu>div{
-	cursor: pointer;
+.themebutton.vk{
+	background:url('../../image/background/simple1_bg.svg');
+	background-size: cover;
 }
+.themebutton.vk>div:not(*:first-child){
+	background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+	box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 0, 0, 0.2) 0 3px 10px;
+}
+.themebutton.vk>div>div{
+	background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+}
+
+
 .popup-container>.menu.visual>div{
 	display: inline-block;
 	margin:5px !important;
@@ -781,10 +662,6 @@
 .popup-container>.menu.visual.withbar>div.showdelete>div:first-child:not(.addbutton){
 	display: none;
 }
-#window:not(.nopointer) .popup-container>.menu.visual.withbar>div:last-child>div{
-	cursor: pointer;
-}
-
 input.fileinput{
 	margin: 0 !important;
 	padding: 0 !important;
@@ -797,9 +674,6 @@ input.fileinput{
 }
 input.fileinput::-webkit-file-upload-button {
     cursor: pointer;
-}
-#window:not(.nopointer) input.fileinput{
-	cursor: pointer;
 }
 .popup-container>.menu.visual>.button.character>.name{
 	top: 10px;
@@ -815,10 +689,6 @@ input.fileinput::-webkit-file-upload-button {
 	height:25px;
 	line-height:25px;
 	position:relative;
-}
-#window:not(.nopointer) .config.switcher>div,
-#window:not(.nopointer) .config.toggle>div{
-	cursor: pointer;
 }
 .config.switcher>div,
 .config.toggle>div{
@@ -1169,9 +1039,6 @@ input.fileinput::-webkit-file-upload-button {
 .videonode.menubutton.extension>div{
 	position: relative;
 	display: block;
-}
-#window:not(.nopointer) .videonode.menubutton.extension>.caption>.menubutton:not(.transparent2):not(.nopointer){
-	cursor: pointer;
 }
 .videonode.menubutton.extension>.caption>.menubutton{
 	position: relative;
@@ -1617,7 +1484,4 @@ input.fileinput::-webkit-file-upload-button {
 	font-size: 24px;
 	padding-top: 2px;
 	padding-bottom: 2px;
-}
-#window:not(.nopointer) .popup-container>.prompt-container>div>div>div>.menubutton{
-	cursor: pointer;
 }

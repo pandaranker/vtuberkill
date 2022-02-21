@@ -182,6 +182,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
+					if(typeof event.baseDamage!='number') event.baseDamage=1;
 					if(target.countCards('h')==0){
 						event.finish();
 						return;
@@ -211,7 +212,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					"step 2"
 					if(result.bool){
 						if(player.hasSkillTag('kuiquan')&&result.cards&&result.cards[0].name=='sha')	player.gain(event.card2,target,'giveAuto');
-						target.damage('fire',event.baseDamage||1);
+						target.damage('fire',event.baseDamage);
 					}
 					else{
 						target.addTempSkill('huogong2');

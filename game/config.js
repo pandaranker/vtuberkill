@@ -15,7 +15,7 @@ window.config={
 		'yindao','richer'],//,'tafang','chess','stone'
 		stockextension:['cardpile','coin','wuxing'],//'boss',
 		layout:['default','newlayout'],
-		theme:['woodden','music','simple'],
+		theme:['vk','woodden','music','simple'],
 		card_font:['LuoLiTi2','xiaozhuan','huangcao','caoshu','xingshu'],
 		double_hp:['hejiansan','pingjun','zuidazhi','zuixiaozhi','zonghe'],
 		image_background_filter:['default','blur','gray','sepia','invert','saturate','contrast','hue','brightness'],
@@ -65,7 +65,7 @@ window.config={
 	alteredSkills:[],
 	brokenFile:[],
 
-	theme:'music',
+	theme:'vk',
 	layout:'mobile',
 	card_style:'default',
 	cardback_style:'vk',
@@ -103,11 +103,10 @@ window.config={
 	handcard_scroll:0,
 	animation:true,
 	skill_animation_type:'default',
-	paused:false,
-	title:false,
-	button_press:true,
+	// paused:false,
+	// button_press:true,
 	damage_shake:true,
-	log_highlight:true,
+	// log_highlight:true,
 	player_border:'normal',
 	radius_size:'default',
 

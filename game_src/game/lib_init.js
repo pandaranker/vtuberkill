@@ -982,6 +982,9 @@ module.exports = function(element,_mode,_message){
         //part: `window.vk_package`，创建于package.js
         var pack = window.vk_package;
         delete window.vk_package;
+        if(lib.init_pack){
+          lib.init_pack(pack)
+        }
         for (let i in pack.character) {
           if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
             lib.config.all.characters.push(i);
@@ -1805,6 +1808,9 @@ module.exports = function(element,_mode,_message){
           localStorage.setItem(lib.configprefix + 'config', JSON.stringify({}));
         }
         proceed(config2);
+      }
+      if(lib.init_extra){
+        lib.init_extra()
       }
     },
     /**
@@ -2978,12 +2984,12 @@ module.exports = function(element,_mode,_message){
           ui.arena.classList.remove('oblongcard');
           ui.window.classList.remove('oblongcard');
         }
-        if (lib.config.textequip == 'text' && (game.layout == 'long' || game.layout == 'mobile')) {
-          ui.arena.classList.add('textequip');
-        }
-        else {
-          ui.arena.classList.remove('textequip');
-        }
+        // if (lib.config.textequip == 'text' && (game.layout == 'long' || game.layout == 'mobile')) {
+        //   ui.arena.classList.add('textequip');
+        // }
+        // else {
+        //   ui.arena.classList.remove('textequip');
+        // }
         if (get.is.phoneLayout()) {
           ui.css.phone.href = lib.assetURL + 'layout/default/phone.css';
           ui.arena.classList.add('phone');

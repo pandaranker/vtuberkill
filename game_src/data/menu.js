@@ -440,7 +440,7 @@
                     unfrequent: true,
                     item: {
                         coding: 'Coding',
-                        github: 'GitHub',
+                        // github: 'GitHub',
                     },
                     onclick: function (item) {
                         game.saveConfig('update_link', item);
@@ -663,7 +663,7 @@
             config: {
                 theme: {
                     name: '主题',
-                    init: 'woodden',
+                    init: 'vk',
                     item: {},
                     visualMenu: function (node, link) {
                         if (!node.menu) {
@@ -712,11 +712,6 @@
                             node.created = true;
                             node.style.overflow = 'hidden';
                             node.firstChild.style.display = 'none';
-                            // node.firstChild.classList.add('shadowed');
-                            // node.firstChild.style.width='16px';
-                            // node.firstChild.style.height='auto';
-                            // node.firstChild.style.padding='2px';
-                            // node.firstChild.style.textAlign='center';
                             var me = ui.create.div(node);
                             me.style.top = 'auto';
                             if (link == 'default' || link == 'newlayout') {
@@ -2456,12 +2451,12 @@
                     init: true,
                     unfrequent: true,
                 },
-                button_press: {
-                    name: '按钮效果',
-                    intro: '选项条被按下时将有按下效果',
-                    init: true,
-                    unfrequent: true,
-                },
+                // button_press: {
+                //     name: '按钮效果',
+                //     intro: '选项条被按下时将有按下效果',
+                //     init: true,
+                //     unfrequent: true,
+                // },
                 jiu_effect: {
                     name: '喝酒效果',
                     init: true,
@@ -2630,24 +2625,24 @@
                         }
                     }
                 },
-                textequip: {
-                    name: '装备显示',
-                    init: 'image',
-                    unfrequent: true,
-                    item: {
-                        image: '图片',
-                        text: '文字',
-                    },
-                    onclick: function (item) {
-                        game.saveConfig('textequip', item);
-                        if (item == 'text' && (game.layout == 'long' || game.layout == 'mobile')) {
-                            ui.arena.classList.add('textequip');
-                        }
-                        else {
-                            ui.arena.classList.remove('textequip');
-                        }
-                    }
-                },
+                // textequip: {
+                //     name: '装备显示',
+                //     init: 'image',
+                //     unfrequent: true,
+                //     item: {
+                //         image: '图片',
+                //         text: '文字',
+                //     },
+                //     onclick: function (item) {
+                //         game.saveConfig('textequip', item);
+                //         if (item == 'text' && (game.layout == 'long' || game.layout == 'mobile')) {
+                //             ui.arena.classList.add('textequip');
+                //         }
+                //         else {
+                //             ui.arena.classList.remove('textequip');
+                //         }
+                //     }
+                // },
                 buttoncharacter_style: {
                     name: '选将样式',
                     init: 'default',
@@ -2657,25 +2652,6 @@
                         old: '旧版'
                     },
                     unfrequent: true,
-                },
-                cursor_style: {
-                    name: '鼠标指针',
-                    init: 'auto',
-                    intro: '设置为固定后鼠标指针将不随移动到的区域而变化',
-                    unfrequent: true,
-                    item: {
-                        auto: '自动',
-                        pointer: '固定'
-                    },
-                    onclick: function (item) {
-                        game.saveConfig('cursor_style', item);
-                        if (item == 'pointer') {
-                            ui.window.classList.add('nopointer');
-                        }
-                        else {
-                            ui.window.classList.remove('nopointer');
-                        }
-                    }
                 },
                 name_font: {
                     name: '人名字体',
@@ -2784,12 +2760,12 @@
                         // }
                     }
                     if (lib.config.layout == 'long' || lib.config.layout == 'mobile') {
-                        map.textequip.show();
+                        // map.textequip.show();
                         map.cardshape.show();
                         map.phonelayout.show();
                     }
                     else {
-                        map.textequip.hide();
+                        // map.textequip.hide();
                         if (lib.config.layout == 'long2' || lib.config.layout == 'nova') {
                             map.phonelayout.show();
                             map.cardshape.show();
@@ -2817,12 +2793,6 @@
                     }
                     else {
                         map.player_height_nova.hide();
-                    }
-                    if (lib.config.touchscreen) {
-                        map.cursor_style.hide();
-                    }
-                    else {
-                        map.cursor_style.show();
                     }
                     if (lib.config.border_style == 'auto') {
                         map.autoborder_count.show();
@@ -2924,12 +2894,12 @@
                         map.show_time.show();
                         map.watchface.hide();
                     }
-                    if (lib.config.show_extensionmaker) {
-                        map.show_extensionshare.show();
-                    }
-                    else {
-                        map.show_extensionshare.hide();
-                    }
+                    // if (lib.config.show_extensionmaker) {
+                    //     map.show_extensionshare.show();
+                    // }
+                    // else {
+                    //     map.show_extensionshare.hide();
+                    // }
                 },
                 show_history: {
                     name: '出牌记录栏',
@@ -2993,12 +2963,12 @@
                     unfrequent: true,
                     intro: '开启后将定时清除历史记录栏的条目（而不是等记录栏满后再清除）'
                 },
-                log_highlight: {
-                    name: '历史记录高亮',
-                    init: true,
-                    unfrequent: true,
-                    intro: '开启后历史记录不同类别的信息将以不同颜色显示',
-                },
+                // log_highlight: {
+                //     name: '历史记录高亮',
+                //     init: true,
+                //     unfrequent: true,
+                //     intro: '开启后历史记录不同类别的信息将以不同颜色显示',
+                // },
                 show_time: {
                     name: '显示时间',
                     intro: '在屏幕顶部显示当前时间',
@@ -3214,8 +3184,8 @@
                     }
                 },
                 show_rarity: {
-                    name: '显示武将稀有度',
-                    init: false,
+                    name: '显示武将星级',
+                    init: true,
                     intro: '仅供娱乐，重启后生效',
                     unfrequent: true,
                     onclick: function (bool) {
@@ -3318,13 +3288,13 @@
                         }
                     },
                 },
-                hide_card_image: {
-                    name: '隐藏卡牌背景',
-                    intro: '所有卡牌将使用文字作为背景',
-                    init: false,
-                    unfrequent: true,
-                    restart: true,
-                },
+                // hide_card_image: {
+                //     name: '隐藏卡牌背景',
+                //     intro: '所有卡牌将使用文字作为背景',
+                //     init: false,
+                //     unfrequent: true,
+                //     restart: true,
+                // },
                 show_name: {
                     name: '显示角色名称',
                     init: false,
@@ -3491,16 +3461,6 @@
                     name: '暂停时显示弃牌堆',
                     init: false,
                     unfrequent: true,
-                },
-                show_extensionmaker: {
-                    name: '显示制作扩展',
-                    init: true,
-                    unfrequent: true,
-                },
-                show_extensionshare: {
-                    name: '显示分享扩展',
-                    init: true,
-                    unfrequent: true,
                 }
             }
         },
@@ -3555,10 +3515,10 @@
                     name: '人物配音',
                     init: true,
                 },
-                equip_audio: {
-                    name: '装备配音',
-                    init: false,
-                },
+                // equip_audio: {
+                //     name: '装备配音',
+                //     init: false,
+                // },
                 repeat_audio: {
                     name: '播放重复语音',
                     init: false,

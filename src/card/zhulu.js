@@ -860,7 +860,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 			yajiaoqiang_skill:'涯角枪',
 			yajiaoqiang:'涯角枪',
 			yajiaoqiang_info:'当你于一名其他角色的回合内第一次使用的黑色牌结算完成后，你可以获得此牌对应的所有实体牌。',
-			numa:'驽马',
+			numa:'轮椅',
 			numa_info:'此牌的使用目标为其他角色。锁定技，当此牌进入你的装备区时，你弃置装备区内的所有其他牌。',
 			caochuan:'草船借箭',
 			caochuan_info:'当带有「伤害」标签的基本牌或普通锦囊牌对你生效前，对此牌使用。抵消此牌对你产生的效果。当此牌结算完成后，你获得此牌对应的所有实体牌。',

@@ -1610,7 +1610,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						return name;
 					}
 					else {
-						var arr = ['shen_caocao', 'shen_simayi', 'shen_guanyu', 'shen_zhugeliang', 'shen_zhaoyun', 'shen_zhouyu', 'shen_lvmeng', 'shen_lvbu', 'shen_liubei', 'shen_luxun', 'shen_ganning', 'ol_zhangliao', 'shen_zhenji', 'shen_caopi', 'key_kagari', 'key_shiki', 'key_hina'];
+						var arr = ['sp_KaguraMea', 'sp_MinatoAqua', 'sp_MononobeAlice', 'sp_Ava', 'sp_Diana', 'sp_HisekiErio', 'sp_GawrGura'];
 						arr.removeArray(list);
 						return arr.randomGet();
 					}

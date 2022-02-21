@@ -17,6 +17,7 @@
     pointer-events: none;
     background: rgba(255, 150, 0, 0.45);
 }
+
 .player_nerf {
     animation: game_start 0.2s;
     -webkit-animation: game_start 0.2s;
@@ -34,24 +35,29 @@
     0% {
         box-shadow: 0 0 8px 6px #fff;
     }
+
     50% {
         box-shadow: 0 0 8px 6px #faf607;
     }
+
     100% {
         box-shadow: 0 0 8px 6px #fff;
     }
 }
-.player.fullskin.glow_phase{
-    &::before{
+
+
+
+.player.fullskin.glow_phase {
+    &::before {
         position: absolute;
         pointer-events: none;
         z-index: 3;
         width: 100%;
         height: 100%;
         background: linear-gradient(#1a98ca, #1a98ca),
-          linear-gradient(90deg, #ffffff33 1px, transparent 0, transparent 19px),
-          linear-gradient(#ffffff33 1px, transparent 0, transparent 19px),
-          linear-gradient(transparent, #1a98ca);
+            linear-gradient(90deg, #ffffff33 1px, transparent 0, transparent 19px),
+            linear-gradient(#ffffff33 1px, transparent 0, transparent 19px),
+            linear-gradient(transparent, #1a98ca);
         background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;
         background-repeat: no-repeat, repeat, repeat, no-repeat;
         background-position: 0% 0%, 0 0, 0 0, 0 0;
@@ -61,20 +67,49 @@
         animation: move-wrapper 3s infinite linear;
     }
 }
+
 @keyframes move-wrapper {
     from {
-      opacity:0.2;
+        opacity: 0.2;
     }
+
     85% {
-      opacity:0.9;
-      background-position: 0 100%, 0 0, 0 0, 0 0;
-      /* 终止位置 */
-      clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);
+        opacity: 0.9;
+        background-position: 0 100%, 0 0, 0 0, 0 0;
+        /* 终止位置 */
+        clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);
     }
+
     to {
-      opacity:0.1;
-      background-position: 0 100%, 0 0, 0 0, 0 0;
-      /* 终止位置 */
-      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        opacity: 0.1;
+        background-position: 0 100%, 0 0, 0 0, 0 0;
+        /* 终止位置 */
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
     }
-  }
+}
+
+
+
+td.warnning_flash {
+    text-shadow: 0 0 2px #F00,0px 0px 4px rgb(165, 77, 42);
+    animation: nofade_flash 2s infinite;
+}
+
+.slow_flash {
+    animation: nofade_flash 5s infinite;
+    -webkit-animation: nofade_flash 5s infinite;
+}
+
+@keyframes nofade_flash {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

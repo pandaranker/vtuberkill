@@ -5,6 +5,8 @@ module.exports = {
 	 * @type {!Object}
 	 */
 	translate: {
+		faction: ' ',
+		
 		sc: '打钱',
 		ship: '上舰',
 		flower: '鲜花',
@@ -282,22 +284,23 @@ module.exports = {
 		group_jin: "晋势力",
 		group_qun: "群势力",
 		group_key: "键势力",
-		group_holo: "杏势力",
-		group_nijisanji: "虹势力",
+		group_holo: "木口势力",
+		group_nijisanji: "彩虹势力",
 		group_VirtuaReal: "维阿势力",
 		group_upd8: "U势力",
-		group_paryi: "帕势力",
+		group_paryi: "帕里势力",
 		group_kagura: "神楽势力",
-		group_nanashi: "7势力",
-		group_psp: "P势力",
-		group_asoul: "魂势力",
+		group_nanashi: "774",
+		group_psp: "PSP",
+		group_asoul: "一个魂",
 		group_nori: "苔势力",
 		group_vwp: "神椿势力",
-		group_chaos: "混沌势力",
+		group_chaos: "混沌社",
 		group_xuyan: "虚研社",
 		group_xuefeng: "雪风军团",
 		group_Providence: "普罗维登",
 		group_HappyEl: "乐元素",
+		group_RedC: "红圈",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
@@ -320,5 +323,6 @@ module.exports = {
 		group_xuefeng_bg: "雪",
 		group_Providence_bg: "罗",
 		group_HappyEl_bg: "乐",
+		group_RedC_bg: "红",
 	}
 }

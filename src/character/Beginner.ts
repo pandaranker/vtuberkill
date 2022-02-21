@@ -2319,7 +2319,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards];
+							return [cards.slice(0,2),cards.slice(2)];
 						})
 						.set('filterMove', function (from, to, moved) {
 							if (to == 0 && moved[0].length >= 2) return false;

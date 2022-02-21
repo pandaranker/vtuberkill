@@ -8,3 +8,5 @@ import {} from './longlaoguan'
 import {} from './single'
 import {} from './versus'
 import {} from './yindao'
+
+import {} from './strategy'

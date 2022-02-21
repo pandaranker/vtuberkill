@@ -59,9 +59,9 @@ body[data-background_color_music='blue'] #arena.mobile:not(.chess) .player[data-
 	background: none !important;
 }
 
-.player,#mebg{
-	/*background:url('wood.png') left repeat-y,url('wood.png') right repeat-y,linear-gradient(#4b4b4b, #464646);*/
-}
+/* .player,#mebg{
+	background:url('wood.png') left repeat-y,url('wood.png') right repeat-y,linear-gradient(#4b4b4b, #464646);
+} */
 .card{
 	color:white;
 }

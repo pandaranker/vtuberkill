@@ -33,8 +33,8 @@ module.exports = {
               game.saveConfig('connect_avatar', item);
               game.saveConfig('connect_avatar', item, 'connect');
             },
-						visualMenu:function(node,link,name,config){
-							node.className='button character themebutton';
+            visualMenu: function (node, link, name, config) {
+              node.className = 'button character themebutton';
               if (!node.chara) {
                 node.chara = true
                 node.setBackground(link, 'character')
@@ -276,16 +276,6 @@ module.exports = {
             frequent: true,
             intro: '开启后游戏中将增加军师、大将、贼首三个身份'
           },
-          // connect_ban_weak:{
-          //     name:'屏蔽弱将',
-          //     init:true,
-          //     restart:true,
-          // },
-          // connect_ban_strong:{
-          //     name:'屏蔽强将',
-          //     init:false,
-          //     restart:true,
-          // },
           connect_enhance_zhu: {
             name: '加强主公',
             init: false,
@@ -862,16 +852,6 @@ module.exports = {
             restart: true,
             intro: '将军争和基础包的装备牌回调至《三国杀》原版'
           }
-          // connect_ban_weak:{
-          //     name:'屏蔽弱将',
-          //     init:false,
-          //     restart:true,
-          // },
-          // connect_ban_strong:{
-          //     name:'屏蔽强将',
-          //     init:false,
-          //     restart:true,
-          // },
         },
         config: {
           update: function (config, map) {
@@ -1205,16 +1185,6 @@ module.exports = {
               '5': '5人',
             }
           },
-          // connect_ban_weak:{
-          //     name:'屏蔽弱将',
-          //     init:true,
-          //     restart:true,
-          // },
-          // connect_ban_strong:{
-          //     name:'屏蔽强将',
-          //     init:false,
-          //     restart:true,
-          // },
         },
         config: {
           update: function (config, map) {
@@ -1976,33 +1946,19 @@ module.exports = {
           },
         }
       },
-      single: {
-        name: '单挑',
+      strategy: {
+        name: '战略',
         connect: {
           connect_single_mode: {
             name: '游戏模式',
-            init: 'dianjiang',
+            init: 'normal',
             item: {
-              dianjiang: '点将单挑',
-              // normal:'新1v1',
-              // changban:'血战长坂坡',
+              normal: '通常',
             },
             restart: true,
             frequent: true,
           },
-          connect_enable_jin: {
-            name: '启用晋势力武将',
-            init: false,
-            restart: true,
-            frequent: true,
-          },
           update: function (config, map) {
-            if (config.connect_single_mode != 'normal') {
-              map.connect_enable_jin.hide();
-            }
-            else {
-              map.connect_enable_jin.show();
-            }
           },
         },
         config: {
@@ -2101,6 +2057,63 @@ module.exports = {
             init: true,
             frequent: true
           }
+        }
+      },
+      single: {
+        name: '单挑',
+        connect: {
+          connect_single_mode: {
+            name: '游戏模式',
+            init: 'dianjiang',
+            item: {
+              dianjiang: '点将单挑',
+              // normal:'新1v1',
+              // changban:'血战长坂坡',
+            },
+            restart: true,
+            frequent: true,
+          },
+          connect_enable_jin: {
+            name: '启用晋势力武将',
+            init: false,
+            restart: true,
+            frequent: true,
+          },
+          update: function (config, map) {
+            if (config.connect_single_mode != 'normal') {
+              map.connect_enable_jin.hide();
+            }
+            else {
+              map.connect_enable_jin.show();
+            }
+          },
+        },
+        config: {
+          single_mode: {
+            name: '游戏模式',
+            init: 'dianjiang',
+            item: {
+              dianjiang: '点将单挑',
+              // normal:'新1v1',
+              // changban:'血战长坂坡',
+            },
+            restart: true,
+            frequent: true,
+          },
+          enable_jin: {
+            name: '启用晋势力武将',
+            init: false,
+            restart: true,
+            frequent: true,
+          },
+          update: function (config, map) {
+            if (config.single_mode != 'normal') {
+              map.enable_jin.hide();
+            }
+            else {
+              map.enable_jin.show();
+            }
+          },
         }
       },
     };
@@ -5190,7 +5203,11 @@ module.exports = {
               return;
             }
             Evt.acted.push(player);
-            var str = get.translation(trigger.player) + '濒死，是否帮助？';
+            var str = `${get.translation(trigger.player)}濒死，是否帮助？`;
+            {
+              let evt = Evt.getParent('dying')
+              if (evt.reason && evt.reason.nofatal) str += `<br>（本次伤害不致命）`
+            }
             var str2 = '当前体力：' + trigger.player.hp;
             if (lib.config.tao_enemy && Evt.dying.side != player.side && lib.config.mode != 'identity' && lib.config.mode != 'guozhan' && !Evt.dying.hasSkillTag('revertsave')) {
               Evt._result = { bool: false }
@@ -5354,10 +5371,10 @@ module.exports = {
           logv: false,
           forceDie: true,
           //priority:-5,
-          content: [function () {
+          content: [() => {
             Evt.logvid = trigger.getLogv();
           },
-          function () {
+          () => {
             Evt.targets = game.filterPlayer(function (current) {
               return current != Evt.player && current.isLinked();
             });
@@ -5365,13 +5382,18 @@ module.exports = {
             Evt.targets.sort(lib.sort.seat);
             delete lib.tempSortSeat;
             Evt._args = [trigger.num, trigger.nature, trigger.cards, trigger.card];
-            if (trigger.source) Evt._args.push(trigger.source);
-            else Evt._args.push("nosource");
+            if (trigger.source)
+              Evt._args.push(trigger.source);
+            else
+              Evt._args.push("nosource");
+            if (trigger.nofatal)
+              Evt.args.push('nofatal')
           },
-          function () {
+          () => {
             if (Evt.targets.length) {
               var target = Evt.targets.shift();
-              if (target.isLinked()) target.damage.apply(target, Evt._args.slice(0));
+              if (target.isLinked())
+                target.damage.apply(target, Evt._args.slice(0));
               Evt.redo();
             }
           }],

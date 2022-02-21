@@ -27,7 +27,7 @@ window.vk_package={
 		// zhenfa:'阵法',
 		yunchou:'运筹帷幄',
 		// longlaoguan:'龙牢关',
-		remark:'回调牌堆',
+		// remark:'回调牌堆',
 	},
 	play:{
 		boss:'诸神降临',
@@ -44,8 +44,8 @@ window.vk_package={
 		guozhan:'国战', 
 		boss:'挑战',
 		longlaoguan:'龙牢关',
-		single:'单挑',
 		brawl:'乱斗',
+		single:'单挑',
 		yindao:'引导',
 	},
 	submode:{
@@ -133,6 +133,7 @@ window.vk_package={
 		shousha:'手杀',
 	},
 	theme:{
+		vk:'VK',
 		woodden:'木纹',
 		music:'音乐',
 		simple:'简约'

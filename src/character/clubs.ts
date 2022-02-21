@@ -49,7 +49,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Umy: ['female', 'qun', 4, ['naisi', 'tuzai', 'wuneng'], ['guoV']],
 
 			/**进击的冰糖 */
-			bingtang: ['female', 'xuyan', 4, ['xiou'], ['guoV']],
+			bingtang: ['female', 'xuyan', 4, ['xiou'], ['guoV', 'doublegroup:xuyan:qun']],
 			/**张京华 */
 			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
 			/**NoiR */

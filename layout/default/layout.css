@@ -1128,9 +1128,6 @@ div:not(.handcards)>.card>.info>span,
 #control>* {
 	pointer-events: auto;
 }
-#window:not(.nopointer) #control{
-	cursor: pointer;
-}
 #control.nozoom>div {
 	transition-property: opacity;
 }
@@ -2344,10 +2341,6 @@ div:not(.handcards)>.card>.info>span,
 	animation: flash 1s;
 	-webkit-animation: flash 1s;
 }
-.slow_flash {
-	animation: slow_flash 5s infinite;
-	-webkit-animation: slow_flash 5s infinite;
-}
 .flip {
 	animation: flip 1s;
 	-webkit-animation: flip 1s;
@@ -2382,37 +2375,6 @@ div:not(.handcards)>.card>.info>span,
 	opacity: 0.6;
 }
 
-#window:not(.nopointer) .player .judges>.card,
-#window:not(.nopointer) .player .marks>.card{
-	cursor: context-menu;
-}
-#window:not(.nopointer) .player .identity.guessing{
-	cursor: help;
-}
-
-#window:not(.nopointer) #system>div>div:not(.hidden),
-#window:not(.nopointer) .choosedouble.character,
-#window:not(.nopointer) .config.more,
-#window:not(.nopointer) .dashboard,
-#window:not(.nopointer) .textlink,
-#window:not(.nopointer) .hrefnode,
-#window:not(.nopointer) #historybar>div>div,
-#window:not(.nopointer) .closenode,
-#window:not(.nopointer) .pointerdiv,
-#window:not(.nopointer) .pointernode div,
-#window:not(.nopointer) .pointerspan span,
-#window:not(.nopointer) .pointertable td>span,
-#window:not(.nopointer) .config>.toggle.onoff,
-#window:not(.nopointer) .pointerdialog .button:not(.unselectable),
-#window:not(.nopointer) .dialog.fullheight .buttons .button:not(.selectedx):not(.glow):not(.glows):not(.forbidden),
-#window:not(.nopointer) #arena.selecting:not(.video) .player .equips>.card.selectable,
-#window:not(.nopointer) #arena.selecting #me .card.selectable,
-#window:not(.nopointer) #arena.selecting .button.selectable,
-#window:not(.nopointer) #arena.selecting .player.selectable,
-#window:not(.nopointer) .menubutton.round,
-*[data-cursor_style="pointer"]{
-	cursor: pointer;
-}
 *[data-cursor_style="forbidden"]{
 	cursor: not-allowed;
 }
@@ -2655,9 +2617,6 @@ div:hover>.intro {
 }
 #window>.choosedouble.character.moved {
 	z-index: 1;
-}
-#window:not(.nopointer)>.choosedouble.character.moved:not(.selecting){
-	cursor: default;
 }
 #window>.choosedouble.character>.name {
 	left: 6%;
@@ -4295,32 +4254,6 @@ div[data-decoration="bronze"]::after{
 
 	50% {
 		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-@keyframes slow_flash {
-	0% {
-		opacity: 1;
-	}
-
-	50% {
-		opacity: 0.4;
-	}
-
-	100% {
-		opacity: 1;
-	}
-}
-@-webkit-keyframes slow_flash {
-	0% {
-		opacity: 1;
-	}
-
-	50% {
-		opacity: 0.4;
 	}
 
 	100% {

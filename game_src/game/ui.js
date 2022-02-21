@@ -933,7 +933,10 @@ module.exports = {
                            infoconfig.connect_chooseCharacter_timeout = {
                               name: '五倍选将时间',
                               init: true,
-                              connect: true
+                              connect: true,
+                              intro: function () {
+                                  return '将选将阶段（包括选择是否使用手气牌）的时间翻五倍';
+                              },
                            };
                            infoconfig.connect_observe = {
                               name: '允许旁观',
@@ -948,12 +951,18 @@ module.exports = {
                            infoconfig.connect_protect_beginner = {
                               name: '保护新手模式',
                               init: true,
-                              connect: true
+                              connect: true,
+                              intro: function () {
+                                  return '开启保护新手模式时，化鲸包、测试包、特殊包和一些上手难度较高的角色不会出现在选将框中，卡包限制在标准与军争之内，不能进行升阶';
+                              },
                            };
                            infoconfig.connect_observe_race = {
                               name: '比赛模式',
                               init: false,
-                              connect: true
+                              connect: true,
+                              intro: function () {
+                                  return '开启比赛模式后，游戏内的座次始终等于玩家进入房间的顺序';
+                              },
                            };
                         }
                         for (var j in infoconfig) {
@@ -5045,7 +5054,7 @@ module.exports = {
                      packlist.push(lib.config.all.characters[i]);
                   }
                   for (var i in lib.characterPack) {
-                     if (!lib.config.all.characters.contains(i)) {
+                     if (!lib.config.all.characters.contains(i) && lib.translate[`${i}_character_config`] !== undefined) {
                         packlist.push(i);
                      }
                   }
@@ -5398,7 +5407,7 @@ module.exports = {
 
                control.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.control2);
 
-               if (lib.config.button_press) {
+               if (true || '按钮效果') {
                   control.addEventListener(lib.config.touchscreen ? 'touchstart' : 'mousedown', function () {
                      if (this.classList.contains('disabled')) return;
                      this.classList.add('controlpressdown');
@@ -5643,9 +5652,9 @@ module.exports = {
                   ui.window.classList.add('compatiblemode');
                }
                ui.window.dataset.radius_size = lib.config.radius_size || 'default';
-               if (game.layout == 'long' || game.layout == 'mobile') {
-                  if (lib.config.textequip == 'text') ui.arena.classList.add('textequip');
-               }
+               // if (game.layout == 'long' || game.layout == 'mobile') {
+               //    if (lib.config.textequip == 'text') ui.arena.classList.add('textequip');
+               // }
                if (game.layout == 'long' || game.layout == 'long2' || game.layout == 'mobile' || game.layout == 'nova') {
                   if (lib.config.cardshape == 'oblong') {
                      ui.window.classList.add('oblongcard');
@@ -5677,7 +5686,6 @@ module.exports = {
                      }, false);
                   }
                }
-               lib.init.js(lib.assetURL + 'game', 'keyWords', function () { });
 
                lib.updateURL = lib.updateURLS[lib.config.update_link] || lib.updateURLS.coding;
 
@@ -5693,9 +5701,6 @@ module.exports = {
                ui.backgroundMusic.autoplay = true;
                ui.backgroundMusic.addEventListener('ended', game.playBackgroundMusic);
                ui.window.appendChild(ui.backgroundMusic);
-               if (lib.config.cursor_style == 'pointer') {
-                  ui.window.classList.add('nopointer');
-               }
                if (lib.config.turned_style == false) {
                   ui.arena.classList.add('hide_turned');
                }
@@ -6217,7 +6222,7 @@ module.exports = {
                if (func) {
                   node.listen(func);
                }
-               if (lib.config.button_press) {
+               if (true || '按钮效果') {
                   node.addEventListener(lib.config.touchscreen ? 'touchstart' : 'mousedown', function (e) {
                      if (!node.classList.contains('hidden')) node.classList.add('pressdown');
                   });

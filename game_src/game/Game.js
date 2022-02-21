@@ -76,7 +76,31 @@ export default {
         cursor: url('./layout/cursor/aero_arrow_glow.cur'),auto;
       }`)
     }
-
+    lib.init_pack = (pack) => {
+      if (game.getFileList instanceof Function) {
+        pack.play['特效测试'] = '特效测试'
+      }
+    }
+    lib.init_extra = () => {
+      if (game.getFileList instanceof Function) {
+        lib.extensionMenu['extension_特效测试'] = {
+          enable: {
+            name: '开启',
+            init: false,
+            restart: true,
+            onclick: function (bool) {
+              if (bool) {
+                lib.config.plays.add('特效测试');
+              }
+              else {
+                lib.config.plays.remove('特效测试');
+              }
+              game.saveConfig('plays', lib.config.plays);
+            }
+          },
+        }
+      }
+    }
     game.putBuff = (player, skill, buff) => {
       game.broadcastAll(function (player, skill, buff) {
         if (!player.node[skill + '_buff']) {

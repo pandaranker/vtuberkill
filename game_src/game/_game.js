@@ -742,7 +742,7 @@ module.exports = {
                 for (var i in obj.help) {
                     lib.help[i] = obj.help[i];
                 }
-                if (obj.editable !== false && lib.config.show_extensionmaker) {
+                if (obj.editable !== false) {
                     lib.extensionMenu['extension_' + obj.name].edit = {
                         name: '编辑此扩展',
                         clear: true,
@@ -6649,11 +6649,9 @@ module.exports = {
                     var itemtype = get.itemtype(arguments[i]);
                     if (itemtype == 'player' || itemtype == 'players') {
                         str += '<span class="bluetext">' + get.translation(arguments[i]) + '</span>';
-                        str2 += get.translation(arguments[i]);
                     }
                     else if (itemtype == 'cards' || itemtype == 'card' || (typeof arguments[i] == 'object' && arguments[i] && arguments[i].name)) {
                         str += '<span class="yellowtext">' + get.translation(arguments[i]) + '</span>';
-                        str2 += get.translation(arguments[i]);
                     }
                     else if (typeof arguments[i] == 'object') {
                         if (arguments[i]) {
@@ -6662,14 +6660,12 @@ module.exports = {
                             }
                             else {
                                 str += get.translation(arguments[i]);
-                                str2 += get.translation(arguments[i]);
                             }
                         }
                     }
                     else if (typeof arguments[i] == 'string') {
                         if (arguments[i][0] == '【' && arguments[i][arguments[i].length - 1] == '】') {
                             str += '<span class="greentext">' + get.translation(arguments[i]) + '</span>';
-                            str2 += get.translation(arguments[i]);
                         }
                         else if (arguments[i][0] == '#') {
                             var color = '';
@@ -6682,35 +6678,31 @@ module.exports = {
                                 case 'i': color = 'ice'; break;
                             }
                             str += '<span class="' + color + 'text">' + get.translation(arguments[i].slice(2)) + '</span>';
-                            str2 += get.translation(arguments[i].slice(2));
                         }
                         else {
                             str += get.translation(arguments[i]);
-                            str2 += get.translation(arguments[i]);
                         }
                     }
                     else {
                         str += arguments[i];
-                        str2 += arguments[i];
                     }
 
                 }
                 var node = ui.create.div();
-                node.innerHTML = lib.config.log_highlight ? str : str2;
+                node.innerHTML = str;
                 ui.sidebar.insertBefore(node, ui.sidebar.firstChild);
-                game.addVideo('log', null, lib.config.log_highlight ? str : str2);
+                game.addVideo('log', null, str);
                 game.broadcast(function (str, str2) {
-                    game.log(lib.config.log_highlight ? str : str2);
+                    game.log(str);
                 }, str, str2);
                 if (!_status.video && !game.online) {
                     if (!logvid) {
                         logvid = _status.event.getLogv();
                     }
                     if (logvid) {
-                        game.logv(logvid, '<div class="text center">' + lib.config.log_highlight ? str : str2 + '</div>');
+                        game.logv(logvid, '<div class="text center">' + str + '</div>');
                     }
                 }
-                // if(lib.config.title) document.title=lib.config.log_highlight?str:str2;
                 if (lib.config.show_log != 'off' && !game.chess) {
                     var nodeentry = node.cloneNode(true);
                     ui.arenalog.insertBefore(nodeentry, ui.arenalog.firstChild);

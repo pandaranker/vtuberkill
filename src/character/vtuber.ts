@@ -1145,15 +1145,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},() => {
 					for (let v of _status.discarded) {
 						if(['basic','trick'].includes(get.type(v))){
-							if (Evt.loop) {
-								if (Evt.player1.hasUseTarget(v)) {
-									Evt.cards.add(v);
-								}
-							}
-							else {
-								if (Evt.player2.hasUseTarget(v)) {
-									Evt.cards.add(v);
-								}
+							if ((Evt.loop ? Evt.player1 : Evt.player2).hasUseTarget(v)) {
+								Evt.cards.add(v);
 							}
 						}
 					}
@@ -1174,30 +1167,17 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.dialog = dialog;
 					}
 				},() => {
-					if (Evt.loop) {
-						game.log(Evt.player1, '观看了', '#y弃牌堆的牌');
-						Evt.player1.chooseButton('是否视为使用其中一张牌？')
-							.set('dialog', Evt.dialog.videoId)
-							.set('ai', (button) => _status.event.player.getUseValue(button.link))
-					}
-					else {
-						game.log(Evt.player2, '观看了', '#y弃牌堆的牌');
-						Evt.player2.chooseButton('是否视为使用其中一张牌？')
-							.set('dialog', Evt.dialog.videoId)
-							.set('ai', (button) => _status.event.player.getUseValue(button.link))
-					}
+					let cur = Evt.loop ? Evt.player1 : Evt.player2
+					game.log(cur, '观看了', '#y弃牌堆的牌');
+					cur.chooseButton('是否视为使用其中一张牌？')
+						.set('dialog', Evt.dialog.videoId)
+						.set('ai', (button) => _status.event.player.getUseValue(button.link))
 				},() => {
 					if (result.bool && result.links) {
+						let cur = Evt.loop ? Evt.player1 : Evt.player2
 						Evt.cardUse = result.links[0];
-						if (Evt.loop) {
-							if (Evt.player1.hasUseTarget(Evt.cardUse)) {
-								Evt.player1.chooseUseTarget(Evt.cardUse, true, false);
-							}
-						}
-						else {
-							if (Evt.player2.hasUseTarget(Evt.cardUse)) {
-								Evt.player2.chooseUseTarget(Evt.cardUse, true, false);
-							}
+						if (cur.hasUseTarget(Evt.cardUse)) {
+							cur.chooseUseTarget(Evt.cardUse, true, false);
 						}
 					}
 					else {

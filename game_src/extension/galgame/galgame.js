@@ -247,16 +247,16 @@ module.exports = function () {
                     if (i <= link.length) {
                         window.addEventListener('keydown', skipfun0);
                         window.addEventListener('keyup', skipfun1);
+                        let dis = (link.length - i)
                         if (window.status == 'skip') {
-                            let dis = (link.length - i)
-                            let t = setTimeout(show, (dis > 5 ? 20 + (80 / (dis-2)) : 100));
+                            let t = setTimeout(show, (dis > 5 ? 20 + (80 / (dis-3)) : 100));
                             drive.onclick = function () {
                                 clearTimeout(t);
                                 show();
                             }
                         }
                         else {
-                            let t = setTimeout(show, 600);
+                            let t = setTimeout(show, (dis > 5 ? 200 + (300 / (dis-4)) : 500));
                             drive.onclick = function () {
                                 clearTimeout(t);
                                 show();
