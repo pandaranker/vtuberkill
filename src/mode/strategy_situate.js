@@ -1,12 +1,23 @@
 
 class City {
-    static cityId = 0;
+    // static cityId = 0;
     constructor(name, pos, config = {}) {
         this.id = ("000" + ++City.cityId).slice(-3);
         this.name = name;
         this.pos = pos;
         this.level = config.level || 0;
         this.region = config.region;
+        this.shape = config.shape;
+        this.color = config.color;
+    }
+}
+City.cityId = 0
+class Mount {
+    constructor(name, pos, config = {}) {
+        this.id = ("000" + ++City.cityId).slice(-3);
+        this.name = name;
+        this.pos = pos;
+        this.level = config.level || 0;
         this.shape = config.shape;
         this.color = config.color;
     }
@@ -69,19 +80,19 @@ module.exports = {
         new City("jiangling", [14, 22], { level: 3 }),
 
         new City("changsha", [16, 24], {
-            level: 3, color: '#99cc44', shape: [
-                [[1, 4], -2], [[-4, 3], -1], [[-5, 4], 0], [[-5, 3], 1], [[-3, 3], 2], [[1, 2], 3]
+            level: 3, color: '#448800', shape: [
+                -2, [1, 3], [-1, 3], [-3, 4], [-4, 3], [-4, 3], [1, 2]
             ]
         }),
         new City("wuling", [12, 23], { level: 2 }),
         new City("lingling", [13, 26], {
-            color: '#119944', shape: [
-                [[-3, 4], -2], [[-5, 3], -1], [[-5, 2], 0], [[-6, 2], 1], [[-7, 0], 2], [[-3, -1], 3]
+            color: '#008844', shape: [
+                -3,1, [[-3, 2]], [[-5, 2]], [[-5, 1]], [[-6, 2]], [[-7, 0]]
             ]
         }),
         new City("guiyang", [15, 26], {
             level: 1, color: '#008877', shape: [
-                [[2, 4], -1], [[-1, 6], 0], [[-1, 5], 1], [[-3, -1], 2], [[4, 5], 2]
+                -1, [[0, 4]], [[-1, 6]], [[-1, 5]], [[-3, -1], [4, 5]]
             ]
         }),
 
@@ -89,16 +100,20 @@ module.exports = {
         new City("wu", [25, 20], { level: 6 }),
         new City("kuaiji", [25, 23], { level: 3 }),
         new City("jianan", [22, 25], { level: 3 }),
-        new City("luling", [20, 25], { level: 2 }),
+        new City("luling", [20, 25], {
+            level: 2, color: '#aa6622', shape: [
+                -1, [[0, 1]], [[-1, 1]], [[-2, 1]], [[-4, 0]], [[-5, -1]]
+            ]
+        }),
 
         new City("nanhai", [17, 28], {
             level: 8, color: '#3311dd', shape: [
-                [[-2, 1], -2], [[4, 9], -2], [[-6, 7], -1], [[-8, 4], 0], [[-8, -4], 1]
+                -2, [[-1, 1], [4, 9]], [[-6, 7]], [[-8, 4]], [[-8, -4]]
             ]
         }),
         new City("jiaozhi", [11, 29], {
             level: 3, color: '#8800aa', shape: [
-                [[1, 3], -3], [[-2, 4], -2], [[-3, 4], -1], [[-5, 1], 0], [[-4, -1], 1], [-4, 2]
+                -3, [[1, 3]], [[-2, 4]], [[-3, 4]], [[-5, 1]], [[-4, -1]], -4
             ]
         }),
         new City("jiuzhen", [9, 32], {

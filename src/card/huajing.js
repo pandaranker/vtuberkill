@@ -505,7 +505,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					return 1;
 				},
 				effect: function () {
-					if (result.bool == true) {
+					if (result.judge === 3) {
 						player.draw(2);
 					} else {
 						player.$.haidi = 2;
@@ -959,6 +959,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				intro: {
 					content: '手牌上限+#',
 				},
+				onremove:true,
 				mod: {
 					maxHandcard: function (player, num) {
 						return num + player.$.haidi;

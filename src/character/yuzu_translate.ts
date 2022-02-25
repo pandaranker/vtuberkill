@@ -1,5 +1,5 @@
 let { lib } = window.vkCore
-module.exports = {
+export default {
     duoduopoi: '多多poi',
     duoduopoi_ab: '多多',
     ShigureUi: '时雨羽衣',

@@ -935,7 +935,7 @@ module.exports = {
                               init: true,
                               connect: true,
                               intro: function () {
-                                  return '将选将阶段（包括选择是否使用手气牌）的时间翻五倍';
+                                 return '将选将阶段（包括选择是否使用手气牌）的时间翻五倍';
                               },
                            };
                            infoconfig.connect_observe = {
@@ -953,7 +953,7 @@ module.exports = {
                               init: true,
                               connect: true,
                               intro: function () {
-                                  return '开启保护新手模式时，化鲸包、测试包、特殊包和一些上手难度较高的角色不会出现在选将框中，卡包限制在标准与军争之内，不能进行升阶';
+                                 return '开启保护新手模式时，化鲸包、测试包、特殊包和一些上手难度较高的角色不会出现在选将框中，卡包限制在标准与军争之内，不能进行升阶';
                               },
                            };
                            infoconfig.connect_observe_race = {
@@ -961,7 +961,7 @@ module.exports = {
                               init: false,
                               connect: true,
                               intro: function () {
-                                  return '开启比赛模式后，游戏内的座次始终等于玩家进入房间的顺序';
+                                 return '开启比赛模式后，游戏内的座次始终等于玩家进入房间的顺序';
                               },
                            };
                         }
@@ -5567,7 +5567,7 @@ module.exports = {
                return ui.skills3;
             },
             arena: function () {
-               game.clickCanvas.changeCanvas({ size: [4, 10], particles: 10 })
+               if (!lib.config.low_performance) game.clickCanvas.changeCanvas({ size: [4, 10], particles: 10 })
                ui.window = ui.create.div('#window.hidden', document.body);
                ui.create.div('#statusbg', document.body);
                ui.refresh(ui.window);
@@ -6601,9 +6601,9 @@ module.exports = {
                 * @property {HTMLDivElement} action action
                 * @property {HTMLDivElement} link 铁索(横置)
                 */
+               let displayer = ui.create.div('.displayer', node)
                node.node = {
-                  avatar: ui.create.div('.avatar', node, ui.click.avatar).hide(),
-                  avatar2: ui.create.div('.avatar2', node, ui.click.avatar2).hide(),
+                  displayer,
                   turnedover: ui.create.div('.turned', '<div>翻<br>面<div>', node),
                   framebg: ui.create.div('.framebg', node),
                   intro: ui.create.div('.intro', node),
@@ -6620,6 +6620,14 @@ module.exports = {
                   handcards1: ui.create.div('.handcards'),
                   handcards2: ui.create.div('.handcards'),
                };
+               let avatar = ui.create.div('.avatar', displayer, ui.click.avatar).hide()
+               let avatar2 = ui.create.div('.avatar2', displayer, ui.click.avatar2).hide()
+               avatar2.playerEle = avatar.playerEle = node
+               node.node = {
+                  ...node.node,
+                  avatar,
+                  avatar2,
+               }
                var chainlength = game.layout == 'default' ? 64 : 40;
                for (var i = 0; i < chainlength; i++) {
                   ui.create.div(node.node.chain.firstChild, '.cardbg').style.transform = 'translateX(' + (i * 5 - 5) + 'px)';
@@ -9498,11 +9506,11 @@ module.exports = {
             },
             avatar: function () {
                if (!lib.config.doubleclick_intro) return;
-               if (this.parentNode.isUnseen(0)) return;
-               if (!lib.character[this.parentNode.name]) return;
+               if (this.playerEle.isUnseen(0)) return;
+               if (!lib.character[this.playerEle.name]) return;
                if (!ui.menuContainer) return;
                var avatar = this;
-               var player = this.parentNode;
+               var player = this.playerEle;
                if (!game.players.contains(player) && !game.dead.contains(player)) return;
                if (!this._doubleClicking) {
                   this._doubleClicking = true;
@@ -9517,11 +9525,11 @@ module.exports = {
             },
             avatar2: function () {
                if (!lib.config.doubleclick_intro) return;
-               if (this.parentNode.classList.contains('unseen2')) return;
-               if (!lib.character[this.parentNode.name2]) return;
+               if (this.playerEle.classList.contains('unseen2')) return;
+               if (!lib.character[this.playerEle.name2]) return;
                if (!ui.menuContainer) return;
                var avatar = this;
-               var player = this.parentNode;
+               var player = this.playerEle;
                if (!game.players.contains(player) && !game.dead.contains(player)) return;
                if (!this._doubleClicking) {
                   this._doubleClicking = true;

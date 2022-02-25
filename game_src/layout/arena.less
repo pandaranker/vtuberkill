@@ -1,27 +1,3 @@
-#arena.playerhidden>.player,
-#arena.playerhidden>#mebg,
-#arena.markhidden>.player>.marks {
-  visibility: hidden;
-  opacity: 0;
-}
-
-#arena.chess>#arenalog {
-  display: none !important;
-}
-
-#arena.observe .handcards>.card>div {
-  opacity: 0 !important;
-}
-
-#arena.hide_name {
-
-  .player>.name:not(.name_seat),
-  .player>.name2,
-  >.dialog .button.character>.name {
-    display: none !important;
-  }
-}
-
 #arenalog {
   width: calc(50% - 210px);
   height: calc(100% - 370px);
@@ -68,18 +44,6 @@
   }
 }
 
-/*#arena[data-font_size='14']{
-	font-size:14px;
-}
-#arena[data-font_size='16']{
-	font-size:16px;
-}
-#arena[data-font_size='18']{
-	font-size:18px;
-}
-#arena[data-font_size='20']{
-	font-size:20px;
-}*/
 #arena {
   width: 94%;
   height: 90%;
@@ -97,33 +61,77 @@
     position: absolute;
     left: 8px;
   }
-}
 
-#arena.right {
-  &:not(.noleft) {
-    left: 240px;
-    opacity: 0.6;
+  &.playerhidden>.player,
+  &.playerhidden>#mebg,
+  &.markhidden>.player>.marks {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  &.hide_name {
+
+    .player>.name:not(.name_seat),
+    .player>.name2,
+    >.dialog .button.character>.name {
+      display: none !important;
+    }
+  }
+
+  &.chess>#arenalog {
+    display: none !important;
+  }
+
+  &.observe .handcards>.card>div {
+    opacity: 0 !important;
+  }
+
+
+  &.right {
+    &:not(.noleft) {
+      left: 240px;
+      opacity: 0.6;
+    }
+  }
+
+  &.left {
+    &:not(.noleft) {
+      left: calc(10% - 240px);
+      opacity: 0.6;
+    }
+  }
+
+  &.top {
+    top: -100%;
+  }
+
+  &.paused2 {
+    opacity: 0.1 !important;
+  }
+
+  &.only_dialog>div:not(.dialog):not(#control) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  &.playerfocus {
+
+    >div:not(#timer):not(.playerfocus):not(#chess-container):not(.removing):not(#autonode),
+    #chess>div:not(.playerfocus):not(.removing) {
+      opacity: 0.3 !important;
+    }
   }
 }
 
-#arena.left {
-  &:not(.noleft) {
-    left: calc(10% - 240px);
-    opacity: 0.6;
+#window {
+  &.leftbar #arena:not(.chess) {
+    left: calc(3% + 50px);
+    width: calc(94% - 50px);
   }
-}
 
-#window.leftbar #arena:not(.chess) {
-  left: calc(3% + 50px);
-  width: calc(94% - 50px);
-}
-
-#window.rightbar #arena:not(.chess) {
-  width: calc(94% - 50px);
-}
-
-#arena.top {
-  top: -100%;
+  &.rightbar #arena:not(.chess) {
+    width: calc(94% - 50px);
+  }
 }
 
 #arena.paused,
@@ -132,9 +140,6 @@
   opacity: 0.3 !important;
 }
 
-#arena.paused2 {
-  opacity: 0.1 !important;
-}
 
 #arena>.poplayer,
 #window>.poplayer {
@@ -144,19 +149,4 @@
   left: 0;
   top: 0;
   z-index: 20
-}
-
-#arena.only_dialog>div:not(.dialog):not(#control) {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-#arena.playerfocus {
-  >div:not(#timer):not(.playerfocus):not(#chess-container):not(.removing):not(#autonode) {
-    opacity: 0.3 !important;
-  }
-
-  #arena.playerfocus #chess>div:not(.playerfocus):not(.removing) {
-    opacity: 0.3 !important;
-  }
 }

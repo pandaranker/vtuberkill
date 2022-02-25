@@ -13,10 +13,7 @@ window.noname_source_list=[
 	'image/character/dusongziGin.jpg',
 	'image/card/sha.png',
 	'image/card/shan.png',
-	'image/card/guohe.png',
-	'image/card/wuzhong.png',
 	'font/LuoLiTi2.ttf',
-	'extension/yindao/path2.png',
 
 	'game/asset.js',
 	'game/config.js',
@@ -27,6 +24,7 @@ window.noname_source_list=[
 	'game/server.js',
 	'game/source.js',
 	'game/update.js',
+	'font/Tiejili.ttf',
 	
 	'layout/cursor/aero_arrow_glow.cur',
 	'layout/default/layout.css',
@@ -34,17 +32,14 @@ window.noname_source_list=[
 	'layout/default/phone.css',
 	'layout/long/layout.css',
 	'layout/long2/layout.css',
-	'layout/mobile/equip.css',
 	'layout/mobile/layout.css',
+	'layout/newlayout/layout.css',
+	'layout/nova/layout.css',
+	
 	'layout/mode/boss.css',
 	'layout/mode/chess.css',
 	'layout/mode/stone.css',
 	'layout/mode/tafang.css',
-	'layout/newlayout/equip.css',
-	'layout/newlayout/global.css',
-	'layout/newlayout/layout.css',
-	'layout/nova/layout.css',
-	
 	
 	'extension/cardpile/extension.js',
 	'extension/coin/extension.js',

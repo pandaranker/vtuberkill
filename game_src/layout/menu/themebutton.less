@@ -41,33 +41,37 @@
         }
     }
 
-    >.fakeplayer>.avatar {
-        width: calc(100% - 2px);
-        height: calc(100% - 2px);
-        left: 1px;
-        top: 1px;
-        border-radius: 2px;
-        position: absolute;
-        margin: 0 !important;
-        padding: 0;
-        box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px inset;
-    }
+    >.fakeplayer {
+        &>.avatar {
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+            left: 1px;
+            top: 1px;
+            border-radius: 2px;
+            position: absolute;
+            margin: 0 !important;
+            padding: 0;
+            box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px inset;
+        }
 
-    >.fakeplayer.oldlayout>.avatar {
-        width: calc(50% - 2px);
-    }
+        &.me {
+            clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
+            -webkit-clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
 
-    >.fakeplayer.me {
-        clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
-        -webkit-clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);
+            >.avatar {
+                width: 22px;
+                height: 22px;
+                left: 3px;
+                top: 0;
+                box-shadow: none;
+                border-radius: 0px;
+            }
+        }
 
-        >.avatar {
-            width: 22px;
-            height: 22px;
-            left: 3px;
-            top: 0;
-            box-shadow: none;
-            border-radius: 0px;
+        &.oldlayout>.avatar {
+            width: calc(50% - 2px);
         }
     }
+
+
 }

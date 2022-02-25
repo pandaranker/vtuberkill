@@ -1,4 +1,4 @@
-module.exports = function(element,_mode,_message){
+module.exports = function (element, _mode, _message) {
   /**
    * 基础属性
    * @namespace
@@ -8,7 +8,7 @@ module.exports = function(element,_mode,_message){
    * dist 路径
    */
   const dist = () => lib.assetURL + 'dist'
-  
+
   let init = {
     /**
      * 初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
@@ -320,7 +320,7 @@ module.exports = function(element,_mode,_message){
           else {
             src = 'image/' + name + ext;
           }
-          this.setBackgroundImage(src,type === 'character'?'true':null);
+          this.setBackgroundImage(src, type === 'character' ? 'true' : null);
           this.style.backgroundSize = "cover";
           return this;
         };
@@ -342,8 +342,8 @@ module.exports = function(element,_mode,_message){
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
          * @param {boolean} loading - 是否显示加载中图片
          */
-        HTMLDivElement.prototype.setBackgroundImage = function (img,loading) {
-          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading?`,url("${lib.assetURL}image/loading.gif")`:``}`;
+        HTMLDivElement.prototype.setBackgroundImage = function (img, loading) {
+          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading ? `,url("${lib.assetURL}image/loading.gif")` : ``}`;
         },
           /**
            * {@link HTMLDivElement#listen|listen}（click）的回调函数
@@ -982,7 +982,7 @@ module.exports = function(element,_mode,_message){
         //part: `window.vk_package`，创建于package.js
         var pack = window.vk_package;
         delete window.vk_package;
-        if(lib.init_pack){
+        if (lib.init_pack) {
           lib.init_pack(pack)
         }
         for (let i in pack.character) {
@@ -1075,7 +1075,7 @@ module.exports = function(element,_mode,_message){
               lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
               lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
               lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
-              ui.css.fontsheet.sheet.insertRule("@font-face {font-family: '" + i + "';src: url('" + lib.assetURL + "font/" + i + ".ttf');}", 0);
+              ui.css.fontsheet.sheet.insertRule(`@font-face {font-family: '${i}';src: url('${lib.assetURL}font/${i}.ttf');}`, 0);
             }
             lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
             lib.configMenu.appearence.config.global_font.item.default = '默认';
@@ -1809,7 +1809,7 @@ module.exports = function(element,_mode,_message){
         }
         proceed(config2);
       }
-      if(lib.init_extra){
+      if (lib.init_extra) {
         lib.init_extra()
       }
     },
@@ -1893,7 +1893,7 @@ module.exports = function(element,_mode,_message){
         ui.updatez();
       }
       {
-        game.clickCanvas.init()
+        if (!lib.config.low_performance) game.clickCanvas.init()
         ui.background = ui.create.div('.background');
         ui.background.style.backgroundSize = "cover";
         ui.background.style.backgroundPosition = '50% 50%';
@@ -1906,7 +1906,7 @@ module.exports = function(element,_mode,_message){
 
             ui.backgroundFlash = ui.create.div('.background', ui.background);
             ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
-            ui.backgroundFlash.style.mixBlendMode= 'overlay';
+            ui.backgroundFlash.style.mixBlendMode = 'overlay';
             ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
             ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
           }
@@ -2630,7 +2630,7 @@ module.exports = function(element,_mode,_message){
           node.dataset.cursor_style = "pointer";
           ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
           if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`,true);
+            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, true);
           }
           else {
             var avatarnode = ui.create.div(node, '.avatar');
@@ -2928,7 +2928,7 @@ module.exports = function(element,_mode,_message){
       ui.css.styles.sheet.insertRule('#arena .player .identity>div {font-family: ' + (lib.config.identity_font || 'huangcao') + ',xinwei}', 0);
       ui.css.styles.sheet.insertRule('.button.character.newstyle>.identity {font-family: ' + (lib.config.identity_font || 'huangcao') + ',xinwei}', 0);
       if (lib.config.cardtext_font && lib.config.cardtext_font != 'default') {
-        ui.css.styles.sheet.insertRule('.card div:not(.info):not(.background) {font-family: ' + lib.config.cardtext_font + ';}', 0);
+        ui.css.styles.sheet.insertRule(`.card div:not(.info):not(.background) {font-family: ${lib.config.cardtext_font};Tiejili}`, 0);
       }
       if (lib.config.global_font && lib.config.global_font != 'default') {
         ui.css.styles.sheet.insertRule('#window {font-family: ' + lib.config.global_font + ',xinwei}', 0);

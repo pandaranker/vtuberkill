@@ -12287,7 +12287,6 @@
               str = get.translation(name)[0];
             }
             ui.create.div('.background.skillmark', node).innerHTML = str;
-            // node.style.fontFamily=lib.config.card_font;
           }
           node.name = name;
           node.skill = skill || name;
@@ -16081,7 +16080,6 @@
         }
         else {
           this.node.background.innerHTML = lib.translate[bg + '_cbg'] || lib.translate[bg + '_bg'] || get.translation(bg)[0];
-          // this.node.background.style.fontFamily=lib.config.card_font;
           if (this.node.background.innerHTML.length > 1) this.node.background.classList.add('tight');
           else this.node.background.classList.remove('tight');
         }

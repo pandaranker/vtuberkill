@@ -1,4 +1,3 @@
-
 /*--------角色--------*/
 
 .player:not(.treasure).playerfocus {
@@ -29,6 +28,11 @@
 }
 
 .player {
+
+    z-index: 2;
+    width: 240px;
+    height: 120px;
+
     .playerjiu {
         animation: game_start 0.5s;
         -webkit-animation: game_start 0.5s;
@@ -42,38 +46,45 @@
         background: rgba(255, 0, 0, 0.3);
     }
 
-    >.avatar>.action {
-        margin: 5px;
-        font-family: 'xinwei';
-        font-size: 20px;
-        letter-spacing: -2px;
-        right: 5px;
-        text-align: right;
+    >.displayer {
+        >.avatar {
+            >.action {
+                margin: 5px;
+                font-family: 'xinwei';
+                font-size: 20px;
+                letter-spacing: -2px;
+                right: 5px;
+                text-align: right;
 
-        &:not(.freecolor) {
-            text-shadow: black 0 0 1px, rgba(10, 155, 67, 1) 0 0 5px, rgba(10, 155, 67, 1) 0 0 10px;
+                &:not(.freecolor) {
+                    text-shadow: black 0 0 1px, rgba(10, 155, 67, 1) 0 0 5px, rgba(10, 155, 67, 1) 0 0 10px;
+                }
+            }
+            &.hidden{
+                pointer-events: none !important;
+            }
+            &.disabled{
+                filter: grayscale(1);
+                -webkit-filter: grayscale(1);
+                opacity: 0.8;
+            }
         }
-    }
 
-    >.avatar.hidden,
-    >.avatar2.hidden {
-        pointer-events: none !important;
-    }
-
-    >.avatar.disabled,
-    >.avatar2.disabled {
-        filter: grayscale(1);
-        -webkit-filter: grayscale(1);
-        opacity: 0.8;
+        >.avatar2{
+            &.hidden {
+                pointer-events: none !important;
+            }
+            &.disabled {
+                filter: grayscale(1);
+                -webkit-filter: grayscale(1);
+                opacity: 0.8;
+            }
+        }
     }
 
     &:not(.current_action) .avatar>.action {
         opacity: 0
     }
-
-    z-index: 2;
-    width: 240px;
-    height: 120px;
 
     >div {
         z-index: 2;
@@ -98,10 +109,10 @@
         top: 24px;
         font-size: 20px;
         font-family: 'xinwei';
-    }
-
-    >.name.name2 {
-        left: 81px
+        &.name2 {
+            left: 81px
+        }
+    
     }
 
     >.intro {
@@ -154,19 +165,22 @@
             top: 0;
             margin: 0;
             padding: 0;
-            >div{
+
+            >div {
                 position: absolute;
                 margin: 0;
                 padding: 0;
                 left: 0;
-                box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px,rgba(0, 0, 0, 0.4) 0 0 2px;
-                &:nth-child(odd){
+                box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 0, 0, 0.4) 0 0 2px;
+
+                &:nth-child(odd) {
                     height: 8px;
                     width: 10px;
                     border-radius: 2px;
                     top: 6px;
                 }
-                &:nth-child(even){
+
+                &:nth-child(even) {
                     width: 10px;
                     height: 2px;
                     top: 9px;
@@ -175,46 +189,45 @@
                 }
             }
         }
-        
+
     }
 
     &:not(.linked2)>.chain>div {
         opacity: 0;
         transform: translateX(-40px);
     }
-}
 
-.player.playerbright {
-    filter: brightness(1.2);
-    -webkit-filter: brightness(1.2);
-}
+    &.playerbright {
+        filter: brightness(1.2);
+        -webkit-filter: brightness(1.2);
+    }
 
-.player.playerflip {
-    animation: playerflip 0.3s ease-out;
-    -webkit-animation: playerflip 0.3s ease-out;
+    &.playerflip {
+        animation: playerflip 0.3s ease-out;
+        -webkit-animation: playerflip 0.3s ease-out;
+    }
+    &.controlfakeme {
+        width: 100px;
+        height: 120px;
+        top: calc(100% - 140px);
+    
+        .avatar {
+            width: 100%;
+            height: 100%;
+            box-shadow: none;
+            left: 0;
+            top: 0
+        }
+    }
+    &.minskin {
+        width: 120px;
+    }
 }
 
 #arena.chess:not(.selecting) .player.current_action .avatar>.action {
     opacity: 0
 }
 
-.player.controlfakeme {
-    width: 100px;
-    height: 120px;
-    top: calc(100% - 140px);
-
-    >.avatar {
-        width: 100%;
-        height: 100%;
-        box-shadow: none;
-        left: 0;
-        top: 0
-    }
-}
-
-.player.minskin {
-    width: 120px;
-}
 
 .player.replaceme {
     animation: replaceme 0.5s;
@@ -245,29 +258,26 @@
         >.name {
             left: 13px;
             top: 21px;
+            &.name2{
+                left: 78px
+            }
+        }
+        &.minskin {
+            >.name {
+                font-size: 18px;
+                line-height: 120%;
+                top: 15px;
+                &.long {
+                    transform: scale(0.9);
+                    transform-origin: top left;
+                    top: 13px;
+                }
+            }
+            &.linked>.name {
+                transform: rotate(90deg) translate(81px, -66px);
+            }
         }
 
-        >.name.name2 {
-            left: 78px
-        }
-    }
-
-    .player.minskin {
-        >.name {
-            font-size: 18px;
-            line-height: 120%;
-            top: 15px;
-        }
-
-        >.name.long {
-            transform: scale(0.9);
-            transform-origin: top left;
-            top: 13px;
-        }
-    }
-
-    .player.linked.minskin>.name {
-        transform: rotate(90deg) translate(81px, -66px);
     }
 }
 
@@ -289,9 +299,9 @@
     .player.linked.minskin>.name {
         transform: rotate(90deg) translate(81px, -66px);
     }
-    
-    &:not(.hide_turned):not(.oldlayout){
-        .player.turnedover>.turned{
+
+    &:not(.hide_turned):not(.oldlayout) {
+        .player.turnedover>.turned {
             opacity: 0.2;
         }
     }
@@ -302,3 +312,6 @@
         display: none;
     }
 }
+
+@import url('./player/unseen.less');
+@import url('./player/linked.less');

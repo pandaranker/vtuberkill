@@ -819,7 +819,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 		},
 		drama: {
 			testDrama: {
-				size: [[5, 5], [20, 20]],
+				size: [[8, 12], [28, 30]],
 				situation: {
 					show: () => {
 						if (ui.STG_start) {
@@ -843,26 +843,35 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 						ui.arena.classList.add('chess');
 						/**绘制固定坐标的六边形路径，返回六边形实际（左上角）坐标 */
-						function hexagonal(ctx, begin, zoom) {
+						function hexagonal(ctx, begin, zoom, angle = [0, 7]) {
 							begin = [(begin[0] + 1) * 560 * zoom, (begin[1] + 1) * 485 * zoom]
-							let line = [[0, 160], [0, 485], [280, 645], [560, 485], [560, 160]]
-							ctx.moveTo(begin[0] + 280 * zoom, begin[1] + 0 * zoom);
-							for (let v of line) {
-								ctx.lineTo(begin[0] + v[0] * zoom, begin[1] + v[1] * zoom);
+							let line = [[280, 0], [0, 160], [0, 485], [280, 645], [560, 485], [560, 160], [280, 0], [0, 160], [0, 485]]
+							line = line.slice(...angle)
+							ctx.moveTo(begin[0] + line[0][0] * zoom, begin[1] + line[0][1] * zoom);
+							let end = begin.slice(0)
+							for (let v of line.slice(1)) {
+								end = [begin[0] + v[0] * zoom, begin[1] + v[1] * zoom]
+								ctx.lineTo(...end);
 							}
-							ctx.closePath();
-							return begin
+							return { begin, end }
+						}
+						function hexLine(ctx, begin, zoom, angle) {
+							let dist = 325 * zoom
+							let dig = Math.PI / 3;
+							let x = dist * Math.sin(angle * dig);
+							let y = dist * -Math.cos(angle * dig);
+							ctx.lineTo(begin[0] + x, begin[1] + y);
+							return [begin[0] + x, begin[1] + y]
 						}
 						function hexToRgba(hex, opacity, deviate) {
 							let r = parseInt('0x' + hex.slice(1, 3)), g = parseInt('0x' + hex.slice(3, 5)), b = parseInt('0x' + hex.slice(5, 7))
-							console.log(r, g, b)
 							if (deviate) {
 								let d = deviate
-								let p = n => Math.max(0,n)
+								let p = n => Math.max(0, n)
 								r += d[0]
 								g += d[1]
 								b += d[2]
-								r=p(r);g=p(g);b=p(b)
+								r = p(r); g = p(g); b = p(b)
 								console.log(r, g, b)
 							}
 							return `rgba(${r},${g},${b},${opacity})`;
@@ -879,37 +888,33 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							ctx.shadowOffsetX = 0;
 							ctx.shadowOffsetY = 0;
 							let zoom = 0.07
-							let xy = [0, 0]
+							let xy = size[0].slice(0)
 							let cs = []
-							for (; xy[0] + size[0][0] < size[1][0]; xy[0]++) {
-								xy[1] = 0
-								for (; xy[1] + size[0][1] < size[1][1]; xy[1]++) {
-									let coord = []
-									for (let c of citys) {
-										let pos = c.pos.slice(0)
-										if (xy[0] + size[0][0] === pos[0] && xy[1] + size[1][0] === pos[1]) {
-											cs.push(c)
-											coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[1][0]] * 2]
-											let coord2 = hexagonal(ctx, coord, zoom)
-											ctx.fillStyle = c.color ? hexToRgba(c.color, 0.9) : "rgba(150, 50, 255, 0.9)";
-											ctx.fillText(lib.situate.translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
-											ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-											ctx.shadowBlur = 10;
-											ctx.shadowColor = ctx.fillStyle;
-											ctx.strokeText(lib.situate.translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
-											ctx.shadowBlur = 0;
-											hexagonal(ctx, [coord[0] - 0.5, coord[1] - 1], zoom)
-											hexagonal(ctx, [coord[0] + 0.5, coord[1] - 1], zoom)
-											ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
-											ctx.stroke();
-											ctx.fillStyle = c.color ? hexToRgba(c.color, 0.5) : "rgba(200, 10, 200, 0.5)";
-											ctx.fill()
-											ctx.beginPath()
-											c.coord = coord2
-											console.log(c, coord2)
-											break;
-										}
-									}
+							for (let c of citys) {
+								let pos = c.pos.slice(0)
+								if (xy[0] < pos[0]
+									&& pos[0] < size[1][0]
+									&& xy[1] < pos[1]
+									&& pos[1] < size[1][1]) {
+									cs.push(c)
+									let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
+									let coord2 = hexagonal(ctx, coord, zoom).begin
+									ctx.fillStyle = c.color ? hexToRgba(c.color, 0.9) : "rgba(150, 50, 255, 0.9)";
+									ctx.fillText(lib.situate.translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
+									ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+									ctx.shadowBlur = 10;
+									ctx.shadowColor = ctx.fillStyle;
+									ctx.strokeText(lib.situate.translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
+									ctx.shadowBlur = 0;
+									hexagonal(ctx, [coord[0] - 0.5, coord[1] - 1], zoom)
+									hexagonal(ctx, [coord[0] + 0.5, coord[1] - 1], zoom)
+									ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
+									ctx.stroke();
+									ctx.fillStyle = c.color ? hexToRgba(c.color, 0.5) : "rgba(200, 10, 200, 0.5)";
+									ctx.fill()
+									ctx.beginPath()
+									c.coord = coord2
+									console.log(c, coord2)
 								}
 							}
 							ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
@@ -917,29 +922,171 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 								if (c.shape) {
 									let shape = c.shape.slice(0)
 									let pos = c.pos.slice(0)
-									let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[1][0]] * 2]
+									let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
+
+									let yx = [99, -99]
+									function getCoo(x, y) {
+										return [coord[0] + x * 1 + y * 0.5, coord[1] + y * 1]
+									}
 									function draw(x, y) {
 										if (x === 0 && y === 0 || x === 0 && y === -1 || x === 1 && y === -1) return;
-										if ((x / 2) + size[0][0] < size[1][0] && (y / 2) + size[0][1] < size[1][1]) {
-											hexagonal(ctx, [coord[0] + x * 1 + y * 0.5, coord[1] + y * 1], zoom)
+										if ((x / 2) + pos[0] > size[0][0]
+											&& (x / 2) + pos[0] < size[1][0]
+											&& (x / 2) + pos[1] > size[0][1]
+											&& (y / 2) + pos[1] < size[1][1]) {
+											hexagonal(ctx, getCoo(x, y), zoom)
 										}
 									}
-									for (let s of shape) {
-										if (s[0] instanceof Array) {
-											for (let x = s[0][0]; x <= s[0][1]; x++) {
-												draw(x, s[1])
+									function draws(xs, y) {
+										if (xs instanceof Array) {
+											for (let x = xs[0]; x <= xs[1]; x++) {
+												draw(x, y)
 											}
 										} else {
-											draw(s[0], s[1])
+											draw(xs, y)
+										}
+									}
+									if (typeof shape[0] === 'number') {
+										for (let i = 1; i < shape.length; i++) {
+											let sy = i - 1 + shape[0]
+											let sx = shape[i]
+											if (sx instanceof Array) {
+												if (sx[0] instanceof Array) {
+													for (let s of sx) {
+														draws(s, sy)
+													}
+												} else {
+													draws(sx, sy)
+												}
+											} else {
+												draw(sx, i - 1 + sy)
+											}
+										}
+									}
+									else {
+										for (let s of shape) {
+											yx[0] = Math.min(yx[0], s[1])
+											yx[1] = Math.max(yx[1], s[1])
+											draws(s[0], s[1])
 										}
 									}
 									ctx.stroke();
-									// ctx.shadowBlur = 10;
-									// ctx.shadowColor = c.color ? hexToRgba(c.color, 1, [11, 5, 11]) : "red";
 									ctx.fillStyle = c.color ? hexToRgba(c.color, 0.3) : "rgba(200, 10, 200, 0.3)";
 									ctx.fill()
 									ctx.beginPath()
-									// ctx.shadowBlur = 0;
+
+									if (typeof shape[0] === 'number') {
+										let loop, getX = sx => {
+											if (sx instanceof Array) {
+												if (sx[0] instanceof Array) {
+													return sx.vkflat()
+												} else {
+													return [...sx]
+												}
+											} else {
+												return [sx]
+											}
+										}
+										//逆时针半周（从左上到右下）
+										for (let i = 1; i < shape.length; i++) {
+											let sy = i - 1 + shape[0]
+											let x = getX(shape[i])[0]
+											let anchor = [(i === 1) ? 0 : 1, (i === shape.length - 1) ? 4 : 3]
+											let path = hexagonal(ctx, getCoo(x, sy), zoom, anchor).end
+											if (i < shape.length - 1) {
+												let nextX = getX(shape[i + 1])[0], dx = nextX - x;
+												let direction = (dx < 0) ? -1 : 1
+												path = hexLine(ctx, path, zoom, direction*2)
+												for (let j = (dx < 0) ? 1 : 0; j < Math.abs(dx); j++) {
+													path = hexLine(ctx, path, zoom, direction)
+													path = hexLine(ctx, path, zoom, direction*2)
+												}
+											}
+											else {
+												let afterX = getX(shape[i])[1], dx = afterX - x
+												for (let j = 0; j < dx; j++) {
+													path = hexLine(ctx, path, zoom, 1)
+													path = hexLine(ctx, path, zoom, 2)
+												}
+												loop = i
+												if (getX(shape[i]).length > 2) {
+													for (let j = 2; j < getX(shape[i]).length; j += 2) {
+														path = hexagonal(ctx, getCoo(getX(shape[i])[j - 1], sy), zoom, [3, 6]).end
+														let curX = getX(shape[i])[j]
+														let dx = curX - getX(shape[i])[j - 1]
+														for (let k = 1; k < dx; k++) {
+															path = hexLine(ctx, path, zoom, 1)
+															path = hexLine(ctx, path, zoom, 2)
+														}
+														path = hexagonal(ctx, getCoo(curX, sy), zoom, [1, 4]).end
+														dx = getX(shape[i])[j + 1] - curX
+														for (let k = 0; k < dx; k++) {
+															path = hexLine(ctx, path, zoom, 1)
+															path = hexLine(ctx, path, zoom, 2)
+														}
+													}
+												}
+											}
+										}
+										//逆时针半周（从右下到左上）
+										for (let i = loop; i > 0; i--) {
+											let sy = i - 1 + shape[0], xs = getX(shape[i]), x = xs.pop()
+											let anchor = [(i === loop) ? 3 : 4, (i === 1) ? 7 : 6]
+											let path = hexagonal(ctx, getCoo(x, sy), zoom, anchor).end
+											if (i > 1) {
+												console.log(getX(shape[i - 1]))
+												let nextX = getX(shape[i - 1]).pop(), dx = nextX - x;
+												let direction = (dx <= 0) ? -1 : 1
+												path = hexLine(ctx, path, zoom, direction)
+												for (let j = (dx > 0) ? 1 : 0; j < Math.abs(dx); j++) {
+													path = hexLine(ctx, path, zoom, direction * 2)
+													path = hexLine(ctx, path, zoom, direction)
+												}
+											}
+											else {
+												let afterX = xs.pop(), dx = afterX - x
+												for (let j = 0; j > dx; j--) {
+													path = hexLine(ctx, path, zoom, -2)
+													path = hexLine(ctx, path, zoom, -1)
+												}
+												if (getX(shape[i]).length > 2) {
+													let index = getX(shape[i]).indexOf(afterX)
+													console.log(index)
+													for (let j = index - 1; j >= 0; j -= 2) {
+														path = hexagonal(ctx, getCoo(getX(shape[i])[j + 1], sy), zoom, [0, 3]).end
+														let curX = getX(shape[i])[j]
+														let dx = curX - getX(shape[i])[j + 1]
+														for (let k = -1; k > dx; k--) {
+															path = hexLine(ctx, path, zoom, -2)
+															path = hexLine(ctx, path, zoom, -1)
+														}
+														path = hexagonal(ctx, getCoo(curX, sy), zoom, [4, 7]).end
+														dx = getX(shape[i])[j - 1] - curX
+														for (let k = 0; k > dx; k--) {
+															path = hexLine(ctx, path, zoom, -2)
+															path = hexLine(ctx, path, zoom, -1)
+														}
+													}
+												}
+											}
+										}
+										ctx.save()
+										// ctx.clip()
+										ctx.strokeStyle = c.color ? hexToRgba(c.color, 0.7) : "rgba(200, 10, 200, 0.7)";
+										ctx.lineWidth = 4
+										ctx.stroke();
+										ctx.restore()
+										ctx.beginPath()
+									}
+									else {
+										// console.log(yx)
+										for (let n = yx[0]; n <= yx[1]; n++) {
+											for (let s of shape) {
+												// if(s[1])
+												// draws(s[0],s[1])
+											}
+										}
+									}
 								}
 							}
 						}

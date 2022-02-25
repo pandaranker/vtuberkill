@@ -24,13 +24,13 @@ module.exports = {
   },
   output: {
     filename: '[name].js',
-    path: resolve('..','game')
+    path: resolve('..', 'game')
   },
   module: {
     unknownContextCritical: false,
     rules: [
       {
-        oneOf:[
+        oneOf: [
           {
             test: /\.css$/i,
             use: [...commonCssLoader],
@@ -60,6 +60,13 @@ module.exports = {
             ]
           }
         ]
+      },
+      {
+        test: /\.scss$/i,
+        use: [
+          ...commonCssLoader,
+          "sass-loader",
+        ],
       },
       // {
       //   test: /\.js$/,
@@ -94,12 +101,14 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: true,
-    minimizer: [new TerserPlugin()],
+    minimize: false,
+    minimizer: [
+      new TerserPlugin({ exclude: ['lib_element', 'lib'] })
+    ],
   },
   plugins: [],
-  mode: 'development',
-  // mode: 'production',
+  // mode: 'development',
+  mode: 'production',
   resolve: {
     // 在导入语句没带文件后缀时，webpack会自动按照顺序添加后缀名查找
     extensions: ['.ts', '.js', '.json'],

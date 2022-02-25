@@ -1,4 +1,5 @@
 import skill from './yuzu_skill'
+import translate from './yuzu_translate'
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
 	return <currentObject>{
 		name: "yuzu",
@@ -377,6 +378,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				return str;
 			},
 		},
-		translate: require('./yuzu_translate'),
+		translate: translate,
 	};
 });

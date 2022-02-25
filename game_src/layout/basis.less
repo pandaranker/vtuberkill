@@ -449,7 +449,7 @@ table {
     }
 
     >.splashtext {
-      font-family: 'huangcao', 'xinwei';
+      font-family: 'Tiejili', 'huangcao', 'xinwei';
       font-size: 50px;
       position: absolute;
       right: 7px;
@@ -477,27 +477,25 @@ table {
     transform: translateY(-300px) scale(0.5);
   }
 
+  &.slim>div> {
+    .splashtext {
+      filter: drop-shadow(3px 3px 2px rgb(69, 69, 121));
+      right: 5px;
+      bottom: 5px;
+    }
 
-}
-
-
-#splash.slim>div>{
-  .splashtext {
-    filter: drop-shadow(3px 3px 2px rgb(69, 69, 121));
-    right: 5px;
-    bottom: 5px;
+    .avatar {
+      width: calc(100% - 10px);
+      height: calc(100% - 10px);
+      left: 5px;
+      top: 5px;
+    }
   }
-  
-  .avatar {
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
-    left: 5px;
-    top: 5px;
-  }
-}
 
-#splash.removing {
-  pointer-events: none;
+  &.removing {
+    pointer-events: none;
+  }
+
 }
 
 
@@ -529,8 +527,11 @@ table {
 @import url('./historybar.less');
 @import url('./low_performance.less');
 @import url('./player.less');
-@import url('./roundmenu.less');
 @import url('./touchinfo.less');
 
+@import url('./control/control.less');
 @import url('./menu/menu.less');
+@import url('./info/info.less');
 @import url('./cursor/basis.less');
+
+// @import url('./mask.scss');

@@ -44,6 +44,7 @@ window.vk_package={
 		guozhan:'国战', 
 		boss:'挑战',
 		longlaoguan:'龙牢关',
+		strategy:'战略',
 		brawl:'乱斗',
 		single:'单挑',
 		yindao:'引导',
@@ -124,7 +125,9 @@ window.vk_package={
 		music_jilve:'极略',
 	},
 	font:{
+		Tiejili: '铁蒺藜',
 		LuoLiTi2: '萝莉',
+		hyk2gj: '汉仪菱心',
 		xiaozhuan:'小篆',
 		xinwei:'新魏',
 		huangcao:'黄草',

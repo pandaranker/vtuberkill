@@ -2655,7 +2655,7 @@
                 },
                 name_font: {
                     name: '人名字体',
-                    init: 'LuoLiTi2',
+                    init: 'Tiejili',
                     unfrequent: true,
                     item: {},
                     textMenu: function (node, link) {
@@ -2671,7 +2671,7 @@
                 },
                 identity_font: {
                     name: '身份字体',
-                    init: 'xingkai',
+                    init: 'hyk2gj',
                     unfrequent: true,
                     item: {},
                     textMenu: function (node, link) {
@@ -2687,7 +2687,7 @@
                 },
                 cardtext_font: {
                     name: '卡牌字体',
-                    init: 'LuoLiTi2',
+                    init: 'Tiejili',
                     unfrequent: true,
                     item: {},
                     textMenu: function (node, link) {

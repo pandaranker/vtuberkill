@@ -7,12 +7,13 @@
 }
 
 #splash.low_performance> {
-    div.hidden {
-        transform: scale(0.8);
-    }
 
     div {
         transition: all 0.5s;
+
+        &.hidden {
+            transform: scale(0.8);
+        }
     }
 }
 
@@ -24,6 +25,18 @@
             .equips,
             .name {
                 transition: all 0s
+            }
+        }
+    }
+
+    .menu.main>.menu-content>div {
+
+        >.right.pane {
+
+            >div:not(.expanded)>.config.auto-hide,
+            >div>.config.hidden {
+                display: none;
+                transition-property: transform;
             }
         }
     }

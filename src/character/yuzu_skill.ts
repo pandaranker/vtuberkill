@@ -476,6 +476,7 @@ export default {
             return player.$.suyuan2 === Evt.player && player.$.suyuan;
         },
         content() {
+            player.removeSkill('suyuan2')
             trigger.player.logSkill('suyuan', player)
             trigger.player.gainPlayerCard(player, true, player.$.suyuan)
         }
@@ -16478,7 +16479,7 @@ export default {
                     else {
                         if (trigger.enablePut && !player.inRangeOf(trigger.player)) {
                             let gains = _status.discarded.filter(card => get.type(card) !== 'basic')
-                            if(gains.length){
+                            if (gains.length) {
                                 player.logSkill('chunzhen')
                                 player.gain(gains, 'log', 'gain2')
                             }
@@ -16495,7 +16496,7 @@ export default {
                 intro: {
                     content: '『纯真』：与琥珀玲的距离变为：#',
                 }
-            }, 'onremove', 'direct','mark').setT('useCard1').setI(1),
+            }, 'onremove', 'direct', 'mark').setT('useCard1').setI(1),
         }
     }, 'forced').setT({ global: 'phaseBegin' }),
     hupo: new toSkill('trigger', {
@@ -16531,7 +16532,7 @@ export default {
                 intro: {
                     content: '『虎迫』：回合结束时回复体力',
                 }
-            },'mark'),
+            }, 'mark'),
         }
     }).setT({ global: 'phaseUseBegin' }),
     //hh
@@ -17240,7 +17241,7 @@ export default {
                 trigger: { global: 'linkEnd' },
                 filter(Evt, player) {
                     let evt = Evt.getParent('useCard');
-                    if (evt?.name === 'useCard' && evt.getParent('chooseUseTarget')?.addedSkill.includes('lvecao')) {
+                    if (evt.name === 'useCard' && evt.getParent('chooseUseTarget')?.addedSkill?.includes('lvecao')) {
                         return evt.card.name == 'tiesuo' && evt.player == player && !Evt.player.isLinked()
                             && Evt.player.countGainableCards(player, 'hej', card => {
                                 if (get.position(card) != 'e' && get.position(card) != 'j' && !card.hasGaintag('ming_')) return false;
@@ -17250,10 +17251,11 @@ export default {
                 },
                 direct: true,
                 content() {
-                    player.gainPlayerCard(trigger.player, 'hej', '获得其区域内一张可见牌').set('filterButton', function (button) {
+                    Evt.tar = trigger.player
+                    player.gainPlayerCard(trigger.player, 'hej', `###${get.prompt('lvecao')}###获得其区域内一张可见牌`).set('filterButton', function (button) {
                         if (get.position(button.link) != 'e' && get.position(button.link) != 'j' && !button.link.hasGaintag('ming_')) return false;
                         return true;
-                    }).set('logSkill', 'lvecao_fadian');
+                    }).set('logSkill', ['lvecao', Evt.tar]);
                 },
                 ai: {
                     effect: {
@@ -17432,7 +17434,7 @@ export default {
         }
     },
     //林大力
-    xilv: {
+    xilv: new toSkill('trigger', {
         trigger: { global: 'drawAfter' },
         filter(Evt, player) {
             if (Evt.player == player) return false;
@@ -17477,7 +17479,7 @@ export default {
         }],
         group: 'xilv_phaseEnd',
         subSkill: {
-            phaseEnd: {
+            phaseEnd: new toSkill('trigger', {
                 trigger: { player: 'phaseEnd' },
                 forced: true,
                 filter(Evt, player) {
@@ -17486,10 +17488,10 @@ export default {
                 content() {
                     player.removeAdditionalSkill('xilv');
                 }
-            }
+            })
         }
-    },
-    bana: {
+    }, 'direct'),
+    bana: new toSkill('trigger', {
         trigger: { global: 'changeHp' },
         filter(Evt, player) {
             return Evt.player.countCards('he') <= Evt.player.hp && Evt.player.hp <= game.countPlayer();
@@ -17504,7 +17506,7 @@ export default {
         ai: {
             expose: 0.1,
         }
-    },
+    }),
     //Kira
     weiguang: {
         intro: {
@@ -17771,6 +17773,10 @@ export default {
         filter(Evt, player) {
             if (get.name(Evt.card) !== 'sha' && get.type(Evt.card) === 'basic') return false
             return Evt.target.inRangeOf(player) && ![player, Evt.target].includes(Evt.player) && Evt.targets.length == 1;
+        },
+        check(Evt, player) {
+            if (get.name(Evt.card) == 'sha') return get.$a(player, Evt.target) > 0 && player.hp > 2
+            return get.effect(player, Evt.card, Evt.player, player) >= get.effect(Evt.target, Evt.card, Evt.player, player);
         },
         logTarget: 'target',
         content: [() => {

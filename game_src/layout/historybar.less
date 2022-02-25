@@ -67,20 +67,20 @@
             font-size: 20px;
             line-height: 20px;
             z-index: 1;
+            &.avatar3 {
+                left: 12px;
+                top: 31px;
+                transform: scale(0.7);
+                transform-origin: top left;
+            }
         }
 
-        >.avatar2.avatar3 {
-            left: 12px;
-            top: 31px;
-            transform: scale(0.7);
-            transform-origin: top left;
-        }
+    }
+    &.hidden {
+        pointer-events: none;
     }
 }
 
-#historybar.hidden {
-    pointer-events: none;
-}
 
 #window.rightbar {
     #historybar {

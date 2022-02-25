@@ -762,6 +762,8 @@ window.vk_asset_list=[
 	'font/xinwei.ttf',
 	'font/yuanli.ttf',
 	'font/LuoLiTi2.ttf',
+	'font/Tiejili.ttf',
+	'font/hyk2gj.ttf',
 
 	'image/background/ol_bg.jpg',
 	'image/background/zhulin_bg.jpg',
@@ -810,8 +812,6 @@ window.vk_asset_list=[
 	'image/card/pyzhuren_club.png',
 	'image/card/pyzhuren_diamond.png',
 	'image/card/pyzhuren_shandian.png',
-	'image/card/monkey.png',
-	'image/card/xuelunyang.png',
 	'image/card/kuwu.png',
 	'image/card/jiuwei.png',
 	'image/card/mianju.png',
@@ -843,7 +843,6 @@ window.vk_asset_list=[
 	'image/card/group_RedC.png',
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',
-	'image/card/kamome_suitcase.png',
 
 	'image/card/bagua.png',
 	'image/card/baiyin.png',
@@ -899,7 +898,6 @@ window.vk_asset_list=[
 	'image/card/jiedao.png',
 	'image/card/jinchan.png',
 	'image/card/jingfanma.png',
-	'image/card/jingleishan.png',
 	'image/card/jiu.png',
 	'image/card/juedou.png',
 	'image/card/jueying.png',
@@ -949,8 +947,6 @@ window.vk_asset_list=[
 	'image/card/shunshou.png',
 	'image/card/suolianjia.png',
 	'image/card/taipingyaoshu.png',
-	'image/card/tanhuadong.png',
-	'image/card/tanshezhiren.png',
 	'image/card/tao.png',
 	'image/card/taoyuan.png',
 	'image/card/tengjia.png',
@@ -972,7 +968,6 @@ window.vk_asset_list=[
 	'image/card/xiayuncailing.png',
 	'image/card/xietianzi.png',
 	'image/card/xingjiegoutong.png',
-	'image/card/xingjunyan.png',
 	'image/card/xionghuangjiu.png',
 	'image/card/xixueguizhihuan.png',
 	'image/card/xuanwuzhihuang.png',
@@ -1095,7 +1090,7 @@ window.vk_asset_list=[
 	'image/replace/huxinjing.png',
 	'image/replace/jiedao.png',
 	'image/replace/jinchan.png',
-	'image/replace/jingleishan.png',
+	'image/replace/jingfanma.png',
 	'image/replace/jinhe.png',
 	'image/replace/jiu.png',
 	'image/replace/juedou.png',
@@ -2032,6 +2027,7 @@ window.vk_asset_list=[
 	'extension/yindao/MiraiAkari.jpg',
 	'extension/yindao/shanbao.jpg',
 	'extension/yindao/ShirakamiHaruka.jpg',
+	'extension/yindao/path2.png',
 ];
 window.vk_skin_list={
 
