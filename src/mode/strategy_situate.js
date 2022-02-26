@@ -107,7 +107,6 @@ class City {
             ctx.fillStyle = c.color ? hexToRgba(c.color, 0.5) : "rgba(200, 10, 200, 0.5)";
             ctx.fill()
             ctx.beginPath()
-            c.tempcoord = coord2
             ctx.restore()
 
             let blocks = c.blocks.slice(0)
@@ -124,6 +123,8 @@ class City {
             ctx.shadowColor = ctx.fillStyle;
             ctx.strokeText(translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
             ctx.restore()
+            
+            c.tempCoord = coord2
         }
         else {
             return false
