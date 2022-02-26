@@ -71,31 +71,39 @@ module.exports = {
       // {
       //   test: /\.js$/,
       //   exclude: /(node_modules|bower_components)/,
-      //   use: {
-      //     loader: 'babel-loader',
-      //     options: {
-      //       presets: [[
-      //         '@babel/preset-env',
-      //         {
-      //           useBuiltIns: 'usage',
-      //           corejs: {
-      //             //core-js的版本
-      //             version: 3
-      //           },
-      //           //需要兼容的浏览器
-      //           targets: {
-      //             chrome: '60',
-      //             firefox: '60',
-      //             ie: '9',
-      //             safari: '10',
-      //             edge: '17'
+      //   use: [
+      //     {
+      //       loader: 'thread-loader',
+      //       options: {
+      //         workers: 2
+      //       }
+      //     },
+      //     {
+      //       loader: 'babel-loader',
+      //       options: {
+      //         presets: [[
+      //           '@babel/preset-env',
+      //           {
+      //             useBuiltIns: 'usage',
+      //             corejs: {
+      //               //core-js的版本
+      //               version: 3
+      //             },
+      //             //需要兼容的浏览器
+      //             targets: {
+      //               chrome: '60',
+      //               firefox: '60',
+      //               ie: '9',
+      //               safari: '10',
+      //               edge: '17'
+      //             }
       //           }
-      //         }
-      //       ]],
-      //       plugins: ['@babel/transform-runtime'],
-      //       sourceType: "unambiguous",
+      //         ]],
+      //         plugins: ['@babel/transform-runtime'],
+      //         sourceType: "unambiguous",
+      //       }
       //     }
-      //   }
+      //   ]
       // }
 
     ]

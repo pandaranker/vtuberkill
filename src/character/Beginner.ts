@@ -1693,7 +1693,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						trigger: { player: 'useCard2' },
 						filter(Evt, player) {
 							if (Evt.card.name != 'sha' || get.color(Evt.card) == 'red') return false;
-							return game.hasPlayer((cur: any) => !Evt.targets.contains(cur) && lib.filter.targetEnabled2(Evt.card, player, target));
+							return game.hasPlayer((cur: any) => !Evt.targets.contains(cur) && lib.filter.targetEnabled2(Evt.card, player, cur));
 						},
 						direct: true,
 						content: [() => {

@@ -1,0 +1,398 @@
+.nature0(@color, @size: 1px) {
+    text-shadow+: @color 0 0 @size
+}
+
+.nature(@color) {
+    .nature0(black);
+    .nature0(@color, 2px);
+    .nature0(@color, 5px);
+    .nature0(@color, 10px);
+    .nature0(@color, 10px);
+    .nature0(@color, 20px);
+    .nature0(@color, 20px);
+}
+
+.naturem(@color) {
+    .nature0(black);
+    .nature0(@color, 2px);
+    .nature0(@color, 5px);
+    .nature0(@color, 5px);
+    .nature0(@color, 5px);
+    .nature0(black);
+}
+
+.naturemx(@color) {
+    .nature0(black);
+    .nature0(fade(@color, 0.1), 2px);
+    .nature0(@color, 2px);
+    .nature0(@color, 5px);
+    .nature0(@color, 5px);
+    .nature0(black);
+}
+
+.naturemm(@color) {
+    .nature0(black);
+    .nature0(@color, 2px);
+    .nature0(@color, 2px);
+    .nature0(@color, 2px);
+    .nature0(@color, 2px);
+    .nature0(black);
+}
+
+@colorFire: rgba(232, 53, 53, 1);
+
+.player .identity {
+
+    &[data-color="zhu"],
+    &[data-color="truezhu"],
+    &[data-color="enemy"] {
+        .nature(@colorFire);
+    }
+}
+
+div,
+span {
+    &[data-nature='fire'] {
+        .nature(@colorFire);
+    }
+
+    &[data-nature='firem'] {
+        .naturem(@colorFire);
+    }
+
+    &[data-nature='firemm'] {
+        .naturemm(@colorFire);
+    }
+
+    &[data-nature='firemx'] {
+        .naturemx(@colorFire);
+    }
+}
+
+@colorOrange: rgba(255, 120, 0, 1);
+
+.player .identity[data-color="mingzhong"],
+.player .identity[data-color="rZhu"],
+.player .identity[data-color="rZhong"],
+.player .identity[data-color="rNei"],
+.player .identity[data-color="cai2"] {
+    .nature(@colorOrange);
+}
+
+div,
+span {
+    &[data-nature='orange'] {
+        .nature(@colorOrange);
+    }
+
+    &[data-nature='orangem'] {
+        .naturem(@colorOrange);
+    }
+
+    &[data-nature='orangemm'] {
+        .naturemm(@colorOrange);
+    }
+
+    &[data-nature='orangemx'] {
+        .naturemx(@colorOrange);
+    }
+}
+
+@colorMetal: rgba(255, 203, 0, 1);
+
+.player .identity[data-color="zhong"],
+.player .identity[data-color="qun"],
+.player .identity[data-color="neutral"],
+.player .identity[data-color="friend2"],
+div[data-nature='metal'],
+span[data-nature='metal'] {
+    .nature(@colorMetal);
+}
+
+div[data-nature='metalm'],
+span[data-nature='metalm'] {
+    .naturem(@colorMetal);
+}
+
+div[data-nature='metalmm'],
+span[data-nature='metalmm'] {
+    .naturemm(@colorMetal);
+}
+
+div[data-nature='metalmx'],
+span[data-nature='metalmx'] {
+    .naturemx(@colorMetal);
+}
+
+@colorKey : rgba(203, 177, 255, 1);
+
+.player .identity[data-color="key"] {
+    .nature(@colorKey);
+}
+
+div,
+span {
+    &[data-nature='key'] {
+        .nature(@colorKey);
+    }
+
+    &[data-nature='keym'] {
+        .naturem(@colorKey);
+    }
+
+    &[data-nature='keymm'] {
+        .naturemm(@colorKey);
+    }
+
+    &[data-nature='keymx'] {
+        .naturemx(@colorKey);
+    }
+}
+
+@colorThunder: rgba(100, 74, 139, 1);
+
+.player .identity[data-color="nei"],
+.player .identity[data-color="ye"],
+.player .identity[data-color="rYe"],
+.player .identity[data-color="bYe"],
+.player .identity[data-color="jin"] {
+    .nature(@colorThunder);
+}
+
+div,
+span {
+    &[data-nature='thunder'] {
+        .nature(@colorThunder);
+    }
+
+    &[data-nature='thunderm'] {
+        .naturem(@colorThunder);
+    }
+
+    &[data-nature='thundermm'] {
+        .naturemm(@colorThunder);
+    }
+
+    &[data-nature='thundermx'] {
+        .naturemx(@colorThunder);
+    }
+}
+
+
+@colorKami: rgba(90, 118, 99, 1);
+
+.player .identity[data-color="kami"] {
+    .nature(@colorKami);
+}
+
+div,
+span {
+    &[data-nature='kami'] {
+        .nature(@colorKami);
+    }
+
+    &[data-nature='kamim'] {
+        .naturem(@colorKami);
+    }
+
+    &[data-nature='kamimm'] {
+        .naturemm(@colorKami);
+    }
+
+    &[data-nature='kamimx'] {
+        .naturemx(@colorKami);
+    }
+}
+
+@colorWood: rgba(57, 123, 4, 1);
+
+.player .identity[data-color="fan"],
+.player .identity[data-color="wu"] {
+    .nature(@colorWood);
+}
+
+div,
+span {
+    &[data-nature='wood'] {
+        .nature(@colorWood);
+    }
+
+    &[data-nature='woodm'] {
+        .naturem(@colorWood);
+    }
+
+    &[data-nature='woodmm'] {
+        .naturemm(@colorWood);
+    }
+
+    &[data-nature='woodmx'] {
+        .naturemx(@colorWood);
+    }
+}
+
+@colorWater: rgba(78, 117, 140, 1);
+
+.player .identity[data-color="cai"],
+.player .identity[data-color="bZhu"],
+.player .identity[data-color="bZhong"],
+.player .identity[data-color="bNei"],
+.player .identity[data-color="wei"],
+.player .identity[data-color="falsezhu"],
+.player .identity[data-color="friend"],
+.water {
+    .nature(@colorWater);
+}
+div,
+span {
+    &[data-nature='water'] {
+        .nature(@colorWater);
+    }
+
+    &[data-nature='waterm'] {
+        .naturem(@colorWater);
+    }
+
+    &[data-nature='watermm'] {
+        .naturemm(@colorWater);
+    }
+
+    &[data-nature='watermx'] {
+        .naturemx(@colorWater);
+    }
+}
+
+@colorSoil: rgba(78, 117, 140, 1);
+
+.player .identity[data-color="shu"]{
+    .nature(@colorSoil);
+}
+div,
+span {
+    &[data-nature='soil'] {
+        .nature(@colorSoil);
+    }
+
+    &[data-nature='soilm'] {
+        .naturem(@colorSoil);
+    }
+
+    &[data-nature='soilmm'] {
+        .naturemm(@colorSoil);
+    }
+
+    &[data-nature='soilmx'] {
+        .naturemx(@colorSoil);
+    }
+}
+
+@colorGray: rgba(213, 194, 179, 1);
+div,
+span {
+    &[data-nature='gray'] {
+        .nature(@colorGray);
+    }
+
+    &[data-nature='graym'] {
+        .naturem(@colorGray);
+    }
+
+    &[data-nature='graymm'] {
+        .naturemm(@colorGray);
+    }
+
+    &[data-nature='graymx'] {
+        .naturemx(@colorGray);
+    }
+}
+
+@colorIce: rgb(116, 136, 132);
+div,
+span {
+    &[data-nature='ice'] {
+        .nature(@colorIce);
+    }
+
+    &[data-nature='icem'] {
+        .naturem(@colorIce);
+    }
+
+    &[data-nature='icemm'] {
+        .naturemm(@colorIce);
+    }
+
+    &[data-nature='icemx'] {
+        .naturemx(@colorIce);
+    }
+}
+
+@colorOcean: rgb(69, 47, 151);
+div,
+span {
+    &[data-nature='ocean'] {
+        .nature(@colorOcean);
+    }
+
+    &[data-nature='oceanm'] {
+        .naturem(@colorOcean);
+    }
+
+    &[data-nature='oceanmm'] {
+        .naturemm(@colorOcean);
+    }
+
+    &[data-nature='oceanmx'] {
+        .naturemx(@colorOcean);
+    }
+}
+
+@colorYami: rgb(111, 89, 121);
+div,
+span {
+    &[data-nature='yami'] {
+        .nature(@colorYami);
+    }
+
+    &[data-nature='yamim'] {
+        .naturem(@colorYami);
+    }
+
+    &[data-nature='yamimm'] {
+        .naturemm(@colorYami);
+    }
+
+    &[data-nature='yamimx'] {
+        .naturemx(@colorYami);
+    }
+}
+
+
+@colorBlack: rgba(0, 0, 0, 0.5);
+div,
+span {
+    &[data-nature='black'] {
+        .nature(@colorBlack);
+    }
+
+    &[data-nature='unknownm'] {
+        .naturem(@colorBlack);
+    }
+
+    &[data-nature='unknown'] {
+        .naturemm(@colorYami);
+    }
+
+}
+
+.player .identity[data-color="unknownx"]{
+    .nature(@colorBlack);
+}
+
+div[data-nature="unknown"] {
+    .nature0(rgba(0, 0, 0, 0.2) , 2px);
+    .nature0(rgba(0, 0, 0, 0.2) , 5px);
+    .nature0(rgba(0, 0, 0, 0.2) , 10px);
+    .nature0(rgba(0, 0, 0, 0.2) , 10px);
+    .nature0(rgba(0, 0, 0, 0.2) , 20px);
+    .nature0(rgba(0, 0, 0, 0.2) , 20px);
+    .nature0(rgba(0, 0, 0, 0.6) , 1px);
+}
