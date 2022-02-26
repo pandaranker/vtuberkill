@@ -26,9 +26,12 @@ module.exports = {
     mobile: './mobile/layout.js',
     newlayout: './newlayout/layout.js',
     nova: './nova/layout.js',
+    boss: './mode/boss.js',
+    strategy1: './mode/strategy1.js',
+    strategy2: './mode/strategy2.js'
   },
   output: {
-    filename: '[name]/layoutTemp.js',
+    filename: (pathData)=>['boss','strategy1','strategy2'].includes(pathData.chunk.name)?'mode/[name]layoutTemp.js':'[name]/layoutTemp.js',
     path: resolve(__dirname, '..', 'layout')
   },
   module: {
@@ -56,7 +59,7 @@ module.exports = {
     ]
   },
   plugins: [new MiniCssExtractPlugin({
-    filename: '[name]/layout.css',
+    filename: (pathData)=>['boss','strategy1','strategy2'].includes(pathData.chunk.name)?'mode/[name].css':'[name]/layout.css',
   })],
   // mode: 'development',
   mode: 'production',

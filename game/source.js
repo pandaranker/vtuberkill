@@ -37,9 +37,6 @@ window.noname_source_list=[
 	'layout/nova/layout.css',
 	
 	'layout/mode/boss.css',
-	'layout/mode/chess.css',
-	'layout/mode/stone.css',
-	'layout/mode/tafang.css',
 	
 	'extension/cardpile/extension.js',
 	'extension/coin/extension.js',
