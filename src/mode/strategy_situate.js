@@ -102,12 +102,7 @@ class City {
             && pos[0] < size[1][0]
             && xy[1] < pos[1]
             && pos[1] < size[1][1]) {
-            ctx.stroke();
-            ctx.save()
-            ctx.fillStyle = c.color ? hexToRgba(c.color, 0.5) : "rgba(200, 10, 200, 0.5)";
-            ctx.fill()
             ctx.beginPath()
-            ctx.restore()
 
             let blocks = c.blocks.slice(0)
             for (let b of blocks) {
@@ -122,7 +117,9 @@ class City {
             ctx.shadowBlur = 10;
             ctx.shadowColor = ctx.fillStyle;
             ctx.strokeText(translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
+            ctx.beginPath()
             ctx.restore()
+            
             
             c.tempCoord = coord2
         }
@@ -164,7 +161,7 @@ class Block {
             && pos[1] < size[1][1]) {
             let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
             let c = this.city
-            let opacity = this.type==='cityCenter'?0.9:0.3
+            let opacity = this.type==='cityCenter'?0.5:0.3
             hexagonal(ctx, coord, zoom)
             ctx.stroke();
             ctx.save()

@@ -1960,6 +1960,7 @@ window.vk_asset_list=[
 	'image/splash/tafang.jpg',
 	'image/splash/versus.jpg',
 	'image/splash/longlaoguan.jpg',
+	'image/splash/yindao.jpg',
 
 	'theme/style/card/image/border_bronze.jpg',
 	'theme/style/card/image/border_gold.jpg',
