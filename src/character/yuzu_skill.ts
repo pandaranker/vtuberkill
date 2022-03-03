@@ -4090,14 +4090,18 @@ export default {
             return Evt.num == 1;
         },
         content: [() => {
-            let check = 1;
-            check -= get.recoverEffect(trigger.player, player, player);
-            player.chooseTarget('『流泪喵喵』：令目标摸两张牌（取消则改本次伤害为回复）', function (card, player, target) {
+            let check = -1;
+            check += get.recoverEffect(trigger.player, player, player);
+            player.chooseTarget('『流泪喵喵』：是否令目标摸两张牌（取消则改本次伤害为回复）', function (card, player, target) {
                 return target == _status.event.target0;
-            }).set('ai', function (target) {
-                if (_status.event.check > 0) return 0;
-                return 1;
-            }).set('check', check).set('target0', trigger.player);
+            })
+                .set('ai', (target) => {
+                    if (_status.event.check > 0)
+                        return -1;
+                    return 1;
+                })
+                .set('check', check)
+                .set('target0', trigger.player);
         }, () => {
             if (result.bool) {
                 result.targets[0].draw(2);
@@ -11854,7 +11858,7 @@ export default {
         }],
         subSkill: {
             level: new toSkill('mark', {
-				mark:'image',
+                mark: 'image',
                 intro: {
                     content: '『晋胄』等级：#'
                 }
@@ -11929,7 +11933,7 @@ export default {
         group: ['gouhun_level', 'gouhun_reCount'],
         subSkill: {
             level: new toSkill('mark', {
-				mark:'image',
+                mark: 'image',
                 intro: {
                     content: '『勾魂』等级：#'
                 }
@@ -13718,13 +13722,13 @@ export default {
             } else Evt.finish();
         }, () => {
             Evt.drawNum = Evt.drawNum == 'equip' ? player.countCards('e') + 1 : 1
-            player.chooseTarget(`『玄荫』：令你或其摸${get.cnNumber(Evt.drawNum)}张牌`, function (card, player, target) {
-                return player == target || target == _status.event.target;
-            }).set('target', Evt.target).set('ai', (target) => {
-                if (target != player && target.hasSkillTag('nogain'))
-                    return 0;
-                return get.$a(player, target);
-            });
+            player.chooseTarget(`『玄荫』：令一名角色摸${get.cnNumber(Evt.drawNum)}张牌`, true)
+                .set('target', Evt.target)
+                .set('ai', (target) => {
+                    if (target != player && target.hasSkillTag('nogain'))
+                        return 0;
+                    return get.$a(player, target);
+                });
         }, () => {
             if (result.bool && result.targets?.length) {
                 result.targets[0].draw(Evt.drawNum);
@@ -13950,7 +13954,7 @@ export default {
         frequent: true,
         content: [() => {
             Evt.ctrlMap = [`A.于摸牌阶段多摸${player.$.shangsheng_Buff}张牌`, `B.于出牌阶段多出${player.$.shangsheng_Buff}张【杀】`, `C.于弃牌阶段手牌上限+${player.$.shangsheng_Buff}`]
-            player.chooseControl('dialogcontrol', ).set('ai', function () {
+            player.chooseControl('dialogcontrol',).set('ai', function () {
                 let player = _status.event.player;
                 let controls = _status.event.controls.slice(0);
                 let map = _status.event.controls;
@@ -13961,7 +13965,7 @@ export default {
                     if (controls.includes(map[1]) && player.countCards('hs', 'sha') >= 2 && player.hasUseTarget({ name: 'sha', isCard: true })) return map[1];
                     return controls.randomGet();
                 }
-            }).set('prompt', '『能力上升』：选择一项').set('ctrlMap',Evt.ctrlMap);
+            }).set('prompt', '『能力上升』：选择一项').set('ctrlMap', Evt.ctrlMap);
         }, () => {
             Evt.change = result.control;
             switch (Evt.change) {
@@ -13970,7 +13974,7 @@ export default {
                 }
                 case Evt.ctrlMap[1]: {
                     player.addTempSkill('shangsheng_Buff1'); break;
-					game.putBuff(player, 'shangsheng', '.player_buff')
+                    game.putBuff(player, 'shangsheng', '.player_buff')
                 }
                 case Evt.ctrlMap[2]: {
                     player.addTempSkill('shangsheng_Buff2'); break;
@@ -16584,10 +16588,10 @@ export default {
     }).setT('useCardToPlayered'),
     ransha: new toSkill('trigger', {
         filter(Evt, player) {
-            return !Evt.numFixed&&Evt.num>0;
+            return !Evt.numFixed && Evt.num > 0;
         },
         check(Evt, player) {
-            return player.needsToDiscard()&&player.countCards('h')>=3;
+            return player.needsToDiscard() && player.countCards('h') >= 3;
         },
         logTarget: 'player',
         content: [() => {
@@ -16595,10 +16599,10 @@ export default {
         }, () => {
             player.addTempSkill('miaolu')
             player.skip('phaseDiscard');
-            game.log(player,'跳过了','#g弃牌阶段');
+            game.log(player, '跳过了', '#g弃牌阶段');
             game.delayx()
         }],
-        derivation:'miaolu'
+        derivation: 'miaolu'
     }).setT('phaseDrawBegin2'),
     //hh
     jichu: new toSkill('trigger', {

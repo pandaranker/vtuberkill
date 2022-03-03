@@ -1,11 +1,11 @@
 window.noname_update = {
-	version: '1.10.0.13',
+	version: '1.10.0.15',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.0.13小型更新：新增角色寝月Nero，勾檀Mayumi削弱，栗子酱RIKO加强，增加VK体力样式，修复部分bug，部分新特效可以用“流畅模式”关闭`,
+		`1.10.0.15小型更新：新增角色寝月Nero，勾檀Mayumi削弱，栗子酱RIKO、黑桐亚里亚加强，修复部分bug，`,
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
 		``,
-		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
+		`部分新特效可以用“流畅模式”关闭，现在于游戏过程中可以右键点击斜体字来查看进一步描述`,
 		``,
 		``,
 		`化鲸篇新增机制可以在游戏内或者设置的“帮助”中查看`,
@@ -26,7 +26,7 @@ window.noname_update = {
 
 		'game/game.js',
 
-		'game/config.js',
+		// 'game/config.js',
 		'game/package.js',
 		'game/asset.js',
 

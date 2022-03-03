@@ -1202,7 +1202,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards.slice(0,player._status.event.puts),cards.slice(player._status.event.puts)];
+							return [cards.slice(0,_status.event.puts),cards.slice(_status.event.puts)];
 						})
 						.set('filterMove', function (from, to, moved) {
 							if (to == 0 && moved[0].length >= _status.event.puts) return false;
@@ -1218,7 +1218,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.finish()
 						return
 					}
+					game.broadcastAll(function(player,cards){
+						let cardxs = []
+						for(let v of cards){
+							let cardx=ui.create.card();
+							cardx.classList.add('infohidden');
+							cardx.classList.add('infoflip');
+							cardxs.push(cardx)
+						}
+						player.$throw(cardxs,500,'nobroadcast');
+					},player,Evt.cards);
 					player.lose(Evt.cards, ui.special);
+					game.delayx();
 				}, () => {
 					let tops = Evt.cards.slice(0)
 					game.log(player, `将${get.cnNumber(tops.length)}张牌放在牌堆顶`)

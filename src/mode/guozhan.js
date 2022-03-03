@@ -2184,7 +2184,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							precontent:function(){
 								'step 0'
 								event.cards = event.result.cards.slice(0);
-								player.$throw(event.cards,1000,'nobroadcast');
+								game.broadcastAll(function(player,cards){
+									let cardxs = []
+									for(let v of cards){
+										let cardx=ui.create.card();
+										cardx.classList.add('infohidden');
+										cardx.classList.add('infoflip');
+										cardxs.push(cardx)
+									}
+									player.$throw(cardxs,500,'nobroadcast');
+								},player,Evt.cards);
 								player.lose(event.cards,ui.ordering);
 								event.result.card.cards=[];
 								event.result.cards=[];

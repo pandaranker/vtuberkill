@@ -1128,7 +1128,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jiumao: {
 				audio: 2,
 				trigger: {
-					player: 'phaseUseEnd',
+					global: 'phaseUseEnd',
 				},
 				filter(Evt, player) {
 					return Evt.player.countCards('h');
@@ -1141,7 +1141,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						var player = _status.event.player;
 						if (player.needsToDiscard() && ui.selected.cards.length < player.countCards('h')) return 6 - get.useful(card);
 						else return 2 - get.useful(card);
-					}).set('prompt', '###' + get.prompt('jiumao', player) + '###你在弃牌阶段开始时，可将任意数量的牌放在' + get.translation(player) + '武将牌旁，称为「猫粮」');
+					}).set('prompt', `###${get.prompt('jiumao', player)}###你在出牌阶段结束时，可将任意数量的牌放在${get.translation(player)}武将牌旁，称为「猫粮」`);
 					'step 1'
 					if (result.bool) {
 						player.logSkill('maoliang', Evt.target);
@@ -3042,7 +3042,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			KurokiriAria: `黑桐亚里亚`,
 			xuanying: `玄荫`,
-			xuanying_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，然后令你或其摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数+1）`,
+			xuanying_info: `每回合限X次，其他角色在你的回合内使用牌时，你可以交给其一张牌，并令一名角色摸一张牌，若你交出了装备牌，则额外摸X张。（X为你装备区的牌数+1）`,
 			xuanying_append: lib.figurer(`特性：联动`),
 			houfan: `候返`,
 			houfan_info: `<font color=#b56>限定技</font> 出牌阶段，若你手牌数为全场最少，你可以减1点体力上限，从弃牌堆随机获得四张装备牌，并将『玄荫』的“使用”改为“使用或打出”。`,
