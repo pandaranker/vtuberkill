@@ -44,7 +44,7 @@ window.vk_package={
 		guozhan:'国战', 
 		boss:'挑战',
 		longlaoguan:'龙牢关',
-		strategy:'战略',
+		// strategy:'战略',
 		brawl:'乱斗',
 		single:'单挑',
 		yindao:'引导',

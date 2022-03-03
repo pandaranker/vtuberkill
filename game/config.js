@@ -12,7 +12,7 @@ window.config={
 		sgscards:['standard','extra'],
 		sgsmodes:['identity','doudizhu','versus','longlaoguan','guozhan','single','brawl','connect'],//
 		stockmode:['identity','doudizhu','versus','boss','longlaoguan','guozhan','single','connect','brawl',
-		'yindao','richer','strategy'],//,'tafang','chess','stone'
+		'yindao','richer'],//,'tafang','chess','stone','strategy'
 		stockextension:['cardpile','coin','wuxing'],//'boss',
 		layout:['default','newlayout'],
 		theme:['vk','woodden','music','simple'],
