@@ -92,9 +92,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		skill: {
 			taiyangzhiyin: {
 				audio: 2,
-				trigger: { player: ['useCard2'] },
+				trigger: { player: 'useCard2' },
 				filter(Evt, player) {
-					//console.log(Evt.card,1)
 					//console.log(player.$.onlink,Evt.card.cardid)
 					return get.number(Evt.card) > 10 && (player.$.onlink == null || player.$.onlink.indexOf(Evt.card.cardid) == -1);
 				},
@@ -108,7 +107,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.$.onlink = [];
 					}//处理正处于连锁中的卡牌
 					'step 0'
-					Evt.Dvalue = get.number(trigger.card) - 10;
+					Evt.Dvalue = Math.min(3, get.number(trigger.card) - 10);
 					var list = [['无法响应'], ['额外目标'], ['摸一张牌']];
 					if (!game.hasPlayer(cur => {
 						return lib.filter.targetEnabled2(trigger.card, player, cur)
@@ -994,38 +993,27 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			},
 			gaonengzhanxie: {
 				priority: 15,
-				firstDo: true,
 				mod: {
 					cardUsable(card, player, num) {
 						if (card.name == 'sha') {
 							return num + player.countCards('e');
 						}
-					},
-					cardEnabled(card, player) {
-						if (card.name == 'sha' && (player.getStat().card.sha > player.countCards('e')))
-							return false
 					}
 				},
-				group: ['gaonengzhanxie_draw'],
-				subSkill: {
-					draw: {
-						trigger: {
-							player: 'useCardAfter'
-						},
-						firstDo: true,
-						direct: true,
-						filter(Evt, player) {
-							if (Evt.card.name == 'sha') return true;
-							else return false;
-						},
-						content() {
-							'step 0'
-							player.draw(player.getStat().card.sha);
-							'step 1'
-							if (player.getCardUsable({ name: 'sha' }) !== 0 && lib.filter.cardEnabled({ name: 'sha' }, player)) {
-								player.chooseToDiscard('he', '弃置' + player.getStat().card.sha.toString() + '张牌', player.getStat().card.sha, true)
-							}
-						}
+				trigger: {
+					player: 'useCardAfter'
+				},
+				forced: true,
+				filter(Evt, player) {
+					if (Evt.card.name == 'sha') return true;
+					else return false;
+				},
+				content() {
+					'step 0'
+					player.draw(player.getStat().card.sha);
+					'step 1'
+					if (player.getCardUsable({ name: 'sha' }) !== 0 && lib.filter.cardEnabled({ name: 'sha' }, player)) {
+						player.chooseToDiscard('he', '弃置' + player.getStat().card.sha.toString() + '张牌', player.getStat().card.sha, true)
 					}
 				}
 			},
@@ -1040,7 +1028,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					if (trigger.source) {
 						var list = [
-							'令' + get.translation(player) + '回复' + trigger.num + '点生命',
+							'取消此伤害，令' + get.translation(player) + '回复' + trigger.num + '点生命',
 							'将' + get.translation(trigger.cards) + '交给' + get.translation(player),
 						];
 						if (!trigger.cards || trigger.cards.length == 0) list.pop();
@@ -1200,30 +1188,30 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					else
 						return false;
 				},
-				content:[() => {
+				content: [() => {
 					player.draw(player.maxHp);
 				}, () => {
-					player.chooseToMove('『远虑』：选择放置到牌堆顶部的牌',true)
+					player.chooseToMove('『远虑』：选择放置到牌堆顶部的牌', true)
 						.set('list', [
 							['牌堆顶'],
 							['手牌&装备区', player.getCards('he')],
 						])
 						.set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
 						.set('processAI', function (list) {
-							var cards = list[0][1].slice(0);
+							var cards = list[1][1].slice(0);
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards];
+							return [cards.slice(0,player._status.event.puts),cards.slice(player._status.event.puts)];
 						})
-						.set('filterMove',function(from,to,moved){
-							if(to==0&&moved[0].length>=_status.event.puts) return false;
+						.set('filterMove', function (from, to, moved) {
+							if (to == 0 && moved[0].length >= _status.event.puts) return false;
 							return true;
 						})
-						.set('filterOk',function(moved){
-							return moved[0].length==_status.event.puts;
+						.set('filterOk', function (moved) {
+							return moved[0].length == _status.event.puts;
 						})
-						.set('puts',player.hp)
+						.set('puts', player.hp)
 				}, () => {
 					if (result.bool && result.moved && result.moved[0].length) Evt.cards = result.moved[0].slice(0);
 					if (!Evt.cards) {
@@ -1326,8 +1314,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					});
 				}, () => {
 					if (result.cards && result.cards.length) {
-						Evt.cardUsable = target.hasUseTarget(Evt.card);
 						Evt.card = result.cards[0];
+						Evt.cardUsable = target.hasUseTarget(Evt.card);
 						target.gain(Evt.card, player, 'give');
 						game.delay(0.2);
 					}
@@ -1549,21 +1537,21 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}, Evt.videoId, typelist, suitlist, numberlist);
 					'step 2'
 					let next = player.chooseButton(3, true)
-					.set('dialog', Evt.videoId)
-					.set('filterButton', function (button) {
-						for (var i = 0; i < ui.selected.buttons.length; i++) {
-							var now = button.link, pre = ui.selected.buttons[i].link;
-							if (now[now.length - 1] == pre[pre.length - 1]) return false;
-						}
-						return true;
-					})
-					.set('ai', function (button) {
-						var card = _status.event.card;
-						var now = button.link;
-						if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
-						return 0;
-					})
-					.set('card', cards[0]);
+						.set('dialog', Evt.videoId)
+						.set('filterButton', function (button) {
+							for (var i = 0; i < ui.selected.buttons.length; i++) {
+								var now = button.link, pre = ui.selected.buttons[i].link;
+								if (now[now.length - 1] == pre[pre.length - 1]) return false;
+							}
+							return true;
+						})
+						.set('ai', function (button) {
+							var card = _status.event.card;
+							var now = button.link;
+							if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
+							return 0;
+						})
+						.set('card', cards[0]);
 					'step 3'
 					game.broadcastAll('closeDialog', Evt.videoId);
 					if (result.bool) {
@@ -1820,7 +1808,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				forced: true,
 				content() {
 					player.loseMaxHp();
-					player.draw(Evt.num = game.countPlayer());
+					player.draw(8);
 					// player.draw(10 - player.countCards('h'));
 					player.addSkill('xinghejianduei_juexing');
 					player.awakenSkill(Evt.name);
@@ -1983,10 +1971,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					let next = player.chooseCard(get.prompt2('youyi'), 'he')
-					.set('ai', card => {
-						if (get.name(card) == 'shan') return 9;
-						return 8 - get.value(card);
-					});
+						.set('ai', card => {
+							if (get.name(card) == 'shan') return 9;
+							return 8 - get.value(card);
+						});
 					'step 1'
 					if (result.bool) {
 						player.logSkill('youyi');
@@ -2148,7 +2136,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 			binzhan: {
-				audio: true,
+				audio: 'hongshaoturou',
 				filter(Evt, player) {
 					return player.countCards('h') != player.getHandcardLimit();
 				},
@@ -2345,14 +2333,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					Evt.cards = trigger.hs;
 					let next = player.chooseCardButton(1, '『弹言』：选择使用的牌', Evt.cards)
-					.set('filterButton', function (button) {
-						var player = _status.event.player;
-						return player.hasUseTarget(button.link);
-					})
-					.set('ai', function (button) {
-						var player = _status.event.player;
-						return player.getUseValue(button.link);
-					});
+						.set('filterButton', function (button) {
+							var player = _status.event.player;
+							return player.hasUseTarget(button.link);
+						})
+						.set('ai', function (button) {
+							var player = _status.event.player;
+							return player.getUseValue(button.link);
+						});
 					'step 1'
 					if (result.bool) {
 						player.chooseUseTarget(result.links[0], true, 'nopopup');
@@ -2581,32 +2569,32 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					let next = player.chooseTarget(2, function (card, player, target) {
 						return true;
 					})
-					.set('targetprompt', ['失去体力', '回复体力'])
-					.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力')
-					.set('ai', function (target) {
-						var player = _status.event.player;
-						var att = get.attitude(player, target);
-						var sgnatt = get.sgn(att);
-						if (ui.selected.targets.length == 0) {
-							if (target.hp == 1 && sgnatt <= 0) {
-								return 9;
-							} else if (target.hp == 1 && sgnatt >= 1) {
-								return -10;
+						.set('targetprompt', ['失去体力', '回复体力'])
+						.set('prompt', '指定两名角色，分别失去一点体力和回复一点体力')
+						.set('ai', function (target) {
+							var player = _status.event.player;
+							var att = get.attitude(player, target);
+							var sgnatt = get.sgn(att);
+							if (ui.selected.targets.length == 0) {
+								if (target.hp == 1 && sgnatt <= 0) {
+									return 9;
+								} else if (target.hp == 1 && sgnatt >= 1) {
+									return -10;
+								} else {
+									return 9 - att
+								}
 							} else {
-								return 9 - att
+								if (target.hp == target.maxHp && sgnatt <= 0) {
+									return 9;
+								} else if (target.hp < target.maxHp && sgnatt >= 1) {
+									return 7;
+								} else if (target.hp < target.maxHp && sgnatt <= 0) {
+									return -10;
+								} else {
+									return 9 - att;
+								}
 							}
-						} else {
-							if (target.hp == target.maxHp && sgnatt <= 0) {
-								return 9;
-							} else if (target.hp < target.maxHp && sgnatt >= 1) {
-								return 7;
-							} else if (target.hp < target.maxHp && sgnatt <= 0) {
-								return -10;
-							} else {
-								return 9 - att;
-							}
-						}
-					});
+						});
 					'step 1'
 					if (result.bool && result.targets?.length) {
 						player.logSkill('xiwo', result.targets);
@@ -3300,10 +3288,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			RobokoSan: `萝卜子`,
 			gaonengzhanxie: `高能战械`,
-			gaonengzhanxie_info: `锁定技 你出牌阶段可使用【杀】的次数等于你装备区内牌数+1。当你于回合内使用【杀】后，你摸X张牌，然后若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)`,
+			gaonengzhanxie_info: `锁定技 你使用【杀】的次数上限加上你装备区牌数。当你于回合内使用【杀】后，你摸X张牌，若你还可使用【杀】，你弃置等量的牌。（X为你本阶段已使用过的【杀】的数量)`,
 			gaonengzhanxie_append: lib.figurer(`特性：多次出杀`),
 			ranyouxielou: `燃油泄漏`,
-			ranyouxielou_info: `锁定技 你受到属性伤害时，来源选择一项：<br>改为令你回复等量体力；或令你获得来源牌。<br>你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。`,
+			ranyouxielou_info: `锁定技 你受到属性伤害时，令来源选择一项：<br>
+			取消之并你回复等量体力；令你获得伤害来源牌。<br>
+			你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。`,
 			ranyouxielou_append: lib.figurer(`特性：属性伤害减免`),
 
 			ShirakamiFubuki: `白上吹雪`,
@@ -3323,17 +3313,17 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			AkiRosenthal: `亚琦·罗森塔尔`,
 			AkiRosenthal_ab: `亚琦`,
 			meiwu: `魅舞`,
-			meiwu_info: `当你于一回合内首次成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。`,
+			meiwu_info: `每回合限一次，当你成为黑色牌的唯一目标时，你可以将目标转移给另一名其他角色，然后若此牌被抵消，你交给其一张牌。`,
 			huichu: `慧厨`,
 			huichu_info: `体力值最少的角色回合开始时，你可以展示所有手牌，若均为♥，其回复 1 点体力。若有其它花色，你可以重铸任意张手牌。`,
 
 
 			HoshimatiSuisei: `星街彗星`,
 			yemuxingyong: `夜幕星咏`,
-			yemuxingyong_info: `每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为「咏」。然后其他角色也可将一张黑色牌置于你武将牌上。出牌阶段，你可获得一张「咏」，然后立即将两张手牌当【过河拆桥】或【酒】使用。`,
+			yemuxingyong_info: `每轮限一次，一个弃牌阶段结束时，你可将本阶段进入弃牌堆的牌置于武将牌上，称为「咏」。然后其他角色也可将一张黑色牌置于你武将牌上。<br>出牌阶段，你可获得一张「咏」，然后立即将两张手牌当【过河拆桥】或【酒】使用。`,
 			yong: `咏`,
 			xinghejianduei: `星河舰队`,
-			xinghejianduei_info: `<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你减 1 点体力上限并摸等同于存活角色数的手牌，然后你的攻击范围和手牌上限始终增加「咏」的数量。`,
+			xinghejianduei_info: `<font color=#ccf>觉醒技</font> 一轮开始时，若你的体力值不大于游戏轮数，你扣减 1 点体力上限并摸八张牌，然后你的攻击范围和手牌上限始终增加「咏」的数量。`,
 
 			SakuraMiko: `樱巫女`,
 			haodu: `豪赌`,
@@ -3341,7 +3331,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			MinatoAqua: `湊阿库娅`,
 			kuali: `夸力满满`,
-			kuali_info: `每回合限一次，出牌/结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
+			kuali_info: `每回合限一次，出牌阶段/结束阶段，你可以选择一项：<br>
+			&nbsp;选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力<br>
+			&nbsp;摸体力为你整数倍的角色数的牌，然后失去1点体力`,
 			kuali_zhuDong_info: `每回合限一次，出牌阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
 			kuali_jieshu_info: `每回合限一次，结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
 			youyi: `友谊誓约`,
@@ -3355,7 +3347,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhonggong: `重工`,
 			zhonggong_info: `准备阶段，若你装备区牌数为全场唯一最少/唯一最多，你令手牌上限永久+1/两名角色横置。`,
 			binzhan: `缤绽`,
-			binzhan_info: `出牌阶段限一次，你可以调整手牌至上限，若你因此弃牌，你可以对攻击范围内的X名角色各造成1点火焰伤害（X为你弃置的牌数）。`,
+			binzhan_info: `出牌阶段限一次，你可以调整手牌至上限，若你因此弃牌，你可以对攻击范围内至多X名角色各造成1点火焰伤害（X为你弃置的牌数）。`,
 
 			NekomataOkayu: `猫又小粥`,
 			fantuan: `安心饭团`,

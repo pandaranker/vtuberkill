@@ -12,11 +12,10 @@ window.config={
 		sgscards:['standard','extra'],
 		sgsmodes:['identity','doudizhu','versus','longlaoguan','guozhan','single','brawl','connect'],//
 		stockmode:['identity','doudizhu','versus','boss','longlaoguan','guozhan','single','connect','brawl',
-		'yindao','richer'],//,'tafang','chess','stone'
+		'yindao','richer','strategy'],//,'tafang','chess','stone'
 		stockextension:['cardpile','coin','wuxing'],//'boss',
 		layout:['default','newlayout'],
-		theme:['woodden','music','simple'],
-		card_font:['LuoLiTi2','xiaozhuan','huangcao','caoshu','xingshu'],
+		theme:['vk','woodden','music','simple'],
 		double_hp:['hejiansan','pingjun','zuidazhi','zuixiaozhi','zonghe'],
 		image_background_filter:['default','blur','gray','sepia','invert','saturate','contrast','hue','brightness'],
 	},
@@ -65,7 +64,7 @@ window.config={
 	alteredSkills:[],
 	brokenFile:[],
 
-	theme:'music',
+	theme:'vk',
 	layout:'mobile',
 	card_style:'default',
 	cardback_style:'vk',
@@ -79,7 +78,6 @@ window.config={
 
 	replace_image:false,
 
-	card_font:'LuoLiTi2',
 	show_statusbar_ios:'off',
 	show_statusbar_android:false,
 	show_name:true,
@@ -103,11 +101,10 @@ window.config={
 	handcard_scroll:0,
 	animation:true,
 	skill_animation_type:'default',
-	paused:false,
-	title:false,
-	button_press:true,
+	// paused:false,
+	// button_press:true,
 	damage_shake:true,
-	log_highlight:true,
+	// log_highlight:true,
 	player_border:'normal',
 	radius_size:'default',
 

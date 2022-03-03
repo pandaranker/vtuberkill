@@ -414,7 +414,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target.hp<target.maxHp;
 				},
 				content:function(){
-					target.recover(event.baseDamage||1);
+					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					target.recover(event.baseDamage);
 					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
 				ai:{
@@ -875,7 +876,8 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target.isHealthy();
 				},
 				content:function(){
-					target.recover(event.baseDamage||1);
+					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					target.recover(event.baseDamage);
 				},
 				ai:{
 					basic:{

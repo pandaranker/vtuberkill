@@ -1049,7 +1049,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			mode_longlaoguan:['dulun','chuanjia','zhinengdulun','longjiao','longwei','takeover','bigong']
 		},
 		get:{
-			attitude:function(from,to){
+			rawAttitude:function(from,to){
 				if(from.identity==to.identity) return 10;
 				return -10;
 			},

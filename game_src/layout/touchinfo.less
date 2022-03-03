@@ -1,0 +1,20 @@
+.touchinfo{
+	padding: 6px;
+	position: absolute;
+	color: white;
+	text-shadow: black 0 0 2px;
+	top: 0;
+	margin: 0;
+	font-family: 'xinwei';
+	&.left{
+		left: 0;
+	}
+	&.right{
+		left: auto;
+		right: 0;
+		text-align: right;
+	}
+}
+#window.touchinfohidden>.touchinfo{
+	opacity: 0;
+}

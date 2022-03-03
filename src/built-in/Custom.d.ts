@@ -107,6 +107,7 @@ declare global {
         vtuberkill_character_rank
         resolveLocalFileSystemURL//？？？
         require//？？？
+        vkCore
     }
     interface HTMLDivElement{
         getModel:()=>Object

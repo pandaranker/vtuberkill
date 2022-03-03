@@ -9787,24 +9787,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			}
 		},
-		ui:{
-			click:{
-				// identity:function(){
-				// 	if(this.touched) {this.touched=false;return;}
-				// 	_status.clicked=true;
-				// 	if(this.parentNode.isUnseen()&&this.parentNode!=game.me){
-				// 		switch(this.firstChild.innerHTML){
-				// 			case '魏':this.firstChild.innerHTML='蜀';this.dataset.color='shu';break;
-				// 			case '蜀':this.firstChild.innerHTML='吴';this.dataset.color='wu';break;
-				// 			case '吴':this.firstChild.innerHTML='群';this.dataset.color='qun';break;
-				// 			case '群':this.firstChild.innerHTML='野';this.dataset.color='ye';break;
-				// 			case '野':this.firstChild.innerHTML='猜';this.dataset.color='unknown';break;
-				// 			default:this.firstChild.innerHTML='魏';this.dataset.color='wei';break;
-				// 		}
-				// 	}
-				// }
-			}
-		},
 		translate:{
 			ye:'野',
 			ye2:'野心家',

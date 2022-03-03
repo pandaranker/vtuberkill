@@ -9,3 +9,8 @@ localStorage.json
 temp/*
 node_modules
 tsconfig.json
+package-lock.json
+*.LICENSE.txt
+.yarn/releases/yarn-1.22.17.cjs
+yarn.lock
+layoutTemp.js

@@ -70,8 +70,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**泠鸢 */
 			Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
-			/**阿梓 */
-			Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
 			/**勺宝 */
 			Shaun: ['female', 'VirtuaReal', 3, ['juxiao', 'shshenyan'], ['guoV']],
 			/**阿萨Aza */
@@ -84,6 +82,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Miki: ['female', 'VirtuaReal', 4, ['xingxu', 'qingsui'], ['guoV']],
 			/**真绯瑠mahiru */
 			Mahiru: ['female', 'VirtuaReal', 4, ['jusheng', 'xingqu'], ['guoV']],
+			/**阿梓 */
+			Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
+			/**小可 */
+			xiaoke: ['female', 'VirtuaReal', '3/4', ['dianying', 'ganfen'], ['guoV']],
 
 			/**胡桃 */
 			Menherachan: ['female', 'NetEase', 4, ['shangbei', 'qianqing'], ['guoV']],
@@ -99,6 +101,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**机萪 */
 			jike: ['female', 'qun', 3, ['qianjiwanbian'], ['guoV']],
+			/**扇宝 */
+			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
+			/**秋蒂 */
+			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {
@@ -957,6 +963,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						Evt.target = result.targets[0];
 						Evt.num = Evt.target.countCards('h');
+						player.logSkill('xiugong', Evt.target)
 						if (Evt.num > 0) {
 							Evt.reality = Evt.target.countCards('h', { type: ['trick', 'delay'] });
 							var rand = 1.5 * Math.pow(Math.random(), Evt.num)
@@ -1123,47 +1130,30 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filter(Evt, player) {
 					return player.countCards('h') > 0;
 				},
-				content() {
-					"step 0"
+				content:[() => {
 					player.chooseToCompare(target).set('small', (get.recoverEffect(target, player, player) > get.recoverEffect(player, target, player) + 1));
-					"step 1"
-					Evt.resultWinner = result.winner;
+				},() => {
 					Evt.loop = 1;
-					if (!Evt.resultWinner) {
-						Evt.player1 = player;
-						Evt.player2 = target;
+					if (result.tie) {
+						Evt.finish()
 					}
 					else {
-						Evt.player1 = Evt.resultWinner;
-						if (Evt.resultWinner != player) Evt.player2 = player;
-						else if (Evt.resultWinner != target) Evt.player2 = target;
+						Evt.player1 = result.winner;
+						Evt.player2 = result.loser;
 					}
 					Evt.cards = [];
-					"step 2"
-					game.getGlobalHistory('cardMove', evt => {
-						if (evt == trigger || (evt.name != 'lose' && evt.name != 'cardsDiscard')) return false;
-						if (evt.name == 'lose' && evt.position != ui.discardPile) return false;
-						for (var i = 0; i < evt.cards.length; i++) {
-							var card = evt.cards[i];
-							if (get.type(card) != 'equip' && get.type(card) != 'delay') {
-								if (Evt.loop) {
-									if (Evt.player1.hasUseTarget(card)) {
-										Evt.cards.add(card);
-									}
-								}
-								else {
-									if (Evt.player2.hasUseTarget(card)) {
-										Evt.cards.add(card);
-									}
-								}
+				},() => {
+					for (let v of _status.discarded) {
+						if(['basic','trick'].includes(get.type(v))){
+							if ((Evt.loop ? Evt.player1 : Evt.player2).hasUseTarget(v)) {
+								Evt.cards.add(v);
 							}
 						}
-					}, trigger);
+					}
 					if (Evt.cards.length <= 0) {
 						Evt.finish();
 					}
 					else {
-						game.cardsGotoOrdering(Evt.cards);
 						var dialog = ui.create.dialog('一捧一逗', Evt.cards, true);
 						_status.dieClose.push(dialog);
 						dialog.videoId = lib.status.videoId++;
@@ -1176,52 +1166,25 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}, Evt.cards, dialog.videoId);
 						Evt.dialog = dialog;
 					}
-					"step 3"
-					if (Evt.loop) {
-						Evt.player1.chooseCard(1, 'he', '是否将一张牌当其中一张牌打出?');
-					}
-					else {
-						Evt.player2.chooseCard(1, 'he', '是否将一张牌当其中一张牌打出?');
-					}
-					"step 4"
-					if (result.bool) {
-						Evt.viewAsCards = result.cards;
-						if (Evt.loop) {
-							game.log(player, '观看了', '#y弃牌堆的牌');
-							var chooseButton = Evt.player1.chooseButton(true, function (button) {
-								return get.value(button.link, _status.event.player);
-							}).set('dialog', Evt.dialog.videoId);
-							Evt.chooseButton = chooseButton;
-						}
-						else {
-							game.log(Evt.target, '观看了', '#y弃牌堆的牌');
-							var chooseButton = Evt.target.chooseButton(true, function (button) {
-								return get.value(button.link, _status.event.player);
-							}).set('dialog', Evt.dialog.videoId);
-							Evt.chooseButton = chooseButton;
-						}
-					}
-					else {
-						Evt.goto(6);
-					}
-					"step 5"
-					if (!result.links[0]) {
-						Evt.goto(6);
-					}
-					else {
+				},() => {
+					let cur = Evt.loop ? Evt.player1 : Evt.player2
+					game.log(cur, '观看了', '#y弃牌堆的牌');
+					cur.chooseButton('是否视为使用其中一张牌？')
+						.set('dialog', Evt.dialog.videoId)
+						.set('ai', (button) => _status.event.player.getUseValue(button.link))
+				},() => {
+					if (result.bool && result.links) {
+						let cur = Evt.loop ? Evt.player1 : Evt.player2
 						Evt.cardUse = result.links[0];
-						if (Evt.loop) {
-							if (Evt.player1.hasUseTarget(Evt.cardUse)) {
-								Evt.player1.chooseUseTarget(result.links[0], Evt.viewAsCards, true, false).viewAs = true;
-							}
-						}
-						else {
-							if (Evt.player2.hasUseTarget(Evt.cardUse)) {
-								Evt.player2.chooseUseTarget(result.links[0], Evt.viewAsCards, true, false).viewAs = true;
-							}
+						if (cur.hasUseTarget(Evt.cardUse)) {
+							cur.chooseUseTarget(Evt.cardUse, true, false);
 						}
 					}
-					"step 6"
+					else {
+						Evt.goto(5);
+						Evt.skipUse = true
+					}
+				},() => {
 					ui.clear();
 					Evt.dialog.close();
 					_status.dieClose.remove(Evt.dialog);
@@ -1234,43 +1197,28 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}, Evt.dialog.videoId);
 					if (Evt.loop) {
 						Evt.loop--;
-						if (Evt.loop) {
-							Evt.player1.chooseBool('将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai', function () {
-								var player = _status.event.player;
-								var target = _status.event.getParent().player2;
-								if (get.recoverEffect(target, player, player) > 1) return 0;
-								else return -0.2 + Math.random();
-							});
-						}
-						else {
-							Evt.player2.chooseBool('将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用，或取消使对方回复一点体力').set('ai', function () {
-								var player = _status.event.player;
-								var target = _status.event.getParent().player1;
-								if (get.recoverEffect(target, player, player) > 1) return 0;
-								else return -0.2 + Math.random();
-							});
-						}
+						Evt.player2.chooseBool('视为使用一张本回合进入弃牌堆的一张基本牌或通常锦囊牌，或取消使对方回复一点体力').set('ai', function () {
+							var player = _status.event.player;
+							var target = _status.event.getParent().player1;
+							if (get.recoverEffect(target, player, player) > 1) return 0;
+							else return -0.2 + Math.random();
+						});
 					}
-					else {
+					else if(!Evt.skipUse){
 						Evt.finish();
 					}
-					"step 7"
-					if (result.bool) {
+				},() => {
+					if (result.bool&&!Evt.skipUse) {
 						Evt.goto(2);
 					}
 					else {
-						if (Evt.loop == 2 || (Evt.loop && Evt.resultWinner == player) || (!Evt.loop && Evt.resultWinner != player)) {
-							Evt.target.recover();
-						}
-						else {
-							player.recover();
-						}
+						Evt.player1.recover();
 					}
-				},
+				}],
 				ai: {
 					order: 8,
 					result: {
-						target: 0.5,
+						target: 1,
 					},
 				},
 			},
@@ -1606,8 +1554,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}, () => {
 					if (Evt.num) {
 						player.chooseTarget('『监策』：选择令一名角色摸' + get.cnNumber(Evt.num) + '张牌', function (card, player, target) {
-								return target != _status.event.source;
-							})
+							return target != _status.event.source;
+						})
 							.set('ai', (target) => {
 								let player = _status.event.player;
 								return target.needsToDiscard() ? get.attitude(target, player) / 2 : get.attitude(target, player);
@@ -1642,7 +1590,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (numbers && numbers.contains(get.number(card))) return -1;
 						return 1;
 					})
-					.set('numbers', numbers);
+						.set('numbers', numbers);
 					'step 1'
 					if (result.bool) {
 						var cards = [result.card];
@@ -2040,7 +1988,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			XiaoxiXiaotao: `小希小桃`,
 			XiaoxiXiaotao_info: `小希小桃`,
 			yipengyidou: `一捧一逗`,
-			yipengyidou_info: `出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以立即将一张牌当本回合进入弃牌堆的一张基本牌或通常锦囊牌使用。然后没赢的角色也可如此做；或令赢的角色回复1点体力。`,
+			yipengyidou_info: `出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以视为使用一张本回合进入弃牌堆的一张基本牌或通常锦囊牌。没赢的角色选择一项：也如此做；令对方回复1点体力。`,
 			yipengyidou_append: lib.figurer(`通过与队友拼点，多次使用关键牌`),
 			renleiguancha: `人类观察`,
 			renleiguancha_info: `结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。`,

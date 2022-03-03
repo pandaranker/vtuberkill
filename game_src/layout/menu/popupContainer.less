@@ -1,0 +1,44 @@
+.popup-container{
+	z-index:10;
+}
+.popup-container.filter-character{
+	text-align: center;
+	overflow: scroll;
+	opacity: 0;
+	transition: all 0.3s;
+    >div{
+        left: 0;
+        top:0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        transition: all 0s;
+        position: relative;
+        >div{
+            position: relative;
+            margin: 10px
+        }
+        >.capt{
+            width: 80px;
+            height: 80px;
+            padding: 0;
+            font-size: 60px;
+            line-height: 90px;
+        }
+    }
+    &.shown{
+        opacity: 1;
+    }
+    &.removing>div{
+        pointer-events: none;
+    }
+}
+.menu-container,.popup-container{
+	width:100%;
+	height:100%;
+	left:0;
+	top:0;
+	position: absolute;
+}
