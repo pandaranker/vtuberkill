@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '1.10.0.12',
+	version: '1.10.0.13',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.0.12微型更新：优化V杀主题（之后会陆续添加更多特效），新增字体“铁蒺藜体”和“汉仪菱心体”，部分新特效可以用“流畅模式”关闭`,
+		`1.10.0.13小型更新：新增角色寝月Nero，勾檀Mayumi削弱，栗子酱RIKO加强，增加VK体力样式，修复部分bug，部分新特效可以用“流畅模式”关闭`,
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
 		``,
 		`现在于游戏过程中可以右键点击斜体字来进一步查看描述`,
@@ -13,7 +13,6 @@ window.noname_update = {
 		海洋特典角色（湊阿夸、笹木咲、向晚、星宫汐）、皇特典（绯赤艾莉欧、噶呜·古拉）`,
 	],
 	files: [
-		'image/character/sea_Ava.jpg',
 		'image/character/Azusa.jpg',
 		'image/character/xiaoke.jpg',
 		'image/character/Xiaorou.jpg',
@@ -27,7 +26,7 @@ window.noname_update = {
 
 		'game/game.js',
 
-		// 'game/config.js',
+		'game/config.js',
 		'game/package.js',
 		'game/asset.js',
 

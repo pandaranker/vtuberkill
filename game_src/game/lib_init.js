@@ -1903,12 +1903,13 @@ module.exports = function (element, _mode, _message) {
           }
           else {
             ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-
-            ui.backgroundFlash = ui.create.div('.background', ui.background);
-            ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
-            ui.backgroundFlash.style.mixBlendMode = 'overlay';
-            ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
-            ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+            if(!ui.backgroundFlash){
+                ui.backgroundFlash = ui.create.div('.background', ui.background);
+                ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+                ui.backgroundFlash.style.mixBlendMode = 'overlay';
+                ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+                ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+            }
           }
           if (lib.config.image_background_blur) {
             ui.background.style.filter = 'blur(8px)';

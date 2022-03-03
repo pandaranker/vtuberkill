@@ -105,6 +105,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
 			/**秋蒂 */
 			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
+			
+			/**吉诺儿kino */
+			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],
+			/**唐九夏 */
+			tangjiuxia: ['female', 'HappyEl', 4, ['jiuxian', 'yujian'], ['guoV']],
+			/**李清歌 */
+			liqingge: ['female', 'HappyEl', 4, ['tage'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {

@@ -17,12 +17,13 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				modTarget: true,
 				content: function () {
 					'step 0'
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					if (!target.hasSkill('qi_skill')) {
 						target.addTempSkill('qi_skill')
 					}
 					'step 1'
 					if (target.isDamaged()) {
-						target.changeHujia();
+						target.changeHujia(Evt.baseNumber);
 					}
 				},
 				ai: {
@@ -91,8 +92,8 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				reverseOrder: true,
 				content: function () {
 					'step 0'
-					if (typeof event.baseDamage != 'number') event.baseDamage = 1;
-					if (event.directHit) event._result = { bool: false };
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
+					if (Evt.directHit) Evt._result = { bool: false };
 					else {
 						let next = target.chooseToDiscard('he');
 						next.set('ai', function (card) {
@@ -102,18 +103,18 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 							if (get.name(card) == 'shan' && evt.target.hp > 1) return 2;
 							return 9 - get.value(card);
 						});
-						next.set('prompt', '弃置一张牌，否则横置并摸一张牌');
+						next.set('prompt', `弃置一张牌，否则横置并摸${Evt.baseNumber}张牌`);
 					}
 					'step 1'
 					if (result.cards && result.cards.length) {
-						target.changeHujia(event.baseDamage);
-						event.finish();
+						target.changeHujia(Evt.baseNumber);
+						Evt.finish();
 					}
 					'step 2'
-					if (target.isLinked()) event.finish();
+					if (target.isLinked()) Evt.finish();
 					'step 3'
 					target.link();
-					target.draw();
+					target.draw(Evt.baseNumber);
 				},
 				ai: {
 					wuxie: function (target, card, player, viewer) {
@@ -164,8 +165,8 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
-					if (typeof event.baseDamage != 'number') event.baseDamage = 1;
-					if (event.directHit) event._result = { bool: false };
+					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = Evt.baseNumber || 1;
+					if (Evt.directHit) Evt._result = { bool: false };
 					else {
 						var sourcecolor = get.color(card, player);
 						let next = target.chooseToRespond({ color: sourcecolor });
@@ -184,7 +185,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					}
 					'step 1'
 					if (result.bool == false) {
-						target.damage(event.baseDamage, 'ocean');
+						target.damage(Evt.baseDamage, 'ocean');
 					}
 				},
 				ai: {
@@ -236,7 +237,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
-					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = 1;
+					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = Evt.baseNumber || 1;
 					Evt.list = ['弃置装备区所有牌', '受到海洋伤害'];
 					if (target.countCards('e')) {
 						target.chooseControl('dialogcontrol', Evt.list).set('ai', function () {
@@ -291,6 +292,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					player.choosePlayerCard(target, 'he', [1, 3], '【沉没】：移除至多3张牌', true).set('ai', function (button) {
 						var val = get.buttonValue(button);
 						var att = get.attitude(_status.event.player, get.owner(button.link));
@@ -316,7 +318,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					event.result = { cards: event.cards };
 					'step 3'
 					if (target && target.countCards('h') == 0) {
-						target.draw();
+						target.draw(Evt.baseNumber);
 					}
 				},
 				ai: {
@@ -374,6 +376,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					player.choosePlayerCard(target, 'he', [1, 3], '【沉静】：移除至多3张牌', true).set('ai', function (button) {
 						var val = get.buttonValue(button);
 						var att = get.attitude(_status.event.player, get.owner(button.link));
@@ -399,7 +402,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					event.result = { cards: event.cards };
 					'step 3'
 					if (target && target.countCards('h') == 0) {
-						target.changeHujia();
+						target.changeHujia(Evt.baseNumber);
 					}
 				},
 				ai: {
@@ -652,26 +655,26 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 						return i != card;
 					});
 				},
-				selectTarget: 1,
+				selectTarget: [1, 2],
 				filterTarget: function (card, player, target) {
 					return target != player && target.hujia;
 				},
 				content: function () {
 					'step 0'
-					if (typeof event.baseDamage != 'number') event.baseDamage = 1;
-					event.dis = player.chooseToDiscard('he', true).set('prompt2', `若弃置装备牌，则额外对目标造成${get.cnNumber(event.baseDamage)}点暗影伤害`).set('ai', function (card) {
+					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = Evt.baseNumber || 1;
+					Evt.dis = player.chooseToDiscard('he', true).set('prompt2', `若弃置装备牌，则额外对目标造成${get.cnNumber(Evt.baseDamage)}点暗影伤害`).set('ai', function (card) {
 						var target = _status.event.getParent().target;
 						var player = _status.event.player;
 						if (get.type(card) === 'equip') return get.damageEffect(target, player, player) + 7 - get.value(card);
 						return 7 - get.value(card);
 					})
 					'step 1'
-					event.num = target.hujia;
-					target.changeHujia(-event.num);
+					Evt.num = target.hujia;
+					target.changeHujia(-Evt.num);
 					game.delay(1.5);
 					'step 2'
-					let card = event.dis.result.cards[0]
-					if (card && get.type(card) === 'equip') target.damage(event.baseDamage, 'yami');
+					let card = Evt.dis.result.cards[0]
+					if (card && get.type(card) === 'equip') target.damage(Evt.baseDamage, 'yami');
 					game.delayx();
 				},
 				ai: {
@@ -706,11 +709,11 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
-					if (typeof event.baseDamage != 'number') event.baseDamage = 1;
-					event.num = target.hujia;
-					target.chooseToDiscard(event.num, true);
+					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = Evt.baseNumber || 1;
+					Evt.num = target.hujia;
+					target.chooseToDiscard(Evt.num, true);
 					'step 1'
-					if (result.cards.length < event.num) target.damage(event.baseDamage, 'ocean');
+					if (result.cards.length < Evt.num) target.damage(Evt.baseDamage, 'ocean');
 				},
 				chongzhu: true,
 				ai: {
@@ -747,11 +750,13 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				},
 				content: function () {
 					'step 0'
-					if (typeof event.baseDamage != 'number') event.baseDamage = 1;
-					target.changeHujia(-event.baseDamage);
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
+					target.changeHujia(-Evt.baseNumber);
 					game.delay(0.5);
+					Evt.change = player.isDamaged() && !player.hujia
 					'step 1'
-					player.changeHujia(event.baseDamage + (player.isDamaged() ? 1 : 0));
+					player.changeHujia(Evt.baseNumber + (Evt.change ? 1 : 0));
+					if (Evt.change) player.draw()
 				},
 				ai: {
 					basic: {
@@ -959,7 +964,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				intro: {
 					content: '手牌上限+#',
 				},
-				onremove:true,
+				onremove: true,
 				mod: {
 					maxHandcard: function (player, num) {
 						return num + player.$.haidi;
@@ -1328,9 +1333,9 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 			chen_card: '消失之牌',
 
 			huiliu: '回流',
-			huiliu_info: '出牌阶段，对距离2以内且有护甲的一名其他角色使用。你获取其一点护甲，若你已受伤，则额外获得一点护甲。',
+			huiliu_info: '出牌阶段，对距离2以内且有护甲的一名其他角色使用。你获取其一点护甲，若你已受伤且没有护甲，则额外获得一点护甲并摸一张牌。',
 			qinshi: '浸蚀',
-			qinshi_info: '出牌阶段，对有护甲的一名其他角色使用，你弃置一张牌，移除其所有护甲，若你弃置了装备牌，则额外对目标造成一点暗影伤害。',
+			qinshi_info: '出牌阶段，对有护甲的1至2名其他角色使用，你依次弃置一张牌，移除其所有护甲，若你弃置了装备牌，则额外对目标造成一点暗影伤害。',
 			bowen: '波纹',
 			bowen_info: '出牌阶段，对有护甲的一名其他角色使用，令其弃置自身护甲数量的手牌，若不足，则额外对其造成一点海洋伤害。',
 

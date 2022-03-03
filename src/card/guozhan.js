@@ -229,7 +229,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(event.card.yingbian_all){
 						target.discard(target.getCards('e',function(card){
 							return lib.filter.cardDiscardable(card,target,'shuiyanqijunx');
@@ -631,7 +631,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				selectTarget:-1,
 				modTarget:true,
 				content:function(){
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					target.damage('fire',event.baseDamage);
 				},
 				ai:{

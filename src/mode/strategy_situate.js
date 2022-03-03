@@ -112,11 +112,12 @@ class City {
             let coord2 = hexagonal(ctx, coord, zoom).begin
             ctx.save()
             ctx.fillStyle = c.color ? hexToRgba(c.color, 0.9) : "rgba(150, 50, 255, 0.9)";
-            ctx.fillText(translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
+            ctx.textAlign = 'center'
+            ctx.fillText(translation.citys[c.name], coord2[0] + 20, coord2[1] + 20);
             ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
             ctx.shadowBlur = 10;
             ctx.shadowColor = ctx.fillStyle;
-            ctx.strokeText(translation.citys[c.name], coord2[0] - 20, coord2[1] + 20);
+            ctx.strokeText(translation.citys[c.name], coord2[0] + 20, coord2[1] + 20);
             ctx.beginPath()
             ctx.restore()
             

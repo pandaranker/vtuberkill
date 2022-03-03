@@ -68,7 +68,7 @@ window.config={
 	layout:'mobile',
 	card_style:'default',
 	cardback_style:'vk',
-	hp_style:'default',
+	hp_style:'vk',
 
 	image_character:'default',
 	image_background:'svg_simple1_bg',

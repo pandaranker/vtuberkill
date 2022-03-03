@@ -1,5 +1,6 @@
 import skill from './yuzu_skill'
 import translate from './yuzu_translate'
+import card from './yuzu_card'
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
 	return <currentObject>{
 		name: "yuzu",
@@ -50,6 +51,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			NekoyamaNae: ['female', 'qun', 6, ['moupi', 'xuneng'],],
 			/**琥珀玲 */
 			KohakuRin: ['female', 'qun', 4, ['chunzhen', 'hupo'],],
+			/**寝月ねろ */
+			NerunaNero: ['female', 'qun', 3, ['peijiu', 'ransha'],],
 
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
@@ -96,12 +99,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
 
-			/**吉诺儿kino */
-			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],
-			/**唐九夏 */
-			tangjiuxia: ['female', 'HappyEl', 4, ['jiuxian', 'yujian'], ['guoV']],
-			/**李清歌 */
-			liqingge: ['female', 'HappyEl', 4, ['tage'], ['guoV']],
 			/**神宫司玉藻 */
 			JingujiTamamo: ['female', 'HappyEl', 3, ['aowei', 'meizhan'], ['zhu', 'guoV']],
 			/**伊莎贝拉·霍利 */
@@ -205,34 +202,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Kino: '#yNebula-Beat',
 			tangjiuxia: '#yNebula-Beat',
 		},
-		skill: skill,
-		card: {
-			niwei_sha: {
-				content() {
-					Evt.target.recover(player);
-					game.delay(0.5);
-				},
-			},
-			niwei_shan: {
-				content() {
-					delete Evt.result;
-					Evt.player.draw(2);
-					game.delay(0.5);
-				},
-			},
-			niwei_tao: {
-				content() {
-					Evt.target.loseHp();
-					game.delay(0.5);
-				},
-			},
-			niwei_jiu: {
-				content() {
-					Evt.target.chooseToUse().set('targetRequired', true);
-					game.delay(0.5);
-				},
-			},
-		},
+		skill: {...skill},
+		card: card,
 		dynamicTranslate: {
 			tiantang(player) {
 				let str = lib.translate.tiantang_info;

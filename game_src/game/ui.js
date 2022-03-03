@@ -6859,6 +6859,7 @@ module.exports = {
                 * @property {HTMLDivElement} name 
                 */
                node.node = {
+                  displayer: ui.create.div('.displayer', node),
                   image: ui.create.div('.image', node),
                   info: ui.create.div('.info', node),
                   name: ui.create.div('.name', node),

@@ -17,6 +17,49 @@
 }
 
 .button {
+    &.character {
+        >.name {
+            left: 5px;
+            top: 22px;
+            max-height: 68px;
+            overflow: hidden;
+        }
+
+        >.hp {
+            left: 5px;
+            top: 3px;
+
+            &.text {
+                top: 8px;
+                left: 6px;
+                font-family: 'huangcao', 'xinwei';
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+        }
+
+        >.intro {
+            top: 71px;
+            left: 0;
+        }
+
+        >.identity {
+            top: -6px;
+            left: 72px;
+        }
+
+        &.newstyle>.identity {
+            /*display: none;*/
+            border: none;
+            background: none !important;
+            /*box-shadow: none;*/
+            left: auto;
+            right: 3px;
+            top: 3px;
+            /*font-size: 20px;*/
+        }
+    }
+
     &.newstyle {
         >.name {
             top: 8px;
@@ -40,25 +83,25 @@
                 bottom: 5px;
             }
 
-            >div.text {
-                background: none !important;
-                box-shadow: none !important;
-                border: none !important;
-                font-family: 'Tiejili';
-                text-align: right;
-                width: auto;
-                height: auto;
-                transform: none !important;
-                text-shadow: black 0 0 2px, black 0 0 3px;
+            >div {
+                width: 10px;
+                height: 10px;
+                background: rgba(57, 123, 4, 1);
+                border: 1px solid rgba(39, 79, 7, 1);
+                box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 2px inset, rgba(255, 255, 255, 0.15) -1px 1px 5px inset;
+                &.text {
+                    background: none !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                    font-family: 'Tiejili';
+                    text-align: right;
+                    width: auto;
+                    height: auto;
+                    transform: none !important;
+                    text-shadow: black 0 0 2px, black 0 0 3px;
+                }
             }
-        }
 
-        .button.newstyle>.hp>div {
-            width: 10px;
-            height: 10px;
-            background: rgba(57, 123, 4, 1);
-            border: 1px solid rgba(39, 79, 7, 1);
-            box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 2px inset, rgba(255, 255, 255, 0.15) -1px 1px 5px inset;
         }
     }
 }
