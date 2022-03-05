@@ -391,7 +391,7 @@ window.vk_asset_list=[
 	'audio/skill/luecai2.mp3',
 	'audio/skill/luecai_draw.mp3',
 	'audio/skill/lunhuizuzhou.mp3',
-	'audio/skill/luxian.mp3',
+	'audio/skill/luji.mp3',
 	'audio/skill/meici1.mp3',
 	'audio/skill/meici2.mp3',
 	'audio/skill/meici3.mp3',
@@ -1379,6 +1379,8 @@ window.vk_asset_list=[
 	'image/card/jinzhou.png',
 	'image/card/gouhun.png',
 	'image/character/NerunaNero.jpg',
+	'image/character/SakumaNiina.jpg',
+	'image/character/Mitsuki.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

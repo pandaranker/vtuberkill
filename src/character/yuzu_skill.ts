@@ -7423,11 +7423,8 @@ export default {
     }).setI(true).setT('phaseJieshuBegin'),
 
     //步步
-    tianlve: {
-        audio: true,
-        trigger: { player: 'phaseUseBegin' },
+    tianlve: new toSkill('trigger', {
         priority: 199,
-        direct: true,
         content: [() => {
             player.chooseTarget(get.$pro2('tianlve'), function (card, player, target) {
                 return target != player;
@@ -7441,11 +7438,11 @@ export default {
                 Evt.target = result.targets[0];
                 Evt.target.recover();
                 player.$.tianlve_pcr = Evt.target;
-                player.addTempSkill('tianlve_pcr');
+                player.addTempSkill('tianlve_pcr', { player: 'phaseUseAfter' });
             }
         }],
         subSkill: {
-            pcr: {
+            pcr: new toSkill('trigger', {
                 mark: 'character',
                 intro: {
                     name: '甜略',
@@ -7455,9 +7452,7 @@ export default {
                     player.unmarkSkill('tianlve_pcr');
                     delete player.$.tianlve_pcr;
                 },
-                trigger: { player: 'useCard' },
                 priority: 199,
-                direct: true,
                 filter(Evt, player) {
                     let card = Evt.card, info = get.info(card);
                     if (info.allowMultiple == false) return false;
@@ -7490,10 +7485,10 @@ export default {
                         if (target == player.$.tianlve_pcr) return true;
                     },
                 },
-            },
+            }, 'direct').setT('useCard'),
         }
-    },
-    luxian: {
+    }, 'audio', 'direct').setT('phaseUseBegin'),
+    luji: {
         audio: true,
         group: 'P_SP',
         trigger: { player: 'phaseZhunbeiBegin' },
@@ -7545,8 +7540,8 @@ export default {
             } else Evt.finish()
         }, () => {
             if (result.links?.length) {
-                player.$.luxian = true;
-                player.awakenSkill('luxian');
+                player.$.luji = true;
+                player.awakenSkill('luji');
                 player.loseMaxHp();
                 for (let i of result.links) {
                     if (_status.characterlist) {
@@ -7556,12 +7551,12 @@ export default {
                     for (let j of skills) {
                         player.addTempSkill(j, { player: 'phaseDiscardAfter' });
                     }
-                    player.flashAvatar('luxian', i);
+                    player.flashAvatar('luji', i);
                 }
-                player.$.luxian_pcr ??= [];
-                player.$.luxian_pcr.addArray(result.links);
+                player.$.luji_pcr ??= [];
+                player.$.luji_pcr.addArray(result.links);
                 player.$.P_SP.addArray(result.links);
-                player.addTempSkill('luxian_pcr', { player: 'phaseDiscardAfter' });
+                player.addTempSkill('luji_pcr', { player: 'phaseDiscardAfter' });
                 player.markSkill('P_SP');
             }
         }],
@@ -7708,7 +7703,7 @@ export default {
                 }],
             },
             change: {
-                trigger: { player: ['shouruAfter', 'chonghuangAfter', 'baoxiaoAfter', 'tianlveAfter', 'luxianAfter', 'quankaiAfter', 'canxinAfter', 'useSkillAfter'] },
+                trigger: { player: ['shouruAfter', 'chonghuangAfter', 'baoxiaoAfter', 'tianlveAfter', 'lujiAfter', 'quankaiAfter', 'canxinAfter', 'useSkillAfter'] },
                 priority: 199,
                 prompt2: '转换一次『耳匿』',
                 filter(Evt, player) {
@@ -9558,6 +9553,134 @@ export default {
             }
         }
     }, 'mark'),
+    //咲间妮娜
+    tianjiang: new toSkill('active', {
+        filter(Evt, player) {
+            return true
+        },
+        filterTarget(card, player, target) {
+            return !target.countCards('h')
+        },
+        content: [() => {
+            target.draw()
+        }, () => {
+            if (lib.filter.targetEnabled2({ name: 'juedou', isCard: true }, player, target)) {
+                player.useCard({ name: 'juedou', isCard: true }, target, false);
+            }
+        }],
+        ai: {
+            order(item, player) {
+                return 5
+            },
+            result: {
+                player(player, target) {
+                    if (target === player) return 1
+                    return get.effect(target, { name: 'juedou' }, player, player) - 2;
+                },
+                target(player, target) {
+                    if (target === player) return 1
+                    return 2 - get.effect(target, { name: 'juedou' }, player, target);
+                }
+            },
+            threaten: 1.3,
+            expose: 0.1,
+        },
+    }),
+    baiquan: new toSkill('trigger', {
+        filter(Evt, player) {
+            return game.countPlayer(cur => cur.countCards('he'));
+        },
+        content: [() => {
+            Evt.count = trigger.num;
+        }, () => {
+            Evt.count--;
+            player.chooseTarget(get.$pro2('baiquan')).set('ai', (target) => {
+                let player = _status.event.player;
+                return get.effect(target, { name: 'guohe_copy2' }, player, player)
+            });
+        }, () => {
+            if (result.bool && result.targets?.length) {
+                player.logSkill('baiquan', result.targets);
+                Evt.target = result.targets[0];
+                Evt.discard = 3
+            } else Evt.finish();
+        }, () => {
+            if (Evt.target.countDiscardableCards(player, 'he')) {
+                player.line(Evt.target);
+                player.discardPlayerCard(Evt.target, 'he', true).set('forceDie', true);
+                Evt.discard--;
+                if (Evt.discard) Evt.redo();
+            }
+            if (Evt.count) Evt.goto(1)
+        }],
+        ai: {
+            maixie: true,
+            maixie_hp: true,
+            threaten: 0.2,
+            expose: 0.1,
+        },
+    }).setT('damageAfter'),
+    //满月
+    xuedian: new toSkill('trigger', {
+        priority: 199,
+        content: [() => {
+            player.chooseTarget(get.$pro2('xuedian'), function (card, player, target) {
+                return true;
+            }, (target) => {
+                let player = _status.event.player;
+                return get.damageEffect(target, player, player);
+            });
+        }, () => {
+            if (result.targets?.length) {
+                player.logSkill('xuedian', result.targets);
+                Evt.target = result.targets[0];
+                player.$.xuedian_houxu = Evt.target;
+                player.addTempSkill('xuedian_houxu', { player: 'phaseUseAfter' });
+            }
+        }],
+        subSkill: {
+            houxu: new toSkill('trigger', {
+                mark: 'character',
+                intro: {
+                    name: '甜略',
+                    content: '本阶段内你对$使用牌无距离限制，且指定其为唯一目标时，可以摸一张牌或增加一个额外目标',
+                },
+                onremove(player, skill) {
+                    player.unmarkSkill('xuedian_houxu');
+                    delete player.$.xuedian_houxu;
+                },
+                priority: 199,
+                filter(Evt, player) {
+                    if (Evt.name === 'damage') {
+                        return Evt.num > 0 && Evt.player === player.$.xuedian_houxu;
+                    }
+                    else {
+                        let draw = player.getHistory('gain', evt => {
+                            if (evt.getParent().name != 'draw') return false;
+                            let houxu = evt.getParent('xuedian_houxu')
+                            if (houxu?.name === 'xuedian_houxu') return true
+                        })
+                        console.log(draw)
+                        return draw.length === 0
+                    }
+                },
+                logTarget(Evt, player) {
+                    return player.$.xuedian_houxu
+                },
+                content: [() => {
+                    if (trigger.name === 'damage') {
+                        player.chooseDrawRecover(2, 1, true)
+                    }
+                    else {
+                        player.turnOver()
+                        if (player.$.xuedian_houxu.isIn() && player.$.xuedian_houxu !== player) {
+                            player.$.xuedian_houxu.turnOver()
+                        }
+                    }
+                }],
+            }, 'forced').setT({ source: 'damageEnd', player: 'phaseUseEnd' }),
+        }
+    }, 'audio', 'direct').setT('phaseUseBegin'),
     //白桃shirako
     jufu: new toSkill('regard', {
         chooseButton: {
@@ -11865,6 +11988,7 @@ export default {
             }).setI(1),
         },
         ai: {
+            combo: 'gouhun',
             effect: {
                 target(card, player, target, current) {
                     if (get.type(card) == 'equip' && get.subtype(card) == 'equip2') return [1, 2];
@@ -11960,6 +12084,7 @@ export default {
                 },
             }
         },
+        involve: 'jinzhou',
         ai: {
             order: 5,
             result: {
@@ -13953,8 +14078,9 @@ export default {
         },
         frequent: true,
         content: [() => {
-            Evt.ctrlMap = [`A.于摸牌阶段多摸${player.$.shangsheng_Buff}张牌`, `B.于出牌阶段多出${player.$.shangsheng_Buff}张【杀】`, `C.于弃牌阶段手牌上限+${player.$.shangsheng_Buff}`]
-            player.chooseControl('dialogcontrol',).set('ai', function () {
+            let Buff = (player.$.shangsheng_Buff) || 1;
+            Evt.ctrlMap = [`A.于摸牌阶段多摸${Buff}张牌`, `B.于出牌阶段多出${Buff}张【杀】`, `C.于弃牌阶段手牌上限+${Buff}`]
+            player.chooseControl('dialogcontrol', Evt.ctrlMap).set('ai', function () {
                 let player = _status.event.player;
                 let controls = _status.event.controls.slice(0);
                 let map = _status.event.controls;
@@ -13973,8 +14099,8 @@ export default {
                     player.addTempSkill('shangsheng_Buff0'); break;
                 }
                 case Evt.ctrlMap[1]: {
-                    player.addTempSkill('shangsheng_Buff1'); break;
                     game.putBuff(player, 'shangsheng', '.player_buff')
+                    player.addTempSkill('shangsheng_Buff1'); break;
                 }
                 case Evt.ctrlMap[2]: {
                     player.addTempSkill('shangsheng_Buff2'); break;
@@ -17879,7 +18005,9 @@ export default {
         }
     }).setT({ global: 'useCardToTarget' }),
     yuanhua: new toSkill('trigger', {
-        combo: 'youchu',
+        ai: {
+            combo: 'youchu',
+        },
         filter(Evt, player) {
             return player.countCards('hs') && player.getStorage('ya').length;
         },

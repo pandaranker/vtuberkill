@@ -38,7 +38,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			EQueen: ['female', 'asoul', 4, ['yehua', 'fengqing'], ['guoV']],
 
 			/**步玎 */
-			Pudding: ['female', 'psp', 4, ['tianlve', 'luxian'], ['guoV', 'P_SP']],
+			Pudding: ['female', 'psp', 4, ['tianlve', 'luji'], ['guoV', 'P_SP']],
 			/**粉兔 */
 			AyanaNana: ['female', 'psp', '2/4', ['erni', 'shouru', 'chonghuang', 'yinzun'], ['zhu', 'guoV', 'P_SP']],
 			/**红晓音 */
@@ -89,6 +89,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**胡桃 */
 			Menherachan: ['female', 'NetEase', 4, ['shangbei', 'qianqing'], ['guoV']],
+			/**栗子酱 */
+			RIKO: ['female', 'NetEase', 4, ['tieyu'], ['guoV']],
+			/**山兔 */
+			YamaUsagi: ['female', 'NetEase', 3, ['zhengmeng', 'wadao'], ['guoV']],
 
 			/**犬山 */
 			InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 'hundunliandong']],
@@ -105,6 +109,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shanbao: ['female', 'qun', 4, ['fengxu'], ['guoV']],
 			/**秋蒂 */
 			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
+			/**麟＆犀 */
+			linxi: ['female', 'qun', 5, ['lilian', 'zihuai'], ['guoV']],
+
+			/**七濑Unia */
+			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
 			
 			/**吉诺儿kino */
 			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],

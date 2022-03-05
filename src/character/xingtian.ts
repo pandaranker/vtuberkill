@@ -452,9 +452,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			xingheng: new toSkill('trigger', {
 				usable: 1,
 				filter(Evt, player) {
-					console.log(Evt)
-					if (['phaseJudge', 'phaseDiscard'].includes(Evt.name)) return player.$.xuanyu.length % 2 === 1
-					else return player.$.xuanyu.length % 2 === 0 && Evt.targets.length === 1
+					if (['phaseJudge', 'phaseDiscard'].includes(Evt.name)) return player.getStorage('xuanyu').length % 2 === 1
+					else return player.getStorage('xuanyu').length % 2 === 0 && Evt.targets.length === 1
 				},
 				content: [() => {
 					console.log('A')
@@ -481,7 +480,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (bool) stat.skill[i] = 0;
 					}
 				}],
-				combo: 'xuanyu'
+				ai: {
+					combo: 'xuanyu'
+				},
 			}, 'logTarget:player').setT({ player: ['phaseJudge', 'phaseDiscard'], target: 'useCardTo' }, 'Before'),
 		},
 		characterReplace: {

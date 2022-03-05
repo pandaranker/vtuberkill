@@ -158,27 +158,23 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**胡桃Usa */
 			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
-			/**七濑Unia */
-			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
 			/**玛安娜Myanna */
 			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
 			/**花花Haya */
 			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
+			/**咲间妮娜 */
+			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
+			/**满月 */
+			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**白桃shirako */
 			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:qun:Providence']],
 
-			/**麟＆犀 */
-			linxi: ['female', 'qun', 5, ['lilian', 'zihuai'], ['guoV']],
 
 			/**雨街F */
 			AmemachiF: ['female', 'RedC', 3, ['ciling', 'xiyu'], ['guoV']],
 
 			/**中国绊爱 */
 			zhongguobanai: ['female', 'NetEase', 4, ['liying', 'fuyu'], ['guoV']],
-			/**栗子酱 */
-			RIKO: ['female', 'NetEase', 4, ['tieyu'], ['guoV']],
-			/**山兔 */
-			YamaUsagi: ['female', 'NetEase', 3, ['zhengmeng', 'wadao'], ['guoV']],
 
 			/**新科娘 */
 			xinkeniang: ['female', 'qun', 4, ['daimao', 'hongtou'], ['zhu', 'guoV']],
