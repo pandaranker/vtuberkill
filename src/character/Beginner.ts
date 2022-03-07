@@ -2334,7 +2334,18 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						Evt.finish()
 						return
 					}
+					game.broadcastAll(function(player,cards){
+						let cardxs = []
+						for(let v of cards){
+							let cardx=ui.create.card();
+							cardx.classList.add('infohidden');
+							cardx.classList.add('infoflip');
+							cardxs.push(cardx)
+						}
+						player.$throw(cardxs,500,'nobroadcast');
+					},player,Evt.cards);
 					player.lose(Evt.cards, ui.special);
+					game.delayx();
 				}, () => {
 					let tops = Evt.cards.slice(0)
 					game.log(player, `将${get.cnNumber(tops.length)}张牌放在牌堆顶`)

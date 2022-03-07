@@ -67,7 +67,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target==player;
 				},
 				content:function(){
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(target.isDying()||event.getParent(2).type=='dying'){
 						target.recover(event.baseDamage);
 						if(_status.currentPhase==target){
@@ -182,7 +182,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(target.countCards('h')==0){
 						event.finish();
 						return;
@@ -640,7 +640,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				charlotte:true,
 				firstDo:true,
 				content:function(){
-					if(!trigger.baseDamage) trigger.baseDamage=1;
+					if(!trigger.baseDamage) trigger.baseDamage=Evt.baseNumber || 1;
 					trigger.baseDamage+=player.$.jiu;
 					trigger.jiu=true;
 					trigger.jiu_add=player.$.jiu;

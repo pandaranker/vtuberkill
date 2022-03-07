@@ -8,14 +8,14 @@
     transform: scale(1.1) rotate(-90deg);
 }
 
-.player.connect> {
-    div {
-        &:not(.avatar):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {
+.player.connect {
+    >div {
+        &:not(.displayer):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {
             display: none !important;
         }
     }
 
-    .gaming {
+    >.gaming {
         left: 16px;
         top: auto;
         bottom: 16px;
@@ -315,3 +315,4 @@
 
 @import url('./player/unseen.less');
 @import url('./player/linked.less');
+@import url('./player/hp.less');

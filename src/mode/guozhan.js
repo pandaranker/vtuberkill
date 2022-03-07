@@ -581,125 +581,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_shibing2vtuber:['female','vtuber',0,[],['unseen']],
 				gz_shibing1clubs:['male','clubs',0,[],['unseen']],
 				gz_shibing2clubs:['female','clubs',0,[],['unseen']],
-
-				// gz_caocao:['male','wei',4,['jianxiong']],
-				// gz_simayi:['male','wei',3,['fankui','guicai']],
-				// gz_xiahoudun:['male','wei',4,['reganglie']],
-				// gz_zhangliao:['male','wei',4,['new_retuxi']],
-				// gz_xuzhu:['male','wei',4,['luoyi']],
-				// gz_guojia:['male','wei',3,['tiandu','new_yiji'],['gzskin']],
-				// gz_zhenji:['female','wei',3,['luoshen','qingguo'],['gzskin']],
-				// gz_xiahouyuan:['male','wei',4,['shensu']],
-				// gz_zhanghe:['male','wei',4,['qiaobian']],
-				// gz_xuhuang:['male','wei',4,['new_duanliang']],
-				// gz_caoren:['male','wei',4,['new_jushou']],
-				// gz_dianwei:['male','wei',4,['qiangxi']],
-				// gz_xunyu:['male','wei',3,['quhu','new_jieming']],
-				// gz_caopi:['male','wei',3,['xingshang','new_fangzhu'],['gzskin']],
-				// gz_yuejin:['male','wei',4,['gzxiaoguo'],['gzskin']],
-
-				// gz_liubei:['male','shu',4,['rerende']],
-				// gz_guanyu:['male','shu',5,['wusheng']],
-				// gz_zhangfei:['male','shu',4,['new_paoxiao']],
-				// gz_zhugeliang:['male','shu',3,['guanxing','new_kongcheng'],['gzskin']],
-				// gz_zhaoyun:['male','shu',4,['new_longdan']],
-				// gz_machao:['male','shu',4,['mashu','new_tieji']],
-				// gz_huangyueying:['female','shu',3,['jizhi','qicai'],['gzskin']],
-				// gz_huangzhong:['male','shu',4,['liegong']],
-				// gz_weiyan:['male','shu',4,['xinkuanggu']],
-				// gz_pangtong:['male','shu',3,['lianhuan','oldniepan']],
-				// gz_sp_zhugeliang:['male','shu',3,['huoji','bazhen','kanpo'],['gzskin']],
-				// gz_liushan:['male','shu',3,['xiangle','fangquan']],
-				// gz_menghuo:['male','shu',4,['huoshou','zaiqi']],
-				// gz_zhurong:['female','shu',4,['juxiang','lieren']],
-				// gz_ganfuren:['female','shu',3,['new_shushen','shenzhi'],['gzskin']],
-				// gz_yuji:['male','qun',3,['qianhuan'],['gzskin']],
-
-				// gz_sunquan:['male','wu',4,['gzzhiheng']],
-				// gz_ganning:['male','wu',4,['qixi']],
-				// gz_lvmeng:['male','wu',4,['new_keji','new_mouduan']],
-				// gz_huanggai:['male','wu',4,['new_kurou']],
-				// gz_zhouyu:['male','wu',3,['reyingzi','refanjian'],['gzskin']],
-				// gz_daqiao:['female','wu',3,['guose','liuli']],
-				// gz_luxun:['male','wu',3,['gzqianxun','duoshi'],['gzskin']],
-				// gz_sunshangxiang:['female','wu',3,['jieyin','gzxiaoji']],
-				// gz_sunjian:['male','wu',5,['gzyinghun']],
-				// gz_xiaoqiao:['female','wu',3,['retianxiang','hongyan'],['gzskin']],
-				// gz_taishici:['male','wu',4,['tianyi']],
-				// gz_zhoutai:['male','wu',4,['buqu','new_fenji']],
-				// gz_re_lusu:['male','wu',3,['haoshi','dimeng']],
-				// gz_zhangzhang:['male','wu',3,['zhijian','guzheng']],
-				// gz_dingfeng:['male','wu',4,['fenxun','duanbing'],['gzskin']],
-
-				// gz_huatuo:['male','qun',3,['new_chuli','jijiu']],
-				// gz_lvbu:['male','qun',5,['wushuang'],['gzskin']],
-				// gz_diaochan:['female','qun',3,['lijian','biyue'],['gzskin']],
-				// gz_re_yuanshao:['male','qun',4,['new_luanji'],['gzskin']],
-				// gz_yanwen:['male','qun',4,['shuangxiong']],
-				// gz_jiaxu:['male','qun',3,['wansha','luanwu','gzweimu'],['gzskin']],
-				// gz_pangde:['male','qun',4,['mashu','jianchu']],
-				// gz_zhangjiao:['male','qun',3,['leiji','guidao']],
-				// gz_caiwenji:['female','qun',3,['beige','gzduanchang']],
-				// gz_mateng:['male','qun',4,['mashu2','xiongyi']],
-				// gz_kongrong:['male','qun',3,['gzmingshi','lirang']],
-				// gz_jiling:['male','qun',4,['shuangren']],
-				// gz_tianfeng:['male','qun',3,['sijian','gzsuishi']],
-				// gz_panfeng:['male','qun',4,['kuangfu'],['gzskin']],
-				// gz_zoushi:['female','qun',3,['huoshui','new_qingcheng']],
-
-				// gz_dengai:['male','wei',4,['tuntian','ziliang','gzjixi'],['gzskin','die_audio']],
-				// gz_caohong:['male','wei',4,['huyuan','heyi'],['gzskin']],
-				// gz_jiangfei:['male','shu',3,['shengxi','gzshoucheng']],
-				// gz_jiangwei:['male','shu',4,['tiaoxin','yizhi','tianfu'],['gzskin']],
-				// gz_xusheng:['male','wu',4,['yicheng'],['gzskin']],
-				// gz_jiangqing:['male','wu',4,['gzshangyi','niaoxiang']],
-				// gz_hetaihou:['female','qun',3,['zhendu','qiluan'],['gzskin']],
-
-				// gz_re_lidian:['male','wei',3,['xunxun','wangxi']],
-				// gz_zangba:['male','wei',4,['hengjiang']],
-				// gz_madai:['male','shu',4,['mashu2','qianxi'],['gzskin']],
-				// gz_mifuren:['female','shu',3,['gzguixiu','gzcunsi']],
-				// gz_sunce:['male','wu',4,['jiang','yingyang','baka_hunshang'],['gzskin']],
-				// gz_chendong:['male','wu',4,['duanxie','fenming']],
-				// gz_sp_dongzhuo:['male','qun',4,['hengzheng','baoling']],
-				// gz_zhangren:['male','qun',4,['chuanxin','fengshi']],
-
-				// gz_jun_liubei:['male','shu',4,['zhangwu','jizhao','shouyue','wuhujiangdaqi']],
-				// gz_jun_zhangjiao:['male','qun',4,['wuxin','hongfa','wendao','huangjintianbingfu']],
-				// gz_jun_sunquan:['male','wu',4,['jiahe','lianzi','jubao','yuanjiangfenghuotu']],
-
-				// gz_liqueguosi:['male','qun',4,['gzxiongsuan']],
-				// gz_zuoci:['male','qun',3,['yigui','jihun'],['gzskin']],
-				// gz_bianfuren:['female','wei',3,['wanwei','gzyuejian']],
-				// gz_xunyou:['male','wei',3,['gzqice','zhiyu'],['gzskin']],
-				// gz_lingtong:['male','wu',4,['xuanlve','yongjin'],['gzskin']],
-				// gz_lvfan:['male','wu',3,['xindiaodu','gzdiancai']],
-				// gz_masu:['male','shu',3,['sanyao','gzzhiman'],['gzskin']],
-				// gz_shamoke:['male','shu',4,['gzjili'],['gzskin']],
 				
-				// gz_lingcao:['male','wu',4,['dujin']],
-				// gz_lifeng:['male','shu',3,['tunchu','shuliang']],
-				// gz_beimihu:["female","qun",3,["hmkguishu","hmkyuanyu"]],
-				// gz_jianggan:["male","wei",3,["weicheng","daoshu"]],
-				// gz_huaxin:['male','wei',3,['wanggui','xibing']],
-				// gz_luyusheng:['female','wu',3,['zhente','zhiwei']],
-				
-				// gz_cuimao:['male','wei',3,['gzzhengbi','gzfengying'],[]],
-				// gz_yujin:['male','wei',4,['gzjieyue'],['gzskin']],
-				// gz_wangping:['male','shu',4,['jianglue'],['gzskin']],
-				// gz_fazheng:['male','shu',3,['gzxuanhuo','gzenyuan'],['gzskin']],
-				// gz_wuguotai:['female','wu',3,['gzbuyi','ganlu'],['gzskin']],
-				// gz_lukang:['male','wu',3,['keshou','zhuwei'],['gzskin']],
-				// gz_yuanshu:['male','qun',4,['gzweidi','gzyongsi'],['gzskin']],
-				// gz_zhangxiu:['male','qun',4,['gzfudi','congjian'],['gzskin']],
-				// gz_jun_caocao:['male','wei',4,['jianan','huibian','gzzongyu','wuziliangjiangdao'],[]],
-				
-				// gz_jin_zhangchunhua:['female','jin',3,['huishi','qingleng']],
-				// gz_jin_simayi:['male','jin',3,['smyyingshi','xiongzhi','xinquanbian']],
-				// gz_jin_wangyuanji:['female','jin',3,['yanxi']],
-				// gz_jin_simazhao:['male','jin',3,['choufa','zhaoran']],
-				// gz_jin_xiahouhui:['female','jin',3,['jyishi','shiduo']],
-				// gz_jin_simashi:['male','jin',3,['yimie','tairan']],
 			}
 		},
 		skill:{
@@ -2302,7 +2184,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							precontent:function(){
 								'step 0'
 								event.cards = event.result.cards.slice(0);
-								player.$throw(event.cards,1000,'nobroadcast');
+								game.broadcastAll(function(player,cards){
+									let cardxs = []
+									for(let v of cards){
+										let cardx=ui.create.card();
+										cardx.classList.add('infohidden');
+										cardx.classList.add('infoflip');
+										cardxs.push(cardx)
+									}
+									player.$throw(cardxs,500,'nobroadcast');
+								},player,Evt.cards);
 								player.lose(event.cards,ui.ordering);
 								event.result.card.cards=[];
 								event.result.cards=[];

@@ -131,7 +131,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					}
 					if(get.cardtag(card,'yingbian_damage')){
 						bool=true;
-						if(typeof event.baseDamage!='number') event.baseDamage=1;
+						if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 						event.baseDamage++;
 						game.log(event.card,'的伤害值基数+1');
 					}
@@ -146,7 +146,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					if(typeof event.shanRequired!='number'||!event.shanRequired||event.shanRequired<0){
 						event.shanRequired=1;
 					}
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(typeof event.extraDamage!='number') event.extraDamage=0;
 					"step 1"
 					if(event.directHit||event.directHit2||(!_status.connectMode&&lib.config.skip_shan&&!target.hasShan())){
@@ -414,7 +414,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target.hp<target.maxHp;
 				},
 				content:function(){
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					target.recover(event.baseDamage);
 					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
@@ -876,7 +876,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target.isHealthy();
 				},
 				content:function(){
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					target.recover(event.baseDamage);
 				},
 				ai:{
@@ -915,7 +915,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				reverseOrder:true,
 				content:function(){
 					"step 0"
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(event.directHit) event._result={bool:false};
 					else{
 						var next=target.chooseToRespond({name:'sha'});
@@ -997,7 +997,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					"step 0"
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(event.directHit) event._result={bool:false};
 					else{
 						var next=target.chooseToRespond({name:'shan'});
@@ -1079,19 +1079,20 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				modTarget:true,
 				content:function(){
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					if(get.is.versus()){
 						if(game.friend.contains(target)){
 							if(game.friend.length<game.enemy.length){
-								target.draw(3);return;
+								target.draw(Evt.baseNumber+2);return;
 							}
 						}
 						else{
 							if(game.friend.length>game.enemy.length){
-								target.draw(3);return;
+								target.draw(Evt.baseNumber+2);return;
 							}
 						}
 					}
-					target.draw(2);
+					target.draw(Evt.baseNumber+1);
 					if(get.nature(event.card)=='ocean'&&!target.hujia)	target.changeHujia();
 				},
 				ai:{
@@ -1125,7 +1126,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				content:function(){
 					"step 0"
 					if(event.turn==undefined) event.turn=target;
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(typeof event.extraDamage!='number'){
 						event.extraDamage=0;
 					}
@@ -1283,9 +1284,10 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					return target.countGainableCards(player,get.is.single()?'he':'hej')>0;
 				},
 				content:function(){
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					var position=get.is.single()?'he':'hej';
 					if(target.countGainableCards(player,position)){
-						player.gainPlayerCard(position,target,true);
+						player.gainPlayerCard(position,target,true,Evt.baseNumber);
 					}
 				},
 				ai:{
@@ -1432,8 +1434,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
+					if (typeof Evt.baseNumber != 'number') Evt.baseNumber = 1;
 					if(!get.is.single()&&target.countDiscardableCards(player,'hej')){
-						player.discardPlayerCard('hej',target,true);
+						player.discardPlayerCard('hej',target,true,Evt.baseNumber);
 						event.finish();
 					}
 					else{

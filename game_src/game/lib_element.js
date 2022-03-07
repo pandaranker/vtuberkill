@@ -4907,6 +4907,7 @@
         Evt.directHit = [];
         Evt.customArgs = { default: {} };
         if (typeof Evt.baseDamage != 'number') Evt.baseDamage = get.info(card, false).baseDamage || 1;
+        if (typeof Evt.baseNumber != 'number') Evt.baseNumber = get.info(card, false).baseNumber || 1;
         if (Evt.oncard) {
           Evt.oncard(Evt.card, Evt.player);
         }
@@ -5171,6 +5172,7 @@
         next.multitarget = info.multitarget;
         next.preResult = Evt.preResult;
         next.baseDamage = Evt.baseDamage;
+        next.baseNumber = Evt.baseNumber;
         if (Evt.forceDie) next.forceDie = true;
         if (Evt.addedTargets) {
           next.addedTargets = Evt.addedTargets;

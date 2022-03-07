@@ -48,7 +48,8 @@
 
 
 .displayer {
-    position: relative;
+    left: 0;
+    top: 0;
     width: 100% !important;
     height: 100% !important;
 }
@@ -79,6 +80,9 @@
             }
 
         }
+    }
+    .player,
+    .card{
 
         .displayer::after {
             content: '已选择';
@@ -87,18 +91,18 @@
             z-index: 4;
             width: 100%;
             height: 100%;
-            top: 50%;
-            left: calc(50% - 1.5em);
+            top: calc(50% - 1em);
+            left: calc(45% - 1.5em);
             font-size: larger;
             font-family: 'Tiejili', 'LuoLiTi2', sans-serif;
-            ;
-            // animation: nofade_flash 2s infinite;
+            color: white;
             opacity: 0;
             transition: all 1s;
         }
 
         &.selected {
             .displayer::after {
+                // animation: nofade_flash 2s infinite;
                 text-shadow: 0 0 2px #F00, 0px 0px 4px rgb(165, 77, 42);
                 opacity: 1;
             }

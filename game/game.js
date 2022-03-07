@@ -1733,13 +1733,20 @@ module.exports = {
                         else {
                             if (lib.config.image_background.indexOf('svg_') == 0) {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
+                                if(ui.backgroundFlash){
+                                    ui.backgroundFlash.delete()
+                                    delete ui.backgroundFlash
+                                }
                             }
                             else {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-
-                                ui.backgroundSVG = ui.create.div('.background', ui.background);
-                                ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
-                                ui.backgroundSVG.style.opacity = '.3';
+                                if(!ui.backgroundFlash){
+                                    ui.backgroundFlash = ui.create.div('.background', ui.background);
+                                    ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+                                    ui.backgroundFlash.style.mixBlendMode = 'overlay';
+                                    ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+                                    ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+                                }
                             }
                         }
                         ui.background.style.backgroundSize = 'cover';
@@ -2081,10 +2088,10 @@ module.exports = {
                 },
                 hp_style: {
                     name: '体力条样式',
-                    init: 'ol',
+                    init: 'VK',
                     item: {
+                        vk: 'VK',
                         default: '默认',
-                        // official:'勾玉',
                         emotion: '表情',
                         glass: '勾玉',
                         round: '国战',
@@ -28628,6 +28635,7 @@ module.exports = {
         Evt.directHit = [];
         Evt.customArgs = { default: {} };
         if (typeof Evt.baseDamage != 'number') Evt.baseDamage = get.info(card, false).baseDamage || 1;
+        if (typeof Evt.baseNumber != 'number') Evt.baseNumber = get.info(card, false).baseNumber || 1;
         if (Evt.oncard) {
           Evt.oncard(Evt.card, Evt.player);
         }
@@ -28892,6 +28900,7 @@ module.exports = {
         next.multitarget = info.multitarget;
         next.preResult = Evt.preResult;
         next.baseDamage = Evt.baseDamage;
+        next.baseNumber = Evt.baseNumber;
         if (Evt.forceDie) next.forceDie = true;
         if (Evt.addedTargets) {
           next.addedTargets = Evt.addedTargets;
@@ -41695,7 +41704,7 @@ module.exports = function (element, _mode, _message) {
          * @function HTMLDivElement#css
          * @param {Object} style - style
          * @param {string} [style.innerHTML] - 设置本元素内部HTML
-         * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
+         * @param {string[]} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
          * @returns {HTMLDivElement} this self
          */
         HTMLDivElement.prototype.css = function (style) {
@@ -43146,12 +43155,13 @@ module.exports = function (element, _mode, _message) {
           }
           else {
             ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-
-            ui.backgroundFlash = ui.create.div('.background', ui.background);
-            ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
-            ui.backgroundFlash.style.mixBlendMode = 'overlay';
-            ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
-            ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+            if(!ui.backgroundFlash){
+                ui.backgroundFlash = ui.create.div('.background', ui.background);
+                ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+                ui.backgroundFlash.style.mixBlendMode = 'overlay';
+                ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+                ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+            }
           }
           if (lib.config.image_background_blur) {
             ui.background.style.filter = 'blur(8px)';
@@ -43957,22 +43967,6 @@ module.exports = function (element, _mode, _message) {
         id: ws.wsid || get.id(),
         closed: false
       };
-      function UTF8ToStr(arr) {
-        let val = ''
-        arr.forEach(item => {
-            if (item < 127) {
-                val += String.fromCharCode(item)
-            } else {
-                val += '%' + item.toString(16).toUpperCase()
-            }
-        })
-        console.log(val)
-        try {
-            return decodeURI(val)
-        } catch (err) {
-            return val
-        }
-      }
       lib.node.clients.push(client);
       for (var i in element.client) {
         client[i] = element.client[i];
@@ -43980,14 +43974,9 @@ module.exports = function (element, _mode, _message) {
       if (window.isNonameServer) {
         document.querySelector('#server_count').innerHTML = lib.node.clients.length;
       }
-      ws.binaryType = 'arraybuffer';
       ws.on('message', function (messagestr) {
         var message;
         try {
-          console.log(messagestr)
-          if(messagestr.data&&messagestr.data.length){
-            messagestr = UTF8ToStr(messagestr.data)
-          }
           message = JSON.parse(messagestr);
           if (!Array.isArray(message) ||
             typeof _message.server[message[0]] !== 'function') {
@@ -51368,6 +51357,7 @@ module.exports = {
                 * @property {HTMLDivElement} name 
                 */
                node.node = {
+                  displayer: ui.create.div('.displayer', node),
                   image: ui.create.div('.image', node),
                   info: ui.create.div('.info', node),
                   name: ui.create.div('.name', node),
@@ -55832,7 +55822,7 @@ module.exports = {
         if (!withport) {
             //ip=ip+':8080';
             if ('https:' != document.location.protocol)
-                ip = ip + '/wss/';
+                ip = ip + ':8080';
         }
         _status.connectCallback = callback;
         try {
@@ -55849,7 +55839,6 @@ module.exports = {
                 //alert("这是一个http请求");
                 game.ws = new WebSocket('ws://' + ip + '');
             }
-            game.ws.binaryType = 'arraybuffer';
             //game.ws=new WebSocket('ws://'+ip+'');
         }
         catch (e) {
@@ -56748,7 +56737,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".scedi{\r\n\tbackground-color: rgba(0,
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/*--------标签--------*/\nhtml {\n  width: 100%;\n  height: 100%;\n  font-size: 16px;\n  cursor: default;\n  overflow: hidden;\n  user-select: none;\n  -ms-user-select: none;\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -webkit-font-smoothing: subpixel-antialiased;\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\n  background-color: #3c3c3c;\n}\nbody {\n  width: 100%;\n  height: 100%;\n  padding: 0;\n  margin: 0;\n  left: 0;\n  top: 0;\n  position: absolute;\n  overflow: hidden;\n  text-rendering: optimizeLegibility;\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  font-family: 'STHeiti', 'SimHei', 'Microsoft JhengHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', Helvetica, Arial, sans-serif;\n}\ndiv {\n  display: inline-block;\n  position: absolute;\n  transition: all 0.5s;\n}\ntable {\n  table-layout: fixed;\n}\n/*--------场景--------*/\n#window {\n  width: 100%;\n  height: 100%;\n  top: 0px;\n  left: 0;\n  transition-property: opacity;\n  overflow: hidden;\n}\n#window.connecting > *:not(#system) {\n  opacity: 0.5;\n}\n#window.server > div:not(.serverinfo) {\n  display: none !important;\n}\n#window.server > .serverinfo {\n  width: 400px;\n  height: 200px;\n  font-family: 'xinwei';\n  text-align: center;\n  left: calc(50% - 200px);\n  top: calc(50% - 100px);\n}\n#window.server > .serverinfo > div {\n  position: relative;\n  display: block;\n  font-size: 20px;\n  margin-top: 10px;\n}\n#window.server > .serverinfo > div > div {\n  position: relative;\n  display: inline-block;\n}\n#window.server > .serverinfo > div > div:last-child {\n  width: 60px;\n  text-align: left;\n  white-space: nowrap;\n}\n#window.server > .serverinfo > div > .menubutton.large:last-child {\n  width: auto;\n  margin-top: 30px;\n  cursor: pointer;\n}\n#window.server > .serverinfo > div:first-child {\n  font-size: 40px;\n}\n.connectlayer > div {\n  display: table-cell;\n  vertical-align: middle;\n  font-size: 60px;\n  color: white;\n  text-shadow: black 0 0 2px;\n  position: relative;\n  font-family: 'xinwei';\n  transition: all 0.5s;\n}\n.connectlayer.fullsize {\n  display: table;\n  text-align: center;\n  z-index: 100;\n}\n.statusbar #window {\n  top: 24px;\n  height: calc(100% - 24px);\n}\n.statusbar #statusbg {\n  display: block;\n}\n#statusbg {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 24px;\n  background: rgba(0, 0, 0, 0.4);\n  display: none;\n}\n#window > .tutorial_tap {\n  width: 30px;\n  height: 30px;\n  border-radius: 100%;\n  background: rgba(255, 255, 255, 0.5);\n  box-shadow: rgba(255, 255, 255, 0.5) 0 0 5px;\n  left: calc(50% - 15px);\n  top: calc(50% - 15px);\n  position: absolute;\n  transition: all 1s;\n}\n#window.testing > *:not(.pausedbg) {\n  display: none !important;\n}\n#window.modepaused > div:not(.modenopause):not(#arena):not(.popped) {\n  opacity: 0.3;\n}\n#window.modepaused > #arena > #roundmenu {\n  opacity: 0.3;\n}\n#window.shortcutpaused > .modeshortcutpause {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > div:not(.background):not(#shortcut):not(#system):not(#arena):not(.hidden):not(.removing):not(.dialog):not(.centermenu):not(.popup-container):not(.forceopaque) {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > #arena > div:not(#timer):not(.removing):not(.hidden):not(#autonode) {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > #system {\n  z-index: 31;\n}\n#window.shortcutpaused.modepaused > .modenopause.popup-container:not(.filter-character) {\n  opacity: 0.3;\n}\n#window.systempaused > #system {\n  opacity: 0.3 !important;\n}\n#window.noclick_important * {\n  pointer-events: none !important;\n}\n#window.noclick_important .noclick_click_important div {\n  pointer-events: auto !important;\n}\n#window.blur_ui #arena.paused,\n#window.blur_ui #arena.menupaused,\n#window.blur_ui #historybar.paused,\n#window.blur_ui #historybar.menupaused,\n#window.blur_ui #arena.unfocus,\n#window.blur_ui #arena.right {\n  filter: blur(3px);\n  -webkit-filter: blur(3px);\n}\n#window.blur_ui #arena.menupaused,\n#window.blur_ui #historybar.menupaused {\n  opacity: 0.6;\n}\n#window.blur_ui #arena.thrownhighlight > .card.thrown:not(.thrownhighlight) {\n  filter: blur(2px);\n  -webkit-filter: blur(2px);\n}\n#window.blur_ui.shortcutpaused > #arena,\n#window.blur_ui.shortcutpaused > #historybar {\n  filter: blur(3px);\n  -webkit-filter: blur(3px);\n}\n#time {\n  width: 100%;\n  padding: 0;\n  margin: 0;\n  position: absolute;\n  left: 0;\n  top: 11px;\n  text-align: center;\n  pointer-events: none;\n  display: block;\n  font-family: 'xinwei';\n}\n#time > div {\n  margin: 0;\n  padding: 0;\n  display: inline-block;\n  margin-left: 6px;\n  margin-right: 6px;\n  position: relative;\n}\n#shortcut {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 10;\n  /*background-color: rgba(0, 0, 0, 0.6);*/\n}\n#shortcut > div {\n  width: 80px;\n  height: 80px;\n  padding: 10px;\n  margin: 0;\n  overflow: hidden;\n  line-height: 80px;\n  font-size: 50px;\n  white-space: nowrap;\n  text-align: center;\n  letter-spacing: -6px;\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n#shortcut > div:not(.menubutton) {\n  width: 100%;\n  height: 80px;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  top: 0;\n}\n#shortcut > div > span {\n  width: 200px;\n  left: -63px;\n  position: relative;\n  display: inline-block;\n}\n#shortcut > div[data-position=\"1\"] {\n  left: calc(50% - 50px);\n  top: calc(50% - 190px);\n}\n#shortcut > div[data-position=\"2\"] {\n  left: calc(50% + 100px);\n  top: calc(50% - 40px);\n}\n#shortcut > div[data-position=\"3\"] {\n  left: calc(50% - 50px);\n  top: calc(50% + 110px);\n}\n#shortcut > div[data-position=\"4\"] {\n  left: calc(50% - 200px);\n  top: calc(50% - 40px);\n}\n#shortcut > div[data-position=\"5\"] {\n  left: calc(50% - 50px);\n  top: calc(50% - 50px);\n}\n#shortcut > .favmodelist:not(.menubutton) {\n  width: 130px;\n  height: 300px;\n  top: calc(50% - 150px);\n  left: calc(50% - 430px);\n  overflow: visible;\n}\n#shortcut > .favmodelist > .menubutton.large {\n  display: block;\n  position: absolute;\n  left: 0;\n  letter-spacing: 0;\n}\n#shortcut > .favmodelist > [data-type=\"even\"] {\n  top: calc(50% - 45px);\n}\n#shortcut > .favmodelist > [data-type=\"odd\"] {\n  top: calc(50% - 20px);\n}\n#shortcut > .favmodelist > [data-position=\"0\"] {\n  transition-duration: 0.5s;\n}\n#shortcut > .favmodelist > [data-position=\"1\"] {\n  transition-duration: 0.6s;\n  -webkit-transform: translateY(50px);\n          transform: translateY(50px);\n}\n#shortcut > .favmodelist > [data-position=\"2\"] {\n  transition-duration: 0.4s;\n  -webkit-transform: translateY(-50px);\n          transform: translateY(-50px);\n}\n#shortcut > .favmodelist > [data-position=\"3\"] {\n  transition-duration: 0.7s;\n  -webkit-transform: translateY(100px);\n          transform: translateY(100px);\n}\n#shortcut > .favmodelist > [data-position=\"4\"] {\n  transition-duration: 0.3s;\n  -webkit-transform: translateY(-100px);\n          transform: translateY(-100px);\n}\n#shortcut > .favmodelist > [data-position=\"5\"] {\n  transition-duration: 0.8s;\n  -webkit-transform: translateY(150px);\n          transform: translateY(150px);\n}\n#shortcut.hidden {\n  pointer-events: none;\n  transition: opacity 0.3s;\n}\n#shortcut.hidden > div[data-position=\"1\"] {\n  -webkit-transform: scale(1) translateY(150px);\n          transform: scale(1) translateY(150px);\n}\n#shortcut.hidden > div[data-position=\"2\"] {\n  -webkit-transform: scale(1) translateX(-150px);\n          transform: scale(1) translateX(-150px);\n}\n#shortcut.hidden > div[data-position=\"3\"] {\n  -webkit-transform: scale(1) translateY(-150px);\n          transform: scale(1) translateY(-150px);\n}\n#shortcut.hidden > div[data-position=\"4\"] {\n  -webkit-transform: scale(1) translateX(150px);\n          transform: scale(1) translateX(150px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"0\"] {\n  -webkit-transform: translateX(-140px);\n          transform: translateX(-140px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"1\"] {\n  -webkit-transform: translateY(50px) translateX(-150px);\n          transform: translateY(50px) translateX(-150px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"2\"] {\n  -webkit-transform: translateY(-50px) translateX(-130px);\n          transform: translateY(-50px) translateX(-130px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"3\"] {\n  -webkit-transform: translateY(100px) translateX(-160px);\n          transform: translateY(100px) translateX(-160px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"4\"] {\n  -webkit-transform: translateY(-100px) translateX(-120px);\n          transform: translateY(-100px) translateX(-120px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"5\"] {\n  -webkit-transform: translateY(150px) translateX(-170px);\n          transform: translateY(150px) translateX(-170px);\n}\n#splash {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  text-align: center;\n  overflow: visible;\n  transition: all 0.3s;\n  overflow-x: scroll;\n  white-space: nowrap;\n}\n#splash:not(.touch) > div:hover:not(.clicked) {\n  -webkit-transform: translateY(-20px);\n          transform: translateY(-20px);\n}\n#splash > div {\n  width: 110px;\n  height: 300px;\n  top: calc(50% - 150px);\n  margin-left: 10px;\n  margin-right: 10px;\n  position: relative;\n  transition: all 0.8s;\n}\n#splash > div:first-child {\n  margin-left: 20px;\n}\n#splash > div:last-child {\n  margin-right: 20px;\n}\n#splash > div > .splashtext {\n  font-family: 'Tiejili', 'huangcao', 'xinwei';\n  font-size: 50px;\n  position: absolute;\n  right: 7px;\n  bottom: 7px;\n  z-index: 1;\n}\n#splash > div > .avatar {\n  width: 86px;\n  height: calc(100% - 14px);\n  left: 7px;\n  top: 7px;\n  background-size: cover;\n}\n#splash > div.clicked {\n  -webkit-transform: translateY(-20px) scale(1.5);\n          transform: translateY(-20px) scale(1.5);\n  transition: all 0.3s;\n  opacity: 0;\n}\n#splash > div.hidden {\n  -webkit-transform: translateY(-300px) scale(0.5);\n          transform: translateY(-300px) scale(0.5);\n}\n#splash.slim > div .splashtext {\n  -webkit-filter: drop-shadow(3px 3px 2px #454579);\n          filter: drop-shadow(3px 3px 2px #454579);\n  right: 5px;\n  bottom: 5px;\n}\n#splash.slim > div .avatar {\n  width: calc(100% - 10px);\n  height: calc(100% - 10px);\n  left: 5px;\n  top: 5px;\n}\n#splash.removing {\n  pointer-events: none;\n}\n#splash[data-radius_size='reduce'] > div > div,\n#splash[data-radius_size='reduce'] > div {\n  border-radius: 4px;\n}\n#splash[data-radius_size='off'] > div > div,\n#splash[data-radius_size='off'] > div {\n  border-radius: 0px;\n}\n#splash[data-radius_size='increase'] > div > div,\n#splash[data-radius_size='increase'] > div {\n  border-radius: 12px;\n}\n#arenalog {\n  width: calc(50% - 210px);\n  height: calc(100% - 370px);\n  left: calc(50% + 60px);\n  top: 200px;\n  overflow: hidden;\n}\n#arenalog:not(.oldlayout) > #arenalog[data-position=\"center\"] {\n  left: calc(25% + 105px);\n}\n#arenalog:not(.oldlayout) #arena:not(.oldlayout) > #arenalog[data-position=\"left\"] {\n  left: 150px;\n}\n#arenalog > div {\n  position: relative;\n  display: block;\n  width: calc(100% - 20px);\n  left: 20px;\n  line-height: 18px;\n}\n#arenalog.withdialog {\n  opacity: 0.5;\n}\n#arena.oldlayout #arenalog {\n  top: 160px;\n  width: calc(50% - 300px);\n  height: calc(100% - 325px);\n}\n#arena.oldlayout #arenalog[data-position=\"center\"] {\n  left: calc(25% + 150px);\n}\n#arena.oldlayout #arenalog[data-position=\"left\"] {\n  left: 240px;\n}\n#arena {\n  width: 94%;\n  height: 90%;\n  top: calc(5% + 10px);\n  left: 3%;\n  transition-property: opacity;\n}\n#arena > canvas {\n  z-index: 10;\n  pointer-events: none;\n  position: absolute;\n}\n#arena #me > div > div > .card {\n  position: absolute;\n  left: 8px;\n}\n#arena.playerhidden > .player,\n#arena.playerhidden > #mebg,\n#arena.markhidden > .player > .marks {\n  visibility: hidden;\n  opacity: 0;\n}\n#arena.hide_name .player > .name:not(.name_seat),\n#arena.hide_name .player > .name2,\n#arena.hide_name > .dialog .button.character > .name {\n  display: none !important;\n}\n#arena.chess > #arenalog {\n  display: none !important;\n}\n#arena.observe .handcards > .card > div {\n  opacity: 0 !important;\n}\n#arena.right:not(.noleft) {\n  left: 240px;\n  opacity: 0.6;\n}\n#arena.left:not(.noleft) {\n  left: calc(10% - 240px);\n  opacity: 0.6;\n}\n#arena.top {\n  top: -100%;\n}\n#arena.paused2 {\n  opacity: 0.1 !important;\n}\n#arena.only_dialog > div:not(.dialog):not(#control) {\n  opacity: 0 !important;\n  pointer-events: none !important;\n}\n#arena.playerfocus > div:not(#timer):not(.playerfocus):not(#chess-container):not(.removing):not(#autonode),\n#arena.playerfocus #chess > div:not(.playerfocus):not(.removing) {\n  opacity: 0.3 !important;\n}\n#window.leftbar #arena:not(.chess) {\n  left: calc(3% + 50px);\n  width: calc(94% - 50px);\n}\n#window.rightbar #arena:not(.chess) {\n  width: calc(94% - 50px);\n}\n#arena.paused,\n#arena.unfocus,\n#historybar.paused {\n  opacity: 0.3 !important;\n}\n#arena > .poplayer,\n#window > .poplayer {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n#historybar {\n  left: 1.5%;\n  width: 50px;\n  height: calc(90% - 20px);\n  top: calc(5% + 25px);\n  border-radius: 4px;\n  visibility: hidden;\n  opacity: 0;\n  overflow: hidden;\n  z-index: 2;\n  transition-property: opacity, visibility;\n}\n#historybar > div {\n  width: 42px;\n  height: 42px;\n  margin: 0;\n  padding: 4px;\n  display: block;\n  position: absolute;\n}\n#historybar > div > .card {\n  -webkit-transform: scale(0.403846);\n          transform: scale(0.403846);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  margin: 0;\n  left: 4px;\n  top: 4px;\n  position: absolute;\n}\n#historybar > div > .avatar {\n  padding: 0;\n  margin: 0;\n  position: absolute;\n  left: 4px;\n  top: 4px;\n  width: 42px;\n  height: 42px;\n  border-radius: 3.230768px;\n}\n#historybar > div > .avatar > div {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  bottom: 2px;\n  height: auto;\n  font-family: 'xinwei';\n  font-size: 18px;\n  text-align: center;\n  width: 100%;\n}\n#historybar > div > .avatar > .avatarbg {\n  bottom: 0;\n  height: 100%;\n  background-size: cover;\n}\n#historybar > div > .avatar2 {\n  width: 20px;\n  height: 20px;\n  left: 28px;\n  top: 28px;\n  border-radius: 100%;\n  font-family: 'xinwei';\n  font-size: 20px;\n  line-height: 20px;\n  z-index: 1;\n}\n#historybar > div > .avatar2.avatar3 {\n  left: 12px;\n  top: 31px;\n  -webkit-transform: scale(0.7);\n          transform: scale(0.7);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n}\n#historybar.hidden {\n  pointer-events: none;\n}\n#window.rightbar #historybar {\n  left: calc(98.5% - 50px);\n  opacity: 1;\n  visibility: visible;\n}\n#window.rightbar2:not(.leftbar) #historybar {\n  left: calc(98.5% - 50px);\n}\n#window.leftbar #historyba {\n  opacity: 1;\n  visibility: visible;\n}\n#window:not(.low_performance) #arena #arenalog > div {\n  animation: game_start 0.5s;\n  -webkit-animation: game_start 0.5s;\n}\n#splash.low_performance div {\n  transition: all 0.5s;\n}\n#splash.low_performance div.hidden {\n  -webkit-transform: scale(0.8);\n          transform: scale(0.8);\n}\n#window.low_performance #arena .player .equips,\n#window.low_performance #arena .player .name {\n  transition: all 0s;\n}\n#window.low_performance .menu.main > .menu-content > div > .right.pane > div:not(.expanded) > .config.auto-hide,\n#window.low_performance .menu.main > .menu-content > div > .right.pane > div > .config.hidden {\n  display: none;\n  transition-property: -webkit-transform;\n  transition-property: transform;\n  transition-property: transform, -webkit-transform;\n}\n/*--------角色--------*/\n.player:not(.treasure).playerfocus {\n  -webkit-transform: scale(1.1);\n          transform: scale(1.1);\n}\n.player.linked:not(.treasure).playerfocus {\n  -webkit-transform: scale(1.1) rotate(-90deg);\n          transform: scale(1.1) rotate(-90deg);\n}\n.player.connect div:not(.avatar):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {\n  display: none !important;\n}\n.player.connect .gaming {\n  left: 16px;\n  top: auto;\n  bottom: 16px;\n  font-family: 'xinwei';\n}\n.player.connect[data-cursor_style=\"forbidden\"] {\n  opacity: 0.5;\n}\n.player {\n  z-index: 2;\n  width: 240px;\n  height: 120px;\n}\n.player .playerjiu {\n  animation: game_start 0.5s;\n  -webkit-animation: game_start 0.5s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 4;\n  pointer-events: none;\n  background: rgba(255, 0, 0, 0.3);\n}\n.player > .displayer > .avatar > .action {\n  margin: 5px;\n  font-family: 'xinwei';\n  font-size: 20px;\n  letter-spacing: -2px;\n  right: 5px;\n  text-align: right;\n}\n.player > .displayer > .avatar > .action:not(.freecolor) {\n  text-shadow: black 0 0 1px, #0a9b43 0 0 5px, #0a9b43 0 0 10px;\n}\n.player > .displayer > .avatar.hidden {\n  pointer-events: none !important;\n}\n.player > .displayer > .avatar.disabled {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n  opacity: 0.8;\n}\n.player > .displayer > .avatar2.hidden {\n  pointer-events: none !important;\n}\n.player > .displayer > .avatar2.disabled {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n  opacity: 0.8;\n}\n.player:not(.current_action) .avatar > .action {\n  opacity: 0;\n}\n.player > div {\n  z-index: 2;\n}\n.player > .nameol {\n  left: 0;\n  top: 13px;\n  width: 100%;\n  font-size: 12px;\n  text-align: center;\n  white-space: nowrap;\n  /*opacity: 0;*/\n}\n.player:hover > .nameol {\n  opacity: 1;\n}\n.player > .name {\n  left: 16px;\n  top: 24px;\n  font-size: 20px;\n  font-family: 'xinwei';\n}\n.player > .name.name2 {\n  left: 81px;\n}\n.player > .intro {\n  top: 87px;\n  left: 18px;\n}\n.player > .turned {\n  font-family: 'xinwei';\n  width: 100%;\n  height: 100%;\n  line-height: 50px;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  text-align: center;\n  font-size: 50px;\n  opacity: 0;\n  pointer-events: none;\n  background: black;\n  top: 0;\n  border-radius: 8px;\n  color: rgba(255, 255, 255, 0.8);\n  text-shadow: none;\n}\n.player > .turned > div {\n  top: calc(50% - 50px);\n  width: 100%;\n  left: 0;\n}\n.player > .chain {\n  top: calc(50% - 10px);\n  left: 0;\n  height: 20px;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: visible;\n  white-space: nowrap;\n  padding: 0;\n  margin: 0;\n  z-index: 3;\n  pointer-events: none;\n}\n.player > .chain > div {\n  overflow: visible;\n  left: 0;\n  top: 0;\n  margin: 0;\n  padding: 0;\n}\n.player > .chain > div > div {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 0, 0, 0.4) 0 0 2px;\n}\n.player > .chain > div > div:nth-child(odd) {\n  height: 8px;\n  width: 10px;\n  border-radius: 2px;\n  top: 6px;\n}\n.player > .chain > div > div:nth-child(even) {\n  width: 10px;\n  height: 2px;\n  top: 9px;\n  z-index: 1;\n  border-radius: 2px;\n}\n.player:not(.linked2) > .chain > div {\n  opacity: 0;\n  -webkit-transform: translateX(-40px);\n          transform: translateX(-40px);\n}\n.player.playerbright {\n  filter: brightness(1.2);\n  -webkit-filter: brightness(1.2);\n}\n.player.playerflip {\n  animation: playerflip 0.3s ease-out;\n  -webkit-animation: playerflip 0.3s ease-out;\n}\n.player.controlfakeme {\n  width: 100px;\n  height: 120px;\n  top: calc(100% - 140px);\n}\n.player.controlfakeme .avatar {\n  width: 100%;\n  height: 100%;\n  box-shadow: none;\n  left: 0;\n  top: 0;\n}\n.player.minskin {\n  width: 120px;\n}\n#arena.chess:not(.selecting) .player.current_action .avatar > .action {\n  opacity: 0;\n}\n.player.replaceme {\n  animation: replaceme 0.5s;\n  -webkit-animation: replaceme 0.5s;\n}\n.player.replaceenemy {\n  animation: replaceenemy 0.5s;\n  -webkit-animation: replaceenemy 0.5s;\n}\n.player.dead,\n.player.likedead,\n.grayscale1 {\n  z-index: 1;\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n.grayscale {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n#arena.slim_player .player > .name {\n  left: 13px;\n  top: 21px;\n}\n#arena.slim_player .player > .name.name2 {\n  left: 78px;\n}\n#arena.slim_player .player.minskin > .name {\n  font-size: 18px;\n  line-height: 120%;\n  top: 15px;\n}\n#arena.slim_player .player.minskin > .name.long {\n  -webkit-transform: scale(0.9);\n          transform: scale(0.9);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  top: 13px;\n}\n#arena.slim_player .player.minskin.linked > .name {\n  -webkit-transform: rotate(90deg) translate(81px, -66px);\n          transform: rotate(90deg) translate(81px, -66px);\n}\n#arena .player.minskin > .name {\n  font-size: 18px;\n  line-height: 120%;\n  top: 15px;\n}\n#arena .player.minskin > .name.long {\n  -webkit-transform: scale(0.9);\n          transform: scale(0.9);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  top: 13px;\n}\n#arena .player.linked.minskin > .name {\n  -webkit-transform: rotate(90deg) translate(81px, -66px);\n          transform: rotate(90deg) translate(81px, -66px);\n}\n#arena:not(.hide_turned):not(.oldlayout) .player.turnedover > .turned {\n  opacity: 0.2;\n}\n#arena.nolink .player > .chain {\n  display: none;\n}\n.unseen .avatar,\n.unseen > .name:not(.name2) {\n  opacity: 0 !important;\n}\n.unseen2 .avatar2,\n.unseen2 > .name2 {\n  opacity: 0 !important;\n}\n#arena:not(.observe) .unseen_v .avatar,\n#arena:not(.observe) .player[data-position='0'].unseen .avatar,\n#arena:not(.observe) .unseen_v > .name:not(.name2):not(.name_seat),\n#arena:not(.observe) .player[data-position='0'].unseen > .name:not(.name2):not(.name_seat) {\n  opacity: 0.2 !important;\n}\n#arena:not(.observe) .unseen2_v .avatar2,\n#arena:not(.observe) .player[data-position='0'].unseen2 .avatar2,\n#arena:not(.observe) .unseen2_v > .name2,\n#arena:not(.observe) .player[data-position='0'].unseen2 > .name2 {\n  opacity: 0.2 !important;\n}\n.player > .name_seat {\n  opacity: 0;\n}\n.player:not([data-position='0']) .unseen.unseen2 > .name_seat,\n.player:not([data-position='0']):not(.fullskin2).unseen > .name_seat {\n  opacity: 1 !important;\n}\n.linked > .displayer > .avatar,\n.linked > .displayer > .avatar2 {\n  -webkit-transform: rotate(-90deg);\n          transform: rotate(-90deg);\n}\n.linked > .displayer > .avatar2 {\n  top: 5px;\n}\n.linked > .identity {\n  top: 88px;\n}\n.linked > .count {\n  right: 154px;\n}\n.touchinfo {\n  padding: 6px;\n  position: absolute;\n  color: white;\n  text-shadow: black 0 0 2px;\n  top: 0;\n  margin: 0;\n  font-family: 'xinwei';\n}\n.touchinfo.left {\n  left: 0;\n}\n.touchinfo.right {\n  left: auto;\n  right: 0;\n  text-align: right;\n}\n#window.touchinfohidden > .touchinfo {\n  opacity: 0;\n}\n.button.replaceButton,\n.button.replaceButton.text {\n  left: 2px;\n  top: auto;\n  text-align: center;\n  width: 42px;\n  right: auto;\n  bottom: 3px;\n  background-image: linear-gradient(rgba(150, 47, 47, 0.8), rgba(132, 43, 43, 0.2));\n  border-radius: 3px;\n  font-family: 'LuoLiTi2', Helvetica, sans-serif;\n}\n.button.replaceButton > div {\n  width: 10px;\n  height: 10px;\n}\n#me .card.selected::after {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #ff0000 0 0 5px, #ff0000 0 0 10px;\n}\n#me .card.glow::before {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #0085ff 0 0 5px, #0085ff 0 0 10px;\n}\n#me .card.glows {\n  opacity: 1;\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #ff9933 0 0 5px, #ff9933 0 0 10px;\n}\n.glow:not(.button):not(.card) {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 133, 255, 0.4) 0 0 5px, rgba(0, 133, 255, 0.5) 0 0 12px, rgba(0, 133, 255, 0.8) 0 0 15px !important;\n}\n.glow2:not(.player.glow_phase) > .displayer > .avatar {\n  /*-webkit-animation:control_glow 4s infinite;*/\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, #0a9b43 0 0 15px, #0a9b43 0 0 15px !important;\n}\n.glow3 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0) 0 0 40px, rgba(0, 133, 255, 0.8) 0 0 60px !important;\n}\n.selectedx3 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(255, 0, 0, 0.8) 0 0 10px, rgba(255, 0, 0, 0) 0 0 40px, rgba(255, 0, 0, 0.8) 0 0 60px !important;\n}\n.glow4 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0) 0 0 40px, rgba(0, 133, 255, 0.8) 0 0 40px !important;\n}\n.selectedx4 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(255, 0, 0, 0.6) 0 0 10px, rgba(255, 0, 0, 0) 0 0 40px, rgba(255, 0, 0, 0.8) 0 0 40px !important;\n}\n.player:not(.glow_phase) .avatar.glow2,\n.button.glow2:not(.selected) {\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, #0a9b43 0 0 5px, #0a9b43 0 0 5px, #0a9b43 0 0 10px, #0a9b43 0 0 10px !important;\n}\n.button.character > .identity {\n  top: -6px;\n  left: 72px;\n}\n.button.character.character.newstyle > .identity {\n  /*display: none;*/\n  border: none;\n  background: none !important;\n  /*box-shadow: none;*/\n  left: auto;\n  right: 3px;\n  top: 3px;\n  /*font-size: 20px;*/\n}\n.button.newstyle > .name {\n  top: 8px;\n  max-height: 84px;\n}\n.button.newstyle > .name.long {\n  top: 6px;\n  -webkit-transform: scale(0.93);\n          transform: scale(0.93);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n}\n.button.newstyle > .hp,\n.button.newstyle > .hp.text {\n  left: auto;\n  top: auto;\n  text-align: right;\n  right: 6px;\n  bottom: 5px;\n}\n.button.newstyle > .hp > div.text {\n  background: none !important;\n  box-shadow: none !important;\n  border: none !important;\n  font-family: 'Tiejili';\n  text-align: right;\n  width: auto;\n  height: auto;\n  -webkit-transform: none !important;\n          transform: none !important;\n  text-shadow: black 0 0 2px, black 0 0 3px;\n}\n.button.newstyle .button.newstyle > .hp > div {\n  width: 10px;\n  height: 10px;\n  background: #397b04;\n  border: 1px solid #274f07;\n  box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 2px inset, rgba(255, 255, 255, 0.15) -1px 1px 5px inset;\n}\n.menu-container {\n  z-index: 8;\n}\n.menu-container div {\n  position: relative;\n}\n.menu-container.hidden {\n  pointer-events: none;\n}\n#menu-button {\n  z-index: 6;\n}\n.themebutton > div {\n  width: 50px;\n  height: 76px;\n  top: 7px;\n  right: 7px;\n  border-radius: 4px;\n}\n.themebutton > div:first-child {\n  z-index: 2;\n}\n.themebutton > div > div {\n  width: calc(100% - 10px);\n  height: 12px;\n  display: block;\n  margin-left: 5px;\n  margin-top: 6px;\n  position: relative;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(0, 0, 0, 0.3) 0 0 5px;\n  transition: all 0s;\n}\n.themebutton > div > div:first-child {\n  margin-top: 5px;\n}\n.themebutton > div > div > div {\n  width: 200%;\n  height: 200%;\n  left: 0;\n  top: 0;\n  -webkit-transform: scale(0.5);\n          transform: scale(0.5);\n  color: white;\n  box-shadow: black 0 0 2px;\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  line-height: 24px;\n  text-align: center;\n  box-shadow: none !important;\n}\n.themebutton > .fakeplayer > .avatar {\n  width: calc(100% - 2px);\n  height: calc(100% - 2px);\n  left: 1px;\n  top: 1px;\n  border-radius: 2px;\n  position: absolute;\n  margin: 0 !important;\n  padding: 0;\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px inset;\n}\n.themebutton > .fakeplayer.me {\n  clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);\n  -webkit-clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);\n}\n.themebutton > .fakeplayer.me > .avatar {\n  width: 22px;\n  height: 22px;\n  left: 3px;\n  top: 0;\n  box-shadow: none;\n  border-radius: 0px;\n}\n.themebutton > .fakeplayer.oldlayout > .avatar {\n  width: calc(50% - 2px);\n}\n.popup-container {\n  z-index: 10;\n}\n.popup-container.filter-character {\n  text-align: center;\n  overflow: scroll;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.popup-container.filter-character > div {\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: auto;\n  margin: 0;\n  padding: 0;\n  transition: all 0s;\n  position: relative;\n}\n.popup-container.filter-character > div > div {\n  position: relative;\n  margin: 10px;\n}\n.popup-container.filter-character > div > .capt {\n  width: 80px;\n  height: 80px;\n  padding: 0;\n  font-size: 60px;\n  line-height: 90px;\n}\n.popup-container.filter-character.shown {\n  opacity: 1;\n}\n.popup-container.filter-character.removing > div {\n  pointer-events: none;\n}\n.menu-container,\n.popup-container {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n.roundarenabutton {\n  /*width: 50px;\n\theight: 50px;*/\n  left: 180px;\n  top: 210px;\n  position: absolute;\n  /*background: rgba(0,0,0,0.2);\n\tbox-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px;\n\tborder-radius:100%;*/\n  z-index: 7;\n  transition-property: opacity;\n  overflow: hidden;\n}\n#arena:not(.phone) #roundmenu {\n  display: none !important;\n}\n#roundmenu > div {\n  width: 26px;\n  height: 4px;\n  background: white;\n  position: absolute;\n  left: 12px;\n  border-radius: 2px;\n  box-shadow: black 0 0 2px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(even) {\n  width: 20px;\n  left: 18px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(odd) {\n  width: 4px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(1),\n#roundmenu:not(.clock) > div:nth-of-type(2) {\n  top: 14px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(3),\n#roundmenu:not(.clock) > div:nth-of-type(4) {\n  top: 23px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(5),\n#roundmenu:not(.clock) > div:nth-of-type(6) {\n  top: 32px;\n  -webkit-transform: none !important;\n          transform: none !important;\n}\n#roundmenu:not(.clock) > div:nth-of-type(7),\n#roundmenu:not(.clock) > div:nth-of-type(8),\n#roundmenu:not(.clock) > div:nth-of-type(9),\n#roundmenu:not(.clock) > div:nth-of-type(10),\n#roundmenu:not(.clock) > div:nth-of-type(11),\n#roundmenu:not(.clock) > div:nth-of-type(12),\n#roundmenu:not(.clock) > div:nth-of-type(13),\n#roundmenu:not(.clock) > div:nth-of-type(14),\n#roundmenu:not(.clock) > div:nth-of-type(15) {\n  opacity: 0;\n}\n#roundmenu.clock > div {\n  width: 2px;\n  height: 2px;\n}\n#roundmenu.clock > div:nth-of-type(1) {\n  left: 24px;\n  top: 2px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(2) {\n  left: 24px;\n  top: 46px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(3) {\n  top: 24px;\n  left: 2px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(4) {\n  top: 24px;\n  left: 46px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(5) {\n  left: 24px;\n  top: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 1px 23px;\n          transform-origin: 1px 23px;\n}\n#roundmenu.clock > div:nth-of-type(6) {\n  left: 24px;\n  top: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 1px -23px;\n          transform-origin: 1px -23px;\n}\n#roundmenu.clock > div:nth-of-type(7) {\n  top: 24px;\n  left: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 23px 1px;\n          transform-origin: 23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(8) {\n  top: 24px;\n  left: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: -23px 1px;\n          transform-origin: -23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(9) {\n  left: 24px;\n  top: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 1px 23px;\n          transform-origin: 1px 23px;\n}\n#roundmenu.clock > div:nth-of-type(10) {\n  left: 24px;\n  top: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 1px -23px;\n          transform-origin: 1px -23px;\n}\n#roundmenu.clock > div:nth-of-type(11) {\n  top: 24px;\n  left: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 23px 1px;\n          transform-origin: 23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(12) {\n  top: 24px;\n  left: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: -23px 1px;\n          transform-origin: -23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(13) {\n  width: 22px;\n  height: 2px;\n  top: 24px;\n  left: 24px;\n  -webkit-transform-origin: 1px 1px;\n          transform-origin: 1px 1px;\n  border-radius: 4px 40px 40px 4px/4px 4px 4px 4px;\n}\n#roundmenu.clock > div:nth-of-type(14) {\n  width: 16px;\n  height: 4px;\n  top: 23px;\n  left: 23px;\n  -webkit-transform-origin: 2px 2px;\n          transform-origin: 2px 2px;\n  border-radius: 4px 23px 23px 4px/4px 4px 4px 4px;\n}\n#roundmenu.clock > div:nth-of-type(15) {\n  width: 80%;\n  height: 80%;\n  left: 10%;\n  top: 10%;\n  border-radius: 100%;\n  margin: 0;\n  padding: 0;\n  z-index: -1;\n  opacity: 0;\n}\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(1),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(2),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(3),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(4),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(5),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(6),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(7),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(8),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(9),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(10),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(11),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(12) {\n  opacity: 0;\n}\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(15) {\n  opacity: 1;\n}\n.skilltext {\n  text-indent: 32px;\n}\n/** 已修改 */\n.skill {\n  left: 0 !important;\n  width: 72px !important;\n  white-space: nowrap;\n  font-family: 'LuoLiTi2', Helvetica, sans-serif;\n}\n.skill::before {\n  content: '『';\n}\n.skill::after {\n  content: '』';\n}\n.skilln {\n  left: 0 !important;\n  width: 70px !important;\n}\n.skill > .card {\n  -webkit-transform: scale(0.56);\n          transform: scale(0.56);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  margin-left: 2px;\n  margin-top: 6px;\n  margin-bottom: -52px;\n}\n.player .identity[data-color=\"zhu\"],\n.player .identity[data-color=\"truezhu\"],\n.player .identity[data-color=\"enemy\"] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 10px, #e83535 0 0 10px, #e83535 0 0 20px, #e83535 0 0 20px;\n}\ndiv[data-nature='fire'],\nspan[data-nature='fire'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 10px, #e83535 0 0 10px, #e83535 0 0 20px, #e83535 0 0 20px;\n}\ndiv[data-nature='firem'],\nspan[data-nature='firem'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 5px, #e83535 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='firemm'],\nspan[data-nature='firemm'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 2px, #e83535 0 0 2px, #e83535 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='firemx'],\nspan[data-nature='firemx'] {\n  text-shadow: black 0 0 1px, rgba(232, 53, 53, 0.001) 0 0 2px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"mingzhong\"],\n.player .identity[data-color=\"rZhu\"],\n.player .identity[data-color=\"rZhong\"],\n.player .identity[data-color=\"rNei\"],\n.player .identity[data-color=\"cai2\"] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 10px, #ff7800 0 0 10px, #ff7800 0 0 20px, #ff7800 0 0 20px;\n}\ndiv[data-nature='orange'],\nspan[data-nature='orange'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 10px, #ff7800 0 0 10px, #ff7800 0 0 20px, #ff7800 0 0 20px;\n}\ndiv[data-nature='orangem'],\nspan[data-nature='orangem'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 5px, #ff7800 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='orangemm'],\nspan[data-nature='orangemm'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='orangemx'],\nspan[data-nature='orangemx'] {\n  text-shadow: black 0 0 1px, rgba(255, 120, 0, 0.001) 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"zhong\"],\n.player .identity[data-color=\"qun\"],\n.player .identity[data-color=\"neutral\"],\n.player .identity[data-color=\"friend2\"],\ndiv[data-nature='metal'],\nspan[data-nature='metal'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 10px, #ffcb00 0 0 10px, #ffcb00 0 0 20px, #ffcb00 0 0 20px;\n}\ndiv[data-nature='metalm'],\nspan[data-nature='metalm'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='metalmm'],\nspan[data-nature='metalmm'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='metalmx'],\nspan[data-nature='metalmx'] {\n  text-shadow: black 0 0 1px, rgba(255, 203, 0, 0.001) 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"key\"] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 10px, #cbb1ff 0 0 10px, #cbb1ff 0 0 20px, #cbb1ff 0 0 20px;\n}\ndiv[data-nature='key'],\nspan[data-nature='key'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 10px, #cbb1ff 0 0 10px, #cbb1ff 0 0 20px, #cbb1ff 0 0 20px;\n}\ndiv[data-nature='keym'],\nspan[data-nature='keym'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='keymm'],\nspan[data-nature='keymm'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='keymx'],\nspan[data-nature='keymx'] {\n  text-shadow: black 0 0 1px, rgba(203, 177, 255, 0.001) 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"nei\"],\n.player .identity[data-color=\"ye\"],\n.player .identity[data-color=\"rYe\"],\n.player .identity[data-color=\"bYe\"],\n.player .identity[data-color=\"jin\"] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 10px, #644a8b 0 0 10px, #644a8b 0 0 20px, #644a8b 0 0 20px;\n}\ndiv[data-nature='thunder'],\nspan[data-nature='thunder'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 10px, #644a8b 0 0 10px, #644a8b 0 0 20px, #644a8b 0 0 20px;\n}\ndiv[data-nature='thunderm'],\nspan[data-nature='thunderm'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 5px, #644a8b 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='thundermm'],\nspan[data-nature='thundermm'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='thundermx'],\nspan[data-nature='thundermx'] {\n  text-shadow: black 0 0 1px, rgba(100, 74, 139, 0.001) 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"kami\"] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 10px, #5a7663 0 0 10px, #5a7663 0 0 20px, #5a7663 0 0 20px;\n}\ndiv[data-nature='kami'],\nspan[data-nature='kami'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 10px, #5a7663 0 0 10px, #5a7663 0 0 20px, #5a7663 0 0 20px;\n}\ndiv[data-nature='kamim'],\nspan[data-nature='kamim'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 5px, #5a7663 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='kamimm'],\nspan[data-nature='kamimm'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='kamimx'],\nspan[data-nature='kamimx'] {\n  text-shadow: black 0 0 1px, rgba(90, 118, 99, 0.001) 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"fan\"],\n.player .identity[data-color=\"wu\"] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 10px, #397b04 0 0 10px, #397b04 0 0 20px, #397b04 0 0 20px;\n}\ndiv[data-nature='wood'],\nspan[data-nature='wood'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 10px, #397b04 0 0 10px, #397b04 0 0 20px, #397b04 0 0 20px;\n}\ndiv[data-nature='woodm'],\nspan[data-nature='woodm'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 5px, #397b04 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='woodmm'],\nspan[data-nature='woodmm'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 2px, #397b04 0 0 2px, #397b04 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='woodmx'],\nspan[data-nature='woodmx'] {\n  text-shadow: black 0 0 1px, rgba(57, 123, 4, 0.001) 0 0 2px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"cai\"],\n.player .identity[data-color=\"bZhu\"],\n.player .identity[data-color=\"bZhong\"],\n.player .identity[data-color=\"bNei\"],\n.player .identity[data-color=\"wei\"],\n.player .identity[data-color=\"falsezhu\"],\n.player .identity[data-color=\"friend\"],\n.water {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='water'],\nspan[data-nature='water'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='waterm'],\nspan[data-nature='waterm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='watermm'],\nspan[data-nature='watermm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='watermx'],\nspan[data-nature='watermx'] {\n  text-shadow: black 0 0 1px, rgba(78, 117, 140, 0.001) 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"shu\"] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='soil'],\nspan[data-nature='soil'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='soilm'],\nspan[data-nature='soilm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='soilmm'],\nspan[data-nature='soilmm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='soilmx'],\nspan[data-nature='soilmx'] {\n  text-shadow: black 0 0 1px, rgba(78, 117, 140, 0.001) 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='gray'],\nspan[data-nature='gray'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 10px, #d5c2b3 0 0 10px, #d5c2b3 0 0 20px, #d5c2b3 0 0 20px;\n}\ndiv[data-nature='graym'],\nspan[data-nature='graym'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='graymm'],\nspan[data-nature='graymm'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='graymx'],\nspan[data-nature='graymx'] {\n  text-shadow: black 0 0 1px, rgba(213, 194, 179, 0.001) 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='ice'],\nspan[data-nature='ice'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 10px, #748884 0 0 10px, #748884 0 0 20px, #748884 0 0 20px;\n}\ndiv[data-nature='icem'],\nspan[data-nature='icem'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 5px, #748884 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='icemm'],\nspan[data-nature='icemm'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 2px, #748884 0 0 2px, #748884 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='icemx'],\nspan[data-nature='icemx'] {\n  text-shadow: black 0 0 1px, rgba(116, 136, 132, 0.001) 0 0 2px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='ocean'],\nspan[data-nature='ocean'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 10px, #452f97 0 0 10px, #452f97 0 0 20px, #452f97 0 0 20px;\n}\ndiv[data-nature='oceanm'],\nspan[data-nature='oceanm'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 5px, #452f97 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='oceanmm'],\nspan[data-nature='oceanmm'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 2px, #452f97 0 0 2px, #452f97 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='oceanmx'],\nspan[data-nature='oceanmx'] {\n  text-shadow: black 0 0 1px, rgba(69, 47, 151, 0.001) 0 0 2px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='yami'],\nspan[data-nature='yami'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 10px, #6f5979 0 0 10px, #6f5979 0 0 20px, #6f5979 0 0 20px;\n}\ndiv[data-nature='yamim'],\nspan[data-nature='yamim'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 5px, #6f5979 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='yamimm'],\nspan[data-nature='yamimm'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='yamimx'],\nspan[data-nature='yamimx'] {\n  text-shadow: black 0 0 1px, rgba(111, 89, 121, 0.001) 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='black'],\nspan[data-nature='black'] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 20px, rgba(0, 0, 0, 0.5) 0 0 20px;\n}\ndiv[data-nature='unknownm'],\nspan[data-nature='unknownm'] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='unknown'],\nspan[data-nature='unknown'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, black 0 0 1px;\n}\n.player .identity[data-color=\"unknownx\"] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 20px, rgba(0, 0, 0, 0.5) 0 0 20px;\n}\ndiv[data-nature=\"unknown\"] {\n  text-shadow: rgba(0, 0, 0, 0.2) 0 0 2px, rgba(0, 0, 0, 0.2) 0 0 5px, rgba(0, 0, 0, 0.2) 0 0 10px, rgba(0, 0, 0, 0.2) 0 0 10px, rgba(0, 0, 0, 0.2) 0 0 20px, rgba(0, 0, 0, 0.2) 0 0 20px, rgba(0, 0, 0, 0.6) 0 0 1px;\n}\n#window:not(.nopointer) #control {\n  cursor: pointer;\n}\n#window:not(.nopointer) #system > div > div:not(.hidden),\n#window:not(.nopointer) .choosedouble.character,\n#window:not(.nopointer) .config.more,\n#window:not(.nopointer) .dashboard,\n#window:not(.nopointer) .textlink,\n#window:not(.nopointer) .hrefnode,\n#window:not(.nopointer) #historybar > div > div,\n#window:not(.nopointer) .closenode,\n#window:not(.nopointer) .pointerdiv,\n#window:not(.nopointer) .pointernode div,\n#window:not(.nopointer) .pointerspan span,\n#window:not(.nopointer) .pointertable td > span,\n#window:not(.nopointer) .config > .toggle.onoff,\n#window:not(.nopointer) .pointerdialog .button:not(.unselectable),\n#window:not(.nopointer) .dialog.fullheight .buttons .button:not(.selectedx):not(.glow):not(.glows):not(.forbidden),\n#window:not(.nopointer) #arena.selecting:not(.video) .player .equips > .card.selectable,\n#window:not(.nopointer) #arena.selecting #me .card.selectable,\n#window:not(.nopointer) #arena.selecting .button.selectable,\n#window:not(.nopointer) #arena.selecting .player.selectable,\n#window:not(.nopointer) .menubutton.round,\n#window:not(.nopointer) *[data-cursor_style=\"pointer\"] {\n  cursor: pointer;\n}\n#window:not(.nopointer) .player .judges > .card,\n#window:not(.nopointer) .player .marks > .card {\n  cursor: context-menu;\n}\n#window:not(.nopointer) .player .identity.guessing {\n  cursor: help;\n}\n#window:not(.nopointer) > .choosedouble.character.moved:not(.selecting) {\n  cursor: default;\n}\n#window:not(.nopointer) .cardpiledelete {\n  cursor: pointer;\n}\n#window:not(.nopointer) .menubg.charactercard .menubutton:not(.ava):not(.intro):not(.unselectable),\n#window:not(.nopointer) .menubg.charactercard > .ava > .avatars > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .menu > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .menu.visual.withbar > div:last-child > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) input.fileinput {\n  cursor: pointer;\n}\n#window:not(.nopointer) .config.switcher > div,\n#window:not(.nopointer) .config.toggle > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .videonode.menubutton.extension > .caption > .menubutton:not(.transparent2):not(.nopointer) {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .prompt-container > div > div > div > .menubutton {\n  cursor: pointer;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/*--------标签--------*/\nhtml {\n  width: 100%;\n  height: 100%;\n  font-size: 16px;\n  cursor: default;\n  overflow: hidden;\n  user-select: none;\n  -ms-user-select: none;\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -webkit-font-smoothing: subpixel-antialiased;\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\n  background-color: #3c3c3c;\n}\nbody {\n  width: 100%;\n  height: 100%;\n  padding: 0;\n  margin: 0;\n  left: 0;\n  top: 0;\n  position: absolute;\n  overflow: hidden;\n  text-rendering: optimizeLegibility;\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  font-family: 'STHeiti', 'SimHei', 'Microsoft JhengHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', Helvetica, Arial, sans-serif;\n}\ndiv {\n  display: inline-block;\n  position: absolute;\n  transition: all 0.5s;\n}\ntable {\n  table-layout: fixed;\n}\n/*--------场景--------*/\n#window {\n  width: 100%;\n  height: 100%;\n  top: 0px;\n  left: 0;\n  transition-property: opacity;\n  overflow: hidden;\n}\n#window.connecting > *:not(#system) {\n  opacity: 0.5;\n}\n#window.server > div:not(.serverinfo) {\n  display: none !important;\n}\n#window.server > .serverinfo {\n  width: 400px;\n  height: 200px;\n  font-family: 'xinwei';\n  text-align: center;\n  left: calc(50% - 200px);\n  top: calc(50% - 100px);\n}\n#window.server > .serverinfo > div {\n  position: relative;\n  display: block;\n  font-size: 20px;\n  margin-top: 10px;\n}\n#window.server > .serverinfo > div > div {\n  position: relative;\n  display: inline-block;\n}\n#window.server > .serverinfo > div > div:last-child {\n  width: 60px;\n  text-align: left;\n  white-space: nowrap;\n}\n#window.server > .serverinfo > div > .menubutton.large:last-child {\n  width: auto;\n  margin-top: 30px;\n  cursor: pointer;\n}\n#window.server > .serverinfo > div:first-child {\n  font-size: 40px;\n}\n.connectlayer > div {\n  display: table-cell;\n  vertical-align: middle;\n  font-size: 60px;\n  color: white;\n  text-shadow: black 0 0 2px;\n  position: relative;\n  font-family: 'xinwei';\n  transition: all 0.5s;\n}\n.connectlayer.fullsize {\n  display: table;\n  text-align: center;\n  z-index: 100;\n}\n.statusbar #window {\n  top: 24px;\n  height: calc(100% - 24px);\n}\n.statusbar #statusbg {\n  display: block;\n}\n#statusbg {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: 24px;\n  background: rgba(0, 0, 0, 0.4);\n  display: none;\n}\n#window > .tutorial_tap {\n  width: 30px;\n  height: 30px;\n  border-radius: 100%;\n  background: rgba(255, 255, 255, 0.5);\n  box-shadow: rgba(255, 255, 255, 0.5) 0 0 5px;\n  left: calc(50% - 15px);\n  top: calc(50% - 15px);\n  position: absolute;\n  transition: all 1s;\n}\n#window.testing > *:not(.pausedbg) {\n  display: none !important;\n}\n#window.modepaused > div:not(.modenopause):not(#arena):not(.popped) {\n  opacity: 0.3;\n}\n#window.modepaused > #arena > #roundmenu {\n  opacity: 0.3;\n}\n#window.shortcutpaused > .modeshortcutpause {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > div:not(.background):not(#shortcut):not(#system):not(#arena):not(.hidden):not(.removing):not(.dialog):not(.centermenu):not(.popup-container):not(.forceopaque) {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > #arena > div:not(#timer):not(.removing):not(.hidden):not(#autonode) {\n  opacity: 0.3 !important;\n}\n#window.shortcutpaused > #system {\n  z-index: 31;\n}\n#window.shortcutpaused.modepaused > .modenopause.popup-container:not(.filter-character) {\n  opacity: 0.3;\n}\n#window.systempaused > #system {\n  opacity: 0.3 !important;\n}\n#window.noclick_important * {\n  pointer-events: none !important;\n}\n#window.noclick_important .noclick_click_important div {\n  pointer-events: auto !important;\n}\n#window.blur_ui #arena.paused,\n#window.blur_ui #arena.menupaused,\n#window.blur_ui #historybar.paused,\n#window.blur_ui #historybar.menupaused,\n#window.blur_ui #arena.unfocus,\n#window.blur_ui #arena.right {\n  filter: blur(3px);\n  -webkit-filter: blur(3px);\n}\n#window.blur_ui #arena.menupaused,\n#window.blur_ui #historybar.menupaused {\n  opacity: 0.6;\n}\n#window.blur_ui #arena.thrownhighlight > .card.thrown:not(.thrownhighlight) {\n  filter: blur(2px);\n  -webkit-filter: blur(2px);\n}\n#window.blur_ui.shortcutpaused > #arena,\n#window.blur_ui.shortcutpaused > #historybar {\n  filter: blur(3px);\n  -webkit-filter: blur(3px);\n}\n#time {\n  width: 100%;\n  padding: 0;\n  margin: 0;\n  position: absolute;\n  left: 0;\n  top: 11px;\n  text-align: center;\n  pointer-events: none;\n  display: block;\n  font-family: 'xinwei';\n}\n#time > div {\n  margin: 0;\n  padding: 0;\n  display: inline-block;\n  margin-left: 6px;\n  margin-right: 6px;\n  position: relative;\n}\n#shortcut {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 10;\n  /*background-color: rgba(0, 0, 0, 0.6);*/\n}\n#shortcut > div {\n  width: 80px;\n  height: 80px;\n  padding: 10px;\n  margin: 0;\n  overflow: hidden;\n  line-height: 80px;\n  font-size: 50px;\n  white-space: nowrap;\n  text-align: center;\n  letter-spacing: -6px;\n  -webkit-transform: scale(1.3);\n          transform: scale(1.3);\n}\n#shortcut > div:not(.menubutton) {\n  width: 100%;\n  height: 80px;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  top: 0;\n}\n#shortcut > div > span {\n  width: 200px;\n  left: -63px;\n  position: relative;\n  display: inline-block;\n}\n#shortcut > div[data-position=\"1\"] {\n  left: calc(50% - 50px);\n  top: calc(50% - 190px);\n}\n#shortcut > div[data-position=\"2\"] {\n  left: calc(50% + 100px);\n  top: calc(50% - 40px);\n}\n#shortcut > div[data-position=\"3\"] {\n  left: calc(50% - 50px);\n  top: calc(50% + 110px);\n}\n#shortcut > div[data-position=\"4\"] {\n  left: calc(50% - 200px);\n  top: calc(50% - 40px);\n}\n#shortcut > div[data-position=\"5\"] {\n  left: calc(50% - 50px);\n  top: calc(50% - 50px);\n}\n#shortcut > .favmodelist:not(.menubutton) {\n  width: 130px;\n  height: 300px;\n  top: calc(50% - 150px);\n  left: calc(50% - 430px);\n  overflow: visible;\n}\n#shortcut > .favmodelist > .menubutton.large {\n  display: block;\n  position: absolute;\n  left: 0;\n  letter-spacing: 0;\n}\n#shortcut > .favmodelist > [data-type=\"even\"] {\n  top: calc(50% - 45px);\n}\n#shortcut > .favmodelist > [data-type=\"odd\"] {\n  top: calc(50% - 20px);\n}\n#shortcut > .favmodelist > [data-position=\"0\"] {\n  transition-duration: 0.5s;\n}\n#shortcut > .favmodelist > [data-position=\"1\"] {\n  transition-duration: 0.6s;\n  -webkit-transform: translateY(50px);\n          transform: translateY(50px);\n}\n#shortcut > .favmodelist > [data-position=\"2\"] {\n  transition-duration: 0.4s;\n  -webkit-transform: translateY(-50px);\n          transform: translateY(-50px);\n}\n#shortcut > .favmodelist > [data-position=\"3\"] {\n  transition-duration: 0.7s;\n  -webkit-transform: translateY(100px);\n          transform: translateY(100px);\n}\n#shortcut > .favmodelist > [data-position=\"4\"] {\n  transition-duration: 0.3s;\n  -webkit-transform: translateY(-100px);\n          transform: translateY(-100px);\n}\n#shortcut > .favmodelist > [data-position=\"5\"] {\n  transition-duration: 0.8s;\n  -webkit-transform: translateY(150px);\n          transform: translateY(150px);\n}\n#shortcut.hidden {\n  pointer-events: none;\n  transition: opacity 0.3s;\n}\n#shortcut.hidden > div[data-position=\"1\"] {\n  -webkit-transform: scale(1) translateY(150px);\n          transform: scale(1) translateY(150px);\n}\n#shortcut.hidden > div[data-position=\"2\"] {\n  -webkit-transform: scale(1) translateX(-150px);\n          transform: scale(1) translateX(-150px);\n}\n#shortcut.hidden > div[data-position=\"3\"] {\n  -webkit-transform: scale(1) translateY(-150px);\n          transform: scale(1) translateY(-150px);\n}\n#shortcut.hidden > div[data-position=\"4\"] {\n  -webkit-transform: scale(1) translateX(150px);\n          transform: scale(1) translateX(150px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"0\"] {\n  -webkit-transform: translateX(-140px);\n          transform: translateX(-140px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"1\"] {\n  -webkit-transform: translateY(50px) translateX(-150px);\n          transform: translateY(50px) translateX(-150px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"2\"] {\n  -webkit-transform: translateY(-50px) translateX(-130px);\n          transform: translateY(-50px) translateX(-130px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"3\"] {\n  -webkit-transform: translateY(100px) translateX(-160px);\n          transform: translateY(100px) translateX(-160px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"4\"] {\n  -webkit-transform: translateY(-100px) translateX(-120px);\n          transform: translateY(-100px) translateX(-120px);\n}\n#shortcut.hidden > .favmodelist > [data-position=\"5\"] {\n  -webkit-transform: translateY(150px) translateX(-170px);\n          transform: translateY(150px) translateX(-170px);\n}\n#splash {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n  text-align: center;\n  overflow: visible;\n  transition: all 0.3s;\n  overflow-x: scroll;\n  white-space: nowrap;\n}\n#splash:not(.touch) > div:hover:not(.clicked) {\n  -webkit-transform: translateY(-20px);\n          transform: translateY(-20px);\n}\n#splash > div {\n  width: 110px;\n  height: 300px;\n  top: calc(50% - 150px);\n  margin-left: 10px;\n  margin-right: 10px;\n  position: relative;\n  transition: all 0.8s;\n}\n#splash > div:first-child {\n  margin-left: 20px;\n}\n#splash > div:last-child {\n  margin-right: 20px;\n}\n#splash > div > .splashtext {\n  font-family: 'Tiejili', 'huangcao', 'xinwei';\n  font-size: 50px;\n  position: absolute;\n  right: 7px;\n  bottom: 7px;\n  z-index: 1;\n}\n#splash > div > .avatar {\n  width: 86px;\n  height: calc(100% - 14px);\n  left: 7px;\n  top: 7px;\n  background-size: cover;\n}\n#splash > div.clicked {\n  -webkit-transform: translateY(-20px) scale(1.5);\n          transform: translateY(-20px) scale(1.5);\n  transition: all 0.3s;\n  opacity: 0;\n}\n#splash > div.hidden {\n  -webkit-transform: translateY(-300px) scale(0.5);\n          transform: translateY(-300px) scale(0.5);\n}\n#splash.slim > div .splashtext {\n  -webkit-filter: drop-shadow(3px 3px 2px #454579);\n          filter: drop-shadow(3px 3px 2px #454579);\n  right: 5px;\n  bottom: 5px;\n}\n#splash.slim > div .avatar {\n  width: calc(100% - 10px);\n  height: calc(100% - 10px);\n  left: 5px;\n  top: 5px;\n}\n#splash.removing {\n  pointer-events: none;\n}\n#splash[data-radius_size='reduce'] > div > div,\n#splash[data-radius_size='reduce'] > div {\n  border-radius: 4px;\n}\n#splash[data-radius_size='off'] > div > div,\n#splash[data-radius_size='off'] > div {\n  border-radius: 0px;\n}\n#splash[data-radius_size='increase'] > div > div,\n#splash[data-radius_size='increase'] > div {\n  border-radius: 12px;\n}\n#arenalog {\n  width: calc(50% - 210px);\n  height: calc(100% - 370px);\n  left: calc(50% + 60px);\n  top: 200px;\n  overflow: hidden;\n}\n#arenalog:not(.oldlayout) > #arenalog[data-position=\"center\"] {\n  left: calc(25% + 105px);\n}\n#arenalog:not(.oldlayout) #arena:not(.oldlayout) > #arenalog[data-position=\"left\"] {\n  left: 150px;\n}\n#arenalog > div {\n  position: relative;\n  display: block;\n  width: calc(100% - 20px);\n  left: 20px;\n  line-height: 18px;\n}\n#arenalog.withdialog {\n  opacity: 0.5;\n}\n#arena.oldlayout #arenalog {\n  top: 160px;\n  width: calc(50% - 300px);\n  height: calc(100% - 325px);\n}\n#arena.oldlayout #arenalog[data-position=\"center\"] {\n  left: calc(25% + 150px);\n}\n#arena.oldlayout #arenalog[data-position=\"left\"] {\n  left: 240px;\n}\n#arena {\n  width: 94%;\n  height: 90%;\n  top: calc(5% + 10px);\n  left: 3%;\n  transition-property: opacity;\n}\n#arena > canvas {\n  z-index: 10;\n  pointer-events: none;\n  position: absolute;\n}\n#arena #me > div > div > .card {\n  position: absolute;\n  left: 8px;\n}\n#arena.playerhidden > .player,\n#arena.playerhidden > #mebg,\n#arena.markhidden > .player > .marks {\n  visibility: hidden;\n  opacity: 0;\n}\n#arena.hide_name .player > .name:not(.name_seat),\n#arena.hide_name .player > .name2,\n#arena.hide_name > .dialog .button.character > .name {\n  display: none !important;\n}\n#arena.chess > #arenalog {\n  display: none !important;\n}\n#arena.observe .handcards > .card > div {\n  opacity: 0 !important;\n}\n#arena.right:not(.noleft) {\n  left: 240px;\n  opacity: 0.6;\n}\n#arena.left:not(.noleft) {\n  left: calc(10% - 240px);\n  opacity: 0.6;\n}\n#arena.top {\n  top: -100%;\n}\n#arena.paused2 {\n  opacity: 0.1 !important;\n}\n#arena.only_dialog > div:not(.dialog):not(#control) {\n  opacity: 0 !important;\n  pointer-events: none !important;\n}\n#arena.playerfocus > div:not(#timer):not(.playerfocus):not(#chess-container):not(.removing):not(#autonode),\n#arena.playerfocus #chess > div:not(.playerfocus):not(.removing) {\n  opacity: 0.3 !important;\n}\n#window.leftbar #arena:not(.chess) {\n  left: calc(3% + 50px);\n  width: calc(94% - 50px);\n}\n#window.rightbar #arena:not(.chess) {\n  width: calc(94% - 50px);\n}\n#arena.paused,\n#arena.unfocus,\n#historybar.paused {\n  opacity: 0.3 !important;\n}\n#arena > .poplayer,\n#window > .poplayer {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n#historybar {\n  left: 1.5%;\n  width: 50px;\n  height: calc(90% - 20px);\n  top: calc(5% + 25px);\n  border-radius: 4px;\n  visibility: hidden;\n  opacity: 0;\n  overflow: hidden;\n  z-index: 2;\n  transition-property: opacity, visibility;\n}\n#historybar > div {\n  width: 42px;\n  height: 42px;\n  margin: 0;\n  padding: 4px;\n  display: block;\n  position: absolute;\n}\n#historybar > div > .card {\n  -webkit-transform: scale(0.403846);\n          transform: scale(0.403846);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  margin: 0;\n  left: 4px;\n  top: 4px;\n  position: absolute;\n}\n#historybar > div > .avatar {\n  padding: 0;\n  margin: 0;\n  position: absolute;\n  left: 4px;\n  top: 4px;\n  width: 42px;\n  height: 42px;\n  border-radius: 3.230768px;\n}\n#historybar > div > .avatar > div {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  bottom: 2px;\n  height: auto;\n  font-family: 'xinwei';\n  font-size: 18px;\n  text-align: center;\n  width: 100%;\n}\n#historybar > div > .avatar > .avatarbg {\n  bottom: 0;\n  height: 100%;\n  background-size: cover;\n}\n#historybar > div > .avatar2 {\n  width: 20px;\n  height: 20px;\n  left: 28px;\n  top: 28px;\n  border-radius: 100%;\n  font-family: 'xinwei';\n  font-size: 20px;\n  line-height: 20px;\n  z-index: 1;\n}\n#historybar > div > .avatar2.avatar3 {\n  left: 12px;\n  top: 31px;\n  -webkit-transform: scale(0.7);\n          transform: scale(0.7);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n}\n#historybar.hidden {\n  pointer-events: none;\n}\n#window.rightbar #historybar {\n  left: calc(98.5% - 50px);\n  opacity: 1;\n  visibility: visible;\n}\n#window.rightbar2:not(.leftbar) #historybar {\n  left: calc(98.5% - 50px);\n}\n#window.leftbar #historyba {\n  opacity: 1;\n  visibility: visible;\n}\n#window:not(.low_performance) #arena #arenalog > div {\n  animation: game_start 0.5s;\n  -webkit-animation: game_start 0.5s;\n}\n#splash.low_performance div {\n  transition: all 0.5s;\n}\n#splash.low_performance div.hidden {\n  -webkit-transform: scale(0.8);\n          transform: scale(0.8);\n}\n#window.low_performance #arena .player .equips,\n#window.low_performance #arena .player .name {\n  transition: all 0s;\n}\n#window.low_performance .menu.main > .menu-content > div > .right.pane > div:not(.expanded) > .config.auto-hide,\n#window.low_performance .menu.main > .menu-content > div > .right.pane > div > .config.hidden {\n  display: none;\n  transition-property: -webkit-transform;\n  transition-property: transform;\n  transition-property: transform, -webkit-transform;\n}\n/*--------角色--------*/\n.player:not(.treasure).playerfocus {\n  -webkit-transform: scale(1.1);\n          transform: scale(1.1);\n}\n.player.linked:not(.treasure).playerfocus {\n  -webkit-transform: scale(1.1) rotate(-90deg);\n          transform: scale(1.1) rotate(-90deg);\n}\n.player.connect > div:not(.displayer):not(.name):not(.nameol):not(.hp):not(.room):not(.gaming):not(.identity) {\n  display: none !important;\n}\n.player.connect > .gaming {\n  left: 16px;\n  top: auto;\n  bottom: 16px;\n  font-family: 'xinwei';\n}\n.player.connect[data-cursor_style=\"forbidden\"] {\n  opacity: 0.5;\n}\n.player {\n  z-index: 2;\n  width: 240px;\n  height: 120px;\n}\n.player .playerjiu {\n  animation: game_start 0.5s;\n  -webkit-animation: game_start 0.5s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 4;\n  pointer-events: none;\n  background: rgba(255, 0, 0, 0.3);\n}\n.player > .displayer > .avatar > .action {\n  margin: 5px;\n  font-family: 'xinwei';\n  font-size: 20px;\n  letter-spacing: -2px;\n  right: 5px;\n  text-align: right;\n}\n.player > .displayer > .avatar > .action:not(.freecolor) {\n  text-shadow: black 0 0 1px, #0a9b43 0 0 5px, #0a9b43 0 0 10px;\n}\n.player > .displayer > .avatar.hidden {\n  pointer-events: none !important;\n}\n.player > .displayer > .avatar.disabled {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n  opacity: 0.8;\n}\n.player > .displayer > .avatar2.hidden {\n  pointer-events: none !important;\n}\n.player > .displayer > .avatar2.disabled {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n  opacity: 0.8;\n}\n.player:not(.current_action) .avatar > .action {\n  opacity: 0;\n}\n.player > div {\n  z-index: 2;\n}\n.player > .nameol {\n  left: 0;\n  top: 13px;\n  width: 100%;\n  font-size: 12px;\n  text-align: center;\n  white-space: nowrap;\n  /*opacity: 0;*/\n}\n.player:hover > .nameol {\n  opacity: 1;\n}\n.player > .name {\n  left: 16px;\n  top: 24px;\n  font-size: 20px;\n  font-family: 'xinwei';\n}\n.player > .name.name2 {\n  left: 81px;\n}\n.player > .intro {\n  top: 87px;\n  left: 18px;\n}\n.player > .turned {\n  font-family: 'xinwei';\n  width: 100%;\n  height: 100%;\n  line-height: 50px;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  text-align: center;\n  font-size: 50px;\n  opacity: 0;\n  pointer-events: none;\n  background: black;\n  top: 0;\n  border-radius: 8px;\n  color: rgba(255, 255, 255, 0.8);\n  text-shadow: none;\n}\n.player > .turned > div {\n  top: calc(50% - 50px);\n  width: 100%;\n  left: 0;\n}\n.player > .chain {\n  top: calc(50% - 10px);\n  left: 0;\n  height: 20px;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: visible;\n  white-space: nowrap;\n  padding: 0;\n  margin: 0;\n  z-index: 3;\n  pointer-events: none;\n}\n.player > .chain > div {\n  overflow: visible;\n  left: 0;\n  top: 0;\n  margin: 0;\n  padding: 0;\n}\n.player > .chain > div > div {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n  left: 0;\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 0, 0, 0.4) 0 0 2px;\n}\n.player > .chain > div > div:nth-child(odd) {\n  height: 8px;\n  width: 10px;\n  border-radius: 2px;\n  top: 6px;\n}\n.player > .chain > div > div:nth-child(even) {\n  width: 10px;\n  height: 2px;\n  top: 9px;\n  z-index: 1;\n  border-radius: 2px;\n}\n.player:not(.linked2) > .chain > div {\n  opacity: 0;\n  -webkit-transform: translateX(-40px);\n          transform: translateX(-40px);\n}\n.player.playerbright {\n  filter: brightness(1.2);\n  -webkit-filter: brightness(1.2);\n}\n.player.playerflip {\n  animation: playerflip 0.3s ease-out;\n  -webkit-animation: playerflip 0.3s ease-out;\n}\n.player.controlfakeme {\n  width: 100px;\n  height: 120px;\n  top: calc(100% - 140px);\n}\n.player.controlfakeme .avatar {\n  width: 100%;\n  height: 100%;\n  box-shadow: none;\n  left: 0;\n  top: 0;\n}\n.player.minskin {\n  width: 120px;\n}\n#arena.chess:not(.selecting) .player.current_action .avatar > .action {\n  opacity: 0;\n}\n.player.replaceme {\n  animation: replaceme 0.5s;\n  -webkit-animation: replaceme 0.5s;\n}\n.player.replaceenemy {\n  animation: replaceenemy 0.5s;\n  -webkit-animation: replaceenemy 0.5s;\n}\n.player.dead,\n.player.likedead,\n.grayscale1 {\n  z-index: 1;\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n.grayscale {\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n#arena.slim_player .player > .name {\n  left: 13px;\n  top: 21px;\n}\n#arena.slim_player .player > .name.name2 {\n  left: 78px;\n}\n#arena.slim_player .player.minskin > .name {\n  font-size: 18px;\n  line-height: 120%;\n  top: 15px;\n}\n#arena.slim_player .player.minskin > .name.long {\n  -webkit-transform: scale(0.9);\n          transform: scale(0.9);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  top: 13px;\n}\n#arena.slim_player .player.minskin.linked > .name {\n  -webkit-transform: rotate(90deg) translate(81px, -66px);\n          transform: rotate(90deg) translate(81px, -66px);\n}\n#arena .player.minskin > .name {\n  font-size: 18px;\n  line-height: 120%;\n  top: 15px;\n}\n#arena .player.minskin > .name.long {\n  -webkit-transform: scale(0.9);\n          transform: scale(0.9);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  top: 13px;\n}\n#arena .player.linked.minskin > .name {\n  -webkit-transform: rotate(90deg) translate(81px, -66px);\n          transform: rotate(90deg) translate(81px, -66px);\n}\n#arena:not(.hide_turned):not(.oldlayout) .player.turnedover > .turned {\n  opacity: 0.2;\n}\n#arena.nolink .player > .chain {\n  display: none;\n}\n.unseen .avatar,\n.unseen > .name:not(.name2) {\n  opacity: 0 !important;\n}\n.unseen2 .avatar2,\n.unseen2 > .name2 {\n  opacity: 0 !important;\n}\n#arena:not(.observe) .unseen_v .avatar,\n#arena:not(.observe) .player[data-position='0'].unseen .avatar,\n#arena:not(.observe) .unseen_v > .name:not(.name2):not(.name_seat),\n#arena:not(.observe) .player[data-position='0'].unseen > .name:not(.name2):not(.name_seat) {\n  opacity: 0.2 !important;\n}\n#arena:not(.observe) .unseen2_v .avatar2,\n#arena:not(.observe) .player[data-position='0'].unseen2 .avatar2,\n#arena:not(.observe) .unseen2_v > .name2,\n#arena:not(.observe) .player[data-position='0'].unseen2 > .name2 {\n  opacity: 0.2 !important;\n}\n.player > .name_seat {\n  opacity: 0;\n}\n.player:not([data-position='0']) .unseen.unseen2 > .name_seat,\n.player:not([data-position='0']):not(.fullskin2).unseen > .name_seat {\n  opacity: 1 !important;\n}\n.linked > .displayer > .avatar,\n.linked > .displayer > .avatar2 {\n  -webkit-transform: rotate(-90deg);\n          transform: rotate(-90deg);\n}\n.linked > .displayer > .avatar2 {\n  top: 5px;\n}\n.linked > .identity {\n  top: 88px;\n}\n.linked > .count {\n  right: 154px;\n}\n.hp {\n  left: 18px;\n  top: 14px;\n  width: 72px;\n  line-height: 14px;\n  text-align: left;\n}\n.hp.text {\n  top: 18px;\n}\n.hp.textstyle {\n  font-family: 'xinwei';\n}\n.hp > div {\n  width: 8px;\n  height: 8px;\n  margin-left: 3px;\n  border-radius: 100%;\n  box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 2px inset, rgba(255, 255, 255, 0.15) -1px 1px 5px inset;\n  position: relative;\n  filter: brightness(1.5);\n  -webkit-filter: brightness(1.5);\n  transition: all 0.5s;\n  background-repeat: no-repeat;\n}\n.hp[data-condition=\"high\"] > div:not(.lost) {\n  background: #397b04;\n  border: 1px solid #274f07;\n}\n.hp[data-condition=\"mid\"] > div:not(.lost) {\n  background: #a68c06;\n  border: 1px solid #4f4007;\n}\n.hp[data-condition=\"low\"] > div:not(.lost) {\n  background: #941b1b;\n  border: 1px solid #4f0707;\n}\n.hp.actcount > div:not(.lost) {\n  background: #3f77ad;\n  border: 1px solid #1f5283;\n}\n.button .hp > div {\n  width: 6px;\n  height: 6px;\n  background: white;\n  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.5);\n  border: 1px solid #fff;\n}\n.treasure > .hp > div:not(.lost) {\n  background: #3f77ad !important;\n  border: 1px solid #1f5283 !important;\n}\n.hp.actcount > div.overflow:not(.lost) {\n  background: #9a9a9a;\n  border: 1px solid #6d6d6d;\n}\n.hp.actcount.overflow2 > div.overflow:not(.lost) {\n  background: #ad813f;\n  border: 1px solid #836d1f;\n}\n.hp.actcount > .lost {\n  background: #3f77ad;\n  border: 1px solid #1f5283;\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n.hp > .lost {\n  background: #397b04;\n  border: 1px solid #274f07;\n  filter: grayscale(1);\n  -webkit-filter: grayscale(1);\n}\n.hp.text[data-condition=\"low\"],\n.hp.textstyle[data-condition=\"low\"] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 10px;\n}\n.hp.text[data-condition=\"mid\"],\n.hp.textstyle[data-condition=\"mid\"] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 10px;\n}\n.hp.text[data-condition=\"high\"],\n.hp.textstyle[data-condition=\"high\"] {\n  text-shadow: #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 10px;\n}\n.touchinfo {\n  padding: 6px;\n  position: absolute;\n  color: white;\n  text-shadow: black 0 0 2px;\n  top: 0;\n  margin: 0;\n  font-family: 'xinwei';\n}\n.touchinfo.left {\n  left: 0;\n}\n.touchinfo.right {\n  left: auto;\n  right: 0;\n  text-align: right;\n}\n#window.touchinfohidden > .touchinfo {\n  opacity: 0;\n}\n.button.replaceButton,\n.button.replaceButton.text {\n  left: 2px;\n  top: auto;\n  text-align: center;\n  width: 42px;\n  right: auto;\n  bottom: 3px;\n  background-image: linear-gradient(rgba(150, 47, 47, 0.8), rgba(132, 43, 43, 0.2));\n  border-radius: 3px;\n  font-family: 'LuoLiTi2', Helvetica, sans-serif;\n}\n.button.replaceButton > div {\n  width: 10px;\n  height: 10px;\n}\n#me .card.selected::after {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #ff0000 0 0 5px, #ff0000 0 0 10px;\n}\n#me .card.glow::before {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #0085ff 0 0 5px, #0085ff 0 0 10px;\n}\n#me .card.glows {\n  opacity: 1;\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, #ff9933 0 0 5px, #ff9933 0 0 10px;\n}\n.glow:not(.button):not(.card) {\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 133, 255, 0.4) 0 0 5px, rgba(0, 133, 255, 0.5) 0 0 12px, rgba(0, 133, 255, 0.8) 0 0 15px !important;\n}\n.glow2:not(.player.glow_phase) > .displayer > .avatar {\n  /*-webkit-animation:control_glow 4s infinite;*/\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, #0a9b43 0 0 15px, #0a9b43 0 0 15px !important;\n}\n.glow3 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0) 0 0 40px, rgba(0, 133, 255, 0.8) 0 0 60px !important;\n}\n.selectedx3 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(255, 0, 0, 0.8) 0 0 10px, rgba(255, 0, 0, 0) 0 0 40px, rgba(255, 0, 0, 0.8) 0 0 60px !important;\n}\n.glow4 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0) 0 0 40px, rgba(0, 133, 255, 0.8) 0 0 40px !important;\n}\n.selectedx4 {\n  box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(255, 0, 0, 0.6) 0 0 10px, rgba(255, 0, 0, 0) 0 0 40px, rgba(255, 0, 0, 0.8) 0 0 40px !important;\n}\n.player:not(.glow_phase) .avatar.glow2,\n.button.glow2:not(.selected) {\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, #0a9b43 0 0 5px, #0a9b43 0 0 5px, #0a9b43 0 0 10px, #0a9b43 0 0 10px !important;\n}\n.button.character > .identity {\n  top: -6px;\n  left: 72px;\n}\n.button.character.character.newstyle > .identity {\n  /*display: none;*/\n  border: none;\n  background: none !important;\n  /*box-shadow: none;*/\n  left: auto;\n  right: 3px;\n  top: 3px;\n  /*font-size: 20px;*/\n}\n.button.character > .name {\n  left: 5px;\n  top: 22px;\n  max-height: 68px;\n  overflow: hidden;\n}\n.button.character > .hp {\n  left: 5px;\n  top: 3px;\n}\n.button.character > .hp.text {\n  top: 8px;\n  left: 6px;\n  font-family: 'huangcao', 'xinwei';\n  font-size: 20px;\n  letter-spacing: 3px;\n}\n.button.character > .intro {\n  top: 71px;\n  left: 0;\n}\n.button.character > .identity {\n  top: -6px;\n  left: 72px;\n}\n.button.character.newstyle > .identity {\n  /*display: none;*/\n  border: none;\n  background: none !important;\n  /*box-shadow: none;*/\n  left: auto;\n  right: 3px;\n  top: 3px;\n  /*font-size: 20px;*/\n}\n.button.newstyle > .name {\n  top: 8px;\n  max-height: 84px;\n}\n.button.newstyle > .name.long {\n  top: 6px;\n  -webkit-transform: scale(0.93);\n          transform: scale(0.93);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n}\n.button.newstyle > .hp,\n.button.newstyle > .hp.text {\n  left: auto;\n  top: auto;\n  text-align: right;\n  right: 6px;\n  bottom: 5px;\n}\n.button.newstyle > .hp > div {\n  width: 10px;\n  height: 10px;\n  background: #397b04;\n  border: 1px solid #274f07;\n  box-shadow: rgba(0, 0, 0, 0.2) 1px -1px 2px inset, rgba(255, 255, 255, 0.15) -1px 1px 5px inset;\n}\n.button.newstyle > .hp > div.text {\n  background: none !important;\n  box-shadow: none !important;\n  border: none !important;\n  font-family: 'Tiejili';\n  text-align: right;\n  width: auto;\n  height: auto;\n  -webkit-transform: none !important;\n          transform: none !important;\n  text-shadow: black 0 0 2px, black 0 0 3px;\n}\n.menu-container {\n  z-index: 8;\n}\n.menu-container div {\n  position: relative;\n}\n.menu-container.hidden {\n  pointer-events: none;\n}\n#menu-button {\n  z-index: 6;\n}\n.themebutton > div {\n  width: 50px;\n  height: 76px;\n  top: 7px;\n  right: 7px;\n  border-radius: 4px;\n}\n.themebutton > div:first-child {\n  z-index: 2;\n}\n.themebutton > div > div {\n  width: calc(100% - 10px);\n  height: 12px;\n  display: block;\n  margin-left: 5px;\n  margin-top: 6px;\n  position: relative;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(0, 0, 0, 0.3) 0 0 5px;\n  transition: all 0s;\n}\n.themebutton > div > div:first-child {\n  margin-top: 5px;\n}\n.themebutton > div > div > div {\n  width: 200%;\n  height: 200%;\n  left: 0;\n  top: 0;\n  -webkit-transform: scale(0.5);\n          transform: scale(0.5);\n  color: white;\n  box-shadow: black 0 0 2px;\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  line-height: 24px;\n  text-align: center;\n  box-shadow: none !important;\n}\n.themebutton > .fakeplayer > .avatar {\n  width: calc(100% - 2px);\n  height: calc(100% - 2px);\n  left: 1px;\n  top: 1px;\n  border-radius: 2px;\n  position: absolute;\n  margin: 0 !important;\n  padding: 0;\n  box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px inset;\n}\n.themebutton > .fakeplayer.me {\n  clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);\n  -webkit-clip-path: polygon(-10px 0, 32px 0, 32px 32px, -10px 32px);\n}\n.themebutton > .fakeplayer.me > .avatar {\n  width: 22px;\n  height: 22px;\n  left: 3px;\n  top: 0;\n  box-shadow: none;\n  border-radius: 0px;\n}\n.themebutton > .fakeplayer.oldlayout > .avatar {\n  width: calc(50% - 2px);\n}\n.popup-container {\n  z-index: 10;\n}\n.popup-container.filter-character {\n  text-align: center;\n  overflow: scroll;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.popup-container.filter-character > div {\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: auto;\n  margin: 0;\n  padding: 0;\n  transition: all 0s;\n  position: relative;\n}\n.popup-container.filter-character > div > div {\n  position: relative;\n  margin: 10px;\n}\n.popup-container.filter-character > div > .capt {\n  width: 80px;\n  height: 80px;\n  padding: 0;\n  font-size: 60px;\n  line-height: 90px;\n}\n.popup-container.filter-character.shown {\n  opacity: 1;\n}\n.popup-container.filter-character.removing > div {\n  pointer-events: none;\n}\n.menu-container,\n.popup-container {\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  position: absolute;\n}\n.roundarenabutton {\n  /*width: 50px;\n\theight: 50px;*/\n  left: 180px;\n  top: 210px;\n  position: absolute;\n  /*background: rgba(0,0,0,0.2);\n\tbox-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px;\n\tborder-radius:100%;*/\n  z-index: 7;\n  transition-property: opacity;\n  overflow: hidden;\n}\n#arena:not(.phone) #roundmenu {\n  display: none !important;\n}\n#roundmenu > div {\n  width: 26px;\n  height: 4px;\n  background: white;\n  position: absolute;\n  left: 12px;\n  border-radius: 2px;\n  box-shadow: black 0 0 2px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(even) {\n  width: 20px;\n  left: 18px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(odd) {\n  width: 4px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(1),\n#roundmenu:not(.clock) > div:nth-of-type(2) {\n  top: 14px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(3),\n#roundmenu:not(.clock) > div:nth-of-type(4) {\n  top: 23px;\n}\n#roundmenu:not(.clock) > div:nth-of-type(5),\n#roundmenu:not(.clock) > div:nth-of-type(6) {\n  top: 32px;\n  -webkit-transform: none !important;\n          transform: none !important;\n}\n#roundmenu:not(.clock) > div:nth-of-type(7),\n#roundmenu:not(.clock) > div:nth-of-type(8),\n#roundmenu:not(.clock) > div:nth-of-type(9),\n#roundmenu:not(.clock) > div:nth-of-type(10),\n#roundmenu:not(.clock) > div:nth-of-type(11),\n#roundmenu:not(.clock) > div:nth-of-type(12),\n#roundmenu:not(.clock) > div:nth-of-type(13),\n#roundmenu:not(.clock) > div:nth-of-type(14),\n#roundmenu:not(.clock) > div:nth-of-type(15) {\n  opacity: 0;\n}\n#roundmenu.clock > div {\n  width: 2px;\n  height: 2px;\n}\n#roundmenu.clock > div:nth-of-type(1) {\n  left: 24px;\n  top: 2px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(2) {\n  left: 24px;\n  top: 46px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(3) {\n  top: 24px;\n  left: 2px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(4) {\n  top: 24px;\n  left: 46px;\n  opacity: 1;\n}\n#roundmenu.clock > div:nth-of-type(5) {\n  left: 24px;\n  top: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 1px 23px;\n          transform-origin: 1px 23px;\n}\n#roundmenu.clock > div:nth-of-type(6) {\n  left: 24px;\n  top: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 1px -23px;\n          transform-origin: 1px -23px;\n}\n#roundmenu.clock > div:nth-of-type(7) {\n  top: 24px;\n  left: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: 23px 1px;\n          transform-origin: 23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(8) {\n  top: 24px;\n  left: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(30deg);\n          transform: rotate(30deg);\n  -webkit-transform-origin: -23px 1px;\n          transform-origin: -23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(9) {\n  left: 24px;\n  top: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 1px 23px;\n          transform-origin: 1px 23px;\n}\n#roundmenu.clock > div:nth-of-type(10) {\n  left: 24px;\n  top: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 1px -23px;\n          transform-origin: 1px -23px;\n}\n#roundmenu.clock > div:nth-of-type(11) {\n  top: 24px;\n  left: 2px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: 23px 1px;\n          transform-origin: 23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(12) {\n  top: 24px;\n  left: 46px;\n  opacity: 0.4;\n  -webkit-transform: rotate(60deg);\n          transform: rotate(60deg);\n  -webkit-transform-origin: -23px 1px;\n          transform-origin: -23px 1px;\n}\n#roundmenu.clock > div:nth-of-type(13) {\n  width: 22px;\n  height: 2px;\n  top: 24px;\n  left: 24px;\n  -webkit-transform-origin: 1px 1px;\n          transform-origin: 1px 1px;\n  border-radius: 4px 40px 40px 4px/4px 4px 4px 4px;\n}\n#roundmenu.clock > div:nth-of-type(14) {\n  width: 16px;\n  height: 4px;\n  top: 23px;\n  left: 23px;\n  -webkit-transform-origin: 2px 2px;\n          transform-origin: 2px 2px;\n  border-radius: 4px 23px 23px 4px/4px 4px 4px 4px;\n}\n#roundmenu.clock > div:nth-of-type(15) {\n  width: 80%;\n  height: 80%;\n  left: 10%;\n  top: 10%;\n  border-radius: 100%;\n  margin: 0;\n  padding: 0;\n  z-index: -1;\n  opacity: 0;\n}\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(1),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(2),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(3),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(4),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(5),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(6),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(7),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(8),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(9),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(10),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(11),\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(12) {\n  opacity: 0;\n}\n#roundmenu.clock[data-watchface=\"simple\"] > div:nth-of-type(15) {\n  opacity: 1;\n}\n.skilltext {\n  text-indent: 32px;\n}\n/** 已修改 */\n.skill {\n  left: 0 !important;\n  width: 72px !important;\n  white-space: nowrap;\n  font-family: 'LuoLiTi2', Helvetica, sans-serif;\n}\n.skill::before {\n  content: '『';\n}\n.skill::after {\n  content: '』';\n}\n.skilln {\n  left: 0 !important;\n  width: 70px !important;\n}\n.skill > .card {\n  -webkit-transform: scale(0.56);\n          transform: scale(0.56);\n  -webkit-transform-origin: top left;\n          transform-origin: top left;\n  margin-left: 2px;\n  margin-top: 6px;\n  margin-bottom: -52px;\n}\n.player .identity[data-color=\"zhu\"],\n.player .identity[data-color=\"truezhu\"],\n.player .identity[data-color=\"enemy\"] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 10px, #e83535 0 0 10px, #e83535 0 0 20px, #e83535 0 0 20px;\n}\ndiv[data-nature='fire'],\nspan[data-nature='fire'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 10px, #e83535 0 0 10px, #e83535 0 0 20px, #e83535 0 0 20px;\n}\ndiv[data-nature='firem'],\nspan[data-nature='firem'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 5px, #e83535 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='firemm'],\nspan[data-nature='firemm'] {\n  text-shadow: black 0 0 1px, #e83535 0 0 2px, #e83535 0 0 2px, #e83535 0 0 2px, #e83535 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='firemx'],\nspan[data-nature='firemx'] {\n  text-shadow: black 0 0 1px, rgba(232, 53, 53, 0.001) 0 0 2px, #e83535 0 0 2px, #e83535 0 0 5px, #e83535 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"mingzhong\"],\n.player .identity[data-color=\"rZhu\"],\n.player .identity[data-color=\"rZhong\"],\n.player .identity[data-color=\"rNei\"],\n.player .identity[data-color=\"cai2\"] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 10px, #ff7800 0 0 10px, #ff7800 0 0 20px, #ff7800 0 0 20px;\n}\ndiv[data-nature='orange'],\nspan[data-nature='orange'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 10px, #ff7800 0 0 10px, #ff7800 0 0 20px, #ff7800 0 0 20px;\n}\ndiv[data-nature='orangem'],\nspan[data-nature='orangem'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 5px, #ff7800 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='orangemm'],\nspan[data-nature='orangemm'] {\n  text-shadow: black 0 0 1px, #ff7800 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='orangemx'],\nspan[data-nature='orangemx'] {\n  text-shadow: black 0 0 1px, rgba(255, 120, 0, 0.001) 0 0 2px, #ff7800 0 0 2px, #ff7800 0 0 5px, #ff7800 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"zhong\"],\n.player .identity[data-color=\"qun\"],\n.player .identity[data-color=\"neutral\"],\n.player .identity[data-color=\"friend2\"],\ndiv[data-nature='metal'],\nspan[data-nature='metal'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 10px, #ffcb00 0 0 10px, #ffcb00 0 0 20px, #ffcb00 0 0 20px;\n}\ndiv[data-nature='metalm'],\nspan[data-nature='metalm'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='metalmm'],\nspan[data-nature='metalmm'] {\n  text-shadow: black 0 0 1px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='metalmx'],\nspan[data-nature='metalmx'] {\n  text-shadow: black 0 0 1px, rgba(255, 203, 0, 0.001) 0 0 2px, #ffcb00 0 0 2px, #ffcb00 0 0 5px, #ffcb00 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"key\"] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 10px, #cbb1ff 0 0 10px, #cbb1ff 0 0 20px, #cbb1ff 0 0 20px;\n}\ndiv[data-nature='key'],\nspan[data-nature='key'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 10px, #cbb1ff 0 0 10px, #cbb1ff 0 0 20px, #cbb1ff 0 0 20px;\n}\ndiv[data-nature='keym'],\nspan[data-nature='keym'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='keymm'],\nspan[data-nature='keymm'] {\n  text-shadow: black 0 0 1px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='keymx'],\nspan[data-nature='keymx'] {\n  text-shadow: black 0 0 1px, rgba(203, 177, 255, 0.001) 0 0 2px, #cbb1ff 0 0 2px, #cbb1ff 0 0 5px, #cbb1ff 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"nei\"],\n.player .identity[data-color=\"ye\"],\n.player .identity[data-color=\"rYe\"],\n.player .identity[data-color=\"bYe\"],\n.player .identity[data-color=\"jin\"] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 10px, #644a8b 0 0 10px, #644a8b 0 0 20px, #644a8b 0 0 20px;\n}\ndiv[data-nature='thunder'],\nspan[data-nature='thunder'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 10px, #644a8b 0 0 10px, #644a8b 0 0 20px, #644a8b 0 0 20px;\n}\ndiv[data-nature='thunderm'],\nspan[data-nature='thunderm'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 5px, #644a8b 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='thundermm'],\nspan[data-nature='thundermm'] {\n  text-shadow: black 0 0 1px, #644a8b 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='thundermx'],\nspan[data-nature='thundermx'] {\n  text-shadow: black 0 0 1px, rgba(100, 74, 139, 0.001) 0 0 2px, #644a8b 0 0 2px, #644a8b 0 0 5px, #644a8b 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"kami\"] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 10px, #5a7663 0 0 10px, #5a7663 0 0 20px, #5a7663 0 0 20px;\n}\ndiv[data-nature='kami'],\nspan[data-nature='kami'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 10px, #5a7663 0 0 10px, #5a7663 0 0 20px, #5a7663 0 0 20px;\n}\ndiv[data-nature='kamim'],\nspan[data-nature='kamim'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 5px, #5a7663 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='kamimm'],\nspan[data-nature='kamimm'] {\n  text-shadow: black 0 0 1px, #5a7663 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='kamimx'],\nspan[data-nature='kamimx'] {\n  text-shadow: black 0 0 1px, rgba(90, 118, 99, 0.001) 0 0 2px, #5a7663 0 0 2px, #5a7663 0 0 5px, #5a7663 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"fan\"],\n.player .identity[data-color=\"wu\"] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 10px, #397b04 0 0 10px, #397b04 0 0 20px, #397b04 0 0 20px;\n}\ndiv[data-nature='wood'],\nspan[data-nature='wood'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 10px, #397b04 0 0 10px, #397b04 0 0 20px, #397b04 0 0 20px;\n}\ndiv[data-nature='woodm'],\nspan[data-nature='woodm'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 5px, #397b04 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='woodmm'],\nspan[data-nature='woodmm'] {\n  text-shadow: black 0 0 1px, #397b04 0 0 2px, #397b04 0 0 2px, #397b04 0 0 2px, #397b04 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='woodmx'],\nspan[data-nature='woodmx'] {\n  text-shadow: black 0 0 1px, rgba(57, 123, 4, 0.001) 0 0 2px, #397b04 0 0 2px, #397b04 0 0 5px, #397b04 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"cai\"],\n.player .identity[data-color=\"bZhu\"],\n.player .identity[data-color=\"bZhong\"],\n.player .identity[data-color=\"bNei\"],\n.player .identity[data-color=\"wei\"],\n.player .identity[data-color=\"falsezhu\"],\n.player .identity[data-color=\"friend\"],\n.water {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='water'],\nspan[data-nature='water'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='waterm'],\nspan[data-nature='waterm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='watermm'],\nspan[data-nature='watermm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='watermx'],\nspan[data-nature='watermx'] {\n  text-shadow: black 0 0 1px, rgba(78, 117, 140, 0.001) 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\n.player .identity[data-color=\"shu\"] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='soil'],\nspan[data-nature='soil'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 10px, #4e758c 0 0 10px, #4e758c 0 0 20px, #4e758c 0 0 20px;\n}\ndiv[data-nature='soilm'],\nspan[data-nature='soilm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='soilmm'],\nspan[data-nature='soilmm'] {\n  text-shadow: black 0 0 1px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='soilmx'],\nspan[data-nature='soilmx'] {\n  text-shadow: black 0 0 1px, rgba(78, 117, 140, 0.001) 0 0 2px, #4e758c 0 0 2px, #4e758c 0 0 5px, #4e758c 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='gray'],\nspan[data-nature='gray'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 10px, #d5c2b3 0 0 10px, #d5c2b3 0 0 20px, #d5c2b3 0 0 20px;\n}\ndiv[data-nature='graym'],\nspan[data-nature='graym'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='graymm'],\nspan[data-nature='graymm'] {\n  text-shadow: black 0 0 1px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='graymx'],\nspan[data-nature='graymx'] {\n  text-shadow: black 0 0 1px, rgba(213, 194, 179, 0.001) 0 0 2px, #d5c2b3 0 0 2px, #d5c2b3 0 0 5px, #d5c2b3 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='ice'],\nspan[data-nature='ice'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 10px, #748884 0 0 10px, #748884 0 0 20px, #748884 0 0 20px;\n}\ndiv[data-nature='icem'],\nspan[data-nature='icem'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 5px, #748884 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='icemm'],\nspan[data-nature='icemm'] {\n  text-shadow: black 0 0 1px, #748884 0 0 2px, #748884 0 0 2px, #748884 0 0 2px, #748884 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='icemx'],\nspan[data-nature='icemx'] {\n  text-shadow: black 0 0 1px, rgba(116, 136, 132, 0.001) 0 0 2px, #748884 0 0 2px, #748884 0 0 5px, #748884 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='ocean'],\nspan[data-nature='ocean'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 10px, #452f97 0 0 10px, #452f97 0 0 20px, #452f97 0 0 20px;\n}\ndiv[data-nature='oceanm'],\nspan[data-nature='oceanm'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 5px, #452f97 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='oceanmm'],\nspan[data-nature='oceanmm'] {\n  text-shadow: black 0 0 1px, #452f97 0 0 2px, #452f97 0 0 2px, #452f97 0 0 2px, #452f97 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='oceanmx'],\nspan[data-nature='oceanmx'] {\n  text-shadow: black 0 0 1px, rgba(69, 47, 151, 0.001) 0 0 2px, #452f97 0 0 2px, #452f97 0 0 5px, #452f97 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='yami'],\nspan[data-nature='yami'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 10px, #6f5979 0 0 10px, #6f5979 0 0 20px, #6f5979 0 0 20px;\n}\ndiv[data-nature='yamim'],\nspan[data-nature='yamim'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 5px, #6f5979 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='yamimm'],\nspan[data-nature='yamimm'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, black 0 0 1px;\n}\ndiv[data-nature='yamimx'],\nspan[data-nature='yamimx'] {\n  text-shadow: black 0 0 1px, rgba(111, 89, 121, 0.001) 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 5px, #6f5979 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='black'],\nspan[data-nature='black'] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 20px, rgba(0, 0, 0, 0.5) 0 0 20px;\n}\ndiv[data-nature='unknownm'],\nspan[data-nature='unknownm'] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 5px, black 0 0 1px;\n}\ndiv[data-nature='unknown'],\nspan[data-nature='unknown'] {\n  text-shadow: black 0 0 1px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, #6f5979 0 0 2px, black 0 0 1px;\n}\n.player .identity[data-color=\"unknownx\"] {\n  text-shadow: black 0 0 1px, rgba(0, 0, 0, 0.5) 0 0 2px, rgba(0, 0, 0, 0.5) 0 0 5px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 10px, rgba(0, 0, 0, 0.5) 0 0 20px, rgba(0, 0, 0, 0.5) 0 0 20px;\n}\ndiv[data-nature=\"unknown\"] {\n  text-shadow: rgba(0, 0, 0, 0.2) 0 0 2px, rgba(0, 0, 0, 0.2) 0 0 5px, rgba(0, 0, 0, 0.2) 0 0 10px, rgba(0, 0, 0, 0.2) 0 0 10px, rgba(0, 0, 0, 0.2) 0 0 20px, rgba(0, 0, 0, 0.2) 0 0 20px, rgba(0, 0, 0, 0.6) 0 0 1px;\n}\n#window:not(.nopointer) #control {\n  cursor: pointer;\n}\n#window:not(.nopointer) #system > div > div:not(.hidden),\n#window:not(.nopointer) .choosedouble.character,\n#window:not(.nopointer) .config.more,\n#window:not(.nopointer) .dashboard,\n#window:not(.nopointer) .textlink,\n#window:not(.nopointer) .hrefnode,\n#window:not(.nopointer) #historybar > div > div,\n#window:not(.nopointer) .closenode,\n#window:not(.nopointer) .pointerdiv,\n#window:not(.nopointer) .pointernode div,\n#window:not(.nopointer) .pointerspan span,\n#window:not(.nopointer) .pointertable td > span,\n#window:not(.nopointer) .config > .toggle.onoff,\n#window:not(.nopointer) .pointerdialog .button:not(.unselectable),\n#window:not(.nopointer) .dialog.fullheight .buttons .button:not(.selectedx):not(.glow):not(.glows):not(.forbidden),\n#window:not(.nopointer) #arena.selecting:not(.video) .player .equips > .card.selectable,\n#window:not(.nopointer) #arena.selecting #me .card.selectable,\n#window:not(.nopointer) #arena.selecting .button.selectable,\n#window:not(.nopointer) #arena.selecting .player.selectable,\n#window:not(.nopointer) .menubutton.round,\n#window:not(.nopointer) *[data-cursor_style=\"pointer\"] {\n  cursor: pointer;\n}\n#window:not(.nopointer) .player .judges > .card,\n#window:not(.nopointer) .player .marks > .card {\n  cursor: context-menu;\n}\n#window:not(.nopointer) .player .identity.guessing {\n  cursor: help;\n}\n#window:not(.nopointer) > .choosedouble.character.moved:not(.selecting) {\n  cursor: default;\n}\n#window:not(.nopointer) .cardpiledelete {\n  cursor: pointer;\n}\n#window:not(.nopointer) .menubg.charactercard .menubutton:not(.ava):not(.intro):not(.unselectable),\n#window:not(.nopointer) .menubg.charactercard > .ava > .avatars > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .menu > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .menu.visual.withbar > div:last-child > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) input.fileinput {\n  cursor: pointer;\n}\n#window:not(.nopointer) .config.switcher > div,\n#window:not(.nopointer) .config.toggle > div {\n  cursor: pointer;\n}\n#window:not(.nopointer) .videonode.menubutton.extension > .caption > .menubutton:not(.transparent2):not(.nopointer) {\n  cursor: pointer;\n}\n#window:not(.nopointer) .popup-container > .prompt-container > div > div > div > .menubutton {\n  cursor: pointer;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -56771,7 +56760,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*--------标签--------*/\nhtml {\n  
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* *{\n    cursor: url('./cursor/aero_arrow_glow.cur'),auto;\n} */\n.card_hightlight {\n  -webkit-animation: pulse 5s infinite;\n          animation: pulse 5s infinite;\n}\n.player_buff {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(255, 150, 0, 0.45);\n}\n.player_nerf {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(10, 155, 70, 0.5);\n}\n@-webkit-keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n.displayer {\n  position: relative;\n  width: 100% !important;\n  height: 100% !important;\n}\n#window:not(.low_performance) .player.fullskin.glow_phase .displayer::before {\n  content: '';\n  position: absolute;\n  pointer-events: none;\n  z-index: 3;\n  width: 100%;\n  height: 100%;\n  background: linear-gradient(#1a98ca, #1a98ca), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(transparent, #1a98ca);\n  background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;\n  background-repeat: no-repeat, repeat, repeat, no-repeat;\n  background-position: 0% 0%, 0 0, 0 0, 0 0;\n  /* 初始位置 */\n  -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n          clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n  /* 添加动画效果 */\n  -webkit-animation: move-wrapper 3s infinite linear;\n          animation: move-wrapper 3s infinite linear;\n}\n#window:not(.low_performance) .player .displayer::after {\n  content: '已选择';\n  position: absolute;\n  pointer-events: none;\n  z-index: 4;\n  width: 100%;\n  height: 100%;\n  top: 50%;\n  left: calc(50% - 1.5em);\n  font-size: larger;\n  font-family: 'Tiejili', 'LuoLiTi2', sans-serif;\n  opacity: 0;\n  transition: all 1s;\n}\n#window:not(.low_performance) .player.selected .displayer::after {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  opacity: 1;\n}\n@-webkit-keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\n@keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\ntd.warnning_flash {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  -webkit-animation: nofade_flash 2s infinite;\n          animation: nofade_flash 2s infinite;\n}\n.slow_flash {\n  animation: nofade_flash 5s infinite;\n  -webkit-animation: nofade_flash 5s infinite;\n}\n@-webkit-keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* *{\n    cursor: url('./cursor/aero_arrow_glow.cur'),auto;\n} */\n.card_hightlight {\n  -webkit-animation: pulse 5s infinite;\n          animation: pulse 5s infinite;\n}\n.player_buff {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(255, 150, 0, 0.45);\n}\n.player_nerf {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(10, 155, 70, 0.5);\n}\n@-webkit-keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n.displayer {\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n#window:not(.low_performance) .player.fullskin.glow_phase .displayer::before {\n  content: '';\n  position: absolute;\n  pointer-events: none;\n  z-index: 3;\n  width: 100%;\n  height: 100%;\n  background: linear-gradient(#1a98ca, #1a98ca), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(transparent, #1a98ca);\n  background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;\n  background-repeat: no-repeat, repeat, repeat, no-repeat;\n  background-position: 0% 0%, 0 0, 0 0, 0 0;\n  /* 初始位置 */\n  -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n          clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n  /* 添加动画效果 */\n  -webkit-animation: move-wrapper 3s infinite linear;\n          animation: move-wrapper 3s infinite linear;\n}\n#window:not(.low_performance) .player .displayer::after,\n#window:not(.low_performance) .card .displayer::after {\n  content: '已选择';\n  position: absolute;\n  pointer-events: none;\n  z-index: 4;\n  width: 100%;\n  height: 100%;\n  top: calc(50% - 1em);\n  left: calc(45% - 1.5em);\n  font-size: larger;\n  font-family: 'Tiejili', 'LuoLiTi2', sans-serif;\n  color: white;\n  opacity: 0;\n  transition: all 1s;\n}\n#window:not(.low_performance) .player.selected .displayer::after,\n#window:not(.low_performance) .card.selected .displayer::after {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  opacity: 1;\n}\n@-webkit-keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\n@keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\ntd.warnning_flash {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  -webkit-animation: nofade_flash 2s infinite;\n          animation: nofade_flash 2s infinite;\n}\n.slow_flash {\n  animation: nofade_flash 5s infinite;\n  -webkit-animation: nofade_flash 5s infinite;\n}\n@-webkit-keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -58755,7 +58744,7 @@ class PerMessageDeflate {
   /**
    * Compress data. Concurrency limited.
    *
-   * @param {(Buffer|String)} data Data to compress
+   * @param {Buffer} data Data to compress
    * @param {Boolean} fin Specifies whether or not this is the last fragment
    * @param {Function} callback Callback
    * @public
@@ -58837,7 +58826,7 @@ class PerMessageDeflate {
   /**
    * Compress data.
    *
-   * @param {(Buffer|String)} data Data to compress
+   * @param {Buffer} data Data to compress
    * @param {Boolean} fin Specifies whether or not this is the last fragment
    * @param {Function} callback Callback
    * @private
@@ -59598,7 +59587,6 @@ const { EMPTY_BUFFER } = __webpack_require__(9834);
 const { isValidStatusCode } = __webpack_require__(8422);
 const { mask: applyMask, toBuffer } = __webpack_require__(5551);
 
-const kByteLength = Symbol('kByteLength');
 const maskBuffer = Buffer.alloc(4);
 
 /**
@@ -59634,7 +59622,7 @@ class Sender {
   /**
    * Frames a piece of data according to the HyBi WebSocket protocol.
    *
-   * @param {(Buffer|String)} data The data to frame
+   * @param {Buffer} data The data to frame
    * @param {Object} options Options object
    * @param {Boolean} [options.fin=false] Specifies whether or not to set the
    *     FIN bit
@@ -59649,7 +59637,7 @@ class Sender {
    *     modified
    * @param {Boolean} [options.rsv1=false] Specifies whether or not to set the
    *     RSV1 bit
-   * @return {(Buffer|String)[]} The framed data
+   * @return {Buffer[]} The framed data as a list of `Buffer` instances
    * @public
    */
   static frame(data, options) {
@@ -59668,37 +59656,22 @@ class Sender {
       }
 
       skipMasking = (mask[0] | mask[1] | mask[2] | mask[3]) === 0;
+      if (options.readOnly && !skipMasking) merge = true;
+
       offset = 6;
     }
 
-    let dataLength;
+    let payloadLength = data.length;
 
-    if (typeof data === 'string') {
-      if (
-        (!options.mask || skipMasking) &&
-        options[kByteLength] !== undefined
-      ) {
-        dataLength = options[kByteLength];
-      } else {
-        data = Buffer.from(data);
-        dataLength = data.length;
-      }
-    } else {
-      dataLength = data.length;
-      merge = options.mask && options.readOnly && !skipMasking;
-    }
-
-    let payloadLength = dataLength;
-
-    if (dataLength >= 65536) {
+    if (data.length >= 65536) {
       offset += 8;
       payloadLength = 127;
-    } else if (dataLength > 125) {
+    } else if (data.length > 125) {
       offset += 2;
       payloadLength = 126;
     }
 
-    const target = Buffer.allocUnsafe(merge ? dataLength + offset : offset);
+    const target = Buffer.allocUnsafe(merge ? data.length + offset : offset);
 
     target[0] = options.fin ? options.opcode | 0x80 : options.opcode;
     if (options.rsv1) target[0] |= 0x40;
@@ -59706,10 +59679,10 @@ class Sender {
     target[1] = payloadLength;
 
     if (payloadLength === 126) {
-      target.writeUInt16BE(dataLength, 2);
+      target.writeUInt16BE(data.length, 2);
     } else if (payloadLength === 127) {
       target[2] = target[3] = 0;
-      target.writeUIntBE(dataLength, 4, 6);
+      target.writeUIntBE(data.length, 4, 6);
     }
 
     if (!options.mask) return [target, data];
@@ -59723,11 +59696,11 @@ class Sender {
     if (skipMasking) return [target, data];
 
     if (merge) {
-      applyMask(data, mask, target, offset, dataLength);
+      applyMask(data, mask, target, offset, data.length);
       return [target];
     }
 
-    applyMask(data, mask, data, 0, dataLength);
+    applyMask(data, mask, data, 0, data.length);
     return [target, data];
   }
 
@@ -59767,22 +59740,34 @@ class Sender {
       }
     }
 
-    const options = {
-      [kByteLength]: buf.length,
-      fin: true,
-      generateMask: this._generateMask,
-      mask,
-      maskBuffer: this._maskBuffer,
-      opcode: 0x08,
-      readOnly: false,
-      rsv1: false
-    };
-
     if (this._deflating) {
-      this.enqueue([this.dispatch, buf, false, options, cb]);
+      this.enqueue([this.doClose, buf, mask, cb]);
     } else {
-      this.sendFrame(Sender.frame(buf, options), cb);
+      this.doClose(buf, mask, cb);
     }
+  }
+
+  /**
+   * Frames and sends a close message.
+   *
+   * @param {Buffer} data The message to send
+   * @param {Boolean} [mask=false] Specifies whether or not to mask `data`
+   * @param {Function} [cb] Callback
+   * @private
+   */
+  doClose(data, mask, cb) {
+    this.sendFrame(
+      Sender.frame(data, {
+        fin: true,
+        rsv1: false,
+        opcode: 0x08,
+        mask,
+        maskBuffer: this._maskBuffer,
+        generateMask: this._generateMask,
+        readOnly: false
+      }),
+      cb
+    );
   }
 
   /**
@@ -59794,38 +59779,41 @@ class Sender {
    * @public
    */
   ping(data, mask, cb) {
-    let byteLength;
-    let readOnly;
+    const buf = toBuffer(data);
 
-    if (typeof data === 'string') {
-      byteLength = Buffer.byteLength(data);
-      readOnly = false;
-    } else {
-      data = toBuffer(data);
-      byteLength = data.length;
-      readOnly = toBuffer.readOnly;
-    }
-
-    if (byteLength > 125) {
+    if (buf.length > 125) {
       throw new RangeError('The data size must not be greater than 125 bytes');
     }
 
-    const options = {
-      [kByteLength]: byteLength,
-      fin: true,
-      generateMask: this._generateMask,
-      mask,
-      maskBuffer: this._maskBuffer,
-      opcode: 0x09,
-      readOnly,
-      rsv1: false
-    };
-
     if (this._deflating) {
-      this.enqueue([this.dispatch, data, false, options, cb]);
+      this.enqueue([this.doPing, buf, mask, toBuffer.readOnly, cb]);
     } else {
-      this.sendFrame(Sender.frame(data, options), cb);
+      this.doPing(buf, mask, toBuffer.readOnly, cb);
     }
+  }
+
+  /**
+   * Frames and sends a ping message.
+   *
+   * @param {Buffer} data The message to send
+   * @param {Boolean} [mask=false] Specifies whether or not to mask `data`
+   * @param {Boolean} [readOnly=false] Specifies whether `data` can be modified
+   * @param {Function} [cb] Callback
+   * @private
+   */
+  doPing(data, mask, readOnly, cb) {
+    this.sendFrame(
+      Sender.frame(data, {
+        fin: true,
+        rsv1: false,
+        opcode: 0x09,
+        mask,
+        maskBuffer: this._maskBuffer,
+        generateMask: this._generateMask,
+        readOnly
+      }),
+      cb
+    );
   }
 
   /**
@@ -59837,38 +59825,41 @@ class Sender {
    * @public
    */
   pong(data, mask, cb) {
-    let byteLength;
-    let readOnly;
+    const buf = toBuffer(data);
 
-    if (typeof data === 'string') {
-      byteLength = Buffer.byteLength(data);
-      readOnly = false;
-    } else {
-      data = toBuffer(data);
-      byteLength = data.length;
-      readOnly = toBuffer.readOnly;
-    }
-
-    if (byteLength > 125) {
+    if (buf.length > 125) {
       throw new RangeError('The data size must not be greater than 125 bytes');
     }
 
-    const options = {
-      [kByteLength]: byteLength,
-      fin: true,
-      generateMask: this._generateMask,
-      mask,
-      maskBuffer: this._maskBuffer,
-      opcode: 0x0a,
-      readOnly,
-      rsv1: false
-    };
-
     if (this._deflating) {
-      this.enqueue([this.dispatch, data, false, options, cb]);
+      this.enqueue([this.doPong, buf, mask, toBuffer.readOnly, cb]);
     } else {
-      this.sendFrame(Sender.frame(data, options), cb);
+      this.doPong(buf, mask, toBuffer.readOnly, cb);
     }
+  }
+
+  /**
+   * Frames and sends a pong message.
+   *
+   * @param {Buffer} data The message to send
+   * @param {Boolean} [mask=false] Specifies whether or not to mask `data`
+   * @param {Boolean} [readOnly=false] Specifies whether `data` can be modified
+   * @param {Function} [cb] Callback
+   * @private
+   */
+  doPong(data, mask, readOnly, cb) {
+    this.sendFrame(
+      Sender.frame(data, {
+        fin: true,
+        rsv1: false,
+        opcode: 0x0a,
+        mask,
+        maskBuffer: this._maskBuffer,
+        generateMask: this._generateMask,
+        readOnly
+      }),
+      cb
+    );
   }
 
   /**
@@ -59888,21 +59879,10 @@ class Sender {
    * @public
    */
   send(data, options, cb) {
+    const buf = toBuffer(data);
     const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
     let opcode = options.binary ? 2 : 1;
     let rsv1 = options.compress;
-
-    let byteLength;
-    let readOnly;
-
-    if (typeof data === 'string') {
-      byteLength = Buffer.byteLength(data);
-      readOnly = false;
-    } else {
-      data = toBuffer(data);
-      byteLength = data.length;
-      readOnly = toBuffer.readOnly;
-    }
 
     if (this._firstFragment) {
       this._firstFragment = false;
@@ -59915,7 +59895,7 @@ class Sender {
             : 'client_no_context_takeover'
         ]
       ) {
-        rsv1 = byteLength >= perMessageDeflate._threshold;
+        rsv1 = buf.length >= perMessageDeflate._threshold;
       }
       this._compress = rsv1;
     } else {
@@ -59927,32 +59907,30 @@ class Sender {
 
     if (perMessageDeflate) {
       const opts = {
-        [kByteLength]: byteLength,
         fin: options.fin,
-        generateMask: this._generateMask,
+        rsv1,
+        opcode,
         mask: options.mask,
         maskBuffer: this._maskBuffer,
-        opcode,
-        readOnly,
-        rsv1
+        generateMask: this._generateMask,
+        readOnly: toBuffer.readOnly
       };
 
       if (this._deflating) {
-        this.enqueue([this.dispatch, data, this._compress, opts, cb]);
+        this.enqueue([this.dispatch, buf, this._compress, opts, cb]);
       } else {
-        this.dispatch(data, this._compress, opts, cb);
+        this.dispatch(buf, this._compress, opts, cb);
       }
     } else {
       this.sendFrame(
-        Sender.frame(data, {
-          [kByteLength]: byteLength,
+        Sender.frame(buf, {
           fin: options.fin,
-          generateMask: this._generateMask,
+          rsv1: false,
+          opcode,
           mask: options.mask,
           maskBuffer: this._maskBuffer,
-          opcode,
-          readOnly,
-          rsv1: false
+          generateMask: this._generateMask,
+          readOnly: toBuffer.readOnly
         }),
         cb
       );
@@ -59960,12 +59938,13 @@ class Sender {
   }
 
   /**
-   * Dispatches a message.
+   * Dispatches a data message.
    *
-   * @param {(Buffer|String)} data The message to send
+   * @param {Buffer} data The message to send
    * @param {Boolean} [compress=false] Specifies whether or not to compress
    *     `data`
    * @param {Object} options Options object
+   * @param {Number} options.opcode The opcode
    * @param {Boolean} [options.fin=false] Specifies whether or not to set the
    *     FIN bit
    * @param {Function} [options.generateMask] The function used to generate the
@@ -59974,7 +59953,6 @@ class Sender {
    *     `data`
    * @param {Buffer} [options.maskBuffer] The buffer used to store the masking
    *     key
-   * @param {Number} options.opcode The opcode
    * @param {Boolean} [options.readOnly=false] Specifies whether `data` can be
    *     modified
    * @param {Boolean} [options.rsv1=false] Specifies whether or not to set the
@@ -59990,7 +59968,7 @@ class Sender {
 
     const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
 
-    this._bufferedBytes += options[kByteLength];
+    this._bufferedBytes += data.length;
     this._deflating = true;
     perMessageDeflate.compress(data, options.fin, (_, buf) => {
       if (this._socket.destroyed) {
@@ -60001,8 +59979,7 @@ class Sender {
         if (typeof cb === 'function') cb(err);
 
         for (let i = 0; i < this._queue.length; i++) {
-          const params = this._queue[i];
-          const callback = params[params.length - 1];
+          const callback = this._queue[i][4];
 
           if (typeof callback === 'function') callback(err);
         }
@@ -60010,7 +59987,7 @@ class Sender {
         return;
       }
 
-      this._bufferedBytes -= options[kByteLength];
+      this._bufferedBytes -= data.length;
       this._deflating = false;
       options.readOnly = false;
       this.sendFrame(Sender.frame(buf, options), cb);
@@ -60027,7 +60004,7 @@ class Sender {
     while (!this._deflating && this._queue.length) {
       const params = this._queue.shift();
 
-      this._bufferedBytes -= params[3][kByteLength];
+      this._bufferedBytes -= params[1].length;
       Reflect.apply(params[0], this, params.slice(1));
     }
   }
@@ -60039,7 +60016,7 @@ class Sender {
    * @private
    */
   enqueue(params) {
-    this._bufferedBytes += params[3][kByteLength];
+    this._bufferedBytes += params[1].length;
     this._queue.push(params);
   }
 
@@ -60491,8 +60468,6 @@ class WebSocketServer extends EventEmitter {
    * @param {Boolean} [options.skipUTF8Validation=false] Specifies whether or
    *     not to skip UTF-8 validation for text and close messages
    * @param {Function} [options.verifyClient] A hook to reject connections
-   * @param {Function} [options.WebSocket=WebSocket] Specifies the `WebSocket`
-   *     class to use. It must be the `WebSocket` class or class that extends it
    * @param {Function} [callback] A listener for the `listening` event
    */
   constructor(options, callback) {
@@ -60511,7 +60486,6 @@ class WebSocketServer extends EventEmitter {
       host: null,
       path: null,
       port: null,
-      WebSocket,
       ...options
     };
 
@@ -60801,7 +60775,7 @@ class WebSocketServer extends EventEmitter {
       `Sec-WebSocket-Accept: ${digest}`
     ];
 
-    const ws = new this.options.WebSocket(null);
+    const ws = new WebSocket(null);
 
     if (protocols.size) {
       //
@@ -61702,45 +61676,6 @@ function initAsClient(websocket, address, protocols, options) {
 
     opts.socketPath = parts[0];
     opts.path = parts[1];
-  }
-
-  if (opts.followRedirects) {
-    if (websocket._redirects === 0) {
-      websocket._originalHost = parsedUrl.host;
-
-      const headers = options && options.headers;
-
-      //
-      // Shallow copy the user provided options so that headers can be changed
-      // without mutating the original object.
-      //
-      options = { ...options, headers: {} };
-
-      if (headers) {
-        for (const [key, value] of Object.entries(headers)) {
-          options.headers[key.toLowerCase()] = value;
-        }
-      }
-    } else if (parsedUrl.host !== websocket._originalHost) {
-      //
-      // Match curl 7.77.0 behavior and drop the following headers. These
-      // headers are also dropped when following a redirect to a subdomain.
-      //
-      delete opts.headers.authorization;
-      delete opts.headers.cookie;
-      delete opts.headers.host;
-      opts.auth = undefined;
-    }
-
-    //
-    // Match curl 7.77.0 behavior and make the first `Authorization` header win.
-    // If the `Authorization` header is set, then there is nothing to do as it
-    // will take precedence.
-    //
-    if (opts.auth && !options.headers.authorization) {
-      options.headers.authorization =
-        'Basic ' + Buffer.from(opts.auth).toString('base64');
-    }
   }
 
   let req = (websocket._req = get(opts));

@@ -473,6 +473,74 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			}
 		},
 		game: {
+			initMap: () => {
+
+				if (!lib.config.touchscreen) {
+					ui.chessMap.addEventListener('mousedown', function (e) {
+						if (Array.isArray(e.path)) {
+							for (var i = 0; i < e.path.length; i++) {
+								var itemtype = get.itemtype(e.path[i]);
+								if (itemtype == 'button' || itemtype == 'card' || itemtype == 'player') {
+									return;
+								}
+							}
+						}
+						this._chessdrag = [e, this.parentNode.chessLeft, this.parentNode.chessTop];
+					});
+					ui.chessMap.addEventListener('mouseleave', function () {
+						this._chessdrag = null;
+					});
+					ui.chessMap.addEventListener('mouseup', function () {
+						if (this._chessdrag) {
+							this._chessdrag = null;
+						}
+					});
+					ui.chessMap.addEventListener('mousemove', function (e) {
+						if (_status.mousedragging) return;
+						if (this._chessdrag) {
+							ui.dramaContainer.move(
+								this._chessdrag[1] - e.x + this._chessdrag[0].x - ui.dramaContainer.chessLeft,
+								this._chessdrag[2] - e.y + this._chessdrag[0].y - ui.dramaContainer.chessTop
+							);
+							// this.parentNode.scrollLeft=this._chessdrag[1]-e.x+this._chessdrag[0].x;
+							// this.parentNode.scrollTop=this._chessdrag[2]-e.y+this._chessdrag[0].y;
+							_status.clicked = true;
+						}
+						e.preventDefault();
+					});
+					ui.chessMap.addEventListener('wheel', function (e) {
+						ui.dramaContainer.move(e.deltaX, e.deltaY);
+						e.preventDefault();
+					});
+					// ui.chessContainer.addEventListener('mousewheel',function(){
+					// 	if(_status.currentChessFocus){
+					// 		cancelAnimationFrame(_status.currentChessFocus);
+					// 		delete _status.currentChessFocus;
+					// 	}
+					// },{passive:true});
+				}
+				else {
+					ui.chessMap.addEventListener('touchstart', function (e) {
+						if (e.touches.length == 1) {
+							this._chessdrag = [e, this.parentNode.chessLeft, this.parentNode.chessTop];
+						}
+					});
+					ui.chessMap.addEventListener('touchend', function () {
+						this._chessdrag = null;
+					});
+					ui.chessMap.addEventListener('touchmove', function (e) {
+						if (_status.mousedragging) return;
+						if (this._chessdrag && e.touches.length == 1) {
+							ui.dramaContainer.move(
+								this._chessdrag[1] - e.touches[0].clientX + this._chessdrag[0].touches[0].clientX - ui.dramaContainer.chessLeft,
+								this._chessdrag[2] - e.touches[0].clientY + this._chessdrag[0].touches[0].clientY - ui.dramaContainer.chessTop
+							);
+							_status.clicked = true;
+						}
+						e.preventDefault();
+					});
+				}
+			},
 			reserveDead: true,
 			addBossFellow: function (position, name) {
 				var fellow = game.addFellow(position, name, 'zoominanim');
@@ -817,9 +885,83 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				if (_status.drama.dialog) _status.drama.dialog.show()
 			}
 		},
+		ui: {
+			click: {
+				moveContainer: function (x, y, scroll) {
+					if (scroll) {
+						clearTimeout(ui.dramaContainer._scrolling);
+						ui.dramaContainer._scrolling = true;
+						ui.chessMap.style.transition = 'transform 0.5s';
+						ui.refresh(ui.chessMap);
+					}
+					else if (ui.dramaContainer._scrolling) {
+						return;
+					}
+					if (typeof x === 'number') ui.dramaContainer.chessLeft += x;
+					if (typeof y === 'number') ui.dramaContainer.chessTop += y;
+					var xmin = 0;
+					if (lib.config.show_history == 'left') {
+						xmin = -50;
+					}
+					if (ui.dramaContainer.chessLeft < xmin) ui.dramaContainer.chessLeft = xmin;
+					if (ui.dramaContainer.chessTop < 0) ui.dramaContainer.chessTop = 0;
+					var xmax = ui.dramaContainer.xmax;
+					var ymax = ui.dramaContainer.ymax;
+					if (ui.dramaContainer.chessLeft > xmax) ui.dramaContainer.chessLeft = xmax;
+					if (ui.dramaContainer.chessTop > ymax) ui.dramaContainer.chessTop = ymax;
+					ui.chessMap.style.transform = 'translate(' + (-ui.dramaContainer.chessLeft) + 'px,' + (-ui.dramaContainer.chessTop) + 'px)';
+					if (scroll) {
+						var ending = ui.chessMap.listenTransition(function () {
+							if (ui.chessMap._ending == ending) {
+								clearTimeout(ui.dramaContainer._scrolling);
+								delete ui.chessMap._ending;
+								ui.chessMap._scrolling = setTimeout(function () {
+									ui.dramaContainer._scrolling = null;
+									ui.chessMap.style.transition = '';
+								}, 500);
+							}
+						});
+						ui.chessMap._ending = ending;
+					}
+				},
+				chessInfo: function (e) {
+					if (this.link.isAlive()) {
+						this.link.chessFocus();
+						if (this.link.classList.contains('selectable') ||
+							this.link.classList.contains('selected')) {
+							ui.click.target.call(this.link, e);//[todo player]
+							ui.click.window.call(ui.window, e);
+						}
+						e.stopPropagation();
+					}
+				},
+				playergrid: function () {
+					if (!_status.paused) return;
+					var pos = parseInt(this.dataset.position);
+					this.link.moveTo(pos % ui.chesswidth, Math.floor(pos / ui.chesswidth));
+					if (ui.movegrids) {
+						while (ui.movegrids.length) {
+							ui.movegrids.shift().delete();
+						}
+					}
+					_status.event.result = {
+						bool: true,
+						move: this.link.dataset.position
+					};
+					game.resume();
+				},
+				obstacle: function () {
+					if (_status.event.chooseObstacle && _status.paused &&
+						_status.event.obstacles && _status.event.obstacles.contains(this)) {
+						_status.event.obstacle = this;
+						game.resume();
+					}
+				}
+			}
+		},
 		drama: {
 			testDrama: {
-				size: [[8, 12], [28, 30]],
+				size: [[5, 16], [26, 34]],
 				situation: {
 					show: () => {
 						if (ui.STG_start) {
@@ -829,26 +971,34 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy2')
 						}
-						ui.dramaContainer = ui.create.div('#chess-container', ui.arena);
+						ui.mapContainer = ui.create.div('#map-container', ui.arena);
+						ui.dramaContainer = ui.create.div('#chess-container', ui.mapContainer);
 						ui.dramaContainer.move = ui.click.moveContainer;
 						ui.dramaContainer.chessLeft = 0;
 						ui.dramaContainer.chessTop = 0;
-						// ui.chess = ui.create.div('#chess', ui.dramaContainer);
+						ui.chessMap = ui.create.div('#chessMap', ui.dramaContainer);
+						game.initMap()
 						ui.canvas2 = document.createElement('canvas');
 						ui.canvas2.id = 'canvas2';
-						ui.canvas2.width = ui.arena.offsetWidth;
-						ui.canvas2.height = ui.arena.offsetHeight;
-						ui.dramaContainer.appendChild(ui.canvas2);
+						ui.chessMap.appendChild(ui.canvas2);
 						ui.ctx2 = ui.canvas2.getContext('2d');
 
 						ui.arena.classList.add('chess');
 						let size = lib.drama[lib.storage.currentDrama].size
-						ui.canvas2.width = (size[1][0] - size[0][0]) * 560;
-						ui.canvas2.height = (size[1][1] - size[0][1]) * 490;
+						let width = (size[1][0] - size[0][0]) * 80
+						let height = (size[1][1] - size[0][1]) * 80
+						ui.canvas2.width = width
+						ui.canvas2.height = height
+						ui.chessMap.width = width
+						ui.chessMap.height = height
 						let citys = lib.situate.citys.slice(0)
+						let mounts = lib.situate.mounts.slice(0)
 
 						for (let c of citys) {
-							c.drawMap(ui.ctx2, size, 0.07)
+							c.drawMap(ui.ctx2, size, 0.06)
+						}
+						for (let m of mounts) {
+							m.drawMap(ui.ctx2, size, 0.06)
 						}
 					},
 					hide: () => {
@@ -861,9 +1011,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						}
 						ui.dramaContainer.delete()
 						delete ui.dramaContainer
-						// delete ui.chess
+						delete ui.chessMap
 						delete ui.canvas2
 						delete ui.ctx2
+						ui.mapContainer.delete()
+						delete ui.mapContainer
 
 					}
 				}

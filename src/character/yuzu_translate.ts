@@ -372,13 +372,13 @@ export default {
     chenming_info: `回合开始时，你可以将本回合除弃牌阶段外的一个阶段改为摸牌阶段。若为出牌阶段，你可以视为使用一张无视距离的【杀】。`,
     xiantong: `衔桐`,
     xiantong_info: `当你受到伤害时，你可以进行一次判定并弃置两张与结果颜色或类型相同的牌令伤害-1；若此伤害未被防止，你获得此判定牌。`,
-    
+
     NekoyamaNae: `猫山苗`,
     moupi: `谋皮`,
     moupi_info: `当你对其它角色造成伤害时，其可以交给你点数之和为6倍数的牌，然后令此伤害-X（X等同于以此法交出牌的点数除6的值）。一个回合结束时，若你没有造成伤害，本回合内以此法交给你牌的角色与你各摸一张牌。`,
     xuneng: `蓄能`,
     xuneng_info: `锁定技 你的手牌上限增加其它角色的手牌数之和，你使用牌造成的基础伤害数等于牌堆洗切次数。`,
-    
+
     KohakuRin: `琥珀玲`,
     chunzhen: `纯真`,
     chunzhen_info: `锁定技 其他角色的回合开始时，其与你的距离变为1直到回合结束，其于回合内使用牌时，其与你的距离+1。
@@ -387,6 +387,13 @@ export default {
     hupo_info: `轮次技 其他角色的出牌阶段开始时，你可以对其造成X点伤害，
     因此进入濒死状态的角色，不会因本次濒死求救失败而死亡；
     若此回合结束时你不在其攻击范围内，其回复X点体力。（X为你已损失的体力值）`,
+
+    NerunaNero: `寝月ねろ`,
+    peijiu: `醅酒`,
+    peijiu_info: `你的【杀】指定目标时，可以对目标造成 1 点伤害，
+    因此进入濒死状态的角色，不会因本次濒死求救失败而死亡。`,
+    ransha: `染姹`,
+    ransha_info: `摸牌阶段，你可以少摸一张牌，获得『露佐』直到回合结束，并跳过本回合的弃牌阶段。`,
 
     HIMEHINA: `田中姬&铃木雏`,
     HIMEHINA_ab: `姬&雏`,
@@ -461,7 +468,8 @@ export default {
 
     liqingge: `李清歌`,
     tage: `踏歌`,
-    tage_info: `每回合限X次，当一名角色于其回合内使用一张牌后，你可以打出一张点数与之相差1的牌替换之。你以此法获得牌的回合结束时，可以摸X张牌，然后将一张手牌交给当前回合角色。（X为你已损失的体力值且至少为1）`,
+    tage_info: `每回合限X次，当一名角色于其回合内使用一张牌后，你可以打出一张点数与之相差1的牌替换之。<br>
+    你以此法获得牌的回合结束时，可以摸X张牌，然后将一张手牌交给当前回合角色。（X为你已损失的体力值且至少为1）`,
 
     JingujiTamamo: `神宫司玉藻`,
     aowei: `傲尾`,
@@ -772,9 +780,9 @@ export default {
     Mayumi: `勾檀Mayumi`,
     Mayumi_ab: `勾檀`,
     jinzhou: `晋胄`,
-    jinzhou_info: `锁定技 当你失去装备区的防具牌时，你摸（1）张牌，然后令所有（）值+1。`,
+    jinzhou_info: `锁定技 当你失去装备区的防具牌时，你摸（1）张牌，并令『晋胄』或『勾魂』的（）值+1。`,
     gouhun: `勾魂`,
-    gouhun_info: `出牌阶段限一次，你可以亮出牌堆顶（3）张牌，并选择一项：获得其中一种类型的牌；令所有（）值+1。<br>你以此技能获得的基本牌不计入次数，锦囊牌不计入手牌上限。`,
+    gouhun_info: `出牌阶段限一次，你可以亮出牌堆顶（3）张牌，并选择一项：获得其中一种类型的牌；令『晋胄』或『勾魂』的（）值+1。<br>你以此技能获得的基本牌不计入次数，锦囊牌不计入手牌上限。`,
     gouhun_append: lib.figurer(`特性：成长`),
 
     Ruruna: `露露娜Ruruna`,
@@ -861,6 +869,7 @@ export default {
     KurumiUsa_ab: `胡桃`,
     jidou: `激斗`,
     jidou_info: `锁定技 你使用【决斗】指定唯一目标或成为【决斗】的目标时，摸一张牌，若你没有手牌或体力为1，改为摸三张。`,
+    jidou_append: lib.figurer(`特性：激昂`),
     duotian: `堕天`,
     duotian_info: `出牌阶段限一次，你可以将一张基本牌当作一张单体锦囊牌使用，若此牌点数：<br>
     ≥6~你可为之增加一个目标；≥12~你于此阶段结束后进行一个额外的出牌阶段。`,
@@ -869,6 +878,7 @@ export default {
     NanaseUnia_ab: `七濑`,
     qisui: `麒随`,
     qisui_info: `每回合每名角色限一次，一名角色于你的回合内摸牌或其他角色令你摸牌时，你可以令其获得『灵军』直到其下一次使用【决斗】，若其已拥有『灵军』，改为本次摸牌量+1。`,
+    qisui_append: lib.figurer(`特性：联动`),
     lingjun: `灵军`,
     lingjun_info: `锁定技 你手牌中的【杀】视为【决斗】。`,
 
@@ -886,10 +896,24 @@ export default {
     Haya_ab: `花花`,
     shengping: `升平`,
     shengping_info: `其他角色弃置你的牌时，你可以与其各摸一张牌。`,
+    shengping_append: lib.figurer(`特性：联动`),
     jiushuang: `酒霜`,
     jiushuang_info: `一名角色的回合开始时，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置。`,
+    jiushuang_append: lib.figurer(`特性：易上手`),
     lingxun: `灵醺`,
     lingxun_info: `锁定技 你手牌中的【酒】视为【决斗】。`,
+
+    SakumaNiina: `咲间妮娜`,
+    tianjiang: `天降`,
+    tianjiang_info: `出牌阶段，你可以令一名没有手牌的角色摸一张牌，视为你对其使用了一张【决斗】。`,
+    tianjiang_append: lib.figurer(`特性：连营`),
+    baiquan: `败犬`,
+    baiquan_info: `你受到 1 点伤害后，可以依次弃置一名角色的三张牌。`,
+
+    Mitsuki: `满月`,
+    xuedian: `血典`,
+    xuedian_info: `出牌阶段开始时，你可以指定一名角色，本阶段内你对其造成伤害时，你选择一项：回复一点体力，摸两张牌。
+    本阶段结束时，若你没有因此摸牌，你与其翻面。`,
 
     Shirako: `白桃shirako`,
     Shirako_ab: `白桃`,
@@ -1057,9 +1081,9 @@ export default {
     tianlve: `甜略`,
     tianlve_info: `出牌阶段开始时，你可以令一名其他角色回复1点体力，然后本阶段内你对其使用牌无距离限制，且指定其为唯一目标时，可以摸一张牌或增加一个额外目标。`,
     tianlve_append: lib.figurer(`特性：卖血 辅助 强化出杀`),
-    luxian: `颅祭`,
-    luxian_info: `<font color=#fda>限定技</font> 准备阶段，若你已受伤，你可以扣减1点体力上限，并发现一次P-SP角色，你视为拥有其所有技能直到弃牌阶段结束。`,
-    luxian_append: lib.figurer(`特性：难上手 爆发`),
+    luji: `颅祭`,
+    luji_info: `<font color=#fda>限定技</font> 准备阶段，若你已受伤，你可以扣减1点体力上限，并发现一次P-SP角色，你视为拥有其所有技能直到弃牌阶段结束。`,
+    luji_append: lib.figurer(`特性：难上手 爆发`),
 
     AyanaNana: `绫奈奈奈`,
     erni: `耳匿`,

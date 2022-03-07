@@ -999,81 +999,11 @@ div:not(.handcards)>.card>.info>span,
 .button.card {
 	font-size: 14px;
 }
-.button.character>.name {
-	left: 5px;
-	top: 22px;
-	max-height: 68px;
-	overflow: hidden;
-}
-.button.character>.hp {
-	left: 5px;
-	top: 3px;
-}
-.button.character>.hp.text {
-	top: 8px;
-	left: 6px;
-	font-family: 'huangcao','xinwei';
-	font-size: 20px;
-	letter-spacing: 3px;
-}
 .button.nodisplay {
 	display: none;
 }
 .dialog .content>.nodisplay {
 	display: none;
-}
-.button.character>.intro {
-	top: 71px;
-	left: 0;
-}
-.button.character>.identity {
-	top: -6px;
-	left: 72px;
-}
-.button.character.newstyle>.identity{
-	/*display: none;*/
-	border: none;
-	background: none !important;
-	/*box-shadow: none;*/
-	left: auto;
-	right: 3px;
-	top: 3px;
-	/*font-size: 20px;*/
-}
-.button.newstyle>.name{
-	top: 8px;
-	max-height: 84px;
-}
-.button.newstyle>.name.long{
-	top: 6px;
-	transform: scale(0.93);
-    transform-origin: top left;
-}
-.button.newstyle>.hp,
-.button.newstyle>.hp.text{
-	left: auto;
-	top: auto;
-	text-align: right;
-	right: 6px;
-	bottom: 5px;
-}
-.button.newstyle>.hp>div{
-	width: 10px;
-	height: 10px;
-	background: rgba(57, 123, 4,1);
-	border: 1px solid rgba(39, 79, 7, 1);
-	box-shadow: rgba(0,0,0,0.2) 1px -1px 2px inset, rgba(255,255,255,0.15) -1px 1px 5px inset;
-}
-.button.newstyle>.hp>div.text{
-	background: none !important;
-	box-shadow: none !important;
-	border: none !important;
-	font-family: 'xinwei';
-	text-align: right;
-	width: auto;
-	height: auto;
-    transform: none !important;
-	text-shadow: black 0 0 2px, black 0 0 3px;
 }
 
 /*--------确认--------*/
@@ -1457,92 +1387,6 @@ div:not(.handcards)>.card>.info>span,
 	opacity: 1;
 	position: absolute;
 	line-height: 20px;
-}
-
-.hp {
-	left: 18px;
-	top: 14px;
-	width: 72px;
-	line-height: 14px;
-	text-align: left;
-}
-.hp.text {
-	top: 18px;
-}
-.hp.textstyle{
-	font-family: 'xinwei'
-}
-.hp>div {
-	width: 8px;
-	height: 8px;
-	margin-left: 3px;
-	position: relative;
-	border-radius: 100%;
-	box-shadow: rgba(0,0,0,0.2) 1px -1px 2px inset,rgba(255,255,255,0.15) -1px 1px 5px inset;
-	position: relative;
-	filter: brightness(1.5);
-	-webkit-filter: brightness(1.5);
-	transition: all 0.5s;
-	background-repeat: no-repeat;
-}
-.button .hp>div {
-	width: 6px;
-	height: 6px;
-	background: white;
-	box-shadow: 0px 1px 1px rgba(0,0,0,0.5);
-	border: 1px solid #fff;
-}
-.hp[data-condition="high"]>div:not(.lost) {
-	background: rgba(57, 123, 4,1);
-	border: 1px solid rgba(39, 79, 7, 1);
-}
-.hp[data-condition="mid"]>div:not(.lost) {
-	background: rgba(166, 140, 6,1);
-	border: 1px solid rgba(79, 64, 7, 1);
-}
-.hp[data-condition="low"]>div:not(.lost) {
-	background: rgba(148, 27, 27,1);
-	border: 1px solid rgba(79, 7, 7, 1);
-}
-.hp.actcount>div:not(.lost) {
-	background: rgba(63, 119, 173,1);
-	border: 1px solid rgba(31, 82, 131, 1);
-}
-.treasure>.hp>div:not(.lost) {
-	background: rgba(63, 119, 173,1) !important;
-	border: 1px solid rgba(31, 82, 131, 1) !important;
-}
-.hp.actcount>div.overflow:not(.lost) {
-	background: rgb(154, 154, 154);
-	border: 1px solid rgb(109, 109, 109);
-}
-.hp.actcount.overflow2>div.overflow:not(.lost) {
-	background: rgb(173, 129, 63);
-	border: 1px solid rgb(131, 109, 31);
-}
-.hp.actcount>.lost {
-	background: rgba(63, 119, 173,1);
-	border: 1px solid rgba(31, 82, 131, 1);
-	filter: grayscale(1);
-	-webkit-filter: grayscale(1);
-}
-.hp>.lost {
-	background: rgba(57, 123, 4,1);
-	border: 1px solid rgba(39, 79, 7, 1);
-	filter: grayscale(1);
-	-webkit-filter: grayscale(1);
-}
-.hp.text[data-condition="low"],
-.hp.textstyle[data-condition="low"] {
-	text-shadow: black 0 0 1px,rgba(232, 53, 53,1) 0 0 2px,rgba(232, 53, 53,1) 0 0 5px,rgba(232, 53, 53,1) 0 0 10px
-}
-.hp.text[data-condition="mid"],
-.hp.textstyle[data-condition="mid"] {
-	text-shadow: black 0 0 1px,rgba(255, 203, 0,1) 0 0 2px,rgba(255, 203, 0,1) 0 0 5px,rgba(255, 203, 0,1) 0 0 10px
-}
-.hp.text[data-condition="high"],
-.hp.textstyle[data-condition="high"] {
-	text-shadow: rgba(57, 123, 4,1) 0 0 2px,rgba(57, 123, 4,1) 0 0 5px,rgba(57, 123, 4,1) 0 0 10px
 }
 
 .player::after,

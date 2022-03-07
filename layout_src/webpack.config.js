@@ -49,6 +49,18 @@ module.exports = {
               "less-loader",
             ],
           },
+          {
+            test: /\.(jpg|png|gif|bmp|jpeg|cur)$/,
+            use: [
+              {
+                loader: 'url-loader',
+                options: {
+                  limit: 30000,
+                  name: '[name][hash:4].[ext]'
+                }
+              }
+            ]
+          }
         ]
       }
     ]

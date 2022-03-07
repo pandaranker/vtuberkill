@@ -1164,13 +1164,20 @@
                         else {
                             if (lib.config.image_background.indexOf('svg_') == 0) {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
+                                if(ui.backgroundFlash){
+                                    ui.backgroundFlash.delete()
+                                    delete ui.backgroundFlash
+                                }
                             }
                             else {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-
-                                ui.backgroundSVG = ui.create.div('.background', ui.background);
-                                ui.backgroundSVG.setBackgroundImage('image/background/' + 'simple1_bg' + '.svg');
-                                ui.backgroundSVG.style.opacity = '.3';
+                                if(!ui.backgroundFlash){
+                                    ui.backgroundFlash = ui.create.div('.background', ui.background);
+                                    ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+                                    ui.backgroundFlash.style.mixBlendMode = 'overlay';
+                                    ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+                                    ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+                                }
                             }
                         }
                         ui.background.style.backgroundSize = 'cover';
@@ -1512,10 +1519,10 @@
                 },
                 hp_style: {
                     name: '体力条样式',
-                    init: 'ol',
+                    init: 'VK',
                     item: {
+                        vk: 'VK',
                         default: '默认',
-                        // official:'勾玉',
                         emotion: '表情',
                         glass: '勾玉',
                         round: '国战',

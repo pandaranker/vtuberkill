@@ -55,7 +55,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				},
 				content:function(){
 					'step 0'
-					if(typeof event.baseDamage!='number') event.baseDamage=1;
+					if(typeof event.baseDamage!='number') event.baseDamage=Evt.baseNumber || 1;
 					if(!target.countCards('h')||!player.isIn()) event.finish();
 					else player.choosePlayerCard(target,'h',true);
 					'step 1'
