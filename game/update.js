@@ -1,8 +1,9 @@
 window.noname_update = {
-	version: '1.10.0.16',
+	version: '1.10.0.17',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.0.16小型更新：新增角色咲间妮娜【普罗维登】、满月【普罗维登】，修复部分bug，`,
+		`1.10.0.17微型更新：修复部分bug，`,
+		'新增角色咲间妮娜【普罗维登】、满月【普罗维登】',
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
 		``,
 		`部分新特效可以用“流畅模式”关闭，现在于游戏过程中可以右键点击斜体字来查看进一步描述`,
@@ -13,8 +14,6 @@ window.noname_update = {
 		海洋特典角色（湊阿夸、笹木咲、向晚、星宫汐）、皇特典（绯赤艾莉欧、噶呜·古拉）`,
 	],
 	files: [
-		'image/character/Azusa.jpg',
-		'image/character/xiaoke.jpg',
 		'image/character/Xiaorou.jpg',
 
 		'dist/card.js',

@@ -1137,11 +1137,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					Evt.target = trigger.player;
+					let check = get.$a(Evt.target, player) >= 0
 					Evt.target.chooseCard('he', [1, Infinity]).set('ai', card => {
 						var player = _status.event.player;
-						if (player.needsToDiscard() && ui.selected.cards.length < player.countCards('h')) return 6 - get.useful(card);
+						if (!check) return get.unuseful3(card)
+						if (player.needsToDiscard() && ui.selected.cards.length < (player.countCards('h') - player.getHandcardLimit())) return 6 - get.useful(card);
 						else return 2 - get.useful(card);
-					}).set('prompt', `###${get.prompt('jiumao', player)}###你在出牌阶段结束时，可将任意数量的牌放在${get.translation(player)}武将牌旁，称为「猫粮」`);
+					}).set('check', check).set('prompt', `###${get.prompt('jiumao', player)}###你在出牌阶段结束时，可将任意数量的牌放在${get.translation(player)}武将牌旁，称为「猫粮」`);
 					'step 1'
 					if (result.bool) {
 						player.logSkill('maoliang', Evt.target);
@@ -3123,6 +3125,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 
 			His_HoshinoNiya: `星野妮娅·史官`,
+			His_HoshinoNiya_ab: `星野·史官`,
 			shushi: `书史`,
 			shushi_info: `你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）`,
 			shushi_append: lib.figurer(`特性：观星`),

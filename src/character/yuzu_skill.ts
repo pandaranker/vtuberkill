@@ -3863,6 +3863,7 @@ export default {
                 },
                 mod: {
                     selectTarget(card, player, range) {
+                        if (range === 1) console.log(card)
                         if (range[1] == -1) return;
                         range[1] += player.$.xinhuo_chuanhuo;
                     },

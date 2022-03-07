@@ -1,0 +1,40 @@
+.menu-buttons {
+    div {
+        position: absolute;
+    }
+
+    >.glow {
+        box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0.8) 0 0 10px, rgba(0, 133, 255, 0.8) 0 0 15px !important;
+    }
+
+    .file-container {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: scroll;
+
+        >div {
+            position: relative;
+            left: 0;
+            display: block;
+            margin: 12px;
+            margin-bottom: 15px;
+            white-space: nowrap;
+            text-align: left;
+
+            >span {
+                cursor: pointer;
+                text-decoration: underline;
+            }
+
+            >img {
+                display: block;
+                margin-top: 5px;
+            }
+        }
+    }
+}

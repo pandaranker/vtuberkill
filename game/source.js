@@ -92,6 +92,7 @@ window.noname_source_list=[
 	'theme/style/cardback/image/official2.png',
 	'theme/style/cardback/image/ol.png',
 	'theme/style/cardback/image/ol2.png',
+	
 	'theme/style/hp/custom.css',
 	'theme/style/hp/vk.css',
 	'theme/style/hp/default.css',
