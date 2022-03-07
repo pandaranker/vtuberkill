@@ -2742,7 +2742,7 @@ module.exports = function (element, _mode, _message) {
       ws.on('message', function (messagestr) {
         var message;
         try {
-          console.log(messagestr)
+          // console.log(messagestr)
           if(messagestr.data&&messagestr.data.length){
             messagestr = UTF8ToStr(messagestr.data)
           }
