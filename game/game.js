@@ -41704,7 +41704,7 @@ module.exports = function (element, _mode, _message) {
          * @function HTMLDivElement#css
          * @param {Object} style - style
          * @param {string} [style.innerHTML] - 设置本元素内部HTML
-         * @param {string[]} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
+         * @param {...string} [style.cssProperty] - 设置任意数量的css属性。{@link https://developer.mozilla.org/en-US/docs/Web/CSS/Reference|cssProperty}
          * @returns {HTMLDivElement} this self
          */
         HTMLDivElement.prototype.css = function (style) {
@@ -55843,7 +55843,7 @@ module.exports = {
         if (!withport) {
             //ip=ip+':8080';
             if ('https:' != document.location.protocol)
-                ip = ip + '/wss/';
+                ip = ip ; //+ '/wss/';
         }
         _status.connectCallback = callback;
         try {
@@ -55858,7 +55858,7 @@ module.exports = {
                 game.ws = new WebSocket('wss://' + ip + '/wss/');
             } else {
                 //alert("这是一个http请求");
-                game.ws = new WebSocket('ws://' + ip + '');
+                game.ws = new WebSocket('ws://' + ip + '/wss/');
             }
             game.ws.binaryType = 'arraybuffer';
             //game.ws=new WebSocket('ws://'+ip+'');
