@@ -147,7 +147,7 @@ module.exports = {
         if (!withport) {
             //ip=ip+':8080';
             if ('https:' != document.location.protocol)
-                ip = ip + ':8080';
+                ip = ip + '/wss/';
         }
         _status.connectCallback = callback;
         try {
@@ -164,6 +164,7 @@ module.exports = {
                 //alert("这是一个http请求");
                 game.ws = new WebSocket('ws://' + ip + '');
             }
+            game.ws.binaryType = 'arraybuffer';
             //game.ws=new WebSocket('ws://'+ip+'');
         }
         catch (e) {

@@ -2714,6 +2714,22 @@ module.exports = function (element, _mode, _message) {
         id: ws.wsid || get.id(),
         closed: false
       };
+      function UTF8ToStr(arr) {
+        let val = ''
+        arr.forEach(item => {
+            if (item < 127) {
+                val += String.fromCharCode(item)
+            } else {
+                val += '%' + item.toString(16).toUpperCase()
+            }
+        })
+        console.log(val)
+        try {
+            return decodeURI(val)
+        } catch (err) {
+            return val
+        }
+      }
       lib.node.clients.push(client);
       for (var i in element.client) {
         client[i] = element.client[i];
@@ -2721,9 +2737,14 @@ module.exports = function (element, _mode, _message) {
       if (window.isNonameServer) {
         document.querySelector('#server_count').innerHTML = lib.node.clients.length;
       }
+      ws.binaryType = 'arraybuffer';
       ws.on('message', function (messagestr) {
         var message;
         try {
+          console.log(messagestr)
+          if(messagestr.data&&messagestr.data.length){
+            messagestr = UTF8ToStr(messagestr.data)
+          }
           message = JSON.parse(messagestr);
           if (!Array.isArray(message) ||
             typeof _message.server[message[0]] !== 'function') {
