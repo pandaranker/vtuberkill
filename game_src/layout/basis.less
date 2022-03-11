@@ -55,7 +55,7 @@ table {
     >div:not(.serverinfo) {
       display: none !important;
     }
-  
+
     >.serverinfo {
       width: 400px;
       height: 200px;
@@ -64,30 +64,30 @@ table {
       left: calc(50% - 200px);
       top: calc(50% - 100px);
     }
-  
+
     >.serverinfo>div {
       position: relative;
       display: block;
       font-size: 20px;
       margin-top: 10px;
-  
+
       >div {
         position: relative;
         display: inline-block;
-  
+
         &:last-child {
           width: 60px;
           text-align: left;
           white-space: nowrap;
         }
       }
-  
+
       >.menubutton.large:last-child {
         width: auto;
         margin-top: 30px;
         cursor: pointer;
       }
-  
+
       &:first-child {
         font-size: 40px;
       }
@@ -95,7 +95,7 @@ table {
   }
 }
 
-.connectlayer{
+.connectlayer {
   >div {
     display: table-cell;
     vertical-align: middle;
@@ -107,7 +107,7 @@ table {
     transition: all 0.5s;
   }
 
-  &.fullsize{
+  &.fullsize {
     display: table;
     text-align: center;
     z-index: 100;
@@ -135,98 +135,102 @@ table {
   display: none;
 }
 
-#window>.tutorial_tap {
-  width: 30px;
-  height: 30px;
-  border-radius: 100%;
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: rgba(255, 255, 255, 0.5) 0 0 5px;
-  left: calc(50% - 15px);
-  top: calc(50% - 15px);
-  position: absolute;
-  transition: all 1s;
-}
-
-#window.testing>*:not(.pausedbg) {
-  display: none !important;
-}
-
-#window.modepaused {
-  >div:not(.modenopause):not(#arena):not(.popped) {
-    opacity: 0.3;
+#window {
+  >.tutorial_tap {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: rgba(255, 255, 255, 0.5) 0 0 5px;
+    left: calc(50% - 15px);
+    top: calc(50% - 15px);
+    position: absolute;
+    transition: all 1s;
   }
 
-  >#arena>#roundmenu {
-    opacity: 0.3;
-  }
-}
-
-#window.shortcutpaused {
-  >.modeshortcutpause {
-    opacity: 0.3 !important;
+  &.testing>*:not(.pausedbg) {
+    display: none !important;
   }
 
-  >div:not(.background):not(#shortcut):not(#system):not(#arena):not(.hidden):not(.removing):not(.dialog):not(.centermenu):not(.popup-container):not(.forceopaque) {
-    opacity: 0.3 !important;
+  &.modepaused {
+    >div:not(.modenopause):not(#arena):not(.popped) {
+      opacity: 0.3;
+    }
+
+    >#arena>#roundmenu {
+      opacity: 0.3;
+    }
   }
 
-  >#arena>div:not(#timer):not(.removing):not(.hidden):not(#autonode) {
-    opacity: 0.3 !important;
+  &.shortcutpaused {
+    >.modeshortcutpause {
+      opacity: 0.3 !important;
+    }
+
+    >div:not(.background):not(#shortcut):not(#system):not(#arena):not(.hidden):not(.removing):not(.dialog):not(.centermenu):not(.popup-container):not(.forceopaque) {
+      opacity: 0.3 !important;
+    }
+
+    >#arena>div:not(#timer):not(.removing):not(.hidden):not(#autonode) {
+      opacity: 0.3 !important;
+    }
+
+    >#system {
+      z-index: 31;
+    }
+
+    &.modepaused>.modenopause.popup-container:not(.filter-character) {
+      opacity: 0.3;
+    }
+
   }
 
-  >#system {
-    z-index: 31;
+  &.blur_ui {
+
+    #arena.paused,
+    #arena.menupaused,
+    #historybar.paused,
+    #historybar.menupaused,
+    #arena.unfocus,
+    #arena.right {
+      filter: blur(3px);
+      -webkit-filter: blur(3px);
+    }
+
+    #arena.menupaused,
+    #historybar.menupaused {
+      opacity: 0.6;
+    }
+
+    #arena.thrownhighlight>.card.thrown:not(.thrownhighlight) {
+      filter: blur(2px);
+      -webkit-filter: blur(2px);
+    }
+
+    &.shortcutpaused {
+
+      >#arena,
+      >#historybar {
+        filter: blur(3px);
+        -webkit-filter: blur(3px);
+      }
+    }
   }
-  &.modepaused>.modenopause.popup-container:not(.filter-character) {
-    opacity: 0.3;
+
+  .noclick_important {
+    * {
+      pointer-events: none !important;
+    }
+
+    .noclick_click_important div {
+      pointer-events: auto !important
+    }
   }
-  
+
 }
 
 #window.systempaused>#system {
   opacity: 0.3 !important;
-}
-
-#window.noclick_important {
-  * {
-    pointer-events: none !important;
-  }
-
-  .noclick_click_important div {
-    pointer-events: auto !important
-  }
-}
-
-#window.blur_ui {
-
-  #arena.paused,
-  #arena.menupaused,
-  #historybar.paused,
-  #historybar.menupaused,
-  #arena.unfocus,
-  #arena.right {
-    filter: blur(3px);
-    -webkit-filter: blur(3px);
-  }
-
-  #arena.menupaused,
-  #historybar.menupaused {
-    opacity: 0.6;
-  }
-
-  #arena.thrownhighlight>.card.thrown:not(.thrownhighlight) {
-    filter: blur(2px);
-    -webkit-filter: blur(2px);
-  }
-
-  &.shortcutpaused {
-
-    >#arena,
-    >#historybar {
-      filter: blur(3px);
-      -webkit-filter: blur(3px);
-    }
-  }
 }
 
 
@@ -537,5 +541,6 @@ table {
 @import url('./player.less');
 @import url('./info/info.less');
 @import url('./cursor/basis.less');
+@import url('./animation/animation.less');
 
 // @import url('./mask.scss');

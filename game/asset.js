@@ -838,6 +838,8 @@ window.vk_asset_list=[
 	'image/card/group_chaos.png',
 	'image/card/group_xuefeng.png',
 	'image/card/group_RedC.png',
+	'image/card/group_painter.png',
+
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',
 
@@ -1355,6 +1357,8 @@ window.vk_asset_list=[
 	'image/character/NerunaNero.jpg',
 	'image/character/SakumaNiina.jpg',
 	'image/character/Mitsuki.jpg',
+	'image/character/Miya.jpg',
+	'image/character/MomoiMonaka.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

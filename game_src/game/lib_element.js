@@ -30,8 +30,10 @@
       //崭新出炉
       choosePromotion: [() => {
         let list = [];
-        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length)
+        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length){
           Evt.finish();
+          return;
+        }
         for (let i of lib.cardPack.mode_derivation) {
           let info = lib.card[i];
           if (info && info.materials && (typeof info.materials == 'function' || Array.isArray(info.materials)))
@@ -14544,6 +14546,7 @@
         var node1 = player.$throwxy2(card1,
           'calc(50% - 114px)', 'calc(50% - 52px)', 'perspective(600px) rotateY(180deg)', true
         );
+        node1.classList.add('comparing');
         if (lib.config.cardback_style != 'default') {
           node1.style.transitionProperty = 'none';
           ui.refresh(node1);
@@ -14580,6 +14583,7 @@
           var node2 = target.$throwxy2(card2,
             'calc(50% + 10px)', 'calc(50% - 52px)', 'perspective(600px) rotateY(180deg)', true
           );
+          node2.classList.add('comparing');
           if (lib.config.cardback_style != 'default') {
             node2.style.transitionProperty = 'none';
             ui.refresh(node2);

@@ -23,16 +23,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**雫るる */
 			ShizukuLulu: ['female', 'qun', 3, ['duixian', 'gutai']],
 			/**白玉 */
-			Shiratama: ['female', 'qun', 4, ['meihua', 'shentian'],],
+			Shiratama: ['female', 'painter', 4, ['meihua', 'shentian'],],
 
 			/**P家诸人 */
-			Paryi: ['male', 'paryi', 4, ['tiantang', 'haoren'], ['doublegroup:paryi:qun']],
+			Paryi: ['male', 'paryi', 4, ['tiantang', 'haoren'], ['doublegroup:paryi:painter']],
 			TakatsukiRitsu: ['female', 'paryi', 3, ['shengya', 'liangshan', 'chongshi']],
 			MorinagaMiu: ['female', 'paryi', 3, ['guanzhai', 'zhishu']],
 			OtomeOto: ['female', 'paryi', 3, ['yuxia', 'lianjue', 'changxiang'], ['zhu']],
 			HisekiErio: ['female', 'paryi', 4, ['huange', 'qishi', 'yongtuan'], ['zhu']],
 			HanazonoSerena: ['female', 'paryi', 4, ['jiumao', 'enfan', 'shiqi'], ['zhu']],
-			KaguraNana: ['female', 'qun', 3, ['DDzhanshou', 'xinluezhili'], ['zhu', 'doublegroup:qun:holo:paryi']],
+			KaguraNana: ['female', 'painter', 3, ['DDzhanshou', 'xinluezhili'], ['zhu','doublegroup:painter:paryi:holo']],
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
@@ -42,6 +42,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Hiiro: ['female', 'Providence', 4, ['jiace', 'xiangying'], ['yingV']],
 			/**猫雷NyaRu */
 			NecoraNyaru: ['female', 'qun', 3, ['miaolu', 'benglei'],],
+			/**羽澄照乌愈 */
+			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
 
 			/**咩栗 */
 			Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],
@@ -71,6 +73,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**蜜球兔 */
 			Miqiutu: ['female', 'VirtuaReal', 4, ['zhazong', 'mengnan'], ['guoV']],
+			/**茶冷 */
+			Karon: ['female', 'VirtuaReal', 4, ['huomo', 'tuying'], ['guoV']],
 
 			/**米白 */
 			mibai: ['female', 'RedC', 4, ['zhepie', 'chumo'], ['guoV']],
@@ -95,6 +99,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**菜菜姐 */
 			caicai: ['female', 'qun', 5, ['tibing', 'guangtui'], ['guoV']],
+			/**笙歌 */
+			shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP', 'doublegroup:qun:psp']],
 		},
 		characterSort: {
 			clubs: {

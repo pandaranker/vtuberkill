@@ -2946,14 +2946,14 @@ module.exports = function (element, _mode, _message) {
         ui.css.styles.remove();
       }
       ui.css.styles = init.sheet();
-      ui.css.styles.sheet.insertRule('#arena .player>.name,#arena .button.character>.name {font-family: ' + (lib.config.name_font || 'xinwei') + ',xinwei}', 0);
-      ui.css.styles.sheet.insertRule('#arena .player .identity>div {font-family: ' + (lib.config.identity_font || 'huangcao') + ',xinwei}', 0);
-      ui.css.styles.sheet.insertRule('.button.character.newstyle>.identity {font-family: ' + (lib.config.identity_font || 'huangcao') + ',xinwei}', 0);
+      ui.css.styles.sheet.insertRule(`#arena .player>.name,#arena .button.character>.name {font-family: ${lib.config.name_font || 'xinwei'},hyk2gj,LuoLiTi2,xinwei}`, 0);
+      ui.css.styles.sheet.insertRule(`#arena .player .identity>div {font-family: ${lib.config.identity_font || 'huangcao'},xinwei}`, 0);
+      ui.css.styles.sheet.insertRule(`.button.character.newstyle>.identity {font-family: ${lib.config.identity_font || 'huangcao'},Tiejili,xinwei}`, 0);
       if (lib.config.cardtext_font && lib.config.cardtext_font != 'default') {
-        ui.css.styles.sheet.insertRule(`.card div:not(.info):not(.background) {font-family: ${lib.config.cardtext_font};Tiejili}`, 0);
+        ui.css.styles.sheet.insertRule(`.card div:not(.info):not(.background) {font-family: ${lib.config.cardtext_font},Tiejili,xinwei}`, 0);
       }
       if (lib.config.global_font && lib.config.global_font != 'default') {
-        ui.css.styles.sheet.insertRule('#window {font-family: ' + lib.config.global_font + ',xinwei}', 0);
+        ui.css.styles.sheet.insertRule(`#window {font-family: ${lib.config.global_font},xinwei}`, 0);
         ui.css.styles.sheet.insertRule('#window #control{font-family: STHeiti,SimHei,Microsoft JhengHei,Microsoft YaHei,WenQuanYi Micro Hei,Helvetica,Arial,sans-serif}', 0);
       }
       switch (lib.config.glow_phase) {

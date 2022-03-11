@@ -78,8 +78,10 @@ module.exports = {
 
 		vtuber: '企',
 		clubs: '社',
+		painter: '画',
 		vtuber2: '企业联合',
 		clubs2: '社团联合',
+		painter2: '画师联合',
 
 		wei: '魏',
 		shu: '蜀',
@@ -113,7 +115,9 @@ module.exports = {
 		Tencent: '腾',
 		lucca: 'L',
 		RedC: '红',
+		MiyaFam: 'MF',
 		double: '多',
+
 		wei2: '魏国',
 		shu2: '蜀国',
 		wu2: '吴国',
@@ -146,6 +150,7 @@ module.exports = {
 		Tencent2: '腾讯',
 		lucca2: 'Lucca事务所',
 		RedC2: 'RedCircle',
+		MiyaFam2: 'MiyaFam',
 		double2: '多势力',
 		male: '男',
 		female: '女',
@@ -301,6 +306,7 @@ module.exports = {
 		group_Providence: "普罗维登",
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
+		group_painter: "画势力",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
@@ -324,5 +330,6 @@ module.exports = {
 		group_Providence_bg: "罗",
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
+		group_painter_bg: "画",
 	}
 }

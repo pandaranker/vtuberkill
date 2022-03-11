@@ -1,5 +1,47 @@
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
-	let Evt: { [propName: string]: any }
+	let kuali = {
+		contentx: [() => {
+			var choice = 1;
+			if (player.hp == 1 && game.hasPlayer(cur => {
+				return cur.countCards('h') % player.countCards('h') == 0 && cur != player;
+			})) choice = 0;
+			player.chooseControlList(
+				['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
+					'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
+				function (Evt, player) {
+					return _status.event.choice;
+				}).set('choice', choice).set('prompt', get.prompt2(Evt.name));
+		}, () => {
+			if (result.index == 0) {
+				player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力', [1, Infinity], function (card, player, target) {
+					if (target == player) return false;
+					return target.countCards('h') % player.countCards('h') == 0;
+				}).set('ai', function (target) {
+					var player = _status.event.player;
+					return ui.selected.targets.length < (player.maxHp - player.hp);
+				})
+			}
+			if (result.index == 1) {
+				Evt.goto(4)
+			}
+		}, () => {
+			if (result.bool && result.targets?.length) {
+				Evt.num = result.targets.length;
+				player.chooseToDiscard(Evt.num, `弃置${get.cnNumber(Evt.num)}张牌并回复${get.cnNumber(Evt.num)}体力`, true, 'he').set('logSkill', 'kuali');
+			}
+		}, () => {
+			player.recover(Evt.num);
+			Evt.finish();
+		}, () => {
+			player.logSkill('kuali');
+			Evt.num = game.countPlayer(cur => {
+				return cur.hp % player.hp == 0;
+			});
+			player.draw(Evt.num);
+		}, () => {
+			player.loseHp();
+		}],
+	}
 	return {
 		name: 'hololive',
 		connect: true,
@@ -32,6 +74,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			ŌokamiMio: ['female', 'holo', 3, ['xuanxu', 'weizeng'], ['forbidai']],
 			/**大脸猫 */
 			NekomataOkayu: ['female', 'holo', 3, ['fantuan', 'shengang']],
+			/**狮白牡丹 */
+			ShishiroBotan: ['female', 'holo', 4, ['sbliedan', 'buqiang']],
+			/**天音彼方 */
+			AmaneKanata: ['female', 'holo', 3, ['yuyi', 'renjian']],
 
 			/**OG诸人 */
 			Civia: ['female', 'holo', 3, ['kuangxin', 'danyan', 'qingjie'], ['guoV']],
@@ -1202,7 +1248,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards.slice(0,_status.event.puts),cards.slice(_status.event.puts)];
+							return [cards.slice(0, _status.event.puts), cards.slice(_status.event.puts)];
 						})
 						.set('filterMove', function (from, to, moved) {
 							if (to == 0 && moved[0].length >= _status.event.puts) return false;
@@ -1218,16 +1264,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.finish()
 						return
 					}
-					game.broadcastAll(function(player,cards){
+					game.broadcastAll(function (player, cards) {
 						let cardxs = []
-						for(let v of cards){
-							let cardx=ui.create.card();
+						for (let v of cards) {
+							let cardx = ui.create.card();
 							cardx.classList.add('infohidden');
 							cardx.classList.add('infoflip');
 							cardxs.push(cardx)
 						}
-						player.$throw(cardxs,500,'nobroadcast');
-					},player,Evt.cards);
+						player.$throw(cardxs, 500, 'nobroadcast');
+					}, player, Evt.cards);
 					player.lose(Evt.cards, ui.special);
 					game.delayx();
 				}, () => {
@@ -1842,9 +1888,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			//夸
 			kuali: {
 				audio: 4,
-				group: ['kuali_zhuDong', 'kuali_jieshu'],
+				group: ['kuali_active', 'kuali_jieshu'],
 				subSkill: {
-					zhuDong: {
+					active: {
+						usable: 1,
 						enable: "phaseUse",
 						filter(Evt, player) {
 							if (player.hasSkill('kuali_used')) return false;
@@ -1853,45 +1900,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									|| (cur.hp % player.hp == 0);
 							});
 						},
-						content() {
-							'step 0'
-							var choice = 1;
-							if (player.hp == 1 && game.hasPlayer(cur => {
-								return cur.countCards('h') % player.countCards('h') == 0 && cur != player;
-							})) choice = 0;
-							player.addTempSkill('kuali_used');
-							player.chooseControlList(
-								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
-									'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
-								function (Evt, player) {
-									return _status.event.choice;
-								}).set('choice', choice).set('prompt', get.prompt2('kuali_zhuDong'));
-							'step 1'
-							if (result.index == 0) {
-								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力', [1, Infinity], function (card, player, target) {
-									if (target == player) return false;
-									return target.countCards('h') % player.countCards('h') == 0;
-								}).set('ai', function (target) {
-									var player = _status.event.player;
-									return ui.selected.targets.length < (player.maxHp - player.hp);
-								})
-							}
-							if (result.index == 1) {
-								player.logSkill('kuali');
-								var num = game.countPlayer(cur => {
-									return cur.hp % player.hp == 0 && cur != player;
-								});
-								player.draw(num);
-								player.loseHp();
-								_status.event.finish();
-							}
-							'step 2'
-							if (result.bool && result.targets?.length) {
-								var num = result.targets.length;
-								player.chooseToDiscard(num, '弃置' + get.cnNumber(num) + '张牌并回复' + get.cnNumber(num) + '体力', true, 'he').set('logSkill', 'kuali');
-								player.recover(num);
-							}
-						},
+						log: false,
+						content: kuali.contentx,
 					},
 					ai: {
 						order(item, player) {
@@ -1916,52 +1926,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									|| (cur.hp % player.hp == 0);
 							});
 						},
-						content() {
-							'step 0'
-							var choice = function () {
-								if (player.hp == 1 && game.hasPlayer(cur => {
-									return cur.countCards('h') % player.countCards('h') == 0 && cur != player;
-								})) return 0;
-								if (game.countPlayer(cur => {
-									return cur.hp % player.hp == 0 && cur != player;
-								}) > 1) return 1;
-								return -1;
-							}
-							player.addTempSkill('kuali_used');
-							player.chooseControlList(
-								['选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力',
-									'摸体力为你整数倍的角色数的牌，然后失去1点体力'],
-								function (Evt, player) {
-									return _status.event.choice;
-								}).set('choice', choice).set('prompt', get.prompt2('kuali_jieshu'));
-							'step 1'
-							if (result.index == 0) {
-								player.chooseTarget('###『夸力满满』###选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力', [1, Infinity], function (card, player, target) {
-									if (target == player) return false;
-									return target.countCards('h') % player.countCards('h') == 0;
-								}).set('ai', function (target) {
-									var player = _status.event.player;
-									return ui.selected.targets.length < (player.maxHp - player.hp);
-								})
-							}
-							if (result.index == 1) {
-								player.logSkill('kuali');
-								var num = game.countPlayer(cur => {
-									return cur.hp % player.hp == 0 && cur != player;
-								});
-								player.draw(num);
-								player.loseHp();
-								_status.event.finish();
-							}
-							'step 2'
-							if (result.bool && result.targets?.length) {
-								var num = result.targets.length;
-								player.chooseToDiscard(num, '弃置' + get.cnNumber(num) + '张牌并回复' + get.cnNumber(num) + '体力', true, 'he').set('logSkill', 'kuali');
-								player.recover(num);
-							}
-						},
+						content: kuali.contentx,
 					},
-					used: {},
 				},
 			},
 			youyi: {
@@ -3342,11 +3308,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			MinatoAqua: `湊阿库娅`,
 			kuali: `夸力满满`,
-			kuali_info: `每回合限一次，出牌阶段/结束阶段，你可以选择一项：<br>
-			&nbsp;选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力<br>
-			&nbsp;摸体力为你整数倍的角色数的牌，然后失去1点体力`,
-			kuali_zhuDong_info: `每回合限一次，出牌阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
-			kuali_jieshu_info: `每回合限一次，结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
+			kuali_info: `出牌阶段限一次/结束阶段，你可以选择一项：<br>
+			<li>选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力<br>
+			<li>摸体力为你整数倍的角色数的牌，失去1点体力`,
+			kuali_active_info: `出牌阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
+			kuali_jieshu_info: `结束阶段，你可以选择任意名手牌数为你整数倍的角色，你弃置等量牌并回复等量体力；或摸体力为你整数倍的角色数的牌，然后失去1点体力。`,
 			youyi: `友谊誓约`,
 			youyi_info: `轮次技 其他角色的回合开始时，你可以展示并交给其一张「誓约」牌。本回合内，当其造成伤害时，你可令其将「誓约」牌交给你以防止之。该回合结束时，其可以弃置「誓约」牌令你或其回复1点体力。`,
 			youyi_append: lib.figurer(`特性：传递关键牌 限制敌方输出`),
@@ -3411,7 +3377,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shisang: `食尚`,
 			shisang_info: `出牌阶段限一次，你使用牌指定目标后，可以将此牌的效果改为令目标回复1点体力。`,
 			wanjie: `腕解`,
-			wanjie_info: `出牌阶段限一次，你可以展示所有手牌并弃置其中黑色牌，然后摸两张牌；或弃置其中红色牌，然后将本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”。`,
+			wanjie_info: `出牌阶段限一次，你可以展示所有手牌并选择一项：<br>
+			弃置其中的黑色牌，并摸两张牌；弃置其中的红色牌，并将本回合『食尚』的 “回复1点体力” 改为 “受到1点伤害”。`,
 
 			Rosalyn: `罗莎琳`,
 			maoge: `帽阁`,

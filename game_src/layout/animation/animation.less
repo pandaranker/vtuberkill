@@ -1,0 +1,122 @@
+/*--------动画--------*/
+.start,.equips>.card,.popup {
+	animation: game_start 0.5s;
+	-webkit-animation: game_start 0.5s;
+}
+.start2 {
+	animation: card_start 0.5s;
+	-webkit-animation: card_start 0.5s;
+}
+.dialog.popped {
+	animation: dialog_start2 0.3s;
+	-webkit-animation: dialog_start2 0.3s;
+}
+/*.dialog.removing{top: 100px}*/
+.card.drawing {
+	animation: drawing 1s;
+	animation-fill-mode: forwards;
+	-webkit-animation: drawing 1s;
+	-webkit-animation-fill-mode: forwards;
+}
+.card.thrown {
+	position: absolute;
+	opacity: 1;
+	margin: 0;
+	z-index: 3;
+    &.comparing{
+        z-index: 4;
+    }
+}
+#arena>.card.thrown {
+	pointer-events: none
+}
+#arena.thrownhighlight>.card.thrown:not(.thrownhighlight):not(.drawingcard) {
+	opacity: 0.5;
+	transform: scale(0.95);
+	/*-webkit-filter:blur(3px);*/
+}
+.card.start {
+	animation: card_start 0.5s;
+	-webkit-animation: card_start 0.5s;
+}
+.judgestart {
+	animation: card_judgestart 1s;
+	-webkit-animation: card_judgestart 1s;
+}
+#me>div>div>.card.start {
+	animation: card_start2 0.5s;
+	-webkit-animation: card_start2 0.5s;
+}
+#me>div>div>.card.drawinghidden {
+	opacity: 0;
+	transform: scale(0.2) !important;
+}
+.marks>.card.drawinghidden,
+.judges>.card.drawinghidden {
+	opacity: 0;
+	transform: scale(0.2);
+}
+#me>.fakeme.avatar {
+	width: 120px;
+	height: 120px;
+	border-radius: 8px;
+	top: 10px;
+	left: 10px;
+	background-size: cover;
+}
+#window[data-radius_size='reduce'] #me>.fakeme.avatar {
+	border-radius: 4px;
+}
+#window[data-radius_size='off'] #me>.fakeme.avatar {
+	border-radius: 0px;
+}
+#window[data-radius_size='increase'] #me>.fakeme.avatar {
+	border-radius: 16px;
+}
+.card.removing {
+	transform: scale(0);
+}
+#me>div>div>.card.removing {
+	margin-left: -52px;
+	margin-right: -52px;
+}
+.card.thrown.removing {
+	width: 104px;
+	height: 104px;
+	transform: none
+}
+#sidebar.sidebar {
+	animation: sidebar 0.5s;
+	-webkit-animation: sidebar 0.5s
+}
+.button.zoom {
+	animation: zoom_button 0.5s;
+	-webkit-animation: zoom_button 0.5s
+}
+.content>.config.start {
+	animation: config 0.5s;
+	-webkit-animation: config 0.5s;
+}
+.flash {
+	animation: flash 1s;
+	-webkit-animation: flash 1s;
+}
+.flip {
+	animation: flip 1s;
+	-webkit-animation: flip 1s;
+}
+
+@keyframes sidebar {
+	from {
+		left: -120px;
+		opacity: 0
+	}
+}
+@-webkit-keyframes sidebar {
+	from {
+		left: -120px;
+		opacity: 0
+	}
+}
+
+@import url('./keyframes.less');

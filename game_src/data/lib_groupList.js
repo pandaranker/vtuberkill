@@ -30,9 +30,10 @@ module.exports = {
 	 * @type {string}
 	 */
 	group: [
-		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
+		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen','painter',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
-		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'hunmiao', 'ego', 'Tencent', 'lucca', 'RedC',
+		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
+		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam',
 		'vshojo',
 		'vtuber', 'clubs'
 	],
@@ -41,13 +42,16 @@ module.exports = {
 	 * 较group去除了企业、社团、三国势力
 	 * @type {string}
 	 */
-	group2: ['qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyEl', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi',
-		'psp', 'asoul', 'vwp', 'xuyan', 'chaos', 'xuefeng', 'Providence'],
+	group2: [
+		'qun', 'holo', 'nijisanji', 'VirtuaReal', 'HappyEl', 'nori', 'paryi', 'upd8', 'kagura', 'nanashi', 'vwp',
+		'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence'
+	],
 	/**
 	 * 势力对应属性
 	 * @constant
 	 */
 	groupnature: {
+		painter:'orange',
 		shen: 'thunder',
 		wei: 'water',
 		shu: 'soil',
@@ -57,6 +61,7 @@ module.exports = {
 		key: 'key',
 		jin: 'thunder',
 		ye: 'thunder',
+
 		holo: 'water',
 		upd8: 'metal',
 		dotlive: 'wood',
@@ -81,7 +86,8 @@ module.exports = {
 		ego: 'ocean',
 		Tencent: 'yami',
 		lucca: 'wood',
-		RedCircle: 'fire',
+		RedC: 'fire',
+		MiyaFam:'orange',
 
 		vtuber: 'metal',
 		clubs: 'ice',

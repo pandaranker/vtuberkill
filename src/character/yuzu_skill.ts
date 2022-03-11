@@ -1098,10 +1098,13 @@ export default {
         intro: {
             content: '本局游戏内累计使用了#张属性【杀】'
         },
+        filter(Evt, player) {
+            return player.$.changjie>0;
+        },
         content() {
             if (player.hasHistory('sourceDamage', evt => {
                 return evt.getParent('phaseUse') === trigger;
-            }) && player.$.changjie > 0) {
+            })) {
                 player.draw(player.$.changjie)
             } else {
                 player.chooseToDiscard(true, player.$.changjie, 'he')
@@ -2317,7 +2320,7 @@ export default {
             player.loseMaxHp();
             Evt.cards = [];
         }, () => {
-            let next = player.judge(card => {
+            player.judge(card => {
                 if (get.color(card) == 'black') return -1.5;
                 return 1.5;
             })
@@ -5098,7 +5101,7 @@ export default {
                 && !card.hasGaintag('ming_'));
         },
         content: [() => {
-            player.chooseCard(get.$pro2('xuanxu'), [1, Infinity], card => {
+            player.chooseCard(get.$pro2('xuanxu'), [1, Infinity], function (card, player, target) {
                 return get.type(card) == 'basic' && !card.hasGaintag('ming_');
             }).set('ai', card => {
                 return 7 - get.useful(card);
@@ -6917,10 +6920,13 @@ export default {
         },
         usable: 1,
         content: [() => {
-            player.chooseCard('he', get.$pro2('bianyin'), true);
+            Evt.cards = trigger.card.cards
+            player.chooseCard('he', get.$pro2('bianyin'), true, function (card, player, target) {
+                return !_status.event.cards.includes(card)
+            })
+                .set('cards', Evt.cards);
         }, () => {
             if (result.bool) {
-                // player.logSkill('bianyin');
                 Evt.suit = get.suit(result.cards[0]);
                 player.lose(result.cards, ui.discardPile).set('visible', true);
                 player.$throw(result.cards, 1000);
@@ -15861,31 +15867,31 @@ export default {
         mod: {
             targetEnabled(card, player, target, now) {
                 if (get.type(card) == 'delay') {
-                    for (let i = 0; i < game.players.length; i++) {
-                        if (!(game.players[i].isOut() || game.players[i] == player)) {
-                            if (game.players[i].getAttackRange() < player.getAttackRange()) return now;
-                        }
+                    if (!game.countPlayer(cur => {
+                        return cur.isIn() && cur !== target && cur.getAttackRange() < target.getAttackRange()
+                    })) {
                         return false;
                     }
                 }
                 if (get.name(card) == 'sha' && get.color(card) == 'black') {
-                    for (let i = 0; i < game.players.length; i++) {
-                        if (!(game.players[i].isOut() || game.players[i] == player)) {
-                            if (game.players[i].getAttackRange() > player.getAttackRange()) return now;
-                        }
+                    if (!game.countPlayer(cur => {
+                        return cur.isIn() && cur !== target && cur.getAttackRange() > target.getAttackRange()
+                    })) {
                         return false;
                     }
                 }
             }
         },
     },
-    cuchuan: {
-        trigger: { player: 'phaseDrawBegin1' },
+    cuchuan: new toSkill('trigger', {
         filter(Evt, player) {
             return !Evt.numFixed && game.hasPlayer(cur => player != cur && get.$dis(player, cur) <= 1);
         },
         check(Evt, player) {
             return game.countPlayer(cur => player != cur && get.$dis(player, cur) <= 1) >= 2;
+        },
+        logTarget(Evt, player) {
+            return game.filterPlayer(cur => player != cur && get.$dis(player, cur) <= 1);
         },
         content: [() => {
             trigger.changeToZero();
@@ -15900,7 +15906,7 @@ export default {
         }, () => {
             if (Evt.targets[Evt.num]) Evt.goto(2);
         }],
-    },
+    }).setT('phaseDrawBegin1'),
     //春猿火
     huoju: {
         trigger: { global: 'damageBegin' },
@@ -17256,6 +17262,124 @@ export default {
             }
         }
     },
+    //喵田弥夜
+    maoxiao: new toSkill('trigger', {
+        filter(Evt, player) {
+            return player.isMaxHandcard()
+        },
+        content: [() => {
+            if (!Evt.num) Evt.num = 0
+            player.chooseToUse({
+                prompt: `###${get.$pro('maoxiao')}###（已使用${Evt.num}张）`,
+                addCount: false,
+            })
+        }, () => {
+            if (result.bool) {
+                Evt.num++
+                if (Evt.num < 3) Evt.goto(0)
+            }
+        }, () => {
+            game.delayx()
+            switch (Evt.num) {
+                case 1:
+                    player.link(true);
+                    player.damage('fire')
+                    break;
+                case 2:
+                    player.recover()
+                    break;
+                case 3:
+                    player.draw(2)
+                    player.turnOver()
+                    break;
+            }
+        }]
+    }).setT({ global: 'phaseAfter' }),
+    jianfa: new toSkill('active', {
+        filter(Evt, player) {
+            return game.countPlayer(cur => {
+                if (cur.getEquip(1)) {
+                    let dist = get.info(cur.getEquip(1)).distance
+                    return dist.attackFrom <= -2
+                }
+            })
+        },
+        filterTarget(card, player, target) {
+            if (!target.getEquip(1)) return false
+            let dist = get.info(target.getEquip(1)).distance
+            return dist.attackFrom <= -2
+        },
+        content: [() => {
+            player.gain(target.getEquip(1), 'log')
+            game.delayx()
+        }]
+    }),
+    jijie: new toSkill('regard', {
+        hiddenCard: function (player, name) {
+            if (name == 'sha') return player.hasZhuSkill('jijie');
+            return false;
+        },
+        enable: 'chooseToUse',
+        usable: 1,
+        filter(Evt, player) {
+            if (!player.hasZhuSkill('jijie')) return false;
+            return player.hasUseTarget('sha') && Evt.filterCard({ name: 'sha', isCard: true }, player, Evt);
+        },
+        content: [() => {
+            player.judge(card => {
+                if (get.color(card) == 'red') return 2;
+                return -1;
+            }).callback = lib.skill.jijie.callback;
+        }, () => {
+            console.log(_status.event)
+            if (result.color !== 'red') {
+                Evt.getParent('chooseToUse')._result.bool = false
+            }
+        }],
+        callback: [() => {
+            if (Evt.judgeResult.color === 'red') {
+                player.chooseUseTarget({ name: 'sha', isCard: false }, true).set('logSkill', 'jijie')
+            }
+        }],
+    }, 'zhuSkill'),
+    //桃井最中
+    qutao: new toSkill('active', {
+        usable: 1,
+        viewAs: { name: 'shunshou' },
+        selectCard: 2,
+        complexCard: true,
+        position: 'hes',
+        filterCard(card: any) {
+            if (ui.selected.cards.length) return get.color(card) != get.color(ui.selected.cards[0]);
+            return true;
+        },
+        check(card: any) {
+            if (ui.selected.cards.length && get.type2(card) === 'basic') return 8 - get.value(card);
+            return 5 - get.value(card);
+        },
+        ai: {
+            basic: {
+                order: 5
+            },
+            result: { player: 1 },
+        },
+    }),
+    daifei: new toSkill('trigger', {
+        filter(Evt, player) {
+            if (Evt.skill) return false
+            return player.getHistory('lose', evt => {
+                if (evt.cards && evt.cards.length) {
+                    var evtG = evt.getParent();
+                    console.log(evt, evtG)
+                    return evtG && evtG.name === 'gain' && evtG.player !== player;
+                }
+            }).length;
+        },
+        content: [() => {
+            game.delayx();
+            player.insertPhase();
+        }]
+    }).setT({ global: 'phaseEnd' }),
     //闪光pika
     yikai: {
         enable: 'phaseUse',

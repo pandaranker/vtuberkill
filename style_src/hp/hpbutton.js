@@ -1,0 +1,1 @@
+import './hpbutton.less'

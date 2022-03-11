@@ -116,61 +116,61 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.loseHp(1);
 					'step 1'
 					let next = player.moveCard(true).set('nojudge', true)
-					.set('ai', function (target) {
-						var player = _status.event.player;
-						var att = get.attitude(player, target);
-						var sgnatt = get.sgn(att);
-						if (ui.selected.targets.length == 0) {
-							if (target == player) {
-								var es = player.getCards('e');
-								for (var i = 0; i < es.length; i++) {
+						.set('ai', function (target) {
+							var player = _status.event.player;
+							var att = get.attitude(player, target);
+							var sgnatt = get.sgn(att);
+							if (ui.selected.targets.length == 0) {
+								if (target == player) {
+									var es = player.getCards('e');
+									for (var i = 0; i < es.length; i++) {
+										var effect = 0;
+										game.filterPlayer(cur => {
+											if (cur.isEmpty(get.subtype(es[i]))) effect++;
+										})
+										return 3 * effect;
+									}
+								}
+								if (att > 0) {
+									if (target.countCards('e', card => {
+										return get.value(card, target) < 0
+											&& game.hasPlayer(cur => cur != player && cur != target && get.attitude(player, cur) < 0 && cur.isEmpty(get.subtype(card)));
+									}) > 0) return 9;
+								}
+								else if (att < 0) {
+									if (game.hasPlayer(cur => {
+										if (cur != target && cur != player && get.attitude(player, cur) > 0) {
+											var es = target.getCards('e');
+											for (var i = 0; i < es.length; i++) {
+												if (get.value(es[i], target) > 0 && cur.isEmpty(get.subtype(es[i])) && get.value(es[i], cur) > 0) return true;
+											}
+										}
+									})) {
+										return -att;
+									}
+								}
+								return 0;
+							}
+							var es = ui.selected.targets[0].getCards('e');
+							var att2 = get.sgn(get.attitude(player, ui.selected.targets[0]));
+							for (let i = 0; i < es.length; i++) {
+								if (ui.selected.targets[0] == player && target.isEmpty(get.subtype(es[i]))) {
 									var effect = 0;
 									game.filterPlayer(cur => {
-										if (cur.isEmpty(get.subtype(es[i]))) effect++;
-									})
-									return 3 * effect;
+										if (cur.isEmpty(get.subtype(es[i])) && cur != target) effect += get.effect(cur, { name: 'sha' }, player, player);
+									});
+									return 2 * (effect + att);
+								}
+								if (sgnatt != 0 && att2 != 0 &&
+									get.sgn(get.value(es[i], ui.selected.targets[0])) == -att2 &&
+									get.sgn(get.value(es[i], target)) == sgnatt &&
+									target.isEmpty(get.subtype(es[i]))) {
+									return Math.abs(att);
 								}
 							}
-							if (att > 0) {
-								if (target.countCards('e', card => {
-									return get.value(card, target) < 0
-										&& game.hasPlayer(cur => cur != player && cur != target && get.attitude(player, cur) < 0 && cur.isEmpty(get.subtype(card)));
-								}) > 0) return 9;
-							}
-							else if (att < 0) {
-								if (game.hasPlayer(cur => {
-									if (cur != target && cur != player && get.attitude(player, cur) > 0) {
-										var es = target.getCards('e');
-										for (var i = 0; i < es.length; i++) {
-											if (get.value(es[i], target) > 0 && cur.isEmpty(get.subtype(es[i])) && get.value(es[i], cur) > 0) return true;
-										}
-									}
-								})) {
-									return -att;
-								}
-							}
-							return 0;
-						}
-						var es = ui.selected.targets[0].getCards('e');
-						var att2 = get.sgn(get.attitude(player, ui.selected.targets[0]));
-						for (let i = 0; i < es.length; i++) {
-							if (ui.selected.targets[0] == player && target.isEmpty(get.subtype(es[i]))) {
-								var effect = 0;
-								game.filterPlayer(cur => {
-									if (cur.isEmpty(get.subtype(es[i])) && cur != target) effect += get.effect(cur, { name: 'sha' }, player, player);
-								});
-								return 2 * (effect + att);
-							}
-							if (sgnatt != 0 && att2 != 0 &&
-								get.sgn(get.value(es[i], ui.selected.targets[0])) == -att2 &&
-								get.sgn(get.value(es[i], target)) == sgnatt &&
-								target.isEmpty(get.subtype(es[i]))) {
-								return Math.abs(att);
-							}
-						}
-						return -att * get.attitude(player, ui.selected.targets[0]);
-					})
-					.set('forced', true);
+							return -att * get.attitude(player, ui.selected.targets[0]);
+						})
+						.set('forced', true);
 					'step 2'
 					if (result.targets[0] != player) {
 						Evt.finish();
@@ -264,7 +264,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								player.logSkill('mozhaotuji');
 								player.draw(1);
 							}
-							else if (trigger.name == 'phaseUse'&&player.$.mozhaotuji_useCard == 0)
+							else if (trigger.name == 'phaseUse' && player.$.mozhaotuji_useCard == 0)
 								player.addTempSkill('mozhaotujiStop');
 							'step 1'
 							player.$.mozhaotuji_useCard = 0;
@@ -316,23 +316,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							}
 						}],
 					},
-				}
-			},
-			mozhaotujiStart: {
-				trigger: {
-					player: ['phaseJudgeEnd', 'phaseDrawEnd', 'phaseDiscardEnd']
-				},
-				priority: 15,
-				direct: true,
-				silent: true,
-				filter(Evt, player) {
-					if ((player.$.mozhaotuji_useCard) == 0)
-						return true;
-					else
-						return !player.hasSkill('mozhaotujiStop');
-				},
-				content() {
-					player.addTempSkill('mozhaotujiStop');
 				}
 			},
 			mozhaotujiStop: {},
@@ -612,11 +595,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							'step 0'
 							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合', 'he', card => {
 								return get.suit(card) == 'club' || get.type(card) == 'equip';
-							})
+							}).set('logSkill',Evt.name)
 							'step 1'
 							if (result.bool) {
 								player.unmarkSkill(Evt.name);
-								player.logSkill(Evt.name);
 								player.insertPhase();
 							}
 						},
@@ -787,16 +769,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger: { global: 'phaseEnd' },
 						marktext: '并',
 						mark: true,
-						silent: true,
-						forced: true,
 						intro: {
 							content: '当前回合结束后获得一个额外回合',
 							name: '并蒂恶蕾',
 						},
 						content() {
-							player.markSkill(Evt.name);
 							game.delayx();
-							player.logSkill(Evt.name);
 							player.insertPhase();
 						},
 					},
@@ -1055,9 +1033,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							name: '并蒂恶蕾',
 						},
 						content() {
-							player.markSkill(Evt.name);
 							game.delayx();
-							player.logSkill(Evt.name);
 							player.insertPhase();
 						}
 					}
@@ -1322,9 +1298,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						intro: {
 							content: "本回合使用锦囊牌时，将被观看手牌并重铸其中一张",
 						},
-						onunmark(player) {
-							player.unmarkSkill('meici_mark');
-						}
 					},
 					set: {
 						direct: true,
@@ -1336,9 +1309,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						content() {
 							player.logSkill('meici', trigger.player);
-							game.delayx();
 							trigger.player.addTempSkill('meici_mark');
-							trigger.player.markSkill('meici_mark');
+							game.delayx();
 						}
 					},
 					use: {
@@ -1347,40 +1319,39 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						filter(Evt, player) {
 							return Evt.player.hasSkill('meici_mark')
-								&& ['trick', 'delay'].contains(get.type(Evt.card));
+								&& get.type2(Evt.card) === 'trick';
 						},
 						forced: true,
-						silent: true,
 						popup: false,
-						content() {
-							'step 0'
+						content: [() => {
 							game.delay(0.5);
-							player.choosePlayerCard("###『美词』###重铸其一张手牌", trigger.player, 'h').set('visible', true).set('target', trigger.player).ai = button => {
-								var val = get.buttonValue(button);
-								var player = _status.event.player;
-								var target = _status.event.target;
+							Evt.target = trigger.player
+							player.choosePlayerCard(`###${get.prompt('meici')}###重铸其一张手牌`, trigger.player, 'h').set('visible', true).set('tar', trigger.player).ai = button => {
+								let val = get.buttonValue(button);
+								let player = _status.event.player;
+								let target = _status.event.tar;
 								if (get.attitude(player, target) > 0) return 4 - val + Math.random();
 								return val + Math.random();
 							};
-							'step 1'
+						}, () => {
 							if (result.bool && result.cards.length) {
 								player.logSkill('meici', trigger.player, true, false, false);
 								trigger.player.lose(result.cards, ui.discardPile).set('visible', true);
 								trigger.player.$throw(result.cards);
 								game.log(trigger.player, '将', result.cards, '置入了弃牌堆');
 								trigger.player.draw();
-								if (get.type(result.cards[0]) == 'basic') {
-									player.chooseCard("重铸一张牌", 'he');
-								}
+								if (get.type(result.cards[0]) !== 'basic') Evt.finish()
 							}
-							'step 2'
+						}, () => {
+							player.chooseCard("『美词』：可以重铸一张手牌", 'h');
+						}, () => {
 							if (result.bool && result.cards.length) {
 								player.lose(result.cards, ui.discardPile);
 								player.$throw(result.cards);
 								player.draw();
 								game.log(player, '将', result.cards, '置入了弃牌堆');
 							}
-						}
+						}]
 					}
 				},
 				ai: {
@@ -1396,27 +1367,23 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					var cards = [];
 					game.getGlobalHistory('cardMove', evt => {
 						if (evt.name == 'lose' && evt.parent.name != 'useCard') {
-							cards.addArray(evt.cards.filterInD('d'));
+							cards.addArray((evt.cards2 || evt.cards).filterInD('d'));
 						}
 					});
-					var suit = [];
-					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
-					if (!player.hasSkill('danlian_club')) suit.push('club');
+					let suit = ['diamond', 'club'];
 					return cards.length >= Evt.player.hp &&
 						cards.filter(card => suit.contains(get.suit(card))).length &&
-						Evt.player.isAlive();
+						Evt.player.isIn();
 				},
+				round: 1,
 				direct: true,
-				popup: false,
 				content() {
 					'step 0'
 					var cards = [];
-					var suit = [];
-					if (!player.hasSkill('danlian_diamond')) suit.push('diamond');
-					if (!player.hasSkill('danlian_club')) suit.push('club');
+					let suit = ['diamond', 'club'];
 					game.getGlobalHistory('cardMove', evt => {
 						if (evt.name == 'lose' && evt.parent.name != 'useCard') {
-							cards.addArray(evt.cards.filterInD('d').filter(card => suit.contains(get.suit(card))));
+							cards.addArray((evt.cards2 || evt.cards).filterInD('d').filter(card => suit.contains(get.suit(card))));
 						}
 					});
 					if (cards) player.chooseCardButton("###『耽恋』：进入弃牌堆的牌###选择一张牌（♦牌当【乐不思蜀】，♣牌当【决斗】）", cards);
@@ -1425,26 +1392,27 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						Evt.card = result.links[0];
 						var pStr = get.suit(Evt.card) == 'diamond' ?
-							"选择乐不思蜀的目标" : "选择决斗的目标";
+							"选择【乐不思蜀】的目标" : "选择【决斗】的目标";
 						Evt.cardName = get.suit(Evt.card) == 'diamond' ?
 							'lebu' : 'juedou';
 
-						game.broadcastAll(function (player, user, pStr, cardName) {
-							player.chooseTarget(pStr, function (card, player, target) {
-								return user.canUse(cardName, target)
-									&& target != player
-									&& target != user;
-							}).set('ai', target => -get.attitude(player, target));
-						}, player, trigger.player, pStr, Evt.cardName)
+						player.chooseTarget(pStr, function (card, player, target) {
+							let user = _status.event.user
+							return user.canUse(_status.event.cardName, target);
+						})
+							.set('user', trigger.player)
+							.set('cardName', Evt.cardName)
+							.set('ai', target => get.effect(target, { name: _status.event.cardName }, _status.event.user, _status.event.player));
 					}
 					else Evt.finish();
 					'step 2'
 					if (result.bool && result.targets.length) {
 						var target = result.targets[0];
+						player.logSkill('danlian',[trigger.player,target])
+						game.delay(0.5);
 						trigger.player.useCard({ name: Evt.cardName }, target, [Evt.card]);
-						player.addTempSkill('danlian_' + get.suit(Evt.card), 'roundStart');
 					}
-					game.delay(0.5);
+					game.delayx()
 				},
 				ai: {
 					threaten: 1.5,
@@ -2357,23 +2325,23 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			mark_bingdielei: `并蒂恶蕾`,
 			mark_bingdielei_anotherPhase: `并蒂恶蕾`,
-			mark_bingdielei_info: `你造成或受到过伤害的额定回合结束时，你可以弃置一张♣或装备牌以获得一个额外回合。`,
+			mark_bingdielei_info: `一个额定回合结束时，若你于本回合内造成或受到过伤害，你可以弃置一张♣或装备牌以获得一个额外回合。`,
 			mark_quanxinquanyi: `全新全异`,
 			mark_quanxinquanyi_endRound: `全新全异`,
-			mark_quanxinquanyi_info: `一轮开始时，你可以声明一张未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。`,
+			mark_quanxinquanyi_info: `一轮开始时，你可以声明一张未以此法未声明过的通常锦囊牌。本轮结束时，若本轮没有声明牌进入弃牌堆，你可以将一张牌当本轮声明牌使用。`,
 			qiujinzhiling: `囚禁指令`,
 			qiujinzhiling_info: `主公技 锁定技 其他同势力角色回合内进入弃牌堆的牌不触发『全新全异』`,
 
 			mark2_bingdielei: `并蒂恶蕾`,
-			mark2_bingdielei_info: `你受到伤害或令一名角色进入濒死状态的额定回合结束时，获得一个额外回合。`,
+			mark2_bingdielei_info: `一个额定回合结束时，若你于本回合内受到伤害或令一名角色进入濒死状态，获得一个额外回合。`,
 
 			SuzukaUtako: `铃鹿诗子`,
 			meici: `美词`,
-			meici_info: `其他角色的回合开始时，若其手牌为全场最多，其本回合使用锦囊牌后，你可以观看其手牌并重铸其中一张，若因此重铸了基本牌，你也可重铸一张牌。`,
+			meici_info: `其他角色的回合开始时，若其手牌为全场最多，其本回合使用锦囊牌后，你可以观看其手牌并重铸其中一张，若为基本牌，你也可重铸一张手牌。`,
 			meici_append: lib.figurer(`特性：难上手`),
 			danlian: `耽恋`,
-			danlian_info: `一个回合结束时，若本回合不因使用而进入弃牌堆的牌数不少于当前回合角色的体力，
-			你可选择其中一张♦/♣牌并选择另一名其他角色，当前回合角色将此牌当【乐不思蜀】/【决斗】对你选择的角色使用。每轮每项限一次。`,
+			danlian_info: `轮次技 一个回合结束时，若本回合不因使用而进入弃牌堆的牌数不少于当前回合角色的体力，
+			你可选择其中一张♦/♣牌，当前回合角色将此牌当【乐不思蜀】/【决斗】对你指定的一名角色使用。`,
 			danlian_append: lib.figurer(`可以把弃牌转化为【乐不思蜀】或【决斗】`),
 
 			HiguchiKaede: `樋口枫`,

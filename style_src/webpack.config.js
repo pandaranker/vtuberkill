@@ -19,12 +19,17 @@ let commonCssLoader = [
     }
   }
 ]
+let hp_style = ['vk','emotion','hpbutton','glass','ol','round']
+let hp_entry = {}
+for(let v of hp_style){
+  hp_entry[v] = `./hp/${v}.js`
+}
 module.exports = {
   entry: {
-    vk: './hp/vk.js',
+    ...hp_entry
   },
   output: {
-    filename: (pathData) => ['vk'].includes(pathData.chunk.name) ? 'hp/[name]layoutTemp.js' : '[name]/layoutTemp.js',
+    filename: (pathData) => hp_style.includes(pathData.chunk.name) ? 'hp/[name]layoutTemp.js' : '[name]/layoutTemp.js',
     path: resolve(__dirname, '..', 'theme', 'style')
   },
   module: {
@@ -41,20 +46,31 @@ module.exports = {
               ...commonCssLoader,
               "less-loader",
             ],
-          },
-          {
-            test: /\.(jpg|png|gif|bmp|jpeg|cur)$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: 30000,
-                  name: '[name][hash:4].[ext]'
-                }
-              }
-            ]
           }
         ]
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        // type: 'asset',
+        // parser: {
+        //   dataurlCondition: {
+        //     maxSize: 8192
+        //   }
+        // },
+        // generator: {
+        //   filename: '[name][hash:4].[ext]'
+        // }
+        type: 'asset/inline',
+        // use: [
+        //   {
+        //     loader: 'url-loader',
+        //     options: {
+        //       limit: 30000,
+        //       name: '[name][hash:4].[ext]'
+        //     }
+        //   }
+        // ],
+        // type:'javascript/auto'
       }
     ]
   },
@@ -64,7 +80,7 @@ module.exports = {
     ]
   },
   plugins: [new MiniCssExtractPlugin({
-    filename: (pathData) => ['vk'].includes(pathData.chunk.name) ? 'hp/[name].css' : '[name]/layout.css',
+    filename: (pathData) => hp_style.includes(pathData.chunk.name) ? 'hp/[name].css' : '[name]/layout.css',
   })],
   // mode: 'development',
   mode: 'production',

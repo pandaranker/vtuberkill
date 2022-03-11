@@ -15,7 +15,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**猫宫 */
 			re_NekomiyaHinata: ['female', 'qun', 4, ['yingdan', 'tianzhuo']],
 			/**狗妈 */
-			re_KaguraNana: ['female', 'qun', 4, ['re_DDzhanshou'], ['zhu']],
+			re_KaguraNana: ['female', 'painter', 4, ['re_DDzhanshou']],
 			/**小白 */
 			re_Siro: ['female', 'dotlive', 3, ['lingsi']],
 			/**狐叔 */
@@ -88,7 +88,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**小希小桃 */
 			re_XiaoxiXiaotao: ['female', 'xuyan', 3, ['re_doupeng', 're_xuyan'], ['guoV']],
 			/**犬山 */
-			re_InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 're_hundunliandong']],
+			re_InuyamaTamaki: ['male', 'painter', 3, ['rongyaochengyuan', 're_hundunliandong']],
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['fengna', 're_xiaoyan']],
 			/**OTO */
@@ -125,7 +125,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**道明寺晴翔 */
 			re_DoumyoujiHaruto: ['male', 'qun', 3, ['shengfu', 'wanbi']],
 			/**时雨羽衣 */
-			re_ShigureUi: ['female', 'qun', 3, ['uijieyuan', 'huixiang']],
+			re_ShigureUi: ['female', 'painter', 3, ['uijieyuan', 'huixiang']],
 			/**白神遥 */
 			re_ShirakamiHaruka: ['female', 'psp', 3, ['zhenbao', 'heimo'], ['guoV']],
 		},
@@ -1553,8 +1553,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				trigger: { global: 'phaseEnd' },
 				round: 1,
 				prompt2: '获得一个额外回合',
-				filter(Evt: any, player: { getHistory: (arg0: string) => { (): any; new(): any; length: any; }; }) {
-					return player.getHistory('lose').length;
+				filter(Evt, player) {
+					return player.getHistory('lose',(evt) => evt.hs && evt.hs.length > 0).length;
 				},
 				content() {
 					player.unmarkSkill(Evt.name);
@@ -5734,7 +5734,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_MitoTsukino: `新·月之美兔`,
 			re_MitoTsukino_info: `月之美兔`,
 			re_bingdielei: `盛蕾`,
-			re_bingdielei_info: `轮次技 一个回合结束时，若你于该回合内失去过牌，你可以获得一个额外回合。`,
+			re_bingdielei_info: `轮次技 一个回合结束时，若你于该回合内失去过手牌，你可以获得一个额外回合。`,
 
 			re_HiguchiKaede: `新·樋口枫`,
 			re_zhenyin: `震音`,

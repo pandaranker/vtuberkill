@@ -21,6 +21,7 @@ let commonCssLoader = [
 ]
 module.exports = {
   entry: {
+    default:'./default/layout.js',
     long: './long/layout.js',
     long2: './long2/layout.js',
     mobile: './mobile/layout.js',
@@ -48,20 +49,12 @@ module.exports = {
               ...commonCssLoader,
               "less-loader",
             ],
-          },
-          {
-            test: /\.(jpg|png|gif|bmp|jpeg|cur)$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: 30000,
-                  name: '[name][hash:4].[ext]'
-                }
-              }
-            ]
           }
         ]
+      },
+      {
+        test: /\.(jpg|png|gif|jpeg)$/,
+        type: 'asset/inline',
       }
     ]
   },

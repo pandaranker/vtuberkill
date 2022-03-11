@@ -1527,8 +1527,8 @@
                         glass: '勾玉',
                         round: '国战',
                         ol: '手杀',
-                        xinglass: '双鱼',
-                        xinround: 'OL',
+                        // xinglass: '双鱼',
+                        // xinround: 'OL',
                         custom: '自定',
                     },
                     visualBar: function (node, item, create, switcher) {
@@ -1591,17 +1591,18 @@
                         });
                     },
                     visualMenu: function (node, link, name, config) {
-                        node.className = 'button hpbutton dashedmenubutton';
+                        node.className = `button hpbutton dashedmenubutton ${link}Hp`;
                         node.innerHTML = '';
+                        if(!ui.hpbutton)    ui.hpbutton = lib.init.css(lib.assetURL + 'theme/style/hp','hpbutton')
                         for (var i = 1; i <= 4; i++) {
                             var div = ui.create.div(node);
                             if (link == 'default') {
                                 ui.create.div(div);
                             }
                             else if (link != 'custom') {
-                                div.setBackgroundImage('theme/style/hp/image/' + link + i + '.png');
+                                // div.setBackgroundImage(`theme/style/hp/image/${link}${i}.png`);
                             }
-                            if (i == 4) {
+                            if (i == 4&&link !== 'vk') {
                                 div.style.webkitFilter = 'grayscale(1)';
                             }
                         }

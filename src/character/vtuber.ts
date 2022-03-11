@@ -49,6 +49,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			AkiRinco: ['female', 'psp', 4, ['jiren', 'luqiu', 'canxin'], ['guoV', 'P_SP']],
 			/**星汐Seki */
 			Seki: ['female', 'psp', 4, ['zhuxing', 'shanzhu'], ['guoV', 'P_SP']],
+			/**西魔幽 */
+			AkumaYuu: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
 
 			/**花谱 */
 			Kaf: ['female', 'vwp', 3, ['liuhua', 'yishi', 'shiji'], ['zhu']],
@@ -82,10 +84,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Miki: ['female', 'VirtuaReal', 4, ['xingxu', 'qingsui'], ['guoV']],
 			/**真绯瑠mahiru */
 			Mahiru: ['female', 'VirtuaReal', 4, ['jusheng', 'xingqu'], ['guoV']],
+			/**勾檀Mayumi */
+			Mayumi: ['female', 'VirtuaReal', 4, ['jinzhou', 'gouhun'], ['guoV']],
 			/**阿梓 */
 			Azusa: ['female', 'VirtuaReal', 4, ['zhiyue', 'zhengniu'], ['guoV']],
 			/**小可 */
 			xiaoke: ['female', 'VirtuaReal', '3/4', ['dianying', 'ganfen'], ['guoV']],
+			/**露露娜Ruruna */
+			Ruruna: ['female', 'VirtuaReal', 4, ['miluan', 'shenjiao'], ['guoV']],
 
 			/**胡桃 */
 			Menherachan: ['female', 'NetEase', 4, ['shangbei', 'qianqing'], ['guoV']],
@@ -121,6 +127,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tangjiuxia: ['female', 'HappyEl', 4, ['jiuxian', 'yujian'], ['guoV']],
 			/**李清歌 */
 			liqingge: ['female', 'HappyEl', 4, ['tage'], ['guoV']],
+
+			/**艾瑞思 */
+			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
 		},
 		characterSort: {
 			vtuber: {

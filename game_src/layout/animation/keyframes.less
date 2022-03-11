@@ -1,0 +1,488 @@
+/*--------动画--------*/
+@keyframes shadow_thunder {
+	0% {
+		box-shadow: rgba(0, 0, 0,1) 0 0 1px, rgba(0, 0, 0,0.1) 0 0 40px, rgba(100, 74, 139,0.5) 0 0 60px, rgba(100, 74, 139, 0.5) 0 0 100px, black 0 0 1px;
+	}
+	50% {
+		box-shadow: rgba(0, 0, 0,1) 0 0 1px, rgba(0, 0, 0,0.3) 0 0 40px, rgba(100, 74, 139,1) 0 0 60px, rgba(100, 74, 139,1) 0 0 100px, black 0 0 1px;
+	}
+	100% {
+		box-shadow: rgba(0, 0, 0,1) 0 0 1px, rgba(0, 0, 0,0.1) 0 0 40px, rgba(100, 74, 139,0.5) 0 0 60px, rgba(100, 74, 139,0.5) 0 0 100px, black 0 0 1px;
+	}
+}
+@keyframes cardeffect {
+	0% {
+		opacity: 0;
+		transform: scale(0.8)
+	}
+
+	2% {
+		opacity: 1;
+		transform: scale(1)
+	}
+
+	50% {
+		opacity: 1;
+		transform: scale(1)
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(0.8)
+	}
+	/*from{box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px !important;}
+	to{box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px !important}*/
+}
+@keyframes control_glow {
+	0% {
+		box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px
+	}
+
+	30% {
+		box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px
+	}
+
+	70% {
+		box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px
+	}
+
+	100% {
+		box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px
+	}
+	/*from{box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px !important;}
+	to{box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px !important}*/
+}
+@-webkit-keyframes control_glow {
+	0% {
+		box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px
+	}
+
+	30% {
+		box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px
+	}
+
+	70% {
+		box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px
+	}
+
+	100% {
+		box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px
+	}
+	/*from{box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px, rgba(10, 155, 67, 1) 0 0 15px, rgba(10, 155, 67, 1) 0 0 15px !important;}
+	to{box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 0, 0, 0.45) 0 3px 10px !important}*/
+}
+@keyframes cardflip {
+	from {
+		transform: perspective(600px) rotateY(-90deg) translateX(52px)
+	}
+
+	to {
+		transform: perspective(600px) rotateY(0deg) translateX(0)
+	}
+}
+@-webkit-keyframes cardflip {
+	from {
+		transform: perspective(600px) rotateY(-90deg) translateX(52px)
+	}
+
+	to {
+		transform: perspective(600px) rotateY(0deg) translateX(0)
+	}
+}
+@keyframes playerflip {
+	from {
+		transform: perspective(1200px) rotateY(-90deg) translateX(150px)
+	}
+
+	to {
+		transform: perspective(1200px) rotateY(0deg) translateX(0)
+	}
+}
+@keyframes playerflip {
+	from {
+		transform: perspective(1200px) rotateY(-90deg) translateX(150px)
+	}
+
+	to {
+		transform: perspective(1200px) rotateY(0deg) translateX(0)
+	}
+}
+@-webkit-keyframes playerflip {
+	from {
+		transform: perspective(1200px) rotateY(-90deg) translateX(150px)
+	}
+
+	to {
+		transform: perspective(1200px) rotateY(0deg) translateX(0)
+	}
+}
+@keyframes splash {
+	from {
+		opacity: 0;
+		transform: translateY(-300px)
+	}
+}
+@-webkit-keyframes splash {
+	from {
+		opacity: 0;
+		transform: translateY(-300px)
+	}
+}
+@keyframes game_start {
+	from {
+		opacity: 0;
+	}
+}
+@-webkit-keyframes game_start {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes equip_hover {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0;
+	}
+}
+@-webkit-keyframes equip_hover {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0;
+	}
+}
+@keyframes buttonclick {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(0.9);
+	}
+}
+@-webkit-keyframes buttonclick {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(0.9);
+	}
+}
+@keyframes equip_hover2 {
+	0% {
+	}
+
+	50% {
+		opacity: 0.6
+	}
+
+	100% {
+		opacity: 0.3
+	}
+}
+@-webkit-keyframes equip_hover2 {
+	0% {
+	}
+
+	50% {
+		opacity: 0.6
+	}
+
+	100% {
+		opacity: 0.3
+	}
+}
+@keyframes dialog_start {
+	from {
+		opacity: 0;
+		top: 100px;
+	}
+}
+@-webkit-keyframes dialog_start {
+	from {
+		opacity: 0;
+		top: 100px;
+	}
+}
+@keyframes dialog_start2 {
+	from {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+}
+@-webkit-keyframes dialog_start2 {
+	from {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+}
+@keyframes replaceme {
+	from {
+		opacity: 0;
+		transform: translateY(120px)
+	}
+}
+@-webkit-keyframes replaceme {
+	from {
+		opacity: 0;
+		transform: translateY(120px)
+	}
+}
+@keyframes replaceenemy {
+	from {
+		opacity: 0;
+		transform: translateY(-120px)
+	}
+}
+@-webkit-keyframes replaceenemy {
+	from {
+		opacity: 0;
+		transform: translateY(-120px)
+	}
+}
+@keyframes drawing {
+	0% {
+		opacity: 0;
+		left: calc(50% - 52px);
+		top: calc(50% - 52px);
+	}
+
+	50% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+@-webkit-keyframes drawing {
+	0% {
+		opacity: 0;
+		left: calc(50% - 52px);
+		top: calc(50% - 52px);
+	}
+
+	50% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+@keyframes drawing2 {
+	0% {
+		opacity: 0
+	}
+
+	50% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+@-webkit-keyframes drawing2 {
+	0% {
+		opacity: 0
+	}
+
+	50% {
+		opacity: 1
+	}
+
+	100% {
+		opacity: 0
+	}
+}
+@keyframes card_start {
+	from {
+		opacity: 0;
+		transform: scale(0);
+	}
+}
+@-webkit-keyframes card_start {
+	from {
+		opacity: 0;
+		transform: scale(0);
+	}
+}
+@keyframes history_start {
+	from {
+		opacity: 0;
+		margin-bottom: -50px
+	}
+}
+@-webkit-keyframes history_start {
+	from {
+		opacity: 0;
+		margin-bottom: -50px
+	}
+}
+@keyframes card_start2 {
+	from {
+		opacity: 0;
+		transform: scale(0);
+		margin-left: -52px;
+		margin-right: -52px;
+	}
+}
+@-webkit-keyframes card_start2 {
+	from {
+		opacity: 0;
+		transform: scale(0);
+		margin-left: -52px;
+		margin-right: -52px;
+	}
+}
+@keyframes card_judgestart {
+	from {
+		opacity: 0;
+		transform: scale(0) rotateY(-180deg) perspective(600px);
+	}
+}
+@-webkit-keyframes card_judgestart {
+	from {
+		opacity: 0;
+		transform: scale(0) rotateY(-180deg) perspective(600px);
+	}
+}
+@keyframes sidebar {
+	from {
+		left: -120px;
+		opacity: 0
+	}
+}
+@-webkit-keyframes sidebar {
+	from {
+		left: -120px;
+		opacity: 0
+	}
+}
+@keyframes zoom_button {
+	from {
+		margin-top: -48px;
+		margin-bottom: -48px;
+		transform: scale(0);
+		opacity: 0
+	}
+}
+@-webkit-keyframes zoom_button {
+	from {
+		margin-top: -48px;
+		margin-bottom: -48px;
+		transform: scale(0);
+		opacity: 0
+	}
+}
+@keyframes config {
+	from {
+		margin-top: -28px;
+		opacity: 0
+	}
+}
+@-webkit-keyframes config {
+	from {
+		margin-top: -28px;
+		opacity: 0
+	}
+}
+@keyframes zoomin {
+	from {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+}
+@-webkit-keyframes zoomin {
+	from {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+}
+@keyframes zoomout {
+	from {
+		opacity: 0;
+		transform: scale(2);
+	}
+}
+@-webkit-keyframes zoomout {
+	from {
+		opacity: 0;
+		transform: scale(2);
+	}
+}
+@keyframes zoomout3 {
+	from {
+		opacity: 0;
+		transform: scale(3);
+	}
+}
+@-webkit-keyframes zoomout3 {
+	from {
+		opacity: 0;
+		transform: scale(3);
+	}
+}
+@keyframes zoomout4 {
+	from {
+		opacity: 0;
+		transform: scale(4);
+	}
+}
+@-webkit-keyframes zoomout4 {
+	from {
+		opacity: 0;
+		transform: scale(4);
+	}
+}
+@keyframes flash {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+@-webkit-keyframes flash {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes flip {
+	from {
+		transform: perspective(1000px) rotateY(0);
+	}
+
+	to {
+		transform: perspective(1000px) rotateY(360deg);
+	}
+}
+@-webkit-keyframes flip {
+	from {
+		transform: perspective(1000px) rotateY(0);
+	}
+
+	to {
+		transform: perspective(1000px) rotateY(360deg);
+	}
+}

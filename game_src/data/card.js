@@ -66,5 +66,6 @@
 		group_Providence: { ...groupCard, },
 		group_HappyEl: { ...groupCard, },
 		group_RedC: { ...groupCard, },
+		group_painter: { ...groupCard, },
 	}
 }

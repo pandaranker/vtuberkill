@@ -47,19 +47,11 @@ module.exports = {
             use: 'ts-loader',
             exclude: /node_modules/
           },
-          {
-            test: /\.(jpg|png|gif|bmp|jpeg|cur)$/,
-            use: [
-              {
-                loader: 'url-loader',
-                options: {
-                  limit: 30000,
-                  name: '[name][hash:4].[ext]'
-                }
-              }
-            ]
-          }
         ]
+      },
+      {
+        test: /\.(jpg|png|gif|jpeg)$/,
+        type: 'asset/inline',
       },
       {
         test: /\.scss$/i,

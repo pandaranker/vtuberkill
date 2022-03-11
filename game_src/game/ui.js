@@ -4869,26 +4869,26 @@ module.exports = {
                   }
                }
                if (!thisiscard) {
-                  var groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
+                  let groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
                   if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
-                  var bool1 = false;
-                  var bool2 = false;
-                  var bool3 = (get.mode() == 'guozhan' && _status.forceKey != true && get.config('onlyguozhan'));
-                  var bool4 = false;
-                  var boolVC = false;
-                  for (var i in lib.character) {
-                     if (lib.character[i][1] == 'shen') {
+                  let bool1 = false;
+                  let bool4 = false;
+                  let boolVC = false;
+                  let groups_copy = [...groups]
+                  for (let i in lib.character) {
+                     let  group = lib.character[i][1]
+                     if(groups_copy.includes(group)){
+                        groups_copy.remove(group)
+                     }
+                     if (group == 'shen') {
                         bool1 = true;
                      }
-                     if (bool3 || lib.character[i][1] == 'key') {
-                        bool2 = true;
-                     }
                      if (!bool4 && get.is.double(i)) bool4 = true;
-                     if (['vtuber', 'clubs'].includes(lib.character[i][1])) boolVC = true
-                     if (bool1 && bool2 && bool4) break;
+                     if (['vtuber', 'clubs'].includes(group)) boolVC = true
+                     if (bool1 && bool4 && groups_copy.length === 0) break;
                   }
+                  groups.removeArray(groups_copy)
                   if (bool1) groups.add('shen');
-                  if (bool2 && !bool3) groups.add('key');
                   if (bool4) groups.add('double');
                   if (boolVC) groups.addArray(['vtuber', 'clubs'])
                   var natures = ['water', 'soil', 'wood', 'metal'];
@@ -6443,9 +6443,10 @@ module.exports = {
                            if (infoitem[1]) {
                               if (double) {
                                  var str = '<div>';
-                                 if (double.length == 2) {
-                                    for (var i of double) {
+                                 if (double.length <= 3) {
+                                    for (let i of double) {
                                        str += get.translation(i);
+                                       if(double.indexOf(i)!==double.length-1) str+='</div><div>'
                                     }
                                  }
                                  else str += get.translation(double[0]);
@@ -6602,6 +6603,8 @@ module.exports = {
                 * @property {HTMLDivElement} link 铁索(横置)
                 */
                let displayer = ui.create.div('.displayer', node)
+               let avatar = ui.create.div('.avatar', displayer, ui.click.avatar).hide()
+               let avatar2 = ui.create.div('.avatar2', displayer, ui.click.avatar2).hide()
                node.node = {
                   displayer,
                   turnedover: ui.create.div('.turned', '<div>翻<br>面<div>', node),
@@ -6620,19 +6623,17 @@ module.exports = {
                   handcards1: ui.create.div('.handcards'),
                   handcards2: ui.create.div('.handcards'),
                };
-               let avatar = ui.create.div('.avatar', displayer, ui.click.avatar).hide()
-               let avatar2 = ui.create.div('.avatar2', displayer, ui.click.avatar2).hide()
                avatar2.playerEle = avatar.playerEle = node
-               node.node = {
-                  ...node.node,
-                  avatar,
-                  avatar2,
-               }
                var chainlength = game.layout == 'default' ? 64 : 40;
                for (var i = 0; i < chainlength; i++) {
                   ui.create.div(node.node.chain.firstChild, '.cardbg').style.transform = 'translateX(' + (i * 5 - 5) + 'px)';
                }
-               node.node.action = ui.create.div('.action', node.node.avatar);//特殊行动标识：在战棋模式中显示当前正在行动的角色与角色间距离
+               node.node = {
+                  ...node.node,
+                  avatar,
+                  avatar2,
+                  action: ui.create.div('.action', node.node.avatar)//特殊行动标识：在战棋模式中显示当前正在行动的角色与角色间距离
+               }
                /**
                 * 回合计数，初始为0，每回合开始则加1
                 * @name phaseNumber
@@ -6685,10 +6686,25 @@ module.exports = {
                node.node.link = node.mark(' ', { mark: get.linkintro });
                node.node.link.firstChild.setBackgroundImage('image/card/tiesuo_mark.png')
                node.node.link.firstChild.style.backgroundSize = 'cover';
-               ui.create.div(node.node.identity);//??
+               ui.create.div(node.node.identity);//创建身份子div
+               let addEL = (node, fun) => node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', fun)
+               // addEL(node.node.hp,()=>{
+               //    html2canvas(node.node.hp, {  
+               //       allowTaint: true,  
+               //       taintTest: false,  
+               //       onrendered: function(canvas) {  
+               //           canvas.id = "mycanvas";  
+               //           //生成base64图片数据  
+               //           var dataUrl = canvas.toDataURL();  
+               //           var newImg = document.createElement("img");  
+               //           newImg.src =  dataUrl;  
+               //           document.body.appendChild(newImg);
+               //       }
+               //    })
+               // })
                if (!noclick) {
-                  node.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.target);
-                  node.node.identity.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.identity);
+                  addEL(node, ui.click.target)
+                  addEL(node.node.identity, ui.click.identity)
                   if (lib.config.touchscreen) {
                      node.addEventListener('touchstart', ui.click.playertouchstart);
                   }

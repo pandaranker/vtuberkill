@@ -25,7 +25,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**碧居结衣 */
 			AoiYui: ['female', 'qun', 3, ['suyuan', 'mujian'], ['riV']],
 			/**甘城なつき */
-			NachoNeko: ['female', 'qun', 4, ['cirong', 'maoyu'], ['riV']],
+			NachoNeko: ['female', 'painter', 4, ['cirong', 'maoyu'], ['riV']],
 
 			/**日ノ隈らん */
 			HinokumaRan: ['female', 'nanashi', 4, ['yixiang', 'xianyu'], ['riV']],
@@ -33,10 +33,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**Melody */
 			Melody: ['female', 'vshojo', 4, ['kuangbiao', 'leizhu', 'tonggan'], ['zhu', 'yingV']],
 
-			/**狮白牡丹 */
-			ShishiroBotan: ['female', 'holo', 4, ['sbliedan', 'buqiang']],
-			/**天音彼方 */
-			AmaneKanata: ['female', 'holo', 3, ['yuyi', 'renjian']],
 
 			/**pph */
 			PinkyPopHepburn: ['female', 'qun', 4, ['pphpanfeng', 'lanyue']],
@@ -45,8 +41,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			KotobukiYume: ['female', 'qun', 4, ['xuanquan', 'rusu'],],
 			/**海月シェル */
 			UmitsukiShell: ['female', 'qun', 4, ['beike', 'wenda'],],
-			/**羽澄照乌愈 */
-			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
 			/**猫山苗 */
 			NekoyamaNae: ['female', 'qun', 6, ['moupi', 'xuneng'],],
 			/**琥珀玲 */
@@ -90,6 +84,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shanguangpika: ['female', 'qun', 4, ['yikai', 'pkyuanjun'], ['guoV']],
 			/**永雏塔菲 */
 			Taffy: ['female', 'qun', 3, ['qianqi', 'chutan'], ['guoV']],
+			/**喵田弥夜Miya */
+			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV']],
+			/**桃井最中 */
+			MomoiMonaka: ['female', 'qun', 4, ['qutao', 'daifei'], ['guoV']],
 			/**谢拉 */
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
 
@@ -111,15 +109,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**YY */
 			yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
-			/**西魔幽 */
-			AkumaYuu: ['male', 'psp', 4, ['akjianwu', 'tongzhao'], ['guoV', 'P_SP']],
 			/**莲汰 */
 			AiTeN: ['male', 'psp', 4, ['langfei', 'xieyun'], ['guoV', 'P_SP']],
-			/**笙歌 */
-			shengge: ['female', 'psp', 4, ['dixian', 'gumei'], ['guoV', 'P_SP', 'doublegroup:qun:psp']],
 
-			/**艾瑞思 */
-			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
 			/**艾白 */
 			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
 			/**文静 */
@@ -138,12 +130,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Muri: ['female', 'VirtuaReal', 3, ['lique', 'zhangdeng'], ['guoV']],
 			/**Hanser */
 			Hanser: ['female', 'VirtuaReal', 3, ['naiwei', 'cishan'], ['guoV']],
-			/**勾檀Mayumi */
-			Mayumi: ['female', 'VirtuaReal', 4, ['jinzhou', 'gouhun'], ['guoV']],
-			/**露露娜Ruruna */
-			Ruruna: ['female', 'VirtuaReal', 4, ['miluan', 'shenjiao'], ['guoV']],
-			/**茶冷 */
-			Karon: ['female', 'VirtuaReal', 4, ['huomo', 'tuying'], ['guoV']],
 
 			/**启娜娜米 */
 			ap_Nana7mi: ['female', 'VirtuaReal', 4, ['niyou', 'shalu'], ['guoV']],
@@ -198,7 +184,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Kino: '#yNebula-Beat',
 			tangjiuxia: '#yNebula-Beat',
 		},
-		skill: {...skill},
+		skill: { ...skill },
 		card: card,
 		dynamicTranslate: {
 			tiantang(player) {

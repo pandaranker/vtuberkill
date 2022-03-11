@@ -128,7 +128,8 @@ export default {
         dialog.style.top = 'calc(50% - 160px)';
         dialog.style.height = '55%';
         dialog.style.width = '60%';
-        dialog.style.zIndex = 2;
+        dialog.style.zIndex = 3;
+        dialog.style.animation = 'card_start 0.4s';
         dialog.style.backgroundRepeat = 'no-repeat';
         dialog.setBackgroundImage(`layout/uiImg/${str}.png`)
         ui[`imgDialog_${str}`] = dialog
