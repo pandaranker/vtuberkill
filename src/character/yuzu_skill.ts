@@ -1099,7 +1099,7 @@ export default {
             content: '本局游戏内累计使用了#张属性【杀】'
         },
         filter(Evt, player) {
-            return player.$.changjie>0;
+            return player.$.changjie > 0;
         },
         content() {
             if (player.hasHistory('sourceDamage', evt => {
@@ -7206,12 +7206,14 @@ export default {
         }, () => {
             if (Evt.num === 0) Evt.finish()
             else {
-                Evt.target.discardPlayerCard(player, Evt.num, Evt.position, true).set('filterButton', button => {
-                    for (var i = 0; i < ui.selected.buttons.length; i++) {
-                        if (get.position(button.link) == get.position(ui.selected.buttons[i].link)) return false;
-                    }
-                    return true;
-                })
+                Evt.target.discardPlayerCard(player, Evt.num, Evt.position, true)
+                    .set('filterButton', function (button) {
+                        for (var i = 0; i < ui.selected.buttons.length; i++) {
+                            if (get.position(button.link) == get.position(ui.selected.buttons[i].link))
+                                return false;
+                        }
+                        return true;
+                    })
             }
         }, () => {
             Evt.num = result.links.length
@@ -16455,7 +16457,9 @@ export default {
         content: [() => {
             let list = trigger.stageList || lib.phaseName.slice(0);
             player.chooseButton([get.$pro2('chenming'), [list, 'vcard'], 'hidden'])
-                .set('filterButton', button => !['phaseDiscard', 'phaseDraw'].includes(button.link[2]))
+                .set('filterButton', function (button) {
+                    return !['phaseDiscard', 'phaseDraw'].includes(button.link[2]);
+                })
                 .set('ai', button => button.link[2] === 'phaseJudge' ? 10 : 5);
         }, () => {
             if (result.links?.length) {
