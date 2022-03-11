@@ -17331,9 +17331,9 @@ export default {
                 return -1;
             }).callback = lib.skill.jijie.callback;
         }, () => {
-            console.log(_status.event)
+            console.log(Evt.getParent('chooseToUse'))
             if (result.color !== 'red') {
-                Evt.getParent('chooseToUse')._result.bool = false
+                Evt.getParent('chooseToUse').result.bool = false
             }
         }],
         callback: [() => {
