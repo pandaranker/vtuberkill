@@ -3710,6 +3710,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						game.log(player, '将' + get.cnNumber(result.cards.length) + '张牌置于牌堆顶');
 					}
 				}],
+				derivation:'re_yuzhan',
 				group: ['re_bizuo_use', 're_bizuo_end'],
 				subSkill: {
 					use: {
@@ -3731,14 +3732,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						prompt: '弼佐:是否发动一次【预占】？',
 						content: [() => {
-							if (player.isOnline()) {
-								player.send(function () {
-									player.useSkill('re_yuzhan', false, false);
-								});
-							}
-							else {
-								player.useSkill('re_yuzhan', false, false);
-							}
+							player.useSkill('re_yuzhan', false, false);
 						}, () => {
 							if (trigger.card?.storage?.bizuo) delete trigger.card.storage.bizuo;
 							if (trigger.cards?.length) {
@@ -3768,7 +3762,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								cards = cards.concat(cards2);
 							}
 							for (var i = 0; i < cards.length; i++) {
-								if (cards[i].storage && cards[i].storage.bizuo == true) {
+								if (cards[i].storage?.bizuo == true) {
 									delete cards[i].storage.bizuo;
 								}
 							}

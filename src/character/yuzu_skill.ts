@@ -16482,9 +16482,11 @@ export default {
                 Evt.card = result.card
                 player.chooseToDiscard(`弃置颜色为${get.$t(result.color)}或类型为${get.$t(get.type2(Evt.card))}两张牌`, 'he', 2)
                     .set('filterCard', function (card, player) {
-                        return get.color(card) === result.color || get.type2(card) === get.type2(Evt.card);
+                        return get.color(card) === _status.event.color || get.type2(card) === _status.event.cardtype;
                     })
                     .set('ai', card => get.unuseful2(card))
+                    .set('color',result.color)
+                    .set('cardtype',get.type2(Evt.card))
             }
         }, () => {
             if (result.cards?.length) {
