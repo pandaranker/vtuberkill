@@ -4870,10 +4870,9 @@ module.exports = {
                }
                if (!thisiscard) {
                   let groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
-                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange')) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
+                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && !_status.connectMode)) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                   let bool1 = false;
                   let bool4 = false;
-                  let boolVC = false;
                   let groups_copy = [...groups]
                   for (let i in lib.character) {
                      let group = lib.character[i][1]
@@ -4884,13 +4883,11 @@ module.exports = {
                         bool1 = true;
                      }
                      if (!bool4 && get.is.double(i)) bool4 = true;
-                     if (['vtuber', 'clubs'].includes(group)) boolVC = true
-                     if (bool1 && bool4 && groups_copy.length === 0) break;
+                     if (bool1 && bool4 &&  groups_copy.length === 0) break;
                   }
                   groups.removeArray(groups_copy)
                   if (bool1) groups.add('shen');
                   if (bool4) groups.add('double');
-                  if (boolVC) groups.addArray(['vtuber', 'clubs'])
                   var natures = ['water', 'soil', 'wood', 'metal'];
                   var span = document.createElement('span');
                   newlined.appendChild(span);
