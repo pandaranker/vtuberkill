@@ -1653,7 +1653,7 @@ module.exports = {
             return str2;
          },
          slimName: function (str) {
-            var str2 = lib.translate[str];
+            let str2 = lib.translate[str];
             if (lib.translate[str + '_ab']) str2 = lib.translate[str + '_ab'];
             if (str.indexOf('gz_') == 0 && lib.translate[str.slice(3) + '_ab']) str2 = lib.translate[str.slice(3) + '_ab'];
             if (!str2) return '';
@@ -1687,6 +1687,7 @@ module.exports = {
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                str2 = str2.slice(2);
             }
+            if(/^[a-zA-Z]+$/.test(str2)) return str2
             return get.verticalStr(str2, true);
          },
          time: function () {
@@ -2341,7 +2342,7 @@ module.exports = {
             if (!str)
                return '';
             str = str
-               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#ccc;font-weight: bold">$2</font>，')
+               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#dddd;font-weight: bold;text-shadow: 2px 2px 3px #DD00DDBB;">$2</font>，')
                .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
                .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
                .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')

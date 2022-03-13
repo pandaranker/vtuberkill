@@ -11,9 +11,8 @@ window.noname_source_list=[
 	'image/character/Kino.jpg',
 	'image/character/shanbao.jpg',
 	'image/character/dusongziGin.jpg',
-	'image/card/sha.png',
-	'image/card/shan.png',
 	'font/LuoLiTi2.ttf',
+	'font/Tiejili.ttf',
 
 	'game/asset.js',
 	'game/config.js',
@@ -24,12 +23,14 @@ window.noname_source_list=[
 	'game/server.js',
 	'game/source.js',
 	'game/update.js',
-	'font/Tiejili.ttf',
 	
 	'layout/cursor/aero_arrow_glow.cur',
+	
 	'layout/default/layout.css',
 	'layout/default/menu.css',
+	'layout/default/resource.css',
 	'layout/default/phone.css',
+
 	'layout/long/layout.css',
 	'layout/long2/layout.css',
 	'layout/mobile/layout.css',

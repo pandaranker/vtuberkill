@@ -28,21 +28,23 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		start:function(){
 			"step 0"
-			for(var i in lib.characterPack){
-				if(i=='clubs'){
-					for(var j in lib.characterPack[i]){
-						lib.characterPack[i][j][1] = 'clubs';
+			if(!_status.connectMode){
+				for(let i in lib.characterPack){
+					if(i=='clubs'){
+						for(var j in lib.characterPack[i]){
+							lib.characterPack[i][j][1] = 'clubs';
+						}
 					}
-				}
-				else if(i=='vtuber'){
-					for(var j in lib.characterPack[i]){
-						lib.characterPack[i][j][1] = 'vtuber';
+					else if(i=='vtuber'){
+						for(var j in lib.characterPack[i]){
+							lib.characterPack[i][j][1] = 'vtuber';
+						}
 					}
-				}
-				else{
-					for(var j in lib.characterPack[i]){
-						if(['psp','xuefeng','VirtuaReal','HappyEl','asoul','dotlive'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
-						else if(!['holo','nijisanji'].contains(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'clubs';
+					else{
+						for(var j in lib.characterPack[i]){
+							if(['psp','xuefeng','VirtuaReal','HappyEl','asoul','dotlive','Tencent'].includes(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'vtuber';
+							else if(!['holo','nijisanji'].includes(lib.characterPack[i][j][1]))	lib.characterPack[i][j][1] = 'clubs';
+						}
 					}
 				}
 			}
@@ -3082,6 +3084,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				});
 			},
 			chooseCharacterOL2:function(){
+				if (get.config('connect_change_choice')) {
+					game.chooseCharacterChangeOL2();
+					return;
+				}
 				var next=game.createEvent('chooseCharacterOL',false);
 				next.setContent(function(){
 					'step 0'
@@ -3215,6 +3221,120 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					setTimeout(function(){
 						ui.arena.classList.remove('choose-character');
 					},500)
+				});
+			},
+			chooseCharacterChangeOL2: function () {
+				var next = game.createEvent('chooseCharacter', false);
+				next.showConfig = true;
+				next.setContent(function () {
+					'step 0'
+					var ref=game.players[0];
+					var bool=Math.random()<0.5;
+					var bool2=Math.random()<0.5;
+					ref.side=bool;
+					ref.next.side=bool2;
+					ref.next.next.side=!bool;
+					ref.previous.side=!bool2;
+					var firstChoose=game.players.randomGet();
+					if(firstChoose.next.side==firstChoose.side){
+						firstChoose=firstChoose.next;
+					}
+					_status.firstAct=firstChoose;
+					for(var i=0;i<4;i++){
+						firstChoose.node.name.innerHTML=get.verticalStr(get.cnNumber(i+1,true)+'号位');
+						firstChoose=firstChoose.next;
+					}
+					for(var i=0;i<game.players.length;i++){
+						if(game.players[i].side==game.me.side){
+							game.players[i].node.identity.firstChild.innerHTML='友';
+						}
+						else{
+							game.players[i].node.identity.firstChild.innerHTML='敌';
+						}
+						game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
+					}
+					ui.arena.classList.add('choose-character');
+					game.broadcast(function(ref,bool,bool2,firstChoose){
+						ref.side=bool;
+						ref.next.side=bool2;
+						ref.next.next.side=!bool;
+						ref.previous.side=!bool2;
+						for(var i=0;i<4;i++){
+							firstChoose.node.name.innerHTML=get.verticalStr(get.cnNumber(i+1,true)+'号位');
+							firstChoose=firstChoose.next;
+						}
+						for(var i=0;i<game.players.length;i++){
+							if(game.players[i].side==game.me.side){
+								game.players[i].node.identity.firstChild.innerHTML='友';
+							}
+							else{
+								game.players[i].node.identity.firstChild.innerHTML='敌';
+							}
+							game.players[i].node.identity.dataset.color=game.players[i].side+'zhu';
+						}
+						ui.arena.classList.add('choose-character');
+					},ref,bool,bool2,_status.firstAct);
+					_status.onreconnect=[function(){
+						var players=game.players.concat(game.dead);
+						for(var i=0;i<players.length;i++){
+							if(players[i].side==game.me.side){
+								players[i].node.identity.firstChild.innerHTML='友';
+							}
+							else{
+								players[i].node.identity.firstChild.innerHTML='敌';
+							}
+						}
+					}];
+
+					"step 1"
+					event.videoId = lib.status.videoId++;
+					var list = [];
+					var libCharacter = {};
+					for (var i = 0; i < lib.configOL.characterPack.length; i++) {
+						var pack = lib.characterPack[lib.configOL.characterPack[i]];
+						for (var j in pack) {
+							if (lib.character[j]) libCharacter[j] = pack[j];
+						}
+					}
+					for (i in libCharacter) {
+						if (lib.filter.characterDisabled(i, libCharacter)) continue;
+						list.push(i);
+					}
+					game.broadcastAll(function (list, id) {
+						_status.characterlist = list;
+						var filter = function (name) {
+							return !_status.characterlist.contains(name);
+						};
+						var dialog = ui.create.characterDialog('heightset', filter).open();
+						dialog.videoId = id;
+						ui.arena.classList.add('choose-character');
+					}, list, event.videoId);
+					event.player = _status.firstAct;
+					"step 2"
+					event.player.chooseButton(true).set('ai', function (button) {
+						return Math.random();
+					}).set('dialog', event.videoId);
+					"step 3"
+					game.broadcastAll(function (player, character, id) {
+						player.init(character);
+						if (player == game.me) game.addRecentCharacter(character);
+					}, event.player, result.links[0]);
+					event.player = event.player.next
+					"step 4"
+					if (event.player.name1) {
+						game.broadcastAll('closeDialog', event.videoId);
+						game.broadcastAll(function (player, character, id) {
+							var dialog = get.idDialog(id);
+							if (dialog) {
+								dialog.close();
+							}
+							setTimeout(function () {
+								ui.arena.classList.remove('choose-character');
+							}, 500);
+						}, event.player, result.links[0], event.videoId);
+					} else {
+						event.goto(2);
+					}
 				});
 			},
 			chooseCharacterOL1:function(){

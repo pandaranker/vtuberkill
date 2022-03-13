@@ -78,7 +78,8 @@ function hexToRgba(hex, opacity, deviate) {
     return `rgba(${r},${g},${b},${opacity})`;
 }
 class Area {
-    constructor() {
+    constructor(pos) {
+        this.pos = pos
         this.blocks = []
     }
     addBlocks(xs, y) {
@@ -90,42 +91,44 @@ class Area {
             this.addBlock(xs, y)
         }
     }
-}
-class City extends Area {
-    // static cityId = 0;
-    constructor(name, pos, config = {}) {
-        super()
-        this.id = ("000" + ++City.cityId).slice(-3);
-        this.name = name;
-        this.pos = pos;
-        this.level = config.level || 0;
-        this.region = config.region;
-        this.shape = config.shape;
-        this.color = config.color;
-        let shape = this.shape
-        if (shape) {
-            if (typeof shape[0] === 'number') {
-                for (let i = 1; i < shape.length; i++) {
-                    let sy = i - 1 + shape[0]
-                    let sx = shape[i]
-                    if (sx instanceof Array) {
-                        if (sx[0] instanceof Array) {
-                            for (let s of sx) {
-                                this.addBlocks(s, sy)
-                            }
-                        } else {
-                            this.addBlocks(sx, sy)
+    addShape(shape) {
+        if (typeof shape[0] === 'number') {
+            for (let i = 1; i < shape.length; i++) {
+                let sy = i - 1 + shape[0]
+                let sx = shape[i]
+                if (sx instanceof Array) {
+                    if (sx[0] instanceof Array) {
+                        for (let s of sx) {
+                            this.addBlocks(s, sy)
                         }
                     } else {
                         this.addBlocks(sx, sy)
                     }
+                } else {
+                    this.addBlocks(sx, sy)
                 }
             }
-            else if (shape.length) {
-                for (let s of shape) {
-                    this.addBlocks(s[0], s[1])
-                }
+        }
+        else if (shape.length) {
+            for (let s of shape) {
+                this.addBlocks(s[0], s[1])
             }
+        }
+    }
+}
+class City extends Area {
+    // static cityId = 0;
+    constructor(name, pos, config = {}) {
+        super(pos)
+        this.id = ("000" + ++City.cityId).slice(-3);
+        this.name = name;
+        this.level = config.level || 0;
+        this.region = config.region;
+        this.shape = config.shape;
+        this.color = config.color;
+        
+        if (this.shape) {
+            this.addShape(this.shape)
         }
         else {
             this.addBlocks(0, 0)
@@ -210,36 +213,14 @@ class City extends Area {
 City.cityId = 0
 class Mount extends Area {
     constructor(name, pos, config = {}) {
-        super()
+        super(pos)
         this.id = ("000" + ++Mount.mountId).slice(-3);
         this.name = name;
-        this.pos = pos;
         this.shape = config.shape;
         this.color = config.color || '#333333';
-        let shape = this.shape
-        if (shape) {
-            if (typeof shape[0] === 'number') {
-                for (let i = 1; i < shape.length; i++) {
-                    let sy = i - 1 + shape[0]
-                    let sx = shape[i]
-                    if (sx instanceof Array) {
-                        if (sx[0] instanceof Array) {
-                            for (let s of sx) {
-                                this.addBlocks(s, sy)
-                            }
-                        } else {
-                            this.addBlocks(sx, sy)
-                        }
-                    } else {
-                        this.addBlocks(sx, sy)
-                    }
-                }
-            }
-            else if (shape.length) {
-                for (let s of shape) {
-                    this.addBlocks(s[0], s[1])
-                }
-            }
+        
+        if (this.shape) {
+            this.addShape(this.shape)
         }
     }
     addBlock(x, y) {

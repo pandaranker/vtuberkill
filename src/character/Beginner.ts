@@ -65,7 +65,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**樱巫女 */
 			re_SakuraMiko: ['female', 'holo', 3, ['huangyou', 'qidao']],
 			/**夏色祭 */
-			re_NatsuiroMatsuri: ['female', 'holo', 3, ['re_huxi1']],
+			re_NatsuiroMatsuri: ['female', 'holo', 3, ['re_huxi']],
 			/**紫咲诗音 */
 			re_MurasakiShion: ['female', 'holo', 3, ['anshu', 'xingchi']],
 			/**赤井心 */
@@ -1554,7 +1554,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				round: 1,
 				prompt2: '获得一个额外回合',
 				filter(Evt, player) {
-					return player.getHistory('lose',(evt) => evt.hs && evt.hs.length > 0).length;
+					return player.getHistory('lose', (evt) => evt.hs && evt.hs.length > 0).length;
 				},
 				content() {
 					player.unmarkSkill(Evt.name);
@@ -2319,7 +2319,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							cards.sort(function (a, b) {
 								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
 							});
-							return [cards.slice(0,2),cards.slice(2)];
+							return [cards.slice(0, 2), cards.slice(2)];
 						})
 						.set('filterMove', function (from, to, moved) {
 							if (to == 0 && moved[0].length >= 2) return false;
@@ -2334,16 +2334,16 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						Evt.finish()
 						return
 					}
-					game.broadcastAll(function(player,cards){
+					game.broadcastAll(function (player, cards) {
 						let cardxs = []
-						for(let v of cards){
-							let cardx=ui.create.card();
+						for (let v of cards) {
+							let cardx = ui.create.card();
 							cardx.classList.add('infohidden');
 							cardx.classList.add('infoflip');
 							cardxs.push(cardx)
 						}
-						player.$throw(cardxs,500,'nobroadcast');
-					},player,Evt.cards);
+						player.$throw(cardxs, 500, 'nobroadcast');
+					}, player, Evt.cards);
 					player.lose(Evt.cards, ui.special);
 					game.delayx();
 				}, () => {
@@ -2590,14 +2590,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}],
 			},
 			//re夏色祭
-			re_huxi1: {
-				audio: 'huxi1',
+			re_huxi: {
+				audio: 'huxi',
 				trigger: { player: 'gainEnd' },
 				filter(Evt, player: PlayerModel) {
+					if (!player.$.huxiGroup) player.$.huxiGroup = []
 					return game.hasPlayer((cur: any) => {
-						if (player.$.huxiGroup == null) return true;
 						return !player.$.huxiGroup.contains(cur) && cur != player;
-					}) && Evt.getParent().skill != 're_huxi1' && Evt.getParent(2).skill != 're_huxi1' && Evt.getParent(3).skill != 're_huxi1';
+					}) && Evt.getParent().skill != 're_huxi' && Evt.getParent(2).skill != 're_huxi' && Evt.getParent(3).skill != 're_huxi';
 				},
 				content: [() => {
 					let next = player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌', true).set('type', 'compare')
@@ -2671,15 +2671,43 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}, () => {
 					if (get.color(Evt.result.getC) == 'red') {
 						player.draw(1);
-						if (!player.hasSkill('re_huxi2')) {
-							player.addTempSkill('re_huxi2');
+						if (!player.hasSkill('re_huxi_buff')) {
+							game.putBuff(player, 're_huxi', '.player_buff')
+							player.addTempSkill('re_huxi_buff', 'none');
 						}
 					}
-					if (player.$.huxiGroup == null) player.$.huxiGroup = [];
 					player.$.huxiGroup.add(target);
 				}],
-				group: 're_huxi1_clear',
+				onremove(player, skill) {
+					delete player.$.huxiGroup
+					game.clearBuff(player, 're_huxi')
+				},
+				group: 're_huxi_clear',
 				subSkill: {
+					buff: {
+						trigger: {
+							player: 'useCard'
+						},
+						firstDo: true,
+						direct: true,
+						filter(Evt: { card: any; }, player: any) {
+							return get.name(Evt.card) == 'sha';
+						},
+						onremove(player, skill) {
+							game.clearBuff(player, 're_huxi')
+						},
+						content() {
+							player.removeSkill('re_huxi_buff');
+							if (trigger.addCount !== false) {
+								trigger.addCount = false;
+								var stat = player.getStat();
+								if (stat && stat.card && stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
+							}
+							game.log(trigger.card, '伤害+1');
+							if (typeof trigger.baseDamage != 'number') trigger.baseDamage = 1;
+							trigger.baseDamage++;
+						},
+					},
 					clear: {
 						firstDo: true,
 						silent: true,
@@ -2692,26 +2720,6 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 					}
 				}
-			},
-			re_huxi2: {
-				trigger: {
-					player: 'useCard'
-				},
-				firstDo: true,
-				direct: true,
-				filter(Evt: { card: any; }, player: any) {
-					return get.name(Evt.card) == 'sha';
-				},
-				content() {
-					if (trigger.addCount !== false) {
-						trigger.addCount = false;
-						var stat = player.getStat();
-						if (stat && stat.card && stat.card[trigger.card.name]) stat.card[trigger.card.name]--;
-						if (player.hasSkill('re_huxi2')) {
-							player.removeSkill('re_huxi2');
-						}
-					}
-				},
 			},
 			//re赤心
 			xinchixin: {
@@ -3710,7 +3718,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						game.log(player, '将' + get.cnNumber(result.cards.length) + '张牌置于牌堆顶');
 					}
 				}],
-				derivation:'re_yuzhan',
+				derivation: 're_yuzhan',
 				group: ['re_bizuo_use', 're_bizuo_end'],
 				subSkill: {
 					use: {
@@ -5848,8 +5856,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			qidao_info: `当判定牌生效前，你可以弃一张牌重新判定。`,
 
 			re_NatsuiroMatsuri: `新·夏色祭`,
-			re_huxi1: `恋上`,
-			re_huxi1_info: `当你不因此技能获得牌后，你可以与一名本回合未『恋上』过的角色交换一张手牌。然后若你获得了红色牌，你摸一张牌，使用的下一张【杀】不计入次数。`,
+			re_huxi: `恋上`,
+			re_huxi_info: `当你不因此技能获得牌后，你可以与本回合未以此法指定的一名角色交换一张手牌。当你以此法获得红色牌时，你摸一张牌，使用的下一张【杀】不计入次数且伤害+1（不可叠加）。`,
+			re_huxi_append: lib.figurer(`特性：传递关键牌 强化出杀`),
+			re_huxi_buff: `恋上ing`,
+			re_huxi_buff_info: `使用的下一张【杀】不计入次数且伤害+1`,
 
 			re_AkaiHaato: `新·赤井心`,
 			xinchixin: `赤心`,
@@ -5859,7 +5870,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_NakiriAyame: `新·百鬼绫目`,
 			guiren: `鬼刃`,
 			guiren_info: `你可以将两张颜色不同的牌当做一张不计入次数的【杀】使用，根据你转化牌的类型获得对应效果：<br>基本~指定此【杀】的属性；锦囊~获得目标一张牌；装备~此【杀】伤害+1。`,
-			guiren_append: lib.figurer(`特性：易上手`),
+			guiren_append: lib.figurer(`特性：易上手 强化出杀 多次出杀`),
 
 			re_MurasakiShion: `新·紫咲诗音`,
 			anshu: `暗术`,
@@ -5872,6 +5883,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			qiangyun_info: `你的判定牌生效前，你可以打出一张牌代替之，然后你可以立即使用打出牌，且此牌造成伤害后，你摸一张牌。`,
 			tuquan: `兔拳`,
 			tuquan_info: `锁定技 你的【杀】被【闪】抵消时，你进行判定，若为♠，你弃置目标一张牌，若为♥，你弃置一张牌。`,
+			tuquan_append: lib.figurer(`特性：强化出杀`),
 
 			re_UruhaRushia: `新·润羽露西娅`,
 			juebi: `绝壁`,
@@ -5955,6 +5967,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			WHiTE_info: `当你受到伤害后，你可以观看来源的手牌并声明一种花色，其无法使用、打出或弃置该花色的牌直到回合结束。`,
 			BLacK: `BLacK`,
 			BLacK_info: `出牌阶段限一次，你可以指定一名其他角色，然后观看牌堆顶X张牌并用其中一张与其拼点，赢的角色对没赢的角色使用拼点牌。（X为目标体力值）`,
+			BLacK_append: lib.figurer(`特性：难上手`),
 
 			re_Kano: `新·鹿乃`,
 			shiguang: `失光`,

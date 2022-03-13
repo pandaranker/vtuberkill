@@ -38,7 +38,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			EQueen: ['female', 'asoul', 4, ['yehua', 'fengqing'], ['guoV']],
 
 			/**步玎 */
-			Pudding: ['female', 'psp', 4, ['tianlve', 'luji'], ['guoV', 'P_SP']],
+			Pudding: ['female', 'psp', 4, ['tianlve', 'luji'], ['guoV', 'P_SP', 'doublegroup:psp:qun']],
 			/**粉兔 */
 			AyanaNana: ['female', 'psp', '2/4', ['erni', 'shouru', 'chonghuang', 'yinzun'], ['zhu', 'guoV', 'P_SP']],
 			/**红晓音 */
@@ -120,6 +120,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**七濑Unia */
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
+			/**玛安娜Myanna */
+			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
+			/**花花Haya */
+			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
+			/**咲间妮娜 */
+			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
 			
 			/**吉诺儿kino */
 			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],
@@ -130,6 +136,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**艾瑞思 */
 			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
+			/**星瞳 */
+			xingtong: ['female', 'Tencent', 4, ['jiezou', 'xtguyong'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {
@@ -2089,7 +2097,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			DoumyoujiHaruto: `道明寺晴翔`,
 			YuNi: `YuNi`,
 			Fairys: `Fairys`,
-			Fairys_ab: `鹦鹉`,
 		},
 	};
 });

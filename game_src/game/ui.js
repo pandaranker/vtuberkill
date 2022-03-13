@@ -4876,8 +4876,8 @@ module.exports = {
                   let boolVC = false;
                   let groups_copy = [...groups]
                   for (let i in lib.character) {
-                     let  group = lib.character[i][1]
-                     if(groups_copy.includes(group)){
+                     let group = lib.character[i][1]
+                     if (groups_copy.includes(group)) {
                         groups_copy.remove(group)
                      }
                      if (group == 'shen') {
@@ -6388,6 +6388,7 @@ module.exports = {
                               }
                            }
                            node.node.name.innerHTML = get.slimName(item);
+
                            if (lib.config.buttoncharacter_style == 'default' || lib.config.buttoncharacter_style == 'simple') {
                               if (lib.config.buttoncharacter_style == 'simple') {
                                  node.node.group.style.display = 'none';
@@ -6429,12 +6430,25 @@ module.exports = {
                            if (node.node.hp.childNodes.length == 0) {
                               node.node.name.style.top = '8px';
                            }
-                           if (node.node.name.querySelectorAll('br').length >= 4) {
+                           if(/^[a-zA-Z]+$/.test(node.node.name.innerHTML)){
+                              node.node.name.classList.add('English');
+                           }
+                           let nameLength = node.node.name.querySelectorAll('br').length
+                           if (nameLength <= 1) {
+                              node.node.name.classList.add('short');
+                           }
+                           else if (nameLength == 2) {
+                              node.node.name.classList.add('lowshort');
+                           }
+                           else if (nameLength == 4 || nameLength == 5) {
+                              node.node.name.classList.add('lowlong');
+                           }
+                           else if (nameLength >= 6) {
                               node.node.name.classList.add('long');
-                              if (lib.config.buttoncharacter_style == 'old') {
-                                 node.addEventListener('mouseenter', ui.click.buttonnameenter);
-                                 node.addEventListener('mouseleave', ui.click.buttonnameleave);
-                              }
+                           }
+                           if (nameLength >= 4 && lib.config.buttoncharacter_style == 'old') {
+                              node.addEventListener('mouseenter', ui.click.buttonnameenter);
+                              node.addEventListener('mouseleave', ui.click.buttonnameleave);
                            }
                            node.node.intro.innerHTML = lib.config.intro;
                            if (!noclick) {
@@ -6446,7 +6460,7 @@ module.exports = {
                                  if (double.length <= 3) {
                                     for (let i of double) {
                                        str += get.translation(i);
-                                       if(double.indexOf(i)!==double.length-1) str+='</div><div>'
+                                       if (double.indexOf(i) !== double.length - 1) str += '</div><div>'
                                     }
                                  }
                                  else str += get.translation(double[0]);

@@ -1772,52 +1772,39 @@ export default {
         },
     },
     //ggl
-    shengya: {
+    shengya: new toSkill('trigger', {
         audio: 4,
-        init(player, skill) {
-            if (!player.$[skill]) player.$[skill] = true;
-        },
-        marktext: "卒",
-        intro: {
-            name: '职业生涯结束',
-            content(storage, player, skill) {
-                return '失去『职业生涯』直到下个回合开始';
-            },
-        },
         trigger: { player: 'useCardAfter' },
         priority: 996,
         forced: true,
         filter(Evt, player) {
-            return player.$.shengya && player.isPhaseUsing() && get.color(Evt.card) == 'red';
+            return !player.hasSkill('shengya_lost') && player.isPhaseUsing() && get.color(Evt.card) == 'red';
         },
-        content() {
+        content: [() => {
             Evt.cards = get.cards(1);
             game.cardsGotoOrdering(Evt.cards);
             player.showCards(Evt.cards);
             game.delay(1);
             player.gain(Evt.cards);
-            if (get.suit(Evt.cards[0]) == 'club') {
+        }, () => {
+            if (get.suit(Evt.cards[0]) === 'club') {
                 player.loseHp();
-                player.$.shengya = false;
-                player.markSkill('shengya');
+                player.addTempSkill('shengya_lost');
             }
-        },
-        group: 'shengya_init',
+        }],
         subSkill: {
-            init: {
-                trigger: { player: 'phaseBefore' },
-                silent: true,
-                forced: true,
-                priority: 996,
-                content() {
-                    if (!player.$.shengya) {
-                        player.$.shengya = true;
-                        player.unmarkSkill('shengya');
-                    }
+            lost: {
+                mark: true,
+                marktext: "卒",
+                intro: {
+                    name: '职业生涯结束',
+                    content(storage, player, skill) {
+                        return '『职业生涯』失效直到下个回合开始';
+                    },
                 },
-            },
+            }
         }
-    },
+    }).setI(true),
     liangshan: {
         init(player, skill) {
             if (!player.$[skill]) player.$[skill] = [];
@@ -6589,20 +6576,30 @@ export default {
         },
         logTarget: 'player',
         content: [() => {
-            ;
             Evt.targets = [player];
             Evt.targets.add(trigger.player);
-            Evt.num = player.$.fuyou ? 2 : 1;
+            if (!player.$.fuyou && Evt.targets.length > 1) {
+                player.chooseTarget('选择一名角色回复体力', true, function (card, player, target) {
+                    return _status.event.pretargets.includes(target)
+                })
+                    .set('ai', get.$a2)
+                    .set('pretargets', Evt.targets);
+            }
         }, () => {
-            ;
+            if (!player.$.fuyou && Evt.targets.length > 1) {
+                Evt.targets = result.targets.slice(0)
+            }
+        }, () => {
             Evt.target = Evt.targets.shift();
-            Evt.recover = Evt.target.recover(Evt.num);
+            Evt.recover = Evt.target.recover();
         }, () => {
-            ;
-            if (!Evt.recover.result)
-                Evt.target.draw(Evt.num);
-            if (Evt.targets.length)
-                Evt.goto(1);
+            if (!Evt.recover.result) {
+                Evt.target.draw(2);
+            }
+            if (Evt.targets.length) {
+                game.delayx();
+                Evt.goto(2);
+            }
         }],
         ai: {
             threaten: 1.6,
@@ -6632,13 +6629,28 @@ export default {
         content: [() => {
             Evt.targets = [player];
             Evt.targets.add(trigger.source);
-            Evt.num = player.$.fuyou ? 2 : 1;
+            if (!player.$.fuyou && Evt.targets.length > 1) {
+                player.chooseTarget('选择一名角色回复体力', true, function (card, player, target) {
+                    return _status.event.pretargets.includes(target)
+                })
+                    .set('ai', get.$a2)
+                    .set('pretargets', Evt.targets);
+            }
+        }, () => {
+            if (!player.$.fuyou && Evt.targets.length > 1) {
+                Evt.targets = result.targets.slice(0)
+            }
         }, () => {
             Evt.target = Evt.targets.shift();
-            Evt.recover = Evt.target.recover(Evt.num);
+            Evt.recover = Evt.target.recover();
         }, () => {
-            if (!Evt.recover.result) Evt.target.draw(Evt.num);
-            if (Evt.targets.length) Evt.goto(1);
+            if (!Evt.recover.result) {
+                Evt.target.draw(2);
+            }
+            if (Evt.targets.length) {
+                game.delayx();
+                Evt.goto(2);
+            }
         }],
         ai: {
             effect: {
@@ -6659,31 +6671,34 @@ export default {
             player.$.fuyou = true;
             player.awakenSkill('fuyou');
         }, () => {
-            {
-                let roundname = 'tuhui_roundcount';
-                if (player.hasMark(roundname)) {
-                    player.popup('重置');
-                    let next = game.createEvent('resetSkill');
-                    [next.player, next.resetSkill] = [player, 'tuhui']
-                    next.setContent('resetRound');
-                    game.delayx();
-                }
+            let roundname = 'tuhuiA_roundcount';
+            if (player.hasMark(roundname)) {
+                player.draw(3)
+                Evt.drawn = true
+                player.popup('重置');
+                let next = game.createEvent('resetSkill');
+                [next.player, next.resetSkill] = [player, 'tuhuiA']
+                next.setContent('resetRound');
+                game.delayx();
             }
         }, () => {
-            {
-                let roundname = 'tuhuiB_roundcount';
-                if (player.hasMark(roundname)) {
-                    player.popup('重置');
-                    let next = game.createEvent('resetSkill');
-                    [next.player, next.resetSkill] = [player, 'tuhuiB']
-                    next.setContent('resetRound');
-                    game.delayx();
+            let roundname = 'tuhuiB_roundcount';
+            if (player.hasMark(roundname)) {
+                if (!Evt.drawn) {
+                    player.draw(3)
+                    Evt.drawn = true
                 }
+                player.popup('重置');
+                let next = game.createEvent('resetSkill');
+                [next.player, next.resetSkill] = [player, 'tuhuiB']
+                next.setContent('resetRound');
+                game.delayx();
             }
         }, () => {
             game.filterPlayer(cur => {
                 cur.addTempSkill('fuyou2');
             });
+            game.delayx();
         }],
         ai: {
             order(item, player) {
@@ -9538,6 +9553,9 @@ export default {
         filter(Evt, player) {
             return player.countDiscardableCards(Evt.player, 'hej') > 0;
         },
+        check(Evt, player) {
+            return player === Evt.player ? player.countDiscardableCards(Evt.player, 'j') : get.attitude(player, Evt.player)
+        },
         logTarget: 'player',
         content: [() => {
             Evt.target = trigger.player
@@ -9550,7 +9568,7 @@ export default {
             }
         }],
         derivation: 'lingxun'
-    }).setT({ global: 'phaseBegin' }),
+    }).setT({ global: 'phaseZhunbeiBegin' }),
     lingxun: new toSkill('mark', {
         marktext: '醺',
         intro: {
@@ -13965,7 +13983,7 @@ export default {
         }]
     },
     //ccm
-    qijian: {
+    qijian: new toSkill('trigger', {
         audio: 4,
         trigger: { global: 'useCardAfter' },
         filter(Evt, player) {
@@ -13989,21 +14007,29 @@ export default {
             }).set('ai1', card => {
                 let player = _status.event.player;
                 let useBy = _status.event.useBy;
-                if (get.tag(card, 'damage') && useBy.group == 'qun' && player.hasZhuSkill('jushi')) return get.order(card) + 10;
+                if (get.tag(card, 'damage') && useBy.group === player.group) return get.order(card) + 10;
                 return get.order(card);
             }).set('useBy', trigger.player).set('logSkill', 'qijian').set('targetRequired', true);
         }, () => {
             if (result.bool) {
                 if (!player.hasHistory('sourceDamage', evt => evt.card.cardid == result.card.cardid && result.targets.includes(evt.player))) {
                     player.draw();
-                    if (trigger.player.group != 'qun' || !player.hasZhuSkill('jushi')) player.addTempSkill('qijian_lost');
                 }
+                if (trigger.player.group !== player.group) player.addTempSkill('qijian_lost');
             }
         }],
         subSkill: {
-            lost: {}
+            lost: {
+                marktext: "鉴",
+                intro: {
+                    name: '查房结束',
+                    content(storage, player, skill) {
+                        return '『起鉴』失效直到下个回合开始';
+                    },
+                },
+            }
         }
-    },
+    }),
     yizhan: {
         subSkill: {
             count: {
@@ -14044,7 +14070,8 @@ export default {
         filter(Evt, player) {
             if (Evt.player.$.yizhan) return false;
             if (Evt.player.isDying()) return false;
-            return Evt.yizhan == true;
+            if (player.countCards() >= player.getHandcardLimit()) return false;
+            return Evt.yizhan === true;
         },
         skillAnimation: true,
         animationColor: 'fire',
@@ -14068,9 +14095,6 @@ export default {
                     return num + game.countPlayer(cur => cur.group && cur.group == 'qun');
             },
         },
-        ai: {
-            combo: 'qijian'
-        }
     },
     //Buff
     shangsheng: {
@@ -16485,8 +16509,8 @@ export default {
                         return get.color(card) === _status.event.color || get.type2(card) === _status.event.cardtype;
                     })
                     .set('ai', card => get.unuseful2(card))
-                    .set('color',result.color)
-                    .set('cardtype',get.type2(Evt.card))
+                    .set('color', result.color)
+                    .set('cardtype', get.type2(Evt.card))
             }
         }, () => {
             if (result.cards?.length) {

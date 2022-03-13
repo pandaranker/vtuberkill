@@ -1356,8 +1356,10 @@ module.exports = function (element, _mode, _message) {
       //part: 初始化ui.css.menu和ui.css.default样式
       ui.css = {
         menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
-          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout');
-          proceed2();
+          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout', function () {
+            init.css(lib.assetURL + 'layout/default', 'resource');
+            proceed2();
+          });
         })
       };
       //part: config for different type of devices(PC, mobile devices).
@@ -1903,12 +1905,12 @@ module.exports = function (element, _mode, _message) {
           }
           else {
             ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-            if(!ui.backgroundFlash){
-                ui.backgroundFlash = ui.create.div('.background', ui.background);
-                ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
-                ui.backgroundFlash.style.mixBlendMode = 'overlay';
-                ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
-                ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+            if (!ui.backgroundFlash) {
+              ui.backgroundFlash = ui.create.div('.background', ui.background);
+              ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+              ui.backgroundFlash.style.mixBlendMode = 'overlay';
+              ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+              ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
             }
           }
           if (lib.config.image_background_blur) {
@@ -2718,17 +2720,17 @@ module.exports = function (element, _mode, _message) {
       function UTF8ToStr(arr) {
         let val = ''
         arr.forEach(item => {
-            if (item < 127) {
-                val += String.fromCharCode(item)
-            } else {
-                val += '%' + item.toString(16).toUpperCase()
-            }
+          if (item < 127) {
+            val += String.fromCharCode(item)
+          } else {
+            val += '%' + item.toString(16).toUpperCase()
+          }
         })
         console.log(val)
         try {
-            return decodeURI(val)
+          return decodeURI(val)
         } catch (err) {
-            return val
+          return val
         }
       }
       lib.node.clients.push(client);
@@ -2743,7 +2745,7 @@ module.exports = function (element, _mode, _message) {
         var message;
         try {
           // console.log(messagestr)
-          if(messagestr.data&&messagestr.data.length){
+          if (messagestr.data && messagestr.data.length) {
             messagestr = UTF8ToStr(messagestr.data)
           }
           message = JSON.parse(messagestr);

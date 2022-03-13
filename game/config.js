@@ -6,7 +6,7 @@ window.config={
 	forbidchess:['hetaihou'],
 	forbidboss:['caiwenji'],
 	forbiddouble:['zhugedan','dongzhuo','wutugu'],
-	forbidthreecard:['qiankunbiao'],
+	forbidthreecard:[],
 	all:{
 		sgscharacters:['Beginner'],
 		sgscards:['standard','extra'],

@@ -7825,8 +7825,34 @@
         this.node.name.dataset.nature = get.groupnature(this.group);
         lib.setIntro(this);
         this.node.name.innerHTML = get[get.slimName2 ? 'slimName2' : 'slimName'](character);
-        if (this.classList.contains('minskin') && this.node.name.querySelectorAll('br').length >= 4) {
-          this.node.name.classList.add('long');
+        if(/^[a-zA-Z]+$/.test(this.node.name.innerHTML)){
+          this.node.name.classList.add('English');
+        }
+        if (this.classList.contains('minskin') ) {
+          if(nameLength <= 1){
+            this.node.name.classList.add('short');
+          }
+          else if(nameLength == 2){
+            this.node.name.classList.add('lowshort');
+          }
+          else if(nameLength == 4 || nameLength == 5){
+            this.node.name.classList.add('lowlong');
+          }
+          else if(nameLength >= 6){
+            this.node.name.classList.add('long');
+          }
+        }
+        else if (this.classList.contains('fullskin') ){
+          let nameLength = this.node.name.querySelectorAll('br').length
+          if(nameLength <= 1){
+            this.node.name.classList.add('short');
+          }
+          else if(nameLength == 2){
+            this.node.name.classList.add('lowshort');
+          }
+          else if(nameLength >= 6){
+            this.node.name.classList.add('long');
+          }
         }
         if (info[4].contains('hiddenSkill') && !this.noclick) {
           if (!this.hiddenSkills) this.hiddenSkills = [];

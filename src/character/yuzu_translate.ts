@@ -76,7 +76,7 @@ export default {
     sishu_append: lib.figurer(`一组花色的牌：即四张花色各不相同的牌；特性：自肃（不能以其他方式使用基本牌）`),
 
     Nyanners: `Nyanners`,
-    Nyanners_ab: `喵喵人`,
+    // Nyanners_ab: `喵喵人`,
     shenghuo: `圣火`,
     shenghuo_info: `出牌阶段限X次，你可以观看牌堆顶与底各X张牌，然后将其中的任意张置于牌堆另一端。（X为你上一次受到伤害的伤害值+1）`,
     shenghuo_append: lib.figurer(`特性：控顶`),
@@ -86,7 +86,7 @@ export default {
     miaoche_info: `主公技 英V于弃牌阶段弃置牌后，你可以获得其中一张弃牌。`,
 
     Ironmouse: `Ironmouse`,
-    Ironmouse_ab: `铁耗子`,
+    // Ironmouse_ab: `铁耗子`,
     haosun: `耗损`,
     haosun_info: `回合开始时，你可以选择一项：<br>回复1点体力以重置此技能并修改『伴猫』，然后你本回合摸牌量-1；声明一种你可以使用的基本牌并令你不能使用之，然后你本回合摸牌量+1。`,
     banmao: `伴猫`,
@@ -95,7 +95,7 @@ export default {
     banmao_rewrite_info: `锁定技 你造成或受到来自【杀】的伤害时，来源摸一张牌。`,
 
     Froot: `Froot`,
-    Froot_ab: `巫妖`,
+    // Froot_ab: `巫妖`,
     exiao: `恶哮`,
     exiao_info: `你使用通常锦囊牌时，可以进行一次判定，若结果为黑色，其不能被【无懈可击】抵消且你获得判定牌。`,
     jinmei: `禁魅`,
@@ -103,7 +103,7 @@ export default {
     jinmei_append: lib.figurer(`特性：干扰`),
 
     Veibae: `Veibae`,
-    Veibae_ab: `白恶魔`,
+    // Veibae_ab: `白恶魔`,
     zhexun: `哲循`,
     zhexun0: `哲循`,
     zhexun_info: `你使用的一张牌若与你本回合已使用的所有牌颜色相同，其不可被响应且可以额外指定一个目标。`,
@@ -111,7 +111,7 @@ export default {
     yuci_info: `锁定技 若场上的其他角色均为同一性别，你每个阶段首次摸牌量+1。`,
 
     Melody: `Projekt Melody`,
-    Melody_ab: `Mel`,
+    Melody_ab: `Melody`,
     kuangbiao: `狂飙`,
     kuangbiao_info: `锁定技 你的♥手牌视为【无中生有】。你使用的♥手牌结算后，你失去不为1的一点体力并将此牌置于武将牌上。你已受伤时，可以将『狂飙』牌如手牌般使用或打出。`,
     leizhu: `磊诛`,
@@ -120,7 +120,7 @@ export default {
     tonggan_info: `主公技 锁定技 与你势力相同的角色，在奇数/偶数轮次内，每阶段首次摸牌量-1/+1。`,
 
     Silvervale: `Silvervale`,
-    Silvervale_ab: `樱花狼灵`,
+    // Silvervale_ab: `樱花狼灵`,
     yingling: `樱聆`,
     yingling_info: `锁定技 你每阶段首次摸牌时，进行一次判定，若结果为红色，本次摸牌量+1。`,
     duchun: `渎纯`,
@@ -425,8 +425,8 @@ export default {
     Miya_ab: `喵田弥夜`,
     maoxiao: `猫消`,
     maoxiao_info: `一个回合结束时，若你的手牌数为全场最多，你可以依次使用1～3张牌，根据使用的牌数获得效果：<br>
-    &nbsp;1张～令自己横置并受到一点火焰伤害
-    &nbsp;2张～回复一点体力
+    &nbsp;1张～令自己横置并受到一点火焰伤害<br>
+    &nbsp;2张～回复一点体力<br>
     &nbsp;3张～摸两张牌并翻面`,
     jianfa: `键伐`,
     jianfa_info: `出牌阶段限一次，你可以将场上的一张攻击范围≥3的武器牌加入手牌。`,
@@ -609,7 +609,7 @@ export default {
     yiqu: `亦趋`,
     yiqu_info: `若你在其他角色执行技能的过程中被指定为目标，你可以获得该技能直到下次进入濒死状态。`,
     wanxian: `挽弦`,
-    wanxian_info: `锁定技 你令其他角色进入濒死状态时，你失去来自『亦趋』额外技能并摸等量的牌。`,
+    wanxian_info: `锁定技 你令其他角色进入濒死状态时，你失去来自『亦趋』的额外技能并摸等量的牌。`,
     zouhun: `奏魂`,
     zouhun_info: `出牌阶段限一次，你可以使用吉他演奏一次乐曲，根据得分摸0~4张牌（乐曲从《说爱你》、《花海》、《下雨了是我在想你》、《水母之歌》、《甜美过滤》中随机抽取）`,
 
@@ -654,7 +654,7 @@ export default {
 
     Ciyana: `希亚娜`,
     yankui: `魇窥`,
-    yankui_info: `其他角色的准备阶段，你可以弃置一张与本轮以此法弃置的牌类型均不同的牌，然后观看其手牌，展示并获得其中一张。若此牌为：非基本牌，本回合其跳过判定阶段与弃牌阶段；基本牌，本回合其可以多使用一张【杀】。`,
+    yankui_info: `其他角色的准备阶段，你可以弃置一张与本轮以此法弃置的牌类型均不同的牌，然后观看其手牌，展示并获得其中一张。若此牌为：<br>非基本牌，本回合其跳过判定阶段与弃牌阶段；基本牌，本回合其可以多使用一张【杀】。`,
 
     YaotomeNoe: `八乙女のえ`,
     huiyuan: `回援`,
@@ -680,7 +680,7 @@ export default {
 
     TakatsukiRitsu: `高槻律`,
     shengya: `生涯`,
-    shengya_info: `<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你亮出牌堆顶一张牌并获得之。若你亮出了♣牌，你失去一点体力，并且失去此技能直到下个回合开始。`,
+    shengya_info: `<font color=#f33>锁定技</font> 出牌阶段内，你使用的一张红色牌后，你亮出牌堆顶一张牌并获得之。若你亮出了♣牌，你失去一点体力，此技能失效直到下个回合开始。`,
     shengya_append: lib.figurer(`特性：易上手`),
     liangshan: `汉歌`,
     liangshan_info: `其他角色在你的回合内第一次摸牌后，你可以将牌堆顶牌置于你的武将牌上。一名角色回合开始或濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。`,
@@ -916,7 +916,7 @@ export default {
     shengping_info: `其他角色弃置你的牌时，你可以与其各摸一张牌。`,
     shengping_append: lib.figurer(`特性：联动`),
     jiushuang: `酒霜`,
-    jiushuang_info: `一名角色的回合开始时，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置。`,
+    jiushuang_info: `一名角色的准备阶段，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置。`,
     jiushuang_append: lib.figurer(`特性：易上手`),
     lingxun: `灵醺`,
     lingxun_info: `锁定技 你手牌中的【酒】视为【决斗】。`,
@@ -1034,14 +1034,14 @@ export default {
     tuhui: `兔烩`,
     tuhuiA: `兔烩(伤)`,
     tuhuiB: `兔烩(受)`,
-    tuhui_info: `每轮每项限一次。你对其他角色造成伤害或其他角色对你造成伤害后，你可以与其各回复（1）点体力；无法回复体力的角色摸（1）张牌。`,
+    tuhui_info: `每轮每项限一次。你对其他角色造成伤害或其他角色对你造成伤害后，你可以令你（或）其回复一点体力；无法回复体力的角色摸两张牌。`,
     fuyou: `复幼`,
-    fuyou_info: `限定技 出牌阶段，你可以令所有角色无法回复体力直到回合结束，重置『兔烩』并使之的（）值+1。`,
+    fuyou_info: `限定技 出牌阶段，你可以令所有角色无法回复体力直到回合结束，将『兔烩』（或）改为（与），若『兔烩』已发动，你摸三张牌并重置『兔烩』。`,
 
     Rynia: `莱妮娅Rynia`,
     Rynia_ab: `莱妮娅`,
     yinxu: `吟虚`,
-    yinxu_info: `转换技 你可以将一张①锦囊牌②装备牌当作无视距离和次数限制的【杀】使用；以此使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。`,
+    yinxu_info: `转换技 你可以将一张①锦囊牌②装备牌当作无视距离和次数限制的【杀】使用；以此法使用的【杀】被抵消时，你可以令你或目标调整手牌至上限。`,
     yinxu_append: lib.figurer(`特性：易上手 爆发`),
 
     airuisi: `艾瑞思`,

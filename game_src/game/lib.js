@@ -64,14 +64,6 @@ module.exports = {
           },
         }
       },
-      //引导
-      yindao: {
-        name: '引导',
-        config: {
-          update: function (config, map) {
-          },
-        }
-      },
       // richer: {
       //     name: '大富翁',
       //     connect: {
@@ -264,7 +256,7 @@ module.exports = {
             restart: true,
           },
           connect_change_choice: {
-            name: '点将模式',
+            name: '自选模式',
             init: false,
             frequent: true,
             restart: true,
@@ -1141,6 +1133,12 @@ module.exports = {
             else {
               map.connect_replace_handcard.hide();
             }
+            if (config.connect_versus_mode == '2v2') {
+              map.connect_change_choice.show();
+            }
+            else {
+              map.connect_change_choice.hide();
+            }
           },
           connect_versus_mode: {
             name: '游戏模式',
@@ -1184,6 +1182,12 @@ module.exports = {
               '4': '4人',
               '5': '5人',
             }
+          },
+          connect_change_choice: {
+            name: '自选模式',
+            init: false,
+            frequent: true,
+            restart: true,
           },
         },
         config: {
@@ -2113,6 +2117,14 @@ module.exports = {
             else {
               map.enable_jin.show();
             }
+          },
+        }
+      },
+      //引导
+      yindao: {
+        name: '引导',
+        config: {
+          update: function (config, map) {
           },
         }
       },

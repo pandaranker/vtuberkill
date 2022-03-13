@@ -2362,7 +2362,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			guangsuxiabo_info: `一个阶段结束时，若你于此阶段受到过伤害或失去了两张以上的牌，你可以摸一张牌并结束当前回合。`,
 
 			SisterClearie: `修女·克蕾雅`,
-			SisterClearie_ab: `修女克蕾雅`,
 			zhenxin: `真信之诚`,
 			zhenxin_info: `锁定技 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。`,
 			sczhuwei: `助危之心`,
@@ -2403,7 +2402,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jiaku_append: lib.figurer(`特性：无损拼点 易上手`),
 
 			LizeHelesta: `莉泽·赫露艾斯塔`,
-			LizeHelesta_ab: `莉泽`,
+			// LizeHelesta_ab: `莉泽`,
 			shencha: `权力审查`,
 			shencha_info: `准备阶段，你可以跳过本回合的摸牌阶段并观看牌堆顶3张牌，获得其中至多两张基本牌，并将其余牌置于牌堆底。若你的装备区没有牌，则你可装备其中的至多两张装备牌，若你的判定区有牌，则每有一张牌你便多观看一张。`,
 			helesta: `赫露圣剑`,

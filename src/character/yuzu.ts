@@ -116,8 +116,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
 			/**文静 */
 			wenjing: ['female', 'Tencent', 4, ['zaiying', 'zhengen'], ['guoV']],
-			/**星瞳 */
-			xingtong: ['female', 'Tencent', 4, ['jiezou', 'xtguyong'], ['guoV']],
 
 			/**乌拉の帝国 */
 			wula: ['female', 'lucca', 4, ['dizuo', 'hongtie'], ['guoV']],
@@ -144,12 +142,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**胡桃Usa */
 			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
-			/**玛安娜Myanna */
-			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
-			/**花花Haya */
-			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
-			/**咲间妮娜 */
-			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
 			/**满月 */
 			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**白桃shirako */

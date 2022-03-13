@@ -199,7 +199,6 @@
 
     &.playerbright {
         filter: brightness(1.2);
-        -webkit-filter: brightness(1.2);
     }
 
     &.playerflip {
@@ -229,15 +228,17 @@
 }
 
 
-.player.replaceme {
-    animation: replaceme 0.5s;
-    -webkit-animation: replaceme 0.5s
+.player{
+    &.replaceme {
+        animation: replaceme 0.5s;
+        -webkit-animation: replaceme 0.5s
+    }
+    &.replaceenemy {
+        animation: replaceenemy 0.5s;
+        -webkit-animation: replaceenemy 0.5s
+    }
 }
 
-.player.replaceenemy {
-    animation: replaceenemy 0.5s;
-    -webkit-animation: replaceenemy 0.5s
-}
 
 .player.dead,
 .player.likedead,
@@ -252,6 +253,10 @@
     -webkit-filter: grayscale(1);
 }
 
+.name.English {
+    transform-origin: top left;
+    transform: translateX(1.1em) rotate(85deg);
+}
 
 #arena.slim_player {
     .player {
@@ -260,6 +265,22 @@
             top: 21px;
             &.name2{
                 left: 78px
+            }
+            &.short {
+                font-size: 150%;
+                line-height: 160%;
+            }
+            &.lowshort {
+                font-size: 140%;
+                line-height: 150%;
+            }
+            &.lowlong {
+                transform: scale(0.95);
+                top: 18px;
+            }
+            &.long {
+                transform: scale(0.85);
+                top: 12px;
             }
         }
         &.minskin {
@@ -287,12 +308,24 @@
             font-size: 18px;
             line-height: 120%;
             top: 15px;
-        }
-
-        >.name.long {
-            transform: scale(0.9);
             transform-origin: top left;
-            top: 13px;
+            &.short {
+                font-size: 120%;
+                transform: scale(1.2);
+            }
+            &.lowshort {
+                transform: scale(1.2);
+            }
+            &.lowlong {
+                transform: scale(0.9);
+                line-height: 110%;
+                top: 13px;
+            }
+            &.long {
+                transform: scale(0.8);
+                line-height: 110%;
+                top: 10px;
+            }
         }
     }
 

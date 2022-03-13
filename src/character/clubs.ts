@@ -3000,7 +3000,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yuenan_info: `摸牌阶段，你可以改为亮出牌堆顶的五张牌，使用其中至多两张牌。`,
 
 			Yomemi: `Yomemi`,
-			Yomemi_ab: `ヨメミ`,
 			mokuai: `模块搭载`,
 			mokuai_info: `锁定技 你的【杀】和『致命药剂』可指定的目标数为X；你每次回复体力固定回复X点。（X为你装备区内牌数且至少为1）。`,
 			yaoji: `致命药剂`,
@@ -3057,12 +3056,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			HinataCocomi: `阳向心美`,
 			qijian: `起鉴`,
-			qijian_info: `其他角色于自己的回合使用一张指定目标的红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌并失去此技能直到本回合结束。`,
+			qijian_info: `其他角色于自己的回合使用一张指定目标的红色牌后，你可以跟随之使用一张牌，若你未以此牌造成伤害，你摸一张牌；若其势力与你不同，此技能失效直到本回合结束。`,
 			qijian_append: lib.figurer(`特性：联动`),
 			yizhan: `翼展`,
-			yizhan_info: `每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为「群」。`,
+			yizhan_info: `每名角色限一次，你令其脱离濒死状态时，你可以摸牌至手牌上限并将其势力改为与你相同。`,
 			jushi: `聚识`,
-			jushi_info: `<font color=#fae>主公技</font> 锁定技 你于群势力角色的回合不会因『起鉴』的效果而失去『起鉴』；场上每有一名群势力角色，你的手牌上限+1。`,
+			jushi_info: `<font color=#fae>主公技</font> 锁定技 场上每有一名势力与你相同的角色，你的手牌上限+1。`,
 
 			KaguraNana: `神乐七奈`,
 			DDzhanshou: `DD斩首`,
@@ -3071,7 +3070,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			DDzhanshou_append: lib.figurer(`特性：连营 破军`),
 			xinluezhili: `辛略之力`,
 			xinluezhili_draw: `辛略之力`,
-			xinluezhili_info: `主公技 当其他角色因『DD斩首』失去最后一张手牌时，其可令你摸一张牌`,
+			xinluezhili_info: `主公技 当其他角色因『DD斩首』失去最后一张手牌时，其可令你摸一张牌。`,
 
 			HanazonoSerena: `花园Serena`,
 			HanazonoSerena_ab: `花园セレナ`,
@@ -3092,7 +3091,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yutuo_info: `每轮限一次，你可以令你受到的伤害-1，然后若你的<防具栏>没有牌，你可废除<防具栏>并以一个未废除的装备栏修改<>，重置此技能。`,
 			yutuo_append: lib.figurer(`特性：减伤`),
 
-			bingtang: `进击的冰糖`,
+			bingtang: `冰糖IO`,
 			bingtang_ab: `冰糖`,
 			xiou: `戏偶`,
 			xiou_info: `准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。`,

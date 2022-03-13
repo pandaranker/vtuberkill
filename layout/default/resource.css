@@ -1,0 +1,142 @@
+
+.card>.cardframebg[data-auto='gold']{
+	background-image:url('../../theme/style/card/image/border_gold.jpg');
+}
+.card>.cardframebg[data-auto='silver']{
+	background-image:url('../../theme/style/card/image/border_silver.jpg');
+}
+.card>.cardframebg[data-auto='bronze']{
+	background-image:url('../../theme/style/card/image/border_bronze.jpg');
+}
+.card>.cardframebg[data-auto='wood']{
+	background-image:url('../../theme/style/card/image/border_wood.jpg');
+}
+.card>.cardframebg[data-auto='map']{
+	background-image:url('../../theme/style/card/image/border_map.jpg');
+}
+
+
+#window .player>.framebg[data-auto="gold"],
+#window #arena.long.mobile:not(.fewplayer) .player[data-position='0']>.framebg[data-auto="gold"]{
+	display:block;
+	background-image:url('../../theme/style/player/gold1.png');
+}
+#window #arena.long:not(.fewplayer) .player>.framebg[data-auto="gold"],
+#arena.oldlayout .player>.framebg[data-auto="gold"]{
+	display:block;
+	background-image:url('../../theme/style/player/gold3.png');
+}
+#window .player>.framebg[data-auto="silver"],
+#window #arena.long.mobile:not(.fewplayer) .player[data-position='0']>.framebg[data-auto="silver"]{
+	display:block;
+	background-image:url('../../theme/style/player/silver1.png');
+}
+#window #arena.long:not(.fewplayer) .player>.framebg[data-auto="silver"],
+#arena.oldlayout .player>.framebg[data-auto="silver"]{
+	display:block;
+	background-image:url('../../theme/style/player/silver3.png');
+}
+#window .player>.framebg[data-auto="bronze"],
+#window #arena.long.mobile:not(.fewplayer) .player[data-position='0']>.framebg[data-auto="bronze"]{
+	display:block;
+	background-image:url('../../theme/style/player/bronze1.png');
+}
+#window #arena.long:not(.fewplayer) .player>.framebg[data-auto="bronze"],
+#arena.oldlayout .player>.framebg[data-auto="bronze"]{
+	display:block;
+	background-image:url('../../theme/style/player/bronze3.png');
+}
+
+
+div[data-decoration="gold"]::before,
+#arena:not(.autoframe)[data-framedecoration="gold"] .player>.framebg::before{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/gold_d1.png');
+	background-size:100% 100%;
+	width:41px;
+	height:80px;
+	left:-13px;
+	top:-19px;
+}
+.button[data-decoration="gold"]::before{
+	transform:scale(0.75) translate(-3px,-3px);
+}
+div[data-decoration="gold"]::after,
+#arena:not(.autoframe)[data-framedecoration="gold"] .player>.framebg::after{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/gold_d2.png');
+	background-size:100% 100%;
+	width:75px;
+	height:32px;
+	left: auto;
+	top: auto;
+	right:-8px;
+	bottom:-8px;
+}
+.button[data-decoration="gold"]::after{
+	transform: scale(0.75) translate(10px,2px);
+}
+
+div[data-decoration="silver"]::before,
+#arena:not(.autoframe)[data-framedecoration="silver"] .player>.framebg::before{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/silver_d1.png');
+	background-size:100% 100%;
+	width:41px;
+	height:61px;
+	left:-13px;
+	top:-14px;
+}
+.button[data-decoration="silver"]::before{
+	transform:scale(0.75) translate(-2px,-3px);
+}
+div[data-decoration="silver"]::after,
+#arena:not(.autoframe)[data-framedecoration="silver"] .player>.framebg::after{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/silver_d2.png');
+	background-size:100% 100%;
+	width:69px;
+	height:21px;
+	left: auto;
+	top: auto;
+	right:-8px;
+	bottom:-9px;
+}
+.button[data-decoration="silver"]::after{
+	transform: scale(0.75) translate(10px,0px);
+}
+
+div[data-decoration="bronze"]::before,
+#arena:not(.autoframe)[data-framedecoration="bronze"] .player>.framebg::before{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/bronze_d1.png');
+	background-size:100% 100%;
+	width:40px;
+	height:80px;
+	left:-13px;
+	top:-18px;
+}
+.button[data-decoration="bronze"]::before{
+	transform:scale(0.75) translate(-2px,-3px);
+}
+div[data-decoration="bronze"]::after,
+#arena:not(.autoframe)[data-framedecoration="bronze"] .player>.framebg::after{
+	content:"";
+	position:absolute;
+	background-image:url('../../theme/style/player/bronze_d2.png');
+	background-size:100% 100%;
+	width:69px;
+	height:21px;
+	left: auto;
+	top: auto;
+	right: -8px;
+	bottom: -5px;
+}
+.button[data-decoration="bronze"]::after{
+	transform:scale(0.75) translate(9px,2px);
+}
