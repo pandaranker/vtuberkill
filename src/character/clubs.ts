@@ -32,6 +32,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			OtomeOto: ['female', 'paryi', 3, ['yuxia', 'lianjue', 'changxiang'], ['zhu']],
 			HisekiErio: ['female', 'paryi', 4, ['huange', 'qishi', 'yongtuan'], ['zhu']],
 			HanazonoSerena: ['female', 'paryi', 4, ['jiumao', 'enfan', 'shiqi'], ['zhu']],
+			/**甘城なつき */
+			NachoNeko: ['female', 'painter', 4, ['cirong', 'maoyu'], ['riV']],
+			/**狗妈 */
 			KaguraNana: ['female', 'painter', 3, ['DDzhanshou', 'xinluezhili'], ['zhu','doublegroup:painter:paryi:holo']],
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
@@ -105,7 +108,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterSort: {
 			clubs: {
 				paryi2: ['Paryi', 'TakatsukiRitsu', 'MorinagaMiu', 'HanazonoSerena', 'OtomeOto', 'HisekiErio', 'MashiroKanon'],
-				vshojo2: ['Nyanners', 'Veibae', 'Ironmouse', 'Froot'],
+				vshojo2: ['Nyanners', 'Veibae', 'Ironmouse', 'Froot','Silvervale'],
 				MeUmy: ['Merry', 'Umy'],
 			}
 		},
@@ -3127,33 +3130,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			duixian_append: lib.figurer(`特性：强化出杀 卖血 易上手`),
 			gutai: `守峡`,
 			gutai_info: `当一张牌造成伤害后，若你为使用者或目标之一，你可以取消此牌的剩余目标。`,
-
-
-			His_HoshinoNiya: `星野妮娅·史官`,
-			His_HoshinoNiya_ab: `星野·史官`,
-			shushi: `书史`,
-			shushi_info: `你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）`,
-			shushi_append: lib.figurer(`特性：观星`),
-			zengzhi: `增殖`,
-			zengzhi_info: `当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。`,
-
-			Qiankesaier: `茜科塞尔`,
-			Qiankesaier_info: `茜科塞尔`,
-			shuangshoujiaoying: `双首角鹰`,
-			shuangshoujiaoying_gai: `双首角鹰`,
-			shuangshoujiaoying_info: `当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。`,
-			shuangshoujiaoying_gai_info: `当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。`,
-			anyingxuemai: `暗影血脉`,
-			anyingxuemai_info: `<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将『双首角鹰』的“【闪】”改为“红色牌”。`,
-
-			heichuan: `原初黑川`,
-			zhengtibuming: `正体不明`,
-			zhengtibuming_info: `游戏开始时，你随机获得三张武将牌作为「替身」，然后亮出其中一张。获得亮出「替身」的通常技，且性别和势力视为与「替身」相同。回合开始或结束时，你可以选择一项：<br>
-			更改亮出的「替身」；或随机更换一张「替身」。当你受到1点伤害后，你可以获得一张新的「替身」。`,
-			lunhuizuzhou: `轮回诅咒`,
-			lunhuizuzhou_info: `锁定技 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。`,
-			mingyunniezao: `命运捏造`,
-			mingyunniezao_info: `主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。`,
 
 			NoiR: `NoiR`,
 			mozouqiyin: `默奏起音`,

@@ -11,12 +11,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Bacharu: ['male', 'dotlive', 4, ['zuodun', 'baidao']],
 			/**小明 */
 			MiraiAkari: ['female', 'qun', 4, ['shiyilijia', 'seqinghuashen']],
+			/**辉夜月 */
+			KaguyaLuna: ['female', 'qun', 3, ['jiajiupaidui', 'kuangzuiluanwu']],
+			/**pph */
+			PinkyPopHepburn: ['female', 'qun', 4, ['pphpanfeng', 'lanyue']],
+
 			/**小希小桃 */
 			XiaoxiXiaotao: ['female', 'xuyan', 3, ['yipengyidou', 'renleiguancha'], ['guoV']],
 			/**兰音 */
 			Reine: ['female', 'xuyan', 4, ['yueyao', 'kongling'], ['guoV']],
-			/**辉夜月 */
-			KaguyaLuna: ['female', 'qun', 3, ['jiajiupaidui', 'kuangzuiluanwu']],
+			/**小柔 */
+			Xiaorou: ['female', 'xuyan', 3, ['rouqing', 'guangying'], ['guoV']],
+
 			/**兔妈妈 */
 			InabaHaneru: ['female', 'nanashi', '2/3', ['jiance', 'chanbing', 'buyu'], ['zhu']],
 			/**BFM */
@@ -126,7 +132,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
 			/**咲间妮娜 */
 			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
-			
+
 			/**吉诺儿kino */
 			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],
 			/**唐九夏 */
@@ -142,8 +148,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterSort: {
 			vtuber: {
 				asoul2: ['Ava', 'Bella', 'Carol', 'Diana', 'EQueen'],
-				VirtuaReal2: ['Yousa', 'Aza', 'Shaun', 'Miqiutu', , 'Azusa'],
-				psp2: ['Pudding', 'AyanaNana', 'AkiRinco', 'KurenaiAkane', 'Lovely'],
+				VirtuaReal2: ['Yousa', 'Aza', 'Shaun', 'Mayumi', 'xiaoke', 'Azusa', 'Mahiru', 'Chiyuu', 'Mari', 'Ruruna'],
+				psp2: ['Pudding', 'AyanaNana', 'AkiRinco', 'KurenaiAkane', 'Lovely', 'Seki', 'AkumaYuu'],
+				vwp2: ['Kaf', 'Rim', 'IsekaiJoucho', 'Harusaruhi', 'Koko', 'Kafu'],
 			}
 		},
 		characterTitle: {
@@ -1163,9 +1170,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filter(Evt, player) {
 					return player.countCards('h') > 0;
 				},
-				content:[() => {
+				content: [() => {
 					player.chooseToCompare(target).set('small', (get.recoverEffect(target, player, player) > get.recoverEffect(player, target, player) + 1));
-				},() => {
+				}, () => {
 					Evt.loop = 1;
 					if (result.tie) {
 						Evt.finish()
@@ -1175,9 +1182,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.player2 = result.loser;
 					}
 					Evt.cards = [];
-				},() => {
+				}, () => {
 					for (let v of _status.discarded) {
-						if(['basic','trick'].includes(get.type(v))){
+						if (['basic', 'trick'].includes(get.type(v))) {
 							if ((Evt.loop ? Evt.player1 : Evt.player2).hasUseTarget(v)) {
 								Evt.cards.add(v);
 							}
@@ -1199,13 +1206,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}, Evt.cards, dialog.videoId);
 						Evt.dialog = dialog;
 					}
-				},() => {
+				}, () => {
 					let cur = Evt.loop ? Evt.player1 : Evt.player2
 					game.log(cur, '观看了', '#y弃牌堆的牌');
 					cur.chooseButton('是否视为使用其中一张牌？')
 						.set('dialog', Evt.dialog.videoId)
 						.set('ai', (button) => _status.event.player.getUseValue(button.link))
-				},() => {
+				}, () => {
 					if (result.bool && result.links) {
 						let cur = Evt.loop ? Evt.player1 : Evt.player2
 						Evt.cardUse = result.links[0];
@@ -1217,7 +1224,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						Evt.goto(5);
 						Evt.skipUse = true
 					}
-				},() => {
+				}, () => {
 					ui.clear();
 					Evt.dialog.close();
 					_status.dieClose.remove(Evt.dialog);
@@ -1237,11 +1244,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							else return -0.2 + Math.random();
 						});
 					}
-					else if(!Evt.skipUse){
+					else if (!Evt.skipUse) {
 						Evt.finish();
 					}
-				},() => {
-					if (result.bool&&!Evt.skipUse) {
+				}, () => {
+					if (result.bool && !Evt.skipUse) {
 						Evt.goto(2);
 					}
 					else {

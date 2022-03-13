@@ -849,7 +849,11 @@ export default {
                     return Evt.source && player != Evt.source;
                 },
                 content() {
-                    player.discard(player.getEquip(2));
+                    let card = player.getEquip(2)
+                    if(card){
+                        player.discard(card);
+                        player.draw()
+                    }
                 }
             }
         }

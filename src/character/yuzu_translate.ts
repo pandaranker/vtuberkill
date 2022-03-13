@@ -272,11 +272,11 @@ export default {
     ByakuyaMayoi: `白夜真宵`,
     bykuangxin: `狂信`,
     bykuangxin_info: `出牌阶段限一次，你可以进行判定直到出现两次点数为A～10的结果，然后你获得其他判定牌，并根据判定顺序组合（第一次为个位、第二次为十位）执行：<br>
-    ${lib.spanClass(`01～05`, `greentext`)}--摸两张牌增加一点体力上限；
-    ${lib.spanClass(`06～40`, `changetext`)}--回复一点体力；
-    ${lib.spanClass(`41～70`, `bluetext`)}--视为使用一张【决斗】；
-    ${lib.spanClass(`71～95`, `browntext`)}--失去一点体力并弃置手牌至上限；
-    ${lib.spanClass(`96～100`, `legendtext`)}--依次获得其他角色随机一张手牌并扣减一点体力上限。`,
+    ${lib.spanClass(`01~05`, `greentext`)}--摸两张牌增加一点体力上限；
+    ${lib.spanClass(`06~40`, `changetext`)}--回复一点体力；
+    ${lib.spanClass(`41~70`, `bluetext`)}--视为使用一张【决斗】；
+    ${lib.spanClass(`71~95`, `browntext`)}--失去一点体力并弃置手牌至上限；
+    ${lib.spanClass(`96~100`, `legendtext`)}--依次获得其他角色随机一张手牌并扣减一点体力上限。`,
 
     Mamoru: `高原守`,
     shoumi: `密守`,
@@ -424,7 +424,7 @@ export default {
     Miya: `喵田弥夜Miya`,
     Miya_ab: `喵田弥夜`,
     maoxiao: `猫消`,
-    maoxiao_info: `一个回合结束时，若你的手牌数为全场最多，你可以依次使用1～3张牌，根据使用的牌数获得效果：<br>
+    maoxiao_info: `一个回合结束时，若你的手牌数为全场最多，你可以依次使用1~3张牌，根据使用的牌数获得效果：<br>
     &nbsp;1张～令自己横置并受到一点火焰伤害<br>
     &nbsp;2张～回复一点体力<br>
     &nbsp;3张～摸两张牌并翻面`,
@@ -630,18 +630,6 @@ export default {
     gunxun_info: `转换技 出牌阶段，你可以亮出至少一张①红色②黑色手牌使之视为①【杀】②【闪】，然后你可令装备区牌数少于本次亮出牌数的一名角色失去所有非锁定技直到回合结束。`,
     ming_gunxunshan: `棍训:闪`,
     ming_gunxunsha: `棍训:杀`,
-
-    Mikawa: `三川`,
-    zhezhuan: `辙转`,
-    zhezhuan_info: `每回合限一次，你可以将一张非基本牌当作具有任意应变标签的同名牌或基本牌使用。`,
-    setu: `涩涂`,
-    setu_info: `出牌阶段限一次，你可以将任意张点数之和小于18的手牌置于武将牌上。然后若你武将牌上牌之乘积大于100，你将这些牌置入弃牌堆，摸等量的牌，并对一名角色造成1点伤害。`,
-
-    Sakurai: `樱井林`,
-    junxu: `军序`,
-    junxu_info: `你每个回合使用第X张牌时，可以摸两张牌或回复一点体力。（X为你的体力值）`,
-    jingniang: `井酿`,
-    jingniang_info: `出牌阶段，你可以弃一张牌，令你的【杀】不计入次数且伤害+1，直到本回合结束。`,
 
     ŌokamiMio: `大神澪`,
     niwei: `逆位`,

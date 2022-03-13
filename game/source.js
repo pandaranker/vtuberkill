@@ -101,6 +101,7 @@ window.noname_source_list=[
 	'theme/style/hp/glass.css',
 	'theme/style/hp/ol.css',
 	'theme/style/hp/round.css',
+	'theme/style/hp/hpbutton.css',
 	// 'theme/style/hp/xinglass.css',
 	// 'theme/style/hp/xinround.css',
 ];

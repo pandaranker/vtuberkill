@@ -9353,8 +9353,7 @@ export default {
                                 if (evt && evt.name === 'phaseUse') {
                                     let next = game.createEvent('duotianExtraStage');
                                     next.player = player;
-                                    next.setContent(function () {
-                                    }, () => {
+                                    next.setContent([() => {
                                         game.delay(1)
                                         player.setAvatar('KurumiUsa', 'KurumiUsa1')
                                     }, () => {
@@ -9364,7 +9363,7 @@ export default {
                                         player.phaseUse()
                                     }, () => {
                                         player.setAvatar('KurumiUsa', 'KurumiUsa')
-                                    });
+                                    }]);
                                     _status.event.next.remove(next);
                                     evt.after.push(next);
                                 }
@@ -9781,11 +9780,11 @@ export default {
         }]
     }, 'direct').setT('phaseUseEnd'),
     //麟＆犀
-    lilian: {
-        trigger: { player: 'phaseBegin' },
+    lilian: new toSkill('trigger',{
+        trigger: { player: 'phaseZhunbeiBegin' },
         direct: true,
         filter(Evt, player) {
-            return player.maxHp;
+            return player.maxHp>0;
         },
         content: [() => {
             player.chooseTarget(get.$pro2('lilian')).set('ai', target => {
@@ -9812,7 +9811,7 @@ export default {
             } else player.loseMaxHp();
             game.delayx();
         }],
-    },
+    }),
     zihuai: {
         trigger: { player: 'discardAfter' },
         priority: 199,

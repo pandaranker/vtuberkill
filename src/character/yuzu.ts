@@ -24,8 +24,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**碧居结衣 */
 			AoiYui: ['female', 'qun', 3, ['suyuan', 'mujian'], ['riV']],
-			/**甘城なつき */
-			NachoNeko: ['female', 'painter', 4, ['cirong', 'maoyu'], ['riV']],
 
 			/**日ノ隈らん */
 			HinokumaRan: ['female', 'nanashi', 4, ['yixiang', 'xianyu'], ['riV']],
@@ -33,9 +31,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**Melody */
 			Melody: ['female', 'vshojo', 4, ['kuangbiao', 'leizhu', 'tonggan'], ['zhu', 'yingV']],
 
-
-			/**pph */
-			PinkyPopHepburn: ['female', 'qun', 4, ['pphpanfeng', 'lanyue']],
 
 			/**琴吹梦 */
 			KotobukiYume: ['female', 'qun', 4, ['xuanquan', 'rusu'],],
@@ -54,8 +49,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**陆鳐 */
 			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
 
-			/**小柔 */
-			Xiaorou: ['female', 'xuyan', 3, ['rouqing', 'guangying'], ['guoV']],
 			/**艾露露 */
 			Ailurus: ['female', 'xuyan', 4, ['aldanyan', 'lunao'], ['guoV']],
 

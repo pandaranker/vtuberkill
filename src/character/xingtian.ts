@@ -521,9 +521,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			pm_zhuge_skill_info: '锁定技 你于出牌阶段内使用【杀】无次数限制。',
 
 			promote_kouqin: "半音口琴",
-			promote_kouqin_info: "出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0～3张牌。",
+			promote_kouqin_info: "出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0~3张牌。",
 			pm_kouqin_skill: '琴奏',
-			pm_kouqin_skill_info: '出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0～3张牌。',
+			pm_kouqin_skill_info: '出牌阶段限一次，你可以演奏一次《美丽之物》，根据得分摸0~3张牌。',
 
 			star_HosimiyaSio: `☆星宫汐`,
 			xuanyu: `宣裕`,

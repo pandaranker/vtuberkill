@@ -1616,6 +1616,45 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			db_def1: `奇袭粮道`,
 			db_def2: `开城诱敌`,
 
+
+			His_HoshinoNiya: `星野妮娅·史官`,
+			His_HoshinoNiya_ab: `星野·史官`,
+			shushi: `书史`,
+			shushi_info: `你的主要阶段开始时，你可以观看牌堆顶的任意张牌，并以任意顺序放回。你每回合至多以此法观看X张牌，且每少观看一张本回合手牌上限便+1。（X为场上人数且至少为5）`,
+			shushi_append: lib.figurer(`特性：观星`),
+			zengzhi: `增殖`,
+			zengzhi_info: `当你的实体锦囊牌结算后，你可以进行一次判定，若花色与该锦囊牌相同，视为你使用了一张同样的锦囊牌。`,
+
+			Qiankesaier: `茜科塞尔`,
+			Qiankesaier_info: `茜科塞尔`,
+			shuangshoujiaoying: `双首角鹰`,
+			shuangshoujiaoying_gai: `双首角鹰`,
+			shuangshoujiaoying_info: `当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的【闪】。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。`,
+			shuangshoujiaoying_gai_info: `当你使用【杀】指定目标后，可以令你或目标展示手牌并重铸其中的红色牌。若为其重铸，你摸一张牌；若为你重铸，此【杀】不计入次数。`,
+			anyingxuemai: `暗影血脉`,
+			anyingxuemai_info: `<font color=#daa>限定技</font>，你进入濒死状态时，可以展示所有手牌并回复其中最少花色牌数的体力。然后将『双首角鹰』的“【闪】”改为“红色牌”。`,
+
+			heichuan: `原初黑川`,
+			zhengtibuming: `正体不明`,
+			zhengtibuming_info: `游戏开始时，你随机获得三张武将牌作为「替身」，然后亮出其中一张。获得亮出「替身」的通常技，且性别和势力视为与「替身」相同。回合开始或结束时，你可以选择一项：<br>
+			更改亮出的「替身」；或随机更换一张「替身」。当你受到1点伤害后，你可以获得一张新的「替身」。`,
+			lunhuizuzhou: `轮回诅咒`,
+			lunhuizuzhou_info: `锁定技 其他角色不能以任何方式让你回复体力。你死亡后，令一名其他角色获得此技能。`,
+			mingyunniezao: `命运捏造`,
+			mingyunniezao_info: `主公技。当其它同势力角色的判定牌生效前，你可以观看牌堆顶的五张牌，选择其中一张替代之，然后将其余牌以任意顺序放回牌堆顶。`,
+
+			Mikawa: `三川`,
+			zhezhuan: `辙转`,
+			zhezhuan_info: `每回合限一次，你可以将一张非基本牌当作具有任意应变标签的同名牌或基本牌使用。`,
+			setu: `涩涂`,
+			setu_info: `出牌阶段限一次，你可以将任意张点数之和小于18的手牌置于武将牌上。然后若你武将牌上牌之乘积大于100，你将这些牌置入弃牌堆，摸等量的牌，并对一名角色造成1点伤害。`,
+		
+			Sakurai: `樱井林`,
+			junxu: `军序`,
+			junxu_info: `你每个回合使用第X张牌时，可以摸两张牌或回复一点体力。（X为你的体力值）`,
+			jingniang: `井酿`,
+			jingniang_info: `出牌阶段，你可以弃一张牌，令你的【杀】不计入次数且伤害+1，直到本回合结束。`,
+		
 			old_Eilene: `旧艾琳`,
 			duanfu: `断缚`,
 			duanfu_info: `你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。`,
