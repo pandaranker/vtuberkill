@@ -1308,6 +1308,7 @@ window.vk_asset_list=[
 	'image/character/Umy.jpg',
 	'image/character/UsadaPekora.jpg',
 	'image/character/UsakiNono.jpg',
+	'image/character/UsakiNono1.jpg',
 	'image/character/UshimiIchigo.jpg',
 	'image/character/XiaDi.jpg',
 	'image/character/xiaoke.jpg',
@@ -1355,6 +1356,7 @@ window.vk_asset_list=[
 	'image/character/Mitsuki.jpg',
 	'image/character/Miya.jpg',
 	'image/character/MomoiMonaka.jpg',
+	'image/character/Keroro.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',
@@ -1539,7 +1541,6 @@ window.vk_asset_list=[
 	'image/skin/MinatoAqua/2.jpg',
 	'image/skin/MinatoAqua/3.jpg',
 	'image/skin/MinatoAqua/4.jpg',
-	'image/skin/MinatoAqua/1.jpg',
 	'image/skin/MononobeAlice/1.jpg',
 	'image/skin/MononobeAlice/2.jpg',
 	'image/skin/MorinagaMiu/1.jpg',

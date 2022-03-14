@@ -5,6 +5,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		character: {
 			/**绊爱 */
 			KizunaAI: ['female', 'upd8', 4, ['ailian', 'qixu'], ['zhu']],
+			/**天开司 */
+			TenkaiTsukasa: ['male', 'upd8', 4, ['pojie', 'dazhen']],
+
 			/**小白 */
 			Siro: ['female', 'dotlive', 4, ['zhongxinghezou', 'xiugong'], ['zhu']],
 			/**巴恰鲁 */
@@ -18,10 +21,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**小希小桃 */
 			XiaoxiXiaotao: ['female', 'xuyan', 3, ['yipengyidou', 'renleiguancha'], ['guoV']],
-			/**兰音 */
-			Reine: ['female', 'xuyan', 4, ['yueyao', 'kongling'], ['guoV']],
 			/**小柔 */
 			Xiaorou: ['female', 'xuyan', 3, ['rouqing', 'guangying'], ['guoV']],
+			/**兰音 */
+			Reine: ['female', 'xuyan', 4, ['yueyao', 'kongling'], ['guoV']],
+			/**艾露露 */
+			Ailurus: ['female', 'xuyan', 4, ['aldanyan', 'hunao'], ['guoV']],
 
 			/**兔妈妈 */
 			InabaHaneru: ['female', 'nanashi', '2/3', ['jiance', 'chanbing', 'buyu'], ['zhu']],
@@ -29,9 +34,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			UmoriHinako: ['female', 'nanashi', 4, ['hongyi', 'jueshou']],
 			/**patra */
 			SuouPatra: ['female', 'nanashi', 4, ['mianmo', 'tiaolv']],
-			/**天开司 */
-			TenkaiTsukasa: ['male', 'upd8', 4, ['pojie', 'dazhen']],
-
+			/**日ノ隈らん */
+			HinokumaRan: ['female', 'nanashi', 4, ['yixiang', 'xianyu'], ['riV']],
+			
 			/**向晚 */
 			Ava: ['female', 'asoul', 4, ['yiqu', 'wanxian'], ['guoV']],
 			/**贝拉 */
@@ -75,6 +80,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			SephiraSu: ['female', 'qun', 3, ['mishu', 'xingchen']],
 			/**姬雏 */
 			HIMEHINA: ['female', 'qun', 3, ['jichu', 'mingshizhige']],
+			/**月紫亚里亚 */
+			TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
 
 			/**泠鸢 */
 			Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
@@ -110,10 +117,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 'hundunliandong']],
 			/**Mishiro */
 			ShirayukiMishiro: ['female', 'nori', 3, ['tianyi', 'nveyu']],
+			
 			/**虾皇 */
 			xiaoxiayu: ['female', 'xuefeng', 4, ['tanghuang', 'xiejiang'], ['guoV']],
 			/**龟龟 */
 			tianxixi: ['female', 'xuefeng', 3, ['lache', 'danfu'], ['guoV']],
+			/**申䒕雅 */
+			shenxiaoya: ['female', 'xuefeng', 4, ['xyshixi', 'wenxin'], ['guoV']],
 
 			/**机萪 */
 			jike: ['female', 'qun', 3, ['qianjiwanbian'], ['guoV']],
@@ -132,6 +142,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
 			/**咲间妮娜 */
 			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
+			/**白桃shirako */
+			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:qun:Providence']],
 
 			/**吉诺儿kino */
 			Kino: ['female', 'HappyEl', 4, ['xiandu', 'yexi'], ['guoV']],
@@ -139,6 +151,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tangjiuxia: ['female', 'HappyEl', 4, ['jiuxian', 'yujian'], ['guoV']],
 			/**李清歌 */
 			liqingge: ['female', 'HappyEl', 4, ['tage'], ['guoV']],
+			/**神宫司玉藻 */
+			JingujiTamamo: ['female', 'HappyEl', 3, ['aowei', 'meizhan'], ['zhu', 'guoV']],
 
 			/**艾瑞思 */
 			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],

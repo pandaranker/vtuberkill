@@ -812,8 +812,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt, player) {
 					var repeat = 0;
 					var another = 0;
-					game.hasPlayer((cur: { getHistory: (arg0: string, arg1: (evt: any) => void) => void; }) => {
-						cur.getHistory('useCard', (evt: { card: any; }) => {
+					game.hasPlayer(cur => {
+						cur.getHistory('useCard', evt => {
 							if (get.color(evt.card, cur) == get.color(Evt.card, player)) {
 								repeat++;
 							} else {
@@ -826,19 +826,17 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				frequent: true,
 				content() {
 					var stats = 0;
-					game.hasPlayer((cur: { getHistory: (arg0: string, arg1: (evt: any) => void) => void; }) => {
-						cur.getHistory('useCard', (evt: { card: any; }) => {
-							if (get.color(evt.card, cur) == get.color(trigger.card, player)) {
-
-							} else {
+					game.hasPlayer(cur => {
+						cur.getHistory('useCard', evt => {
+							if (get.color(evt.card, cur) !== get.color(trigger.card, player)) {
 								stats++;
-							};
+							}
 						});
 					});
 					player.draw(stats);
 				},
 				mod: {
-					aiOrder(player: any, card: any, num: number) {
+					aiOrder(player, card, num) {
 						if (typeof card == 'object' && player != _status.currentPhase) {
 							if (lib.skill.re_shengcai.filter({ card: card }, player)) {
 								return num + 10;

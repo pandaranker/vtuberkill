@@ -30,7 +30,7 @@
       //崭新出炉
       choosePromotion: [() => {
         let list = [];
-        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length){
+        if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) {
           Evt.finish();
           return;
         }
@@ -7825,32 +7825,29 @@
         this.node.name.dataset.nature = get.groupnature(this.group);
         lib.setIntro(this);
         this.node.name.innerHTML = get[get.slimName2 ? 'slimName2' : 'slimName'](character);
-        if(/^[a-zA-Z]+$/.test(this.node.name.innerHTML)){
-          this.node.name.classList.add('English');
-        }
-        if (this.classList.contains('minskin') ) {
-          if(nameLength <= 1){
+        if (this.classList.contains('minskin')) {
+          if (nameLength <= 1) {
             this.node.name.classList.add('short');
           }
-          else if(nameLength == 2){
+          else if (nameLength == 2) {
             this.node.name.classList.add('lowshort');
           }
-          else if(nameLength == 4 || nameLength == 5){
+          else if (nameLength == 4 || nameLength == 5) {
             this.node.name.classList.add('lowlong');
           }
-          else if(nameLength >= 6){
+          else if (nameLength >= 6) {
             this.node.name.classList.add('long');
           }
         }
-        else if (this.classList.contains('fullskin') ){
+        else if (this.classList.contains('fullskin')) {
           let nameLength = this.node.name.querySelectorAll('br').length
-          if(nameLength <= 1){
+          if (nameLength <= 1) {
             this.node.name.classList.add('short');
           }
-          else if(nameLength == 2){
+          else if (nameLength == 2) {
             this.node.name.classList.add('lowshort');
           }
-          else if(nameLength >= 6){
+          else if (nameLength >= 6) {
             this.node.name.classList.add('long');
           }
         }
@@ -7943,7 +7940,7 @@
           }
           this.checkConflict();
         }
-        if(this.group){
+        if (this.group) {
           lib.group.add(this.group);
         }
         if (this.inits) {
@@ -8718,7 +8715,8 @@
           if (this.maxHp == Infinity) {
             hp.innerHTML = '∞';
           }
-          else if (libHp && libHp[2] && get.infoHp(libHp[2]) < 0) {
+          else if ((libHp && libHp[2] && get.infoHp(libHp[2]) < 0)
+            || (this.hp < 0 && !this.isDying())) {
             hp.innerHTML = this.hp + '/' + this.maxHp;
             hp.classList.add('text');
           }
@@ -8819,6 +8817,21 @@
         }
         if (!_status.video) {
           game.addVideo('update', this, [this.countCards('h'), this.hp, this.maxHp, this.hujia]);
+        }
+        function checkEnglish(name) {
+          let nameLength = name.querySelectorAll('br').length
+          if (nameLength === 0 && /^[a-zA-Z]+$/.test(name.innerHTML)) {
+            name.classList.add('English');
+          }
+          if (nameLength >= 1 && name.classList.contains('English')) {
+            name.classList.remove('English');
+          }
+        }
+        if (this.node.name) {
+          checkEnglish(this.node.name)
+        }
+        if (this.node.name2) {
+          checkEnglish(this.node.name2)
         }
         this.updateMarks();
         return this;
@@ -11206,7 +11219,7 @@
             next._triggered = null;
             next.notrigger = true;
           }
-          else if (v === 'nofatal'){
+          else if (v === 'nofatal') {
             next.nofatal = true
           }
           else if (get.itemtype(v) == 'nature') {

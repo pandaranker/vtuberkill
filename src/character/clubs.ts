@@ -47,6 +47,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			NecoraNyaru: ['female', 'qun', 3, ['miaolu', 'benglei'],],
 			/**羽澄照乌愈 */
 			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
+			
+			/**闪光pika */
+			shanguangpika: ['female', 'qun', 4, ['yikai', 'pkyuanjun'], ['guoV']],
+			/**永雏塔菲 */
+			Taffy: ['female', 'qun', 3, ['qianqi', 'chutan'], ['guoV']],
 
 			/**咩栗 */
 			Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],

@@ -653,7 +653,7 @@ export default {
         mark: 'character',
         intro: {
             name: '衔鱼',
-            content: `你失去体力时，$摸牌至上限；
+            content: `你失去体力时，$摸牌至手牌上限；
             你或$死亡时，对方重置且翻至正面。`
         },
         filter(Evt, player) {
@@ -2689,7 +2689,7 @@ export default {
         }, () => {
             if (result.bool) {
                 if (player.countGainableCards(Evt.target, 'he')) {
-                    Evt.target.gainPlayerCard(player, true);
+                    Evt.target.gainPlayerCard(player, true, 'he');
                 }
             }
         }, () => {
@@ -6670,6 +6670,7 @@ export default {
         content: [() => {
             player.$.fuyou = true;
             player.awakenSkill('fuyou');
+            player.setAvatar('UsakiNono', 'UsakiNono')
         }, () => {
             let roundname = 'tuhuiA_roundcount';
             if (player.hasMark(roundname)) {
@@ -6708,6 +6709,17 @@ export default {
                 return 0;
             },
             result: { player: 1 },
+        },
+        group: 'fuyou_put',
+        subSkill: {
+            put: new toSkill('rule', {
+                content: [() => {
+                    player.setAvatar('UsakiNono', 'UsakiNono1')
+                }]
+            }, 'forced').setT({
+                global: 'gameStart',
+                player: 'enterGame',
+            })
         }
     },
     fuyou2: new toSkill('mark', {
@@ -7194,8 +7206,14 @@ export default {
             markcount(storage, player) {
                 return game.countPlayer(cur => cur.inRangeOf(player));
             }
-        }
-    }),
+        },
+        filter(Evt, player) {
+            return player.isTurnedOver() && !Evt.numFixed;
+        },
+        content() {
+            trigger.num += 1
+        },
+    }, 'forced').setT({ source: 'damageBegin1' }),
     xtguyong: new toSkill('trigger', {
         filter(Evt, player) {
             return game.hasPlayer(cur => cur.countCards('h') < player.countCards('h')
@@ -9320,7 +9338,9 @@ export default {
                         let num = result.card.number
                         let targets = result.targets
                         if (num) {
-                            if (num >= 6 && get.type(result.card) !== 'delay') {
+                            if (num >= 6 && get.type(result.card) !== 'delay' && game.countPlayer(cur => {
+                                return !targets.contains(target) && lib.filter.targetEnabled2(result.card, player, target)
+                            })) {
                                 /**增加目标 */
                                 let next = game.createEvent('duotianChangeTarget')
                                 next.player = player
@@ -9706,7 +9726,56 @@ export default {
                 }],
             }, 'forced').setT({ source: 'damageEnd', player: 'phaseUseEnd' }),
         }
-    }, 'audio', 'direct').setT('phaseUseBegin'),
+    }, 'direct').setT('phaseUseBegin'),
+    //蛙吹Keroro
+    beifa: new toSkill('trigger', {
+        logTarget: 'target',
+        filter: function (Evt, player) {
+            if (Evt.target.countCards() < player.countCards()) return false
+            return ['sha', 'juedou'].includes(Evt.card.name) && !Evt.getParent().directHit.contains(Evt.target);
+        },
+        content: function () {
+            let id = (player == trigger.player ? trigger.target : trigger.player)['playerid'];
+            let map = trigger.getParent().customArgs;
+            if (trigger.name.name === 'juedou') {
+                let idt = trigger.target.playerid;
+                if (!map[idt]) map[idt] = {};
+                if (!map[idt].shaReq) map[idt].shaReq = {};
+                if (!map[idt].shaReq[id]) map[idt].shaReq[id] = 1;
+                map[idt].shaReq[id]++;
+            }
+            else {
+                if (!map[id]) map[id] = {};
+                if (!map[id].shanRequired) map[id].shanRequired = 1;
+                map[id].shanRequired++;
+            }
+            trigger.getParent().baseDamage++;
+        },
+        ai: {
+            directHit_ai: true,
+            skillTagFilter: function (player, tag, arg) {
+                if ((arg.card.name != 'juedou' || Math.floor(arg.target.countCards('h', 'sha') / 2) > player.countCards('h', 'sha'))
+                    && (arg.card.name != 'sha' || arg.target.countCards('h', 'shan') > 1)) return false;
+            }
+        }
+    }, 'frequent').setT('useCardToPlayered'),
+    wuwu: new toSkill('trigger', {
+        content: [() => {
+            let draws = 0
+            game.filterPlayer(cur => {
+                if (cur === player) return;
+                cur.getHistory('useCard', evt => {
+                    if (evt.card) draws++
+                })
+            })
+            if (draws) {
+                player.draw(draws)
+            }
+            else {
+                player.chooseUseTarget({ name: 'juedou' }, '###' + get.$pro('wuwu') + '###视为使用一张【决斗】').set('logSkill', 'wuwu')
+            }
+        }]
+    }, 'direct').setT('phaseUseEnd'),
     //白桃shirako
     jufu: new toSkill('regard', {
         chooseButton: {
@@ -9780,11 +9849,11 @@ export default {
         }]
     }, 'direct').setT('phaseUseEnd'),
     //麟＆犀
-    lilian: new toSkill('trigger',{
+    lilian: new toSkill('trigger', {
         trigger: { player: 'phaseZhunbeiBegin' },
         direct: true,
         filter(Evt, player) {
-            return player.maxHp>0;
+            return player.maxHp > 0;
         },
         content: [() => {
             player.chooseTarget(get.$pro2('lilian')).set('ai', target => {
@@ -11328,7 +11397,7 @@ export default {
             expose: 0.2,
         },
     }, 'filterCard'),
-    lunao: new toSkill('trigger', {
+    hunao: new toSkill('trigger', {
         priority: 199,
         filter(Evt, player) {
             return Evt.player.hp <= player;
@@ -11343,11 +11412,11 @@ export default {
                 list[i] = get.rawName(list[i]);
             }
             list.push('取消');
-            player.chooseControl('dialogcontrol', list).set('ai', () => list.randomGets()).set('prompt', get.$pro2('lunao'));
+            player.chooseControl('dialogcontrol', list).set('ai', () => list.randomGets()).set('prompt', get.$pro2('hunao'));
         }, () => {
             if (result.control != '取消') {
                 Evt.target = trigger.player
-                player.logSkill('lunao', Evt.target)
+                player.logSkill('hunao', Evt.target)
                 trigger.nature = Evt.map[result.control]
                 trigger.num++
                 let halt = game.createEvent('halt');
@@ -12307,7 +12376,9 @@ export default {
         }],
     }, 'direct').set('subSkill', {
         dam: new toSkill('mark', {
-            trigger: { player: 'damageBegin3' },
+            filter(Evt, player) {
+                return Evt.num > 0;
+            },
             content() {
                 trigger.num -= player.$.shenjiao_dam
             },
@@ -12321,7 +12392,7 @@ export default {
             intro: {
                 content: '受到的伤害-#'
             }
-        }, 'forced', 'onremove', 'mark').setI(1)
+        }, 'forced', 'onremove', 'mark').setI(1).setT('damageBegin3')
     }).setT('damageAfter').setI(1),
     //茶冷
     huomo: new toSkill('trigger', {
@@ -17234,7 +17305,7 @@ export default {
             return true;
         },
         filterTarget(card, player, target) {
-            return target != player;
+            return target != player && !player.getStorage('chutan_lose').contains(target);
         },
         selectTarget: 2,
         position: 'he',
@@ -17246,6 +17317,7 @@ export default {
         log: 'notarget',
         content: [() => {
             if (!player.$.chutan) player.$.chutan = [];
+            if (!player.$.chutan_lose) player.$.chutan_lose = [];
             player.$.chutan.add(target);
             target.$.chutan_next = player;
             player.addTempSkill('chutan_next', { player: 'phaseBegin' });
@@ -17276,9 +17348,14 @@ export default {
                     let chus = player.getStorage('chutan').slice(0);
                     if (!chus.includes(Evt.player)) return false;
                     chus.remove(Evt.player);
-                    return Evt.player.getHistory('useCard', evt => {
+                    if (Evt.player.getHistory('useCard', evt => {
                         return evt.targets.includes(chus[0]);
-                    }).length > 0;
+                    }).length > 0) {
+                        return true
+                    }
+                    else {
+                        player.$.chutan_lose.add(Evt.player)
+                    }
                 },
                 logTarget: 'player',
                 content() {
@@ -17944,16 +18021,12 @@ export default {
         }
     },
     //李清歌
-    tage: {
-        init(player, skill) {
-            if (!player.$[skill]) player.$[skill] = 0;
-        },
-        trigger: { global: 'useCardAfter' },
+    tage: new toSkill('trigger', {
         firstDo: true,
         direct: true,
         filter(Evt, player) {
             if (Evt.player != _status.currentPhase) return false;
-            let usable = player.getDamagedHp() || 1;
+            let usable = player.getDamagedHp() + 1;
             if (player.$.tage >= usable) return false;
             let num = get.number(Evt.card);
             return typeof num == "number" && player.countCards('hs', card => [1, -1].includes(get.number(card) - num));
@@ -17986,17 +18059,16 @@ export default {
         },
         group: ['tage_drawBy', 'tage_clear'],
         subSkill: {
-            drawBy: {
-                trigger: { global: 'phaseEnd' },
+            drawBy: new toSkill('trigger', {
                 filter(Evt, player) {
                     return player.$.tage > 0;
                 },
                 prompt2(Evt, player) {
-                    let usable = player.getDamagedHp() || 1;
+                    let usable = player.getDamagedHp() + 1;
                     return `摸${get.cnNumber(usable)}张牌，并交给${get.$t(Evt.player)}至少一张牌`;
                 },
                 content: [() => {
-                    let usable = player.getDamagedHp() || 1;
+                    let usable = player.getDamagedHp() + 1;
                     player.draw(usable);
                 }, () => {
                     if (player.countCards('he') && trigger.player.isIn()) {
@@ -18013,8 +18085,8 @@ export default {
                         player.give(result.cards, Evt.target, true);
                     }
                 }]
-            },
-            clear: {
+            }).setT({ global: 'phaseEnd' }),
+            clear: new toSkill('rule', {
                 trigger: { global: 'phaseAfter' },
                 priority: 23,
                 forced: true,
@@ -18024,11 +18096,11 @@ export default {
                     player.$.tage = 0;
                     player.unmarkSkill('tage');
                 }
-            }
+            })
         }
-    },
+    }).setT({ global: 'useCardAfter' }).setI(0),
     //神宫司玉藻
-    aowei: {
+    aowei: new toSkill('trigger', {
         trigger: { global: 'cardsDiscardAfter' },
         firstDo: true,
         direct: true,
@@ -18037,8 +18109,8 @@ export default {
             if (evt.name != 'orderingDiscard' || !evt.relatedEvent || evt.relatedEvent.player == player
                 || !['useCard', 'respond'].includes(evt.relatedEvent.name) || get.name(evt.relatedEvent.card) != 'sha') return false;
             let cards = (Evt.cards2 || Evt.cards).filterInD('d');
-            let card0 = evt.relatedEvent.card;
-            return cards.length > 0 && player.countCards('hs', card => get.suit(card) == get.suit(card0) || get.number(card) == get.number(card0));
+            let precard = evt.relatedEvent.card;
+            return cards.length > 0 && player.countCards('hs', card => get.suit(card) == get.suit(precard) || get.number(card) == get.number(precard));
         },
         content: [() => {
             let evt = trigger.getParent(), cards = (trigger.cards2 || trigger.cards).filterInD('d');
@@ -18061,6 +18133,7 @@ export default {
                 player.logSkill('aowei');
                 Evt.cards = result.cards.slice(0);
                 trigger.cards = Evt.cards;
+                trigger.getParent().relatedEvent.cards = Evt.cards;
                 player.gain(Evt.precard, 'gain2', 'log');
             } else Evt.finish();
         }, () => {
@@ -18079,7 +18152,7 @@ export default {
                 }
             }
         }],
-    },
+    }),
     meizhan: {
         audio: true,
         zhuSkill: true,
@@ -18264,12 +18337,14 @@ export default {
             target.discardPlayerCard(player, 'he', true, `『椰熙』：请弃置${get.$t(player)}的一张牌`)
         }, () => {
             if (result?.cards?.length) {
-                if (get.name(result.cards[0]) === 'sha' || get.type(result.cards[0]) === 'equip')
-                    target.useCard({ name: 'sha' }, get.cards(), player, false)
+                if (get.name(result.cards[0]) !== 'shan') {
+                    Evt.shaUse = target.useCard({ name: 'sha' }, get.cards(), player, false)
+                }
                 else Evt.finish()
             }
             else Evt.finish()
         }, () => {
+            player.gain(Evt.shaUse.cards, 'gain2', 'log')
             if (target.countCards('he')) {
                 player.gainPlayerCard(target, 'he', `『椰熙』：请回收${get.$t(target)}的椰子壳🥥`)
             }

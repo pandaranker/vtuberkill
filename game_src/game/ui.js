@@ -5917,7 +5917,7 @@ module.exports = {
                   });
                }
                ui.auto.id = 'autobutton';
-               ui.autonode = ui.create.div('#autonode', '<div>托管中...</div>', ui.arena);
+               ui.autonode = ui.create.div('#autonode', '<div>托管中</div>', ui.arena);
                ui.autonode.listen(ui.click.auto);
                if (lib.config.mode == 'connect') {
                   ui.auto.hide();

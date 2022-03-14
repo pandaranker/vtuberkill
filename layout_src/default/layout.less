@@ -49,7 +49,31 @@
     text-align: center;
     font-size: 60px;
     font-family: 'xinwei';
-    text-shadow: black 0 0 10px
+    text-shadow: black 0 0 10px;
+
+    >div {
+        &::after {
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+            animation: ellipsis 2s infinite;
+            content: "\2026";
+        }
+
+        @keyframes ellipsis {
+            from {
+                width: 1px;
+            }
+
+            90% {
+                width: 1em;
+            }
+
+            to {
+                width: 1px;
+            }
+        }
+    }
 }
 
 #arena:not(.chess):not(.mobile)>#autonode {
@@ -536,7 +560,7 @@ body>.background.land {
 }
 
 .card.fullborder>.name {
-    font-family: 'xinwei';
+    font-family: 'hyk2gj', 'xinwei', Arial, Helvetica, sans-serif;
 }
 
 .card>.cardframebg {
@@ -1265,7 +1289,8 @@ div:not(.handcards)>.card>.info>span,
 
 
 .button.character>.name {
-    font-family: 'xinwei'
+    line-height: 135%;
+    font-family: 'Tiejili', 'hyk2gj', 'xinwei', Arial, Helvetica, sans-serif
 }
 
 #window>.damage.fullscreenavatar {
@@ -1431,7 +1456,7 @@ div:not(.handcards)>.card>.info>span,
 }
 
 .damage.normal-font {
-    font-family: xinwei;
+    font-family: 'Tiejili', 'hyk2gj', 'xinwei', Arial, Helvetica, sans-serif;
     font-size: 30px;
     top: calc(50% - 15px);
 }

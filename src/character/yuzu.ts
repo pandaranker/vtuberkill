@@ -19,14 +19,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			// YuikaSiina:['female','nijisanji',4,['tiaolian','jiaku']],
 
-			/**月紫亚里亚 */
-			TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
 
 			/**碧居结衣 */
 			AoiYui: ['female', 'qun', 3, ['suyuan', 'mujian'], ['riV']],
-
-			/**日ノ隈らん */
-			HinokumaRan: ['female', 'nanashi', 4, ['yixiang', 'xianyu'], ['riV']],
 
 			/**Melody */
 			Melody: ['female', 'vshojo', 4, ['kuangbiao', 'leizhu', 'tonggan'], ['zhu', 'yingV']],
@@ -49,9 +44,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**陆鳐 */
 			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
 
-			/**艾露露 */
-			Ailurus: ['female', 'xuyan', 4, ['aldanyan', 'lunao'], ['guoV']],
-
 
 			/**兰若Ruo */
 			lanruo: ['female', 'hunmiao', 3, ['dieyuan', 'shengyang'], ['guoV']],
@@ -73,10 +65,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**纪代因果 */
 			KiyoInga: ['female', 'paryi', 4, ['huanxi', 'celv'], ['yingV']],
 
-			/**闪光pika */
-			shanguangpika: ['female', 'qun', 4, ['yikai', 'pkyuanjun'], ['guoV']],
-			/**永雏塔菲 */
-			Taffy: ['female', 'qun', 3, ['qianqi', 'chutan'], ['guoV']],
 			/**喵田弥夜Miya */
 			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV']],
 			/**桃井最中 */
@@ -90,15 +78,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
 
-			/**神宫司玉藻 */
-			JingujiTamamo: ['female', 'HappyEl', 3, ['aowei', 'meizhan'], ['zhu', 'guoV']],
 			/**伊莎贝拉·霍利 */
 			IsabellaHolly: ['female', 'HappyEl', 4, ['youchu', 'yuanhua'], ['guoV']],
 
 			/**伊万 */
 			iiivan: ['female', 'xuefeng', 4, ['shuipo', 'pianchao'], ['guoV']],
-			/**申䒕雅 */
-			shenxiaoya: ['female', 'xuefeng', 4, ['xyshixi', 'wenxin'], ['guoV']],
 
 			/**YY */
 			yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
@@ -137,8 +121,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
 			/**满月 */
 			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
-			/**白桃shirako */
-			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:qun:Providence']],
+			/**蛙吹Keroro */
+			Keroro: ['female', 'Providence', 4, ['beifa', 'wuwu'], ['guoV']],
 
 
 			/**雨街F */
