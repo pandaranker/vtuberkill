@@ -28661,8 +28661,8 @@ module.exports = {
           }
         }
         Evt.id = get.id();
-        Evt.excluded = [];
-        Evt.directHit = [];
+        if (!Evt.excluded) Evt.excluded = [];
+        if (!Evt.directHit) Evt.directHit = [];
         Evt.customArgs = { default: {} };
         if (typeof Evt.baseDamage != 'number') Evt.baseDamage = get.info(card, false).baseDamage || 1;
         if (typeof Evt.baseNumber != 'number') Evt.baseNumber = get.info(card, false).baseNumber || 1;
@@ -49462,7 +49462,7 @@ module.exports = {
                }
                if (!thisiscard) {
                   let groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
-                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && !_status.connectMode)) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
+                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && (!_status.connectMode || lib.configOL.versus_mode === '4v4'))) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                   let bool1 = false;
                   let bool4 = false;
                   let groups_copy = [...groups]

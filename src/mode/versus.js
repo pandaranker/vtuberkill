@@ -28,7 +28,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		start:function(){
 			"step 0"
-			if(!_status.connectMode){
+			if(!_status.connectMode || lib.configOL.versus_mode === '4v4'){
 				for(let i in lib.characterPack){
 					if(i=='clubs'){
 						for(var j in lib.characterPack[i]){
@@ -1648,12 +1648,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.list=[];
 					event.filterChoice=function(name){
 						return false;
-						if(get.config('enable_all')) return false;
-						for(var j in lib.characterPack){
-							if(lib.choiceVtuberkill.contains(j)&&lib.characterPack[j][i])	return false;
-						}
-						return true
-						return !lib.choiceFour.contains(name);
 					}
 					for(i in lib.character){
 						if(event.filterChoice(i)) continue;
@@ -2824,39 +2818,19 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 
 					var filterChoice=function(name){
 						if(name=='zuoci'||name=='miheng') return true;
-						for(var j in lib.characterPack){
-							if(lib.choiceVtuberkill.contains(j)&&lib.characterPack[j][i])	return false;
-						}
-						if(!lib.choiceFour.contains(name)){
-							return true;
-						}
-						if(lib.characterPack.refresh&&lib.characterPack.refresh[name]){
-							if(!lib.configOL.characterPack.contains('refresh')) return true;
-							return false;
-						}
-						if(lib.characterPack.standard&&lib.characterPack.standard[name]){
-							if(!lib.configOL.characterPack.contains('standard')) return true;
-							if(lib.configOL.characterPack.contains('refresh')&&lib.characterPack.refresh['re_'+name]) return true;
-							return false;
-						}
-						if(lib.characterPack.shenhua&&lib.characterPack.shenhua[name]){
-							if(!lib.configOL.characterPack.contains('shenhua')) return true;
-							return false;
-						}
-						if(lib.characterPack.sp&&lib.characterPack.sp[name]){
-							if(!lib.configOL.characterPack.contains('sp')) return true;
-							return false;
-						}
-						if(lib.characterPack.yijiang&&lib.characterPack.yijiang[name]){
-							if(!lib.configOL.characterPack.contains('yijiang')) return true;
-							return false;
+						if(get.is.double(name))	return true;
+						for(let i of lib.choiceVtuberkill){
+							if(lib.characterPack[i]&&lib.characterPack[i][name]){
+								if(!lib.configOL.characterPack.contains(i)) return true;
+								return false;
+							}
 						}
 						return true;
 					}
 					event.flipassign=true;
 					event.videoId=lib.status.videoId++;
-					var func=function(filter,id,selected,map,choiceFour){
-						lib.choiceFour=choiceFour;
+					var func=function(filter,id,selected,map,choiceVtuberkill){
+						lib.choiceVtuberkill=choiceVtuberkill;
 						var dialog=ui.create.characterDialog('heightset',filter,'expandall').open();
 						dialog.videoId=id;
 						for(var i in map){
@@ -2876,8 +2850,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					};
 					event.map=map;
 					event.selected=[];
-					game.broadcastAll(func,filterChoice,event.videoId,event.selected,map,lib.choiceFour);
-					_status.onreconnect=[func,filterChoice,event.videoId,event.selected,map,lib.choiceFour];
+					game.broadcastAll(func,filterChoice,event.videoId,event.selected,map,lib.choiceVtuberkill);
+					_status.onreconnect=[func,filterChoice,event.videoId,event.selected,map,lib.choiceVtuberkill];
 					"step 1"
 					game.broadcastAll(function(player){
 						player.classList.add('selectedx');
@@ -4319,7 +4293,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			["club",4,"bingliang"],
 		],
 		choiceVtuberkill:[
-			'holo','nijisanji','vtuber','clubs'
+			'hololive','nijisanji','vtuber','clubs'
 		],
 		choiceThree:[
 			're_caocao','re_simayi','xiahoudun','re_zhangliao','re_guojia','zhenji','re_xiahouyuan','xuhuang',
@@ -4332,29 +4306,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			'dingfeng','lingtong','xusheng','yufan','handang','panzhangmazhong','zhugeke',
 			'zumao','xuezong','re_huatuo','lvbu','diaochan','re_pangde','jiaxu','chengong',
 			're_gongsunzan','caifuren','gongsunyuan','yj_jushou','sp_liuqi','quyi','caiyong','key_yuzuru'
-		],
-		choiceFour:[
-			'sunquan','zhenji','re_diaochan','zhugeliang','sunshangxiang','re_huangyueying',
-			're_caocao','re_liubei','re_simayi','re_guanyu','re_zhouyu','re_lvbu','re_daqiao','re_zhangfei','re_zhangliao','re_zhaoyun','re_xuzhu','re_machao','re_ganning','re_guojia','re_lidian','re_xiahoudun','re_xushu','re_lvmeng',
-			're_xiahouyuan','re_xiaoqiao','re_huangzhong',
-			'yanwen','dianwei','pangtong','taishici','sp_zhugeliang','re_pangde',
-			'dongzhuo','jiaxu','sunjian','xuhuang','zhurong','jiangwei','sunce',
-			'wangping','sunliang','wangji','yanyan',
-			'chengong','zhangchunhua','xin_fazheng','lingtong','wuguotai','caozhi','xusheng',
-			'xunyou','zhonghui','xin_wangyi','old_madai',//'bulianshi',
-			'handang','liubiao',
-			'fuhuanghou','xin_liru',//'jianyong',
-			'panzhangmazhong','yufan','liufeng',
-			'yj_jushou','caifuren','guyong','zhoucang','sunluban',
-			'gongsunyuan','liuchen','xiahoushi','sunxiu',//'quancong',
-			'guotufengji',
-			'liyan',//'sundeng','cenhun','guohuanghou',
-			'caiyong','wuxian',//'xuecong',
-			'liuxie','yuejin','caoang','hetaihou','simalang','mayunlu','zhugejin','sp_machao','zhugeke','sp_caoren',
-			'dingfeng','heqi','chengyu','wenpin','guanyinping','kanze',
-			'sp_sunshangxiang','quyi','sp_jiangwei','dongbai',//'litong',
-			'yangxiu','sunqian','sunhao','xiahouba','liuqi','luzhi',
-			'zhugeguo','guosi','xf_tangzi','xf_sufei','caohong','mazhong',
 		],
 		translate:{
 			zhu:'主',

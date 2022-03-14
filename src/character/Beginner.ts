@@ -5205,7 +5205,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				forced: true,
 				content: [() => {
 					if (trigger.delay == false) game.delay();
-					player.draw();
+					player.draw(2);
 				}, () => {
 					player.unmarkAuto('huixiang_equip', trigger.cards);
 				}],
@@ -5862,7 +5862,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_AkaiHaato: `新·赤井心`,
 			xinchixin: `赤心`,
-			xinchixin_info: `当牌进入弃牌堆时，若其中有本回合未以此技能获得的♥牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。`,
+			xinchixin_info: `当牌不因使用进入弃牌堆时，若其中有本回合未以此技能获得的♥牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。`,
 			xinchixin_append: lib.figurer(`特性：回收关键牌`),
 
 			re_NakiriAyame: `新·百鬼绫目`,
@@ -5936,7 +5936,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_jiumao: `啾猫`,
 			re_jiumao_info: `其他角色于弃牌阶段开始时，可以交给你任意张手牌；然后若你的手牌数与其相等，你可以于此阶段结束时使用一张牌，且此牌额外结算一次。`,
 			re_enfan: `恩返`,
-			re_enfan_info: `其他角色进入濒死状态时，你可以交给其任意张牌，然后其弃置任意张牌。若因此弃置的牌包含所有类型，其回复1点体力；若包含所有颜色，你与其各摸一张牌。`,
+			re_enfan_info: `其他角色进入濒死状态时，你可以交给其任意张牌，然后其弃置任意张牌。若因此弃置的牌：<br>
+			包含所有类型，其回复1点体力；包含所有颜色，你与其各摸一张牌。`,
 
 			re_ŌokamiMio: `新·大神澪`,
 			re_yuzhan: `预占`,
@@ -5957,7 +5958,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			uijieyuan_info: `出牌阶段限一次，你可以将两张红色牌当【远交近攻】使用，若对本回合手牌数变化过的角色使用，则改为用一张非基本牌以转化。`,
 			huixiang: `绘象`,
 			huixiang_equip: `绘象`,
-			huixiang_info: `出牌阶段或结束阶段，你可以选择场上的一张非宝物装备牌并交给拥有者一张牌，若你对应装备栏没有牌，你视为装备之直到下次发动此技能。被选择的装备进入弃牌堆时，你摸一张牌。`,
+			huixiang_info: `出牌阶段或结束阶段，你可以指定场上的一张非宝物装备牌并交给拥有者一张牌，若你对应装备栏没有牌，你视为装备之直到下次发动此技能。被指定的装备进入弃牌堆时，你摸两张牌。`,
 			huixiang_append: lib.figurer(`特性：难上手`),
 
 			re_AZKi: `新·AZKi`,

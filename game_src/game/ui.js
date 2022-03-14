@@ -4870,7 +4870,7 @@ module.exports = {
                }
                if (!thisiscard) {
                   let groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
-                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && !_status.connectMode)) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
+                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && (!_status.connectMode || lib.configOL.versus_mode === '4v4'))) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
                   let bool1 = false;
                   let bool4 = false;
                   let groups_copy = [...groups]

@@ -1536,7 +1536,7 @@ export default {
         filter(Evt, player) {
             return player.countCards('h') < Evt.player.countCards('h') && get.type(Evt.card) == 'basic';
         },
-        usable: 1,
+        usable: 2,
         check(Evt, player) {
             return get.$a(player, Evt.player) > 0;
         },
@@ -5460,7 +5460,7 @@ export default {
         content: [() => {
             player.$.wulian = true;
             player.awakenSkill('wulian');
-            player.draw(player.getDamagedHp());
+            player.draw(player.getDamagedHp() * 2);
         }, () => {
             player.addTempSkill('lianpo', 'roundStart');
         }],
@@ -7208,12 +7208,12 @@ export default {
             }
         },
         filter(Evt, player) {
-            return player.isTurnedOver() && !Evt.numFixed;
+            return player.isTurnedOver()
         },
         content() {
-            trigger.num += 1
+            trigger.num -= 1
         },
-    }, 'forced').setT({ source: 'damageBegin1' }),
+    }, 'forced').setT('damageBegin3'),
     xtguyong: new toSkill('trigger', {
         filter(Evt, player) {
             return game.hasPlayer(cur => cur.countCards('h') < player.countCards('h')

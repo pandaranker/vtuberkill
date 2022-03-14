@@ -4905,8 +4905,8 @@
           }
         }
         Evt.id = get.id();
-        Evt.excluded = [];
-        Evt.directHit = [];
+        if (!Evt.excluded) Evt.excluded = [];
+        if (!Evt.directHit) Evt.directHit = [];
         Evt.customArgs = { default: {} };
         if (typeof Evt.baseDamage != 'number') Evt.baseDamage = get.info(card, false).baseDamage || 1;
         if (typeof Evt.baseNumber != 'number') Evt.baseNumber = get.info(card, false).baseNumber || 1;

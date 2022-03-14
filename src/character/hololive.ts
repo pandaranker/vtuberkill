@@ -27,7 +27,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**湊阿库娅 */
 			MinatoAqua: ['female', 'holo', 3, ['kuali', 'youyi']],
 			/**兔田佩克拉 */
-			UsadaPekora: ['female', 'holo', 3, ['zhonggong', 'binzhan']],
+			UsadaPekora: ['female', 'holo', 4, ['zhonggong', 'binzhan']],
 			/**大神澪 */
 			ŌokamiMio: ['female', 'holo', 3, ['xuanxu', 'weizeng'], ['forbidai']],
 			/**大脸猫 */
@@ -217,15 +217,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Civia: `希薇娅`,
 			kuangxin: `旷心`,
 			kuangxin2: `旷心`,
-			kuangxin_info: `每回合限一次,当其他角色成为【杀】或伤害类锦囊牌的唯一目标时，你可以令你与其各选择一张牌交换,此牌结算后,若其未受到此牌造成的伤害,你可以令你或其摸一张牌。`,
+			kuangxin_info: `每回合限一次，当其他角色成为【杀】或伤害类锦囊牌的唯一目标时，你可以令你与其各选择一张牌交换，此牌结算后，若其未受到此牌造成的伤害，你可以令你或其摸一张牌。`,
 			danyan: `弹言`,
 			danyan_info: `你的手牌因弃置而进入弃牌堆时，若本回合你没有造成过伤害，你可以使用其中的一张牌。`,
 			qingjie: `轻捷`,
-			qingjie_info: `锁定技 你计算与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。`,
+			qingjie_info: `锁定技 你与装备区内没有坐骑牌的角色的距离视为1；其他角色计算与你的距离时，你每比其多一张手牌，距离便+1。`,
 
 			SpadeEcho: `黑桃影`,
 			hangao: `函告`,
-			hangao_info: `出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，然后若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌，你获得其所有的♦牌。`,
+			hangao_info: `出牌阶段限一次，你可以将一张♠牌交给一名其他角色，该角色于下个回合结束时展示所有手牌，若其本回合没有对你使用过牌，你获得其所有的♥牌；若你本轮交出的♠牌未被其使用且不在其手牌中，你获得其所有的♦牌。`,
 			hangao_append: lib.figurer(`特性：传递关键牌 挑衅`),
 			yinglve: `影掠`,
 			yinglve_info: `结束阶段，你可以废除一个装备栏视为使用一张无距离限制的【顺手牵羊】；你的攻击范围+X且你使用【顺手牵羊】可选择的目标数为X。（X为你废除的装备栏数）`,
@@ -241,7 +241,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shenhai_info: `当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除标号限制。`,
 			shenhai_append: lib.figurer(`可以通过先打小牌后打大牌，让【桃】、【杀】多生效一次`),
 			paomo: `儚恋`,
-			paomo_info: `你的回合内，当其他角色于本回合首次使用实体牌后，你可以令你上一张使用的牌的点数视为此牌的点数，然后与其各摸一张牌。`,
+			paomo_info: `每名角色每回合限一次，当其他角色于你的回合内使用牌后，你可以令你『曜海』记录牌的点数视为与此牌相同，然后与其各摸一张牌。`,
+			paomo_append: lib.figurer(`特性：联动`),
 
 			Yogiri: `夜霧`,
 			shisang: `食尚`,

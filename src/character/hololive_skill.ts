@@ -850,7 +850,7 @@ export default {
                 },
                 content() {
                     let card = player.getEquip(2)
-                    if(card){
+                    if (card) {
                         player.discard(card);
                         player.draw()
                     }
@@ -2599,19 +2599,17 @@ export default {
             }
         }
     },
-    paomo: {
+    paomo: new toSkill('trigger', {
         init(player, skill) {
             if (!player.storage[skill]) player.storage[skill] = [];
         },
-        trigger: { global: 'useCardAfter' },
         priority: 42,
         filter(Evt, player) {
-            if (player != _status.currentPhase) return false;
-            if (player == Evt.player) return false;
-            return Evt.card.isCard && !player.$.paomo.contains(Evt.player) && Evt.player.getHistory('useCard').length == 0;
+            if (player != _status.currentPhase || player == Evt.player) return false;
+            return !player.$.paomo.contains(Evt.player) && player.getLastUsed(1) && get.number(Evt.card);
         },
         check(Evt, player) {
-
+            return get.$a(player, Evt.player) > 0
         },
         content() {
             player.$.paomo.add(trigger.player);
@@ -2622,6 +2620,9 @@ export default {
             }
             player.draw();
             trigger.player.draw();
+        },
+        ai: {
+            combo: 'shenhai'
         },
         group: ['paomo_contains', 'paomo_init'],
         subSkill: {
@@ -2651,7 +2652,7 @@ export default {
                 }
             }
         }
-    },
+    }).setT({ global: 'useCardAfter' }),
     //Yogiri
     shisang: {
         trigger: { player: 'useCard1' },
