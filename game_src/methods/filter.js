@@ -91,7 +91,7 @@
       if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) return true;
       if (_status.connectMode) {
         if (lib.configOL.banned.contains(i) || lib.connectBanned.contains(i)) return true;
-        if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
+        if (lib.configOL.protect_beginner && !lib.configOL.observe_race && get.is.banForBeginner(i)) return true;
         var double_character = false;
         if (lib.configOL.mode == 'guozhan') {
           double_character = true;

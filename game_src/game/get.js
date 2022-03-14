@@ -1014,7 +1014,7 @@ module.exports = {
                for (var j in pack) {
                   if (typeof func == 'function' && func(j)) continue;
                   if (lib.connectBanned.contains(j)) continue;
-                  if (lib.configOL.protect_beginner && get.is.banForBeginner(i)) return true;
+                  if (lib.configOL.protect_beginner && !lib.configOL.observe_race && get.is.banForBeginner(i)) return true;
                   if (lib.character[j]) libCharacter[j] = pack[j];
                }
             }
@@ -1687,7 +1687,7 @@ module.exports = {
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                str2 = str2.slice(2);
             }
-            if(/^[a-zA-Z]+$/.test(str2)) return str2
+            if (/^[a-zA-Z]+$/.test(str2)) return str2
             return get.verticalStr(str2, true);
          },
          time: function () {

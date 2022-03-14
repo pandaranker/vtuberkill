@@ -1,7 +1,6 @@
 window.noname_source_list=[
 	'image/background/simple1_bg.svg',
 
-	'audio/background/music_danji.mp3',
 	
 	'dist/card.js',
 	'dist/character.js',
@@ -10,8 +9,6 @@ window.noname_source_list=[
 	'image/loading.gif',
 	'image/character/Kino.jpg',
 	'image/character/shanbao.jpg',
-	'image/character/dusongziGin.jpg',
-	'font/LuoLiTi2.ttf',
 	'font/Tiejili.ttf',
 
 	'game/asset.js',
@@ -24,7 +21,6 @@ window.noname_source_list=[
 	'game/source.js',
 	'game/update.js',
 	
-	'layout/cursor/aero_arrow_glow.cur',
 	
 	'layout/default/layout.css',
 	'layout/default/menu.css',
@@ -102,6 +98,4 @@ window.noname_source_list=[
 	'theme/style/hp/ol.css',
 	'theme/style/hp/round.css',
 	'theme/style/hp/hpbutton.css',
-	// 'theme/style/hp/xinglass.css',
-	// 'theme/style/hp/xinround.css',
 ];

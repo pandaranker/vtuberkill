@@ -9657,6 +9657,7 @@ export default {
                 Evt.discard--;
                 if (Evt.discard) Evt.redo();
             }
+        }, ()=> {
             if (Evt.count) Evt.goto(1)
         }],
         ai: {
@@ -10067,7 +10068,7 @@ export default {
             return !player.isTurnedOver();
         },
         content: [() => {
-            player.chooseTarget(get.$pro('wadao2'), function (card, player, target) {
+            player.chooseTarget(get.$pro('wadao'), function (card, player, target) {
                 return target !== player;
             }).ai = target => {
                 return get.$a2(target);
@@ -11353,6 +11354,7 @@ export default {
         filterTarget(card, player, target) {
             if (target.hp >= player.hp) return true;
         },
+        position: 'he',
         selectCard: 2,
         discard: false,
         prepare: 'give2',
@@ -11400,7 +11402,7 @@ export default {
     hunao: new toSkill('trigger', {
         priority: 199,
         filter(Evt, player) {
-            return Evt.player.hp <= player;
+            return Evt.player.hp <= player.hp;
         },
         content: [() => {
             let list = lib.linked.slice(0);

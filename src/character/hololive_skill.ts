@@ -2018,6 +2018,14 @@ export default {
                     player.removeSkill('hongshaoturou_shao');
                 }
             },
+        },
+        ai: {
+            order: 6,
+            result: {
+                player(player, target) {
+                    if (player.getHandcardLimit() - player.countCards() > 1) return 1.5;
+                }
+            },
         }
     },
     //Civia

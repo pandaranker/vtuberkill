@@ -647,7 +647,7 @@ export default {
 
     YaotomeNoe: `八乙女のえ`,
     huiyuan: `回援`,
-    huiyuan_info: `每回合限两次，当其他角色使用基本牌时，若其手牌数多于你，则你可以与其各摸一张牌。`,
+    huiyuan_info: `每回合限两次，当其他角色使用基本牌时，若其手牌数多于你，你可以与其各摸一张牌。`,
     huiyuan_append: lib.figurer(`特性：辅助`),
     suoshi: `琐事`,
     suoshi_info: `当你受到伤害时，你可以将一张手牌交给一名全场手牌数最多的角色；若你手牌数不为全场最少，你受到的伤害+1。`,

@@ -1,5 +1,9 @@
 window.vk_asset_list=[
 	'v1.9.191.11.2',
+
+	'layout/cursor/aero_arrow_glow.cur',
+
+
 	'audio/background/aozhan_chaoming.mp3',
 	'audio/background/aozhan_online.mp3',
 	'audio/background/aozhan_rewrite.mp3',
