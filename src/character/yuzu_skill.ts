@@ -9339,7 +9339,7 @@ export default {
                         let targets = result.targets
                         if (num) {
                             if (num >= 6 && get.type(result.card) !== 'delay' && game.countPlayer(cur => {
-                                return !targets.contains(target) && lib.filter.targetEnabled2(result.card, player, target)
+                                return !targets.contains(cur) && lib.filter.targetEnabled2(result.card, player, cur)
                             })) {
                                 /**增加目标 */
                                 let next = game.createEvent('duotianChangeTarget')
