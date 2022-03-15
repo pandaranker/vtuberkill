@@ -15989,14 +15989,14 @@ export default {
             targetEnabled(card, player, target, now) {
                 if (get.type(card) == 'delay') {
                     if (!game.countPlayer(cur => {
-                        return cur.isIn() && cur !== target && cur.getAttackRange() < target.getAttackRange()
+                        return cur.isIn() && cur !== target && cur.getAttackRange() > target.getAttackRange()
                     })) {
                         return false;
                     }
                 }
                 if (get.name(card) == 'sha' && get.color(card) == 'black') {
                     if (!game.countPlayer(cur => {
-                        return cur.isIn() && cur !== target && cur.getAttackRange() > target.getAttackRange()
+                        return cur.isIn() && cur !== target && cur.getAttackRange() < target.getAttackRange()
                     })) {
                         return false;
                     }

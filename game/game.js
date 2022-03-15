@@ -16133,7 +16133,6 @@ module.exports = {
           */
          nodeintro: function (node, simple, evt) {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
-            console.log(node)
             if (node.classList.contains('player') && !node.name) {
                return uiintro;
             }
