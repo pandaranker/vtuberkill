@@ -7,15 +7,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				lib.characterPack.mode_versus=lib.jiangeboss;
 			}
 			else if(get.config('versus_mode')=='siguo'){
-				// lib.characterPack.mode_versus={
-				// 	tangzi:['male',['wei','wu'].randomGet(),4,['xingzhao'],[]],
-				// 	liuqi:['male',['shu','qun'].randomGet(),3,['wenji','tunjiang'],[]],
-				// };
 				for(var i in lib.characterPack.mode_versus){
 					lib.character[i]=lib.characterPack.mode_versus[i];
 				}
-				delete lib.character.sp_liuqi;
-				delete lib.character.xf_tangzi;
 				lib.cardPack.mode_versus=['zong','xionghuangjiu','tongzhougongji','lizhengshangyou'];
 				lib.translate.mode_versus_character_config='四国武将';
 			}
@@ -4336,20 +4330,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			mode_versus_character_config:'战场武将',
 			mode_versus_card_config:'同舟共济',
 
-			tangzi:'唐咨',
-			liuqi:'刘琦',
-
-			wenji:'问计',
-			wenji2:'问计',
-			wenji_info:'队友的出牌阶段开始时，你可令其交给你一张手牌，若此牌为锦囊牌，则非队友角色计算与你的距离+1直到你的下个回合开始',
-			tunjiang:'屯江',
-			tunjiang_info:'结束阶段开始时，若你于本回合的出牌阶段使用过至少两张牌且未造成过伤害，你可以选择一项：1.你摸两张牌；2.队友摸两张牌',
-			xingzhao:'兴棹',
-			xingzhao2:'兴棹',
-			xingzhao3:'兴棹',
-			xingzhao_bg:'棹',
-			xingzhao_info:'锁定技 若你和队友持有的龙船至宝数合计为：1个以上，你具有技能“恂恂”；2个以上，当你或队友使用装备牌时，其摸一张牌；3个以上，你和队友跳过判定阶段',
-
 			boss_liedixuande:'烈帝玄德',
 			boss_gongshenyueying:'工神月英',
 			boss_tianhoukongming:'天侯孔明',
@@ -5315,165 +5295,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						},
 					},
 				},
-			},
-			wenji:{
-				trigger:{global:'phaseUseBegin'},
-				filter:function(event,player){
-					return event.player.side==player.side&&event.player!=player&&event.player.countCards('h');
-				},
-				logTarget:'player',
-				check:function(event,player){
-					return event.player.needsToDiscard(1)||event.player.countCards('h')>player.countCards('h')+1||player.hp==1;
-				},
-				content:function(){
-					'step 0'
-					trigger.player.chooseCard('将一张手牌交给'+get.translation(player),true).ai=function(card){
-						if(get.type(card)=='trick') return 8-get.value(card);
-						return 6-get.value(card);
-					}
-					'step 1'
-					if(result.bool&&result.cards.length){
-						player.gain(result.cards,trigger.player,'give');
-						if(get.type(result.cards[0])=='trick'){
-							player.addTempSkill('wenji2',{player:'phaseBegin'});
-						}
-					}
-				}
-			},
-			wenji2:{
-				mark:true,
-				intro:{
-					content:'非队友角色计算与你的距离+1'
-				},
-				mod:{
-					globalTo:function(from,to,distance){
-						if(from.side!=to.side){
-							return distance+1;
-						}
-					}
-				}
-			},
-			tunjiang:{
-				trigger:{player:'phaseEnd'},
-				direct:true,
-				filter:function(event,player){
-					return !player.getStat('damage')&&player.countUsed()>=2;
-				},
-				content:function(){
-					'step 0'
-					var target=null;
-					for(var i=0;i<game.players.length;i++){
-						if(game.players[i].side==player.side&&game.players[i]!=player){
-							target=game.players[i];break;
-						}
-					}
-					if(target){
-						event.target=target;
-						player.chooseControl('cancel2',function(){
-							if(target.countCards('h')>=player.countCards('h')){
-								return 1;
-							}
-							return 0;
-						}).set('prompt',get.prompt('xingzhao')).set('choiceList',[
-							'摸两张牌','令'+get.translation(target)+'摸两张牌'
-						]);
-					}
-					else{
-						player.chooseBool(get.prompt('xingzhao'));
-					}
-					'step 1'
-					if(event.target){
-						if(result.index==0){
-							player.logSkill('xingzhao');
-							player.draw(2);
-						}
-						else if(result.index==1){
-							player.logSkill('xingzhao',event.target);
-							event.target.draw(2);
-						}
-					}
-					else{
-						if(result.bool){
-							player.logSkill('xingzhao');
-							player.draw(2);
-						}
-					}
-				}
-			},
-			xingzhao:{
-				inherit:'xunxun',
-				mark:true,
-				intro:{
-					content:function(storage,player){
-						var num=0;
-						for(var i=0;i<game.players.length;i++){
-							if(game.players[i].side==player.side){
-								num+=game.players[i].storage.longchuanzhibao;
-							}
-						}
-						var str='无技能';
-						if(num>=1){
-							str='具有技能“恂恂”';
-						}
-						if(num>=2){
-							str+='；当你或队友使用装备牌时，其摸一张牌';
-						}
-						if(num>=3){
-							str+='；你和队友跳过判定阶段';
-						}
-						return str;
-					}
-				},
-				filter:function(event,player){
-					var num=0;
-					for(var i=0;i<game.players.length;i++){
-						if(game.players[i].side==player.side){
-							if(game.players[i].storage.longchuanzhibao) return true;
-						}
-					}
-					return false;
-				},
-				global:['xingzhao2','xingzhao3']
-			},
-			xingzhao2:{
-				trigger:{player:'useCard'},
-				forced:true,
-				filter:function(event,player){
-					if(get.type(event.card)!='equip') return false;
-					var num=0,bool=false;
-					for(var i=0;i<game.players.length;i++){
-						if(game.players[i].side==player.side){
-							num+=game.players[i].storage.longchuanzhibao;
-							if(game.players[i].hasSkill('xingzhao')){
-								bool=true;
-							}
-						}
-					}
-					return bool&&num>=2;
-				},
-				content:function(){
-					player.draw();
-				}
-			},
-			xingzhao3:{
-				trigger:{player:'phaseJudgeBefore'},
-				forced:true,
-				filter:function(event,player){
-					var num=0,bool=false;
-					for(var i=0;i<game.players.length;i++){
-						if(game.players[i].side==player.side){
-							num+=game.players[i].storage.longchuanzhibao;
-							if(game.players[i].hasSkill('xingzhao')){
-								bool=true;
-							}
-						}
-					}
-					return bool&&num>=3;
-				},
-				content:function(){
-					trigger.cancel();
-					game.log(player,'跳过了判定阶段');
-				}
 			},
 			xionghuangjiu:{
 				trigger:{source:'damageBegin1'},
