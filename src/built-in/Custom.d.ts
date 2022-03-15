@@ -37,7 +37,7 @@ declare global {
         subSkill?: {[propName: string]: Skill}
         position?: string
         derivation?: string | string[]
-        involve?: string | string[]
+        involve?: string | string[] | Object[]
         unique?: true
         juexingji?: true
         firstDo?: true

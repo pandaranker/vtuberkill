@@ -175,6 +175,11 @@ module.exports = function (element, _mode, _message) {
             clearTimeout(this.timeout);
             delete this.timeout;
           }
+          if (this.destroyLink && this.destroyLink.length) {
+            for (let v of this.destroyLink) {
+              v.delete(time)
+            }
+          }
           if (!this._listeningEnd || this._transitionEnded) {
             if (typeof time != 'number') time = 500;
             this.classList.add('removing');

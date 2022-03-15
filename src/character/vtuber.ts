@@ -136,6 +136,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**七濑Unia */
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
+			/**胡桃Usa */
+			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
 			/**玛安娜Myanna */
 			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
 			/**花花Haya */

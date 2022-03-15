@@ -57,6 +57,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],
 			/**呜米 */
 			Umy: ['female', 'qun', 4, ['naisi', 'tuzai', 'wuneng'], ['guoV']],
+			/**林莉奈 */
+			RinaHayashi: ['female', 'qun', 3, ['xilv', 'bana'], ['guoV']],
 
 			/**进击的冰糖 */
 			bingtang: ['female', 'xuyan', 4, ['xiou'], ['guoV', 'doublegroup:xuyan:qun']],

@@ -144,7 +144,7 @@ export default {
     若你没有因此恢复体力，你可令一名角色获得『愈翼』直到其下个回合结束。`,
     yuyi_append: lib.figurer(`特性：辅助`),
     renjian: `忍剑`,
-    renjian_info: `判定阶段开始时，你可弃置一张牌并进行一次判定，若结果为黑色或♦，你视为使用了一张目标数最大为X的暗【杀】（X为你已损失的体力值+1）`,
+    renjian_info: `判定阶段开始时，你可弃置一张牌并进行一次判定，若结果为黑色或♦，你视为使用了一张目标数最大为〈你已损失的体力值+1〉的【暗杀】`,
 
     PinkyPopHepburn: `PinkyPopHepburn`,
     PinkyPopHepburn_ab: `PPH`,
@@ -272,7 +272,7 @@ export default {
     ByakuyaMayoi: `白夜真宵`,
     bykuangxin: `狂信`,
     bykuangxin_info: `出牌阶段限一次，你可以进行判定直到出现两次点数为A～10的结果，然后你获得其他判定牌，并根据判定顺序组合（第一次为个位、第二次为十位）执行：<br>
-    ${lib.spanClass(`01~05`, `greentext`)}--摸两张牌增加一点体力上限；
+    ${lib.spanClass(`01~05`, `greentext`)}--摸两张牌并，体力上限+1；
     ${lib.spanClass(`06~40`, `changetext`)}--回复一点体力；
     ${lib.spanClass(`41~70`, `bluetext`)}--视为使用一张【决斗】；
     ${lib.spanClass(`71~95`, `browntext`)}--失去一点体力并弃置手牌至上限；
@@ -296,7 +296,7 @@ export default {
 
     Zaodaoji: `早稻叽`,
     guangan: `珖黯`,
-    guangan_info: `你的上家对你使用牌，或你对你的下家使用牌时，你可以摸一张牌。每轮限X次（X为场上存活的其他角色数）。`,
+    guangan_info: `每轮限X次。你的上家对你使用牌，或你对你的下家使用牌时，你可以摸一张牌（X为场上存活的其他角色数）。`,
     guangan_append: lib.figurer(`特性：易上手`),
     lanxuan: `澜绚`,
     lanxuan_info: `每回合每项限一次，你造成或受到伤害后，可以立即无视距离与次数限制使用一张牌。`,
@@ -312,7 +312,7 @@ export default {
 
     HoureiTenten: `凤玲天天`,
     shengquan: `圣泉`,
-    shengquan_info: `你受到伤害后，可以弃置任意张同色的手牌，回复X点体力（X为弃牌数-1）。`,
+    shengquan_info: `你受到伤害后，可以弃置任意张同色的手牌，回复〈弃牌数-1〉点体力。`,
     yizhu: `译注`,
     yizhu_info: `出牌阶段限一次，你可以失去一点体力，获得一名其他角色的两张手牌；然后直到你下次发动此技能，其获得被你弃置的牌。`,
 
@@ -532,7 +532,7 @@ export default {
     ciling2: `刺令`,
     ciling2_info: `被杀手刺杀中`,
     xiyu: `细雨`,
-    xiyu_info: `锁定技。你于回合外使用牌时，摸一张牌。`,
+    xiyu_info: `锁定技。你于回合外使用牌时，摸X张牌。（X为本回合此技能发动的次数）`,
 
     linxi: `麟＆犀`,
     lilian: `历敛`,
@@ -747,9 +747,10 @@ export default {
     Aza: `阿萨Aza`,
     Aza_ab: `阿萨`,
     qiding: `契定`,
-    qiding_info: `出牌阶段限一次，你可以令攻击范围内的一名角色观看你的手牌并选择一项：<br>受到1点伤害；令你观看并获得其一张牌且防止你对其的伤害直到本回合结束。`,
+    qiding_info: `出牌阶段限一次，你可以令攻击范围内的一名角色观看你的手牌并选择一项：<br>
+    受到1点伤害；令你观看并获得其一张牌，防止你对其造成的伤害直到本回合结束。`,
     chouxin: `酬心`,
-    chouxin_info: `锁定技 当♥牌正面朝上离开你的手牌时，若你：未受伤~失去1点体力；已受伤~回复一点体力。你已发动过此技能的回合内，你跳过弃牌阶段。`,
+    chouxin_info: `锁定技 当♥牌正面朝上离开你的手牌时，若你：未受伤~失去1点体力；已受伤~回复1点体力。你已发动过此技能的回合内，你跳过弃牌阶段。`,
 
     Mahiru: `真绯瑠Mahiru`,
     Mahiru_ab: `真绯瑠`,
@@ -905,7 +906,7 @@ export default {
     shengping_info: `其他角色弃置你的牌时，你可以与其各摸一张牌。`,
     shengping_append: lib.figurer(`特性：联动`),
     jiushuang: `酒霜`,
-    jiushuang_info: `一名角色的准备阶段，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置。`,
+    jiushuang_info: `一名角色的准备阶段，你可以令其弃置你的一张牌，并获得『灵醺』直到其下一次使用【决斗】，若其已有『灵醺』，改为令其横置或重置且你摸一张牌。`,
     jiushuang_append: lib.figurer(`特性：易上手`),
     lingxun: `灵醺`,
     lingxun_info: `锁定技 你手牌中的【酒】视为【决斗】。`,

@@ -10304,11 +10304,13 @@ module.exports = {
                   uiintro = get.nodeintro(this.parentNode.parentNode, false, e);
                }
                uiintro = uiintro || get.nodeintro(this, false, e);
+               uiintro.destroyLink = uiintro.destroyLink || []
                if (!uiintro) return;
                uiintro.classList.add('popped');
                uiintro.classList.add('static');
                ui.window.appendChild(uiintro);
                var layer = ui.create.div('.poplayer', ui.window);
+               uiintro.destroyLink.push(layer)
                var clicklayer = function (e) {
                   if (_status.touchpopping) return;
                   delete ui.throwEmotion;

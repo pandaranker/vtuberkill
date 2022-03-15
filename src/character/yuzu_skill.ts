@@ -1,6 +1,7 @@
 import { toSkill } from './skilltype'
 let { game, ui, get, ai, lib, _status } = window.vkCore
 export default {
+    //迟砂：准备阶段，你可以将手牌调整至全场唯一最多，若如此做，你不能使用本回合摸到的牌直到回合结束。
     chisha: {
         audio: true,
         trigger: { player: 'phaseZhunbeiBegin' },
@@ -45,7 +46,7 @@ export default {
             },
         },
     },
-    //迟砂：准备阶段，你可以将手牌调整至全场唯一最多，若如此做，你不能使用本回合摸到的牌直到回合结束。
+    //鹜荐：你对其他角色造成伤害或受到其他角色的伤害后，若你手牌数多于对方，你可以与其交换手牌
     wujian: {
         trigger: {
             player: 'damageAfter', source: 'damageAfter'
@@ -66,7 +67,7 @@ export default {
             player.swapHandcards(Evt.target);
         },
     },
-    //鹜荐：你对其他角色造成伤害或受到其他角色的伤害后，若你手牌数多于对方，你可以与其交换手牌
+    //拒流：其他角色使用非基本牌时，你可以失去一点体力取消之。
     jvliu: {
         trigger: {
             global: 'useCard'
@@ -105,7 +106,7 @@ export default {
             game.delayx();
         }],
     },
-    //拒流：其他角色使用非基本牌时，你可以失去一点体力取消之。
+    //无瑕：觉醒技。准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『攻熏』。
     wuxia: {
         unique: true,
         juexingji: true,
@@ -134,7 +135,6 @@ export default {
         derivation: 'wuxia_yuanyao',
         involve: 'jvliu',
     },
-    //无瑕：觉醒技。准备阶段，若你体力为1，你增加一点体力并回复一点体力，弃置三张手牌（若不足则改为失去『拒流』）并获得『攻熏』。
     wuxia_yuanyao: {
         filter(Evt, player) {
             if (player.countCards('h') > player.maxHp || player.countCards('h') == player.hp)
@@ -572,7 +572,7 @@ export default {
             return game.countPlayer(cur => cur.getDamagedHp() > 0)
         },
         content: [() => {
-            player.chooseTarget(get.$pro2('yixiang'), (card, player, tar) => {
+            player.chooseTarget(get.$pro2('yixiang'), function (card, player, tar) {
                 return tar.getDamagedHp() > 0;
             }, tar => {
                 let player = _status.event.player
@@ -628,25 +628,25 @@ export default {
         filter(Evt, player) {
             return game.countPlayer() >= 2
         },
-        content: [function () {
-            player.chooseTarget(get.$pro2('xianyu'), (card, player, tar) => {
-                return tar.isIn()
+        content: [() => {
+            player.chooseTarget(get.$pro2('xianyu'), function (card, player, tar) {
+                return tar.isIn();
             }, tar => {
-                return get.$a2(tar)
-            })
-        }, function () {
+                return get.$a2(tar);
+            });
+        }, () => {
             if (result.targets?.length) {
-                Evt.target = result.targets[0]
-                player.logSkill('xianyu', Evt.target)
-                game.delay(0.5)
+                Evt.target = result.targets[0];
+                player.logSkill('xianyu', Evt.target);
+                game.delay(0.5);
             }
             else {
-                player.awakenSkill('xianyu')
-                Evt.finish()
+                player.awakenSkill('xianyu');
+                Evt.finish();
             }
-        }, function () {
-            player.$.xianyu2 = Evt.target
-            player.addTempSkill('xianyu2')
+        }, () => {
+            player.$.xianyu2 = Evt.target;
+            player.addTempSkill('xianyu2', 'none');
         }],
     }, 'direct', 'onremove').setT({ global: 'gameStart', player: 'enterGame' }),
     xianyu2: new toSkill('mark', {
@@ -658,10 +658,10 @@ export default {
         },
         filter(Evt, player) {
             if (Evt.num <= 0) return false
-            return player.$?.xianyu2?.isIn() && !player.$.xianyu2.needsToDiscard()
+            return player.$.xianyu2?.isIn() && !player.$.xianyu2.needsToDiscard()
         },
         logTarget(Evt, player) {
-            return player.$?.xianyu2
+            return player.$.xianyu2
         },
         content() {
             player.$.xianyu2.drawTo(player.getHandcardLimit())
@@ -881,11 +881,8 @@ export default {
         }
     },
     //扇宝
-    fengxu: {
+    fengxu: new toSkill('trigger', {
         audio: 2,
-        trigger: {
-            player: 'useCardToPlayered',
-        },
         filter(Evt, player) {
             return Evt.targets.length == 1
                 && Evt.target == Evt.targets[0]
@@ -947,7 +944,7 @@ export default {
                 Evt.goto(1);
             }
         }]
-    },
+    }).setT('useCardToPlayered'),
     //秋蒂Q
     xiangnuo: {
         trigger: {
@@ -1127,8 +1124,7 @@ export default {
         }
     }, 'forced').setT('phaseUseEnd'),
     //虾皇
-    tanghuang: {
-        trigger: { target: 'useCardToTargeted' },
+    tanghuang: new toSkill('trigger', {
         logTarget: 'player',
         usable: 1,
         filter(Evt, player) {
@@ -1234,8 +1230,8 @@ export default {
                 Evt.more.draw(Evt.dis);
             }
         }],
-    },
-    xiejiang: {
+    }).setT({ target: 'useCardToTargeted' }),
+    xiejiang: new toSkill('trigger', {
         trigger: { player: ['drawEnd', 'changeHujiaEnd'] },
         filter(Evt, player) {
             if (Evt.name == 'draw') return Evt.num >= 2;
@@ -1254,7 +1250,7 @@ export default {
                 xuefeng: 1,
             }
         }
-    },
+    }),
     //龟龟
     lache: {
         trigger: { player: ['recoverAfter', 'discardAfter', 'changeHujiaEnd'] },
@@ -7221,9 +7217,11 @@ export default {
                 || cur.countCards('j') < player.countCards('j'))
         },
         content: [() => {
-            player.chooseTarget(get.$pro2('xtguyong'), (card, player, tar) => tar.countCards('h') < player.countCards('h')
-                || tar.countCards('e') < player.countCards('e')
-                || tar.countCards('j') < player.countCards('j'), tar => tar.countCards('j') < player.countCards('j'))
+            player.chooseTarget(get.$pro2('xtguyong'), function (card, player, tar) {
+                return tar.countCards('h') < player.countCards('h')
+                    || tar.countCards('e') < player.countCards('e')
+                    || tar.countCards('j') < player.countCards('j');
+            }, tar => tar.countCards('j') < player.countCards('j'))
         }, () => {
             if (result?.targets?.length) {
                 Evt.target = result.targets[0]
@@ -7253,7 +7251,9 @@ export default {
             if (Evt.num === 0) Evt.finish()
             else {
                 player.chooseTarget(`令攻击范围内至多${get.cnNumber(Evt.num)}名角色受到${Evt.num}点伤害`, [1, Evt.num],
-                    (card, player, tar) => tar.inRangeOf(player), tar => -get.$a2(tar))
+                    function (card, player, tar) {
+                        return tar.inRangeOf(player);
+                    }, tar => -get.$a2(tar))
             }
         }, () => {
             if (result?.targets?.length) {
@@ -8618,11 +8618,11 @@ export default {
         },
         content: [() => {
             player.awakenSkill('xieyun');
-            player.chooseTarget('选择『协韵』的目标', true, (card, player, tar) => {
+            player.chooseTarget('选择『协韵』的目标', true, function (card, player, tar) {
                 let skills = tar.getSkills(null, false, false);
                 for (let i of skills) {
                     if (i != 'xieyun' && lib.skill[i].limited && tar.awakenedSkills.contains(i)) {
-                        return true
+                        return true;
                     }
                 }
             }, (tar) => {
@@ -9217,6 +9217,7 @@ export default {
         filterCard(card, player) {
             return get.number(card) < 5;
         },
+        involve: 'guohe'
     }, 'enable:chooseToUse'),
     gehuang: new toSkill('trigger', {
         filter(Evt, player) {
@@ -9582,8 +9583,13 @@ export default {
         }, () => {
             if (result.links?.length) {
                 let target = Evt.target
-                if (!target.hasSkill('lingxun')) target.addTempSkill('lingxun', { player: 'juedouBegin' })
-                else target.link();
+                if (!target.hasSkill('lingxun')) {
+                    target.addTempSkill('lingxun', { player: 'juedouBegin' })
+                }
+                else {
+                    target.link();
+                    player.draw()
+                }
             }
         }],
         derivation: 'lingxun'
@@ -9657,7 +9663,7 @@ export default {
                 Evt.discard--;
                 if (Evt.discard) Evt.redo();
             }
-        }, ()=> {
+        }, () => {
             if (Evt.count) Evt.goto(1)
         }],
         ai: {
@@ -10888,8 +10894,7 @@ export default {
         }
     },
     //牛牛子
-    qiying: {
-        trigger: { player: 'damageAfter' },
+    qiying: new toSkill('trigger', {
         filter(Evt, player) {
             if (player == _status.currentPhase) return false;
             return lib.filter.cardEnabled({ name: 'nanman' }, player);
@@ -10907,8 +10912,9 @@ export default {
             player.turnOver();
         }, () => {
             player.chooseUseTarget({ name: 'nanman' }, true);
-        }]
-    },
+        }],
+        involve: 'nanman'
+    }).setT('damageAfter'),
     hengxuan: {
         trigger: { player: 'phaseJieshuBegin' },
         filter(Evt, player) {
@@ -13703,10 +13709,24 @@ export default {
     }, 'locked', 'direct', 'mark').setT(['sha', 'dying'], 'Begin'),
     xiyu: new toSkill('trigger', {
         filter(Evt, player) {
-            return player !== _status.currentPhase
+            return _status.currentPhase && player !== _status.currentPhase
         },
         content() {
-            player.draw()
+            if (player.$.xiyu_mark) {
+                player.addTempSkill('xiyu_mark')
+            }
+            else {
+                player.$.xiyu_mark++
+            }
+            player.draw(player.$.xiyu_mark)
+        },
+        subSkill: {
+            mark: new toSkill('mark', {
+                mark: true,
+                intro: {
+                    content: '本回合已发动#次『细雨』'
+                },
+            }).setI(1)
         }
     }, 'forced').setT('useCard2'),
     //Gaku
@@ -14966,7 +14986,7 @@ export default {
         callback: [() => {
             if (Evt.judgeResult.color == 'black' || Evt.judgeResult.suit == 'diamond') {
                 Evt.num = player.getDamagedHp() + 1
-                player.chooseTarget(`视为使用了一张目标数最大为${Evt.num}的暗【杀】`, [1, Evt.num], function (card, player, target) {
+                player.chooseTarget(`视为使用了一张目标数最大为${Evt.num}的【暗杀】`, [1, Evt.num], function (card, player, target) {
                     if (player == target) return false;
                     return player.canUse({ name: 'sha' }, target, false);
                 }).set('ai', (target) => get.effect(target, { name: 'sha' }, _status.event.player))
@@ -14977,6 +14997,10 @@ export default {
                 player.useCard({ name: 'sha', nature: 'yami', isCard: true }, result.targets, false);
             }
         }],
+        involve: [{
+            name: 'sha',
+            nature: 'yami'
+        }]
     }, 'direct').setT('phaseJudge', 'Begin'),
     //PPH
     pphpanfeng: {

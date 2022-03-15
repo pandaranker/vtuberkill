@@ -246,7 +246,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				}],
 				ai: {
 					useSha: 1,
-				}
+				},
+				involve:[{
+					name: 'sha',
+					nature: 'ocean'
+				}]
 			},
 			baoxiao: {
 				trigger: { player: 'useCard' },
@@ -269,6 +273,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					player.draw(Evt.num);
 				},
+				involve:[{
+					name: 'sha',
+					nature: 'ocean'
+				}]
 			},
 			quru: {
 				audio: 5,
@@ -312,6 +320,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					result: { player: 1 },
 					gainHujia: true
 				},
+				involve:[{
+					name: 'sha',
+					nature: 'ocean'
+				}],
 				group: ['quru_addDam'],
 				subSkill: {
 					addDam: {
@@ -889,6 +901,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 				},
+				involve:[{
+					name: 'sha',
+					nature: 'ocean'
+				}],
 				group: 'qianyong_addDam',
 				subSkill: {
 					addDam: {
@@ -1406,7 +1422,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jinchen: `浸沉`,
 			jinchen_info: `出牌阶段结束时，你可以回复一点体力并翻面，视为使用一张【沉没】。`,
 			qianyong: `潜涌`,
-			qianyong_info: `锁定技 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的海【杀】或摸两张牌。`,
+			qianyong_info: `锁定技 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的【海杀】或摸两张牌。`,
 			qianyong_draw: `潜涌`,
 
 			sea_Ava: `海·向晚`,
@@ -1427,13 +1443,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			qiti: `气嚏`,
 			qiti_info: `你受到属性伤害后，可以交给来源一张牌，令其交给你X张牌。（X为你已损失的体力+1）`,
 			miaoyu: `喵鱼`,
-			miaoyu_info: `转换技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的海【杀】。`,
+			miaoyu_info: `转换技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的【海杀】。`,
 
 			ShirakamiHaruka: `白神遥`,
 			baoxiao: `豹笑`,
-			baoxiao_info: `锁定技 你使用海【杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。`,
+			baoxiao_info: `锁定技 你使用【海杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。`,
 			quru: `取乳`,
-			quru_info: `出牌阶段，你可以将两张非基本牌当作海【杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。`,
+			quru_info: `出牌阶段，你可以将两张非基本牌当作【海杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。`,
 			quru_append: lib.figurer(`特性：叠甲`),
 
 			KisaragiKoyori: `如月こより`,

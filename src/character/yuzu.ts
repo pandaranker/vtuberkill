@@ -73,8 +73,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
 
 
-			/**林莉奈 */
-			RinaHayashi: ['female', 'qun', 3, ['xilv', 'bana'], ['guoV']],
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
 
@@ -117,8 +115,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**诸葛哀汐 */
 			zhugeaixi: ['female', 'qun', 4, ['kaituan', 'gehuang', 'susi'], ['guoV']],
 
-			/**胡桃Usa */
-			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
 			/**满月 */
 			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**蛙吹Keroro */

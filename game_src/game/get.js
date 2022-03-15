@@ -2295,14 +2295,14 @@ module.exports = {
             if (lib.skill[name] && lib.translate[name + '_info']) {
                str = get.skillInfoTranslation(name, player);
                let info = lib.skill[name];
-               let iSkill = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
-               iSkill = [...new Set(iSkill)];
-               for (let i of iSkill) {
+               let iKeys = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
+               iKeys = [...new Set(iKeys)];
+               for (let i of iKeys) {
                   let tra = get.translation(i);
                   if (tra.indexOf('(') > 0)
                      tra = tra.substring(0, tra.indexOf('('));
-                  let reg = new RegExp(`『(${tra})』`, 'g');
-                  str = str.replace(reg, `<span class="iText" data-introLink="${i}">
+                  let reg = new RegExp(`\[【\|『\](${tra})\[】\|』\]`, 'g');
+                  str = str.replace(reg, `<span class="iText" ${typeof i == 'object' ? `data-introLink="${i.name}" ${i.nature ? `data-nature="${i.nature}"` : ``}` : `data-introLink="${i}"`}>
                               <svg width="${tra.length * 1.1 + 2}em" height="1.3em" style="vertical-align: bottom">
                                   <text x="0" y="80%" fill="white">『$1』</text>
                                   <rect width="100%" height="100%" class="iRec"/>
@@ -3030,11 +3030,69 @@ module.exports = {
           */
          nodeintro: function (node, simple, evt) {
             var uiintro = ui.create.dialog('hidden', 'notouchscroll');
+            console.log(node)
             if (node.classList.contains('player') && !node.name) {
                return uiintro;
             }
             var i, translation, intro, str;
             if (node._nointro) return;
+            function setCardInfo(name) {
+               if (get.subtype(name) == 'equip1') {
+                  var added = false;
+                  if (lib.card[name] && lib.card[name].distance) {
+                     var dist = lib.card[name].distance;
+                     if (dist.attackFrom) {
+                        added = true;
+                        uiintro.add('<div class="text center">攻击范围：' + (-dist.attackFrom + 1) + '</div>');
+                     }
+                  }
+                  if (!added) {
+                     uiintro.add('<div class="text center">攻击范围：1</div>');
+                  }
+               }
+               else if (get.subtype(name)) {
+                  uiintro.add('<div class="text center">' + get.translation(get.subtype(name)) + '</div>');
+               }
+               else if (lib.card[name] && lib.card[name].addinfomenu) {
+                  uiintro.add('<div class="text center">' + lib.card[name].addinfomenu + '</div>');
+               }
+               else if (lib.card[name] && lib.card[name].derivation) {
+                  if (typeof lib.card[name].derivation == 'string') {
+                     uiintro.add('<div class="text center">来源：' + get.translation(lib.card[name].derivation) + '</div>');
+                  }
+                  else if (lib.card[name].derivationpack) {
+                     uiintro.add('<div class="text center">来源：' + get.translation(lib.card[name].derivationpack + '_card_config') + '</div>');
+                  }
+               }
+               else {
+                  if (lib.card[name].unique) {
+                     uiintro.add('<div class="text center">特殊' + get.translation(lib.card[name].type) + '牌</div>');
+                  }
+                  else {
+                     if (lib.card[name].type && lib.translate[lib.card[name].type] && lib.translate[lib.card[name].type] != ' ') uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
+                  }
+               }
+               if (lib.card[name].unique && lib.card[name].type == 'equip') {
+                  if (lib.cardPile.guozhan && lib.cardPack.guozhan.contains(name)) {
+                     uiintro.add('<div class="text center">专属装备</div>').style.marginTop = '-5px';
+                  }
+                  else {
+                     uiintro.add('<div class="text center">特殊装备</div>').style.marginTop = '-5px';
+                  }
+               }
+            }
+            function setOceanInfo() {
+               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' +
+                  '<span class="bluetext">海洋</span>' +
+                  '：海洋属性的牌被使用时，若此牌没有「伤害」标签且目标没有护甲，则令目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' +
+                  '</div>');
+            }
+            function setYamiInfo() {
+               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' +
+                  '<span class="legendtext">暗影</span>' +
+                  '：暗影属性的牌可以在其他角色的结束阶段对其使用；暗影属性的牌被使用时，若目标手牌数多于使用者，则其不能响应此牌且此牌造成的伤害不产生传递' +
+                  '</div>');
+            }
             if (typeof node._customintro == 'function') {
                if (node._customintro(uiintro) === false) return;
             }
@@ -3198,7 +3256,11 @@ module.exports = {
                      }
                      for (let v of uiintro.getElementsByTagName('span')) {
                         v.link = v.dataset.introlink
-                        if (v.classList.contains('iText')) lib.setIntro(v)
+                        v.nature = v.dataset.nature
+                        if (v.classList.contains('iText')) {
+                           v.parentLink = uiintro
+                           lib.setIntro(v)
+                        }
                      }
                   }
                }
@@ -3709,49 +3771,7 @@ module.exports = {
                else {
                   if (lib.translate[name + '_info']) {
                      if (!uiintro.nosub) {
-                        if (get.subtype(node) == 'equip1') {
-                           var added = false;
-                           if (lib.card[node.name] && lib.card[node.name].distance) {
-                              var dist = lib.card[node.name].distance;
-                              if (dist.attackFrom) {
-                                 added = true;
-                                 uiintro.add('<div class="text center">攻击范围：' + (-dist.attackFrom + 1) + '</div>');
-                              }
-                           }
-                           if (!added) {
-                              uiintro.add('<div class="text center">攻击范围：1</div>');
-                           }
-                        }
-                        else if (get.subtype(node)) {
-                           uiintro.add('<div class="text center">' + get.translation(get.subtype(node)) + '</div>');
-                        }
-                        else if (lib.card[name] && lib.card[name].addinfomenu) {
-                           uiintro.add('<div class="text center">' + lib.card[name].addinfomenu + '</div>');
-                        }
-                        else if (lib.card[name] && lib.card[name].derivation) {
-                           if (typeof lib.card[name].derivation == 'string') {
-                              uiintro.add('<div class="text center">来源：' + get.translation(lib.card[name].derivation) + '</div>');
-                           }
-                           else if (lib.card[name].derivationpack) {
-                              uiintro.add('<div class="text center">来源：' + get.translation(lib.card[name].derivationpack + '_card_config') + '</div>');
-                           }
-                        }
-                        else {
-                           if (lib.card[name].unique) {
-                              uiintro.add('<div class="text center">特殊' + get.translation(lib.card[name].type) + '牌</div>');
-                           }
-                           else {
-                              if (lib.card[name].type && lib.translate[lib.card[name].type] && lib.translate[lib.card[name].type] != ' ') uiintro.add('<div class="text center">' + get.translation(lib.card[name].type) + '牌</div>');
-                           }
-                        }
-                        if (lib.card[name].unique && lib.card[name].type == 'equip') {
-                           if (lib.cardPile.guozhan && lib.cardPack.guozhan.contains(name)) {
-                              uiintro.add('<div class="text center">专属装备</div>').style.marginTop = '-5px';
-                           }
-                           else {
-                              uiintro.add('<div class="text center">特殊装备</div>').style.marginTop = '-5px';
-                           }
-                        }
+                        setCardInfo(name)
                      }
                      if (lib.translate[name + '_info']) {
                         var placetext = uiintro.add('<div class="text" style="display:inline">' + lib.translate[name + '_info'] + '</div>');
@@ -3770,10 +3790,10 @@ module.exports = {
                         else uiintro.add('<div class="text" style="font-family: yuanli">应变：' + lib.card[name].yingbian_prompt + '</div>');
                      }
                      if (node.nature == 'ocean') {
-                        uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' + '<span class="bluetext">海洋</span>' + '：海洋属性的牌被使用时，若此牌没有「伤害」标签且目标没有护甲，则令目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' + '</div>');
+                        setOceanInfo()
                      }
                      if (node.nature == 'yami') {
-                        uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' + '<span class="legendtext">暗影</span>' + '：暗影属性的牌可以在其他角色的结束阶段对其使用；暗影属性的牌被使用时，若目标手牌数多于使用者，则其不能响应此牌且此牌造成的伤害不产生传递' + '</div>');
+                        setYamiInfo()
                      }
                      if (lib.translate[name + '_append']) {
                         uiintro.add('<div class="text" style="display:inline">' + lib.translate[name + '_append'] + '</div>');
@@ -3924,7 +3944,11 @@ module.exports = {
                         }
                         for (let v of uiintro.getElementsByTagName('span')) {
                            v.link = v.dataset.introlink
-                           if (v.classList.contains('iText')) lib.setIntro(v)
+                           v.nature = v.dataset.nature
+                           if (v.classList.contains('iText')) {
+                              v.parentLink = uiintro
+                              lib.setIntro(v)
+                           }
                         }
                      }
                   }
@@ -4023,20 +4047,48 @@ module.exports = {
                }
             }
             else if (node.classList.contains('iText')) {
-               if (node.curUiintro) node.curUiintro.close();
+               let parentLink = node.parentLink
+               parentLink.destroyLink = parentLink.destroyLink || []
+               if (node.curUiintro) {
+                  node.curUiintro.delete(200)
+                  parentLink.destroyLink.remove(node.curUiintro)
+                  delete node.curUiintro
+               }
+               parentLink.destroyLink.push(uiintro)
+
                let name = node.link;
-               if (lib.translate[name + '_info']) {
-                  node.curUiintro = uiintro
-                  translation = lib.translate[name + '_ab'] || get.translation(name).slice(0, 5);
+               if (typeof node.link == 'object' && node.link.name && lib.translate[node.link.name]) {
+                  name = node.link.name;
+               }
+               node.curUiintro = uiintro
+               if (lib.card[name]) {
+                  uiintro.add(get.translation(name));
+                  setCardInfo(name)
+                  if (lib.translate[`${name}_info`]) {
+                     let placetext = uiintro.add(`<div class="text" style="display:inline">${lib.translate[`${name}_info`]}</div>`);
+                     if (lib.translate[`${name}_info`].indexOf('<div class="equip"') != 0) {
+                        uiintro._place_text = placetext;
+                     }
+                  }
+                  if (node.nature == 'ocean') {
+                     setOceanInfo()
+                  }
+                  if (node.nature == 'yami') {
+                     setYamiInfo()
+                  }
+               }
+               else if (lib.translate[`${name}_info`]) {
+                  translation = lib.translate[`${name}_ab`] || get.translation(name).slice(0, 5);
                   if (lib.skill[name] && lib.skill[name].nobracket) {
-                     uiintro.add('<div><div class="skilln">' + get.translation(name) + '</div><div' + ((get.translation(name).length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                     uiintro.add(`<div><div class="skilln">${get.translation(name)}</div><div${(get.translation(name).length > 3) ? ' class="skilltext"' : ''}>${get.skillInfoTranslation(name)}</div></div>`);
                   }
                   else {
-                     uiintro.add('<div><div class="skill">' + translation + '</div><div' + ((translation.length > 3) ? ' class="skilltext"' : '') + '>' + get.skillInfoTranslation(name) + '</div></div>');
+                     uiintro.add(`<div><div class="skill">${translation}</div><div${(translation.length > 3) ? ' class="skilltext"' : ''}>${get.skillInfoTranslation(name)}</div></div>`);
                   }
-                  if (lib.translate[name + '_append']) {
-                     uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[name + '_append'] + '</div>')
-                  }
+               }
+               if (lib.translate[name + '_append']) {
+                  let placetext = uiintro.add(`<div class="text">${lib.translate[name + '_append']}</div>`)
+                  if (!uiintro._place_text) uiintro._place_text = placetext
                }
             }
             else if (node.classList.contains('equips') && ui.arena.classList.contains('selecting')) {

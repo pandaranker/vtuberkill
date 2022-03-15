@@ -674,7 +674,9 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					game.delay(1.5);
 					'step 2'
 					let card = Evt.dis.result.cards[0]
-					if (card && get.type(card) === 'equip') target.damage(Evt.baseDamage, 'yami');
+					if (card && get.type(card) === 'equip') {
+						player.useCard({ name: 'sha', nature: 'yami' }, target, false)
+					}
 					game.delayx();
 				},
 				ai: {
@@ -703,14 +705,15 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 				fullskin: true,
 				type: 'trick',
 				enable: true,
+				range: { global: 2 },
 				selectTarget: 1,
 				filterTarget: function (card, player, target) {
-					return target != player && target.hujia;
+					return target != player;
 				},
 				content: function () {
 					'step 0'
 					if (typeof Evt.baseDamage != 'number') Evt.baseDamage = Evt.baseNumber || 1;
-					Evt.num = target.hujia;
+					Evt.num = target.hujia || 1;
 					target.chooseToDiscard(Evt.num, true);
 					'step 1'
 					if (result.cards.length < Evt.num) target.damage(Evt.baseDamage, 'ocean');
@@ -725,7 +728,7 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					result: {
 						target: function (player, target) {
 							var hs = target.countCards('h');
-							var hujia = target.hujia;
+							var hujia = target.hujia || 1;
 							if (hs < hujia) return -(2 + hs);
 							else return -hujia;
 						},
@@ -1333,11 +1336,11 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 			chen_card: '消失之牌',
 
 			huiliu: '回流',
-			huiliu_info: '出牌阶段，对距离2以内且有护甲的一名其他角色使用。你获取其一点护甲，若你已受伤且没有护甲，则额外获得一点护甲并摸一张牌。',
+			huiliu_info: '出牌阶段，对距离2以内且有护甲的一名其他角色使用。你窃取其一点护甲，若你已受伤且没有护甲，你获得一点护甲并摸一张牌。',
 			qinshi: '浸蚀',
-			qinshi_info: '出牌阶段，对有护甲的1至2名其他角色使用，你依次弃置一张牌，移除其所有护甲，若你弃置了装备牌，则额外对目标造成一点暗影伤害。',
+			qinshi_info: '出牌阶段，对有护甲的1至2名其他角色使用，你依次弃置一张牌，移除其所有护甲，若你弃置了装备牌，视为对目标使用一张【暗杀】。',
 			bowen: '波纹',
-			bowen_info: '出牌阶段，对有护甲的一名其他角色使用，令其弃置自身护甲数量的手牌，若不足，则额外对其造成一点海洋伤害。',
+			bowen_info: '出牌阶段，对距离2以内的一名其他角色使用，令其弃置自身护甲值（至少为1）的手牌，若其手牌数不足，你对其造成一点海洋伤害。',
 
 			xuanwo: '漩涡',
 			xuanwo_info: '出牌阶段，对一名其他角色使用（横置于判定区内）；若判定结果不为♦，该角色与其相邻的角色各弃置一张牌；然后将此牌移至当前回合角色下家。',

@@ -341,7 +341,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				filter(Evt, player) {
 					return Evt.filterCard({ name: 'jiu', isCard: true }, player, Evt);
 				},
-				filterTarget(card, player, target: { countCards: (arg0: string) => any; }) {
+				filterTarget(card, player, target) {
 					return target.countCards('he');
 				},
 				content: [() => {
@@ -5073,6 +5073,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					else if (ui.selected.cards.length && ui.selected.cards) return get.color(card) == 'red';
 				},
 				position: 'he',
+				involve: 'yuanjiao',
 				group: 'uijieyuan_record',
 				subSkill: {
 					record: {
@@ -5748,7 +5749,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_MononobeAlice: `新·物述有栖`,
 			re_dianmingguzhen: `电鸣`,
-			re_dianmingguzhen_info: `出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你可视为使用一张雷【杀】。`,
+			re_dianmingguzhen_info: `出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你可视为使用一张【雷杀】。`,
 
 			re_MinamiNami: `新·美波七海`,
 			re_longdan: `龙胆雄心`,
@@ -5823,7 +5824,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_zhanxie: `战械`,
 			re_zhanxie_info: `锁定技 你于出牌阶段可多使用两张【杀】。当你使用第三张【杀】时，摸两张牌。`,
 			re_chongdian: `机电`,
-			re_chongdian_info: `你受到雷电伤害时可改为回复等量体力。你的装备牌可当无距离限制的雷【杀】使用。`,
+			re_chongdian_info: `你受到雷电伤害时可改为回复等量体力。你的装备牌可当无距离限制的【雷杀】使用。`,
 
 			re_ShirakamiFubuki: `新·白上吹雪`,
 			re_yuanlv: `狐虑`,

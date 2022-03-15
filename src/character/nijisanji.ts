@@ -448,24 +448,29 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player: 'phaseDiscardBefore',
 				},
 				filter(Evt, player) {
-					return (player.countCards('h') >= player.countCards('e')) && player.countCards('e') > 0;
+					return player.countCards('h')>0;
 				},
 				content() {
 					'step 0'
-					player.chooseCard('h', player.countCards('e'), true, '请选择重铸的牌');
+					player.chooseCard('h', [1, player.countCards('e')+1], true, '『乐癖』：请选择重铸的牌');
 					'step 1'
-					player.lose(result.cards, ui.discardPile);
-					player.$throw(result.cards, 1000);
-					game.log(player, '将', cards, '置入了弃牌堆');
+					if(result.bool){
+						Evt.num = result.cards.length
+						player.lose(result.cards, ui.discardPile, 'visible');
+						player.$throw(result.cards, 1000);
+						game.log(player, '将', cards, '置入了弃牌堆');
+					}
+					else Evt.finish()
 					'step 2'
-					player.draw(player.countCards('e'));
-					player.addTempSkill('yuepi_handLimit');
+					player.draw(Evt.num);
+					player.$.yuepi_handLimit = Evt.num
+					player.addTempSkill('yuepi_handLimit',{player:'phaseDiscardAfter'});
 				},
 				subSkill: {
 					handLimit: {
 						mod: {
 							maxHandcard(player, num) {
-								return num + player.countCards('e');
+								return num + player.$.yuepi_handLimit;
 							},
 						}
 					}
@@ -595,7 +600,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							'step 0'
 							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合', 'he', card => {
 								return get.suit(card) == 'club' || get.type(card) == 'equip';
-							}).set('logSkill',Evt.name)
+							}).set('logSkill', Evt.name)
 							'step 1'
 							if (result.bool) {
 								player.unmarkSkill(Evt.name);
@@ -1408,7 +1413,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 2'
 					if (result.bool && result.targets.length) {
 						var target = result.targets[0];
-						player.logSkill('danlian',[trigger.player,target])
+						player.logSkill('danlian', [trigger.player, target])
 						game.delay(0.5);
 						trigger.player.useCard({ name: Evt.cardName }, target, [Evt.card]);
 					}
@@ -1830,7 +1835,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					threaten(player, target) {
 						return 1.6;
 					}
-				}
+				},
+				involve: [{
+					name: 'sha',
+					nature: 'yami'
+				}]
 			},
 			//雪城真寻
 			jiaoming: {
@@ -1994,7 +2003,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					if (result.control != 'cancel2') {
 						if (result.index == 0) {
-							player.draw(2);
+							player.draw(3);
 						} else {
 							player.recover();
 						}
@@ -2298,7 +2307,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tinenghuifu1_info: `锁定技 当你失去装备区的一张牌后，你回复1点体力。当你的体力值减少后，你摸一张牌。`,
 			tinenghuifu1_append: lib.figurer(`特性：卖血`),
 			dianmingguzhen: `电鸣鼓震`,
-			dianmingguzhen_info: `出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为对对应装备栏内没有装备的所有角色使用一张雷【杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。`,
+			dianmingguzhen_info: `出牌阶段限一次，你可以失去 1 点体力移动场上的一张装备牌，若移动的是你的，你视为向对应装备栏内没有装备的所有角色使用一张【雷杀】；然后你可以为抵消此【杀】的角色追加一次【闪电】判定。`,
 			dianmingguzhen_append: lib.figurer(`可以通过将自己的装备转移给队友，实现瞬间爆发`),
 
 			ShizukaRin: `静凛`,
@@ -2309,11 +2318,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			IenagaMugi: `家长麦`,
 			fengxue: `奋学`,
-			fengxue_info: `你可以跳过出牌阶段，亮出牌堆顶的X+1张牌，使用其中一张牌，然后获得其中一种花色的牌。（X为体力值不小于你的角色数）`,
+			fengxue_info: `你可以跳过出牌阶段，亮出牌堆顶<br>〈体力值不小于你的角色数+1〉张牌，使用其中一张牌，获得其中一种花色的牌。`,
 			yuepi: `乐癖`,
-			yuepi_info: `弃牌阶段开始时，你可以重铸等同于你装备区牌数的手牌，令你在本阶段增加等量的手牌上限。`,
+			yuepi_info: `弃牌阶段开始时，你可以重铸至多<br>〈你装备区牌数+1〉张手牌，令你在本阶段增加等量的手牌上限。`,
 			cangxiong: `藏兄`,
-			cangxiong_info: `其他角色的体力值变为1后，你可以交给其任意手牌，然后若其手牌数大于你，将移出游戏直到其回合开始。`,
+			cangxiong_info: `其他角色的体力值变为 1 后，你可以交给其任意张手牌；若其手牌数多于你，将移出游戏直到其回合开始。`,
 			cangxiong_append: lib.figurer(`特性：传递关键牌 保护友方`),
 
 			MitoTsukino: `月之美兔`,
@@ -2376,14 +2385,16 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			你的【闪】或【无懈可击】进入弃牌堆时，摸一半数量的牌（向上取整）。`,
 			suisi_append: lib.figurer(`特性：高防御 自肃`),
 			liefeng: `猎风`,
-			liefeng_info: `结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的暗【杀】。`,
+			liefeng_info: `结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的【暗杀】。`,
 
 			YukishiroMahiro: `雪城真寻`,
 			jiaoming: `骄名`,
-			jiaoming_info: `出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：<br>对你使用一张【杀】；或失去1点体力并令你于本回合失去『骄名』。`,
+			jiaoming_info: `出牌阶段，若本阶段进入弃牌堆的牌名称均不同，你可令攻击范围内有你的一名其他角色选择一项：<br>
+			对你使用一张【杀】；失去1点体力并令你于本回合失去『骄名』。`,
 			jiaoming_append: lib.figurer(`特性：挑衅`),
 			changhe: `唱和`,
-			changhe_info: `出牌阶段结束时，若本阶段进入弃牌堆的牌中有至少三张名称相同，你可以选择一项：<br>摸两张牌；或回复1点体力。`,
+			changhe_info: `出牌阶段结束时，若本阶段至少有三张名称相同的牌进入弃牌堆，你可以选择一项：<br>
+			摸三张牌；回复1点体力。`,
 
 			OnomachiHaruka: `小野町春香`,
 			nvjiangrouhao: `女将柔豪`,
