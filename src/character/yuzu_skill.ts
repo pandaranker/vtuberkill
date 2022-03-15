@@ -13712,7 +13712,7 @@ export default {
             return _status.currentPhase && player !== _status.currentPhase
         },
         content() {
-            if (player.$.xiyu_mark) {
+            if (!player.$.xiyu_mark) {
                 player.addTempSkill('xiyu_mark')
             }
             else {
