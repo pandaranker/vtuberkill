@@ -13722,11 +13722,10 @@ export default {
         },
         subSkill: {
             mark: new toSkill('mark', {
-                mark: true,
                 intro: {
                     content: '本回合已发动#次『细雨』'
                 },
-            }).setI(1)
+            }, 'mark', 'onremove').setI(1)
         }
     }, 'forced').setT('useCard2'),
     //Gaku
