@@ -1479,19 +1479,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					DrawOrStop: {
 						trigger: { global: ['phaseZhunbeiEnd', 'phaseJudgeEnd', 'phaseDrawEnd', 'phaseUseEnd', 'phaseDiscardEnd', 'phaseJieshuEnd'] },
 						filter(Evt: any, player: { $: { re_mozhaotuji_useCard: any; }; }) {
-							if ((player.$.re_mozhaotuji_useCard) >= 1)
+							if (player.$.re_mozhaotuji_useCard >= 1)
 								return true;
-							else if ((player.$.re_mozhaotuji_useCard) == 0)
-								return player == _status.currentPhase;
-							else
-								return false;
 						},
 						priority: 14,
 						direct: true,
 						content: [() => {
-							if ((player.$.re_mozhaotuji_useCard) >= 2) {
+							if (player.$.re_mozhaotuji_useCard >= 1) {
 								player.logSkill('re_mozhaotuji');
-								player.draw(1);
+								player.draw();
 							}
 							player.$.re_mozhaotuji_useCard = 0;
 						}],
@@ -1519,7 +1515,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						check(Evt, player) {
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
-								|| Evt.name === 'phaseDiscard';
+								|| ['phaseDiscard','phaseJieshu'].includes(Evt.name);
 						},
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
@@ -5730,7 +5726,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_ShizukaRin: `新·静凛`,
 			re_mozhaotuji: `夜杰`,
 			re_mozhaotuji_DrawOrStop: `夜杰`,
-			re_mozhaotuji_info: `每回合限一次，你可以将你的一个阶段变为出牌阶段。你使用过至少一张牌的阶段结束时，摸一张牌。`,
+			re_mozhaotuji_info: `每回合限一次，你可以将你的一个阶段变为出牌阶段。一个阶段结束时，若你于此阶段内使用了张牌，你摸一张牌。`,
 
 			re_MitoTsukino: `新·月之美兔`,
 			re_MitoTsukino_info: `月之美兔`,

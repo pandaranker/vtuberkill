@@ -33,16 +33,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			UmitsukiShell: ['female', 'qun', 4, ['beike', 'wenda'],],
 			/**猫山苗 */
 			NekoyamaNae: ['female', 'qun', 6, ['moupi', 'xuneng'],],
-			/**琥珀玲 */
-			KohakuRin: ['female', 'qun', 4, ['chunzhen', 'hupo'],],
-			/**寝月ねろ */
-			NerunaNero: ['female', 'qun', 3, ['peijiu', 'ransha'],],
 
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
-
-			/**陆鳐 */
-			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
 
 
 			/**兰若Ruo */
@@ -87,8 +80,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**莲汰 */
 			AiTeN: ['male', 'psp', 4, ['langfei', 'xieyun'], ['guoV', 'P_SP']],
 
-			/**艾白 */
-			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
 			/**文静 */
 			wenjing: ['female', 'Tencent', 4, ['zaiying', 'zhengen'], ['guoV']],
 
@@ -101,16 +92,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
 			/**无理 */
 			Muri: ['female', 'VirtuaReal', 3, ['lique', 'zhangdeng'], ['guoV']],
-			/**Hanser */
-			Hanser: ['female', 'VirtuaReal', 3, ['naiwei', 'cishan'], ['guoV']],
 
 			/**启娜娜米 */
 			ap_Nana7mi: ['female', 'VirtuaReal', 4, ['niyou', 'shalu'], ['guoV']],
 			/**启阿梓 */
 			ap_Azusa: ['female', 'VirtuaReal', 3, ['puyu', 'appojian'], ['guoV']],
-
-			/**清则子 */
-			qingzezi: ['female', 'qun', 4, ['menghuan', 'gengu'], ['guoV']],
 
 			/**诸葛哀汐 */
 			zhugeaixi: ['female', 'qun', 4, ['kaituan', 'gehuang', 'susi'], ['guoV']],

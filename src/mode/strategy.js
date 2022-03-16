@@ -961,7 +961,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 		},
 		drama: {
 			testDrama: {
-				size: [[5, 16], [26, 34]],
+				size: [[5, 12], [27, 34]],
 				situation: {
 					show: () => {
 						if (ui.STG_start) {
@@ -972,7 +972,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy2')
 						}
 						ui.mapContainer = ui.create.div('#map-container', ui.arena);
+
 						ui.dramaContainer = ui.create.div('#chess-container', ui.mapContainer);
+						// require('./strategy_display').rain(ui.dramaContainer.appendChild(document.createElement('canvas')))
 						ui.dramaContainer.move = ui.click.moveContainer;
 						ui.dramaContainer.chessLeft = 0;
 						ui.dramaContainer.chessTop = 0;
@@ -991,17 +993,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						ui.canvas2.height = height
 						ui.chessMap.width = width
 						ui.chessMap.height = height
-						let citys = lib.situate.citys.slice(0)
-						let mounts = lib.situate.mounts.slice(0)
 
-						for (let c of citys) {
-							c.drawMap(ui.ctx2, size, 0.06)
-						}
-						for (let m of mounts) {
-							m.drawMap(ui.ctx2, size, 0.06)
-						}
+						lib.situate.control.init(ui.canvas2, size, 0.06)
+
+						ui.mapControl = ui.create.div('#map-control', ui.mapContainer)
+						lib.situate.control.setMapControl(ui.mapControl)
 					},
 					hide: () => {
+						ui.ctx2.clearRect(0, 0, ui.canvas2.width, ui.canvas2.height)
 						if (ui.STG_start) {
 							let preUi = ui.STG_start
 							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
@@ -1009,14 +1008,15 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 						}
-						ui.dramaContainer.delete()
-						delete ui.dramaContainer
-						delete ui.chessMap
-						delete ui.canvas2
-						delete ui.ctx2
-						ui.mapContainer.delete()
-						delete ui.mapContainer
-
+						ui.dramaContainer.delete(200, () => {
+							delete ui.dramaContainer
+							delete ui.chessMap
+							delete ui.canvas2
+							delete ui.ctx2
+							ui.mapContainer.delete(200, () => {
+								delete ui.mapContainer
+							})
+						})
 					}
 				}
 			}

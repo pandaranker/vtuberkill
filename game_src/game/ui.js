@@ -3268,13 +3268,13 @@ module.exports = {
                                                 }
                                              }
                                              else if (updates[i].indexOf('image/card') == 0) {
-                                                if (updates[i].indexOf('qiaosi_card') != 11 && !skipcard.contains(updates[i].slice(11, updates[i].lastIndexOf('.')))) {
+                                                if (!skipcard.contains(updates[i].slice(11, updates[i].lastIndexOf('.')))) {
                                                    updates.splice(i--, 1);
                                                 }
                                              }
-                                             else if (updates[i].indexOf('image/mode/stone') == 0) {
-                                                updates.splice(i--, 1);
-                                             }
+                                             // else if (updates[i].indexOf('image/mode/stone') == 0) {
+                                             //    updates.splice(i--, 1);
+                                             // }
                                           }
                                        }
                                        break;

@@ -11968,8 +11968,9 @@ export default {
                         Evt.cards.removeArray(evt.cards);
                     });
                 }, () => {
-                    if (Evt.cards.length == 1 && player.hasUseTarget(Evt.cards[0])) {
-                        Evt.source.chooseUseTarget(Evt.cards[0], '视为使用一张' + get.$t(Evt.cards[0]), true);
+                    if (Evt.cards.length == 1 && Evt.source.hasUseTarget(Evt.cards[0])) {
+                        let card = game.createCard(Evt.cards[0].name, Evt.cards[0].suit, Evt.cards[0].number, Evt.cards[0].nature)
+                        Evt.source.chooseUseTarget(card, `视为使用一张${get.$t(Evt.cards[0])}`, true);
                     }
                 }],
                 mod: {
@@ -11996,9 +11997,9 @@ export default {
             }
             player.addAdditionalSkill('qingsui', 'qingsui_jiai')
         },
-        trigger: { player: ['useCardAfter', 'qingsui_shengyinAfter', 'qingsui_quanyuAfter'] },
+        trigger: { player: ['useCardAfter', 'respondAfter', 'qingsui_shengyinAfter', 'qingsui_quanyuAfter'] },
         filter(Evt, player) {
-            if (Evt.name == 'useCard') return Evt.skill == 'qingsui_jiai_backup';
+            if (['useCard','respond'].includes(Evt.name)) return Evt.skill == 'qingsui_jiai_backup';
             return true;
         },
         locked: true,
@@ -12006,7 +12007,7 @@ export default {
         content: [() => {
             if (player.$.qingsui == 3) player.$.qingsui = 1;
             else player.$.qingsui++;
-            player.addAdditionalSkill('qingsui', ['qingsui_jiai', 'qingsui_shengyin', 'qingsui_quanyu'][player.$.qingsui])
+            player.addAdditionalSkill('qingsui', ['qingsui_jiai', 'qingsui_shengyin', 'qingsui_quanyu'][player.$.qingsui - 1])
         }, () => {
             player.updateMarks('qingsui')
             if (player.$.qingsui == 1) {
@@ -13154,18 +13155,21 @@ export default {
                 Evt.type2 = get.type2(card);
             } else Evt.finish();
         }, () => {
-            let next = target.judge(card => {
-                let evt = _status.event.getParent('shengyin')
-                if (get.color(card) == evt?.color) return 2;
-                if (get.type2(card) == evt?.type2) return -1;
+            target.judge(card => {
+                let evt = _status.event
+                if (get.color(card) === evt.precolor) return 2;
+                if (get.type2(card) === evt.pretype) return -1;
                 return 0;
-            }).set('callback', function () {
-                let evt = _status.event.getParent('shengyin')
-                if (!evt || evt.name != 'shengyin') return;
-                let color = evt.color, type2 = evt.type2, card0 = evt.card, source = evt.player;
-                if (get.type2(Evt.judgeResult.name) == type2) source.gain(card0, player, 'give');
-                if (Evt.judgeResult.color == color) game.asyncDraw([player, source]);
-            });
+            })
+                .set('callback', function () {
+                    let evt = _status.event.getParent()
+                    let card0 = evt.precard, source = evt.getParent().player;
+                    if (get.type2(Evt.judgeResult.name) == evt.pretype) source.gain(card0, player, 'give');
+                    if (Evt.judgeResult.color ==evt.precolor) game.asyncDraw([player, source]);
+                })
+                .set('precard', Evt.card)
+                .set('pretype', get.type2(Evt.card))
+                .set('precolor', get.color(Evt.card))
         }],
         ai: {
             order: 8,
@@ -13680,7 +13684,7 @@ export default {
                         player.useCard({ name: 'sha' }, Evt.target, false)
                     }
                 }]
-            }).setT({ global: 'phaseDiscardEnd' })
+            }, 'direct').setT({ global: 'phaseDiscardEnd' })
         },
         group: 'ciling_dis'
     }, 'direct').setT('phaseUseBefore'),
@@ -14755,16 +14759,28 @@ export default {
         },
         logTarget: 'source',
         content: [() => {
+            Evt.tar = trigger.source
             player.turnOver();
         }, () => {
-            player.gainPlayerCard(trigger.source, true, 'he', Math.ceil(trigger.source.countCards('he') / 2));
+            Evt.num = Math.ceil(Evt.tar.countCards('he') / 2)
+            player.gainPlayerCard(Evt.tar, true, 'he', Evt.num).gaintag.add('jingyan');
         }],
         ai: {
             maixie: true,
             skillTagFilter(player) {
                 return player.isTurnedOver();
             },
-        }
+        },
+        mod: {
+            ignoredHandcard(card, player) {
+                if (card.hasGaintag('jingyan')) {
+                    return true;
+                }
+            },
+            aiOrder(player, card, num) {
+                if (get.itemtype(card) == 'card' && card.hasGaintag('jingyan')) return num - 0.1;
+            },
+        },
     },
     //猫又小粥
     fantuan: {

@@ -66,6 +66,7 @@ function hexAnnulus(ctx, begin, zoom, direction, serif = true) {
     return { begin, drcts }
 }
 function hexToRgba(hex, opacity, deviate) {
+    if (hex.indexOf('#') !== 0) return hex
     let r = parseInt('0x' + hex.slice(1, 3)), g = parseInt('0x' + hex.slice(3, 5)), b = parseInt('0x' + hex.slice(5, 7))
     if (deviate) {
         let d = deviate
@@ -126,7 +127,7 @@ class City extends Area {
         this.region = config.region;
         this.shape = config.shape;
         this.color = config.color;
-        
+
         if (this.shape) {
             this.addShape(this.shape)
         }
@@ -218,7 +219,7 @@ class Mount extends Area {
         this.name = name;
         this.shape = config.shape;
         this.color = config.color || '#333333';
-        
+
         if (this.shape) {
             this.addShape(this.shape)
         }
@@ -297,7 +298,7 @@ class Block {
         blocks.push(this)
     }
     drawMap(ctx, size, zoom, stroke = true) {
-        ctx.font = "36px Arial";
+        ctx.font = "36px 'hyk2gj',Arial";
         ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -381,6 +382,7 @@ const translation = {
         xiapi: '下邳',
         xiaopei: '小沛',
         langya: '琅琊',
+        guangling: '广陵',
 
         shouchun: '寿春',
         lujiang: '庐江',
@@ -422,158 +424,280 @@ const translation = {
         Se: '海洋',
     }
 }
+const citys = [
+    new City("longxi", [0, 10], { level: 2 }),
+    new City("wuwei", [1, 6], { level: 4 }),
+    new City("tianshui", [2, 11], { level: 3 }),
+    new City("anding", [4, 8], { level: 1 }),
+    new City("beidi", [5, 6], { level: 2 }),
+
+    new City("hanzhong", [6, 14], { level: 3 }),
+    new City("zitong", [5, 17], { level: 1 }),
+    new City("chengdu", [2, 20], { level: 6 }),
+    new City("jiangzhou", [6, 22], {
+        level: 2, color: '#48a088', shape: [
+            -4, [1, 2], [-1, 2], [-2, 4], [-4, 4], [-5, 4], [-6, 2], [-6, 1], [[-7, -6], [-3, -1]]
+        ]
+    }),
+    new City("yongan", [10, 20], {
+        level: 2, color: '#7ddecf', shape: [
+            -5, [-1, 0], [-2, 2], [-1, 2], [-2, 4], [-4, 4], [-5, 4], [[-6, -3], [1, 3]], -5
+        ]
+    }),
+
+    new City("fuling", [8, 23], {
+        color: '#aa8844', shape: [
+            -2, 3, [0, 2], [-1, 1], [-2, 2], [-1, 2], [-1, 1], [-1, 1], [0, 1], [0, 1]
+        ]
+    }),
+    new City("jianning", [5, 17], { level: 2 }),
+    new City("yunnan", [3, 28], {
+        level: 1
+    }),
+    new City("yongchang", [1, 29], {}),
+
+    new City("xihe", [10, 6], { level: 2 }),
+    new City("jinyang", [12, 6], { level: 4 }),
+    new City("shangdang", [12, 8], { level: 3 }),
+
+    new City("changan", [8, 11], { level: 8 }),
+    new City("wan", [12, 14], {
+        level: 4, color: '#f3d48a', shape: [
+            -3, [0, 1], [-2, 2], [-2, 2], [-1, 2], [-2, 2], [-2, 1], [-1, 0]
+        ]
+    }),
+    new City("shangyong", [10, 15], {
+        level: 2, color: '#94d685', shape: [
+            -2, [-1, 1], [-2, 1], [-1, 2], [-1, 3], [0, 3], 1
+        ]
+    }),
+
+    new City("luoyang", [12, 11], { level: 8 }),
+
+    new City("ye", [15, 7], { level: 6 }),
+    new City("zhongshan", [16, 5], { level: 3 }),
+    new City("nanpi", [19, 5], { level: 2 }),
+
+    new City("ji", [17, 3], { level: 1 }),
+    new City("beiping", [20, 3], { level: 4 }),
+    new City("liucheng", [22, 2], {}),
+    new City("xiangping", [24, 3], { level: 3 }),
+
+    new City("pingyuan", [19, 8], { level: 2 }),
+    new City("beihai", [23, 7], { level: 4 }),
+
+    new City("puyang", [17, 10], { level: 2 }),
+    new City("chenliu", [16, 12], { level: 3 }),
+
+    new City("xiapi", [22, 13], {
+        level: 5, color: '#d07ae0', shape: [
+            -4, [1, 4], [-1, 4], [-1, 5], [-2, 5], [-3, 1], -3
+        ]
+    }),
+    new City("xiaopei", [20, 12], { level: 2 }),
+    new City("langya", [21, 10], { level: 4 }),
+    new City("guangling", [23, 15], {
+        level: 4, color: '#6fa1eb', shape: [
+            -3, [2, 5], [-2, 5], [-3, 5], [-3, 3], [-3, -1], -3
+        ]
+    }),
+
+    new City("shouchun", [19, 15], {
+        level: 5, color: '#f7b063', shape: [
+            -3, [0, 4], [-1, 4], [-2, 4], [-3, 4], [-2, 4], [-1, 4], [-1, 2]
+        ]
+    }),
+    new City("lujiang", [21, 18], {
+        level: 2, color: '#e0d57a', shape: [
+            -3, [2, 3], [-1, 3], [-2, 2], [-4, 2], [-4, 1], [-4, -1]
+        ]
+    }),
+
+    new City("xuchang", [15, 14], {
+        level: 4, color: '#7ec7ff', shape: [
+            -2, [-1, 1], [-2, 3], [-3, 5], [-3, 4], [-4, 3], [-2, 0]
+        ]
+    }),
+    new City("runan", [17, 16], {
+        level: 3, color: '#8198fc', shape: [
+            -1, [-1, 2], [-3, 3], [-2, 3], [0, 3]
+        ]
+    }),
+
+    new City("xinye", [14, 17], {
+        level: 2, color: '#ea9370', shape: [
+            -3, [0, 2], [-1, 4], [-2, 5], [-3, 5], [-1, 2]
+        ]
+    }),
+    new City("xiangyang", [13, 19], {
+        level: 6, color: '#a893c8', shape: [
+            -4, -4, [-5, -2], [-4, -1], [-3, 1], [-3, 4], [-2, 4], [0, 4]
+        ]
+    }),
+    new City("jiangxia", [17, 19], {
+        level: 4, color: '#8ecdb7', shape: [
+            -3, [-1, 1], [-1, 4], [-1, 4], [-1, 4], [0, 3]
+        ]
+    }),
+    new City("jiangling", [14, 22], {
+        level: 3, color: '#6a84b7', shape: [
+            -4, [-1, 0], [-2, 5], [-3, 4], [-2, 4], [-1, 3], [0, 1]
+        ]
+    }),
+
+    new City("changsha", [16, 24], {
+        level: 4, color: '#008877', shape: [
+            -2, [1, 3], [-1, 3], [-3, 4], [-4, 3], [-4, 3], [1, 2]
+        ]
+    }),
+    new City("wuling", [12, 23], {
+        level: 2, color: '#95a3c6', shape: [
+            -3, [-4, -3], [-4, 0], [-5, 1], [-6, 2], [-5, 2], [-5, 0], [-6, -1], [-6, -5]
+        ]
+    }),
+    new City("lingling", [13, 26], {
+        color: '#008844', shape: [
+            -3, 1, [[-3, 2]], [[-5, 2]], [[-5, 1]], [[-6, 2]], [-7, 0]
+        ]
+    }),
+    new City("guiyang", [15, 26], {
+        level: 1, color: '#008877', shape: [
+            -1, [[0, 4]], [[-1, 6]], [[-1, 5]], [[-3, -1], [4, 5]]
+        ]
+    }),
+
+    new City("jianye", [24, 17], {
+        level: 8, color: '#ee5533', shape: [
+            -1, [0, 2], [-1, 2], [-1, 1], [-1, 1], [-2, -1], -2, [-4, -3], [-5, -3]
+        ]
+    }),
+    new City("wu", [25, 20], {
+        level: 7, color: '#99dd33', shape: [
+            -6, [4, 6], [3, 5], [3, 4], [1, 4], [0, 3], [-1, 2], [-1, 2], [-3, 1], -1
+        ]
+    }),
+    new City("chaisang", [19, 21], {
+        level: 6, color: '#bb7777', shape: [
+            -1, [0, 3], [-3, 3], [-4, 2], [-4, 3], [-5, 2], [-5, 1], [[-5, -4], [-2, 0]]
+        ]
+    }),
+    new City("kuaiji", [25, 23], {
+        level: 4, color: '#bbddaa', shape: [
+            -5, [-3, -1], [-4, 1], [-4, 3], [-3, 2], [-5, 1], [-6, 1], [-6, 0], [-2, -1]
+        ]
+    }),
+    new City("jianan", [22, 25], {
+        level: 3, color: '#88dddd', shape: [
+            -4, [[0, 1]], [[-1, 1]], [[-2, 5]], [-2, 6], [-2, 3], [-2, 2], [-4, 1], [-5, 0], [-5, -4]
+        ]
+    }),
+    new City("luling", [20, 25], {
+        level: 2, color: '#aa6622', shape: [
+            -1, [[0, 1]], [[-1, 1]], [[-2, 1]], [[-4, 0]], [[-5, -1]]
+        ]
+    }),
+
+    new City("nanhai", [17, 28], {
+        level: 8, color: '#3311dd', shape: [
+            -2, [[-2, 1], [4, 9]], [[-5, 7]], [[-8, 4]], [[-8, -4]]
+        ]
+    }),
+    new City("jiaozhi", [11, 29], {
+        level: 3, color: '#8800aa', shape: [
+            -3, [[1, 3]], [[-2, 4]], [[-3, 4]], [[-5, 1]], [[-4, -1]], -4
+        ]
+    }),
+    new City("jiuzhen", [9, 32], {
+        level: 4, color: '#aa2266', shape: [
+            -5, [0, 2], [0, 2], [0, 2], [0, 1], [0, 1], [-1, 1], [-1, 1], [-1, 0]
+        ]
+    }),
+    // new City("rinan", [10, 35], { level: 1 }),
+
+    // new City("taibei", [28, 23], { level: 6 }),
+    // new City("taizhong", [28, 25], { level: 3 }),
+]
+const mounts = [
+    // new City("秦岭", [14, 22], {
+    //     shape: [
+    //         -5, [-1, 0], [-2, 5], [-2, 4], [-2, 4], [-1, 3], [0, 1]
+    //     ]
+    // }),
+
+    new Mount("桐柏山", [12, 16], {
+        shape: [
+            0, 1, [-1, 0]
+        ]
+    }),
+    new Mount("大别山", [17, 17], {
+        shape: [
+            0, [[0, 0], [5, 5]], [0, 4]
+        ]
+    }),
+    new Mount("武夷山脉", [19, 24], {
+        shape: [
+            -1, 0, [-1, 2], [-2, 0], [-2, -1], [-3, -2]
+        ]
+    }),
+    new Mount("南岭", [13, 28], {
+        shape: [
+            -1, [-1, 2]
+        ]
+    }),
+]
+const context = {}
+const data = {}
 module.exports = {
-    citys: [
-        new City("longxi", [0, 10], { level: 2 }),
-        new City("wuwei", [1, 6], { level: 4 }),
-        new City("tianshui", [2, 11], { level: 3 }),
-        new City("anding", [4, 8], { level: 1 }),
-        new City("beidi", [5, 6], { level: 2 }),
-
-        new City("hanzhong", [6, 14], { level: 3 }),
-        new City("zitong", [5, 17], { level: 1 }),
-        new City("chengdu", [2, 20], { level: 6 }),
-        new City("jiangzhou", [6, 22], { level: 2 }),
-        new City("yongan", [10, 20], { level: 1 }),
-
-        new City("fuling", [8, 23], {
-            color: '#aa8844', shape: [
-                -2, 3, [0, 2], [-1, 1], [-2, 2], [-1, 2], [-1, 1], [-1, 1], [0, 1], [0, 1]
-            ]
-        }),
-        new City("jianning", [5, 17], { level: 2 }),
-        new City("yunnan", [3, 28], { level: 1 }),
-        new City("yongchang", [1, 29], {}),
-
-        new City("xihe", [10, 6], { level: 2 }),
-        new City("jinyang", [12, 6], { level: 4 }),
-        new City("shangdang", [12, 8], { level: 3 }),
-
-        new City("changan", [8, 11], { level: 8 }),
-        new City("wan", [12, 14], { level: 4 }),
-        new City("shangyong", [10, 15], { level: 2 }),
-
-        new City("luoyang", [12, 11], { level: 8 }),
-
-        new City("ye", [15, 7], { level: 6 }),
-        new City("zhongshan", [16, 5], { level: 3 }),
-        new City("nanpi", [19, 5], { level: 2 }),
-
-        new City("ji", [17, 3], { level: 1 }),
-        new City("beiping", [20, 3], { level: 4 }),
-        new City("liucheng", [22, 2], {}),
-        new City("xiangping", [24, 3], { level: 3 }),
-
-        new City("pingyuan", [19, 8], { level: 2 }),
-        new City("beihai", [23, 7], { level: 4 }),
-
-        new City("puyang", [17, 10], { level: 2 }),
-        new City("chenliu", [16, 12], { level: 3 }),
-
-        new City("xiapi", [22, 13], { level: 5 }),
-        new City("xiaopei", [20, 12], { level: 2 }),
-        new City("langya", [21, 10], { level: 3 }),
-
-        new City("shouchun", [19, 15], { level: 5 }),
-        new City("lujiang", [21, 18], { level: 2 }),
-
-        new City("xuchang", [15, 14], { level: 4 }),
-        new City("runan", [17, 16], { level: 3 }),
-
-        new City("xinye", [14, 17], { level: 2 }),
-        new City("xiangyang", [13, 19], { level: 6 }),
-        new City("jiangxia", [17, 19], { level: 4 }),
-        new City("jiangling", [14, 22], {
-            level: 3, color: '#7711cc', shape: [
-                -5, [-1, 0], [-2, 5], [-2, 4], [-2, 4], [-1, 3], [0, 1]
-            ]
-        }),
-
-        new City("changsha", [16, 24], {
-            level: 4, color: '#008877', shape: [
-                -2, [1, 3], [-1, 3], [-3, 4], [-4, 3], [-4, 3], [1, 2]
-            ]
-        }),
-        new City("wuling", [12, 23], {
-            level: 2, color: '#4455bb', shape: [
-                -3, [-4, -3], [-4, 0], [-5, 1], [-6, 2], [-5, 2], [-5, 0], [-6, -1], [-6, -5]
-            ]
-        }),
-        new City("lingling", [13, 26], {
-            color: '#008844', shape: [
-                -3, 1, [[-3, 2]], [[-5, 2]], [[-5, 1]], [[-6, 2]], [-7, 0]
-            ]
-        }),
-        new City("guiyang", [15, 26], {
-            level: 1, color: '#008877', shape: [
-                -1, [[0, 4]], [[-1, 6]], [[-1, 5]], [[-3, -1], [4, 5]]
-            ]
-        }),
-
-        new City("jianye", [24, 17], { level: 8 }),
-        new City("wu", [25, 20], {
-            level: 7, color: '#ee5533', shape: [
-                -6, [4, 6], [3, 5], [3, 4], [1, 4], [0, 3], [-1, 2], [-1, 2], [-3, 1], -1
-            ]
-        }),
-        new City("chaisang", [19, 21], {
-            level: 6, color: '#bb7777', shape: [
-                -1, [0, 3], [-3, 3], [-4, 2], [-4, 3], [-5, 2], [-5, 1], [[-5, -4], [-2, 0]]
-            ]
-        }),
-        new City("kuaiji", [25, 23], {
-            level: 4, color: '#bbddaa', shape: [
-                -5, [-3, -1], [-4, 1], [-4, 3], [-3, 2], [-5, 1], [-6, 1], [-6, 0], [-2, -1]
-            ]
-        }),
-        new City("jianan", [22, 25], {
-            level: 3, color: '#88dddd', shape: [
-                -4, [[0, 1]], [[-1, 1]], [[-2, 5]], [-2, 6], [-2, 3], [-2, 2], [-4, 1], [-5, 0], [-5, -4]
-            ]
-        }),
-        new City("luling", [20, 25], {
-            level: 2, color: '#aa6622', shape: [
-                -1, [[0, 1]], [[-1, 1]], [[-2, 1]], [[-4, 0]], [[-5, -1]]
-            ]
-        }),
-
-        new City("nanhai", [17, 28], {
-            level: 8, color: '#3311dd', shape: [
-                -2, [[-2, 1], [4, 9]], [[-5, 7]], [[-8, 4]], [[-8, -4]]
-            ]
-        }),
-        new City("jiaozhi", [11, 29], {
-            level: 3, color: '#8800aa', shape: [
-                -3, [[1, 3]], [[-2, 4]], [[-3, 4]], [[-5, 1]], [[-4, -1]], -4
-            ]
-        }),
-        new City("jiuzhen", [9, 32], {
-            level: 4, color: '#aa2266', shape: [
-                [[0, 2], -5], [[0, 2], -4], [[0, 2], -3], [[0, 1], -2], [[0, 1], -1], [[-1, 1], 0], [[-1, 1], 1], [[-1, 0], 2]
-            ]
-        }),
-        // new City("rinan", [10, 35], { level: 1 }),
-
-        // new City("taibei", [28, 23], { level: 6 }),
-        // new City("taizhong", [28, 25], { level: 3 }),
-    ],
-    mounts: [
-        // new City("秦岭", [14, 22], {
-        //     shape: [
-        //         -5, [-1, 0], [-2, 5], [-2, 4], [-2, 4], [-1, 3], [0, 1]
-        //     ]
-        // }),
-
-        new Mount("武夷山脉", [19, 24], {
-            shape: [
-                -1, 0, [-1, 2], [-2, 0], [-2, -1], [-3, -2]
-            ]
-        }),
-        new Mount("南岭", [13, 28], {
-            shape: [
-                -1, [-1, 2]
-            ]
-        }),
-    ],
-    translation
+    citys,
+    mounts,
+    translation,
+    control: {
+        setMapControl(parent) {
+            let map_status = '省份', map_status_div = 'none'
+            for (let v of ['省份', '势力', '外交']) {
+                let div = document.createElement('div')
+                if (v === map_status) map_status_div = div
+                div.innerHTML = `${v}模式`
+                div.listen(() => {
+                    if (map_status === v) return;
+                    parent.insertBefore(div, map_status_div)
+                    map_status = v
+                    map_status_div = div
+                    data.map_status = map_status
+                })
+                parent.appendChild(div)
+            }
+            Object.defineProperty(data, 'map_status', {
+                get() {
+                    return map_status
+                },
+            })
+        },
+        init(cvs, size, zoom) {
+            context.curCvs = cvs
+            context.curSize = size
+            context.curZoom = zoom
+            let ctx = cvs.getContext('2d');
+            context.curCtx = ctx
+            for (let c of citys) {
+                c.drawMap(ctx, size, zoom)
+            }
+            for (let m of mounts) {
+                m.drawMap(ctx, size, zoom)
+            }
+        },
+        reinit() {
+            if (context.curCvs && context.curCtx) {
+                let ctx = context.curCtx
+                let cvs = context.curCvs
+                ctx.clearRect(0, 0, cvs.width, cvs.height)
+                for (let c of citys) {
+                    c.drawMap(ctx, size, zoom)
+                }
+                for (let m of mounts) {
+                    m.drawMap(ctx, size, zoom)
+                }
+            }
+        }
+    }
 }

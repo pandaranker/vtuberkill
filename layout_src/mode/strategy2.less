@@ -19,19 +19,29 @@
     left: 0 !important;
     top: 0 !important;
     transition: all 0s !important;
-}
 
-#arena.chess>#me,
-#arena.chess>#mebg,
-#arena.chess>#autonode {
-    bottom: 0;
-    top: auto;
-    border-radius: 0;
-}
+    >#me,
+    >#mebg,
+    >#autonode {
+        bottom: 0;
+        top: auto;
+        border-radius: 0;
+    }
 
-#arena.chess>#autonode {
-    width: calc(100% - 240px);
-    left: 120px;
+    >#autonode {
+        width: calc(100% - 240px);
+        left: 120px;
+    }
+
+    >.dialog {
+        height: calc(50% - 20px);
+        max-height: 240px;
+    }
+
+    #chess>.player {
+        left: 14px;
+        top: 14px;
+    }
 }
 
 #me>.fakeme.avatar {
@@ -80,6 +90,67 @@
     }
 }
 
+#map-control {
+    display: flex;
+    position: static;
+    right: 1em;
+    top: 2vw;
+    width: 24vw;
+    height: 7vw;
+    z-index: 12;
+
+    >div {
+        text-shadow: none;
+        position: relative;
+        display: none;
+        opacity: 0;
+        font-size: 2vw;
+        font-family: 'Tiejili', 'hyk2gj', Arial, Helvetica, sans-serif;
+        -webkit-text-stroke: 0.02em rgba(255, 255, 255, 0.6);
+        color: transparent;
+        background-clip: text;
+        background-image: linear-gradient(to right, #f06a 0%, #60fa 50%, #f06a 100%);
+        background-size: 200% 10%;
+        background-position-x: 0%;
+        transition: all .5s;
+        animation: colorChange 3s linear 0s infinite;
+
+        &:first-child {
+            font-size: 2.5vw;
+            display: block;
+            opacity: 1;
+        }
+    }
+
+    &:hover {
+        >div {
+            display: block;
+            opacity: 1;
+
+            &:first-child {
+                width: 5.5vw;
+                display: block;
+                opacity: 1;
+            }
+        }
+    }
+
+    @keyframes colorChange {
+        0% {
+            background-position-x: 0%;
+        }
+
+        50% {
+            background-position-x: 100%;
+        }
+
+        100% {
+            background-position-x: 200%;
+        }
+    }
+}
+
+
 #chess-container {
     left: 0;
     top: 0;
@@ -114,7 +185,7 @@
         linear-gradient(#ffffff33 1px, transparent 0, transparent 19px),
         linear-gradient(#9daa847c, #9daa84);
     background-size: 100% 3px, 3px 100%, 3px 100%, 150px 100%, 100% 150px, 100% 100%;
-    background-repeat: no-repeat, no-repeat, no-repeat,repeat, repeat, no-repeat;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
     background-position: 0 0, 0 0, 100% 0;
 }
 
@@ -164,10 +235,6 @@
     border-radius: 8px;
 }
 
-#arena.chess>.dialog {
-    height: calc(50% - 20px);
-    max-height: 240px;
-}
 
 #window[data-radius_size='reduce']>.dialog {
     border-radius: 4px;
@@ -508,11 +575,6 @@ br.finish_game {
     top: 5px;
     width: calc(100% - 10px);
     height: calc(100% - 10px);
-}
-
-#arena.chess #chess>.player {
-    left: 14px;
-    top: 14px;
 }
 
 

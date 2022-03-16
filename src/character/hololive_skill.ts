@@ -2590,7 +2590,7 @@ export default {
                     return player.$.shenhai_jiesuan[0] == Evt.card;
                 },
                 content() {
-                    var card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
+                    let card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
                     player.useCard(card, (trigger._targets || trigger.targets).slice(0), trigger.cards).skill = trigger.skill || 'shenhai_jiesuan';
                 }
             },
@@ -2840,6 +2840,11 @@ export default {
         },
         cardAround(player) {
             return player.getCards('s', card => card.hasGaintag('maoge'));
+        },
+        hiddenCard(player, name) {
+            if (player.countCards('s', card => card.hasGaintag('maoge')) > player.countCards('h')) {
+                if (player.countCards('s', card => card.hasGaintag('maoge') && get.name(card) === name)) return true
+            }
         },
         trigger: { global: 'phaseLoopBefore', player: ['drawBegin', 'enterGame'] },
         forced: true,

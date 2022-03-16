@@ -264,10 +264,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								player.logSkill('mozhaotuji');
 								player.draw(1);
 							}
-							else if (trigger.name == 'phaseUse' && player.$.mozhaotuji_useCard == 0)
+							else if (trigger.name == 'phaseUse' && player.$.mozhaotuji_useCard == 0) {
 								player.addTempSkill('mozhaotujiStop');
-							'step 1'
+							}
 							player.$.mozhaotuji_useCard = 0;
+							'step 1'
 						},
 					},
 					useCard: {
@@ -293,7 +294,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						check(Evt, player) {
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
-								|| Evt.name === 'phaseDiscard';
+								|| ['phaseDiscard','phaseJieshu'].includes(Evt.name);
 						},
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
@@ -448,13 +449,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player: 'phaseDiscardBefore',
 				},
 				filter(Evt, player) {
-					return player.countCards('h')>0;
+					return player.countCards('h') > 0;
 				},
 				content() {
 					'step 0'
-					player.chooseCard('h', [1, player.countCards('e')+1], true, '『乐癖』：请选择重铸的牌');
+					player.chooseCard('h', [1, player.countCards('e') + 1], true, '『乐癖』：请选择重铸的牌');
 					'step 1'
-					if(result.bool){
+					if (result.bool) {
 						Evt.num = result.cards.length
 						player.lose(result.cards, ui.discardPile, 'visible');
 						player.$throw(result.cards, 1000);
@@ -464,7 +465,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 2'
 					player.draw(Evt.num);
 					player.$.yuepi_handLimit = Evt.num
-					player.addTempSkill('yuepi_handLimit',{player:'phaseDiscardAfter'});
+					player.addTempSkill('yuepi_handLimit', { player: 'phaseDiscardAfter' });
 				},
 				subSkill: {
 					handLimit: {
@@ -1678,48 +1679,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.logSkill('suisi');
 					}
 				},
-				group: [
-					'suisi_shanMod', 'suisi_wuxieMod'
-				],
-				// hasShan(){
-				// 	var basicCards = this.getCards('h', {type: 'basic'});
-				// 	if(basicCards&&basicCards.length){
-				// 		for(var i=0;i<basicCards.length;++i){
-				// 			if(basicCards[i]&&basicCards[i].name != 'shan'){
-				// 				return true;
-				// 			}
-				// 		}
-				// 	}
-				// 	if(this.hasSkillTag('respondShan',true,null,true)) return true;
-				// 	return false;
-				// },
-				// hasWuxie(){
-				// 	var trickCards = this.getCards('h', {type: 'trick'});
-				// 	if(trickCards&&trickCards.length){
-				// 		for(var i=0;i<trickCards.length;++i){
-				// 			if(trickCards[i]&&trickCards[i].name != 'wuxie'){
-				// 				return true;
-				// 			}
-				// 		}
-				// 	}
-				// 	var skills=this.getSkills(true).concat(lib.skill.global);
-				// 	game.expandSkills(skills);
-				// 	for(var i=0;i<skills.length;i++){
-				// 		var ifo=get.info(skills[i]);
-				// 		if(ifo.viewAs&&typeof ifo.viewAs!='function'&&ifo.viewAs.name=='wuxie'){
-				// 			if(!ifo.viewAsFilter||ifo.viewAsFilter(this)){
-				// 				return true;
-				// 			}
-				// 		}
-				// 		else{
-				// 			var hiddenCard=get.info(skills[i]).hiddenCard;
-				// 			if(typeof hiddenCard=='function'&&hiddenCard(this,'wuxie')){
-				// 				return true;
-				// 			}
-				// 		}
-				// 	}
-				// 	return false;
-				// },
+				group: ['suisi_shanMod', 'suisi_wuxieMod'],
 				subSkill: {
 					shanMod: {
 						hiddenCard(player, name) {
@@ -1820,9 +1780,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						return;
 					}
 					player.chooseUseTarget(
-						'###选择一个目标，视为对其使用一张【暗】杀。(【暗】杀：' + Evt.shaCnt + '/' + Evt.handCnt + '）张',
+						'###选择一个目标，视为对其使用一张【暗】杀。(【暗】杀：' + Evt.shaCnt + '/' + Evt.handCnt + '张）',
 						{ name: 'sha', nature: 'yami' }, true, 'nodistance'
 					);
+					'step 3'
 					--Evt.shaCnt;
 					Evt.redo();
 
@@ -2313,7 +2274,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			ShizukaRin: `静凛`,
 			mozhaotuji: `魔爪突击`,
 			mozhaotuji_DrawOrStop: `魔爪突击`,
-			mozhaotuji_info: `回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。你使用过两张或更多牌的阶段结束时，你摸一张牌。`,
+			mozhaotuji_info: `回合内，你可以将任意阶段连续的变为出牌阶段，直到你有出牌阶段未使用过牌。一个阶段结束时，若你于此阶段内使用了至少两张牌，你摸一张牌。`,
 			mozhaotuji_append: lib.figurer(`特性：多次出杀 易上手`),
 
 			IenagaMugi: `家长麦`,

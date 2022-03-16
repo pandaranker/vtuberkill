@@ -618,7 +618,7 @@ export default {
     quanyu_info: `其他角色使用一张牌时，若你没有该花色的手牌，你可以令此牌无效并获得之，然后你展示所有手牌，每缺少一种花色便受到1点无来源的伤害。`,
     quanyu_append: lib.figurer(`特性：干扰`),
     wulian: `舞连`,
-    wulian_info: `<font color=#ecd>限定技</font> 出牌阶段，你可以摸2×已损失体力值的牌，并在本轮内获得『连破』。`,
+    wulian_info: `<font color=#ecd>限定技</font> 出牌阶段，你可以摸〈2×已损失体力值〉张牌，并在本轮内获得『连破』。`,
     lianpo: `连破`,
     lianpo_info: `一名角色的回合结束时，若你本回合内杀死过角色，则你可以进行一个额外的回合。`,
 

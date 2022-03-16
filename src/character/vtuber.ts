@@ -36,7 +36,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			SuouPatra: ['female', 'nanashi', 4, ['mianmo', 'tiaolv']],
 			/**日ノ隈らん */
 			HinokumaRan: ['female', 'nanashi', 4, ['yixiang', 'xianyu'], ['riV']],
-			
+
 			/**向晚 */
 			Ava: ['female', 'asoul', 4, ['yiqu', 'wanxian'], ['guoV']],
 			/**贝拉 */
@@ -85,6 +85,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**泠鸢 */
 			Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],
+			/**Hanser */
+			Hanser: ['female', 'VirtuaReal', 3, ['naiwei', 'cishan'], ['guoV']],
 			/**勺宝 */
 			Shaun: ['female', 'VirtuaReal', 3, ['juxiao', 'shshenyan'], ['guoV']],
 			/**阿萨Aza */
@@ -117,7 +119,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 'hundunliandong']],
 			/**Mishiro */
 			ShirayukiMishiro: ['female', 'nori', 3, ['tianyi', 'nveyu']],
-			
+
 			/**虾皇 */
 			xiaoxiayu: ['female', 'xuefeng', 4, ['tanghuang', 'xiejiang'], ['guoV']],
 			/**龟龟 */
@@ -137,7 +139,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**七濑Unia */
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
 			/**胡桃Usa */
-			KurumiUsa: ['female', 'Providence', 4, ['jidou', 'duotian'], ['guoV']],
+			KurumiUsa: ['female', 'Providence', 3, ['jidou', 'duotian'], ['guoV']],
 			/**玛安娜Myanna */
 			Myanna: ['female', 'Providence', 4, ['yemo', 'jiaopin'], ['guoV']],
 			/**花花Haya */
@@ -160,6 +162,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			airuisi: ['female', 'Tencent', 4, ['maozhi', 'baifei'], ['zhu', 'guoV']],
 			/**星瞳 */
 			xingtong: ['female', 'Tencent', 4, ['jiezou', 'xtguyong'], ['guoV']],
+			/**艾白 */
+			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {
@@ -2047,7 +2051,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yipengyidou_info: `出牌阶段限一次，你可与一名其他角色拼点，赢的角色可以视为使用一张本回合进入弃牌堆的一张基本牌或通常锦囊牌。没赢的角色选择一项：也如此做；令对方回复1点体力。`,
 			yipengyidou_append: lib.figurer(`通过与队友拼点，多次使用关键牌`),
 			renleiguancha: `人类观察`,
-			renleiguancha_info: `结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：造成过伤害~你摸一张牌；死亡或杀死过角色~你造成1点伤害；以上皆无~你摸两张牌并失去1点体力。`,
+			renleiguancha_info: `结束阶段，你可以选择一名其他角色。你的下回合开始时，若该角色在期间：<br>
+			造成过伤害~你摸一张牌；死亡或杀死过角色~你对指定角色造成1点伤害；以上皆无~你摸两张牌并失去1点体力。`,
 			renleiguancha_append: lib.figurer(`特性：额外摸牌`),
 
 			Reine: `兰音`,
@@ -2085,7 +2090,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jueshou_info: `出牌阶段限一次，你可以将一张黑色基本牌或装备牌当作【兵粮寸断】使用，若为♣，则此【兵粮寸断】无距离限制；若为装备牌，其他角色计算与你的距离+1直到你下个回合开始。`,
 			jueshou_append: lib.figurer(`特性：易上手`),
 
-			Kaf: `花谱`,
+			Kaf: `花谱Kaf`,
+			Kaf_ab: `花谱`,
 			liuhua: `化羽`,
 			liuhua_info: `一个回合结束时，若有角色受到了伤害，你可以将所有手牌置于武将牌上并获得一个额外回合。你的『化羽』牌增加后，若之包含四种花色，你获得一种颜色的『化羽』牌并翻面。`,
 			yishi: `遗世`,
@@ -2103,11 +2109,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhanchong_info: `当一张装备牌不因使用正面朝上离开你的手牌区时，你可以翻面并弃置其他角色的一张牌，若不为装备牌，其受到一点伤害。`,
 			zhanchong_append: lib.figurer(`特性：爆发 易上手`),
 
-			Kafu: `可不`,
+			Kafu: `可不Kafu`,
+			Kafu_ab: `可不`,
 			nisheng: `拟声`,
 			nisheng_info: `一个额定回合结束后，你可以展示两张点数相同的手牌并获得一个额外的回合。每个点数限一次。`,
 			jingyan: `精赝`,
-			jingyan_info: `你受到伤害后，可以翻面并获得来源一半的牌（向上取整）。`,
+			jingyan_info: `你受到伤害后，可以翻面并获得来源一半的牌（向上取整），以此获得的牌不计入手牌上限。`,
 			jingyan_append: lib.figurer(`特性：卖血`),
 
 			IsekaiJoucho: `ヰ世界情绪`,

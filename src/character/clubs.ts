@@ -45,6 +45,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Hiiro: ['female', 'Providence', 4, ['jiace', 'xiangying'], ['yingV']],
 			/**猫雷NyaRu */
 			NecoraNyaru: ['female', 'qun', 3, ['miaolu', 'benglei'],],
+			/**琥珀玲 */
+			KohakuRin: ['female', 'qun', 4, ['chunzhen', 'hupo'],],
+			/**寝月ねろ */
+			NerunaNero: ['female', 'qun', 3, ['peijiu', 'ransha'],],
 			/**羽澄照乌愈 */
 			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
 			
@@ -57,8 +61,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],
 			/**呜米 */
 			Umy: ['female', 'qun', 4, ['naisi', 'tuzai', 'wuneng'], ['guoV']],
-			/**林莉奈 */
-			RinaHayashi: ['female', 'qun', 3, ['xilv', 'bana'], ['guoV']],
 
 			/**进击的冰糖 */
 			bingtang: ['female', 'xuyan', 4, ['xiou'], ['guoV', 'doublegroup:xuyan:qun']],
@@ -107,6 +109,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**Silvervale */
 			Silvervale: ['female', 'vshojo', 4, ['yingling', 'duchun'], ['yingV']],
 
+			/**陆鳐 */
+			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
+			/**林莉奈 */
+			RinaHayashi: ['female', 'qun', 3, ['xilv', 'bana'], ['guoV']],
+			/**清则子 */
+			qingzezi: ['female', 'qun', 4, ['menghuan', 'gengu'], ['guoV']],
 			/**菜菜姐 */
 			caicai: ['female', 'qun', 5, ['tibing', 'guangtui'], ['guoV']],
 			/**笙歌 */
@@ -2447,63 +2455,59 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			//进击的冰糖 bintang
 			xiou: {
 				audio: 5,
-				group: 'xiou_gainHand',
 				init(player) {
 					player.$.xiou = {};
 				},
+				trigger: { player: 'phaseUseBegin' },
+				filter(Evt, player) {
+					return game.hasPlayer(function (cur) {
+						return cur != player && cur.countGainableCards(player, 'h');
+					});
+				},
+				content() {
+					'step 0'
+					var filterTarget = function (card, player, target) {
+						return player != target && target.countGainableCards(player, 'h');
+					};
+					player.chooseTarget(
+						'选择一名其他角色，获取其所有手牌',
+						filterTarget, true
+					).set('ai', function (target) {
+						var evt = _status.event;
+						var att = get.attitude(evt.player, target);
+						if (target.hasSkill('yiqu')) return 2 + 3 * att + target.countGainableCards(player, 'h');
+						return att + target.countGainableCards(player, 'h');
+					});
+					'step 1'
+					var p1 = result.targets[0];
+					//添加临时技能xiou_phaseJieshuTrigger
+					player.addTempSkill('xiou_phaseJieshuTrigger', 'phaseJieshuAfter');
+					player.$.xiou.p1 = p1;
+					var hardCards = p1.getGainableCards(player, 'h');
+					if (!hardCards || !hardCards.length) {
+						Evt.finish();
+						return;
+					}
+					Evt.p1HandCardCount = hardCards.length;
+					Evt.p1 = p1;
+					//调用gain获取P1手牌
+					player.gain(hardCards, p1, 'giveAuto', 'bySelf');
+					'step 2'
+					var cnt = player.countCards('he');
+					cnt = Math.min(Evt.p1HandCardCount, cnt);
+					if (cnt > 0) {
+						//选择等量(如果不足则全部)的牌
+						player.chooseCard('he', cnt, '交给' + get.translation(Evt.p1) + get.cnNumber(cnt) + '张牌', true).set('ai', card => {
+							return 8 - get.value(card) + Math.random() * 2;
+						});
+					} else {
+						Evt.finish();
+					}
+					'step 3'
+					//选择的牌交给P1
+					Evt.p1.gain(result.cards, player, 'giveAuto');
+				},
 				subSkill: {
-					gainHand: {
-						audio: 'xiou',
-						trigger: { player: 'phaseZhunbeiBegin' },
-						filter(Evt, player) {
-							return game.hasPlayer(function (cur) {
-								return cur != player && cur.countGainableCards(player, 'h');
-							});
-						},
-						content() {
-							'step 0'
-							var filterTarget = function (card, player, target) {
-								return player != target && target.countGainableCards(player, 'h');
-							};
-							player.chooseTarget(
-								'选择一名其他角色，获取其所有手牌',
-								filterTarget, true
-							).set('ai', function (target) {
-								var evt = _status.event;
-								var att = get.attitude(evt.player, target);
-								if (target.hasSkill('yiqu')) return 2 + 3 * att + target.countGainableCards(player, 'h');
-								return att + target.countGainableCards(player, 'h');
-							});
-							'step 1'
-							var p1 = result.targets[0];
-							//添加临时技能xiou_phaseJieshuTrigger
-							player.addTempSkill('xiou_phaseJieshuTrigger', 'phaseJieshuAfter');
-							player.$.xiou.p1 = p1;
-							var hardCards = p1.getGainableCards(player, 'h');
-							if (!hardCards || !hardCards.length) {
-								Evt.finish();
-								return;
-							}
-							Evt.p1HandCardCount = hardCards.length;
-							Evt.p1 = p1;
-							//调用gain获取P1手牌
-							player.gain(hardCards, p1, 'giveAuto', 'bySelf');
-							'step 2'
-							var cnt = player.countCards('he');
-							cnt = Math.min(Evt.p1HandCardCount, cnt);
-							if (cnt > 0) {
-								//选择等量(如果不足则全部)的牌
-								player.chooseCard('he', cnt, '交给' + get.translation(Evt.p1) + get.cnNumber(cnt) + '张牌', true).set('ai', card => {
-									return 8 - get.value(card) + Math.random() * 2;
-								});
-							} else {
-								Evt.finish();
-							}
-							'step 3'
-							//选择的牌交给P1
-							Evt.p1.gain(result.cards, player, 'giveAuto');
-						}
-					},
 					phaseJieshuTrigger: {
 						audio: 'xiou',
 						trigger: { player: 'phaseJieshuBegin' },
@@ -3104,8 +3108,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			bingtang: `冰糖IO`,
 			bingtang_ab: `冰糖`,
 			xiou: `戏偶`,
-			xiou_info: `准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。`,
-			xiou_gainHand_info: `准备阶段，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。`,
+			xiou_info: `出牌阶段开始时，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。`,
+			xiou_gainHand_info: `出牌阶段开始时，你可以获得一名其他角色的所有手牌，然后交给其等量的牌。结束阶段，若你本回合没有对其造成过伤害，你与其各摸一张牌。`,
 			xiou_append: lib.figurer(`特性：辅助`),
 
 			zhangjinghua: `张京华`,
