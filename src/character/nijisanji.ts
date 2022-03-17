@@ -2342,7 +2342,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			YagamiKaruta: `山神歌流多`,
 			suisi: `髓思`,
-			suisi_info: `锁定技 你不能使用非转化的【闪】与【无懈可击】。你手牌中的【闪】或【无懈可击】进入弃牌堆时，摸一半数量的牌（向上取整）。<br>
+			suisi_info: `锁定技 你不能使用非转化的【闪】与【无懈可击】。你手牌中的【闪】或【无懈可击】进入弃牌堆时，摸一半数量的牌（向上取整）。<br><br>
 			你可以将不为【闪】的基本牌当【闪】使用，不为【无懈可击】的锦囊牌当【无懈可击】使用。`,
 			suisi_append: lib.figurer(`特性：高防御 自肃`),
 			liefeng: `猎风`,
