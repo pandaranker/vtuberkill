@@ -294,7 +294,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						check(Evt, player) {
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
-								|| ['phaseDiscard','phaseJieshu'].includes(Evt.name);
+								|| ['phaseDiscard', 'phaseJieshu'].includes(Evt.name);
 						},
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
@@ -1688,7 +1688,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 									return false;
 								}
 							}
-							return true;
+							// return true;
 						},
 						mod: {
 							cardname(card, player, name) {
@@ -1700,7 +1700,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							},
 							cardEnabled2(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'respondShan') {
-									if (card.name == 'shan') {
+									if (card.name == 'shan' && (!card.isCard || !card.cards || card.cards.length > 1)) {
 										return false;
 									}
 								}
@@ -1712,7 +1712,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							if (_status.event.name == 'chooseToUse' && _status.event.type == 'wuxie') {
 								if (name == 'wuxie') return false;
 							}
-							return true;
+							// return true;
 						},
 						mod: {
 							cardname(card, player, name) {
@@ -1724,7 +1724,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							},
 							cardEnabled2(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'wuxie') {
-									if (card.name == 'wuxie') {
+									if (card.name == 'wuxie' && (!card.isCard || !card.cards || card.cards.length > 1)) {
 										return false;
 									}
 								}
@@ -1785,7 +1785,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					);
 					'step 3'
 					--Evt.shaCnt;
-					Evt.redo();
+					Evt.goto(2);
 
 				},
 				ai: {
@@ -2333,7 +2333,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			SisterClearie: `修女·克蕾雅`,
 			zhenxin: `真信之诚`,
-			zhenxin_info: `锁定技 防止每回合你第一次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合对你造成的第一次伤害。`,
+			zhenxin_info: `锁定技 防止你每回合首次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合首次对你造成的伤害。`,
 			sczhuwei: `助危之心`,
 			sczhuwei_info: `其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。`,
 			sczhuwei_put_info: `令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。`,
@@ -2342,8 +2342,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			YagamiKaruta: `山神歌流多`,
 			suisi: `髓思`,
-			suisi_info: `锁定技 你能且仅能用其它基本牌当【闪】，用其它锦囊牌当【无懈可击】使用。<br>
-			你的【闪】或【无懈可击】进入弃牌堆时，摸一半数量的牌（向上取整）。`,
+			suisi_info: `锁定技 你不能使用非转化的【闪】与【无懈可击】。你手牌中的【闪】或【无懈可击】进入弃牌堆时，摸一半数量的牌（向上取整）。<br>
+			你可以将不为【闪】的基本牌当【闪】使用，不为【无懈可击】的锦囊牌当【无懈可击】使用。`,
 			suisi_append: lib.figurer(`特性：高防御 自肃`),
 			liefeng: `猎风`,
 			liefeng_info: `结束阶段，你可以展示所有手牌，若均无法被使用，你弃置之并视为使用了等量的【暗杀】。`,

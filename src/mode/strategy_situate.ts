@@ -1,3 +1,5 @@
+import { clear } from "console";
+import { type } from "os";
 
 /**
  * 绘制固定坐标的六边形路径，返回六边形实际（左上角）坐标
@@ -35,13 +37,11 @@ function hexagonal(ctx, begin, zoom, angle = [0, 6]) {
  */
 function hexAnnulus(ctx, begin, zoom, direction, serif = true) {
     begin = [(begin[0] + 1) * 560 * zoom, (begin[1] + 1) * 485 * zoom]
-    let center = [280, 325]
-    let dist = 325
-    let dig = Math.PI / 3;
-    let map = ['0.25,-0.5', '0.5,0', '0.25,0.5', '-0.25,0.5', '-0.5,0', '-0.25,-0.5']
-    drcts = direction.map(d => {
-        return map.indexOf(d.join(","))
-    })
+    let center = [280, 325], dist = 325
+    let dig = Math.PI / 3, map = ['0.25,-0.5', '0.5,0', '0.25,0.5', '-0.25,0.5', '-0.5,0', '-0.25,-0.5'],
+        drcts = direction.map(d => {
+            return map.indexOf(d.join(","))
+        })
     function AddLine(line, a, dist) {
         line.push([center[0] + dist * Math.sin(a * dig), center[1] - dist * Math.cos(a * dig)])
     }
@@ -65,7 +65,7 @@ function hexAnnulus(ctx, begin, zoom, direction, serif = true) {
     }
     return { begin, drcts }
 }
-function hexToRgba(hex, opacity, deviate) {
+function hexToRgba(hex: string, opacity, deviate?) {
     if (hex.indexOf('#') !== 0) return hex
     let r = parseInt('0x' + hex.slice(1, 3)), g = parseInt('0x' + hex.slice(3, 5)), b = parseInt('0x' + hex.slice(5, 7))
     if (deviate) {
@@ -78,7 +78,18 @@ function hexToRgba(hex, opacity, deviate) {
     }
     return `rgba(${r},${g},${b},${opacity})`;
 }
+type shapeType = Array<number | (number | number[])[]>
+type posType = [number, number]
+type areaType = { level?: number, color?: string, shape?: shapeType, region?: string }
+type blockType = { level?: number, type?: string, cityId?: string, area?: Area }
 class Area {
+    pos: posType
+    blocks: Array<Block>
+    id: string
+    name: string
+    color?: string
+    shape?: shapeType
+    tempCoord?: posType
     constructor(pos) {
         this.pos = pos
         this.blocks = []
@@ -116,10 +127,16 @@ class Area {
             }
         }
     }
+    addBlock(...args) { }
 }
+/**
+ * City 城市
+ */
 class City extends Area {
-    // static cityId = 0;
-    constructor(name, pos, config = {}) {
+    static cityId: number
+    level: number
+    region: string
+    constructor(name: string, pos: posType, config: areaType = {}) {
         super(pos)
         this.id = ("000" + ++City.cityId).slice(-3);
         this.name = name;
@@ -147,7 +164,7 @@ class City extends Area {
                 && pos[1] < size[1][1]) {
                 let direction = b.getAdjoinBlock((x, y) => x.cityId !== y.cityId).direction
                 if (direction.length) {
-                    let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
+                    let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
                     hexAnnulus(ctx, coord, zoom, direction)
                 }
             }
@@ -167,7 +184,7 @@ class City extends Area {
             cityId: this.id,
         }))
     }
-    drawMap(ctx, size, zoom) {
+    drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
         ctx.font = "36px Arial";
         ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
         ctx.shadowOffsetX = 0;
@@ -188,7 +205,7 @@ class City extends Area {
             c.drawBorder(ctx, size, zoom)
 
 
-            let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
+            let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
             let coord2 = hexagonal(ctx, coord, zoom).begin
             ctx.save()
             ctx.fillStyle = c.color ? hexToRgba(c.color, 0.9) : "rgba(150, 50, 255, 1)";
@@ -212,8 +229,12 @@ class City extends Area {
     }
 }
 City.cityId = 0
+/**
+ * Mount 山脉
+ */
 class Mount extends Area {
-    constructor(name, pos, config = {}) {
+    static mountId: number
+    constructor(name: string, pos: posType, config: areaType = {}) {
         super(pos)
         this.id = ("000" + ++Mount.mountId).slice(-3);
         this.name = name;
@@ -230,7 +251,7 @@ class Mount extends Area {
             area: this
         }))
     }
-    drawMap(ctx, size, zoom) {
+    drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
         let xy = size[0].slice(0)
         let m = this
         let pos = m.pos.slice(0)
@@ -251,16 +272,27 @@ class Mount extends Area {
     }
 }
 Mount.mountId = 0
+type adjoinsType = { left, right, leftup, rightup, leftdown, rightdown }
+/**
+ * Block 地块
+ */
 class Block {
-    constructor(pos, config = {}) {
+    static blockId: number
+    id: string
+    pos: posType
+    level: number
+    type?: string
+    cityId?: string
+    area?: Area
+    adjoins?: adjoinsType
+    constructor(pos: posType, config: blockType = {}) {
         this.id = ("0000" + ++Block.blockId).slice(-4);
-        this.name = name;
         this.pos = pos;
         this.level = config.level || 0;
         this.type = config.type;
         this.area = config.area;
         this.cityId = config.cityId;
-        let adjoins = {}
+        let adjoins = <adjoinsType>{}
         for (let b of blocks) {
             let bpos = b.pos
             if (bpos[1] === pos[1]) {
@@ -297,7 +329,7 @@ class Block {
         this.adjoins = adjoins
         blocks.push(this)
     }
-    drawMap(ctx, size, zoom, stroke = true) {
+    drawMap(ctx = context.curCtx, size: [posType, posType], zoom: number, stroke = true) {
         ctx.font = "36px 'hyk2gj',Arial";
         ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
         ctx.shadowOffsetX = 0;
@@ -307,7 +339,7 @@ class Block {
             && pos[0] < size[1][0]
             && pos[1] > size[0][1]
             && pos[1] < size[1][1]) {
-            let coord = [(pos[0] - size[0][0]) * 2, [pos[1] - size[0][1]] * 2]
+            let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
             let area = this.area
             let opacity = this.type === 'cityCenter' ? 0.5 : 0.3
             hexagonal(ctx, coord, zoom)
@@ -334,6 +366,32 @@ class Block {
     }
 }
 Block.blockId = 0
+/**
+ * Faction 势力
+ */
+class Faction{
+    static factionId: number
+    name:string
+    citys:City[]
+    constructor(name:string,citys:City[],info:anyObject){
+        this.name = name
+        this.citys = citys
+    }
+}
+Faction.factionId = 0
+/**
+ * Clan 氏族|派系
+ */
+class Clan{
+    static clanId: number
+    name:string
+    factions:Faction[]
+    constructor(name:string,factions:Faction[],info:anyObject){
+        this.name = name
+        this.factions = factions
+    }
+}
+Clan.clanId = 0
 const blocks = []
 const translation = {
     citys: {
@@ -431,7 +489,11 @@ const citys = [
     new City("anding", [4, 8], { level: 1 }),
     new City("beidi", [5, 6], { level: 2 }),
 
-    new City("hanzhong", [6, 14], { level: 3 }),
+    new City("hanzhong", [6, 14], {
+        level: 3, color: '#f3ea9d', shape: [
+            -4, [1, 2], [0, 1], [-4, 4], [-6, 4], [-5, 5], [-5, 4], [[-5, -4], [-2, 2]], [-1, 1]
+        ]
+    }),
     new City("zitong", [5, 17], { level: 1 }),
     new City("chengdu", [2, 20], { level: 6 }),
     new City("jiangzhou", [6, 22], {
@@ -441,7 +503,7 @@ const citys = [
     }),
     new City("yongan", [10, 20], {
         level: 2, color: '#7ddecf', shape: [
-            -5, [-1, 0], [-2, 2], [-1, 2], [-2, 4], [-4, 4], [-5, 4], [[-6, -3], [1, 3]], -5
+            -5, [-1, 0], [-2, 2], [-2, 3], [-3, 3], [-4, 4], [-5, 4], [[-5, -3], [1, 3]], -5
         ]
     }),
 
@@ -645,15 +707,28 @@ const mounts = [
         ]
     }),
 ]
-const context = {}
-const data = {}
-module.exports = {
+const factions =[
+    new Faction('group_RedC',[],{}),
+    new Faction('group_xuyan',[],{}),
+    new Faction('group_xuefeng',[],{}),
+    new Faction('group_chaos',[],{}),
+]
+interface anyObject { [key: string]: any }
+interface context extends anyObject {
+    curCvs: HTMLCanvasElement
+    curCtx: CanvasRenderingContext2D
+    curSize: [posType, posType]
+    curZoom: number
+}
+const context = <context>{}
+const data = <anyObject>{}
+export default {
     citys,
     mounts,
     translation,
     control: {
         setMapControl(parent) {
-            let map_status = '省份', map_status_div = 'none'
+            let map_status = '省份', map_status_div: HTMLDivElement
             for (let v of ['省份', '势力', '外交']) {
                 let div = document.createElement('div')
                 if (v === map_status) map_status_div = div
@@ -663,7 +738,6 @@ module.exports = {
                     parent.insertBefore(div, map_status_div)
                     map_status = v
                     map_status_div = div
-                    data.map_status = map_status
                 })
                 parent.appendChild(div)
             }
@@ -673,30 +747,34 @@ module.exports = {
                 },
             })
         },
-        init(cvs, size, zoom) {
+        init(cvs: HTMLCanvasElement, size: [posType, posType], zoom: number) {
             context.curCvs = cvs
             context.curSize = size
             context.curZoom = zoom
-            let ctx = cvs.getContext('2d');
-            context.curCtx = ctx
+            context.curCtx = cvs.getContext('2d')
             for (let c of citys) {
-                c.drawMap(ctx, size, zoom)
+                c.drawMap()
             }
             for (let m of mounts) {
-                m.drawMap(ctx, size, zoom)
+                m.drawMap()
             }
         },
         reinit() {
+            this.clear()
+            if (context.curCvs && context.curCtx) {
+                for (let c of citys) {
+                    c.drawMap()
+                }
+                for (let m of mounts) {
+                    m.drawMap()
+                }
+            }
+        },
+        clear() {
             if (context.curCvs && context.curCtx) {
                 let ctx = context.curCtx
                 let cvs = context.curCvs
                 ctx.clearRect(0, 0, cvs.width, cvs.height)
-                for (let c of citys) {
-                    c.drawMap(ctx, size, zoom)
-                }
-                for (let m of mounts) {
-                    m.drawMap(ctx, size, zoom)
-                }
             }
         }
     }

@@ -1,5 +1,6 @@
-'use strict';
-game.import('mode', function (lib, game, ui, get, ai, _status) {
+/// <reference path = "../built-in.d.ts" />
+import situate from './strategy_situate'
+window.game.import('mode', function (lib, game, ui, get, ai, _status) {
 	return {
 		name: 'strategy',
 		characterPack: {
@@ -44,7 +45,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			"step 0"
 			var playback = localStorage.getItem(lib.configprefix + 'playback');
 			if (playback) {
-				event.finish();
+				Evt.finish();
 				return;
 			}
 			_status.drama = {}
@@ -79,7 +80,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			}
 			"step 1"
 			var bosslist = ui.create.div('#bosslist.hidden');
-			event.bosslist = bosslist;
+			Evt.bosslist = bosslist;
 			_status.drama.bosslist = bosslist;
 			lib.setScroll(bosslist);
 			if (!lib.config.touchscreen && lib.config.mousewheel) {
@@ -99,7 +100,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			game.onresume2 = onresume;
 			ui.create.div(bosslist);
 
-			event.currentDrama = null;
+			Evt.currentDrama = null;
 			for (let i in lib.characterPack.drama) {
 				let info = lib.characterPack.drama[i];
 				let player = ui.create.player(bosslist).init(i);
@@ -113,7 +114,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				player.classList.add('bossplayer');
 
 				if (lib.storage.currentDrama == i) {
-					event.currentDrama = player;
+					Evt.currentDrama = player;
 					player.classList.add('highlight');
 					if (!lib.config.continue_name_boss && lib.drama[i] && lib.drama[i].control) {
 						_status.dramaChoice = lib.drama[i].control();
@@ -122,9 +123,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 			}
-			if (!event.currentDrama) {
-				event.currentDrama = bosslist.childNodes[1];
-				event.currentDrama.classList.add('highlight');
+			if (!Evt.currentDrama) {
+				Evt.currentDrama = bosslist.childNodes[1];
+				Evt.currentDrama.classList.add('highlight');
 			}
 			ui.create.div(bosslist);
 			ui.create.cardsAsync();
@@ -140,8 +141,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			ui.window.appendChild(bosslist);
 
 			setTimeout(function () {
-				if (event.currentDrama) {
-					var left = event.currentDrama.offsetLeft - (ui.window.offsetWidth - 180) / 2;
+				if (Evt.currentDrama) {
+					var left = Evt.currentDrama.offsetLeft - (ui.window.offsetWidth - 180) / 2;
 					if (bosslist.scrollLeft < left) {
 						bosslist.scrollLeft = left;
 					}
@@ -150,15 +151,15 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			}, 200);
 			game.me = ui.create.player();
 			if (lib.config.continue_name_boss) {
-				event.noslide = true;
+				Evt.noslide = true;
 				lib.init.onfree();
 			}
 			else {
 				game.chooseCharacter(function (target) {
-					if (event.currentDrama) {
-						event.currentDrama.classList.remove('highlight');
+					if (Evt.currentDrama) {
+						Evt.currentDrama.classList.remove('highlight');
 					}
-					event.currentDrama = target;
+					Evt.currentDrama = target;
 					game.save('currentDrama', target.name);
 					target.classList.add('highlight');
 					if (_status.dramaChoice) {
@@ -189,19 +190,19 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				});
 			}
 			if (lib.config.test_game) {
-				event.currentDrama.classList.remove('highlight');
-				if (event.currentDrama.nextSibling && event.currentDrama.nextSibling.classList.contains('player')) {
-					event.currentDrama = event.currentDrama.nextSibling;
+				Evt.currentDrama.classList.remove('highlight');
+				if (Evt.currentDrama.nextSibling && Evt.currentDrama.nextSibling.classList.contains('player')) {
+					Evt.currentDrama = Evt.currentDrama.nextSibling;
 				}
 				else {
-					event.currentDrama = event.currentDrama.parentNode.childNodes[1];
+					Evt.currentDrama = Evt.currentDrama.parentNode.childNodes[1];
 				}
-				game.save('currentDrama', event.currentDrama.name);
+				game.save('currentDrama', Evt.currentDrama.name);
 			}
 			"step 2"
 			game.bossinfo = lib.drama.global;
-			for (var i in lib.drama[event.currentDrama.name]) {
-				game.bossinfo[i] = lib.drama[event.currentDrama.name][i];
+			for (var i in lib.drama[Evt.currentDrama.name]) {
+				game.bossinfo[i] = lib.drama[Evt.currentDrama.name][i];
 			}
 
 			setTimeout(function () {
@@ -210,10 +211,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var boss = ui.create.player();
 			boss.getId();
 			game.boss = boss;
-			boss.init(event.currentDrama.name);
+			boss.init(Evt.currentDrama.name);
 			boss.side = true;
-			if (!event.noslide) {
-				var rect = event.currentDrama.getBoundingClientRect();
+			if (!Evt.noslide) {
+				var rect = Evt.currentDrama.getBoundingClientRect();
 				boss.animate('bossing');
 				boss.node.hp.animate('start');
 				boss.bossinginfo = [rect.left + rect.width / 2, rect.top + rect.height / 2];
@@ -229,7 +230,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				result = lib.config.continue_name_boss;
 				game.saveConfig('continue_name_boss');
 			}
-			for (var i = 0; i < result.links.length; i++) {
+			for (let i = 0; i < result.links.length; i++) {
 				var player = ui.create.player();
 				player.getId();
 				player.init(result.links[i]).animate('start');
@@ -401,24 +402,23 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				}, 500);
 			}
 
-			event.bosslist.delete();
+			Evt.bosslist.delete();
 
 			game.arrangePlayers();
-			for (var i = 0; i < game.players.length; i++) {
+			for (let i = 0; i < game.players.length; i++) {
 				game.players[i].node.action.innerHTML = '行动';
 			}
 
-			var players = get.players(lib.sort.position);
-			var info = [];
-			for (var i = 0; i < players.length; i++) {
+			let players = get.players(lib.sort.position);
+			let info = [];
+			for (let i = 0; i < players.length; i++) {
 				info.push({
 					name: players[i].name1,
 					identity: players[i].identity,
 					position: players[i].dataset.position
 				});
 			}
-			_status.videoInited = true,
-				info.boss = (game.me == game.boss);
+			_status.videoInited = true;
 			game.addVideo('init', null, info);
 			if (game.bossinfo.init) {
 				game.bossinfo.init();
@@ -426,7 +426,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			delete lib.drama;
 			"step 3"
 			if (get.config('single_control')) {
-				for (var i = 0; i < game.players.length; i++) {
+				for (let i = 0; i < game.players.length; i++) {
 					if (game.players[i].side == game.me.side) {
 						game.addRecentCharacter(game.players[i].name);
 					}
@@ -435,7 +435,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			else {
 				game.addRecentCharacter(game.me.name);
 			}
-			event.trigger('gameStart');
+			Evt.trigger('gameStart');
 			game.gameDraw(game.boss, game.bossinfo.gameDraw || 4);
 			game.bossPhaseLoop();
 			setTimeout(function () {
@@ -655,26 +655,26 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					"step 1"
 					if (game.bossinfo.loopType == 2) {
 						_status.roundStart = true;
-						if (event.player == game.boss) {
+						if (Evt.player == game.boss) {
 							if (!_status.last || _status.last.nextSeat == game.boss) {
-								event.player = game.boss.nextSeat;
+								Evt.player = game.boss.nextSeat;
 							}
 							else {
-								event.player = _status.last.nextSeat;
+								Evt.player = _status.last.nextSeat;
 							}
 						}
 						else {
 							_status.last = player;
-							event.player = game.boss;
+							Evt.player = game.boss;
 							if (player.nextSeat == game.boss) {
 								delete _status.roundStart;
 							}
 						}
 					}
 					else {
-						event.player = event.player.nextSeat;
+						Evt.player = Evt.player.nextSeat;
 					}
-					event.goto(0);
+					Evt.goto(0);
 				});
 			},
 			onSwapControl: function () {
@@ -741,7 +741,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				next.setContent(function () {
 					"step 0"
 					let list = lib.cardPack.groups.slice(0);
-					event.list = list;
+					Evt.list = list;
 					list.randomSort();
 					var dialog = ui.create.dialog('推荐势力', 'hidden');
 					_status.drama.dialog = dialog
@@ -754,10 +754,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					dialog.noopen = true;
 					var next = game.me.chooseButton(dialog, true).set('onfree', true);
 					next._triggered = null;
-					next.custom.replace.target = event.customreplacetarget;
+					next.custom.replace.target = Evt.customreplacetarget;
 
 					var createCharacterDialog = function () {
-						event.dialogxx = ui.create.cardDialog(v => {
+						Evt.dialogxx = ui.create.cardDialog(v => {
 							if (v.indexOf('group_') >= 0) {
 								for (let i of ['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']) {
 									if (v.indexOf(i) === 6) return true
@@ -766,9 +766,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							}
 							return true
 						});
-						event.dialogxx.classList.add('bosscharacter');
-						event.dialogxx.classList.add('withbg');
-						event.dialogxx.classList.add('fixed');
+						Evt.dialogxx.classList.add('bosscharacter');
+						Evt.dialogxx.classList.add('withbg');
+						Evt.dialogxx.classList.add('fixed');
 						if (ui.cheat2) {
 							ui.cheat2.animate('controlpressdownx', 500);
 							ui.cheat2.classList.remove('disabled');
@@ -858,14 +858,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						_status.dramaChoice.close();
 						delete _status.dramaChoice;
 					}
-					if (event.watcher) {
-						event.result = {
+					if (Evt.watcher) {
+						Evt.result = {
 							watcher: true,
-							links: event.enemy
+							links: Evt.enemy
 						};
 					}
 					else {
-						event.result = {
+						Evt.result = {
 							watcher: false,
 							links: result.links
 						};
@@ -1000,7 +1000,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						lib.situate.control.setMapControl(ui.mapControl)
 					},
 					hide: () => {
-						ui.ctx2.clearRect(0, 0, ui.canvas2.width, ui.canvas2.height)
+						lib.situate.control.clear()
 						if (ui.STG_start) {
 							let preUi = ui.STG_start
 							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
@@ -1021,7 +1021,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				}
 			}
 		},
-		situate: require('./strategy_situate'),
+		situate: {...situate},
 		skill: {
 
 		},

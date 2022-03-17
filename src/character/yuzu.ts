@@ -45,8 +45,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**魂喵喵 */
 			hunmiaomiao: ['female', 'hunmiao', 3, ['xiuyou', 'jiyuan'], ['guoV']],
 
-			/**白夜真宵 */
-			ByakuyaMayoi: ['female', 'chaos', 4, ['bykuangxin'], ['guoV']],
 			/**高原守 */
 			Mamoru: ['male', 'chaos', '-3/3', ['shoumi', 'yanwang'], ['guoV']],
 
@@ -60,11 +58,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**喵田弥夜Miya */
 			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV']],
-			/**桃井最中 */
-			MomoiMonaka: ['female', 'qun', 4, ['qutao', 'daifei'], ['guoV']],
 			/**谢拉 */
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
-
 
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
@@ -79,9 +74,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yizhiYY: ['male', 'psp', 4, ['bianshi'], ['guoV', 'P_SP']],
 			/**莲汰 */
 			AiTeN: ['male', 'psp', 4, ['langfei', 'xieyun'], ['guoV', 'P_SP']],
-
-			/**文静 */
-			wenjing: ['female', 'Tencent', 4, ['zaiying', 'zhengen'], ['guoV']],
 
 			/**乌拉の帝国 */
 			wula: ['female', 'lucca', 4, ['dizuo', 'hongtie'], ['guoV']],
@@ -101,8 +93,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**诸葛哀汐 */
 			zhugeaixi: ['female', 'qun', 4, ['kaituan', 'gehuang', 'susi'], ['guoV']],
 
-			/**满月 */
-			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**蛙吹Keroro */
 			Keroro: ['female', 'Providence', 4, ['beifa', 'wuwu'], ['guoV']],
 

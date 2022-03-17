@@ -146,6 +146,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
 			/**咲间妮娜 */
 			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
+			/**满月 */
+			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**白桃shirako */
 			Shirako: ['female', 'Providence', 4, ['jufu', 'qihun'], ['guoV', 'doublegroup:qun:Providence']],
 
@@ -164,6 +166,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			xingtong: ['female', 'Tencent', 4, ['jiezou', 'xtguyong'], ['guoV']],
 			/**艾白 */
 			aibai: ['female', 'Tencent', 3, ['bianyin', 'shabai'], ['guoV']],
+			/**文静 */
+			wenjing: ['female', 'Tencent', 4, ['zaiying', 'zhengen'], ['guoV']],
 		},
 		characterSort: {
 			vtuber: {

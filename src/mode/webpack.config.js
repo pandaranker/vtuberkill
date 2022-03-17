@@ -4,13 +4,11 @@ const { resolve } = require("path");
 const TerserPlugin  = require('terser-webpack-plugin');
 module.exports = {
   entry: {
-    character:'./character/_entry.js',
-    card:'./card/_entry.js',
-    mode:'./mode/_entry.js',
+    mode:'./_entry.js',
   },
   output: {
     filename: '[name].js',
-    path: resolve(__dirname, '..', 'dist')
+    path: resolve(__dirname, '..','..', 'dist')
   },
   module: {
     rules: [
@@ -31,12 +29,12 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [new TerserPlugin()],
   },
   plugins: [],
-  // mode: 'development',
-  mode: 'production',
+  mode: 'development',
+  // mode: 'production',
   resolve: {
     // 在导入语句没带文件后缀时，webpack会自动按照顺序添加后缀名查找
     extensions: ['.ts', '.js', '.json'],

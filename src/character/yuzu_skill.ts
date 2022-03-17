@@ -3057,12 +3057,11 @@ export default {
         },
     },
     //花那
-    huawen: {
+    huawen: new toSkill('active',{
         audio: 2,
         init(player, skill) {
             if (!player.$[skill]) player.$[skill] = [];
         },
-        enable: 'phaseUse',
         usable: 1,
         filter(Evt, player) {
             return player.countCards('h') > 0;
@@ -3274,29 +3273,24 @@ export default {
             }
         },
         subSkill: {
-            clear: {
-                trigger: { global: 'phaseAfter' },
+            clear: new toSkill('rule',{
                 priority: 23,
-                forced: true,
-                silent: true,
                 popup: false,
                 content() {
                     if (player.storage?.huawen?.length) {
                         player.$.huawen.length = 0;
                     }
                 }
-            }
+            },'forced','silent').setT({ global: 'phaseAfter' })
         },
-    },
-    liaohu: {
+    }),
+    liaohu: new toSkill('trigger',{
         audio: 2,
-        trigger: { global: 'phaseEnd' },
-        priority: 23,
         filter(Evt, player) {
             return player.getStat('damage');
         },
         check(Evt, player) {
-            return get.recoverEffect((player.storage?.huawen?.length ? player.$.huawen[0] : player), player, player) > 0;
+            return get.recoverEffect((player.$.huawen?.length ? player.$.huawen[0] : player), player, player) > 0;
         },
         content() {
             if (player.getStat().skill.huawen != undefined) {
@@ -3307,7 +3301,10 @@ export default {
                 player.recover();
             }
         },
-    },
+        ai:{
+            combo:'huawen'
+        }
+    }).setT({ global: 'phaseEnd' }),
     //elu
     huangran: {
         trigger: { player: 'damageBegin4' },
@@ -9842,7 +9839,7 @@ export default {
         }, function () {
             if (Evt.cards.filter(card => card.name === 'tao').length === 0) {
                 if (player.group === Evt.target.group) {
-                    Evt.target.draw(Evt.cards.length)
+                    Evt.target.draw(Evt.cards.length-1)
                     Evt.finish()
                 }
                 else {

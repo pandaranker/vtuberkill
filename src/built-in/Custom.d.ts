@@ -95,19 +95,20 @@ declare global {
         lib,
         _status,
         /**导入介质 */
-        data
-        translate
-        group
-        groupnature
+        data,
+        translate,
+        group,
+        groupnature,
         /**初始界面 */
-        inSplash
+        inSplash,
         /**菜单 */
-        StatusBar
+        StatusBar,
         /**Rank */
-        vtuberkill_character_rank
-        resolveLocalFileSystemURL//？？？
-        require//？？？
-        vkCore
+        vtuberkill_character_rank,
+        resolveLocalFileSystemURL,//Cordova
+        require,//？？？
+        vkCore,
+        [key: string]: any
     }
     interface HTMLDivElement{
         getModel:()=>Object

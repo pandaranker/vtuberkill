@@ -56,6 +56,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			shanguangpika: ['female', 'qun', 4, ['yikai', 'pkyuanjun'], ['guoV']],
 			/**永雏塔菲 */
 			Taffy: ['female', 'qun', 3, ['qianqi', 'chutan'], ['guoV']],
+			/**桃井最中 */
+			MomoiMonaka: ['female', 'qun', 4, ['qutao', 'daifei'], ['guoV']],
 
 			/**咩栗 */
 			Merry: ['female', 'qun', 4, ['qinhuo', 'lvecao', 'yangxi'], ['guoV']],
@@ -78,8 +80,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			KamikiHasami: ['female', 'qun', 4, ['quzhuan', 'yuanjiu'],],
 			/**黑桐亚里亚 */
 			KurokiriAria: ['female', 'qun', 4, ['xuanying', 'houfan'],],
+
 			/**早稻叽 */
 			Zaodaoji: ['female', 'chaos', 4, ['guangan', 'lanxuan', 'zonghe'], ['zhu', 'guoV']],
+			/**白夜真宵 */
+			ByakuyaMayoi: ['female', 'chaos', 4, ['bykuangxin'], ['guoV']],
 			/**牛牛子 */
 			Niuniuzi: ['female', 'chaos', 4, ['qiying', 'hengxuan'], ['guoV']],
 
