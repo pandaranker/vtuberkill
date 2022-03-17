@@ -12062,10 +12062,10 @@ export default {
             return Evt.es.filter(card => get.subtype(card) == 'equip2').length;
         },
         content: [() => {
-            if (!player.$.level) {
-                player.$.level = 1;
+            if (!player.$.jinzhou_level) {
+                player.$.jinzhou_level = 1;
             }
-            player.draw(player.$.level);
+            player.draw(player.$.jinzhou_level);
         }, () => {
             let str = '选择一个技能（）值+1'
             let list = ['jinzhou', 'gouhun']
@@ -12103,10 +12103,10 @@ export default {
             return true;
         },
         content: [() => {
-            if (!player.$.level) {
-                player.$.level = 1;
+            if (!player.$.gouhun_level) {
+                player.$.gouhun_level = 1;
             }
-            let list = get.cards(player.$.level + 2);
+            let list = get.cards(player.$.gouhun_level + 2);
             Evt.list = list;
             player.showCards(list, '『勾魂』亮出牌');
         }, () => {

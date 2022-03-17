@@ -73,6 +73,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					game.log(player, '将', trigger.card, '的效果改为【浪涌】')
 					player.addTempSkill('nkfumo2', { player: 'useCardAfter' });
 				},
+				involve: 'langyong',
 				group: 'nkfumo_reback',
 				subSkill: {
 					reback: {
@@ -247,7 +248,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				ai: {
 					useSha: 1,
 				},
-				involve:[{
+				involve: [{
 					name: 'sha',
 					nature: 'ocean'
 				}]
@@ -273,7 +274,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 1'
 					player.draw(Evt.num);
 				},
-				involve:[{
+				involve: [{
 					name: 'sha',
 					nature: 'ocean'
 				}]
@@ -320,7 +321,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					result: { player: 1 },
 					gainHujia: true
 				},
-				involve:[{
+				involve: [{
 					name: 'sha',
 					nature: 'ocean'
 				}],
@@ -564,6 +565,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						trigger.targets.addArray(Evt.targets);
 					}
 				},
+				involve: 'chenmo',
 				result: {
 					player: 1,
 				}
@@ -858,7 +860,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.turnOver();
 					'step 1'
 					player.chooseUseTarget({ name: 'chenmo' });
-				}
+				},
+				involve: 'chenmo'
 			},
 			qianyong: {
 				audio: 2,
@@ -901,7 +904,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 				},
-				involve:[{
+				involve: [{
 					name: 'sha',
 					nature: 'ocean'
 				}],
