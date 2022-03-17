@@ -35,7 +35,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**甘城なつき */
 			NachoNeko: ['female', 'painter', 4, ['cirong', 'maoyu'], ['riV']],
 			/**狗妈 */
-			KaguraNana: ['female', 'painter', 3, ['DDzhanshou', 'xinluezhili'], ['zhu','doublegroup:painter:paryi:holo']],
+			KaguraNana: ['female', 'painter', 3, ['DDzhanshou', 'xinluezhili'], ['zhu', 'doublegroup:painter:paryi:holo']],
 			/**真白花音 */
 			MashiroKanon: ['female', 'paryi', 3, ['chenzhu', 'yutuo']],
 
@@ -51,7 +51,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			NerunaNero: ['female', 'qun', 3, ['peijiu', 'ransha'],],
 			/**羽澄照乌愈 */
 			PastelUyu: ['female', 'qun', 3, ['chenming', 'xiantong'],],
-			
+
 			/**闪光pika */
 			shanguangpika: ['female', 'qun', 4, ['yikai', 'pkyuanjun'], ['guoV']],
 			/**永雏塔菲 */
@@ -128,7 +128,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterSort: {
 			clubs: {
 				paryi2: ['Paryi', 'TakatsukiRitsu', 'MorinagaMiu', 'HanazonoSerena', 'OtomeOto', 'HisekiErio', 'MashiroKanon'],
-				vshojo2: ['Nyanners', 'Veibae', 'Ironmouse', 'Froot','Silvervale'],
+				vshojo2: ['Nyanners', 'Veibae', 'Ironmouse', 'Froot', 'Silvervale'],
 				MeUmy: ['Merry', 'Umy'],
 			}
 		},
@@ -418,24 +418,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yuchong: {
 				audio: 2,
 				group: ['yuchong_unbeDis', 'yuchong_unRes'],
-				//	group:['yuchong_dist' , 'yuchong_uneq'],
-				//	subSkill: 
-				//	{			
-				//		dist:{			
-				//			mod:{
-				//距离变化
-				//					attackFrom(from,to,distance){
-				//						if(from.getEquip(1))
-				//						{
-				//							return distance-1; 
-				//						}                
-				//					},
-				//					globalTo(from,to,distance){
-				//						if(to.getEquip(1))
-				//						{
-				//							return distance+1;
-				//						}
-				//					},
 				//无法弃置
 				subSkill: {
 					unbeDis: {
@@ -451,10 +433,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						audio: 'yuchong',
 						mod: {
 							cardname(card, player) {
-								if (player.getEquip(1)) {
+								console.log(card)
+								if (player.getEquip(1) && !_status.yuchonging) {
+									_status.yuchonging = true
 									if (get.subtype(card) == 'equip1') {
+										delete _status.yuchonging
 										return 'sha';
 									}
+									delete _status.yuchonging
 								}
 							},
 						},
