@@ -4874,7 +4874,7 @@ module.exports = {
                   let bool1 = false;
                   let bool4 = false;
                   let groups_copy = [...groups]
-                  for (let i in lib.character) {
+                  for (let i of list) {
                      let group = lib.character[i][1]
                      if (groups_copy.includes(group)) {
                         groups_copy.remove(group)
@@ -4885,8 +4885,9 @@ module.exports = {
                      if (!bool4 && get.is.double(i)) bool4 = true;
                      if (bool1 && bool4 &&  groups_copy.length === 0) break;
                   }
+                  console.log(groups_copy)
                   groups.removeArray(groups_copy)
-                  if (bool1) groups.add('shen');
+                  if (!bool1) groups.remove('shen');
                   if (bool4) groups.add('double');
                   var natures = ['water', 'soil', 'wood', 'metal'];
                   var span = document.createElement('span');

@@ -549,6 +549,7 @@ module.exports = {
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
 		group_painter: "画势力",
+		group_MiyaFam: "MF",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
@@ -573,6 +574,7 @@ module.exports = {
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
 		group_painter_bg: "画",
+		group_MiyaFam_bg: "弥",
 	}
 }
 
@@ -49522,7 +49524,7 @@ module.exports = {
                   let bool1 = false;
                   let bool4 = false;
                   let groups_copy = [...groups]
-                  for (let i in lib.character) {
+                  for (let i of list) {
                      let group = lib.character[i][1]
                      if (groups_copy.includes(group)) {
                         groups_copy.remove(group)
@@ -49533,8 +49535,9 @@ module.exports = {
                      if (!bool4 && get.is.double(i)) bool4 = true;
                      if (bool1 && bool4 &&  groups_copy.length === 0) break;
                   }
+                  console.log(groups_copy)
                   groups.removeArray(groups_copy)
-                  if (bool1) groups.add('shen');
+                  if (!bool1) groups.remove('shen');
                   if (bool4) groups.add('double');
                   var natures = ['water', 'soil', 'wood', 'metal'];
                   var span = document.createElement('span');

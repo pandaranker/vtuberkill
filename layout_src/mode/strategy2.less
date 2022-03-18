@@ -102,9 +102,11 @@
     >div {
         text-shadow: none;
         position: relative;
-        display: none;
+        width: 5px;
+        height: 5px;
+        overflow: hidden;
         opacity: 0;
-        font-size: 2vw;
+        font-size: 1vw;
         font-family: 'Tiejili', 'hyk2gj', Arial, Helvetica, sans-serif;
         -webkit-text-stroke: 0.02em rgba(255, 255, 255, 0.6);
         color: transparent;
@@ -113,9 +115,14 @@
         background-size: 200% 10%;
         background-position-x: 0%;
         transition: all .5s;
+        transition-delay: .1s;
         animation: colorChange 3s linear 0s infinite;
 
         &:first-child {
+            width: auto;
+            height: auto;
+            overflow:auto;
+            width: auto;
             font-size: 2.5vw;
             display: block;
             opacity: 1;
@@ -123,16 +130,19 @@
     }
 
     &:hover {
-        justify-content: space-evenly;
+        // justify-content: space-evenly;
 
         >div {
+            overflow:auto;
+            font-size: 2vw;
             display: block;
             opacity: 1;
+            width: auto;
+            height: auto;
 
             &:first-child {
+                font-size: 2.6vw;
                 width: 5.5vw;
-                display: block;
-                opacity: 1;
             }
         }
     }

@@ -126,7 +126,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tangjiuxia: '#yNebula-Beat',
 		},
 		skill: { ...skill },
-		card: card,
+		card: {...card},
 		dynamicTranslate: {
 			tiantang(player) {
 				let str = lib.translate.tiantang_info;
@@ -272,6 +272,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				return str;
 			},
 		},
-		translate: translate,
+		translate: {...translate},
 	};
 });

@@ -139,7 +139,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			gaonengzhanxie_append: lib.figurer(`特性：多次出杀`),
 			ranyouxielou: `燃油泄漏`,
 			ranyouxielou_info: `锁定技 你受到属性伤害时，令来源选择一项：<br>
-			取消之并你回复等量体力；令你获得伤害来源牌。<br>
+			取消之并你回复等量体力；令你获得伤害来源牌。<br><br>
 			你攻击范围内其他角色受到火焰伤害时，若你的手牌数不小于手牌上限，你弃置一张牌令此伤害+1。`,
 			ranyouxielou_append: lib.figurer(`特性：属性伤害减免`),
 

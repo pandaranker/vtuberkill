@@ -3066,7 +3066,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ref.next.side=bool2;
 					ref.next.next.side=!bool;
 					ref.previous.side=!bool2;
-					var firstChoose=game.players.randomGet();
+					var firstChoose = lib.configOL.observe_race?game.players[0]:game.players.randomGet();
 					if(firstChoose.next.side==firstChoose.side){
 						firstChoose=firstChoose.next;
 					}
@@ -3203,7 +3203,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					ref.next.side=bool2;
 					ref.next.next.side=!bool;
 					ref.previous.side=!bool2;
-					var firstChoose=game.players.randomGet();
+					var firstChoose = lib.configOL.observe_race?game.players[0]:game.players.randomGet();
 					if(firstChoose.next.side==firstChoose.side){
 						firstChoose=firstChoose.next;
 					}

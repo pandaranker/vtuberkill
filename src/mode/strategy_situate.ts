@@ -1,6 +1,6 @@
-import { clear } from "console";
-import { type } from "os";
-
+/**
+ * strategy_situate 地图相关
+ */
 /**
  * 绘制固定坐标的六边形路径，返回六边形实际（左上角）坐标
  * @param {*} ctx 
@@ -9,7 +9,7 @@ import { type } from "os";
  * @param {*} angle 角度（起始角度和终止角度）
  * @returns 
  */
-function hexagonal(ctx, begin, zoom, angle = [0, 6]) {
+function hexagonal(ctx = context.curCtx, begin: posType, zoom = context.curZoom, angle = [0, 6]) {
     begin = [(begin[0] + 1) * 560 * zoom, (begin[1] + 1) * 485 * zoom]
     let center = [280, 325]
     let dist = 325
@@ -19,7 +19,7 @@ function hexagonal(ctx, begin, zoom, angle = [0, 6]) {
         line.push([center[0] + dist * Math.sin(a * dig), center[1] - dist * Math.cos(a * dig)])
     }
     ctx.moveTo(begin[0] + line[0][0] * zoom, begin[1] + line[0][1] * zoom);
-    let end = begin.slice(0)
+    let end: posType = [...begin]
     for (let v of line.slice(1)) {
         end = [begin[0] + v[0] * zoom, begin[1] + v[1] * zoom]
         ctx.lineTo(...end);
@@ -65,7 +65,14 @@ function hexAnnulus(ctx, begin, zoom, direction, serif = true) {
     }
     return { begin, drcts }
 }
-function hexToRgba(hex: string, opacity, deviate?) {
+/**
+ * 转换颜色至RGBA
+ * @param hex 16进制RGB颜色
+ * @param opacity 透明度
+ * @param deviate 偏差值
+ * @returns 
+ */
+function hexToRgba(hex: string, opacity: number, deviate?: [number, number, number]) {
     if (hex.indexOf('#') !== 0) return hex
     let r = parseInt('0x' + hex.slice(1, 3)), g = parseInt('0x' + hex.slice(3, 5)), b = parseInt('0x' + hex.slice(5, 7))
     if (deviate) {
@@ -82,6 +89,9 @@ type shapeType = Array<number | (number | number[])[]>
 type posType = [number, number]
 type areaType = { level?: number, color?: string, shape?: shapeType, region?: string }
 type blockType = { level?: number, type?: string, cityId?: string, area?: Area }
+/**
+ * Area 地域
+ */
 class Area {
     pos: posType
     blocks: Array<Block>
@@ -89,7 +99,6 @@ class Area {
     name: string
     color?: string
     shape?: shapeType
-    tempCoord?: posType
     constructor(pos) {
         this.pos = pos
         this.blocks = []
@@ -127,7 +136,23 @@ class Area {
             }
         }
     }
+    tempCoord(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
+        let pos = this.pos.slice(0)
+        let coord: posType = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
+        ctx.beginPath()
+        let coord2 = hexagonal(ctx, coord, zoom).begin
+        ctx.beginPath()
+        return coord2
+    }
     addBlock(...args) { }
+    drawMap(...args) { }
+
+    get faction() {
+        for (let v of factions) {
+            if (v.areas.includes(this)) return v
+        }
+        return false
+    }
 }
 /**
  * City 城市
@@ -153,7 +178,7 @@ class City extends Area {
             this.addBlocks([0, 1], -1)
         }
     }
-    drawBorder(ctx, size, zoom) {
+    drawBorder(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
         let c = this
         let blocks = c.blocks.slice(0)
         for (let b of blocks) {
@@ -176,7 +201,7 @@ class City extends Area {
         ctx.beginPath()
         ctx.restore()
     }
-    addBlock(x, y) {
+    addBlock(x: number, y: number) {
         let center = (x === 0 && y === 0) || (x === 0 && y === -1) || (x === 1 && y === -1)
         this.blocks.push(new Block([this.pos[0] + x / 2 + y / 4, this.pos[1] + y / 2], {
             type: center ? 'cityCenter' : 'city',
@@ -184,11 +209,7 @@ class City extends Area {
             cityId: this.id,
         }))
     }
-    drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
-        ctx.font = "36px Arial";
-        ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+    drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom, config: anyObject = {}) {
         let xy = size[0].slice(0)
         let c = this
         let pos = c.pos.slice(0)
@@ -198,30 +219,30 @@ class City extends Area {
             && pos[1] < size[1][1]) {
             ctx.beginPath()
 
+            ctx.save()
             let blocks = c.blocks.slice(0)
             for (let b of blocks) {
                 b.drawMap(ctx, size, zoom)
             }
-            c.drawBorder(ctx, size, zoom)
-
-
-            let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
-            let coord2 = hexagonal(ctx, coord, zoom).begin
-            ctx.save()
-            ctx.fillStyle = c.color ? hexToRgba(c.color, 0.9) : "rgba(150, 50, 255, 1)";
-            ctx.textAlign = 'center'
-            ctx.fillText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
-            ctx.strokeStyle = "rgba(0, 10, 255, 1)";
-            ctx.shadowBlur = 10;
-            ctx.lineWidth = 1;
-            ctx.lineJoin = "round";
-            ctx.shadowColor = ctx.fillStyle;
-            ctx.strokeText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
-            ctx.beginPath()
+            if (config.hiddenBorder !== true) {
+                c.drawBorder(ctx, size, zoom)
+            }
             ctx.restore()
 
-
-            c.tempCoord = coord2
+            if (config.hiddenName !== true) {
+                let coord2 = this.tempCoord()
+                ctx.save()
+                ctx.fillStyle = c.color ? hexToRgba(c.color, config.hiddenName | 0.85) : "rgba(150, 50, 255, 0.9)";
+                ctx.fillText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+                ctx.strokeStyle = "rgba(0, 10, 255, 1)";
+                ctx.shadowBlur = 10;
+                ctx.lineWidth = 1;
+                ctx.lineJoin = "round";
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.strokeText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+                ctx.beginPath()
+                ctx.restore()
+            }
         }
         else {
             return false
@@ -330,7 +351,6 @@ class Block {
         blocks.push(this)
     }
     drawMap(ctx = context.curCtx, size: [posType, posType], zoom: number, stroke = true) {
-        ctx.font = "36px 'hyk2gj',Arial";
         ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -339,15 +359,33 @@ class Block {
             && pos[0] < size[1][0]
             && pos[1] > size[0][1]
             && pos[1] < size[1][1]) {
-            let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
+            let coord: posType = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
             let area = this.area
-            let opacity = this.type === 'cityCenter' ? 0.5 : 0.3
+            let opacity = 0.55
+            if (this.cityId) {
+                opacity = this.type === 'cityCenter' ? 0.5 : 0.4
+            }
             hexagonal(ctx, coord, zoom)
             if (stroke) {
                 ctx.stroke();
             }
             ctx.save()
-            ctx.fillStyle = area.color ? hexToRgba(area.color, opacity) : `rgba(150, 50, 255, ${opacity})`;
+            if (this.cityId && data.map_status) {
+                switch (data.map_status) {
+                    case '省份':
+                        ctx.fillStyle = area.color ? hexToRgba(area.color, opacity) : `rgba(150, 50, 255, ${opacity})`;
+                        break;
+                    case '势力':
+                        ctx.fillStyle = area.faction ? hexToRgba(area.faction.color, opacity) : `rgba(55, 55, 65, 0.4)`;
+                        break;
+                    case '外交':
+                        ctx.fillStyle = area.faction ? hexToRgba(area.faction.color, opacity) : `rgba(55, 55, 65, 0.4)`;
+                        break;
+                }
+            }
+            else {
+                ctx.fillStyle = area.color ? hexToRgba(area.color, opacity) : `rgba(150, 50, 255, ${opacity})`;
+            }
             ctx.fill()
             ctx.beginPath()
             ctx.restore()
@@ -369,24 +407,100 @@ Block.blockId = 0
 /**
  * Faction 势力
  */
-class Faction{
+class Faction {
     static factionId: number
-    name:string
-    citys:City[]
-    constructor(name:string,citys:City[],info:anyObject){
+    id: string
+    name: string
+    citys: City[]
+    areas: Area[]
+    color: string
+    constructor(name: string, citynames: string[], info: { chara?: anyObject, config: anyObject }) {
+        this.id = ("000" + ++Faction.factionId).slice(-3);
         this.name = name
-        this.citys = citys
+        this.citys = citys.filter(city => citynames.includes(city.name))
+        this.color = info.config.color
+        this.updateAreas()
+    }
+    updateAreas() {
+        this.areas = this.citys.slice(0)
+    }
+    drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom, config?: anyObject) {
+        let f = this
+        if (this.areas.length) {
+            let config: anyObject = { hiddenName: true }
+            if (data.map_status === '外交') config.hiddenBorder = true
+            ctx.save()
+            for (let a of this.areas) {
+                a.drawMap(ctx, size, zoom, config)
+            }
+            ctx.restore()
+
+
+            let coord2 = this.tempCoord()
+            ctx.save()
+            ctx.fillStyle = f.color ? hexToRgba(f.color, 0.9) : "rgba(150, 50, 255, 1)";
+            let fontFamily = "'hyk2gj',Arial"
+            let nameText = translation.factions[f.name]
+            let fontSize = 36
+            if (nameText.length <= 4) {
+                fontSize += 14
+            }
+            else if (nameText.length <= 7) {
+                fontSize += 9
+            }
+            else if (nameText.length <= 10) {
+                fontSize += 4
+            }
+            if (this.citys.length >= 4) {
+                fontSize += 5
+            }
+            if (this.citys.length >= 6) {
+                fontSize += 10
+            }
+            ctx.font = `${fontSize}px ${fontFamily}`
+            ctx.fillText(nameText, coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+            ctx.strokeStyle = "rgba(0, 10, 255, 1)";
+            ctx.shadowBlur = 10;
+            ctx.lineWidth = 1;
+            ctx.lineJoin = "round";
+            ctx.shadowColor = ctx.fillStyle;
+            ctx.strokeText(nameText, coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+            ctx.beginPath()
+            ctx.restore()
+        }
+        else {
+            return false
+        }
+    }
+    tempCoord() {
+        if (this.areas.length === 1) {
+            return this.areas[0].tempCoord()
+        }
+        if (this.areas.length > 1) {
+            let areaTempCoord = []
+            for (let a of this.areas) {
+                areaTempCoord.push(a.tempCoord())
+            }
+            let temp: posType = [0, 0]
+            for (let v of areaTempCoord) {
+                temp = [temp[0] + v[0], temp[1] + v[1]]
+            }
+            temp[0] /= areaTempCoord.length
+            temp[1] /= areaTempCoord.length
+            return temp
+        }
+        return false
     }
 }
 Faction.factionId = 0
 /**
  * Clan 氏族|派系
  */
-class Clan{
+class Clan {
     static clanId: number
-    name:string
-    factions:Faction[]
-    constructor(name:string,factions:Faction[],info:anyObject){
+    name: string
+    factions: Faction[]
+    constructor(name: string, factions: Faction[], info: anyObject) {
         this.name = name
         this.factions = factions
     }
@@ -394,7 +508,7 @@ class Clan{
 Clan.clanId = 0
 const blocks = []
 const translation = {
-    citys: {
+    citys: <stringObejct>{
         longxi: '陇西',
         wuwei: '武威',
         tianshui: '天水',
@@ -473,14 +587,25 @@ const translation = {
         taibei: '台北',
         taizhong: '台中',
     },
-    lands: {
+    factions: <stringObejct>{
+        group_RedC: '红圈RedCircle',
+        group_MiyaFam: 'Miya Family',
+        group_ego: 'Egolive',
+        group_xuyan: '虚研社',
+        group_xuefeng: '雪风军团',
+        group_chaos: 'chaoslive',
+        group_chidori: '千鸟战队',
+        group_azhun: '天气阿准',
+        group_bingtang: '冰糖',
+    },
+    lands: <stringObejct>{
         Mt: '山峦',
         Gb: '戈壁',
         Pl: '平原',
         Hl: '丘陵',
         Rv: '河流',
         Se: '海洋',
-    }
+    },
 }
 const citys = [
     new City("longxi", [0, 10], { level: 2 }),
@@ -588,7 +713,7 @@ const citys = [
 
     new City("xinye", [14, 17], {
         level: 2, color: '#ea9370', shape: [
-            -3, [0, 2], [-1, 4], [-2, 5], [-3, 5], [-1, 2]
+            -3, [0, 2], [-1, 3], [-2, 4], [-3, 5], [-1, 2]
         ]
     }),
     new City("xiangyang", [13, 19], {
@@ -623,7 +748,7 @@ const citys = [
         ]
     }),
     new City("guiyang", [15, 26], {
-        level: 1, color: '#008877', shape: [
+        level: 1, color: '#75ac8f', shape: [
             -1, [[0, 4]], [[-1, 6]], [[-1, 5]], [[-3, -1], [4, 5]]
         ]
     }),
@@ -635,11 +760,11 @@ const citys = [
     }),
     new City("wu", [25, 20], {
         level: 7, color: '#99dd33', shape: [
-            -6, [4, 6], [3, 5], [3, 4], [1, 4], [0, 3], [-1, 2], [-1, 2], [-3, 1], -1
+            -6, [4, 6], [3, 5], [3, 4], [1, 4], [0, 3], [-1, 2], [-1, 2], [-3, 1]
         ]
     }),
     new City("chaisang", [19, 21], {
-        level: 6, color: '#bb7777', shape: [
+        level: 6, color: '#c4e759', shape: [
             -1, [0, 3], [-3, 3], [-4, 2], [-4, 3], [-5, 2], [-5, 1], [[-5, -4], [-2, 0]]
         ]
     }),
@@ -650,7 +775,7 @@ const citys = [
     }),
     new City("jianan", [22, 25], {
         level: 3, color: '#88dddd', shape: [
-            -4, [[0, 1]], [[-1, 1]], [[-2, 5]], [-2, 6], [-2, 3], [-2, 2], [-4, 1], [-5, 0], [-5, -4]
+            -4, [[0, 1]], [[-1, 1]], [[-2, 5]], [-2, 6], [-2, 3], [-2, 2], [-3, 1], [-4, 0], [-5, -4]
         ]
     }),
     new City("luling", [20, 25], {
@@ -660,17 +785,17 @@ const citys = [
     }),
 
     new City("nanhai", [17, 28], {
-        level: 8, color: '#3311dd', shape: [
-            -2, [[-2, 1], [4, 9]], [[-5, 7]], [[-8, 4]], [[-8, -4]]
+        level: 8, color: '#9bc2e6', shape: [
+            -2, [[-2, 1], [4, 7]], [-5, 7], [-8, 4], [-8, -4]
         ]
     }),
     new City("jiaozhi", [11, 29], {
-        level: 3, color: '#8800aa', shape: [
+        level: 3, color: '#7e719f', shape: [
             -3, [[1, 3]], [[-2, 4]], [[-3, 4]], [[-5, 1]], [[-4, -1]], -4
         ]
     }),
     new City("jiuzhen", [9, 32], {
-        level: 4, color: '#aa2266', shape: [
+        level: 4, color: '#945e75', shape: [
             -5, [0, 2], [0, 2], [0, 2], [0, 1], [0, 1], [-1, 1], [-1, 1], [-1, 0]
         ]
     }),
@@ -707,13 +832,91 @@ const mounts = [
         ]
     }),
 ]
-const factions =[
-    new Faction('group_RedC',[],{}),
-    new Faction('group_xuyan',[],{}),
-    new Faction('group_xuefeng',[],{}),
-    new Faction('group_chaos',[],{}),
+const factions = [
+    new Faction('group_RedC', ['nanhai', 'jiaozhi', 'jiuzhen'], {
+        chara: {
+            leader: 'AmemachiF',
+            members: [''],
+        },
+        config: {
+            color: '#843e65'
+        }
+    }),
+    new Faction('group_MiyaFam', ['changsha'], {
+        chara: {
+            leader: 'Miya',
+            members: [''],
+        },
+        config: {
+            color: '#f1c44b'
+        }
+    }),
+    new Faction('group_ego', ['wuling'], {
+        chara: {
+            leader: 'UsakiNono',
+            members: [''],
+        },
+        config: {
+            color: '#d88db7'
+        }
+    }),
+    new Faction('group_xuyan', ['chaisang'], {
+        chara: {
+            leader: 'XiaoxiXiaotao',
+            members: [''],
+        },
+        config: {
+            color: '#d6ce6d'
+        }
+    }),
+    new Faction('group_xuefeng', ['lujiang', 'runan'], {
+        chara: {
+            leader: 'xiaoxiayu',
+            members: [''],
+        },
+        config: {
+            color: '#a893c8'
+        }
+    }),
+    new Faction('group_chaos', ['xiangyang', 'jiangling', 'jiangxia', 'xinye'], {
+        chara: {
+            leader: 'Zaodaoji',
+            members: [''],
+        },
+        config: {
+            color: '#76d7dc'
+        }
+    }),
+    new Faction('group_chidori', ['kuaiji'], {
+        chara: {
+            leader: 'airuisi',
+            members: [''],
+        },
+        config: {
+            color: '#dc569c'
+        }
+    }),
+    new Faction('group_azhun', ['jianye'], {
+        chara: {
+            leader: 'azhun',
+            members: [''],
+        },
+        config: {
+            color: '#85add6'
+        }
+    }),
+    new Faction('group_bingtang', ['wu'], {
+        chara: {
+            leader: 'bingtang',
+            members: [''],
+        },
+        config: {
+            color: '#b48469'
+        }
+    }),
 ]
 interface anyObject { [key: string]: any }
+interface stringObejct { [key: string]: string }
 interface context extends anyObject {
     curCvs: HTMLCanvasElement
     curCtx: CanvasRenderingContext2D
@@ -721,7 +924,7 @@ interface context extends anyObject {
     curZoom: number
 }
 const context = <context>{}
-const data = <anyObject>{}
+let data = <anyObject>{}
 export default {
     citys,
     mounts,
@@ -738,37 +941,75 @@ export default {
                     parent.insertBefore(div, map_status_div)
                     map_status = v
                     map_status_div = div
+                    this.reinit()
                 })
                 parent.appendChild(div)
             }
-            Object.defineProperty(data, 'map_status', {
-                get() {
-                    return map_status
-                },
-            })
+            if (!data.map_status) {
+                Object.defineProperty(data, 'map_status', {
+                    get() {
+                        return map_status
+                    },
+                })
+            }
         },
         init(cvs: HTMLCanvasElement, size: [posType, posType], zoom: number) {
             context.curCvs = cvs
             context.curSize = size
             context.curZoom = zoom
             context.curCtx = cvs.getContext('2d')
-            for (let c of citys) {
-                c.drawMap()
-            }
-            for (let m of mounts) {
-                m.drawMap()
-            }
+            let ctx = context.curCtx
+            ctx.font = "36px 'hyk2gj',Arial";
+            ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.textAlign = 'center'
+            this.initMap()
         },
         reinit() {
             this.clear()
             if (context.curCvs && context.curCtx) {
-                for (let c of citys) {
-                    c.drawMap()
-                }
-                for (let m of mounts) {
-                    m.drawMap()
-                }
+                this.initMap()
             }
+        },
+        initMap() {
+            switch (data.map_status) {
+                case undefined:
+                case '省份': {
+                    for (let m of mounts) {
+                        m.drawMap()
+                    }
+                    for (let c of citys) {
+                        c.drawMap()
+                    }
+                }
+                    break;
+                case '势力': {
+                    for (let m of mounts) {
+                        m.drawMap()
+                    }
+                    let config: anyObject = { hiddenName: 0.6 }
+                    for (let c of citys) {
+                        if (c.faction === false) {
+                            c.drawMap(context.curCtx, context.curSize, context.curZoom, config)
+                        }
+                    }
+                    for (let f of factions) {
+                        f.drawMap()
+                    }
+                }
+                    break;
+                case '外交': {
+                    for (let f of factions) {
+                        f.drawMap()
+                    }
+                }
+                    break;
+            }
+        },
+        close() {
+            this.clear()
+            data = {}
         },
         clear() {
             if (context.curCvs && context.curCtx) {

@@ -63,6 +63,10 @@ window.game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 			}
+			if(ui.auto){
+				ui.auto.style.display = 'none';
+				ui.sortCard.style.display = 'none';
+			}
 			lib.translate.restart = '返回';
 			ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
 			game.delay(0.1);
@@ -1000,7 +1004,7 @@ window.game.import('mode', function (lib, game, ui, get, ai, _status) {
 						lib.situate.control.setMapControl(ui.mapControl)
 					},
 					hide: () => {
-						lib.situate.control.clear()
+						lib.situate.control.close()
 						if (ui.STG_start) {
 							let preUi = ui.STG_start
 							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
@@ -1008,20 +1012,22 @@ window.game.import('mode', function (lib, game, ui, get, ai, _status) {
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 						}
-						ui.dramaContainer.delete(200, () => {
-							delete ui.dramaContainer
-							delete ui.chessMap
-							delete ui.canvas2
-							delete ui.ctx2
-							ui.mapContainer.delete(200, () => {
-								delete ui.mapContainer
+						ui.mapControl.delete(100, () => {
+							ui.dramaContainer.delete(200, () => {
+								delete ui.dramaContainer
+								delete ui.chessMap
+								delete ui.canvas2
+								delete ui.ctx2
+								ui.mapContainer.delete(200, () => {
+									delete ui.mapContainer
+								})
 							})
 						})
 					}
 				}
 			}
 		},
-		situate: {...situate},
+		situate: { ...situate },
 		skill: {
 
 		},
