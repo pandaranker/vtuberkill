@@ -3060,20 +3060,12 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				next.setContent(function(){
 					'step 0'
 					var ref=game.players[0];
-					if(lib.configOL.observe_race){
-						ref.side=true;
-						ref.next.side=true;
-						ref.next.next.side=false;
-						ref.previous.side=false;
-					}
-					else{
-						var bool=Math.random()<0.5;
-						var bool2=Math.random()<0.5;
-						ref.side=bool;
-						ref.next.side=bool2;
-						ref.next.next.side=!bool;
-						ref.previous.side=!bool2;
-					}
+					var bool=Math.random()<0.5;
+					var bool2= (lib.configOL.observe_race)?bool:Math.random()<0.5;
+					ref.side=bool;
+					ref.next.side=bool2;
+					ref.next.next.side=!bool;
+					ref.previous.side=!bool2;
 					var firstChoose = game.players.randomGet();
 					if(lib.configOL.observe_race){
 						firstChoose = ref.next
@@ -3209,19 +3201,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					var ref=game.players[0];
 					var bool=Math.random()<0.5;
-					if(lib.configOL.observe_race){
-						ref.side=bool;
-						ref.next.side=bool;
-						ref.next.next.side=!bool;
-						ref.previous.side=!bool;
-					}
-					else{
-						var bool2=Math.random()<0.5;
-						ref.side=bool;
-						ref.next.side=bool2;
-						ref.next.next.side=!bool;
-						ref.previous.side=!bool2;
-					}
+					var bool2= (lib.configOL.observe_race)?bool:Math.random()<0.5;
+					ref.side=bool;
+					ref.next.side=bool2;
+					ref.next.next.side=!bool;
+					ref.previous.side=!bool2;
 					var firstChoose = lib.configOL.observe_race?game.players[0]:game.players.randomGet();
 					if(firstChoose.next.side==firstChoose.side){
 						firstChoose=firstChoose.next;
