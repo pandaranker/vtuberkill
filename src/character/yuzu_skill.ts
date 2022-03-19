@@ -6966,10 +6966,10 @@ export default {
         filter(Evt, player) {
             let evt = Evt.getl(player);
             if (_status.currentPhase == player){
-                return evt.cards?.filter(card =>  get.color(card) == 'red').length;
+                return evt?.cards?.filter(card =>  get.color(card) == 'red').length;
             }
             else{
-                return evt.hs?.filter(card => get.color(card) == 'black').length;
+                return evt?.hs?.filter(card => get.color(card) == 'black').length;
             }
         },
         content: [() => {
@@ -6982,7 +6982,8 @@ export default {
             }
         }, () => {
             if (_status.currentPhase == player) {
-                player.draw();
+                player.draw(Evt.num);
+                Evt.num = 0
             } else {
                 player.moveCard();
             }
@@ -6990,7 +6991,6 @@ export default {
             if (_status.currentPhase != player && !result.bool) {
                 Evt.finish();
             }
-        }, () => {
             if (--Evt.num > 0) Evt.goto(1);
         }],
     },
