@@ -1635,7 +1635,7 @@ export default {
                         prompt: "选择两张手牌并对自己使用一张酒或对其它角色使用一张过河拆桥",
                         position: 'h',
                         selectCard: 2,
-                        forced: true,
+                        // forced: true,
                         filterTarget(card, player, target) {
                             if (player == target) {
                                 return lib.filter.cardUsable({ name: 'jiu' }, player, _status.event.getParent('chooseToUse'))

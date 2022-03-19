@@ -1,6 +1,6 @@
 /// <reference path = "../built-in.d.ts" />
 import situate from './strategy_situate'
-window.game.import('mode', function (lib, game, ui, get, ai, _status) {
+window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, _status) {
 	return {
 		name: 'strategy',
 		characterPack: {
@@ -1002,6 +1002,9 @@ window.game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 						ui.mapControl = ui.create.div('#map-control', ui.mapContainer)
 						lib.situate.control.setMapControl(ui.mapControl)
+
+						ui.mapZoom = ui.create.div('#map-zoom', ui.mapContainer)
+						lib.situate.control.setMapControl(ui.mapZoom,{type:'zoom'})
 					},
 					hide: () => {
 						lib.situate.control.close()

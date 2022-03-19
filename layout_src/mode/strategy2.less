@@ -90,14 +90,21 @@
     }
 }
 
-#map-control {
+#map-control,
+#map-zoom {
     display: flex;
     position: static;
     right: 1em;
-    top: 2vw;
     width: 24vw;
     height: 7vw;
     z-index: 12;
+    &#map-control{
+        top: 2vw;
+    }
+    &#map-zoom{
+        top: 40vh;
+        bottom: 2vw;
+    }
 
     >div {
         text-shadow: none;

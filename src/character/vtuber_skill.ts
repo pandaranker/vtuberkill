@@ -1188,7 +1188,7 @@ export default {
         },
         mod: {
             targetEnabled(card, player, target) {
-                if (target.hasSkill('yueyao') && target.$.yueyao == player.countCards('h')) return false;
+                if (target.storage.yueyao === player.countCards('h')) return false;
             },
         },
         group: 'yueyao_addDam',

@@ -49535,7 +49535,6 @@ module.exports = {
                      if (!bool4 && get.is.double(i)) bool4 = true;
                      if (bool1 && bool4 &&  groups_copy.length === 0) break;
                   }
-                  console.log(groups_copy)
                   groups.removeArray(groups_copy)
                   if (!bool1) groups.remove('shen');
                   if (bool4) groups.add('double');

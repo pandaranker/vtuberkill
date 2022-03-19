@@ -6965,17 +6965,21 @@ export default {
         frequent: true,
         filter(Evt, player) {
             let evt = Evt.getl(player);
-            return evt?.cards?.filter(card => {
-                if (_status.currentPhase == player) return get.color(card) == 'red';
-                return get.color(card) == 'black';
-            }).length;
+            if (_status.currentPhase == player){
+                return evt.cards?.filter(card =>  get.color(card) == 'red').length;
+            }
+            else{
+                return evt.hs?.filter(card => get.color(card) == 'black').length;
+            }
         },
         content: [() => {
             let evt = trigger.getl(player);
-            Evt.num = evt.cards.filter(card => {
-                if (_status.currentPhase == player) return get.color(card) == 'red';
-                return get.color(card) == 'black';
-            }).length;
+            if (_status.currentPhase == player){
+                Evt.num = evt.cards.filter(card =>  get.color(card) == 'red').length;
+            }
+            else{
+                Evt.num = evt.hs.filter(card =>  get.color(card) == 'black').length;
+            }
         }, () => {
             if (_status.currentPhase == player) {
                 player.draw();
@@ -16826,7 +16830,7 @@ export default {
         subSkill: {
             put: new toSkill('trigger', {
                 filter(Evt, player) {
-                    return Evt.player.hasSkill('hupo_mark');
+                    return Evt.player.hasSkill('hupo_mark') && !player.inRangeOf(Evt.player);
                 },
                 logTarget: 'player',
                 content: [() => {

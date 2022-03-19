@@ -594,6 +594,7 @@ const translation = {
         group_xuyan: '虚研社',
         group_xuefeng: '雪风军团',
         group_chaos: 'chaoslive',
+        group_NetEase: '网易',
         group_chidori: '千鸟战队',
         group_azhun: '天气阿准',
         group_bingtang: '冰糖',
@@ -887,6 +888,15 @@ const factions = [
             color: '#76d7dc'
         }
     }),
+    new Faction('group_NetEase', ['guangling'], {
+        chara: {
+            leader: 'zhongguobanai',
+            members: [''],
+        },
+        config: {
+            color: '#ff6868'
+        }
+    }),
     new Faction('group_chidori', ['kuaiji'], {
         chara: {
             leader: 'airuisi',
@@ -915,9 +925,9 @@ const factions = [
         }
     }),
 ]
-interface anyObject { [key: string]: any }
-interface stringObejct { [key: string]: string }
-interface context extends anyObject {
+type stringObejct = Record<string,string>
+type anyObject = Record<string,any>
+interface context extends Record<string,any> {
     curCvs: HTMLCanvasElement
     curCtx: CanvasRenderingContext2D
     curSize: [posType, posType]
@@ -930,27 +940,49 @@ export default {
     mounts,
     translation,
     control: {
-        setMapControl(parent) {
-            let map_status = '省份', map_status_div: HTMLDivElement
-            for (let v of ['省份', '势力', '外交']) {
-                let div = document.createElement('div')
-                if (v === map_status) map_status_div = div
-                div.innerHTML = `${v}模式`
-                div.listen(() => {
-                    if (map_status === v) return;
-                    parent.insertBefore(div, map_status_div)
-                    map_status = v
-                    map_status_div = div
-                    this.reinit()
-                })
-                parent.appendChild(div)
+        setMapControl(parent:HTMLDivElement, methods:anyObject = {}) {
+            if(methods.type === 'zoom'){
+                let map_zoom = context.curZoom
+                for(let v of ['0.5','1.5','2']){
+                    let div = document.createElement('div')
+                    div.innerHTML = `×${v}`
+                    div.listen(() => {
+                        map_zoom *= Number.parseFloat(v)
+                        context.curZoom = map_zoom
+                        this.reinit()
+                    })
+                    parent.appendChild(div)
+                }
+                // if (!data.map_zoom) {
+                //     Object.defineProperty(data, 'map_zoom', {
+                //         get() {
+                //             return map_zoom
+                //         },
+                //     })
+                // }
             }
-            if (!data.map_status) {
-                Object.defineProperty(data, 'map_status', {
-                    get() {
-                        return map_status
-                    },
-                })
+            else{
+                let map_status = '省份', map_status_div: HTMLDivElement
+                for (let v of ['省份', '势力', '外交']) {
+                    let div = document.createElement('div')
+                    if (v === map_status) map_status_div = div
+                    div.innerHTML = `${v}模式`
+                    div.listen(() => {
+                        if (map_status === v) return;
+                        parent.insertBefore(div, map_status_div)
+                        map_status = v
+                        map_status_div = div
+                        this.reinit()
+                    })
+                    parent.appendChild(div)
+                }
+                if (!data.map_status) {
+                    Object.defineProperty(data, 'map_status', {
+                        get() {
+                            return map_status
+                        },
+                    })
+                }
             }
         },
         init(cvs: HTMLCanvasElement, size: [posType, posType], zoom: number) {
