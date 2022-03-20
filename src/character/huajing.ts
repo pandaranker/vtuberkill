@@ -179,9 +179,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return Evt.num > 0 && Evt.source?.isIn() && typeof Evt.nature === 'string' && player.countCards('he');
 				},
 				content: [() => {
-					player.chooseCard(get.prompt2('qiti'), 'he').set('ai', card => {
-						return 6 - get.value(card);
-					});
+					player.chooseCard(get.prompt2('qiti'), 'he')
+						.set('ai', card => {
+							return 6 - get.value(card);
+						});
 				}, () => {
 					if (result.bool && result.cards?.length) {
 						Evt.tar = trigger.source
@@ -189,9 +190,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.give(result.cards, Evt.tar, 'giveAuto')
 					}
 				}, () => {
-					Evt.tar.chooseCard(`『气嚏』：交给${get.translation(player)}${get.cnNumber(player.getDamagedHp() + 1)}张牌`, 'he', player.getDamagedHp() + 1, true).set('ai', card => {
-						return 6 - get.value(card);
-					});
+					Evt.tar.chooseCard(`『气嚏』：交给${get.translation(player)}${get.cnNumber(player.getDamagedHp() + 1)}张牌`, 'he', player.getDamagedHp() + 1, true)
+						.set('ai', card => {
+							return 6 - get.value(card);
+						});
 				}, () => {
 					if (result.bool && result.cards?.length) {
 						Evt.tar.give(result.cards, player, 'giveAuto')

@@ -412,11 +412,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						content() {
 							'step 0'
-							player.chooseCard(get.prompt('old_jiumao'), 'he', [1, Infinity]).set('ai', card => {
-								var player = _status.event.player;
-								if (player.needsToDiscard() && ui.selected.cards.length < player.countCards('h')) return 6 - get.useful(card);
-								else return 2 - get.useful(card);
-							}).set('prompt', '###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为「猫粮」');
+							player.chooseCard(get.prompt('old_jiumao'), 'he', [1, Infinity])
+								.set('ai', card => {
+									var player = _status.event.player;
+									if (player.needsToDiscard() && ui.selected.cards.length < player.countCards('h')) return 6 - get.useful(card);
+									else return 2 - get.useful(card);
+								}).set('prompt', '###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为「猫粮」');
 							'step 1'
 							if (result.bool) {
 								player.lose(result.cards, ui.special, 'visible', 'toStorage');
@@ -634,12 +635,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player.draw(),
 						player.$.pekoyu.add(get.suit(trigger.card));
 					'step 1'
-					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌', 'h', true).set('ai', card => {
-						var name = card.name;
-						if (name == 'jiu') return 12;
-						if (get.type(card) == 'trick') return 4;
-						return 10 - get.value(card);
-					});
+					player.chooseToDiscard('###『嚣张咚鼓』###然后，弃置一张牌', 'h', true)
+						.set('ai', card => {
+							var name = card.name;
+							if (name == 'jiu') return 12;
+							if (get.type(card) == 'trick') return 4;
+							return 10 - get.value(card);
+						});
 					'step 2'
 					if (result.bool && result.cards?.length) {
 						if (get.name(result.cards[0], player) == 'jiu')
@@ -857,10 +859,12 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					player.chooseCard(true, 'he').set('ai', card => {
-						var att = _status.event.att;
-						return 3 + att > get.value(card);
-					}).set('att', get.attitude(player, trigger.source))
+					player.chooseCard(true, 'he')
+						.set('ai', card => {
+							var att = _status.event.att;
+							return 3 + att > get.value(card);
+						})
+						.set('att', get.attitude(player, trigger.source))
 					'step 1'
 					if (result.bool && result.cards) {
 						player.give(result.cards, trigger.source, 'giveAuto');
@@ -1648,13 +1652,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhezhuan_info: `每回合限一次，你可以将一张非基本牌当作具有任意应变标签的同名牌或基本牌使用。`,
 			setu: `涩涂`,
 			setu_info: `出牌阶段限一次，你可以将任意张点数之和小于18的手牌置于武将牌上。然后若你武将牌上牌之乘积大于100，你将这些牌置入弃牌堆，摸等量的牌，并对一名角色造成1点伤害。`,
-		
+
 			Sakurai: `樱井林`,
 			junxu: `军序`,
 			junxu_info: `你每个回合使用第X张牌时，可以摸两张牌或回复一点体力。（X为你的体力值）`,
 			jingniang: `井酿`,
 			jingniang_info: `出牌阶段，你可以弃一张牌，令你的【杀】不计入次数且伤害+1，直到本回合结束。`,
-		
+
 			old_Eilene: `旧艾琳`,
 			duanfu: `断缚`,
 			duanfu_info: `你的牌指定目标时，你可以将其横置并使此牌对其无效；你成为牌指定的目标时，你可以将来源解除横置并使此牌对你无效。`,

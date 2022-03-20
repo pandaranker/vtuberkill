@@ -629,22 +629,22 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (result.bool) {
 						_status.event.target = result.targets[0];
 						game.broadcastAll(function (target) {
-							let next = target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌');
-							next.set('forced', false);
-							next.set('ai', card => {
-								if (get.name(card) == 'shan') return 10;
-								var player;
-								game.hasPlayer(cur => {
-									if (cur.hasSkill('chahui')) player = cur;
+							let next = target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌')
+								.set('forced', false)
+								.set('ai', card => {
+									if (get.name(card) == 'shan') return 10;
+									var player;
+									game.hasPlayer(cur => {
+										if (cur.hasSkill('chahui')) player = cur;
+									});
+									if ((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(card) == 'spade')
+										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'spade' && get.suit(card) == 'diamond')
+										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'diamond' && get.suit(card) == 'club')
+										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(card) == 'heart')
+									) {
+										return 100;
+									}
 								});
-								if ((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(card) == 'spade')
-									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'spade' && get.suit(card) == 'diamond')
-									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'diamond' && get.suit(card) == 'club')
-									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(card) == 'heart')
-								) {
-									return 100;
-								}
-							});
 						}, _status.event.target);
 					}
 					else {
@@ -934,9 +934,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (Evt.link == 'liuxuan_jiangzui' && result?.targets?.length) {
 						Evt.target = result.targets[0];
 						player.logSkill(Evt.link, Evt.target);
-						Evt.target.chooseCard('he', '无限溜旋-犟嘴：将一张牌交给' + get.translation(player), 1, true).ai = card => {
-							return -get.value(card);
-						};
+						Evt.target.chooseCard('he', '无限溜旋-犟嘴：将一张牌交给' + get.translation(player), 1, true)
+							.set('ai', card => {
+								return -get.value(card);
+							});
 					} else {
 						Evt.goto(9);
 					}
@@ -1684,7 +1685,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								else dialog.addText('没有「●标记」');
 							},
 							markcount(storage, player) {
-								return storage&&storage.point;
+								return storage && storage.point;
 							}
 						},
 
@@ -1886,9 +1887,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						content() {
 							'step 0'
-							player.chooseToDiscard('he', '弃置任意牌', [1, Infinity], true).set('ai', card => {
-								return 1 - get.value(card);
-							});
+							player.chooseToDiscard('he', '弃置任意牌', [1, Infinity], true)
+								.set('ai', card => {
+									return 1 - get.value(card);
+								});
 							'step 1'
 							if (result.bool && result.cards.length > 0) {
 								player.$.ai_point.point += result.cards.length * 2;

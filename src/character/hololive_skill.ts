@@ -1565,21 +1565,23 @@ export default {
             }
             "step 3"
             player.line(Evt.players, 'green');
-            player.chooseCardOL(Evt.players, 'he', { color: 'black' }, '可将一张黑色牌置于' + get.translation(player) + '武将牌上').set('ai', card => {
-                var source = _status.event.source;
-                var player = _status.event.player;
-                if (get.attitude(player, source) > 0) return 6 - get.value(card);
-                return 0;
-            }).set('source', player).aiCard = function (target) {
-                var hs = target.getCards('h').filter(card => get.color(card) == 'black');
-                var Evt = _status.event;
-                Evt.player = target;
-                hs.sort(function (a, b) {
-                    return Evt.ai(a) - Evt.ai(b);
-                });
-                delete Evt.player;
-                return { bool: true, cards: [hs[0]] };
-            };
+            player.chooseCardOL(Evt.players, 'he', { color: 'black' }, '可将一张黑色牌置于' + get.translation(player) + '武将牌上')
+                .set('ai', card => {
+                    var source = _status.event.source;
+                    var player = _status.event.player;
+                    if (get.attitude(player, source) > 0) return 6 - get.value(card);
+                    return 0;
+                })
+                .set('source', player).aiCard = function (target) {
+                    var hs = target.getCards('h').filter(card => get.color(card) == 'black');
+                    var Evt = _status.event;
+                    Evt.player = target;
+                    hs.sort(function (a, b) {
+                        return Evt.ai(a) - Evt.ai(b);
+                    });
+                    delete Evt.player;
+                    return { bool: true, cards: [hs[0]] };
+                };
             "step 4"
             for (var i = 0; i < result.length; i++) {
                 if (result[i].bool && result[i].cards) {
@@ -2783,11 +2785,13 @@ export default {
         content() {
             'step 0'
             player.showHandcards();
-            player.chooseCard(true, lib.filter.cardDiscardable, '###『腕解』选择一种颜色的牌弃置###若弃置黑色，你摸两张牌；若弃置红色，本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”').set('ai', card => {
-                var player = _status.event.player;
-                var cardTo = player.getCards('h', { color: 'black' });
-                return cardTo.contains(card);
-            });
+            player.chooseCard(true, lib.filter.cardDiscardable, 
+                '###『腕解』选择一种颜色的牌弃置###若弃置黑色，你摸两张牌；若弃置红色，本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”')
+                .set('ai', card => {
+                    var player = _status.event.player;
+                    var cardTo = player.getCards('h', { color: 'black' });
+                    return cardTo.contains(card);
+                });
             'step 1'
             if (result.bool) {
                 player.discard(player.getCards('h', card => get.color(card) == get.color(result.cards[0])));
