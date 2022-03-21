@@ -9818,16 +9818,16 @@ export default {
         }, () => {
             if (result.links) {
                 player.$.shufang_Buff0 = result.links[0][2]
-                player.addTempSkill('shufang_Buff0',{player:'phaseUseBegin'})
+                player.addTempSkill('shufang_Buff0', { player: 'phasDrawBegin' })
             }
         }, () => {
             if (Evt.types.includes('trick')) {
                 player.$.shufang_Buff1 = Evt.cards.filter(card => get.type2(card) === 'trick')
-                player.addTempSkill('shufang_Buff1',{player:'phaseUseBegin'})
+                player.addTempSkill('shufang_Buff1', { player: 'phasDrawBegin' })
             }
         }, () => {
             if (Evt.types.includes('equip')) {
-                player.addTempSkill('shufang_Buff2',{player:'phaseUseBegin'})
+                player.addTempSkill('shufang_Buff2', { player: 'phasDrawBegin' })
             }
         }],
         subSkill: {
@@ -9953,7 +9953,7 @@ export default {
             Evt.target.classList.remove('glow');
             switch (result.index) {
                 case 1: {
-                    player.logSkill('baihuo',Evt.target)
+                    player.logSkill('baihuo', Evt.target)
                     Evt.target.recover()
                     break;
                 }
