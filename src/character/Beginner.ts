@@ -3606,7 +3606,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (result.bool) {
-						if (get.type3(result.cards).length >= 3) {
+						if (get.type3(result.cards,'trick').length >= 3) {
 							Evt.target.recover();
 						}
 						if (get.color3(result.cards).length >= 2) {

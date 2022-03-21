@@ -506,7 +506,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			gao_info: '其他角色的濒死阶段，对其使用，目标回复3点体力。',
 
 			wudaoqu: '无刀取',
-			wudaoqu_info: '成为实体牌的目标时使用，取消此牌，并立即获得之。',
+			wudaoqu_info: '成为实体牌的目标时使用，取消并获得此牌。',
 
 			ruiping: '锐评',
 			ruiping_info: '出牌阶段，你可以与一名角色拼点，赢的角色获得双方拼点牌并受到一点火焰伤害。',

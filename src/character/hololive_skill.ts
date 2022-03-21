@@ -1974,53 +1974,6 @@ export default {
                 }
             }
         },
-        onremove(player, skill) {
-            player.removeSkill('hongshaoturou_shao');
-        },
-        subSkill: {
-            viewAs: {
-                mod: {
-                    cardname(card, player) {
-                        if (card.name == 'shan' || card.name == 'tao') return 'jiu';
-                        if (get.subtype(card) == 'equip3' || get.subtype(card) == 'equip4' || get.subtype(card) == 'equip6') return 'tiesuo';
-                    },
-                },
-                trigger: { player: ['useCard1', 'respond', 'loseBeign'] },
-                firstDo: true,
-                forced: true,
-                filter(Evt, player) {
-                    return Evt.card.name == 'jiu' && !Evt.skill &&
-                        Evt.cards.length == 1 && (Evt.cards[0].name == 'tao' || Evt.cards[0].name == 'shan');
-                },
-                content() {
-                },
-            },
-            shao: {
-                trigger: { player: 'phaseEnd' },
-                marktext: '炎',
-                mark: true,
-                forced: true,
-                intro: {
-                    content: '当前回合结束后受到一点火焰伤害',
-                    name: '自煲自足',
-                },
-                onremove(player, skill) {
-                    game.broadcastAll(function (player) {
-                        if (player.node.hongshaoturou) {
-                            player.node.hongshaoturou.delete();
-                            delete player.node.hongshaoturou;
-                        }
-                    }, player);
-                },
-                filter(Evt, player) {
-                    return true;
-                },
-                content() {
-                    player.damage('fire');
-                    player.removeSkill('hongshaoturou_shao');
-                }
-            },
-        },
         ai: {
             order: 6,
             result: {

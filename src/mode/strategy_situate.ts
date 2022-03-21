@@ -943,6 +943,9 @@ export default {
         setMapControl(parent:HTMLDivElement, methods:anyObject = {}) {
             if(methods.type === 'zoom'){
                 let map_zoom = context.curZoom
+                let prediv = document.createElement('div')
+                prediv.innerHTML = `地图缩放`
+                parent.appendChild(prediv)
                 for(let v of ['0.5','1.5','2']){
                     let div = document.createElement('div')
                     div.innerHTML = `×${v}`

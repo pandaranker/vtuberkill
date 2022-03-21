@@ -701,9 +701,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				subSkill: {
 					viewAs: {
 						mod: {
-							cardname(card, player) {
-								if (card.name == 'shan' || card.name == 'tao') return 'jiu';
-								if (get.subtype(card) == 'equip3' || get.subtype(card) == 'equip4' || get.subtype(card) == 'equip6') return 'tiesuo';
+							cardname(card, player,name) {
+								if (name == 'shan' || name == 'tao') return 'jiu';
+								if (get.subtype(name) == 'equip3' || get.subtype(name) == 'equip4' || get.subtype(name) == 'equip6') return 'tiesuo';
 							},
 						},
 						trigger: { player: ['useCard1', 'respond', 'loseBeign'] },

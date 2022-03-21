@@ -1694,7 +1694,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						mod: {
 							cardname(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'respondShan') {
-									if (card.name != 'shan' && get.type2({ name: card.name }) == 'basic') {
+									if (name != 'shan' && get.type2(name) == 'basic') {
 										return 'shan';
 									}
 								}
@@ -1718,7 +1718,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						mod: {
 							cardname(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'wuxie') {
-									if (card.name != 'wuxie' && get.type2({ name: card.name }) == 'trick') {
+									if (name != 'wuxie' && get.type2(name) == 'trick') {
 										return 'wuxie';
 									}
 								}

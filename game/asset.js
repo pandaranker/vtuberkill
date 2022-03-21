@@ -1357,6 +1357,7 @@ window.vk_asset_list=[
 	'image/character/Miya.jpg',
 	'image/character/MomoiMonaka.jpg',
 	'image/character/Keroro.jpg',
+	'image/character/Mojuko.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

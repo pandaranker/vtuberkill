@@ -243,14 +243,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						.set('complexCard', true)
 						.set('suits', suits)
 						.set('filterCard', function (card) {
-								var suits = _status.event.suits;
-								if (ui.selected.cards.length) {
-									return get.suit(card) == suits[ui.selected.cards.length];
-								}
-								else {
-									return get.suit(card) == suits[0];
-								}
-							})
+							var suits = _status.event.suits;
+							if (ui.selected.cards.length) {
+								return get.suit(card) == suits[ui.selected.cards.length];
+							}
+							else {
+								return get.suit(card) == suits[0];
+							}
+						})
 						.set('ai', card => {
 							return 8 - get.useful(card);
 						});
@@ -433,15 +433,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					unRes: {
 						audio: 'yuchong',
 						mod: {
-							cardname(card, player) {
-								console.log(card)
+							cardname(card, player, name) {
 								if (player.getEquip(1) && !_status.yuchonging) {
-									_status.yuchonging = true
-									if (get.subtype(card) == 'equip1') {
-										delete _status.yuchonging
+									if (get.subtype(name) == 'equip1') {
 										return 'sha';
 									}
-									delete _status.yuchonging
 								}
 							},
 						},
@@ -1258,8 +1254,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					Evt.target = trigger.player;
 					player.chooseCard('s', [1, Infinity], function (card) {
-							return card.hasGaintag('maoliang');
-						}).set('logSkill', ['enfan', Evt.target]).set('ai', card => {
+						return card.hasGaintag('maoliang');
+					}).set('logSkill', ['enfan', Evt.target]).set('ai', card => {
 						var target = _status.event.target;
 						return get.value(card, target) / 1.5 - target.countCards('h');
 					}).set('target', Evt.target).set('prompt', get.prompt2('enfan', player));
