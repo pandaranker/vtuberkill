@@ -9818,16 +9818,16 @@ export default {
         }, () => {
             if (result.links) {
                 player.$.shufang_Buff0 = result.links[0][2]
-                player.addTempSkill('shufang_Buff0')
+                player.addTempSkill('shufang_Buff0',{player:'phaseUseBegin'})
             }
         }, () => {
             if (Evt.types.includes('trick')) {
                 player.$.shufang_Buff1 = Evt.cards.filter(card => get.type2(card) === 'trick')
-                player.addTempSkill('shufang_Buff1')
+                player.addTempSkill('shufang_Buff1',{player:'phaseUseBegin'})
             }
         }, () => {
             if (Evt.types.includes('equip')) {
-                player.addTempSkill('shufang_Buff2')
+                player.addTempSkill('shufang_Buff2',{player:'phaseUseBegin'})
             }
         }],
         subSkill: {
