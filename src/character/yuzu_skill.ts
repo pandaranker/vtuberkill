@@ -670,7 +670,6 @@ export default {
         subSkill: {
             going: new toSkill('trigger', {
                 filter(Evt, player) {
-                    console.log(Evt.player)
                     return (player.$?.xianyu2?.isIn() || player.isIn())
                         && [player.$.xianyu2, player].includes(Evt.player)
                 },
@@ -1051,7 +1050,6 @@ export default {
         filter(Evt, player) {
             if (Evt.name == 'lose' && Evt.position != ui.discardPile) return false;
             for (let i of (Evt.cards2 || Evt.cards).filterInD('d')) {
-                console.log(i)
                 if (get.name(i) === 'sha' && ['thunder', 'ocean'].includes(get.nature(i))) return true;
             }
             return false;
@@ -3304,20 +3302,23 @@ export default {
     //elu
     huangran: new toSkill('trigger', {
         filter(Evt, player) {
+            if (player.hasSkill('huangran_used')) return false
             return Evt.card.name === 'sha' && Evt.getParent().targets.length === 1
         },
         mod: {
             targetInRange(card, player, target) {
-                if (game.countPlayer(cur => {
-                    cur.getHistory('useCard', evt => evt.targets.includes(target))
-                })) return true;
+                if (!game.countPlayer(cur => cur.hasHistory('useCard', evt => evt.targets.includes(target)))) return true;
             },
         },
         logTarget: 'target',
         content: [() => {
             Evt.target = trigger.target
             Evt.cards = trigger.cards.slice(0)
-            Evt.list = ['1.交给目标此【杀】，令你与其横置', `2.将此【杀】属性改为火焰，目标摸一张牌且不可响应`];
+            Evt.list = [
+                '1.交给目标此【杀】，令你与其横置',
+                `2.将此【杀】属性改为火焰，目标摸一张牌且不可响应`,
+                `背水！本回合此技能失效，并依次执行上述所有选项`
+            ];
             if (Evt.cards.length) {
                 player.chooseControl('dialogcontrol', Evt.list, function () {
                     return _status.event.check;
@@ -3326,29 +3327,42 @@ export default {
                 Evt._result = { control: Evt.list[1] };
             }
         }, () => {
+            function choice1() {
+                Evt.target.gain(Evt.cards, 'log', 'gain2');
+                player.link(true)
+                target.link(true)
+            }
+            function choice2() {
+                trigger.card.nature = 'fire'
+                Evt.target.draw()
+                trigger.directHit.add(Evt.target)
+            }
             switch (result.control) {
                 case Evt.list[0]: {
-                    Evt.target.gain(Evt.cards, 'log', 'gain2');
-                    player.link(true)
-                    target.link(true)
+                    choice1()
                     break;
                 }
                 case Evt.list[1]: {
-                    trigger.card.nature = 'fire'
-                    Evt.target.draw()
-                    trigger.directHit.add(Evt.target)
+                    choice2()
+                    break;
+                }
+                case Evt.list[2]: {
+                    player.addTempSkill('huangran_used')
+                    choice1()
+                    choice2()
                     break;
                 }
             }
         }],
         group: 'huangran_reCount',
         subSkill: {
+            used: new toSkill('mark'),
             reCount: new toSkill('trigger', {
                 filter(Evt, player) {
                     return Evt.card.name === 'sha' && Evt.targets.filter(tar => {
-                        return !game.countPlayer(cur => {
-                            cur.getHistory('useCard', evt => evt !== Evt && evt.targets.includes(tar))
-                        })
+                        return !game.countPlayer(cur => cur.hasHistory('useCard', evt => {
+                            return evt !== Evt && evt.targets.includes(tar)
+                        }))
                     }).length
                 },
                 content() {
@@ -6307,7 +6321,6 @@ export default {
                     precontent() {
                         player.logSkill('zhezhuan');
                         let yingbian = lib.skill.zhezhuan_backup.yingbian;
-                        console.log(_status, _status.cardtag);
                         _status.cardtag[yingbian[0]].add(Evt.result.card.cardid);
                         _status.cardtag[yingbian[1]].add(Evt.result.card.cardid);
                     },
@@ -17664,7 +17677,6 @@ export default {
             return player.getHistory('lose', evt => {
                 if (evt.cards && evt.cards.length) {
                     var evtG = evt.getParent();
-                    console.log(evt, evtG)
                     return evtG && evtG.name === 'gain' && evtG.player !== player;
                 }
             }).length;

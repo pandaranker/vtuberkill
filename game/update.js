@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '1.10.2.11',
+	version: '1.10.2.12',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.2.11小型更新：重置艾露Elu【彩虹社】，修改茉吱Mojuko的技能，修复了bug`,
+		`1.10.2.12小型更新：重置艾露Elu【彩虹社】，修改茉吱Mojuko的技能，修复了bug`,
 		'',
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
 		``,

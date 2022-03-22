@@ -98,10 +98,12 @@
     width: 24vw;
     height: 7vw;
     z-index: 12;
-    &#map-control{
+
+    &#map-control {
         top: 2vw;
     }
-    &#map-zoom{
+
+    &#map-zoom {
         top: 40vh;
         bottom: 2vw;
     }
@@ -125,10 +127,25 @@
         transition-delay: .1s;
         animation: colorChange 3s linear 0s infinite;
 
+
+        @keyframes colorChange {
+            0% {
+                background-position-x: 0%;
+            }
+
+            50% {
+                background-position-x: 100%;
+            }
+
+            100% {
+                background-position-x: 200%;
+            }
+        }
+
         &:first-child {
             width: auto;
             height: auto;
-            overflow:auto;
+            overflow: auto;
             width: auto;
             font-size: 2.5vw;
             display: block;
@@ -140,7 +157,7 @@
         // justify-content: space-evenly;
 
         >div {
-            overflow:auto;
+            overflow: auto;
             font-size: 2vw;
             display: block;
             opacity: 1;
@@ -151,20 +168,6 @@
                 font-size: 2.6vw;
                 width: 5.5vw;
             }
-        }
-    }
-
-    @keyframes colorChange {
-        0% {
-            background-position-x: 0%;
-        }
-
-        50% {
-            background-position-x: 100%;
-        }
-
-        100% {
-            background-position-x: 200%;
         }
     }
 }
