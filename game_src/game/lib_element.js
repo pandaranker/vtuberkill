@@ -8700,7 +8700,7 @@
           player.hp = hp;
           player.maxHp = maxHp;
           player.hujia = hujia;
-          player.$ = player.storage;
+          if(player.storage)  player.$ = player.storage;
           player.update();
         }, this, this.hp, this.maxHp, this.hujia);
         if (!_status.video) {

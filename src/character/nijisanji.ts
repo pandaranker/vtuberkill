@@ -27,7 +27,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**白雪巴 */
 			ShirayukiTomoe: ['female', 'nijisanji', 4, ['gonggan', 'yeyu']],
 			/**Elu */
-			Elu: ['female', 'nijisanji', 3, ['huangran', 'yinzhen', 'senhu']],
+			Elu: ['female', 'nijisanji', 3, ['huangran', 'senhu']],
 			/**皇女 */
 			LizeHelesta: ['female', 'nijisanji', 3, ['shencha', 'helesta'], ['zhu']],
 			/**露露 */

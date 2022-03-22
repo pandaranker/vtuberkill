@@ -96,7 +96,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**蛙吹Keroro */
 			Keroro: ['female', 'Providence', 4, ['beifa', 'wuwu'], ['guoV']],
 			/**茉吱Mojuko */
-			Mojuko: ['female', 'Providence', 4, ['shufang', 'baihuo'], ['riV']],
+			Mojuko: ['female', 'Providence', 3, ['shufang', 'baihuo'], ['riV']],
 
 
 			/**雨街F */

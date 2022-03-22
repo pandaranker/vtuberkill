@@ -249,14 +249,14 @@ module.exports = function () {
                         window.addEventListener('keyup', skipfun1);
                         let dis = (link.length - i)
                         if (window.status == 'skip') {
-                            let t = setTimeout(show, (dis > 5 ? 20 + (80 / (dis-3)) : 100));
+                            let t = setTimeout(show, (dis > 5 ? 20 + (60 / (dis - 5)) : 80));
                             drive.onclick = function () {
                                 clearTimeout(t);
                                 show();
                             }
                         }
                         else {
-                            let t = setTimeout(show, (dis > 5 ? 200 + (300 / (dis-4)) : 500));
+                            let t = setTimeout(show, (dis > 5 ? 100 + (200 / (dis - 5)) : 300));
                             drive.onclick = function () {
                                 clearTimeout(t);
                                 show();
@@ -312,6 +312,6 @@ module.exports = function () {
     for (var i in text) {
         galgame.text[i] = text[i];
     }
-    require('./galgame.css')
+    require('./galgame.less')
     game.galgame = galgame;
 }

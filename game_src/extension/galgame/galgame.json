@@ -75,7 +75,7 @@
   ],
   "jiaochen1": [
     "shanbao:你好呀，我叫<span class=\"purple\">扇宝</span>，是主神大人派来指导你使用插件的",
-    "shanbao:对于galgame插件有什么不明白的的地方就请来询问我吧！"
+    "shanbao:对于galgame插件有什么不明白的地方就请来询问我吧！"
   ],
   "jiaochen2": [
     "shanbao:请问你想了解些什么呢？",
@@ -232,7 +232,7 @@
   
   "yindaoA0": [
     "shanbao:你好呀，这里是<span class=\"pink\">扇宝</span>，欢迎来到V杀（VtuberKill）的世界！",
-    "shanbao:对于V杀有什么不懂的的地方就请来询问我吧！<br>（按住Ctrl键可以加速对话哦）",
+    "shanbao:对于V杀有什么不懂的地方就请来询问我吧！<br>（按住Ctrl键可以加速对话哦）",
     "shanbao:请问您之前接触过类似于V杀（diy三国杀）的游戏嘛？",
     "choose:纯路人，什么是三国杀？:听说过，也玩过类似的桌游:只接触过原版的三国杀:游戏规则我都懂，教我怎么进行游戏配置吧:进阶教程什么的有在做嘛？:跳过引导"
   ],
