@@ -1565,21 +1565,23 @@ export default {
             }
             "step 3"
             player.line(Evt.players, 'green');
-            player.chooseCardOL(Evt.players, 'he', { color: 'black' }, '可将一张黑色牌置于' + get.translation(player) + '武将牌上').set('ai', card => {
-                var source = _status.event.source;
-                var player = _status.event.player;
-                if (get.attitude(player, source) > 0) return 6 - get.value(card);
-                return 0;
-            }).set('source', player).aiCard = function (target) {
-                var hs = target.getCards('h').filter(card => get.color(card) == 'black');
-                var Evt = _status.event;
-                Evt.player = target;
-                hs.sort(function (a, b) {
-                    return Evt.ai(a) - Evt.ai(b);
-                });
-                delete Evt.player;
-                return { bool: true, cards: [hs[0]] };
-            };
+            player.chooseCardOL(Evt.players, 'he', { color: 'black' }, '可将一张黑色牌置于' + get.translation(player) + '武将牌上')
+                .set('ai', card => {
+                    var source = _status.event.source;
+                    var player = _status.event.player;
+                    if (get.attitude(player, source) > 0) return 6 - get.value(card);
+                    return 0;
+                })
+                .set('source', player).aiCard = function (target) {
+                    var hs = target.getCards('h').filter(card => get.color(card) == 'black');
+                    var Evt = _status.event;
+                    Evt.player = target;
+                    hs.sort(function (a, b) {
+                        return Evt.ai(a) - Evt.ai(b);
+                    });
+                    delete Evt.player;
+                    return { bool: true, cards: [hs[0]] };
+                };
             "step 4"
             for (var i = 0; i < result.length; i++) {
                 if (result[i].bool && result[i].cards) {
@@ -1972,53 +1974,6 @@ export default {
                 }
             }
         },
-        onremove(player, skill) {
-            player.removeSkill('hongshaoturou_shao');
-        },
-        subSkill: {
-            viewAs: {
-                mod: {
-                    cardname(card, player) {
-                        if (card.name == 'shan' || card.name == 'tao') return 'jiu';
-                        if (get.subtype(card) == 'equip3' || get.subtype(card) == 'equip4' || get.subtype(card) == 'equip6') return 'tiesuo';
-                    },
-                },
-                trigger: { player: ['useCard1', 'respond', 'loseBeign'] },
-                firstDo: true,
-                forced: true,
-                filter(Evt, player) {
-                    return Evt.card.name == 'jiu' && !Evt.skill &&
-                        Evt.cards.length == 1 && (Evt.cards[0].name == 'tao' || Evt.cards[0].name == 'shan');
-                },
-                content() {
-                },
-            },
-            shao: {
-                trigger: { player: 'phaseEnd' },
-                marktext: '炎',
-                mark: true,
-                forced: true,
-                intro: {
-                    content: '当前回合结束后受到一点火焰伤害',
-                    name: '自煲自足',
-                },
-                onremove(player, skill) {
-                    game.broadcastAll(function (player) {
-                        if (player.node.hongshaoturou) {
-                            player.node.hongshaoturou.delete();
-                            delete player.node.hongshaoturou;
-                        }
-                    }, player);
-                },
-                filter(Evt, player) {
-                    return true;
-                },
-                content() {
-                    player.damage('fire');
-                    player.removeSkill('hongshaoturou_shao');
-                }
-            },
-        },
         ai: {
             order: 6,
             result: {
@@ -2277,92 +2232,60 @@ export default {
         },
     },
     //Artia
-    shangdong: {
+    shangdong: new toSkill('mark', {
         marktext: "冻",
-        locked: true,
         intro: {
             name: '殇冻',
             content(storage, player, skill) {
                 return '受到伤害时加' + storage;
             },
         },
-        mark: true,
-        onremove(player) {
-            delete player.$.shangdong;
+        filter(Evt, player) {
+            return player.hasMark('shangdong');
         },
-    },
-    shuangzhi: {
+        content() {
+            trigger.num += player.countMark('shangdong');
+        },
+    }, 'forced', 'silent', 'firstDo', 'onremove').setT('damageBegin3'),
+    shuangzhi: new toSkill('trigger', {
         trigger: { global: 'loseAfter' },
         priority: 222,
-        direct: true,
         filter(Evt, player) {
-            if (Evt.player.$.shuangzhi2 && Evt.player.$.shuangzhi2 >= 2) return false;
-            if (Evt.player.isAlive() && Evt.player != player) {
-                if (Evt.type == 'discard' && Evt.cards.filterInD('d').length) return true;
+            let precount = 0;
+            player.getHistory('lose', evt => {
+                if (evt === Evt) return false;
+                if (evt.type === 'discard') {
+                    precount += trigger.cards.filterInD('d').length
+                }
+            }).length > 0;
+            if (Evt.player.isAlive() && precount < 2) {
+                if (Evt.type === 'discard' && precount+Evt.cards.filterInD('d').length>=2) return true;
             }
         },
+        check(Evt, player) {
+            return get.$a(player, Evt.player) < 0.5
+        },
+        logTarget: 'player',
         content() {
             'step 0'
             Evt.target = trigger.player;
-            Evt.target.addTempSkill('shuangzhi2');
-            if (!Evt.target.$.shuangzhi2) Evt.target.$.shuangzhi2 = 0;
-            Evt.target.$.shuangzhi2 += trigger.cards.filterInD('d').length;
-            if (Evt.target.$.shuangzhi2 < 2) Evt.finish();
-            else player.chooseBool(get.prompt2('shuangzhi')).set('ai', function () {
-                return get.attitude(player, Evt.target) < 1
-            });
+            player.logSkill('shuangzhi', Evt.target);
+            var list = ['受到1点无来源伤害', '受到的伤害+1直到其回合开始']
+            Evt.target.chooseControlList('选择其中的一项', list, true, function (Evt, player) {
+                return _status.event.choice;
+            }).set('choice', ((_status.currentPhase == Evt.target) ? 0 : 1));
             'step 1'
-            if (result.bool) {
-                player.logSkill('shuangzhi', Evt.target);
-                var list = ['受到1点无来源伤害', '受到的伤害+1直到其回合开始']
-                Evt.target.chooseControlList('选择其中的一项', list, true, function (Evt, player) {
-                    return _status.event.choice;
-                }).set('choice', ((_status.currentPhase == Evt.target) ? 0 : 1));
-            } else Evt.finish();
-            'step 2'
             if (result.index == 0) {
                 Evt.target.damage('nosource');
             }
             else {
-                Evt.target.addSkill('shangdong');
+                Evt.target.addTempSkill('shangdong', { player: 'phaseBefore' });
                 Evt.target.addMark('shangdong', 1);
             }
         },
-        group: ['shuangzhi_init', 'shuangzhi_addDam'],
-        subSkill: {
-            init: {
-                trigger: { global: 'phaseBefore' },
-                forced: true,
-                silent: true,
-                firstDo: true,
-                filter(Evt, player) {
-                    return Evt.player.hasMark('shangdong');
-                },
-                content() {
-                    trigger.player.unmarkSkill('shangdong');
-                    trigger.player.removeSkill('shangdong');
-                    trigger.player.syncStorage('shangdong');
-                }
-            },
-            addDam: {
-                trigger: { global: 'damageBegin3' },
-                forced: true,
-                silent: true,
-                firstDo: true,
-                filter(Evt, player) {
-                    return Evt.player.hasMark('shangdong');
-                },
-                content() {
-                    trigger.num += trigger.player.countMark('shangdong');
-                },
-            },
-        },
-    },
-    shuangzhi2: {
-        onremove(player) {
-            delete player.$.shuangzhi2;
-        },
-    },
+    }),
+    shuangzhi2: new toSkill('mark', {
+    }, 'onremove'),
     xiwo: {
         trigger: { global: 'roundStart' },
         priority: 222,
@@ -2783,11 +2706,13 @@ export default {
         content() {
             'step 0'
             player.showHandcards();
-            player.chooseCard(true, lib.filter.cardDiscardable, '###『腕解』选择一种颜色的牌弃置###若弃置黑色，你摸两张牌；若弃置红色，本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”').set('ai', card => {
-                var player = _status.event.player;
-                var cardTo = player.getCards('h', { color: 'black' });
-                return cardTo.contains(card);
-            });
+            player.chooseCard(true, lib.filter.cardDiscardable,
+                '###『腕解』选择一种颜色的牌弃置###若弃置黑色，你摸两张牌；若弃置红色，本回合『食尚』的“回复1点体力”改为“受到你造成的1点伤害”')
+                .set('ai', card => {
+                    var player = _status.event.player;
+                    var cardTo = player.getCards('h', { color: 'black' });
+                    return cardTo.contains(card);
+                });
             'step 1'
             if (result.bool) {
                 player.discard(player.getCards('h', card => get.color(card) == get.color(result.cards[0])));

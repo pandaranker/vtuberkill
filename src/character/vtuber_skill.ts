@@ -1169,10 +1169,7 @@ export default {
         }
     },
     //兰音
-    yueyao: {
-        init(player, skill) {
-            player.storage[skill] = 0;
-        },
+    yueyao: new toSkill('trigger',{
         trigger: {
             global: 'gameDrawAfter',
             player: ['enterGame', 'phaseBegin'],
@@ -1180,7 +1177,6 @@ export default {
         filter(Evt, player) {
             return true;
         },
-        forced: true,
         intro: { content: '月谣：#' },
         content() {
             player.$.yueyao = player.countCards('h');
@@ -1188,7 +1184,7 @@ export default {
         },
         mod: {
             targetEnabled(card, player, target) {
-                if (target.storage.yueyao === player.countCards('h')) return false;
+                if (target.$.yueyao === player.countCards('h')) return false;
             },
         },
         group: 'yueyao_addDam',
@@ -1204,13 +1200,11 @@ export default {
                 }
             },
         }
-    },
-    kongling: {
-        trigger: { player: 'damageAfter' },
+    },'forced').setI(0),
+    kongling: new toSkill('trigger',{
         filter(Evt, player) {
             return Evt.num > 0;
         },
-        direct: true,
         content() {
             'step 0'
             player.chooseTarget(get.prompt2('kongling'), function (card, player, target) {
@@ -1232,7 +1226,7 @@ export default {
             maixie: true,
             combo: 'yueyao'
         }
-    },
+    },'direct').setT('damageAfter'),
     jiajiupaidui: {
         audio: 3,
         enable: 'chooseToUse',

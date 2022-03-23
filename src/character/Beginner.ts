@@ -2588,15 +2588,15 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				audio: 'huxi',
 				trigger: { player: 'gainEnd' },
 				filter(Evt, player: PlayerModel) {
-					if (!player.$.huxiGroup) player.$.huxiGroup = []
-					return game.hasPlayer((cur: any) => {
-						return !player.$.huxiGroup.contains(cur) && cur != player;
+					if (!player.$.re_huxiGroup) player.$.re_huxiGroup = []
+					return game.hasPlayer(cur => {
+						return !player.$.re_huxiGroup.contains(cur) && cur != player;
 					}) && Evt.getParent().skill != 're_huxi' && Evt.getParent(2).skill != 're_huxi' && Evt.getParent(3).skill != 're_huxi';
 				},
 				content: [() => {
-					let next = player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌', true).set('type', 'compare')
-						.set('filterTarget', function (card: any, player: { $: { huxiGroup: any[]; }; countCards: (arg0: string) => any; }, target: { countCards: (arg0: string) => any; }) {
-							if (player.$.huxiGroup && player.$.huxiGroup.contains(target)) return false;
+					player.chooseCardTarget('『呼吸』：请选择呼吸的对象与交换的牌', true).set('type', 'compare')
+						.set('filterTarget', function (card, player, target) {
+							if (player.$.re_huxiGroup && player.$.re_huxiGroup.contains(target)) return false;
 							return target != player && player.countCards('h') && target.countCards('h');
 						})
 				}, () => {
@@ -2614,6 +2614,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						game.pause();
 					}
 				}, () => {
+					player.$.re_huxiGroup.add(target);
 					player.lose(Evt.card1, ui.ordering);
 					Evt.target.lose(Evt.card2, ui.ordering);
 				}, () => {
@@ -2670,10 +2671,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							player.addTempSkill('re_huxi_buff', 'none');
 						}
 					}
-					player.$.huxiGroup.add(target);
 				}],
 				onremove(player, skill) {
-					delete player.$.huxiGroup
+					delete player.$.re_huxiGroup
 					game.clearBuff(player, 're_huxi')
 				},
 				group: 're_huxi_clear',
@@ -2707,10 +2707,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						silent: true,
 						direct: true,
 						trigger: {
-							player: ['phaseAfter']
+							player: 'phaseAfter'
 						},
 						content() {
-							delete player.$.huxiGroup;
+							delete player.$.re_huxiGroup;
 						}
 					}
 				}
@@ -3606,7 +3606,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (result.bool) {
-						if (get.type3(result.cards).length >= 3) {
+						if (get.type3(result.cards,'trick').length >= 3) {
 							Evt.target.recover();
 						}
 						if (get.color3(result.cards).length >= 2) {

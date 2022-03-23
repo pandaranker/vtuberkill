@@ -242,7 +242,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						.set('selectCard', suits.length)
 						.set('complexCard', true)
 						.set('suits', suits)
-						.set('filterCard', card => {
+						.set('filterCard', function (card) {
 							var suits = _status.event.suits;
 							if (ui.selected.cards.length) {
 								return get.suit(card) == suits[ui.selected.cards.length];
@@ -280,6 +280,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					if (!player.storage[skill]) player.storage[skill] = [1, 2, 3, 4];
 				},
 				filter(Evt, player) {
+					console.log(player.$.daimeng)
 					if (!player.$.daimeng) return false;
 					for (var i of player.$.daimeng) {
 						if (!game.hasPlayer(function (cur) {
@@ -432,15 +433,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					unRes: {
 						audio: 'yuchong',
 						mod: {
-							cardname(card, player) {
-								console.log(card)
+							cardname(card, player, name) {
 								if (player.getEquip(1) && !_status.yuchonging) {
-									_status.yuchonging = true
-									if (get.subtype(card) == 'equip1') {
-										delete _status.yuchonging
+									if (get.subtype(name) == 'equip1') {
 										return 'sha';
 									}
-									delete _status.yuchonging
 								}
 							},
 						},
@@ -1256,7 +1253,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				content() {
 					'step 0'
 					Evt.target = trigger.player;
-					player.chooseCard('s', [1, Infinity], card => card.hasGaintag('maoliang')).set('logSkill', ['enfan', Evt.target]).set('ai', card => {
+					player.chooseCard('s', [1, Infinity], function (card) {
+						return card.hasGaintag('maoliang');
+					}).set('logSkill', ['enfan', Evt.target]).set('ai', card => {
 						var target = _status.event.target;
 						return get.value(card, target) / 1.5 - target.countCards('h');
 					}).set('target', Evt.target).set('prompt', get.prompt2('enfan', player));

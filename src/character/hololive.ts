@@ -233,7 +233,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			Artia: `阿媂娅`,
 			shuangzhi: `殇冻`,
-			shuangzhi_info: `其他角色一回合内弃置第二张牌后，你可以令其选择一项：<br>受到1点无来源伤害；或受到的伤害+1直到其回合开始。`,
+			shuangzhi_info: `一名角色于一回合内弃置第二张牌后，你可以令其选择一项：<br>受到1点无来源伤害；受到的伤害+1直到其下个回合开始。`,
 			xiwo: `希握`,
 			xiwo_info: `一轮开始时，你可以令一名角色失去1点体力，另一名角色回复1点体力。本轮结束时前者回复1点体力，后者失去1点体力。`,
 

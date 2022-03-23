@@ -27,7 +27,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**白雪巴 */
 			ShirayukiTomoe: ['female', 'nijisanji', 4, ['gonggan', 'yeyu']],
 			/**Elu */
-			Elu: ['female', 'nijisanji', 3, ['huangran', 'yinzhen', 'senhu']],
+			Elu: ['female', 'nijisanji', 3, ['huangran', 'senhu']],
 			/**皇女 */
 			LizeHelesta: ['female', 'nijisanji', 3, ['shencha', 'helesta'], ['zhu']],
 			/**露露 */
@@ -491,12 +491,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 				content() {
 					'step 0'
-					player.chooseCard('h', [1, Infinity], true, '请选择要给对方的牌').set('ai', card => {
-						var target = _status.event.getTrigger().player;
-						console.log(target);
-						if ((target.countCards('h') + ui.selected.cards.length) > (player.countCards('h') - ui.selected.cards.length)) return -1;
-						return 7 - get.value(card);
-					});
+					player.chooseCard('h', [1, Infinity], true, '请选择要给对方的牌')
+						.set('ai', card => {
+							var target = _status.event.getTrigger().player;
+							console.log(target);
+							if ((target.countCards('h') + ui.selected.cards.length) > (player.countCards('h') - ui.selected.cards.length)) return -1;
+							return 7 - get.value(card);
+						});
 					'step 1'
 					if (result.cards) {
 						trigger.player.gain(result.cards, player, 'giveAuto');
@@ -997,10 +998,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 								}
 							}
 							'step 1'
-							player.chooseCard('选择一张亮出牌', 1, card => {
-								var cuplayer = _status.event.player;
-								return cuplayer.$.quanxinquanyi_showcards.contains(card)
-							})
+							player.chooseCard('选择一张亮出牌', 1, function (card) {
+									var cuplayer = _status.event.player;
+									return cuplayer.$.quanxinquanyi_showcards.contains(card);
+								})
 							'step 2'
 							if (result.bool) {
 								Evt.useshowCards = result.cards;
@@ -1693,7 +1694,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						mod: {
 							cardname(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'respondShan') {
-									if (card.name != 'shan' && get.type2({ name: card.name }) == 'basic') {
+									if (name != 'shan' && get.type2(name) == 'basic') {
 										return 'shan';
 									}
 								}
@@ -1717,7 +1718,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						mod: {
 							cardname(card, player, name) {
 								if (_status.event.name == 'chooseToUse' && _status.event.type == 'wuxie') {
-									if (card.name != 'wuxie' && get.type2({ name: card.name }) == 'trick') {
+									if (name != 'wuxie' && get.type2(name) == 'trick') {
 										return 'wuxie';
 									}
 								}

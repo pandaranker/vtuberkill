@@ -92,15 +92,27 @@ type blockType = { level?: number, type?: string, cityId?: string, area?: Area }
 /**
  * Area 地域
  */
-class Area {
+class Pos {
     pos: posType
+    constructor(pos: posType) {
+        this.pos = pos
+    }
+    inSize(size = context.curSize) {
+        let pos = this.pos.slice(0)
+        return size[0][0] < pos[0]
+            && pos[0] < size[1][0]
+            && size[0][1] < pos[1]
+            && pos[1] < size[1][1]
+    }
+}
+class Area extends Pos {
     blocks: Array<Block>
     id: string
     name: string
     color?: string
     shape?: shapeType
-    constructor(pos) {
-        this.pos = pos
+    constructor(pos: posType) {
+        super(pos)
         this.blocks = []
     }
     addBlocks(xs, y) {
@@ -183,10 +195,7 @@ class City extends Area {
         let blocks = c.blocks.slice(0)
         for (let b of blocks) {
             let pos = b.pos
-            if (pos[0] > size[0][0]
-                && pos[0] < size[1][0]
-                && pos[1] > size[0][1]
-                && pos[1] < size[1][1]) {
+            if (b.inSize) {
                 let direction = b.getAdjoinBlock((x, y) => x.cityId !== y.cityId).direction
                 if (direction.length) {
                     let coord = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
@@ -210,13 +219,8 @@ class City extends Area {
         }))
     }
     drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom, config: anyObject = {}) {
-        let xy = size[0].slice(0)
         let c = this
-        let pos = c.pos.slice(0)
-        if (xy[0] < pos[0]
-            && pos[0] < size[1][0]
-            && xy[1] < pos[1]
-            && pos[1] < size[1][1]) {
+        if (this.inSize()) {
             ctx.beginPath()
 
             ctx.save()
@@ -232,7 +236,7 @@ class City extends Area {
             if (config.hiddenName !== true) {
                 let coord2 = this.tempCoord()
                 ctx.save()
-                ctx.fillStyle = c.color ? hexToRgba(c.color, config.hiddenName | 0.85) : "rgba(150, 50, 255, 0.9)";
+                ctx.fillStyle = c.color ? hexToRgba(c.color, config.hiddenName > 0 ? config.hiddenName : 0.85) : "rgba(150, 50, 255, 0.9)";
                 ctx.fillText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
                 ctx.strokeStyle = "rgba(0, 10, 255, 1)";
                 ctx.shadowBlur = 10;
@@ -246,6 +250,23 @@ class City extends Area {
         }
         else {
             return false
+        }
+    }
+    drawName(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
+        let c = this
+        if (this.inSize()) {
+            let coord2 = this.tempCoord()
+            ctx.save()
+            ctx.fillStyle = c.color ? hexToRgba(c.color, 0.85) : "rgba(150, 50, 255, 0.9)";
+            ctx.fillText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+            ctx.strokeStyle = "rgba(0, 10, 255, 1)";
+            ctx.shadowBlur = 10;
+            ctx.lineWidth = 1;
+            ctx.lineJoin = "round";
+            ctx.shadowColor = ctx.fillStyle;
+            ctx.strokeText(translation.citys[c.name], coord2[0] + 300 * zoom, coord2[1] + 300 * zoom);
+            ctx.beginPath()
+            ctx.restore()
         }
     }
 }
@@ -273,13 +294,8 @@ class Mount extends Area {
         }))
     }
     drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
-        let xy = size[0].slice(0)
         let m = this
-        let pos = m.pos.slice(0)
-        if (xy[0] < pos[0]
-            && pos[0] < size[1][0]
-            && xy[1] < pos[1]
-            && pos[1] < size[1][1]) {
+        if (m.inSize()) {
             ctx.beginPath()
 
             let blocks = m.blocks.slice(0)
@@ -297,7 +313,7 @@ type adjoinsType = { left, right, leftup, rightup, leftdown, rightdown }
 /**
  * Block 地块
  */
-class Block {
+class Block extends Pos {
     static blockId: number
     id: string
     pos: posType
@@ -307,6 +323,7 @@ class Block {
     area?: Area
     adjoins?: adjoinsType
     constructor(pos: posType, config: blockType = {}) {
+        super(pos)
         this.id = ("0000" + ++Block.blockId).slice(-4);
         this.pos = pos;
         this.level = config.level || 0;
@@ -354,11 +371,8 @@ class Block {
         ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
-        let pos = this.pos.slice(0)
-        if (pos[0] > size[0][0]
-            && pos[0] < size[1][0]
-            && pos[1] > size[0][1]
-            && pos[1] < size[1][1]) {
+        if (this.inSize()) {
+            let pos = this.pos.slice(0)
             let coord: posType = [(pos[0] - size[0][0]) * 2, (pos[1] - size[0][1]) * 2]
             let area = this.area
             let opacity = 0.55
@@ -426,22 +440,29 @@ class Faction {
     }
     drawMap(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom, config?: anyObject) {
         let f = this
-        if (this.areas.length) {
+        if (f.areasInSize().length) {
             let config: anyObject = { hiddenName: true }
             if (data.map_status === '外交') config.hiddenBorder = true
             ctx.save()
-            for (let a of this.areas) {
+            for (let a of f.areasInSize()) {
                 a.drawMap(ctx, size, zoom, config)
             }
             ctx.restore()
 
-
-            let coord2 = this.tempCoord()
+        }
+        else {
+            return false
+        }
+    }
+    drawName(ctx = context.curCtx, size = context.curSize, zoom = context.curZoom) {
+        let f = this
+        if (f.areasInSize().length) {
+            let coord2 = f.tempCoord()
             ctx.save()
             ctx.fillStyle = f.color ? hexToRgba(f.color, 0.9) : "rgba(150, 50, 255, 1)";
             let fontFamily = "'hyk2gj',Arial"
             let nameText = translation.factions[f.name]
-            let fontSize = 36
+            let fontSize = 30 + 100 * zoom
             if (nameText.length <= 4) {
                 fontSize += 14
             }
@@ -451,10 +472,10 @@ class Faction {
             else if (nameText.length <= 10) {
                 fontSize += 4
             }
-            if (this.citys.length >= 4) {
+            if (f.citys.length >= 4) {
                 fontSize += 5
             }
-            if (this.citys.length >= 6) {
+            if (f.citys.length >= 6) {
                 fontSize += 10
             }
             ctx.font = `${fontSize}px ${fontFamily}`
@@ -468,17 +489,15 @@ class Faction {
             ctx.beginPath()
             ctx.restore()
         }
-        else {
-            return false
-        }
     }
     tempCoord() {
-        if (this.areas.length === 1) {
-            return this.areas[0].tempCoord()
+        let areasInSize = this.areasInSize()
+        if (areasInSize.length === 1) {
+            return areasInSize[0].tempCoord()
         }
-        if (this.areas.length > 1) {
+        if (areasInSize.length > 1) {
             let areaTempCoord = []
-            for (let a of this.areas) {
+            for (let a of areasInSize) {
                 areaTempCoord.push(a.tempCoord())
             }
             let temp: posType = [0, 0]
@@ -490,6 +509,9 @@ class Faction {
             return temp
         }
         return false
+    }
+    areasInSize() {
+        return this.areas.filter(a => a.inSize())
     }
 }
 Faction.factionId = 0
@@ -925,9 +947,9 @@ const factions = [
         }
     }),
 ]
-type stringObejct = Record<string,string>
-type anyObject = Record<string,any>
-interface context extends Record<string,any> {
+type stringObejct = Record<string, string>
+type anyObject = Record<string, any>
+interface context extends Record<string, any> {
     curCvs: HTMLCanvasElement
     curCtx: CanvasRenderingContext2D
     curSize: [posType, posType]
@@ -940,10 +962,13 @@ export default {
     mounts,
     translation,
     control: {
-        setMapControl(parent:HTMLDivElement, methods:anyObject = {}) {
-            if(methods.type === 'zoom'){
+        setMapControl(parent: HTMLDivElement, methods: anyObject = {}) {
+            if (methods.type === 'zoom') {
                 let map_zoom = context.curZoom
-                for(let v of ['0.5','1.5','2']){
+                let prediv = document.createElement('div')
+                prediv.innerHTML = `地图缩放`
+                parent.appendChild(prediv)
+                for (let v of ['0.5', '1.5', '2']) {
                     let div = document.createElement('div')
                     div.innerHTML = `×${v}`
                     div.listen(() => {
@@ -961,7 +986,7 @@ export default {
                 //     })
                 // }
             }
-            else{
+            else {
                 let map_status = '省份', map_status_div: HTMLDivElement
                 for (let v of ['省份', '势力', '外交']) {
                     let div = document.createElement('div')
@@ -991,7 +1016,7 @@ export default {
             context.curZoom = zoom
             context.curCtx = cvs.getContext('2d')
             let ctx = context.curCtx
-            ctx.font = "36px 'hyk2gj',Arial";
+            ctx.font = `${30 + 100 * zoom}px 'hyk2gj',Arial`;
             ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
@@ -1020,7 +1045,7 @@ export default {
                     for (let m of mounts) {
                         m.drawMap()
                     }
-                    let config: anyObject = { hiddenName: 0.6 }
+                    let config: anyObject = { hiddenName: 0.5 }
                     for (let c of citys) {
                         if (c.faction === false) {
                             c.drawMap(context.curCtx, context.curSize, context.curZoom, config)
@@ -1029,11 +1054,17 @@ export default {
                     for (let f of factions) {
                         f.drawMap()
                     }
+                    for (let f of factions) {
+                        f.drawName()
+                    }
                 }
                     break;
                 case '外交': {
                     for (let f of factions) {
                         f.drawMap()
+                    }
+                    for (let f of factions) {
+                        f.drawName()
                     }
                 }
                     break;

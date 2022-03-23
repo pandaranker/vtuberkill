@@ -1341,7 +1341,7 @@ window.vk_asset_list=[
 	'image/character/zhongguobanai.jpg',
 	'image/character/zhugeaixi.jpg',
 
-	//2022年新增的角色图片
+	//2022年前3个月新增的图片文件
 	'image/character/AmaneKanata.jpg',
 	'image/skin/AmaneKanata/1.jpg',
 	'image/skin/AmaneKanata/2.jpg',
@@ -1357,6 +1357,8 @@ window.vk_asset_list=[
 	'image/character/Miya.jpg',
 	'image/character/MomoiMonaka.jpg',
 	'image/character/Keroro.jpg',
+	'image/character/Mojuko.jpg',
+	'image/character/old_ELu.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',
