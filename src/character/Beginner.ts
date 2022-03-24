@@ -1410,8 +1410,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_taiyangzhiyin: {
 				audio: 'taiyangzhiyin',
 				trigger: { player: 'useCard2' },
-				filter(Evt: { card: { cardid: any; }; }, player: { $: { onlink: string | any[] | null; }; }) {
-					return get.number(Evt.card) >= 10;
+				filter(Evt, player) {
+					return get.number(Evt.card, player) >= 10;
 				},
 				priority: 1,
 				content: [() => {
@@ -1515,7 +1515,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						check(Evt, player) {
 							return Evt.name === 'phaseJudge' && player.countCards('j') > 1
-								|| ['phaseDiscard','phaseJieshu'].includes(Evt.name);
+								|| ['phaseDiscard', 'phaseJieshu'].includes(Evt.name);
 						},
 						prompt(Evt, player) {
 							return `把${get.$t(Evt.name)}转换为出牌阶段`;
@@ -2732,7 +2732,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					Evt.cards = trigger.cards.filterInD('d');
 				}, () => {
 					Evt.videoId = lib.status.videoId++;
-					var dialogx = ['###『赤心』：进入弃牌堆的牌###获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶（先选择的在上）'];
+					var dialogx = ['###『赤心』：进入弃牌堆的牌###获得其中一张红色牌；或将其中任意张牌置于牌堆顶（先选择的在上）'];
 					dialogx.push(Evt.cards);
 					if (player.isOnline2()) {
 						player.send(function (dialogx: any, id: any) {
@@ -3606,7 +3606,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (result.bool) {
-						if (get.type3(result.cards,'trick').length >= 3) {
+						if (get.type3(result.cards, 'trick').length >= 3) {
 							Evt.target.recover();
 						}
 						if (get.color3(result.cards).length >= 2) {
@@ -3688,29 +3688,37 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return get.attitude(player, Evt.player) > 0;
 				},
 				content: [() => {
-					let next = player.chooseCard(get.prompt2('re_bizuo'), 'h', [1, player.countCards('h')])
-						.set('ai', (card: any) => {
-							if (['shan', 'wuxie', 'jinchan'].contains(get.name(card)) || !_status.currentPhase.hasUseTarget(card)) return 0;
-							return 6 - get.value(card);
-						});
+					Evt.target = trigger.player;
+					Evt.precards = player.getCards('he')
+					player.chooseToMove(get.$pro2('weizeng'))
+						.set('list', [
+							['牌堆顶'],
+							['手牌&装备区', Evt.precards],
+						])
+						.set('reverse', (_status.currentPhase ? get.attitude(player, _status.currentPhase) > 0 : false))
+						.set('processAI', function (list) {
+							var cards = list[1][1].slice(0);
+							cards.sort(function (a, b) {
+								return (_status.event.reverse ? 1 : -1) * (get.value(b) - get.value(a));
+							});
+							return [cards.slice(0, 1)];
+						})
 				}, () => {
-					if (result.cards && result.cards.length) {
-						player.logSkill('re_bizuo', trigger.player);
-						player.lose(result.cards, ui.special);
-						player.$throw(result.cards, 1000);
+					if (result.bool && result.moved && result.moved[0].length) Evt.cards = result.moved[0].slice(0);
+					if (!Evt.cards) {
+						Evt.finish()
+						return
 					}
-					else {
-						Evt.finish();
-					}
+					player.logSkill('re_bizuo', trigger.player);
+					player.lose(Evt.cards, ui.special);
+					player.$throw(Evt.cards, 1000);
 				}, () => {
-					if (result.cards && result.cards.length) {
-						for (var i = 0; i < result.cards.length; i++) {
-							result.cards[i].fix();
-							result.cards[i].storage.bizuo = true;
-							ui.cardPile.insertBefore(result.cards[i], ui.cardPile.firstChild);
-						}
-						game.log(player, '将' + get.cnNumber(result.cards.length) + '张牌置于牌堆顶');
+					for (let v of Evt.cards) {
+						v.fix();
+						v.storage.bizuo = true;
+						ui.cardPile.insertBefore(v, ui.cardPile.firstChild);
 					}
+					game.log(player, '将' + get.cnNumber(Evt.cards.length) + '张牌置于牌堆顶');
 				}],
 				derivation: 're_yuzhan',
 				group: ['re_bizuo_use', 're_bizuo_end'],
@@ -3754,7 +3762,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								}
 							}
 							for (var i = 0; i < ui.discardPile.childElementCount; i++) {
-								if (ui.cardPile.childNodes[i].storage?.bizuo) {
+								if (ui.discardPile.childNodes[i].storage?.bizuo) {
 									delete ui.discardPile.childNodes[i].storage.bizuo;
 								}
 							}
@@ -4832,7 +4840,6 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					reset: {
 						trigger: { global: 'roundStart' },
 						direct: true,
-						log: false,
 						content() {
 							player.$.shengfu = {};
 							player.syncStorage('shengfu');
@@ -5859,7 +5866,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_AkaiHaato: `新·赤井心`,
 			xinchixin: `赤心`,
-			xinchixin_info: `当牌不因使用进入弃牌堆时，若其中有本回合未以此技能获得的♥牌，你可以获得其中一张红色牌；或将其中任意张牌以任意顺序置于牌堆顶。`,
+			xinchixin_info: `当牌不因使用进入弃牌堆时，若其中有本回合未以此技能获得的♥牌，你可以获得其中一张红色牌；或将其中任意张牌置于牌堆顶。`,
 			xinchixin_append: lib.figurer(`特性：回收关键牌`),
 
 			re_NakiriAyame: `新·百鬼绫目`,

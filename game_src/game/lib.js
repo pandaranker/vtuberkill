@@ -3195,6 +3195,7 @@ module.exports = {
       characterReplace: {},
       dynamicTranslate: {},
       cardPack: {},
+      skin: {},
       onresize: [],
       onphase: [],
       onwash: [],

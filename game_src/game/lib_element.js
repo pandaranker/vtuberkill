@@ -2129,7 +2129,10 @@
         if (!Evt.cancelled && !Evt.nojudge) player.judge(Evt.card).set('type', 'phase');
       }, () => {
         var name = Evt.card.viewAs || Evt.card.name;
-        if (Evt.cancelled && !Evt.direct) {
+        if (Evt.excluded) {
+          delete Evt.excluded;
+        }
+        else if (Evt.cancelled && !Evt.direct) {
           if (lib.card[name].cancel) {
             var next = game.createEvent(name + 'Cancel');
             next.setContent(lib.card[name].cancel);
@@ -3848,10 +3851,7 @@
               _status.event._aiexclude.length = 0;
             }
             else {
-              get.card(true).aiexclude();
-              game.uncheck();
-              Evt.redo();
-              game.resume();
+              ui.click.cancel();
             }
           }
           else {
@@ -4921,21 +4921,21 @@
           else {
             player.stat[player.stat.length - 1].card[card.name]++;
           }
-          if (Evt.skill) {
-            if (player.stat[player.stat.length - 1].skill[Evt.skill] == undefined) {
-              player.stat[player.stat.length - 1].skill[Evt.skill] = 1;
+        }
+        if (Evt.skill) {
+          if (player.stat[player.stat.length - 1].skill[Evt.skill] == undefined) {
+            player.stat[player.stat.length - 1].skill[Evt.skill] = 1;
+          }
+          else {
+            player.stat[player.stat.length - 1].skill[Evt.skill]++;
+          }
+          var sourceSkill = get.info(Evt.skill).sourceSkill;
+          if (sourceSkill) {
+            if (player.stat[player.stat.length - 1].skill[sourceSkill] == undefined) {
+              player.stat[player.stat.length - 1].skill[sourceSkill] = 1;
             }
             else {
-              player.stat[player.stat.length - 1].skill[Evt.skill]++;
-            }
-            var sourceSkill = get.info(Evt.skill).sourceSkill;
-            if (sourceSkill) {
-              if (player.stat[player.stat.length - 1].skill[sourceSkill] == undefined) {
-                player.stat[player.stat.length - 1].skill[sourceSkill] = 1;
-              }
-              else {
-                player.stat[player.stat.length - 1].skill[sourceSkill]++;
-              }
+              player.stat[player.stat.length - 1].skill[sourceSkill]++;
             }
           }
         }
@@ -7474,7 +7474,7 @@
         for (var i = 0; i < skills.length; i++) {
           var ifo = get.info(skills[i]);
           if (ifo.viewAs && typeof ifo.viewAs != 'function' && ifo.viewAs.name == name) {
-            if (!ifo.viewAsFilter || ifo.viewAsFilter(player)) {
+            if (!ifo.viewAsFilter || ifo.viewAsFilter(player) !== false) {
               return true;
             }
           }
@@ -8351,8 +8351,8 @@
        * 本角色发送聊天消息[support online]
        * @param {!string} str 聊天消息
        */
-      chat: function (str) {
-        if (get.is.banWords(str)) return;
+      chat: function (str, forced) {
+        if (!forced && get.is.banWords(str)) return;
         lib.element.player.say.call(this, str);
         game.broadcast(function (id, str) {
           if (lib.playerOL[id]) {
@@ -8660,33 +8660,33 @@
        * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
        * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
        */
-      buffAvatar: function (buff, skill, name) {
-        if (lib.skill[name] && !lib.character[name]) {
-          var stop = false;
-          var list = lib.config.all.characters.slice(0);
-          for (var i in lib.characterPack) {
-            list.add(i);
-          }
-          for (var i = 0; i < list.length; i++) {
-            for (var j in lib.characterPack[list[i]]) {
-              if (lib.characterPack[list[i]][j][3].contains(name)) {
-                name = j;
-                stop = true;
-                break;
-              }
-            }
-            if (stop) {
-              break;
-            }
-          }
-        }
-        if (lib.character[this.name2] && lib.character[this.name2][3].contains(skill)) {
-          this.setAvatarQueue(this.name2, [name]);
-        }
-        else {
-          this.setAvatarQueue(this.name, [name]);
-        }
-      },
+      // buffAvatar: function (buff, skill, name) {
+      //   if (lib.skill[name] && !lib.character[name]) {
+      //     var stop = false;
+      //     var list = lib.config.all.characters.slice(0);
+      //     for (var i in lib.characterPack) {
+      //       list.add(i);
+      //     }
+      //     for (var i = 0; i < list.length; i++) {
+      //       for (var j in lib.characterPack[list[i]]) {
+      //         if (lib.characterPack[list[i]][j][3].contains(name)) {
+      //           name = j;
+      //           stop = true;
+      //           break;
+      //         }
+      //       }
+      //       if (stop) {
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   if (lib.character[this.name2] && lib.character[this.name2][3].contains(skill)) {
+      //     this.setAvatarQueue(this.name2, [name]);
+      //   }
+      //   else {
+      //     this.setAvatarQueue(this.name, [name]);
+      //   }
+      // },
       /**
        * 同步本角色数据(联网)
        * @returns {?GameCores.GameObjects.Player} this self；如果是回放模式且该函数被无参调用，返回空值(undefined)
@@ -8700,7 +8700,7 @@
           player.hp = hp;
           player.maxHp = maxHp;
           player.hujia = hujia;
-          if(player.storage)  player.$ = player.storage;
+          if (player.storage) player.$ = player.storage;
           player.update();
         }, this, this.hp, this.maxHp, this.hujia);
         if (!_status.video) {
@@ -8821,7 +8821,7 @@
         }
         function checkEnglish(name) {
           let nameLength = name.querySelectorAll('br').length
-          if (nameLength === 0 && /^[a-zA-Z]+$/.test(name.innerHTML)) {
+          if (nameLength === 0 && /^[A-z\d\.]+$/.test(name.innerHTML)) {
             name.classList.add('English');
           }
           if (nameLength >= 1 && name.classList.contains('English')) {
@@ -8922,7 +8922,7 @@
         }
         if (i == 'ghujia' || ((!this.marks[i].querySelector('.image') || this.storage[i + '_markcount']) &&
           lib.skill[i] && lib.skill[i].intro && !lib.skill[i].intro.nocount &&
-          (this.storage[i] || lib.skill[i].intro.markcount))) {
+          (this.storage[i] || this.storage[i + '_markcount'] || lib.skill[i].intro.markcount))) {
           this.marks[i].classList.add('overflowmark')
           var num = 0;
           if (typeof lib.skill[i].intro.markcount == 'function') {
@@ -9575,7 +9575,7 @@
        * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link lib.element.player.updateMarks})
        * @param {!string} skill 技能名
        */
-      setIdentity: function (identity) {
+      setIdentity: function (identity, nature) {
         if (!identity) identity = this.identity;
         if (get.is.jun(this)) {
           this.node.identity.firstChild.innerHTML = '君';
@@ -9583,7 +9583,7 @@
         else {
           this.node.identity.firstChild.innerHTML = get.translation(identity);
         }
-        this.node.identity.dataset.color = identity;
+        this.node.identity.dataset.color = nature || identity;
         return this;
       },
       insertPhase: function (skill, insert) {

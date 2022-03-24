@@ -33,6 +33,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			UmitsukiShell: ['female', 'qun', 4, ['beike', 'wenda'],],
 			/**猫山苗 */
 			NekoyamaNae: ['female', 'qun', 6, ['moupi', 'xuneng'],],
+			/**eve.aic */
+			EveAic: ['female', 'upd8', 3, ['yeze', 'E8BFADE4BBA3'],],
+			EveAicVer2: ['female', 'upd8', 3, ['xieyan', 'E59B9EE6BAAF'], ['unseen']],
 
 			/**凤玲天天 */
 			HoureiTenten: ['female', 'qun', 3, ['shengquan', 'yizhu'], ['guoV']],
@@ -120,6 +123,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterIntro: {
 		},
 		characterTitle: {
+			EveAic: '#b渐亡烛火',
+			EveAicVer2: '#䕭潴楯湬敳%u73',
+
 			Shiratama: '#y幼术师',
 
 			liqingge: '#y战斗吧歌姬！',
@@ -128,7 +134,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			tangjiuxia: '#yNebula-Beat',
 		},
 		skill: { ...skill },
-		card: {...card},
+		card: { ...card },
 		dynamicTranslate: {
 			tiantang(player) {
 				let str = lib.translate.tiantang_info;
@@ -274,6 +280,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				return str;
 			},
 		},
-		translate: {...translate},
+		translate: { ...translate },
 	};
 });

@@ -101,20 +101,29 @@ export default {
         }
       }
     }
-    game.putBuff = (player, skill, buff) => {
-      game.broadcastAll(function (player, skill, buff) {
-        if (!player.node[skill + '_buff']) {
-          player.node[skill + '_buff'] = [ui.create.div(buff, player.node.avatar), ui.create.div(buff, player.node.avatar2)];
+    game.putBuff = (player, skill, buff, name) => {
+      let node
+      if(name){
+        if (player.name2 == name) {
+          node = player.node.avatar2;
         }
-      }, player, skill, buff);
+        else {
+          node = player.node.avatar;
+        }
+      }
+      else{
+        node = player.node.displayer
+      }
+      game.broadcastAll(function (player, skill, buff, node) {
+        if (!player.node[skill + '_buff']) {
+          player.node[skill + '_buff'] = ui.create.div(buff, node);
+        }
+      }, player, skill, buff,node);
     }
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
         if (player.node[skill + '_buff']) {
-          if (player.node[skill + '_buff'][0].delete) {
-            player.node[skill + '_buff'][0].delete();
-            player.node[skill + '_buff'][1].delete();
-          }
+          player.node[skill + '_buff'].delete()
           delete player.node[skill + '_buff']
         }
       }, player, skill);

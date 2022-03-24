@@ -8838,7 +8838,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var source=event.targets2.shift();
 					event.source=source;
 					var targets=game.filterPlayer(function(current){
-						return current.identity!='ye'&&current!=source&&!get.is.jun(current)&&!event.targets2.contains(current)&&!current.$.yexinjia_friend;
+						return current.identity!='ye'&&current!=source&&!get.is.jun(current)&&!event.targets2.contains(current)&&!current.storage.yexinjia_friend;
 					}).sortBySeat(source);
 					if(!targets.length){
 						delete _status.showYexings;
@@ -8846,13 +8846,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 					else{
 						event.targets=targets;
-						target.chooseBool('是否发起【拉拢人心】？','令所有其他不为君主/暴露野心家的角色依次选择是否与你结盟。第一个选择加入的人将势力和胜利条件改为与你相同');
+						source.chooseBool('是否发起【拉拢人心】？','令所有其他不为君主/暴露野心家的角色依次选择是否与你结盟。第一个选择加入的人将势力和胜利条件改为与你相同');
 					}
 					'step 4'
 					if(!result.bool){
 						if(event.targets2.length) event.goto(3);
 						return;
 					}
+					'step 5'
 					var target=targets.shift();
 					event.target=target;
 					source.line(target,'green');
@@ -8861,25 +8862,31 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(game.players.length<5) return Math.random()<0.5;
 						return Math.random()<0.3;
 					});
-					'step 5'
+					'step 6'
 					if(result.bool){
-						game.broadcastAll(function(player,target){
-							player.say('加入');
-							player.identity='ye';
-							player.setIdentity('ye');
-							player.$.yexinjia_friend=target;
-						},target,source);
-						target.markSkill('yexinjia_friend');
-						source.removeMark('yexinjia_mark',1);
-						target.drawTo(4);
-						target.recover();
+						target.chat('加入');
+						if(!_status.yexinjia_list) _status.yexinjia_list=['夏','商','周','秦','汉','隋','唐','宋','辽','金','元','明'];
+						source.chooseControl(_status.yexinjia_list).set('prompt','请选择自己所属的野心家势力的标识').set('ai',()=>(_status.yexinjia_list?_status.yexinjia_list.randomGet():0));
 					}
 					else{
 						target.chat('拒绝');
 						game.delay(1.5);
-						if(targets.length) event.goto(4);
+						if(targets.length) event.goto(5);
+						else event.goto(8);
 					}
-					'step 6'
+					'step 7'
+					game.broadcastAll(function(player,target,text){
+						player.identity='ye';
+						source.setIdentity(text,'ye');
+						player.setIdentity(text,'ye');
+						player.storage.yexinjia_friend=target;
+					},target,source,result.control);
+					_status.yexinjia_list.remove(result.control);
+					target.markSkill('yexinjia_friend');
+					source.removeMark('yexinjia_mark',1);
+					target.drawTo(4);
+					target.recover();
+					'step 8'
 					if(event.targets2.length) event.goto(3);
 					else delete _status.showYexings;
 				});
@@ -9107,9 +9114,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				}
 				if(!sides.length) return;
 				else if(sides.length>1){
-					if(sides.length==2){
-						if(map[sides[0]].length==1) map[sides[0]][0].showGiveup();
-						if(map[sides[1]].length==1) map[sides[1]][0].showGiveup();
+					if(!hiddens.length&&sides.length==2){
+						if(map[sides[0]].length==1&&!map[sides[1]].filter(function(i){
+							return i.identity!='ye'&&i.isUnseen(0);
+						}).length) map[sides[0]][0].showGiveup();
+						if(map[sides[1]].length==1&&!map[sides[0]].filter(function(i){
+							return i.identity!='ye'&&i.isUnseen(0);
+						}).length) map[sides[1]][0].showGiveup();
 					}
 				}
 				else{

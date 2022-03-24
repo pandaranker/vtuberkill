@@ -473,7 +473,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						// function(card,player,target){
 						// 	return !target.isLinked();
 						// },
-					'是否发动【贝琳】横置一名角色？').set('ai',function(target){
+					'是否发动【贝琳】横置或重置一名角色？').set('ai',function(target){
 						return get.effect(target,{name:'tiesuo'},_status.event.player,_status.event.player);
 					});
 					'step 1'

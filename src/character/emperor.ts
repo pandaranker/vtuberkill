@@ -1234,9 +1234,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					console.log(Evt.filterCards)
 					'step 2'
-					Evt.list = ['令一名角色摸一张牌', '防止你下一次受到的伤害'];
+					Evt.list = ['令一名角色摸一张牌', '防止一名角色下一次受到的伤害'];
 					if (Evt.filterCards.length) Evt.list.push('视为使用一张本回合未以此法使用过的基本牌');
-					var choice = [0, 1].randomGet();
+					let choice = [0, 1].randomGet();
 					if (!player.$.tangyan_on) choice = 1;
 					if (Evt.list.length >= 3) choice = 2;
 					player.chooseControlList(Evt.list, function () {
@@ -1245,22 +1245,24 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 3'
 					if (result.control != 'cancel2' || (Evt.xinjia && Evt.allBy && Evt.allBy <= 3)) {
 						game.delayx();
-						var str = '';
-						if (Evt.allBy) str += '（依次执行每一项）';
-						switch ((result.index + 1) || Evt.allBy) {
+						let str = '';
+						if (Evt.allBy) {
+							str += '（依次执行每一项）';
+						}
+						Evt.curChoice = (result.index + 1) || Evt.allBy
+						switch (Evt.curChoice) {
 							case 1: {
-								player.logSkill('tangyan');
 								player.chooseTarget(true, '『穿心糖言』：令一名角色摸一张牌' + str).set('ai', function (target) {
-									var player = _status.event.player;
+									let player = _status.event.player;
 									return get.attitude(player, target);
 								})
 							}; break;
 							case 2: {
-								if (player.$.tangyan_on !== true) {
-									player.logSkill('tangyan');
-									game.log(player, '防止了自己下一次受到的伤害' + str);
-									player.$.tangyan_on = true;
-								}
+								player.chooseTarget(true, '『穿心糖言』：防止一名角色下一次受到的伤害' + str).set('ai', function (target) {
+									let player = _status.event.player;
+									if (!target.$.tangyan_on) return get.attitude(player, target);
+									return 0.1 * get.attitude(player, target)
+								})
 							}; break;
 							case 3: {
 								player.logSkill('tangyan');
@@ -1277,7 +1279,22 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}
 					'step 4'
 					if (result.targets?.length) {
-						result.targets[0].draw();
+						let str = '';
+						if (Evt.allBy) {
+							str += '（依次执行每一项）';
+						}
+						let target = result.targets[0]
+						player.logSkill('tangyan', target);
+						switch (Evt.curChoice) {
+							case 1: target.draw();
+								break;
+							case 2: {
+								if (target.$.tangyan_on !== true) {
+									game.log(player, '防止了', target, '下一次受到的伤害' + str);
+									target.$.tangyan_on = true;
+								}
+							}; break;
+						}
 					}
 					if (Evt.xinjia && Evt.allBy <= 2) {
 						Evt.allBy++;
@@ -1290,10 +1307,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						player.$.tangyan.add(card[2]);
 						player.chooseUseTarget({ name: card[2], nature: card[3] }, true, 'noTargetDelay', 'nodelayx');
 					}
-					// if(Evt.xinjia&&Evt.allBy<=2){ 
-					// 	Evt.allBy++;
-					// 	Evt.goto(3);
-					// }
 					'step 6'
 					if (Evt.cards.length) {
 						Evt.goto(1);
@@ -1309,22 +1322,25 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						marktext: '糖',
 						intro: {
 							mark(dialog, content, player) {
-								if (player.$.tangyan_on) return '穿心糖言：防止' + get.translation(player) + '下一次受到的伤害';
+								if (player.$.tangyan_on) return `『穿心糖言』防止${get.translation(player)}下一次受到的伤害`;
 							},
 							content(content, player) {
-								if (player.$.tangyan_on) return '穿心糖言：防止' + get.translation(player) + '下一次受到的伤害';
+								if (player.$.tangyan_on) return `『穿心糖言』防止${get.translation(player)}下一次受到的伤害`;
 							}
 						},
-						trigger: { player: 'damageBegin3' },
+						trigger: { global: 'damageBegin3' },
 						priority: 29,
 						locked: true,
 						forced: true,
+						logTarget: 'player',
 						filter(Evt, player) {
-							return player.$.tangyan_on;
+							return Evt.player.$.tangyan_on;
 						},
 						content() {
-							player.$.tangyan_on = false;
+							game.log(trigger.player, '受到的伤害被', player, '防止');
+							trigger.player.$.tangyan_on = false;
 							trigger.cancel();
+							game.delayx()
 						}
 					},
 					clear: {
@@ -1713,7 +1729,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player: 'addAiPoint'
 						},
 						direct: true,
-						log: false,
 						filter(Evt, player) {
 							return player.hasSkill('ai_point');
 						},
@@ -1741,7 +1756,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							return false;
 						},
 						direct: true,
-						log: false,
 						content() {
 							player.$.ai_xu_ongain = true;
 						}
@@ -1752,7 +1766,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player: 'discardBegin'
 						},
 						direct: true,
-						log: false,
 						filter(Evt, player) {
 							if (game.countPlayer(cur => cur.hasSkill('ai_point') && !cur.$.ai_xu_ondiscard)) return true;
 							return false;
@@ -1768,7 +1781,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						priority: 257,
 						direct: true,
-						log: false,
 						content() {
 							var players = game.players.slice(0);
 							for (var i = 0; i < players.length; ++i) {
@@ -2011,7 +2023,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							global: 'dieAfter'
 						},
 						direct: true,
-						log: false,
 						content() {
 							var diePlayer = trigger.player;
 							lib.skill.ai_zhong.syncDeadPlayer(diePlayer);
@@ -2025,7 +2036,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							return player.hasSkill('ai_point');
 						},
 						direct: true,
-						log: false,
 						content() {
 							'step 0'
 							if (!player.$.ai_point || player.$.ai_point.point < 3) {
@@ -2335,7 +2345,10 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			sp_Diana: `皇·嘉然`,
 			tangyan: `穿心糖言`,
-			tangyan_info: `若你已受伤，你使用、打出或弃置一张基本牌后，可以选择一项：1.令一名角色摸一张牌；2.防止你下一次受到的伤害；3.视为使用一张本回合未以此法使用过的基本牌。`,
+			tangyan_info: `若你已受伤，你使用、打出或弃置一张基本牌后，可以选择一项：<br>
+			1.令一名角色摸一张牌
+			2.防止一名角色下一次受到的伤害
+			3.视为使用一张本回合未以此法使用过的基本牌`,
 			tianyin: `万象天引`,
 			tianyin_info: `出牌阶段，你可以受到1点无来源的伤害，并将一张手牌交给一名其他角色，此牌称为「心嘉」牌。在持有「心嘉」牌角色的回合中，你发动『穿心糖言』改为依次执行所有选项。`,
 			xinjia: `心嘉`,

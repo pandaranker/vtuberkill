@@ -5116,12 +5116,12 @@ export default {
         content: [() => {
             Evt.target = trigger.player;
             Evt.precards = player.getCards('h', card => get.type(card) == 'basic' && card.hasGaintag('ming_'))
-            let next = player.chooseToMove(get.$pro2('weizeng'))
+            player.chooseToMove(get.$pro2('weizeng'))
                 .set('list', [
                     ['牌堆顶'],
                     ['亮出牌', Evt.precards],
                 ])
-                .set('reverse', ((_status.currentPhase && _status.currentPhase.next) ? get.attitude(player, _status.currentPhase.next) > 0 : false))
+                .set('reverse', (_status.currentPhase ? get.attitude(player, _status.currentPhase) > 0 : false))
                 .set('processAI', function (list) {
                     var cards = list[1][1].slice(0);
                     cards.sort(function (a, b) {
@@ -6312,7 +6312,7 @@ export default {
                     selectCard: 1,
                     yingbian: yingbian,
                     viewAs: {
-                        cardid: get.id(),
+                        cardid: get.id(),//
                         name: name,
                         nature: nature,
                         isCard: true,
@@ -9929,7 +9929,10 @@ export default {
                     break;
                 }
             }
-        }]
+        }],
+        ai: {
+            expose: 0.2
+        }
     }, 'forced').setT({ player: 'damageAfter', source: 'damageAfter' }),
     //白桃shirako
     jufu: new toSkill('regard', {
@@ -15671,7 +15674,7 @@ export default {
         }
     },
     //Melody
-    kuangbiao: {
+    kuangbiao: new toSkill('trigger', {
         intro: {
             mark(dialog, storage, player) {
                 if (player.countCards('s', card => card.hasGaintag('kuangbiao')))
@@ -15727,7 +15730,7 @@ export default {
                 }
             }
         }
-    },
+    }),
     leizhu: {
         trigger: { player: 'useCard2' },
         filter(Evt, player) {
@@ -16921,6 +16924,357 @@ export default {
             }
         }
     }, 'forced').setT('useCard').setI(0),
+    //eve.aic.
+    Errorcode: new toSkill('mark'),
+    yeze: new toSkill('trigger', {
+        filter(Evt, player) {
+            return Evt.num > 0
+        },
+        content: [() => {
+            let list = ['控制'];
+            if (game.countPlayer(cur => cur.countGainableCards(player, 'e'))) list.push('收容')
+            if (game.countPlayer() >= 3) list.push('保护')
+            Evt.maxNum = Math.min(trigger.num, list.length)
+            Evt.videoId = lib.status.videoId++;
+            game.broadcastAll(function (id, choicelist, maxNum) {
+                var dialog = ui.create.dialog('『业则』：选择至多' + maxNum + '项');
+                choicelist.forEach(element => {
+                    dialog.add([element, 'vcard']);
+                })
+                dialog.videoId = id;
+            }, Evt.videoId, [['控制'], ['收容'], ['保护']], Evt.maxNum)
+            Evt.list = list
+        }, () => {
+            player.chooseButton([1, Evt.maxNum])
+                .set('filterButton', function (button) {
+                    return _status.event.list.includes(button.link[2])
+                })
+                .set('list', Evt.list)
+                .set('dialog', Evt.videoId);
+        }, () => {
+            game.broadcastAll('closeDialog', Evt.videoId);
+            if (result.bool) {
+                Evt.choice = []
+                result.links.forEach(element => {
+                    Evt.choice.push(element[2])
+                })
+                trigger.num -= Evt.choice.length
+            }
+            else Evt.finish()
+        }, () => {
+            if (Evt.choice.length === 1) {
+                player.addTempSkill('yeze_draw', 'none')
+            }
+        }, () => {
+            if (Evt.choice.includes('控制')) {
+                player.chooseTarget('『业则』：横置或重置一名角色', true)
+                    .set('ai', (target) => get.effect(target, { name: 'tiesuo' }, _status.event.player, _status.event.player));
+            }
+            else Evt.goto(Evt.step + 2)
+        }, () => {
+            if (result.targets?.length) {
+                var target = result.targets[0];
+                player.logSkill('yeze', target);
+                target.link();
+            }
+        }, () => {
+            if (Evt.choice.includes('收容')) {
+                player.chooseTarget(function (card, player, target) {
+                    return target.countGainableCards(player, 'e');
+                }, '『业则』：获得一名角色装备区的1张牌', true)
+                    .set('ai', (target) => target === _status.event.player ? (2 * player.countCards('e', card => get.value(card) <= 0)) : (1 - get.$a2(target)));
+            }
+            else Evt.goto(Evt.step + 2)
+        }, () => {
+            if (result.targets?.length) {
+                var target = result.targets[0];
+                player.logSkill('yeze', target);
+                player.$.yeze = target
+                player.gainPlayerCard(target, 'e', true);
+            }
+        }, () => {
+            if (Evt.choice.includes('保护')) {
+                player.chooseTarget(2, function (card, player, target) {
+                    return target !== player;
+                }, '『业则』：令2名其他角色不能成为卡牌目标直到其回合开始', true)
+                    .set('ai', (target) => 1 + get.$a2(target));
+            }
+            else Evt.finish()
+        }, () => {
+            if (result.targets?.length) {
+                var targets = result.targets.slice(0);
+                player.logSkill('yeze', targets);
+                for (let v of targets) {
+                    v.addTempSkill('yeze_put', { player: 'phaseBegin' })
+                }
+            }
+        }],
+        group: 'yeze_record',
+        subSkill: {
+            record: new toSkill('trigger', {
+                filter(Evt, player) {
+                    let evt = Evt.getParent('gainPlayerCard')
+                    if (!evt) return false
+                    return evt.name === 'gainPlayerCard' && evt.getParent().name === 'yeze'
+                },
+                content() {
+                    trigger.gaintag.add('yeze');
+                }
+            }, 'direct', 'silent').setT('gainBegin'),
+            put: new toSkill('mark', {
+                locked: true,
+                mark: true,
+                intro: {
+                    content: '不能成为卡牌目标'
+                },
+                mod: {
+                    targetEnabled(card, player, target, now) {
+                        if (card.name) return false
+                    }
+                },
+            }),
+            draw: new toSkill('trigger', {
+                trigger: { player: 'phaseDrawBegin' },
+                forced: true,
+                mark: true,
+                intro: {
+                    content: '下个摸牌阶段摸牌数+1'
+                },
+                content: function () {
+                    player.removeSkill('yeze_draw');
+                    if (!trigger.numFixed) trigger.num += 1;
+                },
+            })
+        }
+    }, 'direct').setT('phaseDrawBegin1'),
+    E8BFADE4BBA3: new toSkill('trigger', {
+        nobracket: true,
+        filter(Evt, player) {
+            if (!player.$.yeze) return false
+            return get.type(Evt.card) == 'equip'
+                && get.subtype(Evt.card) == 'equip1'
+                && Evt.targets.includes(player) && player.getHistory('lose', evt => {
+                    if (evt.getParent() != Evt) return false;
+                    for (let i in evt.gaintag_map) {
+                        if (evt.gaintag_map[i].includes('yeze')) return true;
+                    }
+                    return false;
+                }).length > 0;
+        },
+        content: [() => {
+            game.putBuff(player, 'yeze', '.player_buff', 'EveAic')
+            player.chat('eve.aic.ver 1.0中的 0x1 Placement weapon 确认到未处理的异常。')
+            game.delay(1.2)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_nerf', 'EveAic')
+            player.chat('写入位置 weapon bar 时发生访问冲突。')
+            game.delay(1)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_buff', 'EveAic')
+            player.chat('原文件已存在。')
+            game.delay(0.8)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_nerf', 'EveAic')
+            player.chat('执行中发生错误，尝试更新数据...')
+            game.delay(2.2)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            if (player.$.yeze.isIn()) {
+                player.$.yeze.addMark('Errorcode')
+            }
+            game.putBuff(player, 'yeze', '.player_buff', 'EveAic')
+            player.chat('已对每个错误文件夹进行标记。')
+            game.delay(1.2)
+            delete player.$.yeze
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_nerf', 'EveAic')
+            player.chat('正在试图执行来自未知发布者的以下程序。')
+            game.delay(1)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_buff', 'EveAic')
+            player.chat('C:\eve.aic\restart.exe 您想允许执行吗?', true)
+            game.delay(0.8)
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.putBuff(player, 'yeze', '.player_nerf', 'EveAic')
+            player.chooseControl('ok').set('dialog', ['C:\eve.aic\restart.exe 您想允许执行吗?'])
+        }, () => {
+            game.clearBuff(player, 'yeze')
+            game.delay(1)
+            player.reinit('EveAic', 'EveAicVer2', false)
+            game.delay(2)
+        }],
+        ai: {
+            combo: 'yeze'
+        }
+    }, 'forced', 'unique').setT('useCard1'),
+    //eve.aic.ver2
+    xieyan: new toSkill('trigger', {
+        filter(Evt, player) {
+            return (Evt.cards && Evt.cards.filterInD('d').length) || game.countPlayer(cur => {
+                return cur.countCards('e') === 0
+                    || (lib.filter.targetEnabled2({ name: 'sha', nature: 'thunder' }, player, cur)
+                        && !Evt.player.hasHistory('sourceDamage', evt => evt.player === cur))
+            })
+        },
+        logTarget: 'player',
+        content: [() => {
+            Evt.target = trigger.player
+            Evt.cards = trigger.card.filterInD('d')
+            let list = [];
+            if (Evt.cards.length) list.push('将其弃置的1至3张牌交给该角色，你获得剩下的牌')
+            if (game.countPlayer(cur => {
+                return lib.filter.targetEnabled2({ name: 'sha', nature: 'thunder' }, player, cur)
+                    && !Evt.target.hasHistory('sourceDamage', evt => evt.player === cur)
+            })) list.push('视为对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】')
+            if (game.countPlayer(cur => !cur.countCards('e'))) list.push('将1名装备区域没有牌的角色翻面')
+            Evt.maxNum = Math.min(trigger.num, list.length)
+            player.chooseControl('dialogcontrol', list).set('ai', function () {
+                return 1;
+            })
+                .set('prompt', '『协研』：选择一项')
+                .set('addDialog', [Evt.cards])
+            Evt.list = list
+        }, () => {
+            Evt.choice = result.control
+            switch (Evt.choice) {
+                case '将其弃置的1至3张牌交给该角色，你获得剩下的牌': {
+                    player.chooseToMove(`『协研』：交给${get.translation(Evt.target)}1至3张牌`, true)
+                        .set('list', [
+                            ['获得牌', Evt.cards],
+                            [`交给${get.translation(Evt.target)}`],
+                        ])
+                        .set('processAI', function (list) {
+                            var cards = list[0][1].slice(0);
+                            cards.sort(function (a, b) {
+                                return get.value(a) - get.value(b);
+                            });
+                            return [cards.slice(_status.event.puts), cards.slice(0, _status.event.puts)];
+                        })
+                        .set('filterMove', function (from, to, moved) {
+                            if (to == 1 && moved[1].length >= 3) return false;
+                            return true;
+                        })
+                        .set('filterOk', function (moved) {
+                            return moved[1].length >= 1 && moved[1].length <= 3;
+                        })
+                        .set('puts', get.$a(player, Evt.target) > 0 ? Math.min(Evt.cards.length, 3) : 1)
+                } break;
+                case '视为对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】': {
+                    player.chooseTarget(`『协研』：对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】`, true, function (card, player, target) {
+                        if (_status.event.source.hasHistory('sourceDamage', evt => evt.player === target)) return false
+                        return player.canUse({ name: 'sha', nature: 'thunder' }, target, false);
+                    })
+                        .set('source', Evt.target)
+                        .set('ai', function (target) {
+                            return get.effect(target, { name: 'sha', nature: 'thunder' }, _status.event.player);
+                        });
+                } break;
+                case '将1名装备区域没有牌的角色翻面': {
+                    player.chooseTarget(`『协研』：将1名装备区域没有牌的角色翻面`, true, function (card, player, target) {
+                        return target.countCards('e') === 0
+                    })
+                        .set('ai', function (target) {
+                            return (target.isTurnedOver() ? 1 : -1) * get.$a2(target);
+                        });
+                } break;
+            }
+        }, () => {
+            switch (Evt.choice) {
+                case '将其弃置的1至3张牌交给该角色，你获得剩下的牌': {
+                    if (result.bool && result.moved.length) {
+                        player.gain(result.moved[0].slice(0), 'gain2')
+                        player.line(Evt.target)
+                        Evt.target.gain(result.moved[1].slice(0), 'gain2')
+                    }
+                } break;
+                case '视为对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】': {
+                    if (result.targets.length) {
+                        player.useCard({ name: 'sha', nature: 'thunder' }, result.targets, false)
+                    }
+                } break;
+                case '将1名装备区域没有牌的角色翻面': {
+                    if (result.targets.length) {
+                        result.targets[0].turnOver()
+                    }
+                } break;
+            }
+            player.storage.xieyan = Evt.choice
+        }],
+        group: 'xieyan_record',
+        subSkill: {
+            record: new toSkill('trigger', {
+                filter(Evt, player) {
+                    let evt = Evt.getParent('gainPlayerCard')
+                    if (!evt) return false
+                    return evt.name === 'gainPlayerCard' && evt.getParent().name === 'yeze'
+                },
+                content() {
+                    player.storage.xieyan_record = player.storage.xieyan
+                }
+            }, 'direct', 'silent').setT('xieyanAfter'),
+        }
+    }, 'direct').setT({ global: 'phaseDiscardEnd' }),
+    E59B9EE6BAAF: new toSkill('trigger', {
+        nobracket: true,
+        filter(Evt, player) {
+            return player.storage.xieyan_record && player.storage.xieyan_record === player.storage.xieyan
+        },
+        content: [() => {
+            game.putBuff(player, 'xieyan', '.player_buff', 'EveAicVer2')
+            player.chat('针对eve.aic.ver2.0的访问申请被拒绝，重复的访问类型。')
+            game.delay(1.2)
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_nerf', 'EveAicVer2')
+            player.chat('正尝试针对历史版本进行数据交换。')
+            game.delay(1)
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_buff', 'EveAicVer2')
+            player.chat('交换完成。')
+            game.delay(2)
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_nerf', 'EveAicVer2')
+            player.chat('正在清理错误数据过多的文件夹...')
+            game.delay(1)
+        }, () => {
+            game.filterPlayer(cur => {
+                if (cur.countMark('Errorcode') >= cur.maxHp) {
+                    player.line(cur)
+                    cur.die()
+                }
+            })
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_buff', 'EveAicVer2')
+            player.chat('正准备以历史版本启动系统...')
+            game.delay(0.9)
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_nerf', 'EveAicVer2')
+            player.chat('<Y/N>...[Y]', true)
+            game.delay(0.8)
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.putBuff(player, 'xieyan', '.player_buff', 'EveAicVer2')
+            player.chooseControl('ok').set('dialog', ['十分感谢您协助了本次计划的进行。'])
+        }, () => {
+            game.clearBuff(player, 'xieyan')
+            game.delay(1)
+            player.reinit('EveAicVer2', 'EveAic', false)
+            game.delay(2)
+        }],
+        ai: {
+            combo: 'xieyan'
+        }
+    }, 'forced', 'unique').setT('xieyanEnd'),
+
     //琥珀玲
     chunzhen: new toSkill('trigger', {
         filter(Evt, player) {
@@ -17125,7 +17479,7 @@ export default {
             if (result.bool && result.links) {
                 Evt.cards = result.links.slice(0);
             }
-            player.gain(Evt.cards, 'gain2', 'log');
+            player.gain(Evt.cards, 'log', 'gain2');
         }],
     }).setT({ global: ['loseAfter', 'cardsDiscardAfter'] }),
     shentian: new toSkill('active', {
@@ -17195,7 +17549,10 @@ export default {
                     let controls = _status.event.controls.slice(0);
                     if (evt.discards.length >= 4 && controls.includes('获得本回合进入弃牌堆的任意类型不同的牌，且若这些牌之和为质数，令其回复1点体力')) return 0;
                     return _status.event.att;
-                }).set('check', (get.$a(player, _status.currentPhase) > 0) ? 0 : 1).set('prompt', get.$pro2('mishu')).set('addDialog', [cards]);
+                })
+                    .set('check', (get.$a(player, _status.currentPhase) > 0) ? 0 : 1)
+                    .set('prompt', get.$pro2('mishu'))
+                    .set('addDialog', [cards]);
             } else Evt.finish();
         }, () => {
             if (result.control && result.control != '取消') {

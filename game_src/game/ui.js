@@ -4883,7 +4883,7 @@ module.exports = {
                         bool1 = true;
                      }
                      if (!bool4 && get.is.double(i)) bool4 = true;
-                     if (bool1 && bool4 &&  groups_copy.length === 0) break;
+                     if (bool1 && bool4 && groups_copy.length === 0) break;
                   }
                   groups.removeArray(groups_copy)
                   if (!bool1) groups.remove('shen');
@@ -6427,7 +6427,7 @@ module.exports = {
                            if (node.node.hp.childNodes.length == 0) {
                               node.node.name.style.top = '8px';
                            }
-                           if(/^[a-zA-Z]+$/.test(node.node.name.innerHTML)){
+                           if (/^[A-z\d\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
                            let nameLength = node.node.name.querySelectorAll('br').length
@@ -9845,8 +9845,8 @@ module.exports = {
                   if (typeof get.info(Evt.skill).viewAs == 'function') Evt.result.card = get.info(Evt.skill).viewAs(Evt.result.cards, Evt.player);
                   else Evt.result.card = get.copy(get.info(Evt.skill).viewAs);
                   if (Evt.result.cards.length == 1 && Evt.result.card) {
-                     Evt.result.card.suit = get.suit(Evt.result.cards[0]);
-                     Evt.result.card.number = get.number(Evt.result.cards[0]);
+                     if (!Evt.result.card.suit) Evt.result.card.suit = get.suit(Evt.result.cards[0]);
+                     if (!Evt.result.card.number) Evt.result.card.number = get.number(Evt.result.cards[0]);
                   }
                   if (Evt.skillDialog && get.objtype(Evt.skillDialog) == 'div') {
                      Evt.skillDialog.close();

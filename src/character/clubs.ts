@@ -997,7 +997,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					player: 'useCard2'
 				},
 				direct: true,
-				log: false,
 				filter(Evt, player) {
 					return Evt.targets && Evt.targets.length;
 				},
@@ -1152,7 +1151,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					let check = get.$a(Evt.target, player) >= 0
 					Evt.target.chooseCard('he', [1, Infinity]).set('ai', card => {
 						var player = _status.event.player;
-						if (!check) return get.unuseful3(card)
+						if (!_status.event.check) return get.unuseful(card)
 						if (player.needsToDiscard() && ui.selected.cards.length < (player.countCards('h') - player.getHandcardLimit())) return 6 - get.useful(card);
 						else return 2 - get.useful(card);
 					}).set('check', check).set('prompt', `###${get.prompt('jiumao', player)}###你在出牌阶段结束时，可将任意数量的牌放在${get.translation(player)}武将牌旁，称为「猫粮」`);
@@ -2434,7 +2433,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					disableTag: {},
 					reset: {
 						direct: true,
-						log: false,
 						trigger: { global: 'roundStart' },
 						content() {
 							player.removeSkill('yutuo_disableTag');
@@ -2501,7 +2499,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					phaseJieshuTrigger: {
 						audio: 'xiou',
 						trigger: { player: 'phaseJieshuBegin' },
-						log: false,
 						prompt2(Evt, player) {
 							if (player.$.xiou && player.$.xiou.p1)
 								return '你与' + get.translation(player.$.xiou.p1) + '各摸一张牌';
@@ -2804,7 +2801,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							player: 'phaseDiscardBefore'
 						},
 						direct: true,
-						log: false,
 						content() {
 							//跳过弃牌阶段
 							trigger.cancel();
@@ -2957,7 +2953,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						firstDo: true,
 						priority: 253,
 						direct: true,
-						log: false,
 						content() {
 							player.$.budingpaidui = ['小', '大', '等'];
 							player.markSkill('budingpaidui');
@@ -2969,7 +2964,6 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						},
 						direct: true,
 						lastDo: true,
-						log: false,
 						content() {
 							player.$.budingpaidui_uCR = [trigger.card];
 							player.markSkill('budingpaidui');

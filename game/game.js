@@ -14792,7 +14792,7 @@ module.exports = {
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                str2 = str2.slice(2);
             }
-            if (/^[a-zA-Z]+$/.test(str2)) return str2
+            if (/^[A-z\d\.]+$/.test(str2)) return str2
             return get.verticalStr(str2, true);
          },
          time: function () {
@@ -21477,6 +21477,7 @@ module.exports = {
       characterReplace: {},
       dynamicTranslate: {},
       cardPack: {},
+      skin: {},
       onresize: [],
       onphase: [],
       onwash: [],
@@ -25938,7 +25939,10 @@ module.exports = {
         if (!Evt.cancelled && !Evt.nojudge) player.judge(Evt.card).set('type', 'phase');
       }, () => {
         var name = Evt.card.viewAs || Evt.card.name;
-        if (Evt.cancelled && !Evt.direct) {
+        if (Evt.excluded) {
+          delete Evt.excluded;
+        }
+        else if (Evt.cancelled && !Evt.direct) {
           if (lib.card[name].cancel) {
             var next = game.createEvent(name + 'Cancel');
             next.setContent(lib.card[name].cancel);
@@ -27657,10 +27661,7 @@ module.exports = {
               _status.event._aiexclude.length = 0;
             }
             else {
-              get.card(true).aiexclude();
-              game.uncheck();
-              Evt.redo();
-              game.resume();
+              ui.click.cancel();
             }
           }
           else {
@@ -28730,21 +28731,21 @@ module.exports = {
           else {
             player.stat[player.stat.length - 1].card[card.name]++;
           }
-          if (Evt.skill) {
-            if (player.stat[player.stat.length - 1].skill[Evt.skill] == undefined) {
-              player.stat[player.stat.length - 1].skill[Evt.skill] = 1;
+        }
+        if (Evt.skill) {
+          if (player.stat[player.stat.length - 1].skill[Evt.skill] == undefined) {
+            player.stat[player.stat.length - 1].skill[Evt.skill] = 1;
+          }
+          else {
+            player.stat[player.stat.length - 1].skill[Evt.skill]++;
+          }
+          var sourceSkill = get.info(Evt.skill).sourceSkill;
+          if (sourceSkill) {
+            if (player.stat[player.stat.length - 1].skill[sourceSkill] == undefined) {
+              player.stat[player.stat.length - 1].skill[sourceSkill] = 1;
             }
             else {
-              player.stat[player.stat.length - 1].skill[Evt.skill]++;
-            }
-            var sourceSkill = get.info(Evt.skill).sourceSkill;
-            if (sourceSkill) {
-              if (player.stat[player.stat.length - 1].skill[sourceSkill] == undefined) {
-                player.stat[player.stat.length - 1].skill[sourceSkill] = 1;
-              }
-              else {
-                player.stat[player.stat.length - 1].skill[sourceSkill]++;
-              }
+              player.stat[player.stat.length - 1].skill[sourceSkill]++;
             }
           }
         }
@@ -31283,7 +31284,7 @@ module.exports = {
         for (var i = 0; i < skills.length; i++) {
           var ifo = get.info(skills[i]);
           if (ifo.viewAs && typeof ifo.viewAs != 'function' && ifo.viewAs.name == name) {
-            if (!ifo.viewAsFilter || ifo.viewAsFilter(player)) {
+            if (!ifo.viewAsFilter || ifo.viewAsFilter(player) !== false) {
               return true;
             }
           }
@@ -32160,8 +32161,8 @@ module.exports = {
        * 本角色发送聊天消息[support online]
        * @param {!string} str 聊天消息
        */
-      chat: function (str) {
-        if (get.is.banWords(str)) return;
+      chat: function (str, forced) {
+        if (!forced && get.is.banWords(str)) return;
         lib.element.player.say.call(this, str);
         game.broadcast(function (id, str) {
           if (lib.playerOL[id]) {
@@ -32469,33 +32470,33 @@ module.exports = {
        * @param {!string} skill 技能名，如果技能属于角色副将，则设置副将的头像，否则设置主将的头像
        * @param {!string} name (角色|技能)名，如果是角色名，闪烁此角色的头像；如果是技能名，使用此技能所属角色的角色名
        */
-      buffAvatar: function (buff, skill, name) {
-        if (lib.skill[name] && !lib.character[name]) {
-          var stop = false;
-          var list = lib.config.all.characters.slice(0);
-          for (var i in lib.characterPack) {
-            list.add(i);
-          }
-          for (var i = 0; i < list.length; i++) {
-            for (var j in lib.characterPack[list[i]]) {
-              if (lib.characterPack[list[i]][j][3].contains(name)) {
-                name = j;
-                stop = true;
-                break;
-              }
-            }
-            if (stop) {
-              break;
-            }
-          }
-        }
-        if (lib.character[this.name2] && lib.character[this.name2][3].contains(skill)) {
-          this.setAvatarQueue(this.name2, [name]);
-        }
-        else {
-          this.setAvatarQueue(this.name, [name]);
-        }
-      },
+      // buffAvatar: function (buff, skill, name) {
+      //   if (lib.skill[name] && !lib.character[name]) {
+      //     var stop = false;
+      //     var list = lib.config.all.characters.slice(0);
+      //     for (var i in lib.characterPack) {
+      //       list.add(i);
+      //     }
+      //     for (var i = 0; i < list.length; i++) {
+      //       for (var j in lib.characterPack[list[i]]) {
+      //         if (lib.characterPack[list[i]][j][3].contains(name)) {
+      //           name = j;
+      //           stop = true;
+      //           break;
+      //         }
+      //       }
+      //       if (stop) {
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   if (lib.character[this.name2] && lib.character[this.name2][3].contains(skill)) {
+      //     this.setAvatarQueue(this.name2, [name]);
+      //   }
+      //   else {
+      //     this.setAvatarQueue(this.name, [name]);
+      //   }
+      // },
       /**
        * 同步本角色数据(联网)
        * @returns {?GameCores.GameObjects.Player} this self；如果是回放模式且该函数被无参调用，返回空值(undefined)
@@ -32509,7 +32510,7 @@ module.exports = {
           player.hp = hp;
           player.maxHp = maxHp;
           player.hujia = hujia;
-          if(player.storage)  player.$ = player.storage;
+          if (player.storage) player.$ = player.storage;
           player.update();
         }, this, this.hp, this.maxHp, this.hujia);
         if (!_status.video) {
@@ -32630,7 +32631,7 @@ module.exports = {
         }
         function checkEnglish(name) {
           let nameLength = name.querySelectorAll('br').length
-          if (nameLength === 0 && /^[a-zA-Z]+$/.test(name.innerHTML)) {
+          if (nameLength === 0 && /^[A-z\d\.]+$/.test(name.innerHTML)) {
             name.classList.add('English');
           }
           if (nameLength >= 1 && name.classList.contains('English')) {
@@ -32731,7 +32732,7 @@ module.exports = {
         }
         if (i == 'ghujia' || ((!this.marks[i].querySelector('.image') || this.storage[i + '_markcount']) &&
           lib.skill[i] && lib.skill[i].intro && !lib.skill[i].intro.nocount &&
-          (this.storage[i] || lib.skill[i].intro.markcount))) {
+          (this.storage[i] || this.storage[i + '_markcount'] || lib.skill[i].intro.markcount))) {
           this.marks[i].classList.add('overflowmark')
           var num = 0;
           if (typeof lib.skill[i].intro.markcount == 'function') {
@@ -33384,7 +33385,7 @@ module.exports = {
        * 记录本角色的一个技能当前标记数(回放记录)，并更新全部标记信息({@link lib.element.player.updateMarks})
        * @param {!string} skill 技能名
        */
-      setIdentity: function (identity) {
+      setIdentity: function (identity, nature) {
         if (!identity) identity = this.identity;
         if (get.is.jun(this)) {
           this.node.identity.firstChild.innerHTML = '君';
@@ -33392,7 +33393,7 @@ module.exports = {
         else {
           this.node.identity.firstChild.innerHTML = get.translation(identity);
         }
-        this.node.identity.dataset.color = identity;
+        this.node.identity.dataset.color = nature || identity;
         return this;
       },
       insertPhase: function (skill, insert) {
@@ -49534,7 +49535,7 @@ module.exports = {
                         bool1 = true;
                      }
                      if (!bool4 && get.is.double(i)) bool4 = true;
-                     if (bool1 && bool4 &&  groups_copy.length === 0) break;
+                     if (bool1 && bool4 && groups_copy.length === 0) break;
                   }
                   groups.removeArray(groups_copy)
                   if (!bool1) groups.remove('shen');
@@ -51078,7 +51079,7 @@ module.exports = {
                            if (node.node.hp.childNodes.length == 0) {
                               node.node.name.style.top = '8px';
                            }
-                           if(/^[a-zA-Z]+$/.test(node.node.name.innerHTML)){
+                           if (/^[A-z\d\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
                            let nameLength = node.node.name.querySelectorAll('br').length
@@ -54496,8 +54497,8 @@ module.exports = {
                   if (typeof get.info(Evt.skill).viewAs == 'function') Evt.result.card = get.info(Evt.skill).viewAs(Evt.result.cards, Evt.player);
                   else Evt.result.card = get.copy(get.info(Evt.skill).viewAs);
                   if (Evt.result.cards.length == 1 && Evt.result.card) {
-                     Evt.result.card.suit = get.suit(Evt.result.cards[0]);
-                     Evt.result.card.number = get.number(Evt.result.cards[0]);
+                     if (!Evt.result.card.suit) Evt.result.card.suit = get.suit(Evt.result.cards[0]);
+                     if (!Evt.result.card.number) Evt.result.card.number = get.number(Evt.result.cards[0]);
                   }
                   if (Evt.skillDialog && get.objtype(Evt.skillDialog) == 'div') {
                      Evt.skillDialog.close();
@@ -62606,20 +62607,29 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
         }
       }
     }
-    game.putBuff = (player, skill, buff) => {
-      game.broadcastAll(function (player, skill, buff) {
-        if (!player.node[skill + '_buff']) {
-          player.node[skill + '_buff'] = [ui.create.div(buff, player.node.avatar), ui.create.div(buff, player.node.avatar2)];
+    game.putBuff = (player, skill, buff, name) => {
+      let node
+      if(name){
+        if (player.name2 == name) {
+          node = player.node.avatar2;
         }
-      }, player, skill, buff);
+        else {
+          node = player.node.avatar;
+        }
+      }
+      else{
+        node = player.node.displayer
+      }
+      game.broadcastAll(function (player, skill, buff, node) {
+        if (!player.node[skill + '_buff']) {
+          player.node[skill + '_buff'] = ui.create.div(buff, node);
+        }
+      }, player, skill, buff,node);
     }
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
         if (player.node[skill + '_buff']) {
-          if (player.node[skill + '_buff'][0].delete) {
-            player.node[skill + '_buff'][0].delete();
-            player.node[skill + '_buff'][1].delete();
-          }
+          player.node[skill + '_buff'].delete()
           delete player.node[skill + '_buff']
         }
       }, player, skill);

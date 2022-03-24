@@ -1359,6 +1359,8 @@ window.vk_asset_list=[
 	'image/character/Keroro.jpg',
 	'image/character/Mojuko.jpg',
 	'image/character/old_ELu.jpg',
+	'image/character/EveAic.jpg',
+	'image/character/EveAicVer2.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

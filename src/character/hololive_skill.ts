@@ -48,18 +48,12 @@ export default {
         audio: 2,
         trigger: { player: 'useCard2' },
         filter(Evt, player) {
-            //console.log(player.$.onlink,Evt.card.cardid)
-            return get.number(Evt.card) > 10 && (player.$.onlink == null || player.$.onlink.indexOf(Evt.card.cardid) == -1);
+            return get.number(Evt.card) > 10;
         },
         priority: 1,
         frequent: true,
         forced: false,
         content() {
-            var info = get.info(trigger.card);
-            var players = game.filterPlayer();
-            if (player.$.onlink == null) {
-                player.$.onlink = [];
-            }//处理正处于连锁中的卡牌
             'step 0'
             Evt.Dvalue = Math.min(3, get.number(trigger.card) - 10);
             var list = [['无法响应'], ['额外目标'], ['摸一张牌']];
@@ -83,7 +77,6 @@ export default {
                 })
                 dialog.videoId = id;
             }, Evt.videoId, list, Evt.Dvalue);
-            player.$.onlink.push(trigger.card.cardid);
             'step 1'
             player.chooseButton(Evt.Dvalue).set('dialog', Evt.videoId).set('prompt', get.prompt('taiyangzhiyin'));
             'step 2'
@@ -101,7 +94,6 @@ export default {
                 });
                 result.links.forEach(element => {
                     if (element[2] == "额外目标") {
-                        //console.log(trigger);
                         player.chooseTarget(true, '额外指定一名' + get.translation(trigger.card) + '的目标？', function (card, player, target) {
                             var trigger = _status.event;
                             if (trigger.targets.contains(target)) return false;
@@ -123,21 +115,6 @@ export default {
                 }
             }
         },
-        group: 'taiyangzhiyin_clear',
-        subSkill: {
-            clear: {
-                trigger: { player: ['useCardAfter'] },
-                direct: true,
-                content() {
-                    if (player.$.onlink != null) {
-                        var deleteIndex = player.$.onlink.indexOf(trigger.card.cardid);
-                        if (deleteIndex != -1) {
-                            player.$.onlink.splice(deleteIndex, 1, null)
-                        }
-                    }
-                }
-            }
-        }
     },
     renjiazhizhu: {
         unique: true,
@@ -2251,16 +2228,16 @@ export default {
         trigger: { global: 'loseAfter' },
         priority: 222,
         filter(Evt, player) {
+            if (!Evt.player.isIn()) return false
             let precount = 0;
-            player.getHistory('lose', evt => {
+            Evt.player.getHistory('lose', evt => {
                 if (evt === Evt) return false;
                 if (evt.type === 'discard') {
-                    precount += trigger.cards.filterInD('d').length
+                    precount += evt.cards.filterInD('d').length
                 }
-            }).length > 0;
-            if (Evt.player.isAlive() && precount < 2) {
-                if (Evt.type === 'discard' && precount+Evt.cards.filterInD('d').length>=2) return true;
-            }
+            });
+            console.log(precount)
+            if (Evt.type === 'discard' && precount < 2 && precount + Evt.cards.filterInD('d').length >= 2) return true;
         },
         check(Evt, player) {
             return get.$a(player, Evt.player) < 0.5
@@ -2379,17 +2356,15 @@ export default {
         }
     },
     //Doris
-    shenhai: {
+    shenhai: new toSkill('trigger', {
         marktext: '海',
         intro: {
             name: "光辉深海",
             content: "<li>当前回合发动技能次数：#",
         },
-        init(player, skill) {
-            if (!player.storage[skill]) player.storage[skill] = 0;
-        },
         trigger: { player: 'useCard2' },
         priority: 42,
+        popup: false,
         filter(Evt, player) {
             if (get.type(Evt.card) == 'delay' || !Evt.targets) return false;
             if (!player.getLastUsed(1)) return false;
@@ -2400,12 +2375,11 @@ export default {
             }
             return get.number(Evt.card) && get.number(Evt.card) > num;
         },
-        frequent: true,
         content() {
             'step 0'
             if (player.$.shenhai >= 3) {
                 var list = ['令一名其他角色使用', '额外结算一次', '增加或减少一个目标'];
-                player.chooseControlList(list, true, function () {
+                player.chooseControlList(list, get.prompt('shenhai'), true, function () {
                     return 1;
                 });
                 Evt.goto(1);
@@ -2501,12 +2475,7 @@ export default {
         },
         group: ['shenhai_jiesuan', 'shenhai_clear'],
         subSkill: {
-            jiesuan: {
-                init(player, skill) {
-                    if (!player.storage[skill]) player.storage[skill] = [];
-                },
-                trigger: { player: 'useCardAfter' },
-                forced: true,
+            jiesuan: new toSkill('rule',{
                 priority: 42,
                 filter(Evt, player) {
                     if (get.type(Evt.card) == 'delay') return false;
@@ -2516,20 +2485,17 @@ export default {
                     let card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
                     player.useCard(card, (trigger._targets || trigger.targets).slice(0), trigger.cards).skill = trigger.skill || 'shenhai_jiesuan';
                 }
-            },
-            clear: {
-                trigger: { player: 'phaseEnd' },
-                forced: true,
-                silent: true,
+            },'direct').setT('useCardAfter').setI([]),
+            clear: new toSkill('rule',{
                 priority: 42,
                 content() {
                     player.unmarkSkill('shenhai');
                     player.$.shenhai_jiesuan.length = 0;
                     player.$.shenhai = 0;
                 }
-            }
+            },'locked','direct','silent').setT('phaseEnd')
         }
-    },
+    }, 'frequent').setI(0),
     paomo: new toSkill('trigger', {
         init(player, skill) {
             if (!player.storage[skill]) player.storage[skill] = [];

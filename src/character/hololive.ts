@@ -29,7 +29,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**兔田佩克拉 */
 			UsadaPekora: ['female', 'holo', 4, ['zhonggong', 'binzhan']],
 			/**大神澪 */
-			ŌokamiMio: ['female', 'holo', 3, ['xuanxu', 'weizeng'], ['forbidai']],
+			ŌokamiMio: ['female', 'holo', 3, ['xuanxu', 'weizeng']],
 			/**大脸猫 */
 			NekomataOkayu: ['female', 'holo', 3, ['fantuan', 'shengang']],
 			/**狮白牡丹 */
@@ -239,7 +239,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			Doris: `朵莉丝`,
 			shenhai: `曜海`,
-			shenhai_info: `当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：1.令一名其他角色使用2.此牌额外结算一次3.此牌增加或减少一个目标。当你于一回合内发动三次本技能后，解除标号限制。`,
+			shenhai_info: `当你使用一张1.装备牌2.基本牌3.通常锦囊牌时，若该牌点数大于你本回合使用的上一张牌，你可以执行对应标号的项：<br>
+			1.令一名其他角色使用<br>
+			2.此牌额外结算一次<br>
+			3.此牌增加或减少一个目标<br>
+			当你于一回合内发动三次本技能后，解除标号限制。`,
 			shenhai_append: lib.figurer(`可以通过先打小牌后打大牌，让【桃】、【杀】多生效一次`),
 			paomo: `儚恋`,
 			paomo_info: `每名角色每回合限一次，当其他角色于你的回合内使用牌后，你可以令你『曜海』记录牌的点数视为与此牌相同，然后与其各摸一张牌。`,
