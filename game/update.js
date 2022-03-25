@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '1.10.2.13',
+	version: '1.10.2.14',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.2.13小型更新：新增角色~eve.aic【upd8】，修复了一些bug`,
+		`1.10.2.14小型更新：新增角色~eve.aic【upd8】，修复了一些bug`,
 		'',
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
 		``,

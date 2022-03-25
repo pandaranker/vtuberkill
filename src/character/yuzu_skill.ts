@@ -16925,7 +16925,11 @@ export default {
         }
     }, 'forced').setT('useCard').setI(0),
     //eve.aic.
-    Errorcode: new toSkill('mark'),
+    Errorcode: new toSkill('mark', {
+        intro: {
+            content: '被标记为错误'
+        },
+    }, 'mark','locked'),
     yeze: new toSkill('trigger', {
         filter(Evt, player) {
             return Evt.num > 0
@@ -17116,7 +17120,7 @@ export default {
     //eve.aic.ver2
     xieyan: new toSkill('trigger', {
         filter(Evt, player) {
-            return (Evt.cards && Evt.cards.filterInD('d').length) || game.countPlayer(cur => {
+            return (Evt?.cards?.filterInD('d').length) || game.countPlayer(cur => {
                 return cur.countCards('e') === 0
                     || (lib.filter.targetEnabled2({ name: 'sha', nature: 'thunder' }, player, cur)
                         && !Evt.player.hasHistory('sourceDamage', evt => evt.player === cur))
@@ -17125,9 +17129,11 @@ export default {
         logTarget: 'player',
         content: [() => {
             Evt.target = trigger.player
-            Evt.cards = trigger.card.filterInD('d')
+            if (trigger.cards) {
+                Evt.cards = trigger.cards.filterInD('d')
+            }
             let list = [];
-            if (Evt.cards.length) list.push('将其弃置的1至3张牌交给该角色，你获得剩下的牌')
+            if (Evt.cards?.length) list.push('将其弃置的1至3张牌交给该角色，你获得剩下的牌')
             if (game.countPlayer(cur => {
                 return lib.filter.targetEnabled2({ name: 'sha', nature: 'thunder' }, player, cur)
                     && !Evt.target.hasHistory('sourceDamage', evt => evt.player === cur)
@@ -17138,7 +17144,7 @@ export default {
                 return 1;
             })
                 .set('prompt', '『协研』：选择一项')
-                .set('addDialog', [Evt.cards])
+                .set('addDialog', [Evt.cards || '无弃牌'])
             Evt.list = list
         }, () => {
             Evt.choice = result.control
@@ -17166,7 +17172,7 @@ export default {
                         .set('puts', get.$a(player, Evt.target) > 0 ? Math.min(Evt.cards.length, 3) : 1)
                 } break;
                 case '视为对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】': {
-                    player.chooseTarget(`『协研』：对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】`, true, function (card, player, target) {
+                    player.chooseTarget(`『协研』：对1至2名本回合内未受此角色伤害的其他角色使用一张雷【杀】`, [1, 2], true, function (card, player, target) {
                         if (_status.event.source.hasHistory('sourceDamage', evt => evt.player === target)) return false
                         return player.canUse({ name: 'sha', nature: 'thunder' }, target, false);
                     })
@@ -17210,9 +17216,7 @@ export default {
         subSkill: {
             record: new toSkill('trigger', {
                 filter(Evt, player) {
-                    let evt = Evt.getParent('gainPlayerCard')
-                    if (!evt) return false
-                    return evt.name === 'gainPlayerCard' && evt.getParent().name === 'yeze'
+                    return player.storage.xieyan
                 },
                 content() {
                     player.storage.xieyan_record = player.storage.xieyan
