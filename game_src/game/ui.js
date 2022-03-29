@@ -5931,7 +5931,7 @@ module.exports = {
                   if (lib.forcehide.contains('wuxie')) ui.wuxie.classList.add('forcehide');
                   if (lib.forcehide.contains('cardPileButton')) ui.cardPileButton.classList.add('forcehide');
                }
-               ui.volumn = ui.create.system('♫');
+               ui.volumn = ui.create.system('音量');
                lib.setPopped(ui.volumn, ui.click.volumn, 200);
                // if(lib.config.show_pause) ui.auto.style.marginLeft='10px';
                if (!lib.config.show_volumn) {
@@ -6215,7 +6215,16 @@ module.exports = {
                else {
                   parent.appendChild(node);
                }
-               node.innerHTML = str;
+               let systemIconMap = {
+                  '选项': `<ion-icon name="settings-outline"></ion-icon>`,
+                  '暂停': `<ion-icon name="pause-circle-outline"></ion-icon>`,
+                  '托管': `<ion-icon name="play-forward-circle-outline"></ion-icon>`,
+                  '音量': `<ion-icon name="musical-notes-outline"></ion-icon>`,
+                  '整理手牌': `<ion-icon name="server-outline"></ion-icon>`,
+                  '牌堆': `<ion-icon name="albums-outline"></ion-icon>`,
+               }
+               node.innerHTML = (systemIconMap[str]||'') + str;
+               // console.log(node.innerHTML)
                if (func) {
                   node.listen(func);
                }

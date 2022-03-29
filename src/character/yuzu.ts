@@ -63,6 +63,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV']],
 			/**谢拉 */
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
+			/**恋乃夜舞 */
+			KoinoyaMai: ['female', 'qun', 3, ['shanying','siqian']],
 
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
@@ -101,6 +103,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**茉吱Mojuko */
 			Mojuko: ['female', 'Providence', 3, ['shufang', 'baihuo'], ['riV']],
 
+			/**赫卡缇亚 */
+			Hecatia: ['female', 'VirtualUnion', 3, ['naqi', 'shuangzhi','shouji']],
 
 			/**雨街F */
 			AmemachiF: ['female', 'RedC', 3, ['ciling', 'xiyu'], ['guoV']],

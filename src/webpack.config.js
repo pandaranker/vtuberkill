@@ -35,8 +35,8 @@ module.exports = {
     minimizer: [new TerserPlugin()],
   },
   plugins: [],
-  // mode: 'development',
-  mode: 'production',
+  mode: 'development',
+  // mode: 'production',
   resolve: {
     // 在导入语句没带文件后缀时，webpack会自动按照顺序添加后缀名查找
     extensions: ['.ts', '.js', '.json'],

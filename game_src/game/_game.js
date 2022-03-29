@@ -1287,7 +1287,7 @@ module.exports = {
                 jiuNode: function (player, bool) {
                     //Powered by 升麻
                     if (bool) {
-                        if (!player.node.jiu && lib.config.jiu_effect) {
+                        if (!player.node.jiu && '喝酒效果') {
                             player.node.jiu = ui.create.div('.playerjiu', player.node.avatar);
                             player.node.jiu2 = ui.create.div('.playerjiu', player.node.avatar2);
                         }

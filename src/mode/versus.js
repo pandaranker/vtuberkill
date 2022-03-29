@@ -22,7 +22,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 		},
 		start:function(){
 			"step 0"
-			if(!_status.connectMode || lib.configOL.versus_mode === '4v4'){
+			if(!_status.brawl && (!_status.connectMode || lib.configOL.versus_mode === '4v4')){
 				for(let i in lib.characterPack){
 					if(i=='clubs'){
 						for(var j in lib.characterPack[i]){
@@ -6750,7 +6750,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								target.addSkill('jiu');
 							}
 							game.addVideo('jiuNode',target,true);
-							if(!target.node.jiu&&lib.config.jiu_effect){
+							if(!target.node.jiu && '喝酒效果'){
 								target.node.jiu=ui.create.div('.playerjiu',target.node.avatar);
 								target.node.jiu2=ui.create.div('.playerjiu',target.node.avatar2);
 							}

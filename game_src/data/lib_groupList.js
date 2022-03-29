@@ -33,7 +33,7 @@ module.exports = {
 		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen','painter',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
-		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam',
+		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
 		'vshojo',
 		'vtuber', 'clubs'
 	],
@@ -88,6 +88,7 @@ module.exports = {
 		lucca: 'wood',
 		RedC: 'fire',
 		MiyaFam:'orange',
+		VirtualUnion:'ocean',
 
 		vtuber: 'metal',
 		clubs: 'ice',

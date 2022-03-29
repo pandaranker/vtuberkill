@@ -50,18 +50,20 @@ export default {
      */
     const ai = {};
     const vkCore = window.vkCore = { game, ui, get, ai, lib, _status }
-    function vkExtends(target, source) {
-      for (let k in source) {
-        if (source.hasOwnProperty(k) === true) {
-          target[k] = source[k];
+    {
+      function vkExtends(target, source) {
+        for (let k in source) {
+          if (source.hasOwnProperty(k) === true) {
+            target[k] = source[k];
+          }
         }
       }
+      vkExtends(lib, require('./lib').libFun(vkCore))
+      vkExtends(game, require('./_game').gameFun(vkCore))
+      vkExtends(ui, require('./ui').uiFun(vkCore))
+      vkExtends(get, require('./get').getFun(vkCore))
+      vkExtends(ai, require('./ai').aiFun(vkCore))
     }
-    vkExtends(lib, require('./lib').libFun(vkCore))
-    vkExtends(game, require('./_game').gameFun(vkCore))
-    vkExtends(ui, require('./ui').uiFun(vkCore))
-    vkExtends(get, require('./get').getFun(vkCore))
-    vkExtends(ai, require('./ai').aiFun(vkCore))
     //导入资源
     require('@d/entry')
     require('@m/entry')
@@ -100,10 +102,18 @@ export default {
           },
         }
       }
+      let ionicons = document.createElement('script')
+      ionicons.type = 'module'
+      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
+      document.head.appendChild(ionicons)
+      let ionicons_nomodule = document.createElement('script')
+      ionicons.nomodule = true
+      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'
+      document.head.appendChild(ionicons_nomodule)
     }
     game.putBuff = (player, skill, buff, name) => {
       let node
-      if(name){
+      if (name) {
         if (player.name2 == name) {
           node = player.node.avatar2;
         }
@@ -111,14 +121,14 @@ export default {
           node = player.node.avatar;
         }
       }
-      else{
+      else {
         node = player.node.displayer
       }
       game.broadcastAll(function (player, skill, buff, node) {
         if (!player.node[skill + '_buff']) {
           player.node[skill + '_buff'] = ui.create.div(buff, node);
         }
-      }, player, skill, buff,node);
+      }, player, skill, buff, node);
     }
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
@@ -147,22 +157,22 @@ export default {
           ui.putImgDialog(str);
         }, str);
       }
-    },
-      ui.clearImgDialog = (str) => {
-        if (ui[`imgDialog_${str}`]) {
-          let dialog = ui[`imgDialog_${str}`]
-          delete ui[`imgDialog_${str}`];
+    }
+    ui.clearImgDialog = (str) => {
+      if (ui[`imgDialog_${str}`]) {
+        let dialog = ui[`imgDialog_${str}`]
+        delete ui[`imgDialog_${str}`];
+        setTimeout(() => {
+          dialog.style.opacity = 0.05;
           setTimeout(() => {
-            dialog.style.opacity = 0.05;
-            setTimeout(() => {
-              dialog.delete();
-            }, 500);
-          }, 1000);
-          game.broadcastAll(function (str) {
-            ui.clearImgDialog(str);
-          }, str);
-        }
+            dialog.delete();
+          }, 500);
+        }, 1000);
+        game.broadcastAll(function (str) {
+          ui.clearImgDialog(str);
+        }, str);
       }
+    }
     lib.skill._pindiankuang = {
       trigger: {
         player: "chooseToCompareBefore",
@@ -186,5 +196,6 @@ export default {
       }
     }
     lib.init.init();
+
   }
 }

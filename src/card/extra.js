@@ -83,7 +83,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 						target.$.jiu+=event.baseDamage;
 						game.broadcastAll(function(target,card,gain2){
 							target.addSkill('jiu');
-							if(!target.node.jiu&&lib.config.jiu_effect){
+							if(!target.node.jiu && '喝酒效果'){
 								target.node.jiu=ui.create.div('.playerjiu',target.node.avatar);
 								target.node.jiu2=ui.create.div('.playerjiu',target.node.avatar2);
 							}

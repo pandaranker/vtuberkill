@@ -115,7 +115,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 0'
 					player.loseHp(1);
 					'step 1'
-					let next = player.moveCard(true).set('nojudge', true)
+					player.moveCard(true)
+						.set('nojudge', true)
 						.set('ai', function (target) {
 							var player = _status.event.player;
 							var att = get.attitude(player, target);
@@ -600,7 +601,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						popup: false,
 						content() {
 							'step 0'
-							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合', 'he', card => {
+							player.chooseToDiscard('###是否发动『并蒂恶蕾』？###弃置一张♣或装备牌以获得一个额外回合', 'he', function (card) {
 								return get.suit(card) == 'club' || get.type(card) == 'equip';
 							}).set('logSkill', Evt.name)
 							'step 1'
@@ -999,9 +1000,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 							}
 							'step 1'
 							player.chooseCard('选择一张亮出牌', 1, function (card) {
-									var cuplayer = _status.event.player;
-									return cuplayer.$.quanxinquanyi_showcards.contains(card);
-								})
+								var cuplayer = _status.event.player;
+								return cuplayer.$.quanxinquanyi_showcards.contains(card);
+							})
 							'step 2'
 							if (result.bool) {
 								Evt.useshowCards = result.cards;
@@ -1781,7 +1782,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						return;
 					}
 					player.chooseUseTarget(
-						'###选择一个目标，视为对其使用一张【暗】杀。(【暗】杀：' + Evt.shaCnt + '/' + Evt.handCnt + '张）',
+						'###选择一个目标，视为对其使用一张暗【杀】。###(暗【杀】：' + Evt.shaCnt + '/' + Evt.handCnt + '张）',
 						{ name: 'sha', nature: 'yami' }, true, 'nodistance'
 					);
 					'step 3'

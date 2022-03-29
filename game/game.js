@@ -156,7 +156,7 @@ module.exports = {
 		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen','painter',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
-		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam',
+		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
 		'vshojo',
 		'vtuber', 'clubs'
 	],
@@ -211,6 +211,7 @@ module.exports = {
 		lucca: 'wood',
 		RedC: 'fire',
 		MiyaFam:'orange',
+		VirtualUnion:'ocean',
 
 		vtuber: 'metal',
 		clubs: 'ice',
@@ -358,6 +359,7 @@ module.exports = {
 		lucca: 'L',
 		RedC: '红',
 		MiyaFam: 'MF',
+		VirtualUnion: 'VU',
 		double: '多',
 
 		wei2: '魏国',
@@ -392,7 +394,8 @@ module.exports = {
 		Tencent2: '腾讯',
 		lucca2: 'Lucca事务所',
 		RedC2: 'RedCircle',
-		MiyaFam2: 'MiyaFam',
+		MiyaFam2: 'Miya Family',
+		VirtualUnion2: 'virtual union',
 		double2: '多势力',
 		male: '男',
 		female: '女',
@@ -550,6 +553,7 @@ module.exports = {
 		group_RedC: "红圈",
 		group_painter: "画势力",
 		group_MiyaFam: "MF",
+		group_VirtualUnion: "VU",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
 		group_wu_bg: "吴",
@@ -3050,11 +3054,11 @@ module.exports = {
                 //     init: true,
                 //     unfrequent: true,
                 // },
-                jiu_effect: {
-                    name: '喝酒效果',
-                    init: true,
-                    unfrequent: true,
-                },
+                // jiu_effect: {
+                //     name: '喝酒效果',
+                //     init: true,
+                //     unfrequent: true,
+                // },
                 animation: {
                     name: '游戏特效',
                     intro: '开启后出现属性伤害、回复体力等情况时会显示动画',
@@ -6558,7 +6562,7 @@ module.exports = {
                 jiuNode: function (player, bool) {
                     //Powered by 升麻
                     if (bool) {
-                        if (!player.node.jiu && lib.config.jiu_effect) {
+                        if (!player.node.jiu && '喝酒效果') {
                             player.node.jiu = ui.create.div('.playerjiu', player.node.avatar);
                             player.node.jiu2 = ui.create.div('.playerjiu', player.node.avatar2);
                         }
@@ -50583,7 +50587,7 @@ module.exports = {
                   if (lib.forcehide.contains('wuxie')) ui.wuxie.classList.add('forcehide');
                   if (lib.forcehide.contains('cardPileButton')) ui.cardPileButton.classList.add('forcehide');
                }
-               ui.volumn = ui.create.system('♫');
+               ui.volumn = ui.create.system('音量');
                lib.setPopped(ui.volumn, ui.click.volumn, 200);
                // if(lib.config.show_pause) ui.auto.style.marginLeft='10px';
                if (!lib.config.show_volumn) {
@@ -50867,7 +50871,16 @@ module.exports = {
                else {
                   parent.appendChild(node);
                }
-               node.innerHTML = str;
+               let systemIconMap = {
+                  '选项': `<ion-icon name="settings-outline"></ion-icon>`,
+                  '暂停': `<ion-icon name="pause-circle-outline"></ion-icon>`,
+                  '托管': `<ion-icon name="play-forward-circle-outline"></ion-icon>`,
+                  '音量': `<ion-icon name="musical-notes-outline"></ion-icon>`,
+                  '整理手牌': `<ion-icon name="server-outline"></ion-icon>`,
+                  '牌堆': `<ion-icon name="albums-outline"></ion-icon>`,
+               }
+               node.innerHTML = (systemIconMap[str]||'') + str;
+               // console.log(node.innerHTML)
                if (func) {
                   node.listen(func);
                }
@@ -62853,18 +62866,20 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
      */
     const ai = {};
     const vkCore = window.vkCore = { game, ui, get, ai, lib, _status }
-    function vkExtends(target, source) {
-      for (let k in source) {
-        if (source.hasOwnProperty(k) === true) {
-          target[k] = source[k];
+    {
+      function vkExtends(target, source) {
+        for (let k in source) {
+          if (source.hasOwnProperty(k) === true) {
+            target[k] = source[k];
+          }
         }
       }
+      vkExtends(lib, (__webpack_require__(5248).libFun)(vkCore))
+      vkExtends(game, (__webpack_require__(3207).gameFun)(vkCore))
+      vkExtends(ui, (__webpack_require__(717).uiFun)(vkCore))
+      vkExtends(get, (__webpack_require__(7806).getFun)(vkCore))
+      vkExtends(ai, (__webpack_require__(2860).aiFun)(vkCore))
     }
-    vkExtends(lib, (__webpack_require__(5248).libFun)(vkCore))
-    vkExtends(game, (__webpack_require__(3207).gameFun)(vkCore))
-    vkExtends(ui, (__webpack_require__(717).uiFun)(vkCore))
-    vkExtends(get, (__webpack_require__(7806).getFun)(vkCore))
-    vkExtends(ai, (__webpack_require__(2860).aiFun)(vkCore))
     //导入资源
     __webpack_require__(5062)
     __webpack_require__(6439)
@@ -62903,10 +62918,18 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
           },
         }
       }
+      let ionicons = document.createElement('script')
+      ionicons.type = 'module'
+      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
+      document.head.appendChild(ionicons)
+      let ionicons_nomodule = document.createElement('script')
+      ionicons.nomodule = true
+      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'
+      document.head.appendChild(ionicons_nomodule)
     }
     game.putBuff = (player, skill, buff, name) => {
       let node
-      if(name){
+      if (name) {
         if (player.name2 == name) {
           node = player.node.avatar2;
         }
@@ -62914,14 +62937,14 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
           node = player.node.avatar;
         }
       }
-      else{
+      else {
         node = player.node.displayer
       }
       game.broadcastAll(function (player, skill, buff, node) {
         if (!player.node[skill + '_buff']) {
           player.node[skill + '_buff'] = ui.create.div(buff, node);
         }
-      }, player, skill, buff,node);
+      }, player, skill, buff, node);
     }
     game.clearBuff = (player, skill) => {
       game.broadcastAll(function (player, skill) {
@@ -62950,22 +62973,22 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
           ui.putImgDialog(str);
         }, str);
       }
-    },
-      ui.clearImgDialog = (str) => {
-        if (ui[`imgDialog_${str}`]) {
-          let dialog = ui[`imgDialog_${str}`]
-          delete ui[`imgDialog_${str}`];
+    }
+    ui.clearImgDialog = (str) => {
+      if (ui[`imgDialog_${str}`]) {
+        let dialog = ui[`imgDialog_${str}`]
+        delete ui[`imgDialog_${str}`];
+        setTimeout(() => {
+          dialog.style.opacity = 0.05;
           setTimeout(() => {
-            dialog.style.opacity = 0.05;
-            setTimeout(() => {
-              dialog.delete();
-            }, 500);
-          }, 1000);
-          game.broadcastAll(function (str) {
-            ui.clearImgDialog(str);
-          }, str);
-        }
+            dialog.delete();
+          }, 500);
+        }, 1000);
+        game.broadcastAll(function (str) {
+          ui.clearImgDialog(str);
+        }, str);
       }
+    }
     lib.skill._pindiankuang = {
       trigger: {
         player: "chooseToCompareBefore",
@@ -62989,6 +63012,7 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
       }
     }
     lib.init.init();
+
   }
 });
 

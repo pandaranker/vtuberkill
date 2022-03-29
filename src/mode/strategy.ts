@@ -1,5 +1,7 @@
 /// <reference path = "../built-in.d.ts" />
 import situate from './strategy_situate'
+import dramas from './strategy_dramas'
+import chess from './strategy_chess'
 window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, _status) {
 	return {
 		name: 'strategy',
@@ -998,13 +1000,18 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						ui.chessMap.width = width
 						ui.chessMap.height = height
 
+						lib.situate.drama.init(dramas.testDrama)
 						lib.situate.control.init(ui.canvas2, size, 0.06)
+						let chessFunctions =  chess.setChessFunctions(ui.chessMap, ui.dramaContainer, _status)
 
-						ui.mapControl = ui.create.div('#map-control', ui.mapContainer)
-						lib.situate.control.setMapControl(ui.mapControl)
+						ui.mapMode = ui.create.div('#map-mode', ui.mapContainer)
+						lib.situate.control.setMapControl(ui.mapMode,{type:'mode'})
 
 						ui.mapZoom = ui.create.div('#map-zoom', ui.mapContainer)
 						lib.situate.control.setMapControl(ui.mapZoom,{type:'zoom'})
+
+						ui.mapMode = ui.create.div('#map-faction-searcher', ui.arena)
+						lib.situate.control.setMapSearcher(ui.mapMode,{type:'faction',focus:chessFunctions.chessFocus})
 					},
 					hide: () => {
 						lib.situate.control.close()
@@ -1015,7 +1022,9 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 						}
-						ui.mapControl.delete(100, () => {
+						ui.mapMode.delete(100, () => {
+							ui.mapZoom.delete(100)
+							delete ui.mapZoom
 							ui.dramaContainer.delete(200, () => {
 								delete ui.dramaContainer
 								delete ui.chessMap

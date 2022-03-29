@@ -705,14 +705,14 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (--Evt.num > 0) {
-						player.chooseBool(get.prompt2('dianyin'));
+						player.chooseBool(get.prompt2('re_dianyin'));
 					}
 					else {
 						Evt.finish();
 					}
 				}, () => {
 					if (result.bool) {
-						player.logSkill('dianyin');
+						player.logSkill('re_dianyin');
 						Evt.goto(0);
 					}
 				}],
@@ -1742,47 +1742,49 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				content: [() => {
 					player.loseHp(1);
 				}, () => {
-					player.moveCard(true).set('nojudge', true).set('ai', function (target: { countCards: (arg0: string, arg1: (card: any) => any) => number; getCards: (arg0: string) => any; isEmpty: (arg0: any) => any; }) {
-						var player = _status.event.player;
-						var att = get.attitude(player, target);
-						var sgnatt = get.sgn(att);
-						if (ui.selected.targets.length == 0) {
-							if (target == player) {
-								if (target.countCards('e', (card: any) => {
-									return get.value(card, target) < 0
-										&& game.hasPlayer((cur: { isEmpty: (arg0: any) => any; }) => cur != player && cur != target && get.attitude(player, cur) < 0 && cur.isEmpty(get.subtype(card)));
-								}) > 0) return 9;
-							}
-							else {
-								if (game.hasPlayer((cur: { isEmpty: (arg0: any) => any; }) => {
-									if (cur != target && cur != player && get.attitude(player, cur) > 0) {
-										var es = target.getCards('e');
-										for (let i = 0; i < es.length; i++) {
-											if (get.value(es[i], target) > 0 && cur.isEmpty(get.subtype(es[i])) && get.value(es[i], cur) > 0) return true;
+					player.moveCard(true)
+						.set('nojudge', true)
+						.set('ai', function (target: { countCards: (arg0: string, arg1: (card: any) => any) => number; getCards: (arg0: string) => any; isEmpty: (arg0: any) => any; }) {
+							var player = _status.event.player;
+							var att = get.attitude(player, target);
+							var sgnatt = get.sgn(att);
+							if (ui.selected.targets.length == 0) {
+								if (target == player) {
+									if (target.countCards('e', (card: any) => {
+										return get.value(card, target) < 0
+											&& game.hasPlayer((cur: { isEmpty: (arg0: any) => any; }) => cur != player && cur != target && get.attitude(player, cur) < 0 && cur.isEmpty(get.subtype(card)));
+									}) > 0) return 9;
+								}
+								else {
+									if (game.hasPlayer((cur: { isEmpty: (arg0: any) => any; }) => {
+										if (cur != target && cur != player && get.attitude(player, cur) > 0) {
+											var es = target.getCards('e');
+											for (let i = 0; i < es.length; i++) {
+												if (get.value(es[i], target) > 0 && cur.isEmpty(get.subtype(es[i])) && get.value(es[i], cur) > 0) return true;
+											}
 										}
+									})) {
+										return -att;
 									}
-								})) {
-									return -att;
+								}
+								return 0;
+							}
+							var es = ui.selected.targets[0].getCards('e');
+							var i;
+							var att2 = get.sgn(get.attitude(player, ui.selected.targets[0]));
+							for (i = 0; i < es.length; i++) {
+								if (sgnatt != 0 && att2 != 0 &&
+									get.sgn(get.value(es[i], ui.selected.targets[0])) == -att2 &&
+									get.sgn(get.value(es[i], target)) == sgnatt &&
+									target.isEmpty(get.subtype(es[i]))) {
+									return Math.abs(att);
 								}
 							}
-							return 0;
-						}
-						var es = ui.selected.targets[0].getCards('e');
-						var i;
-						var att2 = get.sgn(get.attitude(player, ui.selected.targets[0]));
-						for (i = 0; i < es.length; i++) {
-							if (sgnatt != 0 && att2 != 0 &&
-								get.sgn(get.value(es[i], ui.selected.targets[0])) == -att2 &&
-								get.sgn(get.value(es[i], target)) == sgnatt &&
-								target.isEmpty(get.subtype(es[i]))) {
-								return Math.abs(att);
+							if (i == es.length) {
+								return 0;
 							}
-						}
-						if (i == es.length) {
-							return 0;
-						}
-						return -att * get.attitude(player, ui.selected.targets[0]);
-					});
+							return -att * get.attitude(player, ui.selected.targets[0]);
+						});
 				}, () => {
 					if (result.targets[0] == player) {
 						player.chooseUseTarget({ name: 'sha', nature: 'thunder' }, '是否视为使用一张雷【杀】？', false);
@@ -3184,9 +3186,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				enable: 'phaseUse',
 				usable: 1,
 				filterTarget(card: any, player: any, target) {
-					if (target.hasSkill('rongyaochengyuan_homolive')) {
+					if (target.hasSkill('homolive')) {
 						for (let i of ui.selected.targets) {
-							if (i.hasSkill('rongyaochengyuan_homolive')) return false;
+							if (i.hasSkill('homolive')) return false;
 						}
 					}
 					else {
@@ -3200,7 +3202,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				complexTarget: true,
 				multitarget: false,
 				content() {
-					target.chooseToDiscard(true, 1, 'he', '混沌联动：弃置一张牌');
+					target.chooseToDiscard(true, 1, 'he', '『混沌联动』：弃置一张牌');
 				},
 				ai: {
 					order: 8,
@@ -5745,7 +5747,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_zhenyin_info: `每回合限一次，当你使用黑色牌指定目标后，可以将一名目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。`,
 
 			re_UshimiIchigo: `新·宇志海莓`,
-			re_shuangren: `双刃`,
+			re_shuangren: `狂刃`,
 			re_shuangren_info: `你的黑色【杀】可以额外指定一名角色为目标；你的红色【杀】无距离与次数限制。`,
 			re_jitui: `急退`,
 			re_jitui_info: `当你受到伤害后或在回合外正面朝上失去非基本牌后，你可以摸一张牌。`,
@@ -5915,7 +5917,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_InuyamaTamaki: `新·犬山玉姬`,
 			re_hundunliandong: `混联`,
-			re_hundunliandong_info: `出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。此技能计算势力时，有「homolive」标记的角色视为同势力。`,
+			re_hundunliandong_info: `出牌阶段限一次，你可以令任意势力不相同的角色各弃置一张牌。<br><br>
+			此技能计算势力时，有「homolive」标记的角色视为同势力。`,
 			re_hundunliandong_append: lib.figurer(`特性：强制弃牌`),
 
 			re_KaguraMea: `新·神乐めあ`,

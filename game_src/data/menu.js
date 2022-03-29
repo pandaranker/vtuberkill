@@ -2465,11 +2465,11 @@
                 //     init: true,
                 //     unfrequent: true,
                 // },
-                jiu_effect: {
-                    name: '喝酒效果',
-                    init: true,
-                    unfrequent: true,
-                },
+                // jiu_effect: {
+                //     name: '喝酒效果',
+                //     init: true,
+                //     unfrequent: true,
+                // },
                 animation: {
                     name: '游戏特效',
                     intro: '开启后出现属性伤害、回复体力等情况时会显示动画',

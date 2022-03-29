@@ -1962,7 +1962,6 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 						map[surname].push(i);
 					}
-					console.log(map)
 					for(var i in map){
 						if(map[i].length<3){
 							delete map[i];
@@ -2320,16 +2319,16 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  						holo:[],
  						psp:[],
  						paryi:[],
- 						asoul:[],
+ 						VirtuaReal:[],
  					};
  					var map3=[];
  					var banned=['zuoci','re_zuoci','tw_xiahouba'];
- 					for(var i in lib.character){
+ 					for(let i in lib.character){
  						if(lib.filter.characterDisabled2(i)||lib.filter.characterDisabled(i)||banned.contains(i)) continue;
  						var group=lib.character[i][1];
  						if(group&&map[group]) map[group].push(i);
  					}
- 					for(var i in map){
+ 					for(let i in map){
 						if(map[i].length<5||(i=='key'&&!_status.keyVerified)){
  							delete map[i];
  						}
@@ -2540,6 +2539,36 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  								},
  							},
  						},
+ 						_jiazu_VirtuaReal:{
+ 							enable:'phaseUse',
+ 							usable:1,
+ 							popup:'摘星',
+ 							filter:function(event,player){
+ 								return player.group=='VirtuaReal';
+ 							},
+ 							prompt2:'出牌阶段限一次，你可以摸一张牌并获得1点护甲。若如此做，你于当前回合结束时失去1点体力。',
+ 							content:function(){
+ 								"step 0"
+ 								player.draw();
+ 								"step 1"
+ 								player.changeHujia(1);
+ 								"step 2"
+ 								var evt=event.getParent('phase');
+ 								if(evt&&evt.after){
+ 									var next=player.loseHp();
+ 									event.next.remove(next);
+ 									evt.after.push(next);
+ 								}
+ 							},
+ 							ai:{
+ 								order:10,
+ 								result:{
+ 									player:function(player){
+ 										return player.hp-1;
+ 									},
+ 								},
+ 							},
+ 						},
  						qunxin_temp:{
  							noGlobal:true,
  							onremove:true,
@@ -2677,6 +2706,20 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
  								player.draw();
  							},
  						},
+ 						_jiazu_awaken_VirtuaReal:{
+ 							popup:'时守星沙',
+ 							intro:{
+ 								content:'锁定技，当你回复/失去体力后，你摸一张牌。',
+ 							},
+ 							trigger:{player:['loseHpEnd','recoverEnd']},
+ 							forced:true,
+ 							filter:function(event,player){
+ 								return player._jiazuAwaken&&player.group=='VirtuaReal';
+ 							},
+ 							content:function(){
+ 								player.draw();
+ 							},
+ 						},
  					};
  					var translate={};
  					for(var i in skill){
@@ -2791,8 +2834,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 								return _status.brawl.enemylist.randomGets(player==game.me?5:3);
 							}
 						}
-						var surname=_status.brawl.map3.randomRemove();
-						var list=_status.brawl.map[surname];
+						let surname=_status.brawl.map3.randomRemove();
+						list=_status.brawl.map[surname];
 						if(player==game.me){
 							_status.brawl.mylist=list;
 						}

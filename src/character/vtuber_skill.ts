@@ -505,33 +505,42 @@ export default {
             player.removeSkill('qixu5');
         }
     },
+    homolive: new toSkill('mark', {
+        marktext: '木毛',
+        intro: {
+            name: 'Homolive',
+            content: '我一直都是Homolive的一员啊！'
+        },
+    }),
     rongyaochengyuan: new toSkill('trigger', {
         filter(Evt, player) {
-            if (Evt.source == undefined || Evt.source == player) return false;
-            if (Evt.source.hasSkill('rongyaochengyuan_homolive')) return false;
-            return true;
+            return game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
         },
-        prompt2(Evt, player) {
-            return '给' + get.translation(Evt.source) + '添加homolive标记,并抵挡此次伤害';
-        },
-        logTarget: 'source',
         content() {
-            'step 0'
-            player.logSkill('rongyaochengyuan', trigger.source);
-            trigger.source.addSkill('rongyaochengyuan_homolive');
-            'step 1'
-            trigger.changeToZero();
+            Evt.num = game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
+            player.draw(Evt.num)
         },
         subSkill: {
-            homolive: new toSkill('mark', {
-                marktext: 'HO',
-                intro: {
-                    name: 'Homolive',
-                    content: '我一直都是Homolive的一员啊！'
+            putMark: new toSkill('trigger', {
+                filter(Evt, player) {
+                    if (!Evt.source || Evt.source == player) return false;
+                    if (Evt.source.hasSkill('homolive')) return false;
+                    return true;
                 },
-            }, 'mark'),
+                prompt2(Evt, player) {
+                    return `给${get.translation(Evt.source)}添加homolive标记,并抵挡此次伤害`;
+                },
+                logTarget: 'source',
+                content() {
+                    'step 0'
+                    Evt.tar = trigger.source
+                    Evt.tar.addSkill('homolive');
+                    'step 1'
+                    trigger.changeToZero();
+                },
+            }).setT("damageBegin3"),
         },
-    }).setT("damageBegin3"),
+    }, 'frequent').setT("phaseJieshuBegin"),
     hundunliandong: new toSkill('active', {
         audio: 3,
         usable: 1,
@@ -539,7 +548,7 @@ export default {
             var targets = [player].concat(ui.selected.targets);
             if (targets.contains(target)) return false;
             for (let i = 0; i < targets.length; i++) {
-                if (targets[i].hasSkill('rongyaochengyuan_homolive') && target.hasSkill('rongyaochengyuan_homolive')) {
+                if (targets[i].hasSkill('homolive') && target.hasSkill('homolive')) {
                     return false;
                 }
                 if (targets[i].group == target.group) {
@@ -1169,7 +1178,7 @@ export default {
         }
     },
     //兰音
-    yueyao: new toSkill('trigger',{
+    yueyao: new toSkill('trigger', {
         trigger: {
             global: 'gameDrawAfter',
             player: ['enterGame', 'phaseBegin'],
@@ -1200,8 +1209,8 @@ export default {
                 }
             },
         }
-    },'forced').setI(0),
-    kongling: new toSkill('trigger',{
+    }, 'forced').setI(0),
+    kongling: new toSkill('trigger', {
         filter(Evt, player) {
             return Evt.num > 0;
         },
@@ -1226,7 +1235,7 @@ export default {
             maixie: true,
             combo: 'yueyao'
         }
-    },'direct').setT('damageAfter'),
+    }, 'direct').setT('damageAfter'),
     jiajiupaidui: {
         audio: 3,
         enable: 'chooseToUse',

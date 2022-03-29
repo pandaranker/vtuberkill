@@ -1361,6 +1361,8 @@ window.vk_asset_list=[
 	'image/character/old_ELu.jpg',
 	'image/character/EveAic.jpg',
 	'image/character/EveAicVer2.jpg',
+	'image/character/Hecatia.jpg',
+	'image/character/KoinoyaMai.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',
