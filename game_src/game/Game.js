@@ -107,14 +107,14 @@ export default {
       // ionicons.type = 'module'
       // ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
       // document.head.appendChild(ionicons)
-      setInterval(() => {
-        let script = document.createElement('script');
-        script.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons.js';
-        script.onload = () => {
-          document.body.removeChild(script);
-        };
-        document.body.appendChild(script);
-      },2000)
+      // setInterval(() => {
+      //   let script = document.createElement('script');
+      //   script.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons.js';
+      //   script.onload = () => {
+      //     document.body.removeChild(script);
+      //   };
+      //   document.body.appendChild(script);
+      // },2000)
     }
     game.putBuff = (player, skill, buff, name) => {
       let node
