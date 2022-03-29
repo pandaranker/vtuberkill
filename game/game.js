@@ -62918,14 +62918,18 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
           },
         }
       }
-      let ionicons = document.createElement('script')
-      ionicons.type = 'module'
-      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
-      document.head.appendChild(ionicons)
-      let ionicons_nomodule = document.createElement('script')
-      ionicons.nomodule = true
-      ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'
-      document.head.appendChild(ionicons_nomodule)
+      // import('../extension/ionicons/ionicons')
+      // let ionicons = document.createElement('script')
+      // ionicons.type = 'module'
+      // ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
+      // document.head.appendChild(ionicons)
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons.js';
+      // script.id = id;
+      script.onload = () => {
+        document.head.removeChild(script);
+      };
+      document.head.appendChild(script);
     }
     game.putBuff = (player, skill, buff, name) => {
       let node
@@ -63019,6 +63023,7 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
 ;// CONCATENATED MODULE: ./main.js
 
 
+// import 'ionicons/dist/ionicons.js'
 // import html2canvas from 'html2canvas'
 window.JSZip = (jszip_min_default())
 // window.html2canvas = html2canvas

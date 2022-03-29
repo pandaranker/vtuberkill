@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '1.10.2.14',
+	version: '1.10.2.15',
 	update: '1.9.102.1.1',
 	changeLog: [
-		`1.10.2.14小型更新：新增势力~VirtualUnion，
+		`1.10.2.15小型更新：新增势力~VirtualUnion，
 		新增角色~恋乃夜舞【propro/群】、赫卡tia【VirtualUnion】`,
 		'平衡性调整~削弱了茉吱的『鼠方』、秋凛子的『祭刃』，调整了永雏塔菲的技能，加强了犬山玉姬的『荣誉成员』',
 		`新增虎年特典角色：猫山苗【独立运营/群】，琥珀玲【amalis/群】`,
