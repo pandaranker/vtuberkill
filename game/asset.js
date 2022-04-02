@@ -758,7 +758,11 @@ window.vk_asset_list=[
 	'audio/voice/female/20.mp3',
 	'audio/voice/female/21.mp3',
 	'audio/voice/female/22.mp3',
-	
+	//点击音效
+	'audio/click/heavy.wav',
+	'audio/click/light.wav',
+	'audio/click/mechanical.wav',
+
 	'font/huangcao.ttf',
 	'font/shousha.ttf',
 	'font/xiaozhuan.ttf',
@@ -824,26 +828,26 @@ window.vk_asset_list=[
 	// 'image/card/rewrite_tengjia.png',
 	// 'image/card/rewrite_zhuge.png',
 	
-	'image/card/group_holo.png',
-	'image/card/group_nijisanji.png',
-	'image/card/group_VirtuaReal.png',
-	'image/card/group_HappyEl.png',
-	'image/card/group_upd8.png',
-	'image/card/group_qun.png',
-	'image/card/group_key.png',
-	'image/card/group_paryi.png',
-	'image/card/group_Providence.png',
-	'image/card/group_kagura.png',
-	'image/card/group_nanashi.png',
-	'image/card/group_psp.png',
-	'image/card/group_asoul.png',
-	'image/card/group_nori.png',
-	'image/card/group_vwp.png',
-	'image/card/group_xuyan.png',
-	'image/card/group_chaos.png',
-	'image/card/group_xuefeng.png',
-	'image/card/group_RedC.png',
-	'image/card/group_painter.png',
+	'image/card/group/holo.png',
+	'image/card/group/nijisanji.png',
+	'image/card/group/VirtuaReal.png',
+	'image/card/group/HappyEl.png',
+	'image/card/group/upd8.png',
+	'image/card/group/qun.png',
+	'image/card/group/key.png',
+	'image/card/group/paryi.png',
+	'image/card/group/Providence.png',
+	'image/card/group/kagura.png',
+	'image/card/group/nanashi.png',
+	'image/card/group/psp.png',
+	'image/card/group/asoul.png',
+	'image/card/group/nori.png',
+	'image/card/group/vwp.png',
+	'image/card/group/xuyan.png',
+	'image/card/group/chaos.png',
+	'image/card/group/xuefeng.png',
+	'image/card/group/RedC.png',
+	'image/card/group/painter.png',
 
 	'image/card/tunliang.png',
 	'image/card/yuanjun.png',
@@ -1341,7 +1345,7 @@ window.vk_asset_list=[
 	'image/character/zhongguobanai.jpg',
 	'image/character/zhugeaixi.jpg',
 
-	//2022年前3个月新增的图片文件
+	//22年前3个月新增的图片文件
 	'image/character/AmaneKanata.jpg',
 	'image/skin/AmaneKanata/1.jpg',
 	'image/skin/AmaneKanata/2.jpg',
@@ -1363,6 +1367,8 @@ window.vk_asset_list=[
 	'image/character/EveAicVer2.jpg',
 	'image/character/Hecatia.jpg',
 	'image/character/KoinoyaMai.jpg',
+	//2022年4月新增的图片文件
+	'image/character/YumenoShiori.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

@@ -6,17 +6,17 @@ export default {
                 if (_status.chessscrolling) return;
                 var dx = 0, dy = 0;
                 let pos = POS.tempCoord()
-                if (pos[0] - container.chessLeft < 120) {
-                    dx = pos[0] - container.chessLeft - 30;
+                if (pos[0] - container.chessLeft < 200) {
+                    dx = pos[0] - container.chessLeft - 250;
                 }
                 else if (pos[0] - container.chessLeft > container.offsetWidth - 400) {
                     dx = pos[0] - container.chessLeft - container.offsetWidth + 500;
                 }
-                if (pos[1] - container.chessTop < 90) {
-                    dy = pos[1] - container.chessTop - 30;
+                if (pos[1] - container.chessTop < 120) {
+                    dy = pos[1] - container.chessTop - 150;
                 }
-                else if (pos[1] + map.offsetTop - container.chessTop > container.offsetHeight - 150) {
-                    dy = pos[1] + map.offsetTop - container.chessTop - container.offsetHeight + 150;
+                else if (pos[1] + map.offsetTop - container.chessTop > container.offsetHeight - 240) {
+                    dy = pos[1] + map.offsetTop - container.chessTop - container.offsetHeight + 300;
                 }
                 if (dx || dy) {
                     container.move(dx*1.2, dy*1.2, true);

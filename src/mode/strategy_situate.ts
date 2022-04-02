@@ -610,7 +610,7 @@ class Faction extends Areas {
                 }
             }
         }
-        let opacity = 0.9
+        let opacity = 1
         ctx.save()
         ctx.globalCompositeOperation = 'xor';
         ctx.shadowBlur = 12;
@@ -1005,7 +1005,7 @@ const mounts = [
         ]
     }),
 ]
-const factions = [
+const factions = <Faction[]>[
 ]
 type stringObejct = Record<string, string>
 type anyObject = Record<string, any>
@@ -1024,10 +1024,46 @@ const control = {
     setMapSearcher(parent: HTMLDivElement, methods: anyObject = {}) {
         switch (methods.type) {
             case 'faction': {
+                methods.focus ??= data.chessFunctions.chessFocus
                 let radio = document.createElement('input')
                 radio.type = "radio"
-                // radio.innerHTML = "势力列表"
                 radio.value = "势力列表"
+                radio.onclick = () => {
+                    if (data.radio === radio) {
+                        radio.checked = false;
+                        data.radio = null;
+                    } else data.radio = radio;
+                };
+                parent.appendChild(radio)
+                let prediv = document.createElement('div')
+                parent.appendChild(prediv)
+                prediv.style = `--preH:${factions.length}`
+                for (let v of factions) {
+                    let div = document.createElement('div')
+                    div.innerHTML = translation.factions[v.name]
+                    div.style = `--transY:${factions.indexOf(v) + 1}`
+                    div.listen(() => {
+                        methods.focus(v)
+                        v.MapHighlight()
+                        if (data.timeRecord) clearTimeout(data.timeRecord)
+                        data.timeRecord = setTimeout(() => {
+                            control.reinit()
+                            data.timeRecord = setTimeout(() => {
+                                v.MapHighlight()
+                                data.timeRecord = setTimeout(() => {
+                                    control.reinit()
+                                }, 700)
+                            }, 300)
+                        }, 400)
+                    })
+                    prediv.appendChild(div)
+                }
+            } break;
+            case 'diplomacy': {
+                methods.focus ??= data.chessFunctions.chessFocus
+                let radio = document.createElement('input')
+                radio.type = "radio"
+                radio.value = "外交关系"
                 radio.onclick = () => {
                     if (data.radio === radio) {
                         radio.checked = false;
@@ -1202,6 +1238,9 @@ export default {
                     factions.push(new Faction(fact, facts[fact].citys, facts[fact]))
                 }
             }
+        },
+        set(key:string,info:anyObject){
+            data[key] = info
         }
     }
 }

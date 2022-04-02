@@ -7111,6 +7111,7 @@
         return next;
       },
       canPromotion: function (...args) {
+        if (this.$.canPromotion === false) return false
         if (lib.configOL.protect_beginner) return false;
         let list = [];
         if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
@@ -7825,6 +7826,7 @@
         this.node.name.dataset.nature = get.groupnature(this.group);
         lib.setIntro(this);
         this.node.name.innerHTML = get[get.slimName2 ? 'slimName2' : 'slimName'](character);
+        let nameLength = this.node.name.querySelectorAll('br').length
         if (this.classList.contains('minskin')) {
           if (nameLength <= 1) {
             this.node.name.classList.add('short');
@@ -7840,7 +7842,6 @@
           }
         }
         else if (this.classList.contains('fullskin')) {
-          let nameLength = this.node.name.querySelectorAll('br').length
           if (nameLength <= 1) {
             this.node.name.classList.add('short');
           }
@@ -16016,9 +16017,12 @@
               this.node.image.setBackgroundImage('image/mode/' + lib.card[bg].modeimage + '/card/' + bg + '.png');
             }
             else {
-              if (bg.indexOf('rm_') == 0) {
+              if (bg.indexOf('rm_') === 0) {
                 var bg = bg.slice(3);
                 this.node.image.setBackgroundImage('image/replace/' + bg + '.png');
+              }
+              else if (bg.indexOf('group_') === 0) {
+                this.node.image.setBackgroundImage('image/card/groups/' + bg.slice(6) + '.png');
               }
               else if (lib.config.replace_image) {
                 this.node.image.setBackgroundImage('image/replace/' + bg + '.png');

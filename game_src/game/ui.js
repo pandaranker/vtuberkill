@@ -6223,7 +6223,7 @@ module.exports = {
                   '整理手牌': `<ion-icon name="server-outline"></ion-icon>`,
                   '牌堆': `<ion-icon name="albums-outline"></ion-icon>`,
                }
-               node.innerHTML = (systemIconMap[str]||'') + str;
+               node.innerHTML = (systemIconMap[str] || '') + str;
                // console.log(node.innerHTML)
                if (func) {
                   node.listen(func);
@@ -8159,8 +8159,8 @@ module.exports = {
                   }
                   vol1.appendChild(span);
                }
-               uiintro.add('游戏音效');
 
+               uiintro.add('游戏音效');
                var vol2 = ui.create.div('.volumn');
                uiintro.add(vol2);
                for (var i = 0; i < 8; i++) {
@@ -8174,6 +8174,23 @@ module.exports = {
                      span.innerHTML = '○';
                   }
                   vol2.appendChild(span);
+               }
+               if ('onmousedown' in document) {
+                  uiintro.add('按键音效');
+                  var vol3 = ui.create.div('.volumn');
+                  uiintro.add(vol3);
+                  for (var i = 0; i < 8; i++) {
+                     var span = document.createElement('span');
+                     span.link = i + 1;
+                     span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.volumn_click);
+                     if (i < lib.config.volumn_click) {
+                        span.innerHTML = '●';
+                     }
+                     else {
+                        span.innerHTML = '○';
+                     }
+                     vol3.appendChild(span);
+                  }
                }
                uiintro.add(ui.create.div('.placeholder'));
                return uiintro;
@@ -8205,6 +8222,23 @@ module.exports = {
                game.saveConfig('volumn_audio', volume);
                for (var i = 0; i < 8; i++) {
                   if (i < lib.config.volumn_audio) {
+                     this.parentNode.childNodes[i].innerHTML = '●';
+                  }
+                  else {
+                     this.parentNode.childNodes[i].innerHTML = '○';
+                  }
+               }
+               e.stopPropagation();
+            },
+            volumn_click: function (e) {
+               if (_status.dragged) return;
+               var volume = this.link;
+               if (volume === 1 && lib.config.volumn_click === 1) {
+                  volume = 0;
+               }
+               game.saveConfig('volumn_click', volume);
+               for (var i = 0; i < 8; i++) {
+                  if (i < lib.config.volumn_click) {
                      this.parentNode.childNodes[i].innerHTML = '●';
                   }
                   else {

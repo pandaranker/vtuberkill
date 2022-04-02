@@ -1535,7 +1535,7 @@ export default {
                 Evt.finish();
             }
         }, () => {
-            if (get.type(Evt.card) === 'equip' && !player.countCards('e', card => get.subtype(Evt.card) === get.subtype(card))) {
+            if (get.type(Evt.card) !== 'basic') {
                 player.gain(Evt.card, 'gain2', 'log');
             }
         }],
@@ -4731,6 +4731,112 @@ export default {
             threaten: 1.2,
         },
     },
+    //梦乃栞
+    rencan: new toSkill('active', {
+        usable: 1,
+        filter(Evt, player) {
+            return player.countCards('he') && (player.getNext().isIn() || player.getPrevious().isIn());
+        },
+        check(card) {
+            return 7 - get.useful(card)
+        },
+        position: 'he',
+        filterCard: true,
+        filterTarget(card, player, target) {
+            return [player.getNext(), player.getPrevious()].includes(target) && target.hp < target.maxHp
+        },
+        content: [() => {
+            target.recover()
+        }, () => {
+            if (!game.countPlayer2(cur => {
+                let count = 0
+                cur.getHistory('recover').filter(evt => {
+                    if (evt.getParent().name === 'rencan' && evt.result) {
+                        count += evt.result
+                    }
+                })
+                return count >= 2
+            })) {
+                target.chooseCardTarget({
+                    prompt: get.$pro('rencan'),
+                    prompt2: `你可弃置一张牌令你的上家或下家回复一点体力，若没有角色在本回合内因为『饪飨』回复了至少两点体力，其也可以发动一次『饪飨』。`,
+                    position: 'he',
+                    filterTarget(card, player, target) {
+                        return [player.getNext(), player.getPrevious()].includes(target) && target.hp < target.maxHp;
+                    },
+                    ai1: card => {
+                        return 7 - get.useful(card)
+                    },
+                    ai2: target => {
+                        return get.recoverEffect(target, player, target)
+                    }
+
+                })
+            } else Evt.finish()
+        }, () => {
+            if (result.bool) {
+                target.useSkill('rencan', result.cards, result.targets, false)
+            }
+        }],
+        ai: {
+            order: 2,
+            result: {
+                player(player, target) {
+                    if (player.needsToDiscard()) return 0;
+                    return -0.5;
+                },
+                target(player, target) {
+                    return get.recoverEffect(target, player, target)
+                },
+            }
+        }
+    }),
+    yiduo: new toSkill('trigger', {
+        filter(Evt, player) {
+            return Evt.num > 0 && player.countCards('he') && (player.getNext().isIn() || player.getPrevious().isIn());
+        },
+        content: [() => {
+            player.chooseCardTarget({
+                prompt: get.$pro2('yiduo'),
+                prompt2: `你可弃置一张牌令你的上家或下家受到一点伤害，若没有角色在本回合内因为『呓堕』受到了至少两点伤害，其也可以发动一次『呓堕』。`,
+                position: 'he',
+                filterTarget(card, player, target) {
+                    return [player.getNext(), player.getPrevious()].includes(target);
+                },
+                ai1: card => {
+                    return 6 - get.useful(card)
+                },
+                ai2: target => {
+                    if ((target.hp === 1 && !target.hujia) || target.countCards('he') === 0) return -get.$a2(target)
+                    return -1 - get.$a2(target)
+                }
+
+            })
+        }, () => {
+            if (result.bool) {
+                player.discard(result.cards)
+                Evt.target = result.targets[0]
+                player.logSkill('yiduo', Evt.target)
+                Evt.target.damage()
+            } else Evt.finish()
+        }, () => {
+            if (!game.countPlayer2(cur => {
+                let count = 0
+                cur.getHistory('damage').filter(evt => {
+                    if (evt.getParent().name === 'yiduo' && evt.num > 0) {
+                        count += evt.num
+                    }
+                })
+                return count >= 2
+            })) {
+                console.log(target)
+                target.useSkill('yiduo', false)
+            }
+        }],
+        ai: {
+            maixie: true
+        }
+    }, 'direct').setT('damageEnd'),
     //早见咲
     tuncai: {
         init(player, skill) {
@@ -7773,16 +7879,10 @@ export default {
                     player.updateMarks('erni')
                 }],
             },
-            change: {
-                trigger: { player: ['shouruAfter', 'chonghuangAfter', 'baoxiaoAfter', 'tianlveAfter', 'lujiAfter', 'quankaiAfter', 'canxinAfter', 'useSkillAfter'] },
+            change: new toSkill('trigger', {
                 priority: 199,
                 prompt2: '转换一次『耳匿』',
                 filter(Evt, player) {
-                    let name = Evt.name;
-                    if (name == 'useSkill') name = Evt.skill;
-                    if (['erni_change', 'erni_going'].includes(name)) return false;
-                    let info = lib.skill[name];
-                    if (info.equipSkill || info.ruleSkill || info.silent) return false;
                     return true;
                 },
                 content() {
@@ -7790,7 +7890,7 @@ export default {
                     else player.$.erni = 1;
                     player.updateMarks('erni')
                 }
-            }
+            }).setT('phaseJieshuBegin')
         }
     },
     shouru: {
@@ -7798,24 +7898,24 @@ export default {
         trigger: { player: ['damageAfter', 'useCardAfter', 'respondAfter'] },
         priority: 199,
         frequent: true,
+        usable: 1,
         filter(Evt, player) {
-            if (player.hasSkill('shouru_used')) return false;
             return (Evt.name == 'damage' || ['useCard', 'respond'].includes(Evt.name) && Evt.skill == 'erni_going') && game.hasPlayer(cur => {
-                return cur != player && get.$dis(_status.currentPhase, cur, 'pure') == 1 && cur.countGainableCards(player, 'he');
+                return [_status.currentPhase.getNext(), _status.currentPhase.getPrevious()].includes(cur) && cur.countGainableCards(player, 'hej');
             });
         },
         content: [() => {
             Evt.source = trigger.player;
             player.chooseTarget(get.$pro2('shouru'), true, function (card, player, target) {
-                return target != player && get.$dis(_status.currentPhase, target, 'pure') == 1 && target.countGainableCards(player, 'he');
+                return [_status.currentPhase.getNext(), _status.currentPhase.getPrevious()].includes(target) && target.countGainableCards(player, 'hej');
             }, function (target) {
                 let player = _status.event.player;
-                return 8 - get.$a(player, target);
+                return get.effect(target, { name: 'shunshou_copy' }, player, player);
             });
         }, () => {
             if (result.targets?.length) {
-                player.addTempSkill('shouru_used')
-                player.gainPlayerCard('he', result.targets[0], '『受乳』：获得其一张牌');
+                Evt.tar = result.targets[0]
+                player.gainPlayerCard('hej', Evt.tar, '『受乳』：获得其一张牌');
             }
         }],
         ai: {
@@ -7823,9 +7923,6 @@ export default {
             threaten: 0.8,
         },
         involve: 'erni',
-        subSkill: {
-            used: {}
-        },
     },
     chonghuang: {
         audio: true,
@@ -9910,7 +10007,7 @@ export default {
                 }, () => {
                     if (result.targets?.length) {
                         Evt.target = result.targets[0]
-                        Evt.target.drawTo(Math.min(Evt.target, 5))
+                        Evt.target.drawTo(Math.min(Evt.target.maxHp, 5))
                     }
                 }]
             }, 'forced').setT('phaseEnd'),
@@ -17942,7 +18039,7 @@ export default {
                 && game.countPlayer(cur => cur.countCards() - player.countCards() >= 4)
                 && get.$a(Evt.tar, player) > 0 && player.hp >= 3
             let check2 = get.damageEffect(player, Evt.tar, Evt.tar) > 0 && (player.isMaxHandcard() || player.isDamaged())
-            Evt.list = [`摸一张牌`, `对${get.$t(player)}造成一点伤害`]
+            Evt.list = [`摸一张牌`, `对${get.$t(player)}造成一点伤害`, `取消`]
             Evt.tar.chooseControl('dialogcontrol', Evt.list, function () {
                 return _status.event.check;
             })

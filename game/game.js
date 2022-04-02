@@ -30925,6 +30925,7 @@ module.exports = {
         return next;
       },
       canPromotion: function (...args) {
+        if (this.$.canPromotion === false) return false
         if (lib.configOL.protect_beginner) return false;
         let list = [];
         if (!lib.cardPack.mode_derivation || !lib.cardPack.mode_derivation.length) return false;
@@ -31639,6 +31640,7 @@ module.exports = {
         this.node.name.dataset.nature = get.groupnature(this.group);
         lib.setIntro(this);
         this.node.name.innerHTML = get[get.slimName2 ? 'slimName2' : 'slimName'](character);
+        let nameLength = this.node.name.querySelectorAll('br').length
         if (this.classList.contains('minskin')) {
           if (nameLength <= 1) {
             this.node.name.classList.add('short');
@@ -31654,7 +31656,6 @@ module.exports = {
           }
         }
         else if (this.classList.contains('fullskin')) {
-          let nameLength = this.node.name.querySelectorAll('br').length
           if (nameLength <= 1) {
             this.node.name.classList.add('short');
           }
@@ -39830,9 +39831,12 @@ module.exports = {
               this.node.image.setBackgroundImage('image/mode/' + lib.card[bg].modeimage + '/card/' + bg + '.png');
             }
             else {
-              if (bg.indexOf('rm_') == 0) {
+              if (bg.indexOf('rm_') === 0) {
                 var bg = bg.slice(3);
                 this.node.image.setBackgroundImage('image/replace/' + bg + '.png');
+              }
+              else if (bg.indexOf('group_') === 0) {
+                this.node.image.setBackgroundImage('image/card/groups/' + bg.slice(6) + '.png');
               }
               else if (lib.config.replace_image) {
                 this.node.image.setBackgroundImage('image/replace/' + bg + '.png');
@@ -41707,7 +41711,7 @@ module.exports = function (element, _mode, _message) {
           else {
             src = 'image/' + name + ext;
           }
-          this.setBackgroundImage(src, type === 'character' ? 'true' : null);
+          this.setBackgroundImage(src, type === 'character' ? 'loading.gif' : null);
           this.style.backgroundSize = "cover";
           return this;
         };
@@ -41727,10 +41731,10 @@ module.exports = function (element, _mode, _message) {
          * 设置本元素的背景图片
          * @function HTMLDivElement#setBackgroundImage
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
-         * @param {boolean} loading - 是否显示加载中图片
+         * @param {boolean} bg - 是否显示加载中图片
          */
-        HTMLDivElement.prototype.setBackgroundImage = function (img, loading) {
-          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading ? `,url("${lib.assetURL}image/loading.gif")` : ``}`;
+        HTMLDivElement.prototype.setBackgroundImage = function (img, bg) {
+          this.style.backgroundImage = `url("${lib.assetURL}${img}")${bg ? `,url("${lib.assetURL}image/${bg}")` : ``}`;
         },
           /**
            * {@link HTMLDivElement#listen|listen}（click）的回调函数
@@ -42198,6 +42202,27 @@ module.exports = function (element, _mode, _message) {
             // }
           }
         };
+        if('onmousedown' in document){
+          if(!game.getFileList){
+            document.oncontextmenu = function(e){
+              e.preventDefault()
+            }
+          }
+          document.onmousedown = (e)=> {
+            if(e.button == 2){
+              game.clickAudio('mechanical.wav')
+            }
+            else if(e.button == 0){
+              let classList = [...e.target.classList,...e.target.parentNode.classList]
+              if(classList.contains('button')||classList.contains('toggle')||classList.contains('pressdown')){
+                game.clickAudio('heavy.wav')
+              }
+              else{
+                game.clickAudio('light.wav')
+              }
+            }
+          };
+        }
         /**
          * window加载结束时调用
          * @function
@@ -44020,7 +44045,7 @@ module.exports = function (element, _mode, _message) {
           node.dataset.cursor_style = "pointer";
           ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
           if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, true);
+            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
           }
           else {
             var avatarnode = ui.create.div(node, '.avatar');
@@ -50879,7 +50904,7 @@ module.exports = {
                   '整理手牌': `<ion-icon name="server-outline"></ion-icon>`,
                   '牌堆': `<ion-icon name="albums-outline"></ion-icon>`,
                }
-               node.innerHTML = (systemIconMap[str]||'') + str;
+               node.innerHTML = (systemIconMap[str] || '') + str;
                // console.log(node.innerHTML)
                if (func) {
                   node.listen(func);
@@ -52815,8 +52840,8 @@ module.exports = {
                   }
                   vol1.appendChild(span);
                }
-               uiintro.add('游戏音效');
 
+               uiintro.add('游戏音效');
                var vol2 = ui.create.div('.volumn');
                uiintro.add(vol2);
                for (var i = 0; i < 8; i++) {
@@ -52830,6 +52855,23 @@ module.exports = {
                      span.innerHTML = '○';
                   }
                   vol2.appendChild(span);
+               }
+               if ('onmousedown' in document) {
+                  uiintro.add('按键音效');
+                  var vol3 = ui.create.div('.volumn');
+                  uiintro.add(vol3);
+                  for (var i = 0; i < 8; i++) {
+                     var span = document.createElement('span');
+                     span.link = i + 1;
+                     span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', ui.click.volumn_click);
+                     if (i < lib.config.volumn_click) {
+                        span.innerHTML = '●';
+                     }
+                     else {
+                        span.innerHTML = '○';
+                     }
+                     vol3.appendChild(span);
+                  }
                }
                uiintro.add(ui.create.div('.placeholder'));
                return uiintro;
@@ -52861,6 +52903,23 @@ module.exports = {
                game.saveConfig('volumn_audio', volume);
                for (var i = 0; i < 8; i++) {
                   if (i < lib.config.volumn_audio) {
+                     this.parentNode.childNodes[i].innerHTML = '●';
+                  }
+                  else {
+                     this.parentNode.childNodes[i].innerHTML = '○';
+                  }
+               }
+               e.stopPropagation();
+            },
+            volumn_click: function (e) {
+               if (_status.dragged) return;
+               var volume = this.link;
+               if (volume === 1 && lib.config.volumn_click === 1) {
+                  volume = 0;
+               }
+               game.saveConfig('volumn_click', volume);
+               for (var i = 0; i < 8; i++) {
+                  if (i < lib.config.volumn_click) {
                      this.parentNode.childNodes[i].innerHTML = '●';
                   }
                   else {
@@ -62923,7 +62982,7 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
       // ionicons.type = 'module'
       // ionicons.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'
       // document.head.appendChild(ionicons)
-      // setInterval(() => {
+      // setTimeout(() => {
       //   let script = document.createElement('script');
       //   script.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons.js';
       //   script.onload = () => {
@@ -62959,6 +63018,45 @@ var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
         }
       }, player, skill);
     }
+    game.clickAudio = (...args)=> {
+        var str = '';
+        var onerror = null;
+        for(let i of args){
+          if (typeof i === 'string' || typeof i == 'number') {
+              str += '/' + i;
+          }
+          else if (typeof i == 'function') {
+              onerror = i
+          }
+        }
+        if (!lib.config.repeat_audio && _status.skillaudio.contains(str)) return;
+        _status.skillaudio.add(str);
+        setTimeout(function () {
+            _status.skillaudio.remove(str);
+        }, 200);
+        var audio = document.createElement('audio');
+        audio.autoplay = true;
+        audio.volume = lib.config.volumn_click / 8;
+        if (str.indexOf('.mp3') != -1 || str.indexOf('.ogg') != -1|| str.indexOf('.wav') != -1) {
+            audio.src = lib.assetURL + 'audio/click' + str;
+        }
+        else {
+            audio.src = lib.assetURL + 'audio/click' + str + '.mp3';
+        }
+        audio.addEventListener('ended', function () {
+            this.remove();
+        });
+        audio.onerror = function () {
+            if (this._changed) {
+                this.remove();
+                if (onerror) {
+                    onerror();
+                }
+            }
+        };
+        document.body.appendChild(audio);
+        return audio;
+    },
     ui.putImgDialog = (str) => {
       if (str && !ui[`imgDialog_${str}`]) {
         let dialog = ui.create.dialog('hidden');

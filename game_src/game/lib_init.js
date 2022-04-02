@@ -325,7 +325,7 @@ module.exports = function (element, _mode, _message) {
           else {
             src = 'image/' + name + ext;
           }
-          this.setBackgroundImage(src, type === 'character' ? 'true' : null);
+          this.setBackgroundImage(src, type === 'character' ? 'loading.gif' : null);
           this.style.backgroundSize = "cover";
           return this;
         };
@@ -345,10 +345,10 @@ module.exports = function (element, _mode, _message) {
          * 设置本元素的背景图片
          * @function HTMLDivElement#setBackgroundImage
          * @param {string} img - 图片相对{@link lib.assetURL|assertURL}路径
-         * @param {boolean} loading - 是否显示加载中图片
+         * @param {boolean} bg - 是否显示加载中图片
          */
-        HTMLDivElement.prototype.setBackgroundImage = function (img, loading) {
-          this.style.backgroundImage = `url("${lib.assetURL}${img}")${loading ? `,url("${lib.assetURL}image/loading.gif")` : ``}`;
+        HTMLDivElement.prototype.setBackgroundImage = function (img, bg) {
+          this.style.backgroundImage = `url("${lib.assetURL}${img}")${bg ? `,url("${lib.assetURL}image/${bg}")` : ``}`;
         },
           /**
            * {@link HTMLDivElement#listen|listen}（click）的回调函数
@@ -816,6 +816,27 @@ module.exports = function (element, _mode, _message) {
             // }
           }
         };
+        if('onmousedown' in document){
+          if(!game.getFileList){
+            document.oncontextmenu = function(e){
+              e.preventDefault()
+            }
+          }
+          document.onmousedown = (e)=> {
+            if(e.button == 2){
+              game.clickAudio('mechanical.wav')
+            }
+            else if(e.button == 0){
+              let classList = [...e.target.classList,...e.target.parentNode.classList]
+              if(classList.contains('button')||classList.contains('toggle')||classList.contains('pressdown')){
+                game.clickAudio('heavy.wav')
+              }
+              else{
+                game.clickAudio('light.wav')
+              }
+            }
+          };
+        }
         /**
          * window加载结束时调用
          * @function
@@ -2638,7 +2659,7 @@ module.exports = function (element, _mode, _message) {
           node.dataset.cursor_style = "pointer";
           ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
           if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, true);
+            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
           }
           else {
             var avatarnode = ui.create.div(node, '.avatar');

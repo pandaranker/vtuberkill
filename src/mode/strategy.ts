@@ -2,7 +2,7 @@
 import situate from './strategy_situate'
 import dramas from './strategy_dramas'
 import chess from './strategy_chess'
-window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, _status) {
+window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai, _status) {
 	return {
 		name: 'strategy',
 		characterPack: {
@@ -24,24 +24,17 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 		},
 		cardPack: {
 			STG: [],
-			recommendGroups: [
-				'group_VirtuaReal',
-				'group_asoul',
-				'group_psp',
-				'group_xuyan',
-				'group_Providence',
-			],
-			groups: [
-				'group_VirtuaReal',
-				'group_psp',
-				'group_asoul',
-				'group_chaos',
-				'group_xuyan',
-				'group_xuefeng',
-				'group_Providence',
-				'group_HappyEl',
-				'group_RedC',
-			]
+			// groups: [
+			// 	'group_VirtuaReal',
+			// 	'group_psp',
+			// 	'group_asoul',
+			// 	'group_chaos',
+			// 	'group_xuyan',
+			// 	'group_xuefeng',
+			// 	'group_Providence',
+			// 	'group_HappyEl',
+			// 	'group_RedC',
+			// ]
 		},
 		start: function () {
 			"step 0"
@@ -65,7 +58,7 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 					}
 				}
 			}
-			if(ui.auto){
+			if (ui.auto) {
 				ui.auto.style.display = 'none';
 				ui.sortCard.style.display = 'none';
 			}
@@ -78,12 +71,35 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 			}
 			lib.translate = {
 				...lib.translate,
-				testDrama: '新游戏',
+				testDrama: '测试剧本',
 				'Date:2X21': '筚路蓝缕',
 				'Date:2X21_info': `公元2021年初，冲蝗的号角不再响彻、鲸落的潮水也逐渐退去，
 				在摇摇欲坠的新科帝国治下，国V大陆一时间进入群雄割据、豪强并起、勃勃生机万物竞发的局面。<br>
 				新人的登场、老人的离去，国V大陆自古没有永恒的主，只有一轮又一轮的版本更新换代。然而，这份“传统”真的会延续下去吗？`,
 			}
+			ui.strategyInfo = ui.create.system('战略模式', null, true);
+			lib.setPopped(ui.strategyInfo, function () {
+				var uiintro = ui.create.dialog('hidden');
+				uiintro.add('战略模式');
+				var list = [
+					'战略模式中，玩家可以扮演一个V圈势力进行游戏',
+					'在地图界面，右上角可以选择地图模式，左下角可以调整地图大小，右侧可以展开势力列表',
+					'在选择剧本界面，可以查看各个势力的信息',
+					'进入战略模式时，游戏布局会自动切换至「手杀」',
+				];
+				var intro = '<ul style="text-align:left;margin-top:0;width:450px">';
+				for (var i = 0; i < list.length; i++) {
+					intro += '<li>' + list[i];
+				}
+				intro += '</ul>'
+				uiintro.add('<div class="text center">' + intro + '</div>');
+				var ul = uiintro.querySelector('ul');
+				if (ul) {
+					ul.style.width = '180px';
+				}
+				uiintro.add(ui.create.div('.placeholder'));
+				return uiintro;
+			}, 250);
 			"step 1"
 			var bosslist = ui.create.div('#bosslist.hidden');
 			Evt.bosslist = bosslist;
@@ -206,244 +222,84 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 				game.save('currentDrama', Evt.currentDrama.name);
 			}
 			"step 2"
-			game.bossinfo = lib.drama.global;
-			for (var i in lib.drama[Evt.currentDrama.name]) {
-				game.bossinfo[i] = lib.drama[Evt.currentDrama.name][i];
+			if(lib.config.layout !== 'long2'){
+				lib.init.layout('long2', true)
 			}
+			game.stginfo = { ...lib.drama.global, ...lib.drama[Evt.currentDrama.name] }
 
 			setTimeout(function () {
 				ui.control.classList.remove('bosslist');
 			}, 500);
-			var boss = ui.create.player();
-			boss.getId();
-			game.boss = boss;
-			boss.init(Evt.currentDrama.name);
-			boss.side = true;
-			if (!Evt.noslide) {
-				var rect = Evt.currentDrama.getBoundingClientRect();
-				boss.animate('bossing');
-				boss.node.hp.animate('start');
-				boss.bossinginfo = [rect.left + rect.width / 2, rect.top + rect.height / 2];
-				boss.style.transition = 'all 0s';
-				boss.node.equips.style.opacity = '0';
-			}
-			else {
-				boss.animate('start');
-			}
-			boss.setIdentity('zhu');
-			boss.identity = 'zhu';
-			if (lib.config.continue_name_boss) {
-				result = lib.config.continue_name_boss;
-				game.saveConfig('continue_name_boss');
-			}
-			for (let i = 0; i < result.links.length; i++) {
-				var player = ui.create.player();
-				player.getId();
-				player.init(result.links[i]).animate('start');
-				player.setIdentity('cai');
-				player.identity = 'cai';
-				player.side = false;
-				game.players.push(player);
-				if (result.boss) {
-					if (game.bossinfo.minion) {
-						player.dataset.position = i + 3;
-					}
-					else {
-						player.dataset.position = (i + 1) * 2;
-					}
-				}
-				else {
-					player.dataset.position = i + 1;
-				}
-				ui.arena.appendChild(player);//[todo player]
-			}
-			if (result.boss) {
-				game.players.unshift(boss);
-				boss.dataset.position = 0;
-			}
-			else {
-				game.players.push(boss);
-				boss.dataset.position = 7;
-			}
-			if (game.bossinfo.minion) {
-				if (!result.boss) {
-					boss.dataset.position = 6;
-				}
-				for (var i in game.bossinfo.minion) {
-					var player = ui.create.player();
-					player.getId();
-					player.init(game.bossinfo.minion[i]);
-					if (boss.bossinginfo) {
-						player.animate('bossing');
-						player.node.hp.animate('start');
-						player.style.transition = 'all 0s';
-					}
-					else {
-						player.animate('start');
-					}
-					player.setIdentity('zhong');
-					player.identity = 'zhong';
-					player.side = true;
-					game.players.push(player);
-					var num = parseInt(i);
-					if (result.boss) {
-						player.dataset.position = num - 1;
-					}
-					else {
-						if (num == 2) {
-							player.dataset.position = 7;
-						}
-						else {
-							player.dataset.position = num - 3;
-						}
-					}
-					ui.arena.appendChild(player);//[todo player]
-					if (boss.bossinginfo) {
-						var rect = player.getBoundingClientRect();
-						player.style.transform = 'translate(' + (boss.bossinginfo[0] - rect.left - rect.width / 2) + 'px,' + (boss.bossinginfo[1] - rect.top - rect.height / 2) + 'px) scale(1.1)';
-						ui.refresh(player);
-						player.style.transition = '';
-						player.style.transform = '';
-					}
-				}
-			}
-			ui.create.me();
-			ui.fakeme = ui.create.div('.fakeme.avatar', ui.me);
-			if (game.me !== boss) {
-				game.singleHandcard = true;
-				ui.arena.classList.add('single-handcard');
-				ui.window.classList.add('single-handcard');
-				game.onSwapControl();
 
-				if (lib.config.show_handcardbutton) {
-					lib.setPopped(ui.create.system('手牌', null, true), function () {
-						var uiintro = ui.create.dialog('hidden');
 
-						var players = game.players.concat(game.dead);
-						for (var i = 0; i < players.length; i++) {
-							if (players[i].side == game.me.side && players[i] != game.me) {
-								uiintro.add(get.translation(players[i]));
-								var cards = players[i].getCards('h');
-								if (cards.length) {
-									uiintro.addSmall(cards, true);
-								}
-								else {
-									uiintro.add('（无）');
-								}
-							}
-						}
+			let currentDrama = lib.drama[lib.storage.currentDrama]
+			let currentFaction_name = result.links[0][2]
+			let currentFaction = currentDrama.factions[currentFaction_name]
 
-						return uiintro;
-					}, 220);
-				}
+			function createFaction(player, factionName, faction, position) {
+				player.initFaction(factionName, faction.chara.leader).animate('start')
+				player.dataset.position = position
+				ui.arena.appendChild(player)
 			}
-			else {
-				ui.fakeme.style.display = 'none';
-			}
-			if (game.bossinfo.chongzheng) {
-				lib.setPopped(ui.create.system('重整', null, true), function () {
-					var uiintro = ui.create.dialog('hidden');
+			createFaction(game.me, currentFaction_name, currentFaction, 7)
 
-					uiintro.add('重整');
-					var table = ui.create.div('.bosschongzheng');
+			ui.create.me(true);
+			// ui.fakeme = ui.create.div('.fakeme.avatar', ui.me);
+			// ui.handcards1 = game.me.node.handcards1;
+			// ui.handcards2 = game.me.node.handcards2;
+			// ui.handcards1Container.appendChild(ui.handcards1);
+			// ui.handcards2Container.appendChild(ui.handcards2);
 
-					var tr, td, added = false;
-					for (var i = 0; i < game.dead.length; i++) {
-						if (typeof game.dead[i].storage.boss_chongzheng !== 'number') continue;
-						added = true;
-						tr = ui.create.div(table);
-						td = ui.create.div(tr);
-						td.innerHTML = get.translation(game.dead[i]);
-						td = ui.create.div(tr);
-						if (game.dead[i].maxHp > 0) {
-							td.innerHTML = '剩余' + (game.bossinfo.chongzheng - game.dead[i].storage.boss_chongzheng) + '回合';
-						}
-						else {
-							td.innerHTML = '无法重整'
-						}
-					}
 
-					if (!added) {
-						uiintro.add('<div class="text center">（无重整角色）</div>');
-						uiintro.add(ui.create.div('.placeholder.slim'))
-					}
-					else {
-						uiintro.add(table);
-					}
-
-					return uiintro;
-				}, 180);
-			}
-			ui.single_swap = ui.create.system('换人', function () {
-				var players = get.players(game.me);
-				players.remove(game.boss);
-				if (players.length > 1) {
-					if (ui.auto.classList.contains('hidden')) {
-						game.me.popup('请稍后换人');
-						return;
-					}
-					if (_status.event.isMine()) {
-						ui.click.auto();
-						setTimeout(function () {
-							ui.click.auto();
-						}, 500);
-					}
-					game.modeSwapPlayer(players[1]);
-				}
-			}, true);
-			if (get.config('single_control') || game.me == game.boss) {
-				ui.single_swap.style.display = 'none';
-			}
-
-			ui.arena.appendChild(boss);//[todo player]
-			if (boss.bossinginfo) {
-				var rect = boss.getBoundingClientRect();
-				boss.style.transform = 'translate(' + (boss.bossinginfo[0] - rect.left - rect.width / 2) + 'px,' + (boss.bossinginfo[1] - rect.top - rect.height / 2) + 'px) scale(1.1)';
-				ui.refresh(boss);
-				boss.style.transition = '';
-				boss.style.transform = '';
-				delete boss.bossinginfo;
-				setTimeout(function () {
-					boss.node.equips.style.opacity = '';
-				}, 500);
-			}
+			// if (lib.config.continue_name_boss) {
+			// 	result = lib.config.continue_name_boss;
+			// 	game.saveConfig('continue_name_boss');
+			// }
 
 			Evt.bosslist.delete();
 
-			game.arrangePlayers();
-			for (let i = 0; i < game.players.length; i++) {
-				game.players[i].node.action.innerHTML = '行动';
-			}
+			// game.arrangePlayers();
+			// for (let i = 0; i < game.players.length; i++) {
+			// 	game.players[i].node.action.innerHTML = '行动';
+			// }
 
-			let players = get.players(lib.sort.position);
-			let info = [];
-			for (let i = 0; i < players.length; i++) {
-				info.push({
-					name: players[i].name1,
-					identity: players[i].identity,
-					position: players[i].dataset.position
-				});
-			}
-			_status.videoInited = true;
-			game.addVideo('init', null, info);
-			if (game.bossinfo.init) {
-				game.bossinfo.init();
-			}
+			// let players = get.players(lib.sort.position);
+			// let info = [];
+			// for (let i = 0; i < players.length; i++) {
+			// 	info.push({
+			// 		name: players[i].name1,
+			// 		identity: players[i].identity,
+			// 		position: players[i].dataset.position
+			// 	});
+			// }
+			// _status.videoInited = true;
+			// game.addVideo('init', null, info);
+			// if (game.bossinfo.init) {
+			// 	game.bossinfo.init();
+			// }
 			delete lib.drama;
 			"step 3"
-			if (get.config('single_control')) {
-				for (let i = 0; i < game.players.length; i++) {
-					if (game.players[i].side == game.me.side) {
-						game.addRecentCharacter(game.players[i].name);
-					}
-				}
+			
+			if (ui.STG_start) {
+				let preUi = ui.STG_start
+				ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
+				preUi.remove()
+			} else {
+				ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 			}
-			else {
-				game.addRecentCharacter(game.me.name);
-			}
+			// game.addRecentCharacter(game.me.name);
+			// if (get.config('single_control')) {
+			// 	for (let i = 0; i < game.players.length; i++) {
+			// 		if (game.players[i].side == game.me.side) {
+			// 			game.addRecentCharacter(game.players[i].name);
+			// 		}
+			// 	}
+			// }
+			// else {
+			// }
 			Evt.trigger('gameStart');
-			game.gameDraw(game.boss, game.bossinfo.gameDraw || 4);
-			game.bossPhaseLoop();
+			// game.gameDraw(game.boss, game.bossinfo.gameDraw || 4);
+			game.factionPhaseLoop();
 			setTimeout(function () {
 				ui.updatehl();
 			}, 200);
@@ -463,6 +319,116 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						game.checkResult();
 					}
 				},
+				initFaction(factionName, leaderName, initSkill) {
+					if (!game.stginfo.factions[factionName]) return;
+					game.factions ??= []
+					game.factions.push(this)
+					var info = game.stginfo.factions[factionName];
+					if (!info) {
+						info = ['', '', 1, [], []];
+					}
+					if (!info[4]) {
+						info[4] = [];
+					}
+
+					this.classList.add('fullskin');
+
+					this.node.avatar.setBackgroundImage(`image/card/groups/${factionName.slice(6)}.png`, `background/simple2_bg.svg`);
+					if (typeof leaderName === 'string' && game.stginfo.charas[leaderName]) {
+						this.node.avatar.style.backgroundSize = `100% 90%,100% 100%`;
+					}
+					else {
+						this.node.avatar.style.backgroundSize = `110% 60%,200% 100%`;
+						this.node.avatar.style.backgroundRepeat = `no-repeat`;
+					}
+					this.node.avatar.show();
+					// this.node.count.show();
+					// this.node.equips.show();
+
+					this.name = factionName;
+					this.name1 = factionName;
+					this.group = factionName.slice(6);
+					this.leader = game.stginfo.factions[factionName].chara.leader
+					this.members = [...game.stginfo.factions[factionName].chara.members]
+					this.charas = [this.leader, ...this.members]
+					this.node.hp.classList.add('text');
+					this.node.hp.dataset.condition = '';
+					this.node.hp.style.left = 'auto';
+					this.node.hp.style.width = 'auto';
+					this.node.hp.innerHTML = '角色数-' + this.charas.length;
+					this.$.nohp = true
+					// this.node.hp.hide();
+
+					this.node.intro.innerHTML = lib.config.intro;
+					this.node.name.dataset.nature = get.groupnature(this.group);
+					lib.setIntro(this);
+					let skills = []
+					if (lib.translate[`${factionName}_info`]) {
+						skills.push(`${factionName}_intro`)
+						lib.skill[`${factionName}_intro`] = {}
+						lib.translate[`${factionName}_intro`] = `介绍`
+						lib.translate[`${factionName}_intro_info`] = lib.translate[`${factionName}_info`]
+					}
+					this.node.name.innerHTML = get.slimName(factionName);
+
+					if (true) {
+						let nameLength = this.node.name.querySelectorAll('br').length
+						if (nameLength <= 1) {
+							this.node.name.classList.add('short');
+						}
+						else if (nameLength == 2) {
+							this.node.name.classList.add('lowshort');
+						}
+						else if (nameLength >= 6) {
+							this.node.name.classList.add('long');
+						}
+					}
+
+					if (leaderName && game.stginfo.charas[leaderName]) {
+						var info2 = game.stginfo.charas[leaderName];
+						if (!info2) {
+							info2 = ['', '', 1, [], []];
+						}
+						if (!info2[4]) {
+							info2[4] = [];
+						}
+						this.classList.add('fullskin2');
+						this.node.avatar2.setBackground(leaderName, 'character');
+
+						this.node.avatar2.show();
+						this.name2 = leaderName;
+
+						this.node.count.classList.add('p2');
+
+						this.node.name2.dataset.nature = get.groupnature(this.group);
+						this.node.name2.innerHTML = get.slimName(leaderName);
+					}
+
+					if (skills.length) {
+						for (var i = 0; i < skills.length; i++) {
+							this.addSkill(skills[i]);
+						}
+						//   this.checkConflict();
+					}
+
+					this.actionPoints = 6;
+					this.maxActionPoints = 6;
+					if (this.inits) {
+						for (var i = 0; i < lib.element.player.inits.length; i++) {
+							lib.element.player.inits[i](this);
+						}
+					}
+					if (this._inits) {
+						for (var i = 0; i < this._inits.length; i++) {
+							this._inits[i](this);
+						}
+					}
+					this.$.canPromotion = false
+					this.isFaction = true
+					this.phase = game.stginfo.factionPhase
+					this.update();
+					return this;
+				}
 			}
 		},
 		card: {
@@ -602,29 +568,34 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 					game.over(!game.boss.isAlive());
 				}
 			},
-			getVideoName: function () {
-				var str = get.translation(game.me.name);
-				if (game.me.name2) {
-					str += '/' + get.translation(game.me.name2);
+			// getVideoName: function () {
+			// 	var str = get.translation(game.me.name);
+			// 	if (game.me.name2) {
+			// 		str += '/' + get.translation(game.me.name2);
+			// 	}
+			// 	var str2 = '挑战';
+			// 	if (game.me != game.boss) {
+			// 		str2 += ' - ' + get.translation(game.boss);
+			// 	}
+			// 	var name = [str, str2];
+			// 	return name;
+			// },
+			factionPhaseLoop: function () {
+				if (ui.cardPileButton.style.display != 'none') {
+					ui.auto.style.display = 'none';
+					ui.sortCard.style.display = 'none';
+					ui.cardPileButton.style.display = 'none';
 				}
-				var str2 = '挑战';
-				if (game.me != game.boss) {
-					str2 += ' - ' + get.translation(game.boss);
-				}
-				var name = [str, str2];
-				return name;
-			},
-			bossPhaseLoop: function () {
 				var next = game.createEvent('phaseLoop');
-				if (game.bossinfo.loopFirst) {
-					next.player = game.bossinfo.loopFirst();
-				}
-				else {
-					next.player = game.boss;
-				}
+				// if (game.bossinfo.loopFirst) {
+				// 	next.player = game.bossinfo.loopFirst();
+				// }
+				// else {
+				// 	next.player = game.boss;
+				// }
+				next.player = game.me
 				_status.looped = true;
-				next.setContent(function () {
-					"step 0"
+				next.setContent([() => {
 					if (player.chongzheng) {
 						player.chongzheng = false;
 					}
@@ -648,40 +619,22 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 								player.revive(player.hp);
 							}
 						}
-						if (game.bossinfo.loopType == 2) {
-							game.boss.chongzheng = true;
-						}
 					}
 					else {
-						if (player.identity == 'zhu' && game.boss != player) {
-							player = game.boss;
-						}
 						player.phase();
 					}
-					"step 1"
-					if (game.bossinfo.loopType == 2) {
-						_status.roundStart = true;
-						if (Evt.player == game.boss) {
-							if (!_status.last || _status.last.nextSeat == game.boss) {
-								Evt.player = game.boss.nextSeat;
-							}
-							else {
-								Evt.player = _status.last.nextSeat;
-							}
-						}
-						else {
-							_status.last = player;
-							Evt.player = game.boss;
-							if (player.nextSeat == game.boss) {
-								delete _status.roundStart;
-							}
-						}
+				}, () => {
+					let index = game.factions.indexOf(Evt.player)
+					if (index + 1 === game.factions.length) {
+						game.log('新的一个月开始~')
+						Evt.player = game.factions[0]
 					}
 					else {
-						Evt.player = Evt.player.nextSeat;
+						Evt.player = game.factions[index + 1]
 					}
+				}, () => {
 					Evt.goto(0);
-				});
+				}]);
 			},
 			onSwapControl: function () {
 				if (game.me == game.boss) return;
@@ -733,6 +686,15 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 				}
 			},
 			chooseCharacter: function (func) {
+				for (let v in dramas) {
+					if (lib.drama[v]) {
+						lib.drama[v] = {
+							...lib.drama[v],
+							...dramas[v]
+						}
+					}
+				}
+				lib.cardPack.recommendGroups = dramas[lib.storage.currentDrama].recommendGroups.slice(0)
 				var next = game.createEvent('chooseCharacter', false);
 				next.showConfig = true;
 				next.customreplacetarget = func;
@@ -744,11 +706,9 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						player.init(list[0]);
 					}
 				}
+				next.set('factions', Object.keys(dramas[lib.storage.currentDrama].factions))
 				next.setContent(function () {
 					"step 0"
-					let list = lib.cardPack.groups.slice(0);
-					Evt.list = list;
-					list.randomSort();
 					var dialog = ui.create.dialog('推荐势力', 'hidden');
 					_status.drama.dialog = dialog
 					dialog.classList.add('fixed');
@@ -765,10 +725,7 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 					var createCharacterDialog = function () {
 						Evt.dialogxx = ui.create.cardDialog(v => {
 							if (v.indexOf('group_') >= 0) {
-								for (let i of ['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']) {
-									if (v.indexOf(i) === 6) return true
-								}
-								return false
+								if (Evt.factions.includes(v)) return false
 							}
 							return true
 						});
@@ -791,9 +748,9 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						ui.cheat2 = ui.create.control('全部势力', function () {
 							ui.cheat2.classList.toggle('glow')
 							if (this.dialog == _status.event.dialog) {
-								if (game.changeCoin) {
-									game.changeCoin(50);
-								}
+								// if (game.changeCoin) {
+								// 	game.changeCoin(50);
+								// }
 								this.dialog.close();
 								_status.event.dialog = this.backup;
 								ui.window.appendChild(this.backup);
@@ -867,7 +824,7 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 					if (Evt.watcher) {
 						Evt.result = {
 							watcher: true,
-							links: Evt.enemy
+							links: result.links
 						};
 					}
 					else {
@@ -967,9 +924,9 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 		},
 		drama: {
 			testDrama: {
-				size: [[5, 12], [27, 34]],
 				situation: {
-					show: () => {
+					size: [[5, 12], [27, 34]],
+					show(){
 						if (ui.STG_start) {
 							let preUi = ui.STG_start
 							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy2')
@@ -977,6 +934,7 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy2')
 						}
+
 						ui.mapContainer = ui.create.div('#map-container', ui.arena);
 
 						ui.dramaContainer = ui.create.div('#chess-container', ui.mapContainer);
@@ -992,7 +950,7 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						ui.ctx2 = ui.canvas2.getContext('2d');
 
 						ui.arena.classList.add('chess');
-						let size = lib.drama[lib.storage.currentDrama].size
+						let size = this.size
 						let width = (size[1][0] - size[0][0]) * 80
 						let height = (size[1][1] - size[0][1]) * 80
 						ui.canvas2.width = width
@@ -1001,17 +959,19 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						ui.chessMap.height = height
 
 						lib.situate.drama.init(dramas.testDrama)
+						lib.situate.drama.set('chessFunctions', chess.setChessFunctions(ui.chessMap, ui.dramaContainer, _status))
 						lib.situate.control.init(ui.canvas2, size, 0.06)
-						let chessFunctions =  chess.setChessFunctions(ui.chessMap, ui.dramaContainer, _status)
 
 						ui.mapMode = ui.create.div('#map-mode', ui.mapContainer)
-						lib.situate.control.setMapControl(ui.mapMode,{type:'mode'})
+						lib.situate.control.setMapControl(ui.mapMode, { type: 'mode' })
 
 						ui.mapZoom = ui.create.div('#map-zoom', ui.mapContainer)
-						lib.situate.control.setMapControl(ui.mapZoom,{type:'zoom'})
+						lib.situate.control.setMapControl(ui.mapZoom, { type: 'zoom' })
 
-						ui.mapMode = ui.create.div('#map-faction-searcher', ui.arena)
-						lib.situate.control.setMapSearcher(ui.mapMode,{type:'faction',focus:chessFunctions.chessFocus})
+						ui.mapSearcher = ui.create.div('#map-searcher', ui.arena)
+						ui.factionSearcher = ui.create.div('#map-faction-searcher', ui.mapSearcher)
+						lib.situate.control.setMapSearcher(ui.factionSearcher, { type: 'faction' })
+						lib.situate.control.setMapSearcher(ui.factionSearcher, { type: 'diplomacy' })
 					},
 					hide: () => {
 						lib.situate.control.close()
@@ -1022,20 +982,91 @@ window.game.import('mode', function (lib:Record<string,any>, game, ui, get, ai, 
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 						}
-						ui.mapMode.delete(100, () => {
-							ui.mapZoom.delete(100)
-							delete ui.mapZoom
-							ui.dramaContainer.delete(200, () => {
-								delete ui.dramaContainer
-								delete ui.chessMap
-								delete ui.canvas2
-								delete ui.ctx2
-								ui.mapContainer.delete(200, () => {
-									delete ui.mapContainer
+						ui.factionSearcher.delete(10,()=>{
+							ui.mapSearcher.delete(100, () => {
+								ui.mapMode.delete(100)
+								delete ui.mapMode
+								ui.mapZoom.delete(100)
+								delete ui.mapZoom
+								ui.dramaContainer.delete(200, () => {
+									delete ui.dramaContainer
+									delete ui.chessMap
+									delete ui.canvas2
+									delete ui.ctx2
+									ui.mapContainer.delete(200, () => {
+										delete ui.mapContainer
+									})
 								})
 							})
 						})
 					}
+				}
+			},
+			global: {
+				factionPhase() {
+					var next = game.createEvent('phase');
+					next.player = this;
+					_status.faction = this;
+					next.setContent([() => {
+						if (!player.$.orderCards) {
+							player.$.orderCards = [
+								game.createCard({ name: '动员', suit: '通常', number: '' }),
+								game.createCard({ name: '建设', suit: '通常', number: '' }),
+								game.createCard({ name: '登庸', suit: '通常', number: '' }),
+								game.createCard({ name: '计策', suit: '通常', number: '' }),
+								game.createCard({ name: '研发', suit: '通常', number: '' })
+							]
+						}
+					}, () => {
+						player.gain(player.$.orderCards)
+						Evt.fakeforce = true;
+					}, () => {
+						Evt.endButton = ui.create.control('结束回合', 'stayleft', function () {
+							if (_status.event.skill) {
+								ui.click.cancel();
+							}
+							ui.click.cancel();
+						});
+						ui.watchDrama = ui.create.control('查看地图', function () {
+							ui.watchDrama.classList.toggle('glow')
+							if (lib.storage.currentDrama) {
+								if (_status.drama.watch) {
+									_status.drama.watch = false;
+									// game.showChoose()
+									game.stginfo.situation.hide()
+									if (ui.cheat2) {
+										ui.cheat2.animate('controlpressdownx', 500);
+										ui.cheat2.classList.remove('disabled');
+									}
+								}
+								else {
+									_status.drama.watch = true;
+									// game.hideChoose()
+									game.stginfo.situation.show()
+									if (ui.cheat2) {
+										ui.cheat2.classList.add('disabled');
+									}
+								}
+							}
+						});
+						player.chooseCard('选择下一步行动', true)
+					}, () => {
+						if (Evt.endButton) {
+							Evt.endButton.close();
+							delete Evt.endButton;
+						}
+						if (ui.watchDrama) {
+							if (_status.drama.watch) {
+								game.stginfo.situation.hide()
+							}
+							ui.watchDrama.close();
+							delete ui.watchDrama;
+						}
+						Evt.resume();
+					}, () => {
+						Evt.fakeforce = false;
+						player.lose(player.getCards())
+					}]);
 				}
 			}
 		},

@@ -27,6 +27,7 @@ window.config={
 	cheat:false,
 	volumn_background:1,
 	volumn_audio:5,
+	volumn_click:5,
 
 	connect_avatar:'KizunaAI',
 	connect_nickname:'无名玩家',

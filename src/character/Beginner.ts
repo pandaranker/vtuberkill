@@ -2433,7 +2433,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					}
 				}, () => {
 					if (!Evt.chk) {
-						player.chooseCard("重铸任意张手牌", 'h', [1, Infinity]).set('ai', (card: any) => {
+						player.chooseCard("###『烩料』###重铸任意张手牌", 'h', [1, Infinity]).set('ai', (card: any) => {
 							return 6.5 - get.value(card);
 						});
 					}
@@ -3744,7 +3744,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						prompt: '弼佐:是否发动一次【预占】？',
 						content: [() => {
-							player.useSkill('re_yuzhan', false, false);
+							player.useSkill('re_yuzhan', false);
 						}, () => {
 							if (trigger.card?.storage?.bizuo) delete trigger.card.storage.bizuo;
 							if (trigger.cards?.length) {

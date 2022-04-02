@@ -54,6 +54,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**远北千南 */
 			AchikitaChinami: ['female', 'nijisanji', 3, ['yingkuo', 'shengni'],],
 
+			/**梦乃栞 */
+			YumenoShiori: ['female', 'paryi', 4, ['rencan', 'yiduo'],],
 			/**早见咲 */
 			HayamiSaki: ['female', 'paryi', 4, ['tuncai', 'zhidu'], ['zhu', 'guoV']],
 			/**纪代因果 */
@@ -64,7 +66,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**谢拉 */
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
 			/**恋乃夜舞 */
-			KoinoyaMai: ['female', 'qun', 3, ['shanying','siqian']],
+			KoinoyaMai: ['female', 'qun', 3, ['shanying', 'siqian']],
 
 			/**姬拉 */
 			Kira: ['female', 'qun', 4, ['weiguang', 'liangqin'], ['guoV']],
@@ -104,7 +106,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Mojuko: ['female', 'Providence', 3, ['shufang', 'baihuo'], ['riV']],
 
 			/**赫卡缇亚 */
-			Hecatia: ['female', 'VirtualUnion', 3, ['naqi', 'shuangzhi','shouji']],
+			Hecatia: ['female', 'VirtualUnion', 3, ['naqi', 'shuangzhi', 'shouji']],
 
 			/**雨街F */
 			AmemachiF: ['female', 'RedC', 3, ['ciling', 'xiyu'], ['guoV']],
