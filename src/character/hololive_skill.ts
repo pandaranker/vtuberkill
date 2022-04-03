@@ -742,7 +742,7 @@ export default {
                         if (card.name == 'sha') return num + Buff;
                     },
                     globalFrom(from, to, distance) {
-                        let Buff = (player.$.huxi_buff) || 1;
+                        let Buff = (from.$.huxi_buff) || 1;
                         return -Buff;
                     },
                 }

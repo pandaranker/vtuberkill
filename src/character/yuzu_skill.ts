@@ -461,13 +461,14 @@ export default {
 
                 let evt = trigger.getParent().relatedEvent;
                 if ((trigger.name == 'discard' && !trigger.delay) || evt?.name == 'respond') game.delayx();
-                Evt.target.damage('nosource')
             } else Evt.finish();
         }, () => {
             Evt.target.$.suyuan = Evt.cards.length
             Evt.target.$.suyuan2 = player
             Evt.target.addTempSkill('suyuan2', 'none')
             Evt.target.gain(Evt.cards, 'gain2', 'log');
+        },()=>{
+            Evt.target.damage('nosource','nocard')
         }],
     }, 'direct').setT({ player: 'loseAfter', global: 'cardsDiscardAfter' }),
     suyuan2: new toSkill('mark', {
@@ -4148,6 +4149,7 @@ export default {
         priority: 3,
         direct: true,
         filter(Evt, player) {
+            if (player.hasSkill('chengneng_used')) return false
             return Evt.num && Evt.player != player && player.countDiscardableCards(player, 'he');
         },
         check(Evt, player) {
@@ -13983,7 +13985,7 @@ export default {
                 return target !== player && !target.hasSkill('ciling2')
             }).set('ai', tar => get.$a2(tar) < 0)
         }, () => {
-            if (result.targets?.length) {
+            if (result.bool && result.targets?.length) {
                 Evt.target = result.targets[0];
                 player.logSkill('ciling', Evt.target);
                 Evt.target.addSkill('ciling2')
@@ -15894,7 +15896,7 @@ export default {
         filter(Evt, player) {
             return get.suit(Evt.card) == 'heart' && player.hasHistory('lose', evt => {
                 if (evt.getParent() != Evt) return false;
-                if (JSON.stringify(evt.hs) == JSON.stringify(Evt.cards)) return true;
+                if (evt.hs.length && JSON.stringify(evt.hs) === JSON.stringify(Evt.cards)) return true;
                 return false;
             });
         },

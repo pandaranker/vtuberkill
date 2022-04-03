@@ -512,7 +512,8 @@ export default {
             content: '我一直都是Homolive的一员啊！'
         },
     }),
-    rongyaochengyuan: new toSkill('trigger', {
+    rongyuchengyuan: new toSkill('trigger', {
+        audio:3,
         filter(Evt, player) {
             return game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
         },
@@ -520,10 +521,12 @@ export default {
             Evt.num = game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
             player.draw(Evt.num)
         },
+        group:'rongyuchengyuan_putMark',
         subSkill: {
             putMark: new toSkill('trigger', {
+                audio:'rongyuchengyuan',
                 filter(Evt, player) {
-                    if (!Evt.source || Evt.source == player) return false;
+                    if (!Evt.source || Evt.source === player) return false;
                     if (Evt.source.hasSkill('homolive')) return false;
                     return true;
                 },

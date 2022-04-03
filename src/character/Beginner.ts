@@ -88,7 +88,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**小希小桃 */
 			re_XiaoxiXiaotao: ['female', 'xuyan', 3, ['re_doupeng', 're_xuyan'], ['guoV']],
 			/**犬山 */
-			re_InuyamaTamaki: ['male', 'painter', 3, ['rongyaochengyuan', 're_hundunliandong']],
+			re_InuyamaTamaki: ['male', 'painter', 3, ['rongyuchengyuan', 're_hundunliandong']],
 			/**咩宝 */
 			re_KaguraMea: ['female', 'paryi', 3, ['fengna', 're_xiaoyan']],
 			/**OTO */

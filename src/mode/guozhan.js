@@ -552,7 +552,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				/**天开司 */
 				gz_TenkaiTsukasa: ['male','clubs',4,['re_pojie','re_dazhen'],['gzskin','doublegroup:clubs:nijisanji:vtuber']],
 				/**犬山 */
-				gz_InuyamaTamaki:['male','clubs',3,['rongyaochengyuan','re_hundunliandong'],['doublegroup:clubs:vtuber:nijisanji:holo']],
+				gz_InuyamaTamaki:['male','clubs',3,['rongyuchengyuan','re_hundunliandong'],['doublegroup:clubs:vtuber:nijisanji:holo']],
 
 				//神乐
 				gz_KaguraMea: ['female', 'ye', 4, ['gz_luecai', 're_xiaoyan']],

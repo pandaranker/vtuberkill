@@ -24,8 +24,9 @@ export default {
 
     InuyamaTamaki: `犬山玉姬`,
     InuyamaTamaki_info: `犬山玉姬`,
-    rongyaochengyuan: `荣誉成员`,
-    rongyaochengyuan_info: `其他角色对你造成伤害时，若其没有「homolive」标记，你可令其获得一个，然后防止此伤害。<br>
+    rongyuchengyuan: `荣誉成员`,
+    rongyuchengyuan_putMark: `荣誉成员`,
+    rongyuchengyuan_info: `其他角色对你造成伤害时，若其没有「homolive」标记，你可令其获得一个，然后防止此伤害。<br>
     结束阶段，你可以摸X张牌（X为场上手牌数为0或拥有「homolive」标记的角色数），`,
     hundunliandong: `混沌联动`,
     hundunliandong_info: `出牌阶段限一次，你可以指定包括你在内势力各不同的任意名角色，从你开始依次弃一张牌直到：<br>

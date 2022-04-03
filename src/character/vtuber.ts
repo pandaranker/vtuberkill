@@ -118,7 +118,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			YamaUsagi: ['female', 'NetEase', 3, ['zhengmeng', 'wadao'], ['guoV']],
 
 			/**犬山 */
-			InuyamaTamaki: ['male', 'nori', 3, ['rongyaochengyuan', 'hundunliandong']],
+			InuyamaTamaki: ['male', 'nori', 3, ['rongyuchengyuan', 'hundunliandong']],
 			/**Mishiro */
 			ShirayukiMishiro: ['female', 'nori', 3, ['tianyi', 'nveyu']],
 
