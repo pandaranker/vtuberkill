@@ -6436,25 +6436,27 @@ module.exports = {
                            if (node.node.hp.childNodes.length == 0) {
                               node.node.name.style.top = '8px';
                            }
-                           if (/^[A-z\d\.]+$/.test(node.node.name.innerHTML)) {
+                           if (/^[A-z\d\s\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
-                           let nameLength = node.node.name.querySelectorAll('br').length
-                           if (nameLength <= 1) {
-                              node.node.name.classList.add('short');
-                           }
-                           else if (nameLength == 2) {
-                              node.node.name.classList.add('lowshort');
-                           }
-                           else if (nameLength == 4 || nameLength == 5) {
-                              node.node.name.classList.add('lowlong');
-                           }
-                           else if (nameLength >= 6) {
-                              node.node.name.classList.add('long');
-                           }
-                           if (nameLength >= 4 && lib.config.buttoncharacter_style == 'old') {
-                              node.addEventListener('mouseenter', ui.click.buttonnameenter);
-                              node.addEventListener('mouseleave', ui.click.buttonnameleave);
+                           else{
+                              let nameLength = node.node.name.querySelectorAll('br').length
+                              if (nameLength <= 1) {
+                                 node.node.name.classList.add('short');
+                              }
+                              else if (nameLength == 2) {
+                                 node.node.name.classList.add('lowshort');
+                              }
+                              else if (nameLength == 4 || nameLength == 5) {
+                                 node.node.name.classList.add('lowlong');
+                              }
+                              else if (nameLength >= 6) {
+                                 node.node.name.classList.add('long');
+                              }
+                              if (nameLength >= 4 && lib.config.buttoncharacter_style == 'old') {
+                                 node.addEventListener('mouseenter', ui.click.buttonnameenter);
+                                 node.addEventListener('mouseleave', ui.click.buttonnameleave);
+                              }
                            }
                            node.node.intro.innerHTML = lib.config.intro;
                            if (!noclick) {

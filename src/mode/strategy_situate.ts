@@ -217,6 +217,7 @@ class Area extends Pos {
 class City extends Area {
     static cityId: number
     level: number
+    resource: Record<Resource['name'], number>
     constructor(name: string, pos: posType, config: areaType = {}) {
         super(pos)
         this.id = ("000" + ++City.cityId).slice(-3);
@@ -576,6 +577,7 @@ Region.regionId = 0
  */
 class Faction extends Areas {
     static factionId: number
+    resource: Record<Resource['name'], number>
     constructor(name: string, citynames: string[], info: { chara?: anyObject, config: anyObject }) {
         super(name)
         this.id = ("000" + ++Faction.factionId).slice(-3);
@@ -613,12 +615,30 @@ class Faction extends Areas {
         let opacity = 1
         ctx.save()
         ctx.globalCompositeOperation = 'xor';
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 10;
         ctx.shadowColor = hexToRgba(f.color, 1, [-30, -30, -30]);
         ctx.fillStyle = hexToRgba(f.color, opacity, [30, 30, 30]);
         ctx.fill()
         ctx.beginPath()
         ctx.restore()
+    }
+    showInformation(ctx = context.tempCtx, size = context.curSize, zoom = context.curZoom, config?: anyObject) {
+        let f = this
+        if (f.areasInSize().length) {
+            let coord2 = f.tempCoord()
+            ctx.save()
+            ctx.globalCompositeOperation = 'xor';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = hexToRgba(f.color, 1, [-30, -30, -30]);
+            ctx.fillStyle = hexToRgba(f.color, 1);
+            let infoText = config.text || ''
+            let fontSize = 6 + 300 * zoom
+            let fontFamily = "'hyk2gj',Arial"
+            ctx.font = `${fontSize}px ${fontFamily}`
+            ctx.fillText(infoText, coord2[0] + 310 * zoom, coord2[1] + 330 * zoom);
+            ctx.beginPath()
+            ctx.restore()
+        }
     }
 }
 Faction.factionId = 0
@@ -635,6 +655,151 @@ class Clan {
     }
 }
 Clan.clanId = 0
+class Resource {
+    static resourceId: number
+    name: string
+    abbreviation: `${string[1]}`
+    dispersion: 'city' | 'faction'
+    allocation: Record<City['name'] | Faction['name'], [number, number]>
+    container: 'city' | 'faction'
+    reserves: Record<City['name'] | Faction['name'], number>
+    constructor(name: string, allocat: Record<City['name'] | Faction['name'], [number] | [number, number]>, info: anyObject = { reserves: {} }) {
+        this.name = name
+        for (let v in allocat) {
+            if (!this.dispersion) {
+                factions.some(f => {
+                    if (f.name === v) {
+                        this.dispersion = 'faction'
+                        return true
+                    }
+                })
+                citys.some(c => {
+                    if (c.name === v) {
+                        this.dispersion = 'city'
+                        return true
+                    }
+                })
+            }
+            if (allocat[v].length === 1) {
+                allocat[v][1] = 0
+            }
+        }
+        this.allocation = allocat as Record<City['name'] | Faction['name'], [number, number]>
+        this.reserves = info.reserves
+        for (let v of Object.keys(this.reserves)) {
+            if (!this.container) {
+                factions.some(f => {
+                    if (f.name === v) {
+                        this.container = 'faction'
+                        return true
+                    }
+                })
+                citys.some(c => {
+                    if (c.name === v) {
+                        this.container = 'city'
+                        return true
+                    }
+                })
+            }
+            else break;
+        }
+        this.setReserves()
+        this.updateReserves()
+    }
+    addReserves(containerName: City['name'] | Faction['name'], reserve: number) {
+        this.reserves[containerName] = reserve
+        this.setReserves()
+    }
+    setReserves(containers?: City[] | Faction[]) {
+        if (this.container === 'faction') {
+            containers = factions
+        }
+        else if (this.container === 'city') {
+            containers = citys
+        }
+        for (let cont of containers) {
+            cont.resource[this.abbreviation] = this.reserves[cont.name] || 0
+        }
+    }
+    updateReserves(containers?: City[] | Faction[]) {
+        if (this.container === 'faction') {
+            containers = factions
+        }
+        else if (this.container === 'city') {
+            containers = citys
+        }
+        for (let cont of containers) {
+            this.reserves[cont.name] = cont.resource[this.abbreviation]
+        }
+    }
+    cityHarvest(factionName: Faction['name']) {
+        let curc = citys.find(c => c.name === factionName)
+        let harvest = 0
+        if (this.dispersion === 'city') {
+            harvest += this.allocation[curc.name][0]
+        }
+        else if (this.dispersion === 'faction') {
+            factions.some(f => {
+                if (f.citys.includes(curc)) {
+                    harvest += this.allocation[f.name][0]
+                    return true;
+                }
+            })
+        }
+        this.reserves[curc.name] += harvest
+    }
+    factionHarvest(factionName: Faction['name']) {
+        let curf = factions.find(f => f.name === factionName)
+        let harvest = 0
+        if (this.dispersion === 'city') {
+            citys.forEach(c => {
+                if (curf.citys.includes(c)) {
+                    harvest += this.allocation[c.name][0]
+                }
+            })
+        }
+        else if (this.dispersion === 'faction') {
+            harvest += this.allocation[curf.name][0]
+        }
+        this.reserves[curf.name] += harvest
+        if(context.tempCtx){
+            curf.showInformation(context.tempCtx, context.curSize, context.curZoom, {
+                text: `${translation.resource[this.name]}${this.abbreviation}${harvest > 0 ? '增加' : '减少'}了${harvest}`
+            })
+            if (data.timeRecord) {
+                clearTimeout(data.timeRecord)
+                control.tempClear()
+            }
+            data.timeRecord = setTimeout(() => {
+                control.tempClear()
+            }, 2000)
+        }
+    }
+    harvest() {
+        if (this.container === 'faction') {
+            for (let f of factions) {
+                this.factionHarvest(f.name)
+            }
+        }
+        else if (this.container === 'city') {
+            for (let f of factions) {
+                this.factionHarvest(f.name)
+            }
+        }
+        this.updateReserves()
+    }
+    naturalGrowth() {
+        for (let v in this.allocation) {
+            let singleAlloc = this.allocation[v]
+            singleAlloc[0] += singleAlloc[1]
+        }
+    }
+    mouthNext() {
+        this.harvest()
+        this.naturalGrowth()
+    }
+}
+Resource.resourceId = 0
 const blocks = []
 const translation = {
     citys: <stringObejct>{
@@ -642,7 +807,9 @@ const translation = {
         wuwei: '武威',
         tianshui: '天水',
         anding: '安定',
-        beidi: '北地',
+
+        shuofang: '朔方',
+        wuyuan: '五原',
 
         hanzhong: '汉中',
         zitong: '梓潼',
@@ -728,6 +895,15 @@ const translation = {
         group_azhun: '天气阿准',
         group_bingtang: '冰糖',
     },
+    resource: <stringObejct>{
+        population: '人口',
+        reputation: '信誉',
+        electricity: '电力',
+
+        figure: '皮套',
+        voice: '音声',
+        cutting: '切片',
+    },
     lands: <stringObejct>{
         Mt: '山峦',
         Gb: '戈壁',
@@ -742,14 +918,16 @@ const citys = [
     new City("wuwei", [1, 6], { level: 4 }),
     new City("tianshui", [2, 11], { level: 3 }),
     new City("anding", [4, 8], { level: 1 }),
-    new City("beidi", [5, 6], { level: 2 }),
+
+    new City("shuofang", [6, 5], { level: 2 }),
+    new City("wuyuan", [7, 2]),
 
     new City("hanzhong", [6, 14], {
         level: 3, color: '#f3ea9d', shape: [
             -4, [1, 2], [0, 1], [-4, 4], [-6, 4], [-5, 5], [-5, 4], [[-5, -4], [-2, 2]], [-1, 1]
         ]
     }),
-    new City("zitong", [5, 17], { level: 1 }),
+    new City("zitong", [5, 17], { level: 2 }),
     new City("chengdu", [2, 20], { level: 6 }),
     new City("jiangzhou", [6, 22], {
         level: 2, color: '#48a088', shape: [
@@ -1005,13 +1183,15 @@ const mounts = [
         ]
     }),
 ]
-const factions = <Faction[]>[
-]
+const factions = <Faction[]>[]
+const resources = <Resource[]>[]
 type stringObejct = Record<string, string>
 type anyObject = Record<string, any>
 interface context extends anyObject {
     curCvs: HTMLCanvasElement
+    tempCvs: HTMLCanvasElement
     curCtx: CanvasRenderingContext2D
+    tempCtx: CanvasRenderingContext2D
     curSize: [posType, posType]
     curZoom: number
 }
@@ -1045,13 +1225,16 @@ const control = {
                     div.listen(() => {
                         methods.focus(v)
                         v.MapHighlight()
-                        if (data.timeRecord) clearTimeout(data.timeRecord)
+                        if (data.timeRecord) {
+                            clearTimeout(data.timeRecord)
+                            control.tempClear()
+                        }
                         data.timeRecord = setTimeout(() => {
-                            control.reinit()
+                            control.tempClear()
                             data.timeRecord = setTimeout(() => {
                                 v.MapHighlight()
                                 data.timeRecord = setTimeout(() => {
-                                    control.reinit()
+                                    control.tempClear()
                                 }, 700)
                             }, 300)
                         }, 400)
@@ -1101,17 +1284,26 @@ const control = {
             case 'zoom': {
                 let map_zoom = context.curZoom
                 let prediv = document.createElement('div')
+                let originalWidth = context.curCvs.width
+                let originalHeight = context.curCvs.height
                 prediv.innerHTML = `地图缩放`
                 parent.appendChild(prediv)
                 for (let v of ['还原', '0.5', '0.8', '1.2', '1.6']) {
                     let div = document.createElement('div')
                     div.innerHTML = v === '还原' ? v : `×${v}`
                     div.listen(() => {
-                        if (v === '还原') context.curZoom = map_zoom = 0.06
+                        if (v === '还原') {
+                            context.curZoom = map_zoom = 0.06
+                            context.curCvs.width = originalWidth
+                            context.curCvs.height = originalHeight
+                        }
                         else {
                             map_zoom *= Number.parseFloat(v)
                             context.curZoom = map_zoom
+                            context.curCvs.width *= Number.parseFloat(v)
+                            context.curCvs.height *= Number.parseFloat(v)
                         }
+                        control.tempSynchronization()
                         this.reinit()
                     })
                     parent.appendChild(div)
@@ -1142,18 +1334,45 @@ const control = {
             } break;
         }
     },
+    resourceController() {
+        return {
+            changeResorce(fact, resource, num) {
+                let curf = factions.find(f => f.name === fact)
+                let curRes = resources.find(r => r.name === resource)
+                curf.resource[resource] += num
+                curRes.setReserves()
+
+            },
+            mouthNext(watching) {
+                for(let curRes of resources){
+                    curRes.mouthNext()
+                }
+            },
+            getResorce(fact, resource, key = 'reserves') {
+                let curRes = resources.find(r => r.name === resource)
+                return curRes[key][fact]
+            }
+        }
+    },
     init(cvs: HTMLCanvasElement, size: [posType, posType], zoom: number) {
         context.curCvs = cvs
         context.curSize = size
         context.curZoom = zoom
         context.curCtx = cvs.getContext('2d')
-        context.tempCtx = cvs.getContext('2d')
-        let ctx = context.curCtx
-        ctx.font = `${6 + 500 * zoom}px 'hyk2gj',Arial`;
-        ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.textAlign = 'center'
+        context.parent = cvs.parentElement
+        context.tempCvs = document.createElement('canvas')
+        context.tempCvs.style.position = 'ab'
+        context.tempCvs.id = 'temp-canvas'
+        context.parent.appendChild(context.tempCvs)
+        context.tempCtx = context.tempCvs.getContext('2d')
+        control.tempSynchronization()
+        for (let ctx of [context.curCtx, context.tempCtx]) {
+            ctx.font = `${6 + 500 * zoom}px 'hyk2gj',Arial`;
+            ctx.strokeStyle = "rgba(0, 10, 255, 0.5)";
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.textAlign = 'center'
+        }
         this.initMap()
     },
     reinit() {
@@ -1223,6 +1442,16 @@ const control = {
             ctx.clearRect(0, 0, cvs.width, cvs.height)
         }
     },
+    tempSynchronization() {
+        [context.tempCvs.width, context.tempCvs.height] = [context.curCvs.width, context.curCvs.height]
+    },
+    tempClear() {
+        if (context.tempCvs && context.tempCtx) {
+            let ctx = context.tempCtx
+            let cvs = context.tempCvs
+            ctx.clearRect(0, 0, cvs.width, cvs.height)
+        }
+    }
 }
 export default {
     citys,
@@ -1231,6 +1460,13 @@ export default {
     control,
     drama: {
         init(info) {
+            if (info.resource) {
+                resources.length = 0
+                let resos = info.reso
+                for (let res in resos) {
+                    resources.push(new Resource(res, resos[res].allocation, resos[res]))
+                }
+            }
             if (info.factions) {
                 factions.length = 0
                 let facts = info.factions
@@ -1239,7 +1475,7 @@ export default {
                 }
             }
         },
-        set(key:string,info:anyObject){
+        set(key: string, info: anyObject) {
             data[key] = info
         }
     }

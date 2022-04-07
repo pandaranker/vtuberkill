@@ -192,15 +192,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				filter(Evt, player) {
 					return game.hasPlayer(cur => {
 						if (player.inRange(cur)) {
-							if (player.countCards('h') != cur.countCards('h')) return true;
-							var es = player.getCards('e');
-							for (var i = 0; i < es.length; i++) {
-								if (cur.isEmpty(get.subtype(es[i])) && (player.countCards('e') != cur.countCards('e'))) return true;
-							}
-							var js = player.getCards('j');
-							for (var i = 0; i < js.length; i++) {
-								if (cur.canAddJudge(js[i]) && (player.countCards('j') != cur.countCards('j'))) return true;
-							}
+							return player.countCards('h') != cur.countCards('h')
+							||player.countCards('e') != cur.countCards('e')
+							|| player.countCards('j') != cur.countCards('j')
 						}
 						return false;
 					});
@@ -211,15 +205,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (target == player) return true;
 						if (ui.selected.targets.length && ui.selected.targets[0] != player) return false;
 						if (player.inRange(target)) {
-							if (player.countCards('h') != target.countCards('h')) return true;
-							var es = player.getCards('e');
-							for (var i = 0; i < es.length; i++) {
-								if (target.isEmpty(get.subtype(es[i])) && (player.countCards('e') != target.countCards('e'))) return true;
-							}
-							var js = player.getCards('j');
-							for (var i = 0; i < js.length; i++) {
-								if (target.canAddJudge(js[i]) && (player.countCards('j') != target.countCards('j'))) return true;
-							}
+							return player.countCards('h') != target.countCards('h')
+							||player.countCards('e') != target.countCards('e')
+							|| player.countCards('j') != target.countCards('j')
 						}
 						return false;
 					});
@@ -1025,7 +1013,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			gz_LizeHelesta: `国战莉泽`,
 			tongchen: `同尘`,
-			tongchen_info: `出牌阶段限一次，若你攻击范围内有角色某一区域内的牌数与你在该区域的牌数不等，你可在你与其的该区域间移动一张牌。然后若你与其在该区域内的牌数相等，你摸一张牌。`,
+			tongchen_info: `出牌阶段限一次，若你攻击范围内有角色某一区域内的牌数与你在该区域的牌数不等，你可在你们之间移动区域内的一张牌。然后若你与其在该区域内的牌数相等，你摸一张牌。`,
 			wangxuan: `王选`,
 			wangxuan_info: `锁定技 当你的体力或装备区装备为全场最多时，你的手牌上限和攻击范围翻倍。`,
 

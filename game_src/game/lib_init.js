@@ -536,9 +536,9 @@ module.exports = function (element, _mode, _message) {
          * @param {*} item - 要在数组中定位的元素
          * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
          */
-        Array.prototype.find = function (item) {
-          return this.indexOf(item);
-        };
+        // Array.prototype.find = function (item) {
+        //   return this.indexOf(item);
+        // };
         /**
          * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
          * @function Array#contains
@@ -591,7 +591,7 @@ module.exports = function (element, _mode, _message) {
             for (var i = 0; i < item.length; i++) this.remove(item[i]);
             return;
           }
-          var pos = this.find(item);
+          var pos = this.indexOf(item);
           if (pos == -1) {
             return false;
           }

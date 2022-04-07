@@ -29,7 +29,7 @@ declare global {
          * @param {*} item - 要在数组中定位的元素
          * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
          */
-        find(item: any): number;
+        // find(item: any): number;
         /**
          * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
          * @function Array#contains

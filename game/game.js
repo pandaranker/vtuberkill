@@ -73,6 +73,10 @@
 		group_HappyEl: { ...groupCard, },
 		group_RedC: { ...groupCard, },
 		group_painter: { ...groupCard, },
+
+		//仅出现在战略模式中的势力
+		group_MiyaFam: { ...groupCard, },
+		group_bingtang: { ...groupCard, },
 	}
 }
 
@@ -394,7 +398,6 @@ module.exports = {
 		Tencent2: '腾讯',
 		lucca2: 'Lucca事务所',
 		RedC2: 'RedCircle',
-		MiyaFam2: 'Miya Family',
 		VirtualUnion2: 'virtual union',
 		double2: '多势力',
 		male: '男',
@@ -552,7 +555,6 @@ module.exports = {
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
 		group_painter: "画势力",
-		group_MiyaFam: "MF",
 		group_VirtualUnion: "VU",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
@@ -578,7 +580,6 @@ module.exports = {
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
 		group_painter_bg: "画",
-		group_MiyaFam_bg: "弥",
 	}
 }
 
@@ -14796,7 +14797,7 @@ module.exports = {
             else if (str2.indexOf('国战') == 0 && lib.config.mode == 'guozhan' && str.indexOf('gz_') == 0) {
                str2 = str2.slice(2);
             }
-            if (/^[A-z\d\.]+$/.test(str2)) return str2
+            if (/^[A-z\d\s\.]+$/.test(str2)) return str2
             return get.verticalStr(str2, true);
          },
          time: function () {
@@ -28538,6 +28539,14 @@ module.exports = {
         game.delay();
       }, function () {
         if (targets.length == 2) {
+          if (Evt.logSkill) {
+            if (typeof Evt.logSkill == 'string') {
+              player.logSkill(Evt.logSkill);
+            }
+            else if (Array.isArray(Evt.logSkill)) {
+              player.logSkill.apply(player, Evt.logSkill);
+            }
+          }
           player.choosePlayerCard('hej', true, function (button) {
             var player = _status.event.player;
             var targets0 = _status.event.targets0;
@@ -32636,10 +32645,10 @@ module.exports = {
         }
         function checkEnglish(name) {
           let nameLength = name.querySelectorAll('br').length
-          if (nameLength === 0 && /^[A-z\d\.]+$/.test(name.innerHTML)) {
+          if (nameLength === 0 && /^[A-z\d\.\s]+$/.test(name.innerHTML)) {
             name.classList.add('English');
           }
-          if (nameLength >= 1 && name.classList.contains('English')) {
+          else if (nameLength >= 1 && name.classList.contains('English')) {
             name.classList.remove('English');
           }
         }
@@ -41922,9 +41931,9 @@ module.exports = function (element, _mode, _message) {
          * @param {*} item - 要在数组中定位的元素
          * @returns {!number} 数组中元素的第一个索引；如果没有找到返回-1
          */
-        Array.prototype.find = function (item) {
-          return this.indexOf(item);
-        };
+        // Array.prototype.find = function (item) {
+        //   return this.indexOf(item);
+        // };
         /**
          * 查找元素是否存在，等同于{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf|Array.prototype.indexOf(item)!=-1}
          * @function Array#contains
@@ -41977,7 +41986,7 @@ module.exports = function (element, _mode, _message) {
             for (var i = 0; i < item.length; i++) this.remove(item[i]);
             return;
           }
-          var pos = this.find(item);
+          var pos = this.indexOf(item);
           if (pos == -1) {
             return false;
           }
@@ -51117,25 +51126,27 @@ module.exports = {
                            if (node.node.hp.childNodes.length == 0) {
                               node.node.name.style.top = '8px';
                            }
-                           if (/^[A-z\d\.]+$/.test(node.node.name.innerHTML)) {
+                           if (/^[A-z\d\s\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
-                           let nameLength = node.node.name.querySelectorAll('br').length
-                           if (nameLength <= 1) {
-                              node.node.name.classList.add('short');
-                           }
-                           else if (nameLength == 2) {
-                              node.node.name.classList.add('lowshort');
-                           }
-                           else if (nameLength == 4 || nameLength == 5) {
-                              node.node.name.classList.add('lowlong');
-                           }
-                           else if (nameLength >= 6) {
-                              node.node.name.classList.add('long');
-                           }
-                           if (nameLength >= 4 && lib.config.buttoncharacter_style == 'old') {
-                              node.addEventListener('mouseenter', ui.click.buttonnameenter);
-                              node.addEventListener('mouseleave', ui.click.buttonnameleave);
+                           else{
+                              let nameLength = node.node.name.querySelectorAll('br').length
+                              if (nameLength <= 1) {
+                                 node.node.name.classList.add('short');
+                              }
+                              else if (nameLength == 2) {
+                                 node.node.name.classList.add('lowshort');
+                              }
+                              else if (nameLength == 4 || nameLength == 5) {
+                                 node.node.name.classList.add('lowlong');
+                              }
+                              else if (nameLength >= 6) {
+                                 node.node.name.classList.add('long');
+                              }
+                              if (nameLength >= 4 && lib.config.buttoncharacter_style == 'old') {
+                                 node.addEventListener('mouseenter', ui.click.buttonnameenter);
+                                 node.addEventListener('mouseleave', ui.click.buttonnameleave);
+                              }
                            }
                            node.node.intro.innerHTML = lib.config.intro;
                            if (!noclick) {

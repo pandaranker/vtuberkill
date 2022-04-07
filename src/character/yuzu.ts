@@ -49,7 +49,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			hunmiaomiao: ['female', 'hunmiao', 3, ['xiuyou', 'jiyuan'], ['guoV']],
 
 			/**高原守 */
-			Mamoru: ['male', 'chaos', '-3/3', ['shoumi', 'yanwang'], ['guoV']],
+			Mamoru: ['male', 'chaos', '-3/3', ['mishou', 'yanwang'], ['guoV']],
 
 			/**远北千南 */
 			AchikitaChinami: ['female', 'nijisanji', 3, ['yingkuo', 'shengni'],],
@@ -91,6 +91,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
 			/**无理 */
 			Muri: ['female', 'VirtuaReal', 3, ['lique', 'zhangdeng'], ['guoV']],
+			/**轴伊Joi */
+			Joi: ['female', 'qun', 3, ['pianxin', 'yuancheng'], ['guoV', 'doublegroup:qun:VirtuaReal']],
 
 			/**启娜娜米 */
 			ap_Nana7mi: ['female', 'VirtuaReal', 4, ['niyou', 'shalu'], ['guoV']],
@@ -104,6 +106,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Keroro: ['female', 'Providence', 4, ['beifa', 'wuwu'], ['guoV']],
 			/**茉吱Mojuko */
 			Mojuko: ['female', 'Providence', 3, ['shufang', 'baihuo'], ['riV']],
+			/**柊真华 */
+			HiiragiMadoka: ['female', 'Providence', 4, ['huage', 'yayin'], ['guoV']],
 
 			/**赫卡缇亚 */
 			Hecatia: ['female', 'VirtualUnion', 3, ['naqi', 'shuangzhi', 'shouji']],

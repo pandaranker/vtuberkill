@@ -36,8 +36,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			// 	'group_RedC',
 			// ]
 		},
-		start: function () {
-			"step 0"
+		start: [() => {
 			var playback = localStorage.getItem(lib.configprefix + 'playback');
 			if (playback) {
 				Evt.finish();
@@ -74,8 +73,8 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 				testDrama: '测试剧本',
 				'Date:2X21': '筚路蓝缕',
 				'Date:2X21_info': `公元2021年初，冲蝗的号角不再响彻、鲸落的潮水也逐渐退去，
-				在摇摇欲坠的新科帝国治下，国V大陆一时间进入群雄割据、豪强并起、勃勃生机万物竞发的局面。<br>
-				新人的登场、老人的离去，国V大陆自古没有永恒的主，只有一轮又一轮的版本更新换代。然而，这份“传统”真的会延续下去吗？`,
+					在摇摇欲坠的新科帝国治下，国V大陆一时间进入群雄割据、豪强并起、勃勃生机万物竞发的局面。<br>
+					新人的登场、老人的离去，国V大陆自古没有永恒的主，只有一轮又一轮的版本更新换代。然而，这份“传统”真的会延续下去吗？`,
 			}
 			ui.strategyInfo = ui.create.system('战略模式', null, true);
 			lib.setPopped(ui.strategyInfo, function () {
@@ -100,77 +99,80 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 				uiintro.add(ui.create.div('.placeholder'));
 				return uiintro;
 			}, 250);
-			"step 1"
-			var bosslist = ui.create.div('#bosslist.hidden');
-			Evt.bosslist = bosslist;
-			_status.drama.bosslist = bosslist;
-			lib.setScroll(bosslist);
-			if (!lib.config.touchscreen && lib.config.mousewheel) {
-				bosslist._scrollspeed = 30;
-				bosslist._scrollnum = 10;
-				bosslist.onmousewheel = ui.click.mousewheel;
-			}
-			var onpause = function () {
-				ui.window.classList.add('bosspaused');
-			}
-			var onresume = function () {
-				ui.window.classList.remove('bosspaused');
-			}
-			game.onpause = onpause;
-			game.onpause2 = onpause;
-			game.onresume = onresume;
-			game.onresume2 = onresume;
-			ui.create.div(bosslist);
+		}, () => {
+			//创建横向列表
+			{
+				var bosslist = ui.create.div('#bosslist.hidden');
+				Evt.bosslist = bosslist;
+				_status.drama.bosslist = bosslist;
+				lib.setScroll(bosslist);
+				if (!lib.config.touchscreen && lib.config.mousewheel) {
+					bosslist._scrollspeed = 30;
+					bosslist._scrollnum = 10;
+					bosslist.onmousewheel = ui.click.mousewheel;
+				}
+				var onpause = function () {
+					ui.window.classList.add('bosspaused');
+				}
+				var onresume = function () {
+					ui.window.classList.remove('bosspaused');
+				}
+				game.onpause = onpause;
+				game.onpause2 = onpause;
+				game.onresume = onresume;
+				game.onresume2 = onresume;
+				ui.create.div(bosslist);
 
-			Evt.currentDrama = null;
-			for (let i in lib.characterPack.drama) {
-				let info = lib.characterPack.drama[i];
-				let player = ui.create.player(bosslist).init(i);
-				console.log(player)
-				player.node.hp.classList.add('text');
-				player.node.hp.dataset.condition = '';
-				player.node.hp.style.left = 'auto';
-				player.node.hp.innerHTML = info[5];
-				player.setIdentity(player.name);
-				player.node.identity.dataset.color = 'qun';
-				player.classList.add('bossplayer');
+				Evt.currentDrama = null;
+				for (let i in lib.characterPack.drama) {
+					let info = lib.characterPack.drama[i];
+					let player = ui.create.player(bosslist).init(i);
+					console.log(player)
+					player.node.hp.classList.add('text');
+					player.node.hp.dataset.condition = '';
+					player.node.hp.style.left = 'auto';
+					player.node.hp.innerHTML = info[5];
+					player.setIdentity(player.name);
+					player.node.identity.dataset.color = 'qun';
+					player.classList.add('bossplayer');
 
-				if (lib.storage.currentDrama == i) {
-					Evt.currentDrama = player;
-					player.classList.add('highlight');
-					if (!lib.config.continue_name_boss && lib.drama[i] && lib.drama[i].control) {
-						_status.dramaChoice = lib.drama[i].control();
-						_status.dramaChoice.name = i;
-						_status.dramaChoice.link = lib.drama[i].controlid || i;
+					if (lib.storage.currentDrama == i) {
+						Evt.currentDrama = player;
+						player.classList.add('highlight');
+						if (!lib.config.continue_name_boss && lib.drama[i] && lib.drama[i].control) {
+							_status.dramaChoice = lib.drama[i].control();
+							_status.dramaChoice.name = i;
+							_status.dramaChoice.link = lib.drama[i].controlid || i;
+						}
 					}
 				}
-			}
-			if (!Evt.currentDrama) {
-				Evt.currentDrama = bosslist.childNodes[1];
-				Evt.currentDrama.classList.add('highlight');
-			}
-			ui.create.div(bosslist);
-			ui.create.cardsAsync();
-			game.finishCards();
-			game.addGlobalSkill('autoswap');
-			ui.arena.setNumber(8);
-			ui.control.style.transitionProperty = 'opacity';
-			ui.control.classList.add('bosslist');
-			setTimeout(function () {
-				ui.control.style.transitionProperty = '';
-			}, 1000);
-
-			ui.window.appendChild(bosslist);
-
-			setTimeout(function () {
-				if (Evt.currentDrama) {
-					var left = Evt.currentDrama.offsetLeft - (ui.window.offsetWidth - 180) / 2;
-					if (bosslist.scrollLeft < left) {
-						bosslist.scrollLeft = left;
-					}
+				if (!Evt.currentDrama) {
+					Evt.currentDrama = bosslist.childNodes[1];
+					Evt.currentDrama.classList.add('highlight');
 				}
-				bosslist.show();
-			}, 200);
+				ui.create.div(bosslist);
+				ui.create.cardsAsync();
+				game.finishCards();
+				game.addGlobalSkill('autoswap');
+				ui.arena.setNumber(8);
+				ui.control.style.transitionProperty = 'opacity';
+				ui.control.classList.add('bosslist');
+				setTimeout(function () {
+					ui.control.style.transitionProperty = '';
+				}, 1000);
+
+				ui.window.appendChild(bosslist);
+
+				setTimeout(function () {
+					if (Evt.currentDrama) {
+						var left = Evt.currentDrama.offsetLeft - (ui.window.offsetWidth - 180) / 2;
+						if (bosslist.scrollLeft < left) {
+							bosslist.scrollLeft = left;
+						}
+					}
+					bosslist.show();
+				}, 200);
+			}
 			game.me = ui.create.player();
 			if (lib.config.continue_name_boss) {
 				Evt.noslide = true;
@@ -221,8 +223,8 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 				}
 				game.save('currentDrama', Evt.currentDrama.name);
 			}
-			"step 2"
-			if(lib.config.layout !== 'long2'){
+		}, () => {
+			if (lib.config.layout !== 'long2') {
 				lib.init.layout('long2', true)
 			}
 			game.stginfo = { ...lib.drama.global, ...lib.drama[Evt.currentDrama.name] }
@@ -232,23 +234,30 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			}, 500);
 
 
+
+			function createFaction(player, factionName, faction, position, diff?) {
+				player.initFaction(factionName, faction.chara.leader).animate('start')
+				player.dataset.position = position
+				player.style = `--transY:${game.factions.indexOf(player) + Math.random()*0.9};
+				--transX:${game.factions.indexOf(player) + Math.random()*0.8}`
+				console.log(player.style)
+				ui.arena.appendChild(player)
+			}
+
 			let currentDrama = lib.drama[lib.storage.currentDrama]
 			let currentFaction_name = result.links[0][2]
 			let currentFaction = currentDrama.factions[currentFaction_name]
-
-			function createFaction(player, factionName, faction, position) {
-				player.initFaction(factionName, faction.chara.leader).animate('start')
-				player.dataset.position = position
-				ui.arena.appendChild(player)
-			}
 			createFaction(game.me, currentFaction_name, currentFaction, 7)
 
 			ui.create.me(true);
-			// ui.fakeme = ui.create.div('.fakeme.avatar', ui.me);
-			// ui.handcards1 = game.me.node.handcards1;
-			// ui.handcards2 = game.me.node.handcards2;
-			// ui.handcards1Container.appendChild(ui.handcards1);
-			// ui.handcards2Container.appendChild(ui.handcards2);
+
+			let currentFactions_name = Object.keys(currentDrama.factions)
+			for(let name of currentFactions_name){
+				if(name===currentFaction_name)	continue;
+
+				let fact = currentDrama.factions[name]
+				createFaction(ui.create.player(), name, fact, 1)
+			}
 
 
 			// if (lib.config.continue_name_boss) {
@@ -278,8 +287,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			// 	game.bossinfo.init();
 			// }
 			delete lib.drama;
-			"step 3"
-			
+		}, () => {
 			if (ui.STG_start) {
 				let preUi = ui.STG_start
 				ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
@@ -303,7 +311,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			setTimeout(function () {
 				ui.updatehl();
 			}, 200);
-		},
+		}],
 		element: {
 			player: {
 				dieAfter: function () {
@@ -369,7 +377,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						lib.translate[`${factionName}_intro`] = `介绍`
 						lib.translate[`${factionName}_intro_info`] = lib.translate[`${factionName}_info`]
 					}
-					this.node.name.innerHTML = get.slimName(factionName);
+					this.node.name.innerHTML = get.slimName(`${factionName.slice(6)}2`);
 
 					if (true) {
 						let nameLength = this.node.name.querySelectorAll('br').length
@@ -622,11 +630,14 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 					}
 					else {
 						player.phase();
+						game.delayx()
 					}
 				}, () => {
 					let index = game.factions.indexOf(Evt.player)
 					if (index + 1 === game.factions.length) {
 						game.log('新的一个月开始~')
+						game.stg.mouthNext(_status.drama.watch)
+						game.delayx()
 						Evt.player = game.factions[0]
 					}
 					else {
@@ -926,7 +937,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			testDrama: {
 				situation: {
 					size: [[5, 12], [27, 34]],
-					show(){
+					show() {
 						if (ui.STG_start) {
 							let preUi = ui.STG_start
 							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy2')
@@ -955,8 +966,6 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						let height = (size[1][1] - size[0][1]) * 80
 						ui.canvas2.width = width
 						ui.canvas2.height = height
-						ui.chessMap.width = width
-						ui.chessMap.height = height
 
 						lib.situate.drama.init(dramas.testDrama)
 						lib.situate.drama.set('chessFunctions', chess.setChessFunctions(ui.chessMap, ui.dramaContainer, _status))
@@ -972,6 +981,8 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						ui.factionSearcher = ui.create.div('#map-faction-searcher', ui.mapSearcher)
 						lib.situate.control.setMapSearcher(ui.factionSearcher, { type: 'faction' })
 						lib.situate.control.setMapSearcher(ui.factionSearcher, { type: 'diplomacy' })
+
+						game.stg = lib.situate.control.resourceController()
 					},
 					hide: () => {
 						lib.situate.control.close()
@@ -982,12 +993,14 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						} else {
 							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
 						}
-						ui.factionSearcher.delete(10,()=>{
+						ui.factionSearcher.delete(10, () => {
 							ui.mapSearcher.delete(100, () => {
-								ui.mapMode.delete(100)
-								delete ui.mapMode
-								ui.mapZoom.delete(100)
-								delete ui.mapZoom
+								if(ui.mapMode){
+									ui.mapMode.delete(100)
+									delete ui.mapMode
+									ui.mapZoom.delete(100)
+									delete ui.mapZoom
+								}
 								ui.dramaContainer.delete(200, () => {
 									delete ui.dramaContainer
 									delete ui.chessMap
@@ -1119,6 +1132,36 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			你是否为了融入圈子而压抑着自己的个性呢？又或者因为无法隐藏自己的独特，而感到难以融入圈子呢？
 			有没有想过，某一天自己能在新的世界里以新的身份自由挥洒着光彩呢？<br>
 			这只从日本归来的神秘猫咪，在饱满地吸收了异国虚拟偶像的知识后，回到祖国建立了属于自己的全新社团——Red Circle！`,
+			VirtualUnion2: 'VirtualUnion',
+
+			MiyaFam2: 'MiyaFamily',
+			group_MiyaFam: "MF",
+			group_MiyaFam_bg: "弥",
+			group_MiyaFam_info: `难易度：困难<br><br>
+			百科：喵田弥夜Miya是一名活跃于b站上的个人势VUP，于2019年3月22日出道。<br>
+			背景：MF没有所谓的运营，目标是【像家人一样友好温馨的团体】。<br>
+			活动就是成员之间自己想如何互相约所以我个人认为不是社团，miya也不反对大家加入其它组织。<br>
+			MF的共同点是，大家都是miya做画师妈妈的孩子。不过因为有管不过来之类的原因miya当画师妈妈的孩子不一定属于MF。`,
+			bingtang2: '环冰糖圈',
+			group_bingtang: `冰糖`,
+			group_bingtang_bg: `糖`,
+			group_bingtang_info: `难易度：困难<br><br>
+			百科：冰糖（BT）是超电VUP所属的虚拟UP主和动画区UP主，前虚研社一期生成员，于2019年5月2日开始活动。<br>
+			（以及H萌团队成员、VirtuaReal与P-SP影之一期生、hololive中国影之无印的帕里pro和oveRidea成员、hoplive一期生）`,
+			azhun2: '天气阿准',
+			group_azhun: `阿准`,
+			group_azhun_bg: `准`,
+			group_azhun_info: `难易度：极难<br><br>
+			百科：阿准是由中国天气推出的专业虚拟天气主播，是一名天气爱好者，中国天气正式员工。<br>
+			在天气方面有不懂的可以随时来问她。`,
+			chidori2: '千鸟战队',
+			group_chidori: '千鸟',
+			ggroup_chidori_bg: `鸟`,
+			group_chidori_info: `难易度：极难<br><br>
+			百科：千鸟，又称千鸟战队，是位于中国大陆的虚拟UP主社团。<br>
+			背景：我们“千鸟战队”n(*≧▽≦*)n~今后会垂直于电子游戏领域，<br>
+			为大家提供许多有趣的游戏比赛直播、“游戏主题”的综艺节目以及更多与“游戏+虚拟偶像”特有的内容（整活了！整活了！），<br>
+			不久我们的直播小综艺就会跟大家见面了，敬请期待哦，也请大家多多关注我们今后的动态鸭♪就酱！ヾ(￣▽￣)Bye~Bye~`,
 		},
 		get: {
 			rawAttitude: function (from, to) {

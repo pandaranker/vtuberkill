@@ -2337,7 +2337,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			zhenxin: `真信之诚`,
 			zhenxin_info: `锁定技 防止你每回合首次对体力值小于你的角色造成的伤害；防止体力值大于你的角色每回合首次对你造成的伤害。`,
 			sczhuwei: `助危之心`,
-			sczhuwei_info: `其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可以移动你或其装备区的一张牌。`,
+			sczhuwei_info: `其他角色的结束阶段，若其手牌或体力为全场最少，其可以与你各摸一张牌，然后你可在你们之间移动装备区的一张牌。`,
 			sczhuwei_put_info: `令修女克蕾雅与你各摸一张牌，然后她可以移动你或其装备区的一张牌。`,
 
 			HonmaHimawari: `本间向日葵`,

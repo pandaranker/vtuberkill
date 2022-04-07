@@ -1369,6 +1369,8 @@ window.vk_asset_list=[
 	'image/character/KoinoyaMai.jpg',
 	//2022年4月新增的图片文件
 	'image/character/YumenoShiori.jpg',
+	'image/character/HiiragiMadoka.jpg',
+	'image/character/Joi.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

@@ -3412,7 +3412,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 					return Evt.player == player && !player.hasJudge('lebu') && (!player.hasUnknown(2) || !player.needsToDiscard());
 				},
 				content: [() => {
-					let next = player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌', true, function (card: any, player: any, target: { hp: number; }) {
+					player.chooseTarget('###『幻歌』###选择一名角色，摸取其体力值的牌', true, function (card: any, player: any, target: { hp: number; }) {
 						return target.hp != Infinity;
 					})
 						.set('ai', function (target: { hp: number; }) {
@@ -3424,7 +3424,6 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						player.logSkill('re_huange', result.targets);
 						player.draw(result.targets[0].hp);
 						player.$.re_huange_disc = result.targets[0];
-						player.markSkill('re_huange_disc');
 						player.addTempSkill('re_huange_disc');
 					}
 				}],
@@ -3444,17 +3443,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						content: [() => {
 							if (player.$.re_huange_disc.isIn() && player.countCards('he')) {
-								player.chooseCard('he', '###『幻歌』###弃置' + get.cnNumber(player.$.re_huange_disc.hp) + '张牌', player.$.re_huange_disc.hp, true, lib.filter.cardDiscardable);
-							} else {
-								Evt.goto(2);
+								player.chooseToDiscard('he', `###『幻歌』###弃置${get.cnNumber(player.$.re_huange_disc.hp)}张牌`, player.$.re_huange_disc.hp, true);
 							}
-						}, () => {
-							if (result.bool) {
-								player.discard(result.cards);
-							}
-						}, () => {
-							player.unmarkSkill('re_huange_disc');
-							delete player.$.re_huange_disc;
 						}],
 					}
 				},

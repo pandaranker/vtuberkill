@@ -4724,6 +4724,14 @@
         game.delay();
       }, function () {
         if (targets.length == 2) {
+          if (Evt.logSkill) {
+            if (typeof Evt.logSkill == 'string') {
+              player.logSkill(Evt.logSkill);
+            }
+            else if (Array.isArray(Evt.logSkill)) {
+              player.logSkill.apply(player, Evt.logSkill);
+            }
+          }
           player.choosePlayerCard('hej', true, function (button) {
             var player = _status.event.player;
             var targets0 = _status.event.targets0;
@@ -8822,10 +8830,10 @@
         }
         function checkEnglish(name) {
           let nameLength = name.querySelectorAll('br').length
-          if (nameLength === 0 && /^[A-z\d\.]+$/.test(name.innerHTML)) {
+          if (nameLength === 0 && /^[A-z\d\.\s]+$/.test(name.innerHTML)) {
             name.classList.add('English');
           }
-          if (nameLength >= 1 && name.classList.contains('English')) {
+          else if (nameLength >= 1 && name.classList.contains('English')) {
             name.classList.remove('English');
           }
         }

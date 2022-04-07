@@ -156,10 +156,9 @@
         }
 
         &:first-child {
-            width: auto;
+            width: 30%;
             height: auto;
             overflow: auto;
-            width: auto;
             font-size: 2.5vw;
             display: block;
             opacity: 1;
@@ -178,6 +177,7 @@
             height: auto;
 
             &:first-child {
+                transition-delay: .4s;
                 font-size: 2.6vw;
                 width: 5.5vw;
             }
@@ -316,6 +316,14 @@
     background-size: 100% 3px, 3px 100%, 3px 100%, 150px 100%, 100% 150px, 100% 100%;
     background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
     background-position: 0 0, 0 0, 100% 0;
+    #temp-canvas{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        z-index: 12;
+        pointer-events: none;
+    }
 }
 
 #arena .card.thrown {

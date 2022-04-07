@@ -151,7 +151,6 @@ module.exports = {
 		Tencent2: '腾讯',
 		lucca2: 'Lucca事务所',
 		RedC2: 'RedCircle',
-		MiyaFam2: 'Miya Family',
 		VirtualUnion2: 'virtual union',
 		double2: '多势力',
 		male: '男',
@@ -309,7 +308,6 @@ module.exports = {
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
 		group_painter: "画势力",
-		group_MiyaFam: "MF",
 		group_VirtualUnion: "VU",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
@@ -335,6 +333,5 @@ module.exports = {
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
 		group_painter_bg: "画",
-		group_MiyaFam_bg: "弥",
 	}
 }
