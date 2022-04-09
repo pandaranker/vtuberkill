@@ -55,7 +55,7 @@ export default {
     yixiang_info: `准备阶段，你可以翻面并令一名角色回复已损失的体力值，本回合结束时，其展示手牌，每缺少一种类型，其失去 1 点体力，你摸 1 张牌。`,
     xianyu: `衔鱼`,
     xianyu2: `衔鱼`,
-    xianyu_info: `游戏开始时，你可以指定一名角色，你失去体力时，其摸牌至上限；
+    xianyu_info: `游戏开始时，你可以指定一名角色，当你失去体力后，其摸牌至上限；
     你或其死亡时，对方重置且翻至正面。`,
 
     TEST: `测试员`,
@@ -203,7 +203,7 @@ export default {
     ming_pianchao: `片超`,
     pianchao: `片超`,
     pianchao_phaseUseBy: `片超`,
-    pianchao_info: `你体力流失后，可以亮出两张手牌并获得1点护甲；当你弃置亮出的手牌时，可以使用其中一张，并于此额定阶段结束后进行一个额外的出牌阶段。`,
+    pianchao_info: `当你失去体力后，你可以亮出两张手牌并获得1点护甲；当你弃置亮出的手牌时，可以使用其中一张，并于此额定阶段结束后进行一个额外的出牌阶段。`,
 
     shenxiaoya: `申䒕雅`,
     xyshixi: `实习`,
@@ -331,7 +331,7 @@ export default {
 
     NatsumiMoe: `夏实萌惠`,
     moemanyi: `满溢`,
-    moemanyi_info: `锁定技 你的攻击范围为全场最高/最低时，不能成为延时锦囊牌/黑色【杀】的目标。`,
+    moemanyi_info: `锁定技 你的攻击范围为全场最高/最低时，不能成为延时锦囊牌/红色【杀】的目标。`,
     cuchuan: `粗串`,
     cuchuan_info: `摸牌阶段，你可以放弃摸牌，改为令距离为1的角色各摸一张牌，然后你获得这些角色各一张牌。`,
 
@@ -950,6 +950,15 @@ export default {
     gumei: `古寐`,
     gumei_info: `你使用锦囊牌时，可以令一名角色横置或重置，若其武将牌周围有牌，则改为摸一张牌。`,
 
+    Sayako: `纱耶sayako`,
+    Sayako_ab: `纱耶`,
+    zhichu: `稚楚`,
+    zhichu_info: `出牌阶段限一次，你可以无视距离与次数限制使用一张牌，若此牌造成了伤害，你弃置一至三张手牌并令目标各摸等量牌。`,
+    yunxiang: `云祥`,
+    yunxiang_info: `其他角色弃置牌后，若弃牌数多于你的手牌数，你可以使用其中一张。`,
+    mingman: `命满`,
+    mingman_info: `锁定技。若你没有手牌，你摸牌量和造成的伤害+1。`,
+
 
     zhugeaixi: `诸葛哀汐`,
     kaituan: `开团`,
@@ -1034,7 +1043,7 @@ export default {
 
     HiiragiMadoka: `柊真华`,
     huage: `华歌`,
-    huage_info: `锁定技 你每使用或打出：<br>
+    huage_info: `锁定技 一个轮次内，你每使用或打出：<br>
     1.四张不同花色的牌，获得一张【酒】、一张【杀】<br>
     2.三张相同花色的牌，获得一张【决斗】、一张【杀】`,
     yayin: `雅饮`,

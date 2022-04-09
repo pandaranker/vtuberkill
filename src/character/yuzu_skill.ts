@@ -1493,9 +1493,9 @@ export default {
                     name: '魇窥',
                     content(storage, player) {
                         let str = '<ul style="padding-top:0;margin-top:0"><p>本轮次已弃置的牌类型</p>';
-                        for (let i = 0; i < storage.length; i++) {
-                            str += '<li>' + get.$t(storage[i]);
-                        }
+                        storage.forEach(v => {
+                            str += `<li>${get.$t(v)}`;
+                        })
                         str += '</ul>'
                         return str;
                     },
@@ -2797,14 +2797,9 @@ export default {
         check(card) {
             return 7 - get.value(card);
         },
-        //		selectTarget:-1,
-        //		filterTarget(card,player,target){
-        //			return player==target;
-        //		},
         discard: false,
         visible: true,
         toStorage: true,
-        //		prepare:'give',
         content: [() => {
             player.$give(cards, player, false);
             player.markAuto('tianyi', cards);
@@ -5269,6 +5264,7 @@ export default {
                 for (let i of card.cards) {
                     if (!i.hasGaintag('ming_niwei')) return;
                 }
+                if (range[0] == -1) range[0] = 1;
                 if (range[1] == -1) range[1] = 1;
             },
             targetInRange(card, player, target, now) {
@@ -9407,6 +9403,72 @@ export default {
         }
     },
 
+    //纱耶sayako 
+    zhichu: new toSkill('active', {
+        usable: 1,
+        filter(Evt, player) {
+            return player.countCards('hs', card => player.hasUseTarget(card, false, false))
+        },
+        position: 'hs',
+        filterCard(card, player) {
+            return player.hasUseTarget(card, false, false);
+        },
+        filterTarget(card, player, target) {
+            return player.canUse(card, target, false, false)
+        },
+        selectTarget: lib.filter.selectTarget,
+        discard: false,
+        lose: false,
+        delay: false,
+        multitarget: true,
+        content: [() => {
+            Evt.usedCard = player.useCard(cards, targets)
+        }, () => {
+            if (game.countPlayer(cur => cur.hasHistory('damage', evt => evt.getParent(2) === Evt.usedCard))) {
+                player.chooseToDiscard([1, 3], true, '『稚楚』请弃置1~3张牌', `${get.$t(targets)}将摸等量牌`)
+                console.log(targets)
+            }
+            else Evt.finish()
+        }, () => {
+            if (result.cards) {
+                game.asyncDraw(targets, result.cards.length)
+            }
+        }],
+        ai: {
+            order: 1,
+            result: {
+                player(player) {
+                    if (player.countCards('h') >= 3) return 0.5;
+                    return 0;
+                },
+            }
+        }
+    }),
+    yunxiang: new toSkill('trigger', {
+        filter(Evt, player) {
+            let cards = (Evt.cards2 || Evt.cards).filterInD('d')
+            return Evt.player != player && cards.length > player.countCards()
+                && cards.filter(card => player.hasUseTarget(card)).length
+        },
+        content: [() => {
+            Evt.cards = (trigger.cards2 || trigger.cards).filterInD('d');
+            player.chooseCardButton(Evt.cards, get.$pro2('yunxiang'), function (button) {
+                return _status.event.player.hasUseTarget(card)
+            })
+        }, () => {
+            if (result.bool && result.links) {
+                player.chooseUseTarget(result.links[0], true, false)
+            }
+        }],
+    }).setT({ global: 'discardEnd' }),
+    mingman: new toSkill('trigger', {
+        filter(Evt, player) {
+            return player.countCards() === 0
+        },
+        content() {
+            trigger.num++;
+        },
+    }, 'forced').setT({ player: 'drawBegin', source: 'damageBegin1' }),
     //诸葛哀汐
     kaituan: new toSkill('regard', {
         viewAs: { name: 'guohe' },
@@ -9420,7 +9482,6 @@ export default {
     }, 'enable:chooseToUse'),
     gehuang: new toSkill('trigger', {
         filter(Evt, player) {
-            console.log(Evt)
             return get.type2(Evt.card) === 'trick';
         },
         intro: { content: '鸽簧：#' },
@@ -10203,6 +10264,7 @@ export default {
             Evt.check1 = check1
             Evt.check2 = check2
             player.$.huage[Evt.suit]++
+            player.markSkill('huage')
         }, () => {
             if (Evt.check1) {
                 let card1 = get.cardPile(function (card) { return card.name == 'jiu' }, ['cardPile', 'discardPile']);
@@ -10225,7 +10287,29 @@ export default {
                     player.gain(gainedCards, 'draw', 'log');
                 }
             }
-        }]
+        }],
+        intro: {
+            content(storage, player) {
+                let str = '<ul style="padding-top:0;margin-top:0"><p>本轮次记录的花色-牌数</p>';
+                for (let v in storage) {
+                    str += `<li>${get.$t(v)}牌-${get.$t(storage[v])}张`;
+                }
+                str += '</ul>'
+                return str;
+            },
+        },
+        group: 'huage_clear',
+        subSkill: {
+            clear: new toSkill('rule', {
+                popup: false,
+                content() {
+                    for (let v in player.$.huage) {
+                        player.$.huage[v] = 0
+                    }
+                    player.unmarkSkill('huage')
+                }
+            }, 'forced', 'silent').setT({ global: 'roundEnd' })
+        }
     }, 'forced').setT(['useCard', 'respond']).setI({ heart: 0, diamond: 0, club: 0, spade: 0 }),
     yayin: new toSkill('regard', {
         priority: 3,
@@ -10241,7 +10325,10 @@ export default {
                 if (card.name === 'jiu') return Infinity;
             },
             selectTarget(card, player, range) {
-                if (card.name === 'jiu' && _status.event.type !== 'dying' && range[1] == -1) range[1] = 1;
+                if (card.name === 'jiu' && _status.event.type !== 'dying') {
+                    if (range[0] == -1) range[0] = 1;
+                    if (range[1] == -1) range[1] = 1;
+                }
             },
             cardSavable(card, player) {
                 if (card.name === 'jiu') return true;
@@ -16578,7 +16665,7 @@ export default {
                         return false;
                     }
                 }
-                if (get.name(card) == 'sha' && get.color(card) == 'black') {
+                if (get.name(card) == 'sha' && get.color(card) == 'red') {
                     if (!game.countPlayer(cur => {
                         return cur.isIn() && cur !== target && cur.getAttackRange() < target.getAttackRange()
                     })) {
@@ -19183,16 +19270,13 @@ export default {
                 }]
             }).setT({ global: 'phaseEnd' }),
             clear: new toSkill('rule', {
-                trigger: { global: 'phaseAfter' },
                 priority: 23,
-                forced: true,
-                silent: true,
                 popup: false,
                 content() {
                     player.$.tage = 0;
                     player.unmarkSkill('tage');
                 }
-            })
+            }, 'forced', 'silent').setT({ global: 'phaseAfter' })
         }
     }).setT({ global: 'useCardAfter' }).setI(0),
     //神宫司玉藻
@@ -19384,7 +19468,7 @@ export default {
                         return card == _status.event.ya;
                     })
                     .set('ya', Evt.ya)
-                    .set('prompt', '是否使用【' + get.$t(Evt.ya) + '】？')
+                    .set('prompt', `是否使用【${get.$t(Evt.ya)}】？`)
             }
         }],
         group: ['ya', 'yuanhua_drawBy'],

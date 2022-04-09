@@ -23396,7 +23396,7 @@ module.exports = {
           popup: false,
           firstDo: true,
           content: [function () {
-            if ((player == _status.roundStart || _status.roundSkipped) && !trigger.skill) {
+            if ((player == _status.roundStart || _status.roundSkipped) && !trigger.skill && game.roundNumber > 0) {
               Evt.trigger('roundEnd');
             }
           },

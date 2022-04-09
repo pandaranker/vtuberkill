@@ -436,6 +436,25 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 			},
+			rm_huxinjing:{
+				fullskin:true,
+				type:"equip",
+				subtype:"equip2",
+				skills:['rm_huxinjing'],
+				filterTarget:function(card,player,target){
+					if(get.mode()!='guozhan') return true;
+					return player==target;
+				},
+				selectTarget:function(){
+					return get.mode()=='guozhan'?-1:1;
+				},
+				toself:false,
+				ai:{
+					basic:{
+						equipValue:6
+					},
+				},
+			},
 			rm_liulongcanjia: {
 				audio: true,
 				mode: ['guozhan'],
@@ -1498,6 +1517,29 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 					player.gainPlayerCard(trigger.player, 'h', true);
 				},
 			},
+			rm_huxinjing:{
+				equipSkill:true,
+				trigger:{player:'damageBegin4'},
+				// forced:true,
+				filter:function(event,player){
+					if(player.hasSkillTag('unequip2')) return false;
+					if(event.source&&event.source.hasSkillTag('unequip',false,{
+						name:event.card?event.card.name:null,
+						target:player,
+						card:event.card
+					})) return false;
+					if(get.mode()!='guozhan'&&event.num>1) return true;
+					return event.num>=player.hp;
+				},
+				content:function(){
+					trigger.cancel();
+					var e2=player.getEquip('rm_huxinjing');
+					if(e2){
+						player.discard(e2);
+					}
+					player.removeSkill('rm_huxinjing');
+				}
+			},
 			rm_liulongcanjia: {
 				equipSkill: true,
 				mod: {
@@ -1639,6 +1681,10 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 			rm_feilongduofeng2: '飞龙夺凤',
 			rm_feilongduofeng3: '飞龙夺凤',
 			rm_feilongduofeng_info: '当你使用【杀】指定一名角色为目标后，你可令该角色弃置一张牌。当你使用【杀】令其他角色进入濒死状态时，你可以获得其一张手牌。',
+			rm_huxinjing_bg:'镜',
+			rm_huxinjing:'护心镜',
+			rm_huxinjing_info:'此牌可对其他角色使用。当你受到伤害时，若伤害值大于1或大于等于你的体力值，则你可以将【护心镜】置入弃牌堆，然后防止此伤害。',
+			rm_huxinjing_info_guozhan:'当你受到伤害时，若伤害值大于或等于你的体力值，则你可以将【护心镜】置入弃牌堆，然后防止此伤害。',
 			rm_liulongcanjia: '六龙骖驾',
 			rm_liulongcanjia_info: '锁定技 你计算与其他角色的距离-1，其他角色计算与你的距离+1。</br>锁定技 当此牌进入你的装备区时，你弃置你装备区内其他坐骑牌；当此牌在你的装备区内，你不能使用其他坐骑牌（你的装备区便不能置入其他坐骑牌）。',
 			rm_jingfanma_bg:'-马',

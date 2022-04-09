@@ -1371,6 +1371,7 @@ window.vk_asset_list=[
 	'image/character/YumenoShiori.jpg',
 	'image/character/HiiragiMadoka.jpg',
 	'image/character/Joi.jpg',
+	'image/character/Sayako.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

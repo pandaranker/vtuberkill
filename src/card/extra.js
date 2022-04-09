@@ -543,7 +543,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					});
 					players.sort(lib.sort.seat);
 					var choice=players[0];
-					var next=player.chooseTarget('是否移动木牛流马？',function(card,player,target){
+					var next=player.chooseTarget('是否移动【拉普拉斯】？',function(card,player,target){
 						return !target.isMin()&&player!=target&&target.isEmpty(5);
 					});
 					next.set('ai',function(target){

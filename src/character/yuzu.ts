@@ -87,6 +87,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**云玉鸾 */
 			yunyuluan: ['female', 'lucca', 4, ['jiujiu', 'qitong'], ['guoV']],
 
+			/**纱耶sayako */
+			Sayako: ['female', 'qun', 4, ['zhichu', 'yunxiang', 'mingman'], ['guoV']],
 			/**杜松子 */
 			dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
 			/**无理 */
