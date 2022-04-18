@@ -231,60 +231,39 @@ export default {
             console.log(trigger);
         }
     },
-    juhun: {
+    juhun: new toSkill('trigger', {
         trigger: { global: 'damageAfter' },
         forced: true,
         usable: 1,
         content() {
-            Evt.card = get.cards()[0];
-            if (!player.$.juhun) player.$.juhun = [];
-            game.cardsGotoSpecial(Evt.card);
-            player.$gain2(Evt.card);
-            player.markAuto('juhun', [Evt.card]);
-            // player.showCards(player.$.juhun,'聚魂');
-            // player.markSkill('juhun');
+            Evt.cards = get.cards();
+            player.addToExpansion(Evt.cards, 'draw').gaintag.add('junhun_mark');
         },
-        intro: {
-            content: 'cards',
-            onunmark: 'throw',
-        },
-        cardAround: true,
-        group: ['juhun_get'],
+        group: ['juhun_get', 'juhun_mark'],
         subSkill: {
-            get: {
+            mark: new toSkill('mark', {
+                intro: {
+                    content: 'expansion',
+                    markcount: 'expansion',
+                },
+                onremove: function (player, skill) {
+                    var cards = player.getExpansions(skill);
+                    if (cards.length) player.loseToDiscardpile(cards);
+                },
+            }, 'locked'),
+            get: new toSkill('trigger', {
                 trigger: {
                     global: 'roundStart'
                 },
-                direct: true,
                 filter(Evt, player) {
-                    return player.$.juhun != undefined && player.$.juhun.length != 0;
+                    return player.getExpansions('junhun_mark').length != 0;
                 },
                 content() {
-                    // player.$.juhun.forEach(function(c) {
-                    // 	player.gain(c);
-                    // });
-                    'step 0'
-                    player.gain(player.$.juhun);
-                    player.$give(player.$.juhun, player, false);
-                    delete player.$.juhun;
-                    'step 1'
-                    player.unmarkSkill('juhun');
+                    player.gain(player.getExpansions('junhun_mark'), player, 'give', 'log', 'fromStorage');
                 }
-            },
-            // draw:{
-            // 	trigger:{
-            // 		player:'phaseDrawBegin'
-            // 	},
-            // 	direct:true,
-            // 	filter(Evt,player){
-            // 		return !Evt.numFixed&&player.isMaxHandcard(false);
-            // 	},
-            // 	content(){
-            // 		trigger.num--;
-            // 	},
-            // }
+            }, 'forced'),
         }
-    },
+    }),
     meilu: {
         trigger: {
             player: 'phaseBegin'
@@ -296,41 +275,21 @@ export default {
         content() {
             player.turnOver();
         },
-        group: ['meilu_kill', 'meilu_draw'],
+        mod: {
+            cardUsable(card, player, num) {
+                if (card.name == 'sha' && player.isTurnedOver()) return Infinity;
+            }
+        },
+        group: ['meilu_drawBy'],
         subSkill: {
-            kill: {
-                firstDo: true,
-                trigger: { player: 'phaseUseBefore' },
-                forced: true,
-                filter(Evt, player) {
-                    return player.classList.contains('turnedover');
-                },
-                content() {
-                    trigger.audioed = true;
-                    player.markSkill('meilu');
-                    player.addTempSkill('meilu_infinityKill', 'phaseUseEnd');
-                },
-            },
-            draw: {
+            drawBy: new toSkill('trigger', {
                 trigger: { player: 'turnOverAfter' },
-                forced: true,
-                filter(Evt, player) {
-                    return !player.classList.contains('turnedover');
-                },
                 content() {
                     if (player.hp < player.maxHp) {
-                        player.markSkill('meilu');
                         player.recover();
                     }
                 },
-            },
-            infinityKill: {
-                mod: {
-                    cardUsable(card, player, num) {
-                        if (card.name == 'sha') return Infinity;
-                    }
-                }
-            }
+            }, 'forced'),
         }
     },
     liaolishiyan: {
@@ -1468,40 +1427,34 @@ export default {
             lose: {},
         }
     },
-    yong: {
-        init(player) {
-            if (!player.$.yong) {
-                player.$.yong = [];
-            }
-        },
-        locked: true,
-        notemp: true,
-        marktext: '咏',
+    yong: new toSkill('mark', {
         intro: {
-            content: 'cards',
-            onunmark: 'throw',
+            content: 'expansion',
+            markcount: 'expansion',
         },
-        cardAround: true
-    },
-    yemuxingyong: {
+        onremove: function (player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) player.loseToDiscardpile(cards);
+        },
+    }, 'locked'),
+    yemuxingyong: new toSkill('trigger', {
         audio: 3,
         round: 1,
         trigger: {
             global: 'phaseDiscardAfter',
         },
         filter(Evt, player) {
-            if (Evt.player.isIn()) {
-                var find = false;
-                Evt.player.getHistory('lose', evt => {
-                    return evt.type == 'discard' && evt.getParent('phaseDiscard') == Evt && evt.hs.filterInD('d').length > 0;
-                }).forEach(function (arr) {
-                    if (arr.cards != undefined) arr.cards.forEach(function (c) {
-                        find = true;
-                    })
-                });
-                return find;
-            }
-            return false;
+            var cards = [];
+            game.getGlobalHistory('cardMove', evt => {
+                if (evt.name == 'cardsDiscard' && evt.getParent('phaseDiscard') == Evt) cards.addArray(evt.cards.filterInD('d'));
+            });
+            game.countPlayer2(cur => {
+                cur.getHistory('lose', evt => {
+                    if (evt.type != 'discard' || evt.getParent('phaseDiscard') != Evt) return;
+                    cards.addArray(evt.cards.filterInD('d'));
+                })
+            });
+            return cards.length;
         },
         check(Evt, player) {
             return Evt.cards.length > 1;
@@ -1519,28 +1472,18 @@ export default {
                 })
             });
             Evt.cards = cards;
-            if (Evt.cards.length) {
-                game.cardsGotoSpecial(Evt.cards);
-            }
-            else {
-                Evt.finish();
-            }
             'step 1'
-            player.$.yong = player.$.yong.concat(Evt.cards);
-            player.showCards(player.$.yong, '夜幕星咏');
-            player.syncStorage('yong');
-            player.markSkill('yong');
-            "step 2"
+            player.addToExpansion(Evt.cards, 'gain2').gaintag.add('yong');
             Evt.players = game.filterPlayer(cur => {
                 return cur != player && cur.countCards('he') > 0;
             });
             Evt.players.sortBySeat(player);
             if (!Evt.players.length) {
-                player.showCards(player.$.yong, "咏");
+                player.showCards(player.getExpansions('yong'), "咏");
                 game.delayx();
                 Evt.finish();
             }
-            "step 3"
+            "step 2"
             player.line(Evt.players, 'green');
             player.chooseCardOL(Evt.players, 'he', { color: 'black' }, '可将一张黑色牌置于' + get.translation(player) + '武将牌上')
                 .set('ai', card => {
@@ -1559,45 +1502,43 @@ export default {
                     delete Evt.player;
                     return { bool: true, cards: [hs[0]] };
                 };
-            "step 4"
+            "step 3"
             for (var i = 0; i < result.length; i++) {
                 if (result[i].bool && result[i].cards) {
-                    var card = result[i].cards[0];
-                    Evt.players[i].lose(card, ui.special, 'toStorage');
-                    player.$.yong.push(card);
-                    Evt.players[i].$give(card, player, false);
+                    let cards = result[i].cards.slice(0);
+                    player.addToExpansion(cards, 'give', Evt.players[i]).gaintag.add('yong');
                 }
             }
-            'step 5'
-            player.showCards(player.$.yong, '夜幕星咏');
-            player.syncStorage('yong');
-            player.markSkill('yong');
+            'step 4'
+            player.showCards(player.getExpansions('yong'), "咏");
         },
+        mod: {
+            maxHandcard(player, num) {
+                if (player.awakenedSkills.contains('xinghejianduei')) {
+                    return num + player.getExpansions('yong').length;
+                }
+            },
+            attackFrom(from, to, distance) {
+                if (from.awakenedSkills.contains('xinghejianduei')) {
+                    return distance - from.getExpansions('yong').length;
+                }
+            },
+        },
+        involve: ['xinghejianduei', 'guohe', 'jiu'],
         group: ['yong', 'yemuxingyong_use'],
         subSkill: {
             use: {
                 audio: 'cansha',
                 enable: 'phaseUse',
                 filter(Evt, player) {
-                    if (!player.$.yong.length) {
-                        return false;
-                    }
-                    return true;
+                    return player.getExpansions('yong').length;
                 },
                 content() {
                     'step 0'
-                    player.chooseButton(['选择一张咏', player.$.yong], 1);
+                    player.chooseButton(['选择一张咏', player.getExpansions('yong')], 1);
                     'step 1'
                     if (result.bool) {
-                        var card = result.links[0];
-                        player.gain(result.links, 'fromStorage');
-                        player.$.yong.remove(card);
-                        player.syncStorage('yong');
-                        player.markSkill('yong');
-                        player.$give(card, player, false);
-                        if (!player.$.yong.length) {
-                            player.unmarkSkill('yong');
-                        }
+                        player.gain(result.links, player, 'give', 'log', 'fromStorage');
                     }
                     else Evt.finish();
                     'step 2'
@@ -1650,8 +1591,8 @@ export default {
                 },
             },
         }
-    },
-    xinghejianduei: {
+    }),
+    xinghejianduei: new toSkill('trigger', {
         skillAnimation: true,
         animationColor: 'thunder',
         juexingji: true,
@@ -1660,31 +1601,15 @@ export default {
             global: 'roundStart'
         },
         filter(Evt, player) {
-            return !player.$.xinghejianduei && player.hp <= game.roundNumber;
+            return player.hp <= game.roundNumber;
         },
-        forced: true,
         content() {
             player.loseMaxHp();
             player.draw(8);
-            // player.draw(10 - player.countCards('h'));
-            player.addSkill('xinghejianduei_juexing');
             player.awakenSkill(Evt.name);
             player.storage[Evt.name] = true;
         },
-        subSkill: {
-            juexing: {
-                mod: {
-                    maxHandcard(player, num) {
-                        return num + player.$.yong.length;
-                    },
-                    attackFrom(from, to, distance) {
-                        return distance - from.$.yong.length;
-                    },
-                }
-            }
-        }
-    },
-
+    }, 'forced'),
     //夸
     kuali: {
         audio: 4,
@@ -2475,7 +2400,7 @@ export default {
         },
         group: ['shenhai_jiesuan', 'shenhai_clear'],
         subSkill: {
-            jiesuan: new toSkill('rule',{
+            jiesuan: new toSkill('rule', {
                 priority: 42,
                 filter(Evt, player) {
                     if (get.type(Evt.card) == 'delay') return false;
@@ -2485,15 +2410,15 @@ export default {
                     let card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
                     player.useCard(card, (trigger._targets || trigger.targets).slice(0), trigger.cards).skill = trigger.skill || 'shenhai_jiesuan';
                 }
-            },'direct').setT('useCardAfter').setI([]),
-            clear: new toSkill('rule',{
+            }, 'direct').setT('useCardAfter').setI([]),
+            clear: new toSkill('rule', {
                 priority: 42,
                 content() {
                     player.unmarkSkill('shenhai');
                     player.$.shenhai_jiesuan.length = 0;
                     player.$.shenhai = 0;
                 }
-            },'locked','direct','silent').setT('phaseEnd')
+            }, 'locked', 'direct', 'silent').setT('phaseEnd')
         }
     }, 'frequent').setI(0),
     paomo: new toSkill('trigger', {

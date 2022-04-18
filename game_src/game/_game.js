@@ -81,6 +81,7 @@ module.exports = {
                         es: [],
                         js: [],
                         ss: [],
+                        xs: [],
                         cards: [],
                         cards2: [],
                     };
@@ -90,11 +91,12 @@ module.exports = {
                             map.es.addArray(evt.es);
                             map.js.addArray(evt.js);
                             map.ss.addArray(evt.ss);
+                            map.xs.addArray(evt.xs);
                             map.cards.addArray(evt.cards);
                             map.cards2.addArray(evt.cards2);
                         }
                     });
-                    if (map.cards.length > 0 || map.ss.length > 0) return map;
+                    if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
                 };
                 if (arg && get.is.object(arg)) {
                     for (var i in arg) next[i] = arg[i];
@@ -1264,8 +1266,8 @@ module.exports = {
                 _status.video = true;
                 clearTimeout(_status.timeout);
 
-                for (var i in lib.characterPack) {
-                    for (var j in lib.characterPack[i]) {
+                for (let i in lib.characterPack) {
+                    for (let j in lib.characterPack[i]) {
                         lib.character[j] = lib.character[j] || lib.characterPack[i][j];
                     }
                 }
@@ -5201,7 +5203,7 @@ module.exports = {
                     args[i] = arguments[i];
                 }
                 if ((args.length == 0 || args.contains('card')) && _status.event.player) {
-                    var cards = _status.event.player.getCards('hejs');
+                    var cards = _status.event.player.getCards('hejsx');
                     for (j = 0; j < cards.length; j++) {
                         cards[j].classList.remove('selected');
                         cards[j].classList.remove('selectable');

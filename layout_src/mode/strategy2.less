@@ -183,12 +183,24 @@
             }
         }
     }
+    
+    &.removing{
+        >div {
+            transition: none !important;
+        }
+    }
 }
 
 #map-searcher {
     position: flex;
     right: 8vw;
     top: 10vh;
+
+    &.removing{
+        div {
+            transition: none !important;
+        }
+    }
 
 }
 

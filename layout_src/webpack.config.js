@@ -21,7 +21,7 @@ let commonCssLoader = [
 ]
 module.exports = {
   entry: {
-    default:'./default/layout.js',
+    default: './default/layout.js',
     long: './long/layout.js',
     long2: './long2/layout.js',
     mobile: './mobile/layout.js',
@@ -32,7 +32,7 @@ module.exports = {
     strategy2: './mode/strategy2.js'
   },
   output: {
-    filename: (pathData)=>['boss','strategy1','strategy2'].includes(pathData.chunk.name)?'mode/[name]layoutTemp.js':'[name]/layoutTemp.js',
+    filename: (pathData) => ['boss', 'strategy1', 'strategy2'].includes(pathData.chunk.name) ? 'mode/[name]layoutTemp.js' : '[name]/layoutTemp.js',
     path: resolve(__dirname, '..', 'layout')
   },
   module: {
@@ -64,7 +64,7 @@ module.exports = {
     ]
   },
   plugins: [new MiniCssExtractPlugin({
-    filename: (pathData)=>['boss','strategy1','strategy2'].includes(pathData.chunk.name)?'mode/[name].css':'[name]/layout.css',
+    filename: (pathData) => ['boss', 'strategy1', 'strategy2'].includes(pathData.chunk.name) ? 'mode/[name].css' : '[name]/layout.css',
   })],
   // mode: 'development',
   mode: 'production',

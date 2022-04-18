@@ -1179,7 +1179,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 								else {
 									this.classList.add('bluebg');
 								}
-								num = get.config('choice_' + link);
+								num = get.config(`choice_${link}`);
 								if (event.zhongmode) {
 									num = 6;
 									if (link == 'zhu' || link == 'nei' || link == 'mingzhong') {
@@ -1193,6 +1193,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 									dialog.content.insertBefore(buttons, node);
 									buttons.animate('start');
 									node.remove();
+									dialog.updateForcebutton();
 									game.uncheck();
 									game.check();
 									for (var i = 0; i < seats.childElementCount; i++) {

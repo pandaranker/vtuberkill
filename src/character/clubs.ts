@@ -71,7 +71,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**张京华 */
 			zhangjinghua: ['male', 'qun', 3, ['xiemen', 'jiai']],
 			/**NoiR */
-			NoiR: ['female', 'qun', 3, ['mozouqiyin', 'budingpaidui']],
+			NoiR: ['female', 'singer', 3, ['mozouqiyin', 'budingpaidui']],
 			/**晴步子 */
 			Bafuko: ['female', 'qun', 4, ['shangsheng', 'jinghua']],
 			/**阳向心美 */
@@ -117,11 +117,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Silvervale: ['female', 'vshojo', 4, ['yingling', 'duchun'], ['yingV']],
 
 			/**陆鳐 */
-			luyao: ['female', 'qun', 4, ['manyou', 'changjie'], ['guoV']],
+			luyao: ['female', 'singer', 4, ['manyou', 'changjie'], ['guoV']],
 			/**林莉奈 */
-			RinaHayashi: ['female', 'qun', 3, ['xilv', 'bana'], ['guoV']],
+			RinaHayashi: ['female', 'singer', 3, ['xilv', 'bana'], ['guoV']],
 			/**清则子 */
-			qingzezi: ['female', 'qun', 4, ['menghuan', 'gengu'], ['guoV']],
+			qingzezi: ['female', 'singer', 4, ['menghuan', 'gengu'], ['guoV']],
 			/**菜菜姐 */
 			caicai: ['female', 'qun', 5, ['tibing', 'guangtui'], ['guoV']],
 			/**笙歌 */
@@ -220,8 +220,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			KaguraMea: `神乐めあ`,
 			luecai: `掠财`,
-			luecai_info: `出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。
-			准备阶段，若你的武将牌上有「财布」，你可以移去任意数量的「财布」摸等量的牌。`,
+			luecai_info: `出牌阶段限一次，你可以将手牌数大于你的角色的一张牌置于你的武将牌上，或令一名手牌数小于你的角色将一张牌置于你的武将牌上，称为「财布」。<br>
+			准备阶段，若你的武将牌上有「财布」，你可以弃置任意张「财布」摸等量的牌。`,
 			luecai_append: lib.figurer(`特性：顺手牵咩`),
 			xiaoyan: `嚣言`,
 			xiaoyan_info: `锁定技 你对手牌数小于你的角色使用牌不可被响应。当你造成或受到伤害时，若有花色与来源牌相同的「财布」，此伤害+1。`,
@@ -266,7 +266,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			DDzhanshou_append: lib.figurer(`特性：连营 破军`),
 			xinluezhili: `辛略之力`,
 			xinluezhili_draw: `辛略之力`,
-			xinluezhili_info: `主公技 当其他角色因『DD斩首』失去最后一张手牌时，其可令你摸一张牌。`,
+			xinluezhili_info: `主公技 你的回合内，其他角色失去最后一张手牌时，其可令你摸一张牌。`,
 
 			HanazonoSerena: `花园Serena`,
 			HanazonoSerena_ab: `花园セレナ`,
@@ -274,7 +274,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			jiumao: `啾猫`,
 			jiumao_put: `啾猫`,
 			jiumao_info: `每名角色于出牌阶段限一次，可将任意张手牌置于你武将牌上，称为「猫粮」。<br>
-			每回合限一次，你可将「猫粮」如手牌般使用或打出。`,
+			每回合限三次，你可将「猫粮」如手牌般使用或打出。`,
 			jiumao_append: lib.figurer(`特性：联动`),
 			enfan: `恩返`,
 			enfan_info: `你令其他角色脱离濒死状态时，可以交给其任意数量的「猫粮」，然后若其手牌数与你相同，其可以视为使用一张你的「猫粮」。`,
@@ -306,7 +306,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			XiaDi: `下地`,
 			yinliu: `引流`,
 			yinliu_info: `出牌阶段限一次，你可以弃置至多三张牌，然后摸牌并展示直到出现了你弃置牌未包含的花色为止。若你以此法弃置了所有手牌，本回合结束时你可再次发动此技能。`,
-			yinliu_append: lib.figurer(`特性：赌狗`),
+			yinliu_append: lib.figurer(`特性：赌怪`),
 			dunzou: `遁走`,
 			dunzou_info: `你于其他角色的回合被♣牌指定并结算后，你可以将自己移出游戏直到回合结束。`,
 			dunzou_enable: `遁走`,

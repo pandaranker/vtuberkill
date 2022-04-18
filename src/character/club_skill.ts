@@ -525,25 +525,16 @@ export default {
     },
 
     caibu: new toSkill('mark', {
-        init(player) {
-            if (!player.$.caibu) {
-                player.$.caibu = [];
-            }
-        },
-        notemp: true,
         marktext: '财',
         intro: {
-            content: 'cards',
-            onunmark(storage, player) {
-                if (storage && storage.length) {
-                    player.$throw(storage, 1000);
-                    game.cardsDiscard(storage);
-                    game.log(storage, '被置入了弃牌堆');
-                    storage.length = 0;
-                }
-            },
+            content: 'expansion',
+            markcount: 'expansion',
         },
-    }, 'locked', 'cardAround'),
+        onremove: function (player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) player.loseToDiscardpile(cards);
+        },
+    }, 'locked'),
     luecai: {
         audio: 2,
         group: ['caibu', 'luecai_draw'],
@@ -562,21 +553,18 @@ export default {
                 target.chooseCard('he', true)
             }
             'step 1'
-            if (target.countCards('h') > player.countCards('h')) {
-                Evt.card = result.links[0];
-            }
-            else if (target.countCards('h') < player.countCards('h')) {
-                Evt.card = result.cards[0];
-            }
-            'step 2'
             if (result.bool) {
-                target.$give(Evt.card, player, false);
-                target.lose(Evt.card, ui.special, 'toStorage');
-                player.$.caibu.push(Evt.card);
-                player.syncStorage('caibu');
-                player.markSkill('caibu');
-                player.showCards(player.$.caibu, '财布');
+                if (target.countCards('h') > player.countCards('h')) {
+                    Evt.card = result.links[0];
+                }
+                else if (target.countCards('h') < player.countCards('h')) {
+                    Evt.card = result.cards[0];
+                }
+                player.addToExpansion(Evt.card, target, 'give').gaintag.add('caibu');
             }
+            else Evt.finish()
+            'step 2'
+            game.delayx()
         },
         ai: {
             order: 10,
@@ -602,116 +590,88 @@ export default {
             threaten: 1.1
         },
         subSkill: {
-            draw: {
-                //audio:false,
+            draw: new toSkill('trigger', {
                 trigger: {
                     player: 'phaseBegin'
                 },
                 filter(Evt, player) {
-                    return player.$.caibu.length > 0;
+                    return player.getExpansions('caibu').length > 0
                 },
-                silent: true,
                 content() {
                     'step 0'
-                    player.chooseCardButton(get.prompt('luecai') + '移去任意张财布', [1, Infinity], player.$.caibu);
+                    player.chooseCardButton(`${get.prompt('luecai')}弃置任意张财布`, [1, Infinity], player.getExpansions('caibu'));
                     'step 1'
                     if (result.bool) {
                         player.logSkill('luecai_draw');
-                        var cards = result.links;
-                        player.$throw(cards);
-                        game.cardsDiscard(cards);
-                        //game.trySkillAudio('luecai_draw',player);
-                        player.$.caibu.removeArray(cards)
-                        // cards.forEach(card => player.$.caibu.remove(card));
-                        player.syncStorage('caibu');
+                        let cards = result.links;
+                        player.loseToDiscardpile(cards);
                         player.draw(cards.length);
+                        game.delayx()
                     }
-                    'step 2'
-                    if (!player.$.caibu.length) {
-                        player.unmarkSkill('caibu');
+                }
+            }, 'direct')
+        },
+    },
+    xiaoyan: {
+        forced: true,
+        trigger: {
+            source: 'damageBegin1',
+            player: 'damageBegin3'
+        },
+        firstDo: true,
+        filter(Evt, player) {
+            if (!Evt.card || !get.suit(Evt.card)) return false;
+            var chk = false;
+            player.getExpansions('caibu').forEach(function (c) {
+                if (get.suit(c) == get.suit(Evt.card)) chk = true;
+            });
+            return chk;
+        },
+        content() {
+            trigger.num++;
+        },
+        ai: {
+            damageBonus: true,
+            skillTagFilter(player, tag, arg) {
+                if (!arg || !arg.card || !get.tag(arg.card, 'damage')
+                ) {
+                    var chk = false;
+                    player.getExpansions('caibu').forEach(function (c) {
+                        if (get.suit(c) == get.suit(arg.card)) chk = true;
+                    });
+                    return chk;
+                }
+            },
+            effect: {
+                target(card, player, target, current) {
+                    if (get.tag(card, 'damage') && target.getExpansions('caibu').length) {
+                        var chk = false;
+                        target.getExpansions('caibu').forEach(function (c) {
+                            if (get.suit(c) == get.suit(card)) chk = true;
+                        });
+                        if (chk) return [1, 0, 2, -1];
+                    }
+                },
+                player(card, player, target, current) {
+                    if (get.tag(card, 'damage') && player.getExpansions('caibu').length) {
+                        var chk = false;
+                        player.getExpansions('caibu').forEach(function (c) {
+                            if (get.suit(c) == get.suit(card)) chk = true;
+                        });
+                        if (chk) return [1, 0, 2, -1];
                     }
                 }
             }
         },
-    },
-    xiaoyan: {
-        group: ['caibu', 'xiaoyan_res', 'xiaoyan_dam', 'xiaoyan_highlight', 'xiaoyan_clear'],
+        group: ['caibu', 'xiaoyan_res', 'xiaoyan_highlight', 'xiaoyan_clear'],
         subSkill: {
-            res: {
-                direct: true,
-                trigger: {
-                    player: "useCard",
-                },
-                // filter(Evt,player){
-                // 	return Evt.card
-                // 		&& (
-                // 			get.type(Evt.card)=='trick'||get.type(Evt.card)=='basic' 
-                // 			&& !['shan','tao','jiu','du'].contains(Evt.card.name)
-                // 		)
-                // 		&& game.hasPlayer(function(cur){
-                // 			return current!=player && current.countCards('h') < player.countCards('h')
-                // 				&& Evt.targets.contains(current);
-                // 		});
-                // },
+            res: new toSkill('trigger', {
                 content() {
                     trigger.directHit.addArray(game.filterPlayer(function (cur) {
                         return cur.countCards('h') < player.countCards('h')
                     }));
                 },
-            },
-            dam: {
-                audio: 'xiaoyan',
-                forced: true,
-                trigger: {
-                    source: 'damageBegin1',
-                    player: 'damageBegin3'
-                },
-                firstDo: true,
-                filter(Evt, player) {
-                    if (!Evt.card || !get.suit(Evt.card)) return false;
-                    var chk = false;
-                    player.$.caibu.forEach(function (c) {
-                        if (get.suit(c) == get.suit(Evt.card)) chk = true;
-                    });
-                    return chk;
-                },
-                content() {
-                    trigger.num++;
-                },
-                ai: {
-                    damageBonus: true,
-                    skillTagFilter(player, tag, arg) {
-                        if (!arg || !arg.card || !get.tag(arg.card, 'damage')
-                        ) {
-                            var chk = false;
-                            player.$.caibu.forEach(function (c) {
-                                if (get.suit(c) == get.suit(arg.card)) chk = true;
-                            });
-                            return chk;
-                        }
-                    },
-                    effect: {
-                        target(card, player, target, current) {
-                            if (get.tag(card, 'damage') && target.$.caibu && target.$.caibu.length) {
-                                var chk = false;
-                                target.$.caibu.forEach(function (c) {
-                                    if (get.suit(c) == get.suit(card)) chk = true;
-                                });
-                                if (chk) return [1, 0, 2, -1];
-                            }
-                        },
-                        player(card, player, target, current) {
-                            if (get.tag(card, 'damage') && player.$.caibu && player.$.caibu.length) {
-                                var chk = false;
-                                player.$.caibu.forEach(function (c) {
-                                    if (get.suit(c) == get.suit(card)) chk = true;
-                                });
-                                if (chk) return [1, 0, 2, -1];
-                            }
-                        }
-                    }
-                }
-            },
+            }, 'locked', 'direct').setT('useCard'),
             highlight: {
                 direct: true,
                 trigger: {
@@ -722,7 +682,7 @@ export default {
                     if (!Evt.card || !get.suit(Evt.card)) return false;
                     if (!get.tag(Evt.card, 'damage')) return false;
                     var chk = false;
-                    player.$.caibu.forEach(function (c) {
+                    player.getExpansions('caibu').forEach(function (c) {
                         if (get.suit(c) == get.suit(Evt.card)) chk = true;
                     });
                     return chk;
@@ -818,25 +778,10 @@ export default {
         }
     },
 
-    xinluezhili: {
-        unique: true,
-        zhuSkill: true,
-    },
-    DDzhanshou: {
+    DDzhanshou: new toSkill('trigger', {
         audio: 3,
-        trigger: {
-            player: 'useCard2'
-        },
-        direct: true,
         filter(Evt, player) {
             return Evt.targets && Evt.targets.length;
-        },
-        check(Evt, player) {
-            return Evt.targets.filter(function (target) {
-                if (get.attitude(_status.event.player, target) > 0 && target.countCards('h') <= 3) return true;
-                if (get.attitude(_status.event.player, target) <= 0 && target.countCards('he') > 3) return false;
-                return false;
-            });
         },
         content() {
             'step 0'
@@ -878,94 +823,89 @@ export default {
                     }
                 }).set('count', count);
             }
+            else Evt.finish()
             'step 2'
             if (result.bool) {
-                player.logSkill('DDzhanshou', Evt.target);
-                if (Evt.target.$.DDzhanshou_card) {
-                    Evt.target.$.DDzhanshou_card = Evt.target.$.DDzhanshou_card.concat(result.links);
-                }
-                else {
-                    Evt.target.$.DDzhanshou_card = result.links.slice(0);
-                }
-                // game.addVideo('storage', Evt.target, ['DDzhanshou_card',get.cardsInfo(Evt.target.$.DDzhanshou_card),'cards']);
-                Evt.target.addSkill('DDzhanshou_card');
-                Evt.target.lose(result.links, ui.special, 'toStorage');
+                let target = Evt.target
+                player.logSkill('DDzhanshou', target);
+                target.addToExpansion(result.cards, 'giveAuto', target).gaintag.add('DDzhanshou_card');
+                target.addSkill('DDzhanshou_card');
             }
             'step 3'
-            if (Evt.target && Evt.target.countCards('h') == 0) {
+            if (Evt.target.countCards('h') == 0) {
                 Evt.target.draw();
-            }
-            'step 4'
-            if (Evt.target && Evt.target.hasSkill('xinluezhili_draw')) {
-                Evt.target.removeSkill('xinluezhili_draw');
             }
         },
         subSkill: {
-            card: {
+            card: new toSkill('trigger', {
+                audio: false,
                 trigger: {
                     global: 'phaseEnd'
                 },
-                audio: false,
-                mark: true,
-                direct: true,
                 intro: {
-                    content: 'cardCount',
-                    onunmark(storage, player) {
-                        if (storage && storage.length) {
-                            player.$throw(storage, 1000);
-                            game.cardsDiscard(storage);
-                            game.log(storage, '被置入了弃牌堆');
-                            storage.length = 0;
-                        }
+                    markcount: 'expansion',
+                    mark(dialog, storage, player) {
+                        var cards = player.getExpansions('DDzhanshou_card');
+                        if (player.isUnderControl(true)) dialog.addAuto(cards);
+                        else return '共有' + get.cnNumber(cards.length) + '张牌';
                     },
                 },
                 content() {
-                    if (player.$.DDzhanshou_card) {
-                        player.gain(player.$.DDzhanshou_card, 'fromStorage');
-                        delete player.$.DDzhanshou_card;
-                    }
+                    'step 0'
+                    var cards = player.getExpansions('DDzhanshou_card');
+                    player.gain(cards, 'draw');
+                    game.log(player, '收回了' + get.cnNumber(cards.length) + '张『DD斩首』牌');
+                    'step 1'
                     player.removeSkill('DDzhanshou_card');
                 },
-            }
+            }, 'mark', 'direct')
         }
+    }, 'direct').setT('useCard2'),
+    xinluezhili: {
+        unique: true,
+        zhuSkill: true,
+        global: 'xinluezhili_draw'
     },
-    xinluezhili_draw: {
-        trigger: {
-            player: 'loseAfter',
-        },
+    xinluezhili_draw: new toSkill('trigger', {
         filter(Evt, player) {
-            if (player.countCards('h')) return false;
-            var target = game.filterPlayer(cur => cur.hasZhuSkill('xinluezhili'));
-            return Evt.hs && Evt.hs.length > 0 && target.length;
+            if (player.countCards('h') || !Evt.hs || !Evt.hs.length) return false;
+            let dogmom = _status.currentPhase
+            if (!dogmom || dogmom === player || !dogmom.hasZhuSkill('xinluezhili')) return false;
+            return true;
         },
         check(Evt, player) {
-            var targets = game.filterPlayer(cur => cur.hasZhuSkill('xinluezhili'));
-            return get.attitude(player, targets[0]) > 0;
+            let dogmom = _status.currentPhase
+            return get.attitude(player, dogmom) > 0;
         },
         content() {
-            var targets = game.filterPlayer(cur => cur.hasZhuSkill('xinluezhili'));
-            game.asyncDraw(targets)
+            let dogmom = _status.currentPhase
+            game.asyncDraw([dogmom])
         }
-    },
+    }).setT('loseAfter'),
 
 
     maoliang: new toSkill('mark', {
-        init(player) {
-            player.$.maoliang = [];
-        },
         marktext: '粮',
         intro: {
-            content: 'cards',
+            mark(dialog, storage, player) {
+                if (player.countCards('s', card => card.hasGaintag('maoliang')))
+                    dialog.addAuto(player.getCards('s', card => card.hasGaintag('maoliang')));
+            },
+            markcount(storage, player) {
+                return player.countCards('s', card => card.hasGaintag('maoliang'));
+            },
             onunmark(storage, player) {
-                if (storage && storage.length) {
-                    player.$throw(storage, 1000);
-                    game.cardsDiscard(storage);
-                    game.log(storage, '被置入了弃牌堆');
-                    storage.length = 0;
+                let cards = player.getCards('s', card => card.hasGaintag('maoliang'));
+                if (cards.length) {
+                    player.lose(cards, ui.discardPile);
+                    player.$throw(cards, 1000);
+                    game.log(cards, '进入了弃牌堆');
                 }
             },
         },
-        cardAround: true
+        cardAround(player) {
+            return player.getCards('s', card => card.hasGaintag('maoliang'));
+        },
     }),
     jiumao: {
         audio: 2,
@@ -1000,10 +940,9 @@ export default {
                 discard: false,
                 toStorage: true,
                 content() {
-                    player.loseToSpecial(cards, 'maoliang', target);
                     player.$give(cards, target, false);
-                    target.markAuto('maoliang', cards);
-                    target.showCards(target.$.maoliang, `${get.translation(target)}的猫粮`);
+                    player.loseToSpecial(cards, 'maoliang', target);
+                    target.showCards(target.getCards('s', card => card.hasGaintag('maoliang')), `${get.translation(target)}的猫粮`);
                     game.delayx();
                 },
                 ai: {
@@ -1013,49 +952,52 @@ export default {
                     }
                 }
             }),
-            cardDisable: {
+            cardDisable: new toSkill('rule', {
                 mod: {
-                    cardEnabled2(cardx, player) {
-                        if (player.countCards('s', card => card.hasGaintag('maoliang'))) {
-                            if (get.position(cardx) == 's' && cardx.hasGaintag('maoliang') && player.hasSkill('jiumao_used')) return false;
+                    cardEnabled2(card, player) {
+                        if (get.position(card) == 's' && card.hasGaintag('maoliang')) {
+                            if (player.$.jiumao_used >= 3) return false;
                         }
                     }
                 },
-                trigger: {
-                    player: 'useCard1',
-                },
-                forced: true,
-                silent: true,
                 popup: false,
                 filter(Evt, player) {
-                    return player.getHistory('lose', evt => {
+                    return player.hasHistory('lose', evt => {
                         if (evt.getParent() != Evt) return false;
                         for (var i in evt.gaintag_map) {
                             if (evt.gaintag_map[i].contains('maoliang')) return true;
                         }
                         return false;
-                    }).length > 0;
+                    });
                 },
                 content() {
-                    player.addTempSkill('jiumao_used');
+                    if (player.hasSkill('jiumao_used')) {
+                        player.$.jiumao_used++
+                    }
+                    else {
+                        player.addTempSkill('jiumao_used');
+                    }
                 },
-            },
-            lose: {
+            }, 'forced', 'silent').setT(['useCard', 'respond']),
+            lose: new toSkill('rule', {
                 trigger: { player: 'loseEnd' },
                 firstDo: true,
                 silent: true,
                 filter(Evt, player) {
                     if (!Evt.ss || !Evt.ss.length) return false;
-                    var maoliang = player.getStorage('maoliang');
-                    if (!maoliang.length) return false;
-                    return Evt.ss.filter(card => maoliang.contains(card)).length > 0;
+                    for (let i in Evt.gaintag_map) {
+                        if (Evt.gaintag_map[i].includes('maoliang')) return true;
+                    }
                 },
                 content() {
-                    player.$.maoliang.removeArray(trigger.ss);
                     player.updateMarks();
                 },
-            },
-            used: {},
+            }),
+            used: new toSkill('mark', {
+                intro: {
+                    content: '本回合已发动#次『啾猫』'
+                },
+            }, 'mark', 'onremove').setI(1)
         },
     },
     enfan: {
@@ -1094,25 +1036,28 @@ export default {
             Evt.target = trigger.player;
             player.chooseCard('s', [1, Infinity], function (card) {
                 return card.hasGaintag('maoliang');
-            }).set('logSkill', ['enfan', Evt.target]).set('ai', card => {
-                var target = _status.event.target;
-                return get.value(card, target) / 1.5 - target.countCards('h');
-            }).set('target', Evt.target).set('prompt', get.prompt2('enfan', player));
+            })
+                .set('logSkill', ['enfan', Evt.target])
+                .set('ai', card => {
+                    var target = _status.event.target;
+                    return get.value(card, target) / 1.5 - target.countCards('h');
+                })
+                .set('target', Evt.target)
+                .set('prompt', get.prompt2('enfan', player));
             'step 1'
             if (result.bool && result.cards) {
                 player.give(result.cards, Evt.target, false);
             }
             else Evt.finish();
             'step 2'
-            if (player.countCards('h') == Evt.target.countCards('h') && player.$.maoliang.length) {
-                console.log(2)
-                Evt.target.chooseCardButton(player.$.maoliang.slice(0)).set('filterButton', function (button) {
+            if (player.countCards('h') == Evt.target.countCards('h') && player.countCards('s', card => card.hasGaintag('maoliang'))) {
+                Evt.target.chooseCardButton(player.getCards('s', card => card.hasGaintag('maoliang')).slice(0)).set('filterButton', function (button) {
                     var player = _status.event.player;
                     return ['basic', 'trick'].contains(get.type(button.link)) && player.hasUseTarget(button.link);
                 }).set('ai', function (button) {
                     var player = _status.event.player;
                     return player.getUseValue(button.link);
-                }).set('prompt', '可以视为使用一张' + get.translation(player) + '的「猫粮」');
+                }).set('prompt', `可以视为使用一张${get.translation(player)}的「猫粮」`);
             }
             else Evt.finish();
             'step 3'
@@ -2714,7 +2659,6 @@ export default {
         //item:     条件
         //      string:         传入比较条件直接比较，['小','大','等'] 任意一个，返回结果
         //      player:         传入角色，通过角色的storage比较，如果对应storage不存在就返回false
-        //      其他(undefined): 默认使用当前事件（_status.event）角色
         //return:
         //      true:   满足条件
         //      false:  不满足条件或者条件获取失败

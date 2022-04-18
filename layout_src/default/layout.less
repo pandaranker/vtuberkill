@@ -1379,27 +1379,32 @@ div:not(.handcards)>.card>.info>span,
 
 #window>.damage.fullscreenavatar>.text {
     display: table;
-}
-
-#window>.damage.fullscreenavatar>.text>div {
-    display: block;
-    position: relative;
-    width: auto;
-    height: auto;
-    font-size: 90px;
-    text-align: right;
-    top: auto;
-    bottom: 30px;
-    position: absolute;
-    left: auto;
-    right: 165px;
-}
-
-#window>.damage.fullscreenavatar>.text>div>div {
-    transform: scale(4);
-    opacity: 0;
-    display: inline-block;
-    position: relative;
+    >div {
+        display: block;
+        position: relative;
+        width: auto;
+        height: auto;
+        font-size: 90px;
+        text-align: right;
+        top: auto;
+        bottom: 30px;
+        position: absolute;
+        left: auto;
+        right: 165px;
+        &.long{
+            transform: scale(0.95) translateY(25%);
+        }
+        >div {
+            transform: scale(4);
+            opacity: 0;
+            display: inline-block;
+            position: relative;
+        }
+        >.flashtext {
+            transform: none;
+            opacity: 1;
+        }
+    }
 }
 
 #window>.damage.fullscreenavatar>.textbg {
@@ -1415,10 +1420,6 @@ div:not(.handcards)>.card>.info>span,
 	transform: scale(2);
 	opacity: 0;
 }*/
-#window>.damage.fullscreenavatar>.text>div>.flashtext {
-    transform: none;
-    opacity: 1;
-}
 
 #window>.damage.fullscreenavatar>.name>div {
     display: block;

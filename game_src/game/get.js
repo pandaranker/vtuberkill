@@ -61,7 +61,7 @@ module.exports = {
             //“保护新手”模式的ban将
             banForBeginner(current) {
                if (current in lib.character) {
-                  for (var i in lib.characterPack) {
+                  for (let i in lib.characterPack) {
                      if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
                         if (current in lib.characterPack[i]) {
                            return true
@@ -78,7 +78,7 @@ module.exports = {
                   return false;
                }
                if (current in lib.card) {
-                  for (var i in lib.cardPack) {
+                  for (let i in lib.cardPack) {
                      if (!['standard', 'extra'].contains(i)) {
                         if (lib.cardPack[i].contains(current)) {
                            return true
@@ -370,7 +370,6 @@ module.exports = {
                      _status.maxShuffle--;
                   }
                   game.shuffleNumber++;
-                  if (_status.event.trigger) _status.event.trigger('washCard');
                   var cards = [], i;
                   for (var i = 0; i < lib.onwash.length; i++) {
                      if (lib.onwash[i]() == 'remove') {
@@ -393,6 +392,7 @@ module.exports = {
                   for (var i = 0; i < cards.length; i++) {
                      ui.cardPile.appendChild(cards[i]);
                   }
+                  if (_status.event.trigger) _status.event.trigger('washCard');
                }
                if (ui.cardPile.hasChildNodes() == false) {
                   game.over('平局');
@@ -579,7 +579,7 @@ module.exports = {
          character: function (name, num) {
             var info = lib.character[name];
             if (!info) {
-               for (var i in lib.characterPack) {
+               for (let i in lib.characterPack) {
                   if (lib.characterPack[i][name]) {
                      info = lib.characterPack[i][name];
                      break;
@@ -1721,10 +1721,10 @@ module.exports = {
          itemtype: function (obj) {
             var i, j;
             if (typeof obj == 'string') {
-               if (obj.length <= 4) {
+               if (obj.length <= 5) {
                   var bool = true;
                   for (i = 0; i < obj.length; i++) {
-                     if (/h|e|j|s/.test(obj[i]) == false) {
+                     if (/h|e|j|s|x/.test(obj[i]) == false) {
                         bool = false; break;
                      }
                   }
@@ -1968,7 +1968,6 @@ module.exports = {
                      _status.maxShuffle--;
                   }
                   game.shuffleNumber++;
-                  if (_status.event.trigger) _status.event.trigger('washCard');
                   var cards = [], i;
                   for (var i = 0; i < lib.onwash.length; i++) {
                      if (lib.onwash[i]() == 'remove') {
@@ -1991,6 +1990,7 @@ module.exports = {
                   for (var i = 0; i < cards.length; i++) {
                      ui.cardPile.appendChild(cards[i]);
                   }
+                  if (_status.event.trigger) _status.event.trigger('washCard');
                }
                if (ui.cardPile.hasChildNodes() == false) {
                   game.over('平局');
@@ -2231,6 +2231,7 @@ module.exports = {
             if (card.timeout && card.destiny) {
                if (card.destiny.classList.contains('equips')) return 'e';
                if (card.destiny.classList.contains('judges')) return 'j';
+               if (card.destiny.classList.contains('expansions')) return 'x';
                if (card.destiny.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
                if (card.destiny.id == 'cardPile') return 'c';
                if (card.destiny.id == 'discardPile') return 'd';
@@ -2241,6 +2242,7 @@ module.exports = {
             if (!card.parentNode) return;
             if (card.parentNode.classList.contains('equips')) return 'e';
             if (card.parentNode.classList.contains('judges')) return 'j';
+            if (card.parentNode.classList.contains('expansions')) return 'x';
             if (card.parentNode.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
             if (card.parentNode.id == 'cardPile') return 'c';
             if (card.parentNode.id == 'discardPile') return 'd';
@@ -2342,7 +2344,7 @@ module.exports = {
             if (!str)
                return '';
             str = str
-               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#dddd;font-weight: bold;text-shadow: 2px 2px 3px #DD00DDBB;">$2</font>，')
+               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|结束阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#dddd;font-weight: bold;text-shadow: 2px 2px 3px #DD00DDBB;">$2</font>，')
                .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
                .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
                .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')
@@ -2730,7 +2732,7 @@ module.exports = {
          owner: function (card, method) {
             var list = game.players.concat(game.dead);
             for (var i = 0; i < list.length; i++) {
-               if (list[i].getCards('hej').contains(card)) return list[i];
+               if(list[i].getCards('hejsx').contains(card)) return list[i];
                if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
             //for(var i=0;i<game.players.length;i++){
@@ -2956,6 +2958,18 @@ module.exports = {
                case 'cardCount': {
                   if (typeof content == 'object' && typeof content.length == 'number') {
                      return '共有' + get.cnNumber(content.length) + '张牌';
+                  }
+                  return false;
+               }
+               case 'expansion':{
+                  content=player.getCards('x',function(card){
+                     return card.hasGaintag(skill);
+                  });
+                  if(dialog&&content.length){
+                     dialog.addAuto(content);
+                  }
+                  else{
+                     return '没有卡牌';
                   }
                   return false;
                }

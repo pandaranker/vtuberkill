@@ -1418,7 +1418,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						var target = result.targets[0];
 						player.logSkill('danlian', [trigger.player, target])
 						game.delay(0.5);
-						trigger.player.useCard({ name: Evt.cardName }, target, [Evt.card]);
+						trigger.player.useCard({ name: Evt.cardName }, target, [Evt.card], 'noai');
 					}
 					game.delayx()
 				},

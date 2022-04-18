@@ -9,7 +9,7 @@ module.exports = function (element, _mode, _message) {
    */
   const dist = () => lib.assetURL + 'dist'
 
-  let init = {
+  const init = {
     /**
      * 初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
      * 入口函数
@@ -30,7 +30,7 @@ module.exports = function (element, _mode, _message) {
         }
         lib.configprefix += '_';
       }
-      window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 5000);
+      window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 3000);
       //part: `cordovaLoadTimeout`的创建，在 ../app/redirect.js
       if (window.cordovaLoadTimeout) {
         clearTimeout(window.cordovaLoadTimeout);
@@ -87,11 +87,13 @@ module.exports = function (element, _mode, _message) {
         if (htmlbg) {
           if (htmlbg.indexOf('svg_') == 0) {
             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg.slice(4) + '.svg")';
+            document.documentElement.style.height = '100%';
           }
           else {
             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg + '.jpg")';
             document.documentElement.style.backgroundSize = 'cover';
             document.documentElement.style.backgroundPosition = '50% 50%';
+            document.documentElement.style.height = '100%';
           }
         }
       }
@@ -816,22 +818,23 @@ module.exports = function (element, _mode, _message) {
             // }
           }
         };
-        if('onmousedown' in document){
-          if(!game.getFileList){
-            document.oncontextmenu = function(e){
+        if ('onmousedown' in document) {
+          if (!game.getFileList) {
+            document.oncontextmenu = function (e) {
               e.preventDefault()
             }
           }
-          document.onmousedown = (e)=> {
-            if(e.button == 2){
+          document.onmousedown = (e) => {
+            if (e.target.parentNode === document) return
+            if (e.button == 2) {
               game.clickAudio('mechanical.wav')
             }
-            else if(e.button == 0){
-              let classList = [...e.target.classList,...e.target.parentNode.classList]
-              if(classList.contains('button')||classList.contains('toggle')||classList.contains('pressdown')){
+            else if (e.button == 0) {
+              let classList = [...e.target.classList, ...e.target.parentNode.classList]
+              if (classList.contains('button') || classList.contains('toggle') || classList.contains('pressdown')) {
                 game.clickAudio('heavy.wav')
               }
-              else{
+              else {
                 game.clickAudio('light.wav')
               }
             }
@@ -947,447 +950,470 @@ module.exports = function (element, _mode, _message) {
         }
         lib.assetURL = noname_inited;
       }
-      //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
-      var config3 = null;
-      var proceed = function (config2) {
-        //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
-        if (config3 === null) {
-          config3 = config2;
-          return;
-        }
-        //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
-        if (config2.mode) lib.config.mode = config2.mode;
-        if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
-        for (let i in lib.config.mode_config.global) {
-          if (lib.config.mode_config[lib.config.mode][i] == undefined) {
-            lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
+      if (window.resetGameTimeout) {
+        clearTimeout(window.resetGameTimeout);
+        window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 3000);
+      }
+      //part: 游戏设置信息，window.config，创建于config.js
+      lib.config = window.config;
+      //part: 联机部分的设置
+      lib.configOL = {};
+      //part: 初始化ui.css.menu和ui.css.default样式
+      let preconfig = {
+        //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
+        config3: null,
+        //part: 表示开始界面初始化的状态
+        initDataing: false,
+        toLoad: 2,
+        proceed: function (config2) {
+          //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
+          if (preconfig.config3 === null) {
+            preconfig.config3 = config2;
+            return;
           }
-        }
-        //part: defaultcharacters
-        if (lib.config.characters) {
-          lib.config.defaultcharacters = lib.config.characters.slice(0);
-        }
-        //part: defaultcards
-        if (lib.config.cards) {
-          lib.config.defaultcards = lib.config.cards.slice(0);
-        }
-        //part: 从`config2`加载`lib.config`和`_mode_config`的数据
-        for (let i in config2) {
-          if (i.indexOf('_mode_config') != -1) {
-            var thismode = i.substr(i.indexOf('_mode_config') + 13);
-            if (!lib.config.mode_config[thismode]) {
-              lib.config.mode_config[thismode] = {};
+          //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
+          if (config2.mode && !preconfig.skip_splash) {
+            lib.config.mode = config2.mode;
+          }
+          if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
+          for (let i in lib.config.mode_config.global) {
+            if (lib.config.mode_config[lib.config.mode][i] == undefined) {
+              lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
             }
-            lib.config.mode_config[thismode][i.substr(0, i.indexOf('_mode_config'))] = config2[i];
           }
-          else {
-            lib.config[i] = config2[i];
+          //part: defaultcharacters
+          if (lib.config.characters) {
+            lib.config.defaultcharacters = lib.config.characters.slice(0);
           }
-        }
-        //part: 从`lib.config.translate`拷贝到`lib.translate`
-        for (let i in lib.config.translate) {
-          lib.translate[i] = lib.config.translate[i];
-        }
+          //part: defaultcards
+          if (lib.config.cards) {
+            lib.config.defaultcards = lib.config.cards.slice(0);
+          }
+          //part: 从`config2`加载`lib.config`和`_mode_config`的数据
+          for (let i in config2) {
+            if (i.indexOf('_mode_config') != -1) {
+              var thismode = i.substr(i.indexOf('_mode_config') + 13);
+              if (!lib.config.mode_config[thismode]) {
+                lib.config.mode_config[thismode] = {};
+              }
+              lib.config.mode_config[thismode][i.substr(0, i.indexOf('_mode_config'))] = config2[i];
+            }
+            else if (i !== 'mode') {
+              lib.config[i] = config2[i];
+            }
+          }
+          //part: 从`lib.config.translate`拷贝到`lib.translate`
+          for (let i in lib.config.translate) {
+            lib.translate[i] = lib.config.translate[i];
+          }
 
-        lib.config.all.characters = [];
-        lib.config.all.cards = [];
-        lib.config.all.plays = [];
-        lib.config.all.mode = [];
-        //part: 如果测试模式已开启，重置资源列表
-        if (lib.config.debug) {
-          init.js(lib.assetURL + 'game', 'asset', function () {
-            lib.skin = window.vk_skin_list;
-            delete window.vk_skin_list;
-            delete window.vk_asset_list;
-          });
-        }
+          lib.config.all.characters = [];
+          lib.config.all.cards = [];
+          lib.config.all.plays = [];
+          lib.config.all.mode = [];
+          //part: 如果测试模式已开启，重置资源列表
+          if (lib.config.debug) {
+            init.js(lib.assetURL + 'game', 'asset', function () {
+              lib.skin = window.vk_skin_list;
+              delete window.vk_skin_list;
+              delete window.vk_asset_list;
+            });
+          }
 
-        if (window.isNonameServer) {
-          lib.config.mode = 'connect';
-        }
-        //part: `window.vk_package`，创建于package.js
-        var pack = window.vk_package;
-        delete window.vk_package;
-        if (lib.init_pack) {
-          lib.init_pack(pack)
-        }
-        for (let i in pack.character) {
-          if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
-            lib.config.all.characters.push(i);
-            lib.translate[i + '_character_config'] = pack.character[i];
+          if (window.isNonameServer && lib.config.mode !== 'connect') {
+            lib.config.mode = 'connect';
           }
-        }
-        for (let i in pack.card) {
-          if (lib.config.hiddenCardPack.indexOf(i) == -1) {
-            lib.config.all.cards.push(i);
-            lib.translate[i + '_card_config'] = pack.card[i];
+          //part: `window.vk_package`，创建于package.js
+          var pack = window.vk_package;
+          delete window.vk_package;
+          if (lib.init_pack) {
+            lib.init_pack(pack)
           }
-        }
-        for (let i in pack.play) {
-          lib.config.all.plays.push(i);
-          lib.translate[i + '_play_config'] = pack.play[i];
-        }
-        for (let i in pack.submode) {
-          for (let j in pack.submode[i]) {
-            lib.translate[i + '|' + j] = pack.submode[i][j];
+          for (let i in pack.character) {
+            if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
+              lib.config.all.characters.push(i);
+              lib.translate[i + '_character_config'] = pack.character[i];
+            }
           }
-        }
+          for (let i in pack.card) {
+            if (lib.config.hiddenCardPack.indexOf(i) == -1) {
+              lib.config.all.cards.push(i);
+              lib.translate[i + '_card_config'] = pack.card[i];
+            }
+          }
+          for (let i in pack.play) {
+            lib.config.all.plays.push(i);
+            lib.translate[i + '_play_config'] = pack.play[i];
+          }
+          for (let i in pack.submode) {
+            for (let j in pack.submode[i]) {
+              lib.translate[i + '|' + j] = pack.submode[i][j];
+            }
+          }
 
-        if (!lib.config.gameRecord) {
-          lib.config.gameRecord = {};
-        }
-        for (let i in pack.mode) {
-          if (lib.config.hiddenModePack.indexOf(i) == -1) {
-            lib.config.all.mode.push(i);
-            lib.translate[i] = pack.mode[i];
-            if (!lib.config.gameRecord[i]) {
-              lib.config.gameRecord[i] = { data: {} };
+          if (!lib.config.gameRecord) {
+            lib.config.gameRecord = {};
+          }
+          for (let i in pack.mode) {
+            if (lib.config.hiddenModePack.indexOf(i) == -1) {
+              lib.config.all.mode.push(i);
+              lib.translate[i] = pack.mode[i];
+              if (!lib.config.gameRecord[i]) {
+                lib.config.gameRecord[i] = { data: {} };
+              }
             }
           }
-        }
-        //??
-        if (lib.config.all.mode.length == 0) {
-          lib.config.all.mode.push('identity');
-          lib.translate.identity = '身份';
-          if (!lib.config.gameRecord.identity) {
-            lib.config.gameRecord.identity = { data: {} };
+          //??
+          if (lib.config.all.mode.length == 0) {
+            lib.config.all.mode.push('identity');
+            lib.translate.identity = '身份';
+            if (!lib.config.gameRecord.identity) {
+              lib.config.gameRecord.identity = { data: {} };
+            }
           }
-        }
-        {
-          if (pack.background) {
-            for (let i in pack.background) {
-              if (lib.config.hiddenBackgroundPack.contains(i)) continue;
-              lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
+          {
+            if (pack.background) {
+              for (let i in pack.background) {
+                if (lib.config.hiddenBackgroundPack.contains(i)) continue;
+                lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
+              }
+              for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
+                var link = lib.config.customBackgroundPack[i];
+                lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
+              }
+              lib.configMenu.appearence.config.image_background.item.default = '默认';
             }
-            for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
-              var link = lib.config.customBackgroundPack[i];
-              lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
-            }
-            lib.configMenu.appearence.config.image_background.item.default = '默认';
-          }
-          if (pack.music) {
-            if (lib.device || typeof window.require == 'function') {
-              lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
-            }
-            lib.config.all.background_music = ['music_danji'];
-            for (let i in pack.music) {
-              lib.config.all.background_music.push(i);
-              lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
-            }
-            if (lib.config.customBackgroundMusic) {
-              for (let i in lib.config.customBackgroundMusic) {
+            if (pack.music) {
+              if (lib.device || typeof window.require == 'function') {
+                lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
+              }
+              lib.config.all.background_music = ['music_danji'];
+              for (let i in pack.music) {
                 lib.config.all.background_music.push(i);
-                lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
+              }
+              if (lib.config.customBackgroundMusic) {
+                for (let i in lib.config.customBackgroundMusic) {
+                  lib.config.all.background_music.push(i);
+                  lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                }
+              }
+              lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
+              lib.configMenu.audio.config.background_music.item.music_off = '关闭';
+            }
+            if (pack.theme) {
+              for (let i in pack.theme) {
+                lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
               }
             }
-            lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
-            lib.configMenu.audio.config.background_music.item.music_off = '关闭';
-          }
-          if (pack.theme) {
-            for (let i in pack.theme) {
-              lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
+            if (lib.config.extension_sources) {
+              for (let i in lib.config.extension_sources) {
+                lib.configMenu.general.config.extension_source.item[i] = i;
+              }
             }
           }
-          if (lib.config.extension_sources) {
-            for (let i in lib.config.extension_sources) {
-              lib.configMenu.general.config.extension_source.item[i] = i;
+          //part: touch, layout, scroll config
+          var ua = navigator.userAgent.toLowerCase();
+          if ('ontouchstart' in document) {
+            //移动端
+            if (!lib.config.totouched) {
+              game.saveConfig('totouched', true);
+              if (lib.device) {
+                //移动端通过客户端访问
+                game.saveConfig('low_performance', true);
+                game.saveConfig('confirm_exit', true);
+                game.saveConfig('touchscreen', true);
+                game.saveConfig('fold_mode', false);
+                if (ua.indexOf('ipad') == -1) {
+                  game.saveConfig('phonelayout', true);
+                }
+                else if (lib.device == 'ios') {
+                  game.saveConfig('show_statusbar_ios', 'overlay');
+                }
+              }
+              else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
+                //移动端通过网页访问
+                game.saveConfig('touchscreen', true);
+                if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
+                  game.saveConfig('phonelayout', true);
+                }
+
+                game.reload();
+              }
             }
+          }
+          else if (lib.config.touchscreen) {//非移动端，如果触屏模式开启，就设置关闭
+            game.saveConfig('touchscreen', false);
           }
 
-          if (pack.font) {
-            ui.css.fontsheet = init.sheet();
-            for (let i in pack.font) {
-              lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
-              ui.css.fontsheet.sheet.insertRule(`@font-face {font-family: '${i}';src: url('${lib.assetURL}font/${i}.ttf');}`, 0);
-            }
-            lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
-            lib.configMenu.appearence.config.global_font.item.default = '默认';
+          if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
+            game.saveConfig('toscrolled', true);
+            game.saveConfig('mousewheel', false);
           }
-        }
-        //part: touch, layout, scroll config
-        var ua = navigator.userAgent.toLowerCase();
-        if ('ontouchstart' in document) {
-          //移动端
-          if (!lib.config.totouched) {
-            game.saveConfig('totouched', true);
-            if (lib.device) {
-              //移动端通过客户端访问
-              game.saveConfig('low_performance', true);
-              game.saveConfig('confirm_exit', true);
-              game.saveConfig('touchscreen', true);
-              game.saveConfig('fold_mode', false);
-              if (ua.indexOf('ipad') == -1) {
-                game.saveConfig('phonelayout', true);
-              }
-              else if (lib.device == 'ios') {
-                game.saveConfig('show_statusbar_ios', 'overlay');
-              }
-            }
-            else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
-              //移动端通过网页访问
-              game.saveConfig('touchscreen', true);
-              if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
-                game.saveConfig('phonelayout', true);
-              }
-
-              game.reload();
-            }
-          }
-        }
-        else if (lib.config.touchscreen) {//非移动端，如果触屏模式开启，就设置关闭
-          game.saveConfig('touchscreen', false);
-        }
-
-        if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
-          game.saveConfig('toscrolled', true);
-          game.saveConfig('mousewheel', false);
-        }
-        //part: 是否打开开始界面
-        var show_splash = lib.config.show_splash;
-        if (show_splash == 'off') {
-          show_splash = false;
-        }
-        else if (show_splash == 'init') {
-          if (localStorage.getItem('show_splash_off')) {
+          //part: 是否打开开始界面
+          let show_splash = lib.config.show_splash;
+          if (show_splash == 'off'
+            || (show_splash == 'init' && localStorage.getItem('show_splash_off'))
+            || preconfig.skip_splash) {
             show_splash = false;
           }
-        }
-        localStorage.removeItem('show_splash_off');
-        //part: extension list
-        //??
-        //[never executed]
-        var extensionlist = [];
-        if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
-          if (lib.config.extensions && lib.config.extensions.length) {
-            window.resetExtension = function () {
-              for (let i = 0; i < lib.config.extensions.length; i++) {
-                game.saveConfig('extension_' + lib.config.extensions[i] + '_enable', false);
+          localStorage.removeItem('show_splash_off');
+          preconfig.show_splash = show_splash
+          //part: extension list
+          //??
+          //[never executed]
+          var extensionlist = [];
+          if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
+            if (lib.config.extensions && lib.config.extensions.length) {
+              window.resetExtension = function () {
+                for (let i = 0; i < lib.config.extensions.length; i++) {
+                  game.saveConfig('extension_' + lib.config.extensions[i] + '_enable', false);
+                }
+                localStorage.setItem(lib.configprefix + 'disable_extension', true);
               }
-              localStorage.setItem(lib.configprefix + 'disable_extension', true);
+            }
+            for (let i = 0; i < lib.config.plays.length; i++) {
+              if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
+                extensionlist.push(lib.config.plays[i]);
+              }
+            }
+            for (let i = 0; i < lib.config.extensions.length; i++) {
+              var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
+              if (extcontent) {
+                _status.evaluatingExtension = true;
+                try {
+                  eval(extcontent);
+                }
+                catch (e) {
+                  console.log(e);
+                }
+                _status.evaluatingExtension = false;
+              }
+              else if (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash) {
+                extensionlist.push(lib.config.extensions[i]);
+              }
             }
           }
-          for (let i = 0; i < lib.config.plays.length; i++) {
-            if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
-              extensionlist.push(lib.config.plays[i]);
-            }
-          }
-          for (let i = 0; i < lib.config.extensions.length; i++) {
-            var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
-            if (extcontent) {
-              _status.evaluatingExtension = true;
-              try {
-                eval(extcontent);
-              }
-              catch (e) {
-                console.log(e);
-              }
-              _status.evaluatingExtension = false;
-            }
-            else if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
-              extensionlist.push(lib.config.extensions[i]);
-            }
-          }
-        }
-        else {
-          if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
+          else if (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash) {
             for (let i = 0; i < lib.config.extensions.length; i++) {
               game.import('extension', { name: lib.config.extensions[i] });
             }
           }
-        }
-        //用于加载包的函数
-        let loadPack = function () {
-          let toLoad = 2;
-          let packLoaded = function () {
-            toLoad--;
-            if (toLoad == 0) {
-              if (_status.windowLoaded) {
-                delete _status.windowLoaded;
-                init.onload();
+          //part: 检查layout并设置`game.layout = layout`
+          let layout = lib.config.layout;
+          if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
+            layout = 'mobile';
+          }
+          if (layout == 'phone') {
+            layout = 'mobile';
+            game.saveConfig('layout', 'mobile');
+            game.saveConfig('phonelayout', true);
+          }
+          game.layout = layout;
+          //part: 随机选取背景或选择_status.htmlbg作为背景图像
+          if (lib.config.image_background_random) {
+            if (_status.htmlbg) {
+              game.saveConfig('image_background', _status.htmlbg);
+            }
+            else {
+              let list = [];
+              for (let i in lib.configMenu.appearence.config.image_background.item) {
+                if (i == 'default') continue;
+                list.push(i);
+              }
+              game.saveConfig('image_background', list.randomGet(lib.config.image_background));
+            }
+            init.background();
+          }
+          delete _status.htmlbg;
+          //part: game to window.game
+          window.game = game;
+          //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
+          let styleToLoad = 6;
+          let styleLoaded = function () {
+            styleToLoad--;
+            if (styleToLoad == 0) {
+              if (extensionlist.length && show_splash) {
+                let extToLoad = extensionlist.length;
+                let extLoaded = function () {
+                  extToLoad--;
+                  if (extToLoad == 0) {
+                    preconfig.loadPack();
+                  }
+                }
+                for (let i = 0; i < extensionlist.length; i++) {
+                  init.js(lib.assetURL + 'extension/' + extensionlist[i], 'extension', extLoaded, (function (i) {
+                    return function () {
+                      game.removeExtension(i);
+                      extToLoad--;
+                      if (extToLoad == 0) {
+                        preconfig.loadPack();
+                      }
+                    }
+                  }(extensionlist[i])));
+                }
               }
               else {
-                /**
-                 * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
-                 * @private
-                 * @default
-                 */
-                _status.packLoaded = true;
+                preconfig.loadPack();
               }
             }
           };
-          if (localStorage.getItem(lib.configprefix + 'playback')
-            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
-              lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
-            toLoad++;
-            init.js(dist(), 'mode', packLoaded, packLoaded);
-          }
-          init.js(dist(), ['card', 'character'], packLoaded, packLoaded);
-        };
-        //part: 检查layout并设置`game.layout = layout`
-        let layout = lib.config.layout;
-        if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
-          layout = 'mobile';
-        }
-        if (layout == 'phone') {
-          layout = 'mobile';
-          game.saveConfig('layout', 'mobile');
-          game.saveConfig('phonelayout', true);
-        }
-        game.layout = layout;
-        //part: 随机选取背景或选择_status.htmlbg作为背景图像
-        if (lib.config.image_background_random) {
-          if (_status.htmlbg) {
-            game.saveConfig('image_background', _status.htmlbg);
+          //css.layout
+          if (lib.config.layout != 'default') {
+            ui.css.layout = init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
           }
           else {
-            console.log(lib.configMenu.appearence.config.image_background.item)
-            let list = [];
-            for (let i in lib.configMenu.appearence.config.image_background.item) {
-              if (i == 'default') continue;
-              list.push(i);
-            }
-            game.saveConfig('image_background', list.randomGet(lib.config.image_background));
+            ui.css.layout = init.css();
+            styleToLoad--;
           }
-          init.background();
-        }
-        delete _status.htmlbg;
-        //part: game to window.game
-        window.game = game;
-        //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
-        let styleToLoad = 6;
-        let styleLoaded = function () {
-          styleToLoad--;
-          if (styleToLoad == 0) {
-            if (extensionlist.length && (lib.config.mode != 'connect' || show_splash)) {
-              let extToLoad = extensionlist.length;
-              let extLoaded = function () {
-                extToLoad--;
-                if (extToLoad == 0) {
-                  loadPack();
-                }
-              }
-              for (let i = 0; i < extensionlist.length; i++) {
-                init.js(lib.assetURL + 'extension/' + extensionlist[i], 'extension', extLoaded, (function (i) {
-                  return function () {
-                    game.removeExtension(i);
-                    extToLoad--;
-                    if (extToLoad == 0) {
-                      loadPack();
-                    }
-                  }
-                }(extensionlist[i])));
-              }
+          //css.phone
+          if (get.is.phoneLayout()) {
+            ui.css.phone = init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
+          }
+          else {
+            ui.css.phone = init.css();
+            styleToLoad--;
+          }
+          {
+            //css.theme
+            ui.css.theme = init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
+            //css.card_style
+            ui.css.card_style = init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
+            //css_cardpack_style
+            ui.css.cardback_style = init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
+            //css.hp_style
+            ui.css.hp_style = init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
+          }
+          //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
+          if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
+            let str = '';
+            switch (lib.config.player_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646)'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4))'; break;
+            }
+            ui.css.player_stylesheet = init.sheet('#window .player{background-image:' + str + '}');
+          }
+          if (lib.config.border_style && lib.config.border_style != 'default' && lib.config.border_style != 'custom' && lib.config.border_style != 'auto') {
+            ui.css.border_stylesheet = init.sheet();
+            let bstyle = lib.config.border_style;
+            if (bstyle.indexOf('dragon_') == 0) {
+              bstyle = bstyle.slice(7);
+            }
+            ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg,#window #arena.long.mobile:not(.fewplayer) .player[data-position="0"]>.framebg{display:block;background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '1.png")}', 0);
+            ui.css.border_stylesheet.sheet.insertRule('#window #arena.long:not(.fewplayer) .player>.framebg, #arena.oldlayout .player>.framebg{background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '3.png")}', 0);
+            ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
+          }
+          if (lib.config.control_style && lib.config.control_style != 'default' && lib.config.control_style != 'custom') {
+            let str = '';
+            switch (lib.config.control_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+            }
+            if (lib.config.control_style == 'wood') {
+              ui.css.control_stylesheet = init.sheet('#window .control,#window .menubutton,#window #system>div>div,#window #system>div>.pressdown2{background-image:' + str + '}');
             }
             else {
-              loadPack();
+              ui.css.control_stylesheet = init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:' + str + '}');
             }
           }
-        };
-        //css.layout
-        if (lib.config.layout != 'default') {
-          ui.css.layout = init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
-        }
-        else {
-          ui.css.layout = init.css();
-          styleToLoad--;
-        }
-        //css.phone
-        if (get.is.phoneLayout()) {
-          ui.css.phone = init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
-        }
-        else {
-          ui.css.phone = init.css();
-          styleToLoad--;
-        }
-        //css.theme
-        ui.css.theme = init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
-        //css.card_style
-        ui.css.card_style = init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
-        //css_cardpack_style
-        ui.css.cardback_style = init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
-        //css.hp_style
-        ui.css.hp_style = init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
-        //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
-        if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
-          let str = '';
-          switch (lib.config.player_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646)'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4))'; break;
+          if (lib.config.menu_style && lib.config.menu_style != 'default' && lib.config.menu_style != 'custom') {
+            let str = '';
+            switch (lib.config.menu_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood2.png")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+            }
+            ui.css.menu_stylesheet = init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
           }
-          ui.css.player_stylesheet = init.sheet('#window .player{background-image:' + str + '}');
-        }
-        if (lib.config.border_style && lib.config.border_style != 'default' && lib.config.border_style != 'custom' && lib.config.border_style != 'auto') {
-          ui.css.border_stylesheet = init.sheet();
-          let bstyle = lib.config.border_style;
-          if (bstyle.indexOf('dragon_') == 0) {
-            bstyle = bstyle.slice(7);
-          }
-          ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg,#window #arena.long.mobile:not(.fewplayer) .player[data-position="0"]>.framebg{display:block;background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '1.png")}', 0);
-          ui.css.border_stylesheet.sheet.insertRule('#window #arena.long:not(.fewplayer) .player>.framebg, #arena.oldlayout .player>.framebg{background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '3.png")}', 0);
-          ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
-        }
-        if (lib.config.control_style && lib.config.control_style != 'default' && lib.config.control_style != 'custom') {
-          let str = '';
-          switch (lib.config.control_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
-          }
-          if (lib.config.control_style == 'wood') {
-            ui.css.control_stylesheet = init.sheet('#window .control,#window .menubutton,#window #system>div>div,#window #system>div>.pressdown2{background-image:' + str + '}');
+          //part: ??
+          lib.config.duration = 500;
+          //part: add mouse/touch Evt listeners to document.
+          if (!lib.config.touchscreen) {
+            document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
+            document.addEventListener('mousemove', ui.click.windowmousemove);
+            document.addEventListener('mousedown', ui.click.windowmousedown);
+            document.addEventListener('mouseup', ui.click.windowmouseup);
+            document.addEventListener('contextmenu', ui.click.right);
           }
           else {
-            ui.css.control_stylesheet = init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:' + str + '}');
+            document.addEventListener('touchstart', ui.click.touchconfirm);
+            document.addEventListener('touchstart', ui.click.windowtouchstart);
+            document.addEventListener('touchend', ui.click.windowtouchend);
+            document.addEventListener('touchmove', ui.click.windowtouchmove);
           }
-        }
-        if (lib.config.menu_style && lib.config.menu_style != 'default' && lib.config.menu_style != 'custom') {
-          let str = '';
-          switch (lib.config.menu_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood2.png")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+        },
+        proceed2: function () {
+          if (preconfig.config3) {
+            preconfig.proceed(preconfig.config3);
           }
-          ui.css.menu_stylesheet = init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
-        }
-        //part: ??
-        lib.config.duration = 500;
-        //part: add mouse/touch Evt listeners to document.
-        if (!lib.config.touchscreen) {
-          document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
-          document.addEventListener('mousemove', ui.click.windowmousemove);
-          document.addEventListener('mousedown', ui.click.windowmousedown);
-          document.addEventListener('mouseup', ui.click.windowmouseup);
-          document.addEventListener('contextmenu', ui.click.right);
-        }
-        else {
-          document.addEventListener('touchstart', ui.click.touchconfirm);
-          document.addEventListener('touchstart', ui.click.windowtouchstart);
-          document.addEventListener('touchend', ui.click.windowtouchend);
-          document.addEventListener('touchmove', ui.click.windowtouchmove);
-        }
-      };
-      var proceed2 = function () {
-        if (config3) {
-          proceed(config3);
-        }
-        else {
-          config3 = true;
-        }
-      };
+          else {
+            preconfig.config3 = true;
+          }
+        },
+        //用于加载包的函数
+        loadPack: function () {
+          let show_splash = preconfig.show_splash
+          if (!Object.keys(lib.character).length && !preconfig.initDataing) {
+            lib.init.js(dist(), ['card', 'character'], preconfig.packLoaded, preconfig.packLoaded);
+          }
+          if (localStorage.getItem(lib.configprefix + 'playback')
+            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash)
+              && lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
+            preconfig.toLoad++;
+            if (!preconfig.initDataing) preconfig.initDataing = true
+            init.js(dist(), 'mode', preconfig.packLoaded, preconfig.packLoaded);
+          }
+          else {
+            if (!preconfig.initDataing) {
+              preconfig.initDataing = true
+            }
+            else {
+              preconfig.toLoad++;
+              preconfig.packLoaded()
+            }
+          }
+        },
+        packLoaded: function () {
+          preconfig.toLoad--;
+          if (preconfig.toLoad == 0) {
+            if (!preconfig.initDataing) {
+              preconfig.initDataing = true
+              init.analyseLoad()
+            }
+            else if (_status.windowLoaded) {
+              delete _status.windowLoaded;
+              init.onload();
+            }
+            else {
+              /**
+               * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
+               * @private
+               * @default
+               */
+              _status.packLoaded = true;
+            }
+          }
+        },
+      }
+      init.init_ui_css(preconfig)
+      // if (localStorage.getItem(lib.configprefix + 'directstart')) {
+      //   init.init_startGame(preconfig)
+      // }
+      // else {
+      //   init.js(dist(), 'main', () => {
+      //     if (window.resetGameTimeout) {
+      //       clearTimeout(window.resetGameTimeout)
+      //     }
+      //     game.main.createHome(preconfig)
+      //   })
+      // }
+      init.init_startGame(preconfig)
+    },
+    init_startGame: function (preconfig) {
+      var proceed = preconfig.proceed;
       require('@l/basis.less')
-      //part: 初始化ui.css.menu和ui.css.default样式
-      ui.css = {
-        menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
-          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout', function () {
-            init.css(lib.assetURL + 'layout/default', 'resource');
-            proceed2();
-          });
-        })
-      };
       //part: config for different type of devices(PC, mobile devices).
       if (lib.device) {
         //移动端，window加载完成时被调用
@@ -1752,11 +1778,6 @@ module.exports = function (element, _mode, _message) {
           }
         }
       }
-      //part: 游戏设置信息，window.config，创建于config.js
-      lib.config = window.config;
-      //part: 联机部分的设置
-      lib.configOL = {};
-      delete window.config;
       var config2;
       if (localStorage.getItem(lib.configprefix + 'nodb')) {
         window.nodb = true;
@@ -1837,8 +1858,40 @@ module.exports = function (element, _mode, _message) {
         }
         proceed(config2);
       }
+      init.init_after()
+    },
+    init_startConnect: function (preconfig) {
+      lib.config.mode = 'connect';
+      preconfig.skip_splash = true;
+      init.init_startGame(preconfig)
+    },
+    init_after: function () {
       if (lib.init_extra) {
         lib.init_extra()
+      }
+    },
+    init_ui_css: function (preconfig) {
+      ui.css = {
+        menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
+          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout', function () {
+            init.css(lib.assetURL + 'layout/default', 'resource');
+            preconfig.proceed2();
+          });
+        })
+      };
+      delete window.config;
+      let pack = window.vk_package;
+      if (pack.font) {
+        ui.css.fontsheet = init.sheet();
+        for (let i in pack.font) {
+          lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
+          ui.css.fontsheet.sheet.insertRule(`@font-face {font-family: '${i}';src: url('${lib.assetURL}font/${i}.ttf');}`, 0);
+        }
+        lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
+        lib.configMenu.appearence.config.global_font.item.default = '默认';
       }
     },
     /**
@@ -1948,6 +2001,7 @@ module.exports = function (element, _mode, _message) {
         document.documentElement.style.backgroundImage = '';
         document.documentElement.style.backgroundSize = '';
         document.documentElement.style.backgroundPosition = '';
+        document.documentElement.style.height = '';
         document.body.insertBefore(ui.background, document.body.firstChild);
         document.body.onresize = ui.updatexr;
         if (lib.config.touchscreen) {
@@ -2126,9 +2180,8 @@ module.exports = function (element, _mode, _message) {
 
       var proceed2 = function () {
         var mode = lib.imported.mode;
-        var card = lib.imported.card;
-        var character = lib.imported.character;
         var play = lib.imported.play;
+        init.analyseLoad()
         delete window.game;
         var i, j, k;
         for (i in mode[lib.config.mode].element) {
@@ -2204,93 +2257,6 @@ module.exports = function (element, _mode, _message) {
           mode[lib.config.mode].init();
         }
 
-        var connectCharacterPack = [];
-        var connectCardPack = [];
-        for (i in character) {
-          if (character[i].character) {
-            lib.characterPack[i] = character[i].character
-          }
-          for (j in character[i]) {
-            if (j == 'mode' || j == 'forbid') continue;
-            if (j == 'connect') {
-              connectCharacterPack.push(i);
-              continue;
-            }
-            if (j == 'character' && !lib.config.characters.contains(i) && lib.config.mode != 'connect') {
-              if (lib.config.mode == 'chess' && get.config('chess_mode') == 'leader' && get.config('chess_leader_allcharacter')) {
-                for (k in character[i][j]) {
-                  lib.hiddenCharacters.push(k);
-                }
-              }
-              else if (lib.config.mode != 'boss' || i != 'boss') {
-                continue;
-              }
-            }
-            if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
-              lib[j].addArray(character[i][j]);
-              continue;
-            }
-            for (k in character[i][j]) {
-              if (j == 'character') {
-                if (!character[i][j][k][4]) {
-                  character[i][j][k][4] = [];
-                }
-                if (character[i][j][k][4].contains('boss') ||
-                  character[i][j][k][4].contains('hiddenboss')) {
-                  lib.config.forbidai.add(k);
-                }
-                if (lib.config.forbidai_user && lib.config.forbidai_user.contains(k)) {
-                  lib.config.forbidai.add(k);
-                }
-                for (var l = 0; l < character[i][j][k][3].length; l++) {
-                  lib.skilllist.add(character[i][j][k][3][l]);
-                }
-              }
-              if (j == 'skill' && k[0] == '_' && (lib.config.mode != 'connect' ? (!lib.config.characters.contains(i)) : (!character[i].connect))) {
-                continue;
-              }
-              if (j == 'translate' && k == i) {
-                lib[j][k + '_character_config'] = character[i][j][k];
-              }
-              else {
-                if (lib[j][k] == undefined) {
-                  if (j == 'skill' && !character[i][j][k].forceLoad && lib.config.mode == 'connect' && !character[i].connect) {
-                    lib[j][k] = {
-                      nopop: character[i][j][k].nopop,
-                      derivation: character[i][j][k].derivation
-                    };
-                  }
-                  else {
-                    lib[j][k] = character[i][j][k];
-                  }
-                  if (j == 'card' && lib[j][k].derivation) {
-                    if (!lib.cardPack.mode_derivation) {
-                      lib.cardPack.mode_derivation = [k];
-                    }
-                    else {
-                      lib.cardPack.mode_derivation.push(k);
-                    }
-                  }
-                }
-                else if (Array.isArray(lib[j][k]) && Array.isArray(character[i][j][k])) {
-                  lib[j][k].addArray(character[i][j][k]);
-                }
-                else {
-                  console.log('dublicate ' + j + ' in character ' + i + ':\n' + k + '\n' + ': ' + lib[j][k] + '\n' + character[i][j][k]);
-                }
-              }
-            }
-          }
-        }
-        var connect_avatar_list = [];
-        for (var i in lib.character) {
-          connect_avatar_list.push(i);
-        }
-        connect_avatar_list.sort(lib.sort.capt);
-        for (var i = 0; i < connect_avatar_list.length; i++) {
-          var ia = connect_avatar_list[i];
-          _mode.connect.config.connect_avatar.item[ia] = lib.translate[ia];
-        }
         if (lib.config.mode != 'connect') {
           var pilecfg = lib.config.customcardpile[get.config('cardpilename') || '当前牌堆'];
           if (pilecfg) {
@@ -2300,91 +2266,6 @@ module.exports = function (element, _mode, _message) {
           else {
             lib.config.bannedpile = {};
             lib.config.addedpile = {};
-          }
-        }
-        else {
-          lib.cardPackList = {};
-        }
-        for (i in card) {
-          lib.cardPack[i] = [];
-          if (card[i].card) {
-            for (var j in card[i].card) {
-              if (!card[i].card[j].hidden && card[i].translate[j + '_info']) {
-                lib.cardPack[i].push(j);
-              }
-            }
-          }
-          for (j in card[i]) {
-            if (j == 'mode' || j == 'forbid') continue;
-            if (j == 'connect') {
-              connectCardPack.push(i);
-              continue;
-            }
-            if (j == 'list') {
-              if (lib.config.mode == 'connect') {
-                lib.cardPackList[i] = card[i][j];
-              }
-              else {
-                if (lib.config.cards.contains(i)) {
-                  var pile;
-                  if (typeof card[i][j] == 'function') {
-                    pile = card[i][j]();
-                  }
-                  else {
-                    pile = card[i][j];
-                  }
-                  lib.cardPile[i] = pile.slice(0);
-                  if (lib.config.bannedpile[i]) {
-                    for (var k = 0; k < lib.config.bannedpile[i].length; k++) {
-                      pile[lib.config.bannedpile[i][k]] = null;
-                    }
-                  }
-                  for (var k = 0; k < pile.length; k++) {
-                    if (!pile[k]) {
-                      pile.splice(k--, 1);
-                    }
-                  }
-                  if (lib.config.addedpile[i]) {
-                    for (var k = 0; k < lib.config.addedpile[i].length; k++) {
-                      pile.push(lib.config.addedpile[i][k]);
-                    }
-                  }
-                  lib.card.list = lib.card.list.concat(pile);
-                }
-              }
-            }
-            else {
-              for (k in card[i][j]) {
-                if (j == 'skill' && k[0] == '_' && !card[i][j][k].forceLoad && (lib.config.mode != 'connect' ? (!lib.config.cards.contains(i)) : (!card[i].connect))) {
-                  continue;
-                }
-                if (j == 'translate' && k == i) {
-                  lib[j][k + '_card_config'] = card[i][j][k];
-                }
-                else {
-                  if (lib[j][k] == undefined) {
-                    if (j == 'skill' && !card[i][j][k].forceLoad && lib.config.mode == 'connect' && !card[i].connect) {
-                      lib[j][k] = {
-                        nopop: card[i][j][k].nopop,
-                        derivation: card[i][j][k].derivation
-                      };
-                    }
-                    else {
-                      lib[j][k] = card[i][j][k];
-                    }
-                  }
-                  else console.log('dublicate ' + j + ' in card ' + i + ':\n' + k + '\n' + lib[j][k] + '\n' + card[i][j][k]);
-                  if (j == 'card' && lib[j][k].derivation) {
-                    if (!lib.cardPack.mode_derivation) {
-                      lib.cardPack.mode_derivation = [k];
-                    }
-                    else {
-                      lib.cardPack.mode_derivation.push(k);
-                    }
-                  }
-                }
-              }
-            }
           }
         }
         if (lib.cardPack.mode_derivation) {
@@ -2458,16 +2339,18 @@ module.exports = function (element, _mode, _message) {
         lib.connectCardPack = [];
         for (var i = 0; i < lib.config.all.characters.length; i++) {
           var packname = lib.config.all.characters[i];
-          if (connectCharacterPack.contains(packname)) {
+          if (_status.connectCharacterPack.contains(packname)) {
             lib.connectCharacterPack.push(packname)
           }
         }
+        delete _status.connectCharacterPack
         for (var i = 0; i < lib.config.all.cards.length; i++) {
           var packname = lib.config.all.cards[i];
-          if (connectCardPack.contains(packname)) {
+          if (_status.connectCardPack.contains(packname)) {
             lib.connectCardPack.push(packname)
           }
         }
+        delete _status.connectCardPack
         if (lib.config.mode != 'connect') {
           for (i = 0; i < lib.card.list.length; i++) {
             if (lib.card.list[i][2] == 'huosha') {
@@ -2520,8 +2403,6 @@ module.exports = function (element, _mode, _message) {
           lib.cheat.i();
         }
         lib.config.sort_card = get.sortCard(lib.config.sort);
-        delete lib.imported.character;
-        delete lib.imported.card;
         delete lib.imported.mode;
         delete lib.imported.play;
         for (var i in init) {
@@ -2602,95 +2483,290 @@ module.exports = function (element, _mode, _message) {
       };
       if (!lib.imported.mode || !lib.imported.mode[lib.config.mode]) {
         window.inSplash = true;
-        clearTimeout(window.resetGameTimeout);
-        delete window.resetGameTimeout;
-        var clickedNode = false;
-        var clickNode = function () {
-          if (clickedNode) return;
-          this.classList.add('clicked');
-          clickedNode = true;
-          lib.config.mode = this.link;
-          game.saveConfig('mode', this.link);
-          if (this.link == 'connect') {
-            localStorage.setItem(lib.configprefix + 'directstart', true);
-            game.reload();
-          }
-          else {
-            if (game.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
-              game.layout = 'mobile';
-              ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
-            }
-            else if (game.layout == 'mobile' && lib.config.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) === -1) {
-              game.layout = lib.config.layout;
-              if (game.layout == 'default') {
-                ui.css.layout.href = '';
-              }
-              else {
-                ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
-              }
-            }
-            splash.delete(1000);
-            delete window.inSplash;
-            window.resetGameTimeout = setTimeout(init.reset, 5000);
-
-            this.listenTransition(() => {
-              init.js(dist(), 'mode', proceed);
-            }, 500);
-          }
+        if (window.resetGameTimeout) {
+          clearTimeout(window.resetGameTimeout);
+          delete window.resetGameTimeout;
         }
-        var downNode = function () {
-          this.classList.add('glow');
-        }
-        var upNode = function () {
-          this.classList.remove('glow');
-        }
-        var splash = ui.create.div('#splash', document.body);
-        if (lib.config.touchscreen) {
-          splash.classList.add('touch');
-          lib.setScroll(splash);
-        }
-        if (lib.config.player_border != 'wide') {
-          splash.classList.add('slim');
-        }
-        splash.dataset.radius_size = lib.config.radius_size;
-        for (var i = 0; i < lib.config.all.mode.length; i++) {
-          var node = ui.create.div('.hidden', splash, clickNode);
-          node.link = lib.config.all.mode[i];
-          node.dataset.cursor_style = "pointer";
-          ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
-          if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
-          }
-          else {
-            var avatarnode = ui.create.div(node, '.avatar');
-            var avatarbg = _mode[lib.config.all.mode[i]].splash;
-            if (avatarbg.indexOf('ext:') == 0) {
-              avatarnode.setBackgroundImage(avatarbg.replace(/ext:/, 'extension/'));
-            }
-            else {
-              avatarnode.setBackgroundDB(avatarbg);
-            }
-          }
-          if (!lib.config.touchscreen) {
-            node.addEventListener('mousedown', downNode);
-            node.addEventListener('mouseup', upNode);
-            node.addEventListener('mouseleave', upNode);
-          }
-          setTimeout((function (node) {
-            return function () {
-              node.show();
-            }
-          }(node)), i * 100);
-        }
-        if (lib.config.mousewheel) {
-          splash.onmousewheel = ui.click.mousewheel;
-        }
+        init.createSplash(proceed)
       }
       else {
         proceed();
       }
       localStorage.removeItem(lib.configprefix + 'directstart');
       delete init.init;
+    },
+    analyseLoad() {
+      console.log('stepA')
+      if (lib.imported.character) {
+        init.analyseChara()
+      }
+      if (lib.imported.card) {
+        init.analyseCard()
+      }
+    },
+    analyseChara() {
+      let character = lib.imported.character;
+      _status.connectCharacterPack = [];
+      for (let i in character) {
+        if (character[i].character) {
+          lib.characterPack[i] = character[i].character
+        }
+        for (j in character[i]) {
+          if (j == 'mode' || j == 'forbid') continue;
+          if (j == 'connect') {
+            _status.connectCharacterPack.push(i);
+            continue;
+          }
+          if (j == 'character' && !lib.config.characters.contains(i) && lib.config.mode != 'connect') {
+            if (lib.config.mode == 'chess' && get.config('chess_mode') == 'leader' && get.config('chess_leader_allcharacter')) {
+              for (k in character[i][j]) {
+                lib.hiddenCharacters.push(k);
+              }
+            }
+            else if (lib.config.mode != 'boss' || i != 'boss') {
+              continue;
+            }
+          }
+          if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
+            lib[j].addArray(character[i][j]);
+            continue;
+          }
+          for (k in character[i][j]) {
+            if (j == 'character') {
+              if (!character[i][j][k][4]) {
+                character[i][j][k][4] = [];
+              }
+              if (character[i][j][k][4].contains('boss') ||
+                character[i][j][k][4].contains('hiddenboss')) {
+                lib.config.forbidai.add(k);
+              }
+              if (lib.config.forbidai_user && lib.config.forbidai_user.contains(k)) {
+                lib.config.forbidai.add(k);
+              }
+              for (var l = 0; l < character[i][j][k][3].length; l++) {
+                lib.skilllist.add(character[i][j][k][3][l]);
+              }
+            }
+            if (j == 'skill' && k[0] == '_' && (lib.config.mode != 'connect' ? (!lib.config.characters.contains(i)) : (!character[i].connect))) {
+              continue;
+            }
+            if (j == 'translate' && k == i) {
+              lib[j][k + '_character_config'] = character[i][j][k];
+            }
+            else {
+              if (lib[j][k] == undefined) {
+                if (j == 'skill' && !character[i][j][k].forceLoad && lib.config.mode == 'connect' && !character[i].connect) {
+                  lib[j][k] = {
+                    nopop: character[i][j][k].nopop,
+                    derivation: character[i][j][k].derivation
+                  };
+                }
+                else {
+                  lib[j][k] = character[i][j][k];
+                }
+                if (j == 'card' && lib[j][k].derivation) {
+                  if (!lib.cardPack.mode_derivation) {
+                    lib.cardPack.mode_derivation = [k];
+                  }
+                  else {
+                    lib.cardPack.mode_derivation.push(k);
+                  }
+                }
+              }
+              else if (Array.isArray(lib[j][k]) && Array.isArray(character[i][j][k])) {
+                lib[j][k].addArray(character[i][j][k]);
+              }
+              else {
+                console.log('dublicate ' + j + ' in character ' + i + ':\n' + k + '\n' + ': ' + lib[j][k] + '\n' + character[i][j][k]);
+              }
+            }
+          }
+        }
+      }
+      let connect_avatar_list = [];
+      for (let i in lib.character) {
+        connect_avatar_list.push(i);
+      }
+      connect_avatar_list.sort(lib.sort.capt);
+      for (let i = 0; i < connect_avatar_list.length; i++) {
+        let ia = connect_avatar_list[i];
+        _mode.connect.config.connect_avatar.item[ia] = lib.translate[ia];
+      }
+      delete lib.imported.character;
+    },
+    analyseCard() {
+      let card = lib.imported.card;
+      _status.connectCardPack = [];
+      if (lib.config.mode == 'connect') {
+        lib.cardPackList = {};
+      }
+      for (let i in card) {
+        lib.cardPack[i] = [];
+        if (card[i].card) {
+          for (var j in card[i].card) {
+            if (!card[i].card[j].hidden && card[i].translate[j + '_info']) {
+              lib.cardPack[i].push(j);
+            }
+          }
+        }
+        for (j in card[i]) {
+          if (j == 'mode' || j == 'forbid') continue;
+          if (j == 'connect') {
+            _status.connectCardPack.push(i);
+            continue;
+          }
+          if (j == 'list') {
+            if (lib.config.mode == 'connect') {
+              lib.cardPackList[i] = card[i][j];
+            }
+            else {
+              if (lib.config.cards.contains(i)) {
+                var pile;
+                if (typeof card[i][j] == 'function') {
+                  pile = card[i][j]();
+                }
+                else {
+                  pile = card[i][j];
+                }
+                lib.cardPile[i] = pile.slice(0);
+                if (lib.config.bannedpile[i]) {
+                  for (var k = 0; k < lib.config.bannedpile[i].length; k++) {
+                    pile[lib.config.bannedpile[i][k]] = null;
+                  }
+                }
+                for (var k = 0; k < pile.length; k++) {
+                  if (!pile[k]) {
+                    pile.splice(k--, 1);
+                  }
+                }
+                if (lib.config.addedpile[i]) {
+                  for (var k = 0; k < lib.config.addedpile[i].length; k++) {
+                    pile.push(lib.config.addedpile[i][k]);
+                  }
+                }
+                lib.card.list = lib.card.list.concat(pile);
+              }
+            }
+          }
+          else {
+            for (k in card[i][j]) {
+              if (j == 'skill' && k[0] == '_' && !card[i][j][k].forceLoad && (lib.config.mode != 'connect' ? (!lib.config.cards.contains(i)) : (!card[i].connect))) {
+                continue;
+              }
+              if (j == 'translate' && k == i) {
+                lib[j][k + '_card_config'] = card[i][j][k];
+              }
+              else {
+                if (lib[j][k] == undefined) {
+                  if (j == 'skill' && !card[i][j][k].forceLoad && lib.config.mode == 'connect' && !card[i].connect) {
+                    lib[j][k] = {
+                      nopop: card[i][j][k].nopop,
+                      derivation: card[i][j][k].derivation
+                    };
+                  }
+                  else {
+                    lib[j][k] = card[i][j][k];
+                  }
+                }
+                else console.log('dublicate ' + j + ' in card ' + i + ':\n' + k + '\n' + lib[j][k] + '\n' + card[i][j][k]);
+                if (j == 'card' && lib[j][k].derivation) {
+                  if (!lib.cardPack.mode_derivation) {
+                    lib.cardPack.mode_derivation = [k];
+                  }
+                  else {
+                    lib.cardPack.mode_derivation.push(k);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      delete lib.imported.card;
+    },
+    createSplash(proceed, body = document.body) {
+      var clickedNode = false;
+      var clickNode = function () {
+        if (clickedNode) return;
+        this.classList.add('clicked');
+        clickedNode = true;
+        lib.config.mode = this.link;
+        game.saveConfig('mode', this.link);
+        if (this.link == 'connect') {
+          localStorage.setItem(lib.configprefix + 'directstart', true);
+          game.reload();
+        }
+        else {
+          if (game.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
+            game.layout = 'mobile';
+            ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
+          }
+          else if (game.layout == 'mobile' && lib.config.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) === -1) {
+            game.layout = lib.config.layout;
+            if (game.layout == 'default') {
+              ui.css.layout.href = '';
+            }
+            else {
+              ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
+            }
+          }
+          splash.delete(1000);
+          delete window.inSplash;
+          window.resetGameTimeout = setTimeout(init.reset, 5000);
+
+          this.listenTransition(() => {
+            init.js(dist(), 'mode', proceed);
+          }, 500);
+        }
+      }
+      var downNode = function () {
+        this.classList.add('glow');
+      }
+      var upNode = function () {
+        this.classList.remove('glow');
+      }
+      var splash = ui.create.div('#splash', body);
+      console.log(splash)
+      if (lib.config.touchscreen) {
+        splash.classList.add('touch');
+        lib.setScroll(splash);
+      }
+      if (lib.config.player_border != 'wide') {
+        splash.classList.add('slim');
+      }
+      splash.dataset.radius_size = lib.config.radius_size;
+      for (var i = 0; i < lib.config.all.mode.length; i++) {
+        var node = ui.create.div('.hidden', splash, clickNode);
+        node.link = lib.config.all.mode[i];
+        node.dataset.cursor_style = "pointer";
+        ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
+        if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
+          ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
+        }
+        else {
+          var avatarnode = ui.create.div(node, '.avatar');
+          var avatarbg = _mode[lib.config.all.mode[i]].splash;
+          if (avatarbg.indexOf('ext:') == 0) {
+            avatarnode.setBackgroundImage(avatarbg.replace(/ext:/, 'extension/'));
+          }
+          else {
+            avatarnode.setBackgroundDB(avatarbg);
+          }
+        }
+        if (!lib.config.touchscreen) {
+          node.addEventListener('mousedown', downNode);
+          node.addEventListener('mouseup', upNode);
+          node.addEventListener('mouseleave', upNode);
+        }
+        setTimeout((function (node) {
+          return function () {
+            node.show();
+          }
+        }(node)), i * 100);
+      }
+      if (lib.config.mousewheel) {
+        splash.onmousewheel = ui.click.mousewheel;
+      }
     },
     startOnline: [function () {
       Evt._resultid = null;
@@ -2712,8 +2788,10 @@ module.exports = function (element, _mode, _message) {
      */
     onfree: function () {
       if (lib.onfree) {
-        clearTimeout(window.resetGameTimeout);
-        delete window.resetGameTimeout;
+        if(window.resetGameTimeout){
+          clearTimeout(window.resetGameTimeout);
+          delete window.resetGameTimeout;
+        }
         if (!game.syncMenu) {
           delete window.resetExtension;
           localStorage.removeItem(lib.configprefix + 'disable_extension');

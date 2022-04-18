@@ -67,6 +67,7 @@
 		group_HappyEl: { ...groupCard, },
 		group_RedC: { ...groupCard, },
 		group_painter: { ...groupCard, },
+		group_singer: { ...groupCard, },
 
 		//仅出现在战略模式中的势力
 		group_MiyaFam: { ...groupCard, },

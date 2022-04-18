@@ -333,16 +333,17 @@ export default {
         }
     },
     /**旧花园猫 */
-    old_maoliang: {
-        mark: true,
-        locked: true,
+    old_maoliang: new toSkill('mark', {
         marktext: '粮',
         intro: {
-            content: 'cards',
-            onunmark: 'throw',
-            cardAround: true
+            content: 'expansion',
+            markcount: 'expansion',
         },
-    },
+        onremove: function (player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) player.loseToDiscardpile(cards);
+        },
+    }, 'locked'),
     old_jiumao: {
         audio: 'jiumao',
         global: 'old_jiumao_put',
@@ -368,28 +369,17 @@ export default {
                     'step 0'
                     player.chooseCard(get.prompt('old_jiumao'), 'he', [1, Infinity])
                         .set('ai', card => {
-                            var player = _status.event.player;
-                            if (player.needsToDiscard() && ui.selected.cards.length < player.countCards('h')) return 6 - get.useful(card);
+                            let player = _status.event.player;
+                            if (player.needsToDiscard() && ui.selected.cards.length < (player.countCards('h') - 1)) return 6 - get.useful(card);
                             else return 2 - get.useful(card);
-                        }).set('prompt', '###『啾猫』###你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为「猫粮」');
+                        }).set('prompt2', '你在弃牌阶段开始时，可将任意数量的牌放在自己武将牌旁，称为「猫粮」');
                     'step 1'
                     if (result.bool) {
-                        player.lose(result.cards, ui.special, 'visible', 'toStorage');
-                        player.$give(result.cards, player, false);
-                        if (player.$.old_maoliang) {
-                            player.$.old_maoliang = player.$.old_maoliang.concat(result.cards);
-                        }
-                        else {
-                            player.$.old_maoliang = result.cards;
-                        }
-                        // game.addVideo('storage', player, ['old_maoliang',get.cardsInfo(player.$.old_maoliang),'cards']);
-                        player.addSkill('old_maoliang');
-                        player.markSkill('old_maoliang');
-                        player.showCards(player.$.old_maoliang, "猫粮");
+                        player.addToExpansion(result.cards, 'give', player).gaintag.add('old_maoliang');
+                        player.addSkill('old_maoliang')
+                        game.delayx();
                     }
                     else Evt.finish();
-                    'step 2'
-                    game.delayx();
                 }
             },
             gain: {
@@ -399,54 +389,42 @@ export default {
                 },
                 filter(Evt, player) {
                     return game.countPlayer(cur => {
-                        return cur.hasSkill('old_maoliang');
+                        return cur.getExpansions('old_maoliang').length;
                     });
                 },
                 content() {
                     'step 0'
                     Evt.targets = game.filterPlayer(cur => {
-                        return cur.hasSkill('old_maoliang');
+                        return cur.getExpansions('old_maoliang').length;
                     });
                     Evt.videoId = lib.status.videoId++;
                     game.broadcastAll(function (targets, id) {
                         var dialog = ui.create.dialog('选择猫粮');
                         targets.forEach(function (p) {
-                            if (p.$.old_maoliang.length) {
+                            if (p.getExpansions('old_maoliang').length) {
                                 dialog.addText(get.translation(p));
-                                dialog.add(p.$.old_maoliang);
+                                dialog.add(p.getExpansions('old_maoliang'));
                             }
                         })
                         dialog.videoId = id;
                     }, Evt.targets, Evt.videoId);
-                    let next = player.chooseButton([1, player.maxHp]);
-                    next.set('dialog', Evt.videoId);
+                    player.chooseButton([1, player.maxHp])
+                        .set('dialog', Evt.videoId);
                     'step 1'
                     game.broadcastAll('closeDialog', Evt.videoId)
                     if (result.bool) {
-                        Evt.cards = result.links;
+                        Evt.gainSource = []
+                        Evt.cards = result.links.slice(0);
                         player.logSkill('old_jiumao');
                         Evt.targets.forEach(function (p) {
-                            var all = p.$.old_maoliang;
-                            var cho = [];
-                            p.$.old_maoliang = [];
-                            all.forEach(card => {
-                                if (Evt.cards.indexOf(card) != -1) {
-                                    cho.push(card);
-                                    p.addTempSkill('old_jiumao_cancel');
-                                }
-                                else {
-                                    p.$.old_maoliang.push(card);
-                                }
-                            })
-                            p.$give(cho, player, false);
-                            player.gain(cho, 'fromStorage');
-                            p.syncStorage('old_maoliang');
-                            p.markSkill('old_maoliang');
-                            game.log(player, "获得了", p, "的猫粮：", cho);
+                            var cho = p.getExpansions('old_maoliang').filter(card => Evt.cards.includes(card));
+                            if (cho.length) {
+                                Evt.gainSource.push(p)
+                                p.addTempSkill('old_jiumao_cancel')
+                                player.gain(cho, 'give', p, 'log', 'fromStorage');
+                            }
                         })
-                        player.line(game.filterPlayer(cur => {
-                            return cur.hasSkill('old_jiumao_cancel');
-                        }), 'green');
+                        // player.line(Evt.gainSource, 'green');
                     }
                 }
             },
@@ -462,61 +440,51 @@ export default {
         }
     },
     old_enfan: {
-        popup: false,
         trigger: {
             global: 'dying'
         },
         filter(Evt, player) {
-            return Evt.player.hasSkill('old_jiumao') || Evt.player.hasSkill('old_maoliang');
+            return (Evt.player.hasSkill('old_jiumao') || Evt.player.hasSkill('old_maoliang'))
+                && game.filterPlayer(cur => {
+                    return cur.getExpansions('old_maoliang').length;
+                });;
         },
         content() {
             'step 0'
             Evt.targets = game.filterPlayer(cur => {
-                return cur.hasSkill('old_maoliang');
+                return cur.getExpansions('old_maoliang').length;
             });
             Evt.videoId = lib.status.videoId++;
             game.broadcastAll(function (targets, id, current) {
                 var dialog = ui.create.dialog('选择猫粮');
                 targets.forEach(function (p) {
-                    if (p != current && p.$.old_maoliang.length) {
+                    if (p.getExpansions('old_maoliang').length) {
                         dialog.addText(get.translation(p));
-                        dialog.add(p.$.old_maoliang);
+                        dialog.add(p.getExpansions('old_maoliang'));
                     }
                 })
                 dialog.videoId = id;
             }, Evt.targets, Evt.videoId, trigger.player)
-            let next = player.chooseButton([1, player.maxHp])
+            player.chooseButton([1, player.maxHp])
                 .set('dialog', Evt.videoId);
             'step 1'
             game.broadcastAll('closeDialog', Evt.videoId);
             if (result.bool) {
-                Evt.cards = result.links;
-                var targets = [];
-                var less = false;
+                Evt.cards = result.links.slice(0);
+                player.logSkill('old_enfan', trigger.player);
+                game.delayx()
                 Evt.targets.forEach(function (p) {
-                    var temp = p.$.old_maoliang;
-                    p.$.old_maoliang = [];
-                    temp.forEach(card => {
-                        if (Evt.cards.indexOf(card) != -1) {
-                            p.$give(card, trigger.player, false);
-                            trigger.player.gain(card, 'fromStorage');
-                            targets.push(p);
-                        }
-                        else {
-                            p.$.old_maoliang.push(card);
-                            less = true;
-                        }
-                    })
-                    p.syncStorage('old_maoliang');
-                    p.markSkill('old_maoliang');
+                    var cho = p.getExpansions('old_maoliang').filter(card => Evt.cards.includes(card));
+                    if (cho.length) {
+                        trigger.player.gain(cho, 'give', p, 'log', 'fromStorage');
+                    }
                 })
-                if (!less) {
+                if (!game.filterPlayer(cur => {
+                    return cur.getExpansions('old_maoliang').length;
+                })) {
                     trigger.player.recover();
                 }
-                player.logSkill('old_enfan', trigger.player);
-                trigger.player.line(targets, 'green');
             }
-            else Evt.finish();
         }
     },
     old_shiqi: {
@@ -655,7 +623,7 @@ export default {
         subSkill: {
             viewAs: {
                 mod: {
-                    cardname(card, player,name) {
+                    cardname(card, player, name) {
                         if (name == 'shan' || name == 'tao') return 'jiu';
                         if (get.subtype(name) == 'equip3' || get.subtype(name) == 'equip4' || get.subtype(name) == 'equip6') return 'tiesuo';
                     },

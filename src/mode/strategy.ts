@@ -238,8 +238,8 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			function createFaction(player, factionName, faction, position, diff?) {
 				player.initFaction(factionName, faction.chara.leader).animate('start')
 				player.dataset.position = position
-				player.style = `--transY:${game.factions.indexOf(player) + Math.random()*0.9};
-				--transX:${game.factions.indexOf(player) + Math.random()*0.8}`
+				player.style = `--transY:${game.factions.indexOf(player) + Math.random() * 0.9};
+				--transX:${game.factions.indexOf(player) + Math.random() * 0.8}`
 				console.log(player.style)
 				ui.arena.appendChild(player)
 			}
@@ -252,8 +252,8 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 			ui.create.me(true);
 
 			let currentFactions_name = Object.keys(currentDrama.factions)
-			for(let name of currentFactions_name){
-				if(name===currentFaction_name)	continue;
+			for (let name of currentFactions_name) {
+				if (name === currentFaction_name) continue;
 
 				let fact = currentDrama.factions[name]
 				createFaction(ui.create.player(), name, fact, 1)
@@ -985,33 +985,38 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						game.stg = lib.situate.control.resourceController()
 					},
 					hide: () => {
-						lib.situate.control.close()
-						if (ui.STG_start) {
-							let preUi = ui.STG_start
-							ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
-							preUi.remove()
-						} else {
-							lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
-						}
-						ui.factionSearcher.delete(10, () => {
+						ui.factionSearcher.delete(50, () => {
+							if (ui.mapMode) {
+								ui.mapMode.delete(100)
+								delete ui.mapMode
+								ui.mapZoom.delete(100)
+								delete ui.mapZoom
+							}
 							ui.mapSearcher.delete(100, () => {
-								if(ui.mapMode){
-									ui.mapMode.delete(100)
-									delete ui.mapMode
-									ui.mapZoom.delete(100)
-									delete ui.mapZoom
-								}
-								ui.dramaContainer.delete(200, () => {
+								lib.situate.control.close()
+								ui.dramaContainer.delete(300, () => {
 									delete ui.dramaContainer
 									delete ui.chessMap
 									delete ui.canvas2
 									delete ui.ctx2
-									ui.mapContainer.delete(200, () => {
-										delete ui.mapContainer
-									})
+									if (ui.mapContainer) {
+										ui.mapContainer.delete(300, () => {
+											delete ui.mapContainer
+										})
+									}
 								})
 							})
 						})
+						setTimeout(() => {
+							if (ui.STG_start) {
+								let preUi = ui.STG_start
+								ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
+								preUi.remove()
+							} else {
+								lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
+							}
+						}, 450)
+						game.delayx(0.5, 0.5)
 					}
 				}
 			},
@@ -1071,6 +1076,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 						if (ui.watchDrama) {
 							if (_status.drama.watch) {
 								game.stginfo.situation.hide()
+								_status.drama.watch = false
 							}
 							ui.watchDrama.close();
 							delete ui.watchDrama;

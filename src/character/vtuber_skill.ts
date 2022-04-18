@@ -513,7 +513,7 @@ export default {
         },
     }),
     rongyuchengyuan: new toSkill('trigger', {
-        audio:3,
+        audio: 3,
         filter(Evt, player) {
             return game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
         },
@@ -521,10 +521,10 @@ export default {
             Evt.num = game.countPlayer(cur => cur.hasSkill('homolive') || cur.countCards() === 0)
             player.draw(Evt.num)
         },
-        group:'rongyuchengyuan_putMark',
+        group: 'rongyuchengyuan_putMark',
         subSkill: {
             putMark: new toSkill('trigger', {
-                audio:'rongyuchengyuan',
+                audio: 'rongyuchengyuan',
                 filter(Evt, player) {
                     if (!Evt.source || Evt.source === player) return false;
                     if (Evt.source.hasSkill('homolive')) return false;
@@ -1585,78 +1585,61 @@ export default {
     },
 
     //Kaf
-    liuhua: {
-        init(player, skill) {
-            if (!player.storage[skill]) player.storage[skill] = [];
-        },
-        mark: true,
+    yu: new toSkill('mark', {
         intro: {
-            name: '化羽',
-            content: 'cards',
-            onunmark(storage, player) {
-                if (storage && storage.length) {
-                    player.$throw(storage, 1000);
-                    game.cardsDiscard(storage);
-                    game.log(storage, '被置入了弃牌堆');
-                    storage.length = 0;
-                }
-            },
+            content: 'expansion',
+            markcount: 'expansion',
         },
-        cardAround: true,
+        onremove: function (player, skill) {
+            var cards = player.getExpansions(skill);
+            if (cards.length) player.loseToDiscardpile(cards);
+        },
+    }),
+    liuhua: {
         trigger: { global: 'phaseAfter' },
         lastDo: true,
         filter(Evt, player) {
             return player.countCards('h') && game.countPlayer2(cur => cur.getHistory('damage').length);
         },
         check(Evt, player) {
-            return player.countCards('h') <= 2 || player.getStorage('liuhua').length <= 1;
+            return player.countCards('h') <= 2 || player.getExpansions('yu').length <= 1;
         },
         content() {
             'step 0'
             player.showHandcards();
             Evt.cards = player.getCards('h');
+            game.delayx()
             'step 1'
-            player.lose(Evt.cards, ui.special, 'toStorage');
-            player.$give(Evt.cards, player, false);
-            player.markAuto('liuhua', Evt.cards);
-            game.log(player, '将', Evt.cards, '置于武将牌上');
-            game.delay(1)
+            player.addToExpansion(Evt.cards, 'give', player).gaintag.add('yu');
+            game.delayx()
             'step 2'
             player.insertPhase();
         },
-        group: 'liuhua_regain',
+        group: ['liuhua_regain', 'yu'],
         subSkill: {
-            regain: {
-                trigger: { player: ['phaseBefore', 'turnOverBefore'], target: ['shiji2After'] },
-                firstDo: true,
-                direct: true,
+            regain: new toSkill('trigger', {
+                trigger: { player: 'addToExpansionAfter' },
                 filter(Evt, player) {
-                    if ((Evt.name == 'phase' && Evt.skill != 'liuhua') || (Evt.name == 'turnOver' && (!Evt.getParent()._trigger || Evt.getParent()._trigger.skill != 'liuhua'))) return false;
-                    if (player.$.liuhua.length < 4) return false;
-                    var list = get.suit3(player.$.liuhua);
+                    if (player.getExpansions('yu').length < 4) return false;
+                    var list = get.suit3(player.getExpansions('yu'));
                     return list.length >= 4;
                 },
                 content() {
                     'step 0'
-                    let next = player.chooseCardButton('###' + get.translation('liuhua') + '###获得一种颜色的『化羽』牌', player.$.liuhua, true);
-                    next.set('ai', function (button) {
-                        return get.value(button.link);
-                    });
-                    next.set('cards', player.$.liuhua);
+                    player.chooseCardButton(`###『${get.translation('liuhua')}』###获得一种颜色的「羽」`, player.getExpansions('yu'), true)
+                        .set('ai', function (button) {
+                            return get.value(button.link);
+                        });
                     'step 1'
                     if (result.bool) {
-                        game.delay(0.5);
                         player.logSkill('liuhua');
-                        Evt.cards = player.$.liuhua.filter(card => get.color(card) == get.color(result.links[0]));
-                        player.unmarkAuto('liuhua', Evt.cards);
-                        player.$give(Evt.cards, player, false);
-                        player.gain(Evt.cards);
-                    } else Evt.finish();
-                    'step 2'
-                    if (trigger.name == 'turnOver') trigger.cancel(true);
-                    player.turnOver();
+                        Evt.cards = player.getExpansions('yu').filter(card => get.color(card) == get.color(result.links[0]));
+                        player.gain(Evt.cards, 'give', player, 'log', 'fromStorage');
+                        game.delayx(1.5);
+                    }
+                    else Evt.finish();
                 },
-            },
+            }, 'direct', 'lastDo'),
         }
     },
     yishi: {
@@ -1669,14 +1652,18 @@ export default {
         content() {
             'step 0'
             player.$.yishi_use = _status.currentPhase;
-            'step 1'
             player.addTempSkill('yishi_use');
-            'step 2'
+            'step 1'
             game.filterPlayer(cur => {
                 if (cur != player && cur != player.$.yishi_use) {
                     cur.addTempSkill('yishi_cardDisable');
                 }
             })
+        },
+        mod: {
+            phaseSkippable(phase, player, cur) {
+                if (cur !== true && phase.skill && player.isTurnedOver()) return false
+            }
         },
         subSkill: {
             use: {
@@ -1692,10 +1679,9 @@ export default {
                     playerEnabled(card, player, target) {
                         if (player != target && player.$.yishi_use != target) return false;
                     }
-                }
+                },
             },
-            cardDisable: {
-                mark: true,
+            cardDisable: new toSkill('mark', {
                 intro: {
                     name: '遗世',
                     content: '本回合内不能使用或打出牌'
@@ -1705,7 +1691,7 @@ export default {
                         return false;
                     },
                 },
-            }
+            }, 'mark')
         }
     },
     shiji: {
@@ -1718,17 +1704,17 @@ export default {
         prompt() {
             var player = _status.event.player;
             var list = game.filterPlayer(function (target) {
-                return target.hasZhuSkill('shiji', player) && player.group == target.group && target.getStorage('liuhua').length;
+                return target.hasZhuSkill('shiji', player) && player.group == target.group && target.getExpansions('yu').length;
             });
             var str = '选择' + get.translation(list);
             if (list.length > 1) str += '中的一人';
-            str += '将其『化羽』牌不包含花色的任意张牌置于之上';
+            str += '将其「羽」不包含花色的任意张牌置于之上';
             return str;
         },
         filter(Evt, player) {
             if (player.countCards('h') == 0) return false;
             return game.hasPlayer(function (target) {
-                return target.hasZhuSkill('shiji', player) && player.group == target.group && target.getStorage('liuhua').length;
+                return target.hasZhuSkill('shiji', player) && player.group == target.group && target.getExpansions('yu').length;
             });
         },
         filterTarget(card, player, target) {
@@ -1741,8 +1727,8 @@ export default {
         usable: 1,
         content() {
             "step 0"
-            var suits = get.suit3(target.getStorage('liuhua'));
-            player.chooseCard(true, 'he', '选择置于' + get.translation(target) + '『化羽』牌上的牌', [1, Infinity], function (card, player) {
+            var suits = get.suit3(target.getExpansions('yu'));
+            player.chooseCard(true, 'he', '选择置于' + get.translation(target) + '「羽」上的牌', [1, Infinity], function (card, player) {
                 return !_status.event.suits.contains(get.suit(card));
             }).set('suits', suits).set('ai', card => {
                 var evt = _status.event.getParent();
@@ -1753,10 +1739,7 @@ export default {
             "step 1"
             if (result.bool && result.cards && result.cards.length) {
                 Evt.cards = result.cards;
-                player.lose(Evt.cards, ui.special, 'toStorage');
-                player.$give(Evt.cards, target, false);
-                target.markAuto('liuhua', Evt.cards);
-                game.log(player, '将', Evt.cards, '置于', target, '武将牌上');
+                target.addToExpansion(Evt.cards, 'give', player).gaintag.add('yu');
             }
         },
         ai: {

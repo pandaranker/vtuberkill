@@ -358,8 +358,22 @@ module.exports = {
              * 菜单创建
              * @param {*} connectMenu 
              */
-            menu: function (connectMenu) {
+            menu: function (...args) {
                var menuTimeout = null;
+               let connectMenu = false, menuList = ['开始', '选项', '武将', '卡牌', '扩展', '其它'], bar = 40
+               for (let v of args) {
+                  if (v === true) {
+                     connectMenu = true
+                     menuList = ['模式', '武将', '卡牌']
+                     bar = 123
+                  }
+                  else if (v instanceof Array) {
+                     menuList = v
+                  }
+                  else if (typeof v === 'number') {
+                     bar = v
+                  }
+               }
                if (!connectMenu && !game.syncMenu) {
                   menuTimeout = setTimeout(lib.init.reset, 1000);
                }
@@ -747,8 +761,8 @@ module.exports = {
                         clickContainer.call(menuContainer);
                      }
                   }
-                  menux = createMenu(['开始', '选项', '武将', '卡牌', '扩展', '其它'], {
-                     position: menuContainer, bar: 40
+                  menux = createMenu(menuList, {
+                     position: menuContainer, bar: bar
                   });
                }
                else {
@@ -781,8 +795,8 @@ module.exports = {
                      }
                   }
 
-                  menux = createMenu(['模式', '武将', '卡牌'], {
-                     position: menuContainer, bar: 123
+                  menux = createMenu(menuList, {
+                     position: menuContainer, bar: bar
                   });
                   menu = menux.menu;
                }
@@ -790,6 +804,7 @@ module.exports = {
 
                var copyObj = get.copy;
 
+               if(menuList.includes('开始')||menuList.includes('模式'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -1156,6 +1171,7 @@ module.exports = {
                   }
                }());
 
+               if(menuList.includes('选项'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -1638,6 +1654,7 @@ module.exports = {
                   rightPane.appendChild(active.link);
                }());
 
+               if(menuList.includes('武将'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -2091,6 +2108,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('卡牌'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -2656,6 +2674,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('扩展'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -2871,6 +2890,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('其它'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -6439,7 +6459,7 @@ module.exports = {
                            if (/^[A-z\d\s\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
-                           else{
+                           else {
                               let nameLength = node.node.name.querySelectorAll('br').length
                               if (nameLength <= 1) {
                                  node.node.name.classList.add('short');
@@ -6644,7 +6664,9 @@ module.exports = {
                   chain: ui.create.div('.chain', '<div></div>', node),
                   handcards1: ui.create.div('.handcards'),
                   handcards2: ui.create.div('.handcards'),
+                  expansions:ui.create.div('.expansions'),
                };
+               node.node.expansions.display='none';
                avatar2.playerEle = avatar.playerEle = node
                var chainlength = game.layout == 'default' ? 64 : 40;
                for (var i = 0; i < chainlength; i++) {

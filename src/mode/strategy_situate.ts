@@ -352,7 +352,9 @@ class Mount extends Area {
     }
 }
 Mount.mountId = 0
-type adjoinsType = { left, right, leftup, rightup, leftdown, rightdown }
+interface adjoinsType extends Record<string,Block|posType> {
+    left, right, leftup, rightup, leftdown, rightdown
+}
 /**
  * Block 地块
  */
@@ -372,14 +374,14 @@ class Block extends Pos {
         this.type = config.type;
         this.area = config.area;
         this.cityId = config.cityId;
-        let adjoins = <adjoinsType>{
+        let adjoins: adjoinsType = {
             right: [0.5, 0],
             left: [-0.5, 0],
             rightup: [0.25, -0.5],
             leftup: [-0.25, -0.5],
             rightdown: [0.25, 0.5],
             leftdown: [-0.25, 0.5],
-        }
+        } as adjoinsType
         let reserveMap = {
             right: 'left',
             left: 'right',
@@ -447,17 +449,18 @@ class Block extends Pos {
         let reserve = []
         let adjoins = this.adjoins
         for (let a in adjoins) {
-            if (adjoins[a] instanceof Block) {
-                let apos = adjoins[a].pos
-                if (!filter(this, adjoins[a])) {
+            let adjoin = adjoins[a]
+            if (adjoin instanceof Block) {
+                let apos = adjoin.pos
+                if (!filter(this, adjoin)) {
                     reserve.push([apos[0] - pos[0], apos[1] - pos[1]])
                 }
                 else {
                     direction.push([apos[0] - pos[0], apos[1] - pos[1]])
                 }
             }
-            else if (adjoins[a] instanceof Array) {
-                reserve.push([...adjoins[a]])
+            else if (adjoin instanceof Array) {
+                reserve.push([...adjoin])
             }
         }
         return { adjoins, direction, reserve }
@@ -762,7 +765,7 @@ class Resource {
             harvest += this.allocation[curf.name][0]
         }
         this.reserves[curf.name] += harvest
-        if(context.tempCtx){
+        if (context.tempCtx) {
             curf.showInformation(context.tempCtx, context.curSize, context.curZoom, {
                 text: `${translation.resource[this.name]}${this.abbreviation}${harvest > 0 ? '增加' : '减少'}了${harvest}`
             })
@@ -1344,7 +1347,7 @@ const control = {
 
             },
             mouthNext(watching) {
-                for(let curRes of resources){
+                for (let curRes of resources) {
                     curRes.mouthNext()
                 }
             },

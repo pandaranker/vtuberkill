@@ -30,7 +30,8 @@ module.exports = {
 	 * @type {string}
 	 */
 	group: [
-		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen','painter',
+		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
+		'painter', 'singer',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
 		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
@@ -51,7 +52,9 @@ module.exports = {
 	 * @constant
 	 */
 	groupnature: {
-		painter:'orange',
+		painter: 'orange',
+		singer: 'ocean',
+
 		shen: 'thunder',
 		wei: 'water',
 		shu: 'soil',
@@ -87,8 +90,8 @@ module.exports = {
 		Tencent: 'yami',
 		lucca: 'wood',
 		RedC: 'fire',
-		MiyaFam:'orange',
-		VirtualUnion:'ocean',
+		MiyaFam: 'orange',
+		VirtualUnion: 'ocean',
 
 		vtuber: 'metal',
 		clubs: 'ice',

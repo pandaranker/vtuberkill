@@ -79,9 +79,11 @@ module.exports = {
 		vtuber: '企',
 		clubs: '社',
 		painter: '画',
+		singer: '歌',
 		vtuber2: '企业联合',
 		clubs2: '社团联合',
 		painter2: '画师联合',
+		singer2: '歌手联合',
 
 		wei: '魏',
 		shu: '蜀',
@@ -308,6 +310,7 @@ module.exports = {
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
 		group_painter: "画势力",
+		group_singer: "歌势力",
 		group_VirtualUnion: "VU",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
@@ -333,5 +336,6 @@ module.exports = {
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
 		group_painter_bg: "画",
+		group_singer_bg: "歌",
 	}
 }

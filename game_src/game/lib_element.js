@@ -1,3 +1,5 @@
+const { set } = require("core-js/core/dict");
+
 {
   /**
    * 基础属性
@@ -849,7 +851,6 @@
           i.fix();
           ui.special.appendChild(i);
         }
-        if (Evt.notrigger !== true) Evt.trigger('addCardToStorage');
       },
       chooseToEnable: [function () {
         let list = [];
@@ -4801,14 +4802,17 @@
           return;
         }
         if (!get.info(card, false).noForceDie) Evt.forceDie = true;
-        var next = player.lose(cards, 'visible', ui.ordering).set('type', 'use');
-        var directDiscard = [];
-        for (var i = 0; i < cards.length; i++) {
-          if (!next.cards.contains(cards[i])) {
-            directDiscard.push(cards[i]);
+        if (cards.length) {
+          var owner = (get.owner(cards[0]) || player);
+          var next = owner.lose(cards, 'visible', ui.ordering).set('type', 'use');
+          var directDiscard = [];
+          for (var i = 0; i < cards.length; i++) {
+            if (!next.cards.contains(cards[i])) {
+              directDiscard.push(cards[i]);
+            }
           }
+          if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         }
-        if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         //player.using=cards;
         var cardaudio = true;
         if (Evt.skill) {
@@ -5459,7 +5463,6 @@
       }, () => {
         if (player.getStat().allSkills > 200) {
           player._noSkill = true;
-          console.log(player.name, Evt.skill);
         }
         if (document.getElementsByClassName('thrown').length) {
           if (Evt.skill && get.info(Evt.skill).delay !== false && get.info(Evt.skill).delay !== 0) game.delayx();
@@ -5548,6 +5551,19 @@
         Evt.trigger('discard');
       }],
       /**
+       * 将牌置入弃牌堆
+       * @name content.loseToDiscardpile
+       * @type {GameCores.Bases.StateMachine}
+       */
+      loseToDiscardpile: function () {
+        "step 0"
+        game.log(player, '将', cards, '置入了弃牌堆');
+        event.done = player.lose(cards, event.position, 'visible');
+        event.done.type = 'loseToDiscardpile';
+        "step 1"
+        event.trigger('loseToDiscardpile');
+      },
+      /**
        * 角色打出牌
        * @name content.respond
        * @type {GameCores.Bases.StateMachine}
@@ -5591,15 +5607,16 @@
           game.log(player, '打出了', card);
         }
         player.actionHistory[player.actionHistory.length - 1].respond.push(Evt);
-        var cards2 = cards.slice(0);
-        if (cards2.length) {
-          var next = player.lose(cards2, ui.ordering, 'visible');
-          if (Evt.noOrdering) next.noOrdering = true;
-          cards2.removeArray(next.cards);
-          if (cards2.length) {
-            var next2 = game.cardsGotoOrdering(cards2);
-            if (Evt.noOrdering) next2.noOrdering = true;
+        if (cards.length) {
+          var owner = (get.owner(cards[0]) || player);
+          var next = owner.lose(cards, 'visible', ui.ordering).set('type', 'use');
+          var directDiscard = [];
+          for (var i = 0; i < cards.length; i++) {
+            if (!next.cards.contains(cards[i])) {
+              directDiscard.push(cards[i]);
+            }
           }
+          if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         }
         if (Evt.animate != false && Evt.throw !== false) {
           for (var i = 0; i < cards.length; i++) {
@@ -5860,13 +5877,138 @@
         game.delayx();
       }],
       /**
+       * 角色将牌加入额外区
+       * @name content.addToExpansion
+       * @type {GameCores.Bases.StateMachine}
+       */
+      addToExpansion: function () {
+        "step 0"
+        if (event.animate == 'give') event.visible = true;
+        if (cards) {
+          var map = {};
+          for (var i of cards) {
+            var owner = get.owner(i, 'judge');
+            if (owner && get.position(i) != 'x') {
+              var id = owner.playerid;
+              if (!map[id]) map[id] = [];
+              map[id].push(i);
+            }
+          }
+          for (var i in map) {
+            var owner = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
+            var next = owner.lose(map[i], ui.special).set('type', 'loseToExpansion').set('forceDie', true).set('getlx', false);
+            if (event.visible == true) next.visible = true;
+            event.relatedLose = next;
+          }
+        }
+        else {
+          event.finish();
+        }
+        "step 1"
+        for (var i = 0; i < cards.length; i++) {
+          if (cards[i].destroyed) {
+            if (player.hasSkill(cards[i].destroyed)) {
+              delete cards[i].destroyed;
+            }
+            else {
+              cards.splice(i--, 1);
+            }
+          }
+        }
+        if (cards.length == 0) {
+          event.finish();
+          return;
+        }
+        "step 2"
+        var hs = player.getCards('x');
+        for (var i = 0; i < cards.length; i++) {
+          if (hs.contains(cards[i])) {
+            cards.splice(i--, 1);
+          }
+        }
+        for (var num = 0; num < cards.length; num++) {
+          if (_status.discarded) {
+            _status.discarded.remove(cards[num]);
+          }
+          for (var num2 = 0; num2 < cards[num].vanishtag.length; num2++) {
+            if (cards[num].vanishtag[num2][0] != '_') {
+              cards[num].vanishtag.splice(num2--, 1);
+            }
+          }
+        }
+        if (event.animate == 'draw') {
+          player.$draw(cards.length);
+          game.log(player, '将', get.cnNumber(cards.length), '张牌置于了武将牌上');
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(500, 500));
+        }
+        else if (event.animate == 'gain') {
+          player.$gain(cards, false);
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(700, 700));
+        }
+        else if (event.animate == 'gain2' || event.animate == 'draw2') {
+          var gain2t = 300;
+          if (player.$gain2(cards) && player == game.me) {
+            gain2t = 500;
+          }
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(gain2t, gain2t));
+        }
+        else if (event.source && (event.animate == 'give' || event.animate == 'giveAuto')) {
+          if (event.animate == 'give') event.source['$' + event.animate](cards, player, false);
+          else {
+            var givemap = { hs: [], ots: [] };
+            for (var i = 0; i < cards.length; i++) {
+              givemap[event.relatedLose && event.relatedLose.hs && event.relatedLose.hs.contains(cards[i]) ? 'hs' : 'ots'].push(cards[i]);
+            }
+            if (givemap.hs.length) {
+              event.source.$giveAuto(givemap.hs, player, false);
+              game.log(player, '将', get.cnNumber(givemap.hs.length), '张牌置于了武将牌上');
+            }
+            if (givemap.ots.length) {
+              event.source.$give(givemap.ots, player, false);
+              game.log(player, '将', givemap.ots, '置于了武将牌上');
+            }
+          }
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(500, 500));
+        }
+        else {
+          player.$addToExpansion(cards, null, event.gaintag);
+          for (var i of event.gaintag) player.markSkill(i);
+          event.finish();
+        }
+        if (event.log) {
+          game.log(player, '将', cards, '置于了武将牌上');
+        }
+        "step 4"
+        game.delayx();
+      },
+      /**
        * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
        * @name content.lose
        * @type {GameCores.Bases.StateMachine}
        */
       lose: [() => {
         var evt = Evt.getParent();
-        if (evt.name != 'discard' && Evt.type != 'discard') {
+        if ((evt.name != 'discard' && Evt.type != 'discard') && (evt.name != 'loseToDiscardpile' && Evt.type != 'loseToDiscardpile')) {
           Evt.delay = false;
           return;
         }
@@ -5910,17 +6052,12 @@
         }
       }, () => {
         Evt.gaintag_map = {};
-        var hs = [], es = [], js = [], ss = [];
+        var hs = [], es = [], js = [], ss = [], xs = [];
+        var unmarks = [];
         if (Evt.insert_card && Evt.position == ui.cardPile) Evt.cards.reverse();
-        var hej = player.getCards('hejs');
+        var hej = player.getCards('hejsx');
         Evt.stockcards = cards.slice(0);
         for (var i = 0; i < cards.length; i++) {
-          if (cards[i].gaintag && cards[i].gaintag.length) {
-            Evt.gaintag_map[cards[i].cardid] = cards[i].gaintag.slice(0);
-            if (cards[i].hasGaintag('ming_')) Evt.gaintag_map[cards[i].cardid].push('ming_');
-            if (cards[i].hasGaintag('an_')) Evt.gaintag_map[cards[i].cardid].push('an_');
-            cards[i].removeGaintag(true);
-          }
           if (!hej.contains(cards[i])) {
             cards.splice(i--, 1);
             continue;
@@ -5933,6 +6070,11 @@
             else if (cards[i].parentNode.classList.contains('judges')) {
               cards[i].original = 'j';
               js.push(cards[i]);
+            }
+            else if (cards[i].parentNode.classList.contains('expansions')) {
+              cards[i].original = 'x';
+              xs.push(cards[i]);
+              if (cards[i].gaintag && cards[i].gaintag.length) unmarks.addArray(cards[i].gaintag);
             }
             else if (cards[i].parentNode.classList.contains('handcards')) {
               if (cards[i].classList.contains('glows')) {
@@ -5947,6 +6089,10 @@
             else {
               cards[i].original = null;
             }
+          }
+          if (cards[i].gaintag && cards[i].gaintag.length) {
+            Evt.gaintag_map[cards[i].cardid] = cards[i].gaintag.slice(0);
+            cards[i].removeGaintag(true);
           }
 
           cards[i].style.transform += ' scale(0.2)';
@@ -6026,10 +6172,16 @@
         else if (Evt.position == ui.cardPile) {
           game.updateRoundNumber();
         }
+        if (unmarks.length) {
+          for (var i of unmarks) {
+            player[(lib.skill[i] && lib.skill[i].mark || player.hasCard((card) => card.hasGaintag(i), 'x')) ? 'markSkill' : 'unmarkSkill'](i);
+          }
+        }
         Evt.hs = hs;
         Evt.es = es;
         Evt.js = js;
         Evt.ss = ss;
+        Evt.xs = xs;
       }, () => {
         if (num < cards.length) {
           let evt = Evt.getParent();
@@ -6080,7 +6232,7 @@
         Evt.goto(2);
       }, () => {
         var evt = Evt.getParent();
-        if (evt.name != 'discard' && Evt.type != 'discard') return;
+        if ((evt.name != 'discard' && event.type != 'discard') && (evt.name != 'loseToDiscardpile' && Evt.type != 'loseToDiscardpile')) return;
         if (evt.delay != false) {
           if (evt.waitingForTransition) {
             _status.waitingForTransition = evt.waitingForTransition;
@@ -6556,7 +6708,7 @@
             if (lib.character[player.name1]) _status.characterlist.add(player.name1);
             if (lib.character[player.name2]) _status.characterlist.add(player.name2);
           }
-          Evt.cards = player.getCards('hejs');
+          Evt.cards = player.getCards('hejsx');
           if (Evt.cards.length) {
             player.discard(Evt.cards).forceDie = true;
             //player.$throw(Evt.cards,1000);
@@ -7047,27 +7199,36 @@
        * 检测本角色武将牌周围是否有牌
        */
       hasCardAround: function () {
+        return this.getCardAround().length > 0
+      },
+      getCardAround: function () {
         let cards = [];
         let skills = this.getSkills(true, false, false);
         game.expandSkills(skills);
         for (let i of skills) {
-          if (lib.skill[i] && lib.skill[i].cardAround) {
-            let key = [];
-            let storage = this.getStorage(i);
-            let method = lib.skill[i].cardAround;
-            if (Array.isArray(method)) {
-              for (let j of method) key = key.concat(storage[j]);
+          if (lib.skill[i]) {
+            if (lib.skill[i].cardAround) {
+              let key = [];
+              let storage = this.getStorage(i);
+              let method = lib.skill[i].cardAround;
+              if (Array.isArray(method)) {
+                for (let j of method) key = key.concat(storage[j]);
+              }
+              else if (typeof method == 'function') {
+                key = key.concat(method(this));
+              }
+              else if (Array.isArray(storage)) {
+                key = key.concat(storage);
+              }
+              else key.push(storage);
+              cards.addArray(key);
             }
-            else if (typeof method == 'function') {
-              key = key.concat(method(this));
+            else if (lib.skill[i].intro && lib.skill[i].intro.markcount === 'expansion') {
+              cards.addArray(this.getExpansions(i));
             }
-            else if (Array.isArray(storage)) key = key.concat(storage);
-            else key.push(storage);
-            cards.addArray(key);
           }
         }
-        if (cards.length) return cards;
-        return false;
+        return cards;
       },
       isYingV: function () {
         var info = lib.character[this.name || this.name1];
@@ -8179,6 +8340,12 @@
             }
           }, this);
         }
+        this.node.displayer.style.opacity = 0;
+        this.node.displayer.style.transition = 'none'
+        setTimeout(() => {
+          this.node.displayer.style.opacity = ''
+          this.node.displayer.style.transition = ''
+        }, 220)
         this.node.avatar.hide();
         this.node.count.hide();
         if (this.node.wuxing) {
@@ -8527,6 +8694,8 @@
           equips: this.getCards('e'),
           judges: this.getCards('j'),
           specials: this.getCards('s'),
+          expansions: this.getCards('x'),
+          expansion_gaintag: [],
           disableJudge: this.storage._disableJudge,
           disableEquip: this.storage.disableEquip,
           views: [],
@@ -8548,6 +8717,9 @@
         }
         for (var i = 0; i < state.handcards.length; i++) {
           state.gaintag[i] = state.handcards[i].gaintag;
+        }
+        for (var i = 0; i < state.expansions.length; i++) {
+          state.expansion_gaintag[i] = state.expansions[i].gaintag;
         }
         if (this.getModeState) {
           state.mode = this.getModeState();
@@ -8937,6 +9109,9 @@
           if (typeof lib.skill[i].intro.markcount == 'function') {
             num = lib.skill[i].intro.markcount(this.storage[i], this);
           }
+          else if (lib.skill[i].intro.markcount == 'expansion') {
+            num = this.countCards('x', (card) => card.hasGaintag(i));
+          }
           else if (typeof this.storage[i + '_markcount'] == 'number') {
             num = this.storage[i + '_markcount'];
           }
@@ -9069,7 +9244,6 @@
           num = 0;
           for (var i in stat) {
             if (typeof stat[i] == 'number') {
-              console.log(i, stat[i])
               num += stat[i];
             }
           }
@@ -9200,6 +9374,13 @@
                   this.node.judges.childNodes[j].name = this.node.judges.childNodes[j].viewAs;
                   cards1.push(this.node.judges.childNodes[j]);
                 }
+              }
+            }
+          }
+          else if (arg1[i] == 'x') {
+            for (j = 0; j < this.node.expansions.childElementCount; j++) {
+              if (!this.node.expansions.childNodes[j].classList.contains('removing')) {
+                cards.push(this.node.expansions.childNodes[j]);
               }
             }
           }
@@ -10937,6 +11118,34 @@
         next.setContent('discard');
         return next;
       },
+      loseToDiscardpile: function () {
+        var next = game.createEvent('loseToDiscardpile');
+        next.player = this;
+        next.num = 0;
+        for (var i = 0; i < arguments.length; i++) {
+          if (get.itemtype(arguments[i]) == 'player') {
+            next.source = arguments[i];
+          }
+          else if (get.itemtype(arguments[i]) == 'cards') {
+            next.cards = arguments[i].slice(0);
+          }
+          else if (get.itemtype(arguments[i]) == 'card') {
+            next.cards = [arguments[i]];
+          }
+          else if (typeof arguments[i] == 'boolean') {
+            next.animate = arguments[i];
+          }
+          else if (get.objtype(arguments[i]) == 'div') {
+            next.position = arguments[i];
+          }
+          else if (arguments[i] == 'notBySelf') {
+            next.notBySelf = true;
+          }
+        }
+        if (next.cards == undefined) _status.event.next.remove(next);
+        next.setContent('loseToDiscardpile');
+        return next;
+      },
       respond: function () {
         var next = game.createEvent('respond');
         next.player = this;
@@ -10985,6 +11194,24 @@
         if (cards2) next.cards2 = cards2;
         next.setContent('swapHandcards');
         return next;
+      },
+      $addToExpansion: function (cards, broadcast, gaintag) {
+        var hs = this.getCards('x');
+        for (var i = 0; i < cards.length; i++) {
+          if (hs.contains(cards[i])) {
+            cards.splice(i--, 1);
+          }
+        }
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].fix();
+          if (gaintag) cards[i].addGaintag(gaintag);
+          var sort = lib.config.sort_card(cards[i]);
+          this.node.expansions.insertBefore(cards[i], this.node.expansions.firstChild);
+        }
+        if (broadcast !== false) game.broadcast(function (player, cards, gaintag) {
+          player.$addToExpansion(cards, null, gaintag);
+        }, this, cards, gaintag);
+        return this;
       },
       directequip: function (cards) {
         for (var i = 0; i < cards.length; i++) {
@@ -11127,6 +11354,7 @@
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -11136,11 +11364,79 @@
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
+        };
+        next.gaintag = [];
+        return next;
+      },
+      addToExpansion: function () {
+        var next = game.createEvent('addToExpansion');
+        next.player = this;
+        for (var i = 0; i < arguments.length; i++) {
+          if (get.itemtype(arguments[i]) == 'player') {
+            next.source = arguments[i];
+          }
+          else if (get.itemtype(arguments[i]) == 'cards') {
+            next.cards = arguments[i].slice(0);
+          }
+          else if (get.itemtype(arguments[i]) == 'card') {
+            next.cards = [arguments[i]];
+          }
+          else if (arguments[i] === 'log') {
+            next.log = true;
+          }
+          else if (arguments[i] == 'fromStorage') {
+            next.fromStorage = true;
+          }
+          else if (arguments[i] == 'fromRenku') {
+            next.fromStorage = true;
+            next.fromRenku = true;
+          }
+          else if (arguments[i] == 'bySelf') {
+            next.bySelf = true;
+          }
+          else if (typeof arguments[i] == 'string') {
+            next.animate = arguments[i];
+          }
+          else if (typeof arguments[i] == 'boolean') {
+            next.delay = arguments[i];
+          }
+        }
+        if (next.animate == 'gain2' || next.animate == 'draw2' || next.animate == 'give') {
+          if (!next.hasOwnProperty('log')) {
+            next.log = true;
+          }
+        }
+        next.setContent('addToExpansion');
+        next.getl = function (player) {
+          var that = this;
+          var map = {
+            player: player,
+            hs: [],
+            es: [],
+            js: [],
+            ss: [],
+            xs: [],
+            cards: [],
+            cards2: [],
+          };
+          player.getHistory('lose', function (evt) {
+            if (evt.parent == that) {
+              map.hs.addArray(evt.hs);
+              map.es.addArray(evt.es);
+              map.js.addArray(evt.js);
+              map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
+              map.cards.addArray(evt.cards);
+              map.cards2.addArray(evt.cards2);
+            }
+          });
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         next.gaintag = [];
         return next;
@@ -11177,7 +11473,7 @@
           }
         }
         if (next.cards) {
-          var hej = this.getCards('hejs');
+          var hej = this.getCards('hejsx');
           for (var i = 0; i < next.cards.length; i++) {
             if (!hej.contains(next.cards[i])) {
               next.cards.splice(i--, 1);
@@ -11603,6 +11899,7 @@
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -11612,11 +11909,12 @@
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         return next;
       },
@@ -11636,6 +11934,7 @@
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -11645,11 +11944,12 @@
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         return next;
       },
@@ -12035,7 +12335,7 @@
        * 文字弹出动画效果
        * [recommend] 令人迷惑的是，此函数实质调用了{@link lib.element.player.$damagepop}，而不是{@link lib.element.player.$damagepop}调用此函数
        * @param {!string} name (技能|角色|游戏牌)名或其他任意非空字符串
-       * @param {string} [classname='water'] 效果色
+       * @param {string} [className='water'] 效果色
        * @param {?boolean} [nobroadcast] 如果为true，则
        */
       popup: function (name, className, nobroadcast) {
@@ -12143,6 +12443,9 @@
           storage.removeArray(info.slice(0));
           this.markAuto(name);
         }
+      },
+      getExpansions: function (tag) {
+        return this.getCards('x', (card) => card.hasGaintag(tag));
       },
       getStorage: function (name) {
         return this.storage[name] || [];
@@ -15624,6 +15927,7 @@
           // ui.create.div('',str.split('').join('<br>'),ui.create.div('.text.textbg',node));
           ui.create.div('', '<div>' + str.split('').join('</div><br><div>') + '</div>', ui.create.div('.text', node));
           node.firstChild.firstChild.style.backgroundImage = avatar.style.backgroundImage;
+          if (str.length >= 7) node.lastChild.firstChild.className = 'long';
           node.dataset.nature = nature || 'unknown';
           var num = 0;
           var nodes = node.lastChild.firstChild.querySelectorAll('div');
@@ -16494,7 +16798,7 @@
        * @returns {!boolean}
        */
       hasPosition: function () {
-        return ['h', 'e', 'j'].contains(get.position(this));
+        return ['h', 'e', 'j', 's', 'x'].contains(get.position(this));
       },
       /**
        * 判断本卡牌是否在牌堆或弃牌堆中
@@ -16601,7 +16905,6 @@
         else {
           if (typeof key != 'string') {
             console.log('warning: using non-string object as Evt key');
-            console.log(key, value);
             console.log(_status.event);
           }
           this[key] = value;
@@ -17254,6 +17557,11 @@
           if (zoom) buttons.classList.add('smallzoom');
           this.buttons = this.buttons.concat(ui.create.buttons(item[0], item[1], buttons, noclick));
         }
+        this.updateForcebutton(zoom)
+        ui.update();
+        return item;
+      },
+      updateForcebutton(zoom) {
         if (this.buttons.length) {
           if (this.forcebutton !== false) this.forcebutton = true;
           if (this.buttons.length > 3 || (zoom && this.buttons.length > 5)) {
@@ -17263,8 +17571,6 @@
             this.classList.add('forcebutton-auto');
           }
         }
-        ui.update();
-        return item;
       },
       addText: function (str, center) {
         if (center !== false) {

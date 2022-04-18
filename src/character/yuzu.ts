@@ -56,6 +56,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**梦乃栞 */
 			YumenoShiori: ['female', 'paryi', 4, ['rencan', 'yiduo'],],
+			/**椎名菜羽 */
+			ShiinaNanoha: ['female', 'paryi', 4, ['qiansi', 'kangqie'],],
 			/**早见咲 */
 			HayamiSaki: ['female', 'paryi', 4, ['tuncai', 'zhidu'], ['zhu', 'guoV']],
 			/**纪代因果 */
@@ -88,7 +90,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			yunyuluan: ['female', 'lucca', 4, ['jiujiu', 'qitong'], ['guoV']],
 
 			/**纱耶sayako */
-			Sayako: ['female', 'qun', 4, ['zhichu', 'yunxiang', 'mingman'], ['guoV']],
+			Sayako: ['female', 'singer', 4, ['zhichu', 'yunxiang', 'mingman'], ['guoV']],
 			/**杜松子 */
 			dusongziGin: ['female', 'qun', 3, ['danqing', 'gaiqu'], ['guoV']],
 			/**无理 */

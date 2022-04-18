@@ -1,5 +1,7 @@
 /// <reference path = "../built-in.d.ts" />
 
+import { toSkill } from "./skilltype";
+
 
 window.game.import('character', function (lib: Record<string, any>, game: Record<string, any>, ui: Record<string, any>, get: Record<string, any>, ai: Record<string, any>, _status) {
 	return <currentObject>{
@@ -99,11 +101,11 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_HanazonoSerena: ['female', 'paryi', 3, ['re_jiumao', 're_enfan']],
 
 			/**美波 */
-			re_MinamiNami: ['female', 'qun', 4, ['re_longdan']],
+			re_MinamiNami: ['female', 'singer', 4, ['re_longdan']],
 			/**鹿乃 */
-			re_Kano: ['female', 'qun', 4, ['shiguang']],
+			re_Kano: ['female', 'singer', 4, ['shiguang']],
 			/**花丸 */
-			re_HanamaruHareru: ['female', 'qun', 3, ['rangran', 'jiazhao']],
+			re_HanamaruHareru: ['female', 'singer', 3, ['rangran', 'jiazhao']],
 			/**Re修女克蕾雅 */
 			re_SisterClearie: ['female', 'nijisanji', 4, ['shenyou', 'shenfa']],
 			/**Re莉泽 */
@@ -2586,9 +2588,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}],
 			},
 			//re夏色祭
-			re_huxi: {
+			re_huxi: new toSkill('trigger',{
 				audio: 'huxi',
-				trigger: { player: 'gainEnd' },
 				filter(Evt, player: PlayerModel) {
 					if (!player.$.re_huxiGroup) player.$.re_huxiGroup = []
 					return game.hasPlayer(cur => {
@@ -2716,7 +2717,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						}
 					}
 				}
-			},
+			}).setT('gainEnd'),
 			//re赤心
 			xinchixin: {
 				trigger: { global: ['loseAfter', 'cardsDiscardAfter'] },
@@ -3066,26 +3067,24 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				content: [() => {
 					player.chooseToCompare(target).set('small', get.recoverEffect(player, target, target) > 0);
 				}, () => {
-					Evt.resultWinner = result.winner;
-					if (Evt.resultWinner == player) {
-						player.draw(2);
+					Evt.winner = result.winner;
+					if (Evt.winner) {
+						Evt.winner.draw(2);
 					}
-					else if (Evt.resultWinner == target) {
-						target.draw(2);
-					}
+					else Evt.finish()
 				}, () => {
-					if (Evt.resultWinner != player) {
+					if (Evt.winner != player) {
 						player.chooseBool('是否使对方回复一点体力').set('ai', () => {
 							return _status.event.check;
 						}).set('check', get.recoverEffect(target, player, player) > 0);
 					}
-					else Evt.goto(5);
+					else Evt.goto(Evt.step + 2);
 				}, () => {
 					if (result.bool) {
 						target.recover(player);
 					}
 				}, () => {
-					if (Evt.resultWinner != target) {
+					if (Evt.winner != target) {
 						target.chooseBool('是否使对方回复一点体力').set('ai', () => {
 							return _status.event.check;
 						}).set('check', get.recoverEffect(player, target, target) > 0);
@@ -5662,7 +5661,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			yayun: `押运`,
 			laohuji: `老虎机`,
 			yayun_info: `轮次技 在合适的时机，你可以弃置所有手牌，连续判定三次，每有一张判定牌花色包含于弃牌中，你便摸一张牌；若三次判定结果均为同一花色，你额外摸三张牌。`,
-			yayun_append: lib.figurer(`特性：赌狗`),
+			yayun_append: lib.figurer(`特性：赌怪`),
 			jidao: `极道`,
 			jidao_info: `你可以防止对其他角色造成的伤害，改为令其发动一次『押运』。`,
 
@@ -5845,13 +5844,13 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_SakuraMiko: `新·樱巫女`,
 			huangyou: `黄油`,
 			huangyou_info: `出牌阶段，你可以弃置两张红色牌摸三张牌或回复1点体力，然后判定一次，若不为♥，本回合不能再发动此技能。`,
-			huangyou_append: lib.figurer(`特性：赌狗`),
+			huangyou_append: lib.figurer(`特性：赌怪`),
 			qidao: `祈祷`,
 			qidao_info: `当判定牌生效前，你可以弃一张牌重新判定。`,
 
 			re_NatsuiroMatsuri: `新·夏色祭`,
 			re_huxi: `恋上`,
-			re_huxi_info: `当你不因此技能获得牌后，你可以与本回合未以此法指定的一名角色交换一张手牌。当你以此法获得红色牌时，你摸一张牌，使用的下一张【杀】不计入次数且伤害+1（不可叠加）。`,
+			re_huxi_info: `当你不因此技能获得牌时，你可以与本回合未以此法指定的一名角色交换一张手牌。当你以此法获得红色牌时，你摸一张牌，使用的下一张【杀】不计入次数且伤害+1（不可叠加）。`,
 			re_huxi_append: lib.figurer(`特性：传递关键牌 强化出杀`),
 			re_huxi_buff: `恋上ing`,
 			re_huxi_buff_info: `使用的下一张【杀】不计入次数且伤害+1`,

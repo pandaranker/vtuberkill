@@ -1,3 +1,5 @@
+const { player } = require('./lib_element');
+
 module.exports = {
   libFun: (vkCore) => {
     let { game, ui, get, ai, lib, _status } = vkCore
@@ -2954,6 +2956,15 @@ module.exports = {
               for (var i = 0; i < info.specials.length; i++) {
                 info.specials[i].classList.add('glows');
               }
+              if (info.expansions.length) {
+                var expansion_gaintag = [];
+                player.$addToExpansion(info.expansions);
+                for (var i = 0; i < info.expansions.length; i++) {
+                  info.expansions[i].addGaintag(info.expansion_gaintag[i]);
+                  expansion_gaintag.addArray(info.expansion_gaintag[i]);
+                }
+                for (var i of expansion_gaintag) player.markSkill[i];
+              }
               for (var i = 0; i < info.judges.length; i++) {
                 if (info.views[i] && info.views[i] != info.judges[i]) {
                   info.judges[i].classList.add('fakejudge');
@@ -5114,7 +5125,7 @@ module.exports = {
             }
           },
           function () {
-            if (player.isTurnedOver()) {
+            if (player.isTurnedOver()&&game.checkMod(trigger, player, 'unchanged', 'phaseSkippable', player)) {
               trigger.cancel();
               player.turnOver();
               player.phaseSkipped = true;
@@ -5166,7 +5177,7 @@ module.exports = {
          * 弃牌结算后，延时一段时间清除残留弃牌效果
          */
         _discard: {
-          trigger: { global: 'discardAfter' },
+          trigger: { global: ['discardAfter', 'loseToDiscardpileAfter'] },
           forced: true,
           popup: false,
           priority: -100,

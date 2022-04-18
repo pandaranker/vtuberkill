@@ -73,6 +73,7 @@
 		group_HappyEl: { ...groupCard, },
 		group_RedC: { ...groupCard, },
 		group_painter: { ...groupCard, },
+		group_singer: { ...groupCard, },
 
 		//仅出现在战略模式中的势力
 		group_MiyaFam: { ...groupCard, },
@@ -157,7 +158,8 @@ module.exports = {
 	 * @type {string}
 	 */
 	group: [
-		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen','painter',
+		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
+		'painter', 'singer',
 		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
 		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
@@ -178,7 +180,9 @@ module.exports = {
 	 * @constant
 	 */
 	groupnature: {
-		painter:'orange',
+		painter: 'orange',
+		singer: 'ocean',
+
 		shen: 'thunder',
 		wei: 'water',
 		shu: 'soil',
@@ -214,8 +218,8 @@ module.exports = {
 		Tencent: 'yami',
 		lucca: 'wood',
 		RedC: 'fire',
-		MiyaFam:'orange',
-		VirtualUnion:'ocean',
+		MiyaFam: 'orange',
+		VirtualUnion: 'ocean',
 
 		vtuber: 'metal',
 		clubs: 'ice',
@@ -326,9 +330,11 @@ module.exports = {
 		vtuber: '企',
 		clubs: '社',
 		painter: '画',
+		singer: '歌',
 		vtuber2: '企业联合',
 		clubs2: '社团联合',
 		painter2: '画师联合',
+		singer2: '歌手联合',
 
 		wei: '魏',
 		shu: '蜀',
@@ -555,6 +561,7 @@ module.exports = {
 		group_HappyEl: "乐元素",
 		group_RedC: "红圈",
 		group_painter: "画势力",
+		group_singer: "歌势力",
 		group_VirtualUnion: "VU",
 		group_wei_bg: "魏",
 		group_shu_bg: "蜀",
@@ -580,6 +587,7 @@ module.exports = {
 		group_HappyEl_bg: "乐",
 		group_RedC_bg: "红",
 		group_painter_bg: "画",
+		group_singer_bg: "歌",
 	}
 }
 
@@ -5357,6 +5365,7 @@ module.exports = {
                         es: [],
                         js: [],
                         ss: [],
+                        xs: [],
                         cards: [],
                         cards2: [],
                     };
@@ -5366,11 +5375,12 @@ module.exports = {
                             map.es.addArray(evt.es);
                             map.js.addArray(evt.js);
                             map.ss.addArray(evt.ss);
+                            map.xs.addArray(evt.xs);
                             map.cards.addArray(evt.cards);
                             map.cards2.addArray(evt.cards2);
                         }
                     });
-                    if (map.cards.length > 0 || map.ss.length > 0) return map;
+                    if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
                 };
                 if (arg && get.is.object(arg)) {
                     for (var i in arg) next[i] = arg[i];
@@ -6540,8 +6550,8 @@ module.exports = {
                 _status.video = true;
                 clearTimeout(_status.timeout);
 
-                for (var i in lib.characterPack) {
-                    for (var j in lib.characterPack[i]) {
+                for (let i in lib.characterPack) {
+                    for (let j in lib.characterPack[i]) {
                         lib.character[j] = lib.character[j] || lib.characterPack[i][j];
                     }
                 }
@@ -10477,7 +10487,7 @@ module.exports = {
                     args[i] = arguments[i];
                 }
                 if ((args.length == 0 || args.contains('card')) && _status.event.player) {
-                    var cards = _status.event.player.getCards('hejs');
+                    var cards = _status.event.player.getCards('hejsx');
                     for (j = 0; j < cards.length; j++) {
                         cards[j].classList.remove('selected');
                         cards[j].classList.remove('selectable');
@@ -13171,7 +13181,7 @@ module.exports = {
             //“保护新手”模式的ban将
             banForBeginner(current) {
                if (current in lib.character) {
-                  for (var i in lib.characterPack) {
+                  for (let i in lib.characterPack) {
                      if (!['Beginner', 'hololive', 'nijisanji', 'clubs', 'vtuber'].contains(i)) {
                         if (current in lib.characterPack[i]) {
                            return true
@@ -13188,7 +13198,7 @@ module.exports = {
                   return false;
                }
                if (current in lib.card) {
-                  for (var i in lib.cardPack) {
+                  for (let i in lib.cardPack) {
                      if (!['standard', 'extra'].contains(i)) {
                         if (lib.cardPack[i].contains(current)) {
                            return true
@@ -13480,7 +13490,6 @@ module.exports = {
                      _status.maxShuffle--;
                   }
                   game.shuffleNumber++;
-                  if (_status.event.trigger) _status.event.trigger('washCard');
                   var cards = [], i;
                   for (var i = 0; i < lib.onwash.length; i++) {
                      if (lib.onwash[i]() == 'remove') {
@@ -13503,6 +13512,7 @@ module.exports = {
                   for (var i = 0; i < cards.length; i++) {
                      ui.cardPile.appendChild(cards[i]);
                   }
+                  if (_status.event.trigger) _status.event.trigger('washCard');
                }
                if (ui.cardPile.hasChildNodes() == false) {
                   game.over('平局');
@@ -13689,7 +13699,7 @@ module.exports = {
          character: function (name, num) {
             var info = lib.character[name];
             if (!info) {
-               for (var i in lib.characterPack) {
+               for (let i in lib.characterPack) {
                   if (lib.characterPack[i][name]) {
                      info = lib.characterPack[i][name];
                      break;
@@ -14831,10 +14841,10 @@ module.exports = {
          itemtype: function (obj) {
             var i, j;
             if (typeof obj == 'string') {
-               if (obj.length <= 4) {
+               if (obj.length <= 5) {
                   var bool = true;
                   for (i = 0; i < obj.length; i++) {
-                     if (/h|e|j|s/.test(obj[i]) == false) {
+                     if (/h|e|j|s|x/.test(obj[i]) == false) {
                         bool = false; break;
                      }
                   }
@@ -15078,7 +15088,6 @@ module.exports = {
                      _status.maxShuffle--;
                   }
                   game.shuffleNumber++;
-                  if (_status.event.trigger) _status.event.trigger('washCard');
                   var cards = [], i;
                   for (var i = 0; i < lib.onwash.length; i++) {
                      if (lib.onwash[i]() == 'remove') {
@@ -15101,6 +15110,7 @@ module.exports = {
                   for (var i = 0; i < cards.length; i++) {
                      ui.cardPile.appendChild(cards[i]);
                   }
+                  if (_status.event.trigger) _status.event.trigger('washCard');
                }
                if (ui.cardPile.hasChildNodes() == false) {
                   game.over('平局');
@@ -15341,6 +15351,7 @@ module.exports = {
             if (card.timeout && card.destiny) {
                if (card.destiny.classList.contains('equips')) return 'e';
                if (card.destiny.classList.contains('judges')) return 'j';
+               if (card.destiny.classList.contains('expansions')) return 'x';
                if (card.destiny.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
                if (card.destiny.id == 'cardPile') return 'c';
                if (card.destiny.id == 'discardPile') return 'd';
@@ -15351,6 +15362,7 @@ module.exports = {
             if (!card.parentNode) return;
             if (card.parentNode.classList.contains('equips')) return 'e';
             if (card.parentNode.classList.contains('judges')) return 'j';
+            if (card.parentNode.classList.contains('expansions')) return 'x';
             if (card.parentNode.classList.contains('handcards')) return card.classList.contains('glows') ? 's' : 'h';
             if (card.parentNode.id == 'cardPile') return 'c';
             if (card.parentNode.id == 'discardPile') return 'd';
@@ -15452,7 +15464,7 @@ module.exports = {
             if (!str)
                return '';
             str = str
-               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#dddd;font-weight: bold;text-shadow: 2px 2px 3px #DD00DDBB;">$2</font>，')
+               .replace(/(.*?)(出牌阶段限一次|出牌阶段|准备阶段|结束阶段|每回合限一次|每回合每项限一次|每回合限X次|一轮开始时)，/g, '$1<font style="color:#dddd;font-weight: bold;text-shadow: 2px 2px 3px #DD00DDBB;">$2</font>，')
                .replace(/(锁定技) /g, '<font color=#f77>$1 </font>')
                .replace(/(阵法技) /g, '<font color=#fe2>$1 </font>')
                .replace(/(轮次技) /g, '<font color=#fc2>$1 </font>')
@@ -15840,7 +15852,7 @@ module.exports = {
          owner: function (card, method) {
             var list = game.players.concat(game.dead);
             for (var i = 0; i < list.length; i++) {
-               if (list[i].getCards('hej').contains(card)) return list[i];
+               if(list[i].getCards('hejsx').contains(card)) return list[i];
                if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
             //for(var i=0;i<game.players.length;i++){
@@ -16066,6 +16078,18 @@ module.exports = {
                case 'cardCount': {
                   if (typeof content == 'object' && typeof content.length == 'number') {
                      return '共有' + get.cnNumber(content.length) + '张牌';
+                  }
+                  return false;
+               }
+               case 'expansion':{
+                  content=player.getCards('x',function(card){
+                     return card.hasGaintag(skill);
+                  });
+                  if(dialog&&content.length){
+                     dialog.addAuto(content);
+                  }
+                  else{
+                     return '没有卡牌';
                   }
                   return false;
                }
@@ -18284,6 +18308,8 @@ module.exports = {
 
 /***/ 5248:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const { player } = __webpack_require__(7747);
 
 module.exports = {
   libFun: (vkCore) => {
@@ -21241,6 +21267,15 @@ module.exports = {
               for (var i = 0; i < info.specials.length; i++) {
                 info.specials[i].classList.add('glows');
               }
+              if (info.expansions.length) {
+                var expansion_gaintag = [];
+                player.$addToExpansion(info.expansions);
+                for (var i = 0; i < info.expansions.length; i++) {
+                  info.expansions[i].addGaintag(info.expansion_gaintag[i]);
+                  expansion_gaintag.addArray(info.expansion_gaintag[i]);
+                }
+                for (var i of expansion_gaintag) player.markSkill[i];
+              }
               for (var i = 0; i < info.judges.length; i++) {
                 if (info.views[i] && info.views[i] != info.judges[i]) {
                   info.judges[i].classList.add('fakejudge');
@@ -23401,7 +23436,7 @@ module.exports = {
             }
           },
           function () {
-            if (player.isTurnedOver()) {
+            if (player.isTurnedOver()&&game.checkMod(trigger, player, 'unchanged', 'phaseSkippable', player)) {
               trigger.cancel();
               player.turnOver();
               player.phaseSkipped = true;
@@ -23453,7 +23488,7 @@ module.exports = {
          * 弃牌结算后，延时一段时间清除残留弃牌效果
          */
         _discard: {
-          trigger: { global: 'discardAfter' },
+          trigger: { global: ['discardAfter', 'loseToDiscardpileAfter'] },
           forced: true,
           popup: false,
           priority: -100,
@@ -23811,7 +23846,9 @@ module.exports = {
 /***/ }),
 
 /***/ 7747:
-/***/ (function(module) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+const { set } = __webpack_require__(4231);
 
 {
   /**
@@ -24664,7 +24701,6 @@ module.exports = {
           i.fix();
           ui.special.appendChild(i);
         }
-        if (Evt.notrigger !== true) Evt.trigger('addCardToStorage');
       },
       chooseToEnable: [function () {
         let list = [];
@@ -28616,14 +28652,17 @@ module.exports = {
           return;
         }
         if (!get.info(card, false).noForceDie) Evt.forceDie = true;
-        var next = player.lose(cards, 'visible', ui.ordering).set('type', 'use');
-        var directDiscard = [];
-        for (var i = 0; i < cards.length; i++) {
-          if (!next.cards.contains(cards[i])) {
-            directDiscard.push(cards[i]);
+        if (cards.length) {
+          var owner = (get.owner(cards[0]) || player);
+          var next = owner.lose(cards, 'visible', ui.ordering).set('type', 'use');
+          var directDiscard = [];
+          for (var i = 0; i < cards.length; i++) {
+            if (!next.cards.contains(cards[i])) {
+              directDiscard.push(cards[i]);
+            }
           }
+          if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         }
-        if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         //player.using=cards;
         var cardaudio = true;
         if (Evt.skill) {
@@ -29274,7 +29313,6 @@ module.exports = {
       }, () => {
         if (player.getStat().allSkills > 200) {
           player._noSkill = true;
-          console.log(player.name, Evt.skill);
         }
         if (document.getElementsByClassName('thrown').length) {
           if (Evt.skill && get.info(Evt.skill).delay !== false && get.info(Evt.skill).delay !== 0) game.delayx();
@@ -29363,6 +29401,19 @@ module.exports = {
         Evt.trigger('discard');
       }],
       /**
+       * 将牌置入弃牌堆
+       * @name content.loseToDiscardpile
+       * @type {GameCores.Bases.StateMachine}
+       */
+      loseToDiscardpile: function () {
+        "step 0"
+        game.log(player, '将', cards, '置入了弃牌堆');
+        event.done = player.lose(cards, event.position, 'visible');
+        event.done.type = 'loseToDiscardpile';
+        "step 1"
+        event.trigger('loseToDiscardpile');
+      },
+      /**
        * 角色打出牌
        * @name content.respond
        * @type {GameCores.Bases.StateMachine}
@@ -29406,15 +29457,16 @@ module.exports = {
           game.log(player, '打出了', card);
         }
         player.actionHistory[player.actionHistory.length - 1].respond.push(Evt);
-        var cards2 = cards.slice(0);
-        if (cards2.length) {
-          var next = player.lose(cards2, ui.ordering, 'visible');
-          if (Evt.noOrdering) next.noOrdering = true;
-          cards2.removeArray(next.cards);
-          if (cards2.length) {
-            var next2 = game.cardsGotoOrdering(cards2);
-            if (Evt.noOrdering) next2.noOrdering = true;
+        if (cards.length) {
+          var owner = (get.owner(cards[0]) || player);
+          var next = owner.lose(cards, 'visible', ui.ordering).set('type', 'use');
+          var directDiscard = [];
+          for (var i = 0; i < cards.length; i++) {
+            if (!next.cards.contains(cards[i])) {
+              directDiscard.push(cards[i]);
+            }
           }
+          if (directDiscard.length) game.cardsGotoOrdering(directDiscard);
         }
         if (Evt.animate != false && Evt.throw !== false) {
           for (var i = 0; i < cards.length; i++) {
@@ -29675,13 +29727,138 @@ module.exports = {
         game.delayx();
       }],
       /**
+       * 角色将牌加入额外区
+       * @name content.addToExpansion
+       * @type {GameCores.Bases.StateMachine}
+       */
+      addToExpansion: function () {
+        "step 0"
+        if (event.animate == 'give') event.visible = true;
+        if (cards) {
+          var map = {};
+          for (var i of cards) {
+            var owner = get.owner(i, 'judge');
+            if (owner && get.position(i) != 'x') {
+              var id = owner.playerid;
+              if (!map[id]) map[id] = [];
+              map[id].push(i);
+            }
+          }
+          for (var i in map) {
+            var owner = (_status.connectMode ? lib.playerOL : game.playerMap)[i];
+            var next = owner.lose(map[i], ui.special).set('type', 'loseToExpansion').set('forceDie', true).set('getlx', false);
+            if (event.visible == true) next.visible = true;
+            event.relatedLose = next;
+          }
+        }
+        else {
+          event.finish();
+        }
+        "step 1"
+        for (var i = 0; i < cards.length; i++) {
+          if (cards[i].destroyed) {
+            if (player.hasSkill(cards[i].destroyed)) {
+              delete cards[i].destroyed;
+            }
+            else {
+              cards.splice(i--, 1);
+            }
+          }
+        }
+        if (cards.length == 0) {
+          event.finish();
+          return;
+        }
+        "step 2"
+        var hs = player.getCards('x');
+        for (var i = 0; i < cards.length; i++) {
+          if (hs.contains(cards[i])) {
+            cards.splice(i--, 1);
+          }
+        }
+        for (var num = 0; num < cards.length; num++) {
+          if (_status.discarded) {
+            _status.discarded.remove(cards[num]);
+          }
+          for (var num2 = 0; num2 < cards[num].vanishtag.length; num2++) {
+            if (cards[num].vanishtag[num2][0] != '_') {
+              cards[num].vanishtag.splice(num2--, 1);
+            }
+          }
+        }
+        if (event.animate == 'draw') {
+          player.$draw(cards.length);
+          game.log(player, '将', get.cnNumber(cards.length), '张牌置于了武将牌上');
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(500, 500));
+        }
+        else if (event.animate == 'gain') {
+          player.$gain(cards, false);
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(700, 700));
+        }
+        else if (event.animate == 'gain2' || event.animate == 'draw2') {
+          var gain2t = 300;
+          if (player.$gain2(cards) && player == game.me) {
+            gain2t = 500;
+          }
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(gain2t, gain2t));
+        }
+        else if (event.source && (event.animate == 'give' || event.animate == 'giveAuto')) {
+          if (event.animate == 'give') event.source['$' + event.animate](cards, player, false);
+          else {
+            var givemap = { hs: [], ots: [] };
+            for (var i = 0; i < cards.length; i++) {
+              givemap[event.relatedLose && event.relatedLose.hs && event.relatedLose.hs.contains(cards[i]) ? 'hs' : 'ots'].push(cards[i]);
+            }
+            if (givemap.hs.length) {
+              event.source.$giveAuto(givemap.hs, player, false);
+              game.log(player, '将', get.cnNumber(givemap.hs.length), '张牌置于了武将牌上');
+            }
+            if (givemap.ots.length) {
+              event.source.$give(givemap.ots, player, false);
+              game.log(player, '将', givemap.ots, '置于了武将牌上');
+            }
+          }
+          game.pause();
+          setTimeout(function () {
+            player.$addToExpansion(cards, null, event.gaintag);
+            for (var i of event.gaintag) player.markSkill(i);
+            game.resume();
+          }, get.delayx(500, 500));
+        }
+        else {
+          player.$addToExpansion(cards, null, event.gaintag);
+          for (var i of event.gaintag) player.markSkill(i);
+          event.finish();
+        }
+        if (event.log) {
+          game.log(player, '将', cards, '置于了武将牌上');
+        }
+        "step 4"
+        game.delayx();
+      },
+      /**
        * 失去牌至(弃牌堆|牌堆)，或将牌移动至武将牌上(special arena)
        * @name content.lose
        * @type {GameCores.Bases.StateMachine}
        */
       lose: [() => {
         var evt = Evt.getParent();
-        if (evt.name != 'discard' && Evt.type != 'discard') {
+        if ((evt.name != 'discard' && Evt.type != 'discard') && (evt.name != 'loseToDiscardpile' && Evt.type != 'loseToDiscardpile')) {
           Evt.delay = false;
           return;
         }
@@ -29725,17 +29902,12 @@ module.exports = {
         }
       }, () => {
         Evt.gaintag_map = {};
-        var hs = [], es = [], js = [], ss = [];
+        var hs = [], es = [], js = [], ss = [], xs = [];
+        var unmarks = [];
         if (Evt.insert_card && Evt.position == ui.cardPile) Evt.cards.reverse();
-        var hej = player.getCards('hejs');
+        var hej = player.getCards('hejsx');
         Evt.stockcards = cards.slice(0);
         for (var i = 0; i < cards.length; i++) {
-          if (cards[i].gaintag && cards[i].gaintag.length) {
-            Evt.gaintag_map[cards[i].cardid] = cards[i].gaintag.slice(0);
-            if (cards[i].hasGaintag('ming_')) Evt.gaintag_map[cards[i].cardid].push('ming_');
-            if (cards[i].hasGaintag('an_')) Evt.gaintag_map[cards[i].cardid].push('an_');
-            cards[i].removeGaintag(true);
-          }
           if (!hej.contains(cards[i])) {
             cards.splice(i--, 1);
             continue;
@@ -29748,6 +29920,11 @@ module.exports = {
             else if (cards[i].parentNode.classList.contains('judges')) {
               cards[i].original = 'j';
               js.push(cards[i]);
+            }
+            else if (cards[i].parentNode.classList.contains('expansions')) {
+              cards[i].original = 'x';
+              xs.push(cards[i]);
+              if (cards[i].gaintag && cards[i].gaintag.length) unmarks.addArray(cards[i].gaintag);
             }
             else if (cards[i].parentNode.classList.contains('handcards')) {
               if (cards[i].classList.contains('glows')) {
@@ -29762,6 +29939,10 @@ module.exports = {
             else {
               cards[i].original = null;
             }
+          }
+          if (cards[i].gaintag && cards[i].gaintag.length) {
+            Evt.gaintag_map[cards[i].cardid] = cards[i].gaintag.slice(0);
+            cards[i].removeGaintag(true);
           }
 
           cards[i].style.transform += ' scale(0.2)';
@@ -29841,10 +30022,16 @@ module.exports = {
         else if (Evt.position == ui.cardPile) {
           game.updateRoundNumber();
         }
+        if (unmarks.length) {
+          for (var i of unmarks) {
+            player[(lib.skill[i] && lib.skill[i].mark || player.hasCard((card) => card.hasGaintag(i), 'x')) ? 'markSkill' : 'unmarkSkill'](i);
+          }
+        }
         Evt.hs = hs;
         Evt.es = es;
         Evt.js = js;
         Evt.ss = ss;
+        Evt.xs = xs;
       }, () => {
         if (num < cards.length) {
           let evt = Evt.getParent();
@@ -29895,7 +30082,7 @@ module.exports = {
         Evt.goto(2);
       }, () => {
         var evt = Evt.getParent();
-        if (evt.name != 'discard' && Evt.type != 'discard') return;
+        if ((evt.name != 'discard' && event.type != 'discard') && (evt.name != 'loseToDiscardpile' && Evt.type != 'loseToDiscardpile')) return;
         if (evt.delay != false) {
           if (evt.waitingForTransition) {
             _status.waitingForTransition = evt.waitingForTransition;
@@ -30371,7 +30558,7 @@ module.exports = {
             if (lib.character[player.name1]) _status.characterlist.add(player.name1);
             if (lib.character[player.name2]) _status.characterlist.add(player.name2);
           }
-          Evt.cards = player.getCards('hejs');
+          Evt.cards = player.getCards('hejsx');
           if (Evt.cards.length) {
             player.discard(Evt.cards).forceDie = true;
             //player.$throw(Evt.cards,1000);
@@ -30862,27 +31049,36 @@ module.exports = {
        * 检测本角色武将牌周围是否有牌
        */
       hasCardAround: function () {
+        return this.getCardAround().length > 0
+      },
+      getCardAround: function () {
         let cards = [];
         let skills = this.getSkills(true, false, false);
         game.expandSkills(skills);
         for (let i of skills) {
-          if (lib.skill[i] && lib.skill[i].cardAround) {
-            let key = [];
-            let storage = this.getStorage(i);
-            let method = lib.skill[i].cardAround;
-            if (Array.isArray(method)) {
-              for (let j of method) key = key.concat(storage[j]);
+          if (lib.skill[i]) {
+            if (lib.skill[i].cardAround) {
+              let key = [];
+              let storage = this.getStorage(i);
+              let method = lib.skill[i].cardAround;
+              if (Array.isArray(method)) {
+                for (let j of method) key = key.concat(storage[j]);
+              }
+              else if (typeof method == 'function') {
+                key = key.concat(method(this));
+              }
+              else if (Array.isArray(storage)) {
+                key = key.concat(storage);
+              }
+              else key.push(storage);
+              cards.addArray(key);
             }
-            else if (typeof method == 'function') {
-              key = key.concat(method(this));
+            else if (lib.skill[i].intro && lib.skill[i].intro.markcount === 'expansion') {
+              cards.addArray(this.getExpansions(i));
             }
-            else if (Array.isArray(storage)) key = key.concat(storage);
-            else key.push(storage);
-            cards.addArray(key);
           }
         }
-        if (cards.length) return cards;
-        return false;
+        return cards;
       },
       isYingV: function () {
         var info = lib.character[this.name || this.name1];
@@ -31994,6 +32190,12 @@ module.exports = {
             }
           }, this);
         }
+        this.node.displayer.style.opacity = 0;
+        this.node.displayer.style.transition = 'none'
+        setTimeout(() => {
+          this.node.displayer.style.opacity = ''
+          this.node.displayer.style.transition = ''
+        }, 220)
         this.node.avatar.hide();
         this.node.count.hide();
         if (this.node.wuxing) {
@@ -32342,6 +32544,8 @@ module.exports = {
           equips: this.getCards('e'),
           judges: this.getCards('j'),
           specials: this.getCards('s'),
+          expansions: this.getCards('x'),
+          expansion_gaintag: [],
           disableJudge: this.storage._disableJudge,
           disableEquip: this.storage.disableEquip,
           views: [],
@@ -32363,6 +32567,9 @@ module.exports = {
         }
         for (var i = 0; i < state.handcards.length; i++) {
           state.gaintag[i] = state.handcards[i].gaintag;
+        }
+        for (var i = 0; i < state.expansions.length; i++) {
+          state.expansion_gaintag[i] = state.expansions[i].gaintag;
         }
         if (this.getModeState) {
           state.mode = this.getModeState();
@@ -32752,6 +32959,9 @@ module.exports = {
           if (typeof lib.skill[i].intro.markcount == 'function') {
             num = lib.skill[i].intro.markcount(this.storage[i], this);
           }
+          else if (lib.skill[i].intro.markcount == 'expansion') {
+            num = this.countCards('x', (card) => card.hasGaintag(i));
+          }
           else if (typeof this.storage[i + '_markcount'] == 'number') {
             num = this.storage[i + '_markcount'];
           }
@@ -32884,7 +33094,6 @@ module.exports = {
           num = 0;
           for (var i in stat) {
             if (typeof stat[i] == 'number') {
-              console.log(i, stat[i])
               num += stat[i];
             }
           }
@@ -33015,6 +33224,13 @@ module.exports = {
                   this.node.judges.childNodes[j].name = this.node.judges.childNodes[j].viewAs;
                   cards1.push(this.node.judges.childNodes[j]);
                 }
+              }
+            }
+          }
+          else if (arg1[i] == 'x') {
+            for (j = 0; j < this.node.expansions.childElementCount; j++) {
+              if (!this.node.expansions.childNodes[j].classList.contains('removing')) {
+                cards.push(this.node.expansions.childNodes[j]);
               }
             }
           }
@@ -34752,6 +34968,34 @@ module.exports = {
         next.setContent('discard');
         return next;
       },
+      loseToDiscardpile: function () {
+        var next = game.createEvent('loseToDiscardpile');
+        next.player = this;
+        next.num = 0;
+        for (var i = 0; i < arguments.length; i++) {
+          if (get.itemtype(arguments[i]) == 'player') {
+            next.source = arguments[i];
+          }
+          else if (get.itemtype(arguments[i]) == 'cards') {
+            next.cards = arguments[i].slice(0);
+          }
+          else if (get.itemtype(arguments[i]) == 'card') {
+            next.cards = [arguments[i]];
+          }
+          else if (typeof arguments[i] == 'boolean') {
+            next.animate = arguments[i];
+          }
+          else if (get.objtype(arguments[i]) == 'div') {
+            next.position = arguments[i];
+          }
+          else if (arguments[i] == 'notBySelf') {
+            next.notBySelf = true;
+          }
+        }
+        if (next.cards == undefined) _status.event.next.remove(next);
+        next.setContent('loseToDiscardpile');
+        return next;
+      },
       respond: function () {
         var next = game.createEvent('respond');
         next.player = this;
@@ -34800,6 +35044,24 @@ module.exports = {
         if (cards2) next.cards2 = cards2;
         next.setContent('swapHandcards');
         return next;
+      },
+      $addToExpansion: function (cards, broadcast, gaintag) {
+        var hs = this.getCards('x');
+        for (var i = 0; i < cards.length; i++) {
+          if (hs.contains(cards[i])) {
+            cards.splice(i--, 1);
+          }
+        }
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].fix();
+          if (gaintag) cards[i].addGaintag(gaintag);
+          var sort = lib.config.sort_card(cards[i]);
+          this.node.expansions.insertBefore(cards[i], this.node.expansions.firstChild);
+        }
+        if (broadcast !== false) game.broadcast(function (player, cards, gaintag) {
+          player.$addToExpansion(cards, null, gaintag);
+        }, this, cards, gaintag);
+        return this;
       },
       directequip: function (cards) {
         for (var i = 0; i < cards.length; i++) {
@@ -34942,6 +35204,7 @@ module.exports = {
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -34951,11 +35214,79 @@ module.exports = {
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
+        };
+        next.gaintag = [];
+        return next;
+      },
+      addToExpansion: function () {
+        var next = game.createEvent('addToExpansion');
+        next.player = this;
+        for (var i = 0; i < arguments.length; i++) {
+          if (get.itemtype(arguments[i]) == 'player') {
+            next.source = arguments[i];
+          }
+          else if (get.itemtype(arguments[i]) == 'cards') {
+            next.cards = arguments[i].slice(0);
+          }
+          else if (get.itemtype(arguments[i]) == 'card') {
+            next.cards = [arguments[i]];
+          }
+          else if (arguments[i] === 'log') {
+            next.log = true;
+          }
+          else if (arguments[i] == 'fromStorage') {
+            next.fromStorage = true;
+          }
+          else if (arguments[i] == 'fromRenku') {
+            next.fromStorage = true;
+            next.fromRenku = true;
+          }
+          else if (arguments[i] == 'bySelf') {
+            next.bySelf = true;
+          }
+          else if (typeof arguments[i] == 'string') {
+            next.animate = arguments[i];
+          }
+          else if (typeof arguments[i] == 'boolean') {
+            next.delay = arguments[i];
+          }
+        }
+        if (next.animate == 'gain2' || next.animate == 'draw2' || next.animate == 'give') {
+          if (!next.hasOwnProperty('log')) {
+            next.log = true;
+          }
+        }
+        next.setContent('addToExpansion');
+        next.getl = function (player) {
+          var that = this;
+          var map = {
+            player: player,
+            hs: [],
+            es: [],
+            js: [],
+            ss: [],
+            xs: [],
+            cards: [],
+            cards2: [],
+          };
+          player.getHistory('lose', function (evt) {
+            if (evt.parent == that) {
+              map.hs.addArray(evt.hs);
+              map.es.addArray(evt.es);
+              map.js.addArray(evt.js);
+              map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
+              map.cards.addArray(evt.cards);
+              map.cards2.addArray(evt.cards2);
+            }
+          });
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         next.gaintag = [];
         return next;
@@ -34992,7 +35323,7 @@ module.exports = {
           }
         }
         if (next.cards) {
-          var hej = this.getCards('hejs');
+          var hej = this.getCards('hejsx');
           for (var i = 0; i < next.cards.length; i++) {
             if (!hej.contains(next.cards[i])) {
               next.cards.splice(i--, 1);
@@ -35418,6 +35749,7 @@ module.exports = {
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -35427,11 +35759,12 @@ module.exports = {
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         return next;
       },
@@ -35451,6 +35784,7 @@ module.exports = {
             es: [],
             js: [],
             ss: [],
+            xs: [],
             cards: [],
             cards2: [],
           };
@@ -35460,11 +35794,12 @@ module.exports = {
               map.es.addArray(evt.es);
               map.js.addArray(evt.js);
               map.ss.addArray(evt.ss);
+              map.xs.addArray(evt.xs);
               map.cards.addArray(evt.cards);
               map.cards2.addArray(evt.cards2);
             }
           });
-          if (map.cards.length > 0 || map.ss.length > 0) return map;
+          if (map.cards.length > 0 || map.ss.length > 0 || map.xs.length > 0) return map;
         };
         return next;
       },
@@ -35850,7 +36185,7 @@ module.exports = {
        * 文字弹出动画效果
        * [recommend] 令人迷惑的是，此函数实质调用了{@link lib.element.player.$damagepop}，而不是{@link lib.element.player.$damagepop}调用此函数
        * @param {!string} name (技能|角色|游戏牌)名或其他任意非空字符串
-       * @param {string} [classname='water'] 效果色
+       * @param {string} [className='water'] 效果色
        * @param {?boolean} [nobroadcast] 如果为true，则
        */
       popup: function (name, className, nobroadcast) {
@@ -35958,6 +36293,9 @@ module.exports = {
           storage.removeArray(info.slice(0));
           this.markAuto(name);
         }
+      },
+      getExpansions: function (tag) {
+        return this.getCards('x', (card) => card.hasGaintag(tag));
       },
       getStorage: function (name) {
         return this.storage[name] || [];
@@ -39439,6 +39777,7 @@ module.exports = {
           // ui.create.div('',str.split('').join('<br>'),ui.create.div('.text.textbg',node));
           ui.create.div('', '<div>' + str.split('').join('</div><br><div>') + '</div>', ui.create.div('.text', node));
           node.firstChild.firstChild.style.backgroundImage = avatar.style.backgroundImage;
+          if (str.length >= 7) node.lastChild.firstChild.className = 'long';
           node.dataset.nature = nature || 'unknown';
           var num = 0;
           var nodes = node.lastChild.firstChild.querySelectorAll('div');
@@ -40309,7 +40648,7 @@ module.exports = {
        * @returns {!boolean}
        */
       hasPosition: function () {
-        return ['h', 'e', 'j'].contains(get.position(this));
+        return ['h', 'e', 'j', 's', 'x'].contains(get.position(this));
       },
       /**
        * 判断本卡牌是否在牌堆或弃牌堆中
@@ -40416,7 +40755,6 @@ module.exports = {
         else {
           if (typeof key != 'string') {
             console.log('warning: using non-string object as Evt key');
-            console.log(key, value);
             console.log(_status.event);
           }
           this[key] = value;
@@ -41069,6 +41407,11 @@ module.exports = {
           if (zoom) buttons.classList.add('smallzoom');
           this.buttons = this.buttons.concat(ui.create.buttons(item[0], item[1], buttons, noclick));
         }
+        this.updateForcebutton(zoom)
+        ui.update();
+        return item;
+      },
+      updateForcebutton(zoom) {
         if (this.buttons.length) {
           if (this.forcebutton !== false) this.forcebutton = true;
           if (this.buttons.length > 3 || (zoom && this.buttons.length > 5)) {
@@ -41078,8 +41421,6 @@ module.exports = {
             this.classList.add('forcebutton-auto');
           }
         }
-        ui.update();
-        return item;
       },
       addText: function (str, center) {
         if (center !== false) {
@@ -41404,7 +41745,7 @@ module.exports = function (element, _mode, _message) {
    */
   const dist = () => lib.assetURL + 'dist'
 
-  let init = {
+  const init = {
     /**
      * 初始化游戏，向HTMLDivElement和Array的原型链上添加一批方法（比如delete和addArray）
      * 入口函数
@@ -41425,7 +41766,7 @@ module.exports = function (element, _mode, _message) {
         }
         lib.configprefix += '_';
       }
-      window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 5000);
+      window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 3000);
       //part: `cordovaLoadTimeout`的创建，在 ../app/redirect.js
       if (window.cordovaLoadTimeout) {
         clearTimeout(window.cordovaLoadTimeout);
@@ -41482,11 +41823,13 @@ module.exports = function (element, _mode, _message) {
         if (htmlbg) {
           if (htmlbg.indexOf('svg_') == 0) {
             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg.slice(4) + '.svg")';
+            document.documentElement.style.height = '100%';
           }
           else {
             document.documentElement.style.backgroundImage = 'url("' + lib.assetURL + 'image/background/' + htmlbg + '.jpg")';
             document.documentElement.style.backgroundSize = 'cover';
             document.documentElement.style.backgroundPosition = '50% 50%';
+            document.documentElement.style.height = '100%';
           }
         }
       }
@@ -42211,22 +42554,23 @@ module.exports = function (element, _mode, _message) {
             // }
           }
         };
-        if('onmousedown' in document){
-          if(!game.getFileList){
-            document.oncontextmenu = function(e){
+        if ('onmousedown' in document) {
+          if (!game.getFileList) {
+            document.oncontextmenu = function (e) {
               e.preventDefault()
             }
           }
-          document.onmousedown = (e)=> {
-            if(e.button == 2){
+          document.onmousedown = (e) => {
+            if (e.target.parentNode === document) return
+            if (e.button == 2) {
               game.clickAudio('mechanical.wav')
             }
-            else if(e.button == 0){
-              let classList = [...e.target.classList,...e.target.parentNode.classList]
-              if(classList.contains('button')||classList.contains('toggle')||classList.contains('pressdown')){
+            else if (e.button == 0) {
+              let classList = [...e.target.classList, ...e.target.parentNode.classList]
+              if (classList.contains('button') || classList.contains('toggle') || classList.contains('pressdown')) {
                 game.clickAudio('heavy.wav')
               }
-              else{
+              else {
                 game.clickAudio('light.wav')
               }
             }
@@ -42342,447 +42686,470 @@ module.exports = function (element, _mode, _message) {
         }
         lib.assetURL = noname_inited;
       }
-      //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
-      var config3 = null;
-      var proceed = function (config2) {
-        //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
-        if (config3 === null) {
-          config3 = config2;
-          return;
-        }
-        //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
-        if (config2.mode) lib.config.mode = config2.mode;
-        if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
-        for (let i in lib.config.mode_config.global) {
-          if (lib.config.mode_config[lib.config.mode][i] == undefined) {
-            lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
+      if (window.resetGameTimeout) {
+        clearTimeout(window.resetGameTimeout);
+        window.resetGameTimeout = setTimeout(init.reset, parseInt(localStorage.getItem(lib.configprefix + 'loadtime')) || 3000);
+      }
+      //part: 游戏设置信息，window.config，创建于config.js
+      lib.config = window.config;
+      //part: 联机部分的设置
+      lib.configOL = {};
+      //part: 初始化ui.css.menu和ui.css.default样式
+      let preconfig = {
+        //part: flag变量，标志`ui.css`是否加载完成，完成时设置为true；如果其他UI和config数据加载完成时`ui.css`未加载完毕，寄存config数据于`config3`，并在css加载完成时调用
+        config3: null,
+        //part: 表示开始界面初始化的状态
+        initDataing: false,
+        toLoad: 2,
+        proceed: function (config2) {
+          //[recommend] 移到`init`函数结尾更好，`proceed`函数更整洁
+          if (preconfig.config3 === null) {
+            preconfig.config3 = config2;
+            return;
           }
-        }
-        //part: defaultcharacters
-        if (lib.config.characters) {
-          lib.config.defaultcharacters = lib.config.characters.slice(0);
-        }
-        //part: defaultcards
-        if (lib.config.cards) {
-          lib.config.defaultcards = lib.config.cards.slice(0);
-        }
-        //part: 从`config2`加载`lib.config`和`_mode_config`的数据
-        for (let i in config2) {
-          if (i.indexOf('_mode_config') != -1) {
-            var thismode = i.substr(i.indexOf('_mode_config') + 13);
-            if (!lib.config.mode_config[thismode]) {
-              lib.config.mode_config[thismode] = {};
+          //part: 如果`config2.mode`存在，则直接进入游戏的`config2.mode`；模式初始化`lib.config.mode_config`
+          if (config2.mode && !preconfig.skip_splash) {
+            lib.config.mode = config2.mode;
+          }
+          if (lib.config.mode_config[lib.config.mode] == undefined) lib.config.mode_config[lib.config.mode] = {};
+          for (let i in lib.config.mode_config.global) {
+            if (lib.config.mode_config[lib.config.mode][i] == undefined) {
+              lib.config.mode_config[lib.config.mode][i] = lib.config.mode_config.global[i];
             }
-            lib.config.mode_config[thismode][i.substr(0, i.indexOf('_mode_config'))] = config2[i];
           }
-          else {
-            lib.config[i] = config2[i];
+          //part: defaultcharacters
+          if (lib.config.characters) {
+            lib.config.defaultcharacters = lib.config.characters.slice(0);
           }
-        }
-        //part: 从`lib.config.translate`拷贝到`lib.translate`
-        for (let i in lib.config.translate) {
-          lib.translate[i] = lib.config.translate[i];
-        }
+          //part: defaultcards
+          if (lib.config.cards) {
+            lib.config.defaultcards = lib.config.cards.slice(0);
+          }
+          //part: 从`config2`加载`lib.config`和`_mode_config`的数据
+          for (let i in config2) {
+            if (i.indexOf('_mode_config') != -1) {
+              var thismode = i.substr(i.indexOf('_mode_config') + 13);
+              if (!lib.config.mode_config[thismode]) {
+                lib.config.mode_config[thismode] = {};
+              }
+              lib.config.mode_config[thismode][i.substr(0, i.indexOf('_mode_config'))] = config2[i];
+            }
+            else if (i !== 'mode') {
+              lib.config[i] = config2[i];
+            }
+          }
+          //part: 从`lib.config.translate`拷贝到`lib.translate`
+          for (let i in lib.config.translate) {
+            lib.translate[i] = lib.config.translate[i];
+          }
 
-        lib.config.all.characters = [];
-        lib.config.all.cards = [];
-        lib.config.all.plays = [];
-        lib.config.all.mode = [];
-        //part: 如果测试模式已开启，重置资源列表
-        if (lib.config.debug) {
-          init.js(lib.assetURL + 'game', 'asset', function () {
-            lib.skin = window.vk_skin_list;
-            delete window.vk_skin_list;
-            delete window.vk_asset_list;
-          });
-        }
+          lib.config.all.characters = [];
+          lib.config.all.cards = [];
+          lib.config.all.plays = [];
+          lib.config.all.mode = [];
+          //part: 如果测试模式已开启，重置资源列表
+          if (lib.config.debug) {
+            init.js(lib.assetURL + 'game', 'asset', function () {
+              lib.skin = window.vk_skin_list;
+              delete window.vk_skin_list;
+              delete window.vk_asset_list;
+            });
+          }
 
-        if (window.isNonameServer) {
-          lib.config.mode = 'connect';
-        }
-        //part: `window.vk_package`，创建于package.js
-        var pack = window.vk_package;
-        delete window.vk_package;
-        if (lib.init_pack) {
-          lib.init_pack(pack)
-        }
-        for (let i in pack.character) {
-          if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
-            lib.config.all.characters.push(i);
-            lib.translate[i + '_character_config'] = pack.character[i];
+          if (window.isNonameServer && lib.config.mode !== 'connect') {
+            lib.config.mode = 'connect';
           }
-        }
-        for (let i in pack.card) {
-          if (lib.config.hiddenCardPack.indexOf(i) == -1) {
-            lib.config.all.cards.push(i);
-            lib.translate[i + '_card_config'] = pack.card[i];
+          //part: `window.vk_package`，创建于package.js
+          var pack = window.vk_package;
+          delete window.vk_package;
+          if (lib.init_pack) {
+            lib.init_pack(pack)
           }
-        }
-        for (let i in pack.play) {
-          lib.config.all.plays.push(i);
-          lib.translate[i + '_play_config'] = pack.play[i];
-        }
-        for (let i in pack.submode) {
-          for (let j in pack.submode[i]) {
-            lib.translate[i + '|' + j] = pack.submode[i][j];
+          for (let i in pack.character) {
+            if (lib.config.hiddenCharacterPack.indexOf(i) == -1) {
+              lib.config.all.characters.push(i);
+              lib.translate[i + '_character_config'] = pack.character[i];
+            }
           }
-        }
+          for (let i in pack.card) {
+            if (lib.config.hiddenCardPack.indexOf(i) == -1) {
+              lib.config.all.cards.push(i);
+              lib.translate[i + '_card_config'] = pack.card[i];
+            }
+          }
+          for (let i in pack.play) {
+            lib.config.all.plays.push(i);
+            lib.translate[i + '_play_config'] = pack.play[i];
+          }
+          for (let i in pack.submode) {
+            for (let j in pack.submode[i]) {
+              lib.translate[i + '|' + j] = pack.submode[i][j];
+            }
+          }
 
-        if (!lib.config.gameRecord) {
-          lib.config.gameRecord = {};
-        }
-        for (let i in pack.mode) {
-          if (lib.config.hiddenModePack.indexOf(i) == -1) {
-            lib.config.all.mode.push(i);
-            lib.translate[i] = pack.mode[i];
-            if (!lib.config.gameRecord[i]) {
-              lib.config.gameRecord[i] = { data: {} };
+          if (!lib.config.gameRecord) {
+            lib.config.gameRecord = {};
+          }
+          for (let i in pack.mode) {
+            if (lib.config.hiddenModePack.indexOf(i) == -1) {
+              lib.config.all.mode.push(i);
+              lib.translate[i] = pack.mode[i];
+              if (!lib.config.gameRecord[i]) {
+                lib.config.gameRecord[i] = { data: {} };
+              }
             }
           }
-        }
-        //??
-        if (lib.config.all.mode.length == 0) {
-          lib.config.all.mode.push('identity');
-          lib.translate.identity = '身份';
-          if (!lib.config.gameRecord.identity) {
-            lib.config.gameRecord.identity = { data: {} };
+          //??
+          if (lib.config.all.mode.length == 0) {
+            lib.config.all.mode.push('identity');
+            lib.translate.identity = '身份';
+            if (!lib.config.gameRecord.identity) {
+              lib.config.gameRecord.identity = { data: {} };
+            }
           }
-        }
-        {
-          if (pack.background) {
-            for (let i in pack.background) {
-              if (lib.config.hiddenBackgroundPack.contains(i)) continue;
-              lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
+          {
+            if (pack.background) {
+              for (let i in pack.background) {
+                if (lib.config.hiddenBackgroundPack.contains(i)) continue;
+                lib.configMenu.appearence.config.image_background.item[i] = pack.background[i];
+              }
+              for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
+                var link = lib.config.customBackgroundPack[i];
+                lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
+              }
+              lib.configMenu.appearence.config.image_background.item.default = '默认';
             }
-            for (let i = 0; i < lib.config.customBackgroundPack.length; i++) {
-              var link = lib.config.customBackgroundPack[i];
-              lib.configMenu.appearence.config.image_background.item[link] = link.slice(link.indexOf('_') + 1);
-            }
-            lib.configMenu.appearence.config.image_background.item.default = '默认';
-          }
-          if (pack.music) {
-            if (lib.device || typeof window.require == 'function') {
-              lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
-            }
-            lib.config.all.background_music = ['music_danji'];
-            for (let i in pack.music) {
-              lib.config.all.background_music.push(i);
-              lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
-            }
-            if (lib.config.customBackgroundMusic) {
-              for (let i in lib.config.customBackgroundMusic) {
+            if (pack.music) {
+              if (lib.device || typeof window.require == 'function') {
+                lib.configMenu.audio.config.background_music.item.music_custom = '自定义音乐';
+              }
+              lib.config.all.background_music = ['music_danji'];
+              for (let i in pack.music) {
                 lib.config.all.background_music.push(i);
-                lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                lib.configMenu.audio.config.background_music.item[i] = pack.music[i];
+              }
+              if (lib.config.customBackgroundMusic) {
+                for (let i in lib.config.customBackgroundMusic) {
+                  lib.config.all.background_music.push(i);
+                  lib.configMenu.audio.config.background_music.item[i] = lib.config.customBackgroundMusic[i];
+                }
+              }
+              lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
+              lib.configMenu.audio.config.background_music.item.music_off = '关闭';
+            }
+            if (pack.theme) {
+              for (let i in pack.theme) {
+                lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
               }
             }
-            lib.configMenu.audio.config.background_music.item.music_random = '随机播放';
-            lib.configMenu.audio.config.background_music.item.music_off = '关闭';
-          }
-          if (pack.theme) {
-            for (let i in pack.theme) {
-              lib.configMenu.appearence.config.theme.item[i] = pack.theme[i];
+            if (lib.config.extension_sources) {
+              for (let i in lib.config.extension_sources) {
+                lib.configMenu.general.config.extension_source.item[i] = i;
+              }
             }
           }
-          if (lib.config.extension_sources) {
-            for (let i in lib.config.extension_sources) {
-              lib.configMenu.general.config.extension_source.item[i] = i;
+          //part: touch, layout, scroll config
+          var ua = navigator.userAgent.toLowerCase();
+          if ('ontouchstart' in document) {
+            //移动端
+            if (!lib.config.totouched) {
+              game.saveConfig('totouched', true);
+              if (lib.device) {
+                //移动端通过客户端访问
+                game.saveConfig('low_performance', true);
+                game.saveConfig('confirm_exit', true);
+                game.saveConfig('touchscreen', true);
+                game.saveConfig('fold_mode', false);
+                if (ua.indexOf('ipad') == -1) {
+                  game.saveConfig('phonelayout', true);
+                }
+                else if (lib.device == 'ios') {
+                  game.saveConfig('show_statusbar_ios', 'overlay');
+                }
+              }
+              else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
+                //移动端通过网页访问
+                game.saveConfig('touchscreen', true);
+                if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
+                  game.saveConfig('phonelayout', true);
+                }
+
+                game.reload();
+              }
             }
+          }
+          else if (lib.config.touchscreen) {//非移动端，如果触屏模式开启，就设置关闭
+            game.saveConfig('touchscreen', false);
           }
 
-          if (pack.font) {
-            ui.css.fontsheet = init.sheet();
-            for (let i in pack.font) {
-              lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
-              lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
-              ui.css.fontsheet.sheet.insertRule(`@font-face {font-family: '${i}';src: url('${lib.assetURL}font/${i}.ttf');}`, 0);
-            }
-            lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
-            lib.configMenu.appearence.config.global_font.item.default = '默认';
+          if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
+            game.saveConfig('toscrolled', true);
+            game.saveConfig('mousewheel', false);
           }
-        }
-        //part: touch, layout, scroll config
-        var ua = navigator.userAgent.toLowerCase();
-        if ('ontouchstart' in document) {
-          //移动端
-          if (!lib.config.totouched) {
-            game.saveConfig('totouched', true);
-            if (lib.device) {
-              //移动端通过客户端访问
-              game.saveConfig('low_performance', true);
-              game.saveConfig('confirm_exit', true);
-              game.saveConfig('touchscreen', true);
-              game.saveConfig('fold_mode', false);
-              if (ua.indexOf('ipad') == -1) {
-                game.saveConfig('phonelayout', true);
-              }
-              else if (lib.device == 'ios') {
-                game.saveConfig('show_statusbar_ios', 'overlay');
-              }
-            }
-            else if (confirm('是否切换到触屏模式？（触屏模式可提高触屏设备的响应速度，但无法使用鼠标）')) {
-              //移动端通过网页访问
-              game.saveConfig('touchscreen', true);
-              if (ua.indexOf('iphone') != -1 || ua.indexOf('android') != -1) {
-                game.saveConfig('phonelayout', true);
-              }
-
-              game.reload();
-            }
-          }
-        }
-        else if (lib.config.touchscreen) {//非移动端，如果触屏模式开启，就设置关闭
-          game.saveConfig('touchscreen', false);
-        }
-
-        if (!lib.config.toscrolled && ua.indexOf('macintosh') != -1) {
-          game.saveConfig('toscrolled', true);
-          game.saveConfig('mousewheel', false);
-        }
-        //part: 是否打开开始界面
-        var show_splash = lib.config.show_splash;
-        if (show_splash == 'off') {
-          show_splash = false;
-        }
-        else if (show_splash == 'init') {
-          if (localStorage.getItem('show_splash_off')) {
+          //part: 是否打开开始界面
+          let show_splash = lib.config.show_splash;
+          if (show_splash == 'off'
+            || (show_splash == 'init' && localStorage.getItem('show_splash_off'))
+            || preconfig.skip_splash) {
             show_splash = false;
           }
-        }
-        localStorage.removeItem('show_splash_off');
-        //part: extension list
-        //??
-        //[never executed]
-        var extensionlist = [];
-        if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
-          if (lib.config.extensions && lib.config.extensions.length) {
-            window.resetExtension = function () {
-              for (let i = 0; i < lib.config.extensions.length; i++) {
-                game.saveConfig('extension_' + lib.config.extensions[i] + '_enable', false);
+          localStorage.removeItem('show_splash_off');
+          preconfig.show_splash = show_splash
+          //part: extension list
+          //??
+          //[never executed]
+          var extensionlist = [];
+          if (!localStorage.getItem(lib.configprefix + 'disable_extension')) {
+            if (lib.config.extensions && lib.config.extensions.length) {
+              window.resetExtension = function () {
+                for (let i = 0; i < lib.config.extensions.length; i++) {
+                  game.saveConfig('extension_' + lib.config.extensions[i] + '_enable', false);
+                }
+                localStorage.setItem(lib.configprefix + 'disable_extension', true);
               }
-              localStorage.setItem(lib.configprefix + 'disable_extension', true);
+            }
+            for (let i = 0; i < lib.config.plays.length; i++) {
+              if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
+                extensionlist.push(lib.config.plays[i]);
+              }
+            }
+            for (let i = 0; i < lib.config.extensions.length; i++) {
+              var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
+              if (extcontent) {
+                _status.evaluatingExtension = true;
+                try {
+                  eval(extcontent);
+                }
+                catch (e) {
+                  console.log(e);
+                }
+                _status.evaluatingExtension = false;
+              }
+              else if (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash) {
+                extensionlist.push(lib.config.extensions[i]);
+              }
             }
           }
-          for (let i = 0; i < lib.config.plays.length; i++) {
-            if (lib.config.all.plays.indexOf(lib.config.plays[i]) != -1) {
-              extensionlist.push(lib.config.plays[i]);
-            }
-          }
-          for (let i = 0; i < lib.config.extensions.length; i++) {
-            var extcontent = localStorage.getItem(lib.configprefix + 'extension_' + lib.config.extensions[i]);
-            if (extcontent) {
-              _status.evaluatingExtension = true;
-              try {
-                eval(extcontent);
-              }
-              catch (e) {
-                console.log(e);
-              }
-              _status.evaluatingExtension = false;
-            }
-            else if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
-              extensionlist.push(lib.config.extensions[i]);
-            }
-          }
-        }
-        else {
-          if (lib.config.mode != 'connect' || (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash)) {
+          else if (!localStorage.getItem(lib.configprefix + 'directstart') && show_splash) {
             for (let i = 0; i < lib.config.extensions.length; i++) {
               game.import('extension', { name: lib.config.extensions[i] });
             }
           }
-        }
-        //用于加载包的函数
-        let loadPack = function () {
-          let toLoad = 2;
-          let packLoaded = function () {
-            toLoad--;
-            if (toLoad == 0) {
-              if (_status.windowLoaded) {
-                delete _status.windowLoaded;
-                init.onload();
+          //part: 检查layout并设置`game.layout = layout`
+          let layout = lib.config.layout;
+          if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
+            layout = 'mobile';
+          }
+          if (layout == 'phone') {
+            layout = 'mobile';
+            game.saveConfig('layout', 'mobile');
+            game.saveConfig('phonelayout', true);
+          }
+          game.layout = layout;
+          //part: 随机选取背景或选择_status.htmlbg作为背景图像
+          if (lib.config.image_background_random) {
+            if (_status.htmlbg) {
+              game.saveConfig('image_background', _status.htmlbg);
+            }
+            else {
+              let list = [];
+              for (let i in lib.configMenu.appearence.config.image_background.item) {
+                if (i == 'default') continue;
+                list.push(i);
+              }
+              game.saveConfig('image_background', list.randomGet(lib.config.image_background));
+            }
+            init.background();
+          }
+          delete _status.htmlbg;
+          //part: game to window.game
+          window.game = game;
+          //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
+          let styleToLoad = 6;
+          let styleLoaded = function () {
+            styleToLoad--;
+            if (styleToLoad == 0) {
+              if (extensionlist.length && show_splash) {
+                let extToLoad = extensionlist.length;
+                let extLoaded = function () {
+                  extToLoad--;
+                  if (extToLoad == 0) {
+                    preconfig.loadPack();
+                  }
+                }
+                for (let i = 0; i < extensionlist.length; i++) {
+                  init.js(lib.assetURL + 'extension/' + extensionlist[i], 'extension', extLoaded, (function (i) {
+                    return function () {
+                      game.removeExtension(i);
+                      extToLoad--;
+                      if (extToLoad == 0) {
+                        preconfig.loadPack();
+                      }
+                    }
+                  }(extensionlist[i])));
+                }
               }
               else {
-                /**
-                 * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
-                 * @private
-                 * @default
-                 */
-                _status.packLoaded = true;
+                preconfig.loadPack();
               }
             }
           };
-          if (localStorage.getItem(lib.configprefix + 'playback')
-            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash) &&
-              lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
-            toLoad++;
-            init.js(dist(), 'mode', packLoaded, packLoaded);
-          }
-          init.js(dist(), ['card', 'character'], packLoaded, packLoaded);
-        };
-        //part: 检查layout并设置`game.layout = layout`
-        let layout = lib.config.layout;
-        if (lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
-          layout = 'mobile';
-        }
-        if (layout == 'phone') {
-          layout = 'mobile';
-          game.saveConfig('layout', 'mobile');
-          game.saveConfig('phonelayout', true);
-        }
-        game.layout = layout;
-        //part: 随机选取背景或选择_status.htmlbg作为背景图像
-        if (lib.config.image_background_random) {
-          if (_status.htmlbg) {
-            game.saveConfig('image_background', _status.htmlbg);
+          //css.layout
+          if (lib.config.layout != 'default') {
+            ui.css.layout = init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
           }
           else {
-            console.log(lib.configMenu.appearence.config.image_background.item)
-            let list = [];
-            for (let i in lib.configMenu.appearence.config.image_background.item) {
-              if (i == 'default') continue;
-              list.push(i);
-            }
-            game.saveConfig('image_background', list.randomGet(lib.config.image_background));
+            ui.css.layout = init.css();
+            styleToLoad--;
           }
-          init.background();
-        }
-        delete _status.htmlbg;
-        //part: game to window.game
-        window.game = game;
-        //part: 加载js(卡牌, 角色, 模式拓展等)以及css(UI布局, 样式)
-        let styleToLoad = 6;
-        let styleLoaded = function () {
-          styleToLoad--;
-          if (styleToLoad == 0) {
-            if (extensionlist.length && (lib.config.mode != 'connect' || show_splash)) {
-              let extToLoad = extensionlist.length;
-              let extLoaded = function () {
-                extToLoad--;
-                if (extToLoad == 0) {
-                  loadPack();
-                }
-              }
-              for (let i = 0; i < extensionlist.length; i++) {
-                init.js(lib.assetURL + 'extension/' + extensionlist[i], 'extension', extLoaded, (function (i) {
-                  return function () {
-                    game.removeExtension(i);
-                    extToLoad--;
-                    if (extToLoad == 0) {
-                      loadPack();
-                    }
-                  }
-                }(extensionlist[i])));
-              }
+          //css.phone
+          if (get.is.phoneLayout()) {
+            ui.css.phone = init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
+          }
+          else {
+            ui.css.phone = init.css();
+            styleToLoad--;
+          }
+          {
+            //css.theme
+            ui.css.theme = init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
+            //css.card_style
+            ui.css.card_style = init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
+            //css_cardpack_style
+            ui.css.cardback_style = init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
+            //css.hp_style
+            ui.css.hp_style = init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
+          }
+          //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
+          if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
+            let str = '';
+            switch (lib.config.player_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646)'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4))'; break;
+            }
+            ui.css.player_stylesheet = init.sheet('#window .player{background-image:' + str + '}');
+          }
+          if (lib.config.border_style && lib.config.border_style != 'default' && lib.config.border_style != 'custom' && lib.config.border_style != 'auto') {
+            ui.css.border_stylesheet = init.sheet();
+            let bstyle = lib.config.border_style;
+            if (bstyle.indexOf('dragon_') == 0) {
+              bstyle = bstyle.slice(7);
+            }
+            ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg,#window #arena.long.mobile:not(.fewplayer) .player[data-position="0"]>.framebg{display:block;background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '1.png")}', 0);
+            ui.css.border_stylesheet.sheet.insertRule('#window #arena.long:not(.fewplayer) .player>.framebg, #arena.oldlayout .player>.framebg{background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '3.png")}', 0);
+            ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
+          }
+          if (lib.config.control_style && lib.config.control_style != 'default' && lib.config.control_style != 'custom') {
+            let str = '';
+            switch (lib.config.control_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+            }
+            if (lib.config.control_style == 'wood') {
+              ui.css.control_stylesheet = init.sheet('#window .control,#window .menubutton,#window #system>div>div,#window #system>div>.pressdown2{background-image:' + str + '}');
             }
             else {
-              loadPack();
+              ui.css.control_stylesheet = init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:' + str + '}');
             }
           }
-        };
-        //css.layout
-        if (lib.config.layout != 'default') {
-          ui.css.layout = init.css(lib.assetURL + 'layout/' + layout, 'layout', styleLoaded);
-        }
-        else {
-          ui.css.layout = init.css();
-          styleToLoad--;
-        }
-        //css.phone
-        if (get.is.phoneLayout()) {
-          ui.css.phone = init.css(lib.assetURL + 'layout/default', 'phone', styleLoaded);
-        }
-        else {
-          ui.css.phone = init.css();
-          styleToLoad--;
-        }
-        //css.theme
-        ui.css.theme = init.css(lib.assetURL + 'theme/' + lib.config.theme, 'style', styleLoaded);
-        //css.card_style
-        ui.css.card_style = init.css(lib.assetURL + 'theme/style/card', lib.config.card_style, styleLoaded);
-        //css_cardpack_style
-        ui.css.cardback_style = init.css(lib.assetURL + 'theme/style/cardback', lib.config.cardback_style, styleLoaded);
-        //css.hp_style
-        ui.css.hp_style = init.css(lib.assetURL + 'theme/style/hp', lib.config.hp_style, styleLoaded);
-        //part: 通过配置创建`<link>`, 设置角色牌的背景、边框、边饰、文本样式
-        if (lib.config.player_style && lib.config.player_style != 'default' && lib.config.player_style != 'custom') {
-          let str = '';
-          switch (lib.config.player_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646)'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4))'; break;
+          if (lib.config.menu_style && lib.config.menu_style != 'default' && lib.config.menu_style != 'custom') {
+            let str = '';
+            switch (lib.config.menu_style) {
+              case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood2.png")'; break;
+              case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
+              case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+            }
+            ui.css.menu_stylesheet = init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
           }
-          ui.css.player_stylesheet = init.sheet('#window .player{background-image:' + str + '}');
-        }
-        if (lib.config.border_style && lib.config.border_style != 'default' && lib.config.border_style != 'custom' && lib.config.border_style != 'auto') {
-          ui.css.border_stylesheet = init.sheet();
-          let bstyle = lib.config.border_style;
-          if (bstyle.indexOf('dragon_') == 0) {
-            bstyle = bstyle.slice(7);
-          }
-          ui.css.border_stylesheet.sheet.insertRule('#window .player>.framebg,#window #arena.long.mobile:not(.fewplayer) .player[data-position="0"]>.framebg{display:block;background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '1.png")}', 0);
-          ui.css.border_stylesheet.sheet.insertRule('#window #arena.long:not(.fewplayer) .player>.framebg, #arena.oldlayout .player>.framebg{background-image:url("' + lib.assetURL + 'theme/style/player/' + bstyle + '3.png")}', 0);
-          ui.css.border_stylesheet.sheet.insertRule('.player>.count{z-index: 3 !important;border-radius: 2px !important;text-align: center !important;}', 0);
-        }
-        if (lib.config.control_style && lib.config.control_style != 'default' && lib.config.control_style != 'custom') {
-          let str = '';
-          switch (lib.config.control_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood.jpg")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
-          }
-          if (lib.config.control_style == 'wood') {
-            ui.css.control_stylesheet = init.sheet('#window .control,#window .menubutton,#window #system>div>div,#window #system>div>.pressdown2{background-image:' + str + '}');
+          //part: ??
+          lib.config.duration = 500;
+          //part: add mouse/touch Evt listeners to document.
+          if (!lib.config.touchscreen) {
+            document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
+            document.addEventListener('mousemove', ui.click.windowmousemove);
+            document.addEventListener('mousedown', ui.click.windowmousedown);
+            document.addEventListener('mouseup', ui.click.windowmouseup);
+            document.addEventListener('contextmenu', ui.click.right);
           }
           else {
-            ui.css.control_stylesheet = init.sheet('#window .control,.menubutton:not(.active):not(.highlight):not(.red):not(.blue),#window #system>div>div{background-image:' + str + '}');
+            document.addEventListener('touchstart', ui.click.touchconfirm);
+            document.addEventListener('touchstart', ui.click.windowtouchstart);
+            document.addEventListener('touchend', ui.click.windowtouchend);
+            document.addEventListener('touchmove', ui.click.windowtouchmove);
           }
-        }
-        if (lib.config.menu_style && lib.config.menu_style != 'default' && lib.config.menu_style != 'custom') {
-          let str = '';
-          switch (lib.config.menu_style) {
-            case 'wood': str = 'url("' + lib.assetURL + 'theme/woodden/wood2.png")'; break;
-            case 'music': str = 'linear-gradient(#4b4b4b, #464646);color:white;text-shadow:black 0 0 2px'; break;
-            case 'simple': str = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));color:white;text-shadow:black 0 0 2px'; break;
+        },
+        proceed2: function () {
+          if (preconfig.config3) {
+            preconfig.proceed(preconfig.config3);
           }
-          ui.css.menu_stylesheet = init.sheet('html #window>.dialog.popped,html .menu,html .menubg{background-image:' + str + '}');
-        }
-        //part: ??
-        lib.config.duration = 500;
-        //part: add mouse/touch Evt listeners to document.
-        if (!lib.config.touchscreen) {
-          document.addEventListener('mousewheel', ui.click.windowmousewheel, { passive: true });
-          document.addEventListener('mousemove', ui.click.windowmousemove);
-          document.addEventListener('mousedown', ui.click.windowmousedown);
-          document.addEventListener('mouseup', ui.click.windowmouseup);
-          document.addEventListener('contextmenu', ui.click.right);
-        }
-        else {
-          document.addEventListener('touchstart', ui.click.touchconfirm);
-          document.addEventListener('touchstart', ui.click.windowtouchstart);
-          document.addEventListener('touchend', ui.click.windowtouchend);
-          document.addEventListener('touchmove', ui.click.windowtouchmove);
-        }
-      };
-      var proceed2 = function () {
-        if (config3) {
-          proceed(config3);
-        }
-        else {
-          config3 = true;
-        }
-      };
+          else {
+            preconfig.config3 = true;
+          }
+        },
+        //用于加载包的函数
+        loadPack: function () {
+          let show_splash = preconfig.show_splash
+          if (!Object.keys(lib.character).length && !preconfig.initDataing) {
+            lib.init.js(dist(), ['card', 'character'], preconfig.packLoaded, preconfig.packLoaded);
+          }
+          if (localStorage.getItem(lib.configprefix + 'playback')
+            || ((localStorage.getItem(lib.configprefix + 'directstart') || !show_splash)
+              && lib.config.all.mode.indexOf(lib.config.mode) != -1)) {
+            preconfig.toLoad++;
+            if (!preconfig.initDataing) preconfig.initDataing = true
+            init.js(dist(), 'mode', preconfig.packLoaded, preconfig.packLoaded);
+          }
+          else {
+            if (!preconfig.initDataing) {
+              preconfig.initDataing = true
+            }
+            else {
+              preconfig.toLoad++;
+              preconfig.packLoaded()
+            }
+          }
+        },
+        packLoaded: function () {
+          preconfig.toLoad--;
+          if (preconfig.toLoad == 0) {
+            if (!preconfig.initDataing) {
+              preconfig.initDataing = true
+              init.analyseLoad()
+            }
+            else if (_status.windowLoaded) {
+              delete _status.windowLoaded;
+              init.onload();
+            }
+            else {
+              /**
+               * 当包加载完毕先于window.onload时，标志包已经加载完毕，直至onload加载完毕则删除该标志
+               * @private
+               * @default
+               */
+              _status.packLoaded = true;
+            }
+          }
+        },
+      }
+      init.init_ui_css(preconfig)
+      // if (localStorage.getItem(lib.configprefix + 'directstart')) {
+      //   init.init_startGame(preconfig)
+      // }
+      // else {
+      //   init.js(dist(), 'main', () => {
+      //     if (window.resetGameTimeout) {
+      //       clearTimeout(window.resetGameTimeout)
+      //     }
+      //     game.main.createHome(preconfig)
+      //   })
+      // }
+      init.init_startGame(preconfig)
+    },
+    init_startGame: function (preconfig) {
+      var proceed = preconfig.proceed;
       __webpack_require__(2568)
-      //part: 初始化ui.css.menu和ui.css.default样式
-      ui.css = {
-        menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
-          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout', function () {
-            init.css(lib.assetURL + 'layout/default', 'resource');
-            proceed2();
-          });
-        })
-      };
       //part: config for different type of devices(PC, mobile devices).
       if (lib.device) {
         //移动端，window加载完成时被调用
@@ -43147,11 +43514,6 @@ module.exports = function (element, _mode, _message) {
           }
         }
       }
-      //part: 游戏设置信息，window.config，创建于config.js
-      lib.config = window.config;
-      //part: 联机部分的设置
-      lib.configOL = {};
-      delete window.config;
       var config2;
       if (localStorage.getItem(lib.configprefix + 'nodb')) {
         window.nodb = true;
@@ -43232,8 +43594,40 @@ module.exports = function (element, _mode, _message) {
         }
         proceed(config2);
       }
+      init.init_after()
+    },
+    init_startConnect: function (preconfig) {
+      lib.config.mode = 'connect';
+      preconfig.skip_splash = true;
+      init.init_startGame(preconfig)
+    },
+    init_after: function () {
       if (lib.init_extra) {
         lib.init_extra()
+      }
+    },
+    init_ui_css: function (preconfig) {
+      ui.css = {
+        menu: init.css(lib.assetURL + 'layout/default', 'menu', function () {
+          ui.css.default = init.css(lib.assetURL + 'layout/default', 'layout', function () {
+            init.css(lib.assetURL + 'layout/default', 'resource');
+            preconfig.proceed2();
+          });
+        })
+      };
+      delete window.config;
+      let pack = window.vk_package;
+      if (pack.font) {
+        ui.css.fontsheet = init.sheet();
+        for (let i in pack.font) {
+          lib.configMenu.appearence.config.name_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.identity_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.cardtext_font.item[i] = pack.font[i];
+          lib.configMenu.appearence.config.global_font.item[i] = pack.font[i];
+          ui.css.fontsheet.sheet.insertRule(`@font-face {font-family: '${i}';src: url('${lib.assetURL}font/${i}.ttf');}`, 0);
+        }
+        lib.configMenu.appearence.config.cardtext_font.item.default = '默认';
+        lib.configMenu.appearence.config.global_font.item.default = '默认';
       }
     },
     /**
@@ -43343,6 +43737,7 @@ module.exports = function (element, _mode, _message) {
         document.documentElement.style.backgroundImage = '';
         document.documentElement.style.backgroundSize = '';
         document.documentElement.style.backgroundPosition = '';
+        document.documentElement.style.height = '';
         document.body.insertBefore(ui.background, document.body.firstChild);
         document.body.onresize = ui.updatexr;
         if (lib.config.touchscreen) {
@@ -43521,9 +43916,8 @@ module.exports = function (element, _mode, _message) {
 
       var proceed2 = function () {
         var mode = lib.imported.mode;
-        var card = lib.imported.card;
-        var character = lib.imported.character;
         var play = lib.imported.play;
+        init.analyseLoad()
         delete window.game;
         var i, j, k;
         for (i in mode[lib.config.mode].element) {
@@ -43599,93 +43993,6 @@ module.exports = function (element, _mode, _message) {
           mode[lib.config.mode].init();
         }
 
-        var connectCharacterPack = [];
-        var connectCardPack = [];
-        for (i in character) {
-          if (character[i].character) {
-            lib.characterPack[i] = character[i].character
-          }
-          for (j in character[i]) {
-            if (j == 'mode' || j == 'forbid') continue;
-            if (j == 'connect') {
-              connectCharacterPack.push(i);
-              continue;
-            }
-            if (j == 'character' && !lib.config.characters.contains(i) && lib.config.mode != 'connect') {
-              if (lib.config.mode == 'chess' && get.config('chess_mode') == 'leader' && get.config('chess_leader_allcharacter')) {
-                for (k in character[i][j]) {
-                  lib.hiddenCharacters.push(k);
-                }
-              }
-              else if (lib.config.mode != 'boss' || i != 'boss') {
-                continue;
-              }
-            }
-            if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
-              lib[j].addArray(character[i][j]);
-              continue;
-            }
-            for (k in character[i][j]) {
-              if (j == 'character') {
-                if (!character[i][j][k][4]) {
-                  character[i][j][k][4] = [];
-                }
-                if (character[i][j][k][4].contains('boss') ||
-                  character[i][j][k][4].contains('hiddenboss')) {
-                  lib.config.forbidai.add(k);
-                }
-                if (lib.config.forbidai_user && lib.config.forbidai_user.contains(k)) {
-                  lib.config.forbidai.add(k);
-                }
-                for (var l = 0; l < character[i][j][k][3].length; l++) {
-                  lib.skilllist.add(character[i][j][k][3][l]);
-                }
-              }
-              if (j == 'skill' && k[0] == '_' && (lib.config.mode != 'connect' ? (!lib.config.characters.contains(i)) : (!character[i].connect))) {
-                continue;
-              }
-              if (j == 'translate' && k == i) {
-                lib[j][k + '_character_config'] = character[i][j][k];
-              }
-              else {
-                if (lib[j][k] == undefined) {
-                  if (j == 'skill' && !character[i][j][k].forceLoad && lib.config.mode == 'connect' && !character[i].connect) {
-                    lib[j][k] = {
-                      nopop: character[i][j][k].nopop,
-                      derivation: character[i][j][k].derivation
-                    };
-                  }
-                  else {
-                    lib[j][k] = character[i][j][k];
-                  }
-                  if (j == 'card' && lib[j][k].derivation) {
-                    if (!lib.cardPack.mode_derivation) {
-                      lib.cardPack.mode_derivation = [k];
-                    }
-                    else {
-                      lib.cardPack.mode_derivation.push(k);
-                    }
-                  }
-                }
-                else if (Array.isArray(lib[j][k]) && Array.isArray(character[i][j][k])) {
-                  lib[j][k].addArray(character[i][j][k]);
-                }
-                else {
-                  console.log('dublicate ' + j + ' in character ' + i + ':\n' + k + '\n' + ': ' + lib[j][k] + '\n' + character[i][j][k]);
-                }
-              }
-            }
-          }
-        }
-        var connect_avatar_list = [];
-        for (var i in lib.character) {
-          connect_avatar_list.push(i);
-        }
-        connect_avatar_list.sort(lib.sort.capt);
-        for (var i = 0; i < connect_avatar_list.length; i++) {
-          var ia = connect_avatar_list[i];
-          _mode.connect.config.connect_avatar.item[ia] = lib.translate[ia];
-        }
         if (lib.config.mode != 'connect') {
           var pilecfg = lib.config.customcardpile[get.config('cardpilename') || '当前牌堆'];
           if (pilecfg) {
@@ -43695,91 +44002,6 @@ module.exports = function (element, _mode, _message) {
           else {
             lib.config.bannedpile = {};
             lib.config.addedpile = {};
-          }
-        }
-        else {
-          lib.cardPackList = {};
-        }
-        for (i in card) {
-          lib.cardPack[i] = [];
-          if (card[i].card) {
-            for (var j in card[i].card) {
-              if (!card[i].card[j].hidden && card[i].translate[j + '_info']) {
-                lib.cardPack[i].push(j);
-              }
-            }
-          }
-          for (j in card[i]) {
-            if (j == 'mode' || j == 'forbid') continue;
-            if (j == 'connect') {
-              connectCardPack.push(i);
-              continue;
-            }
-            if (j == 'list') {
-              if (lib.config.mode == 'connect') {
-                lib.cardPackList[i] = card[i][j];
-              }
-              else {
-                if (lib.config.cards.contains(i)) {
-                  var pile;
-                  if (typeof card[i][j] == 'function') {
-                    pile = card[i][j]();
-                  }
-                  else {
-                    pile = card[i][j];
-                  }
-                  lib.cardPile[i] = pile.slice(0);
-                  if (lib.config.bannedpile[i]) {
-                    for (var k = 0; k < lib.config.bannedpile[i].length; k++) {
-                      pile[lib.config.bannedpile[i][k]] = null;
-                    }
-                  }
-                  for (var k = 0; k < pile.length; k++) {
-                    if (!pile[k]) {
-                      pile.splice(k--, 1);
-                    }
-                  }
-                  if (lib.config.addedpile[i]) {
-                    for (var k = 0; k < lib.config.addedpile[i].length; k++) {
-                      pile.push(lib.config.addedpile[i][k]);
-                    }
-                  }
-                  lib.card.list = lib.card.list.concat(pile);
-                }
-              }
-            }
-            else {
-              for (k in card[i][j]) {
-                if (j == 'skill' && k[0] == '_' && !card[i][j][k].forceLoad && (lib.config.mode != 'connect' ? (!lib.config.cards.contains(i)) : (!card[i].connect))) {
-                  continue;
-                }
-                if (j == 'translate' && k == i) {
-                  lib[j][k + '_card_config'] = card[i][j][k];
-                }
-                else {
-                  if (lib[j][k] == undefined) {
-                    if (j == 'skill' && !card[i][j][k].forceLoad && lib.config.mode == 'connect' && !card[i].connect) {
-                      lib[j][k] = {
-                        nopop: card[i][j][k].nopop,
-                        derivation: card[i][j][k].derivation
-                      };
-                    }
-                    else {
-                      lib[j][k] = card[i][j][k];
-                    }
-                  }
-                  else console.log('dublicate ' + j + ' in card ' + i + ':\n' + k + '\n' + lib[j][k] + '\n' + card[i][j][k]);
-                  if (j == 'card' && lib[j][k].derivation) {
-                    if (!lib.cardPack.mode_derivation) {
-                      lib.cardPack.mode_derivation = [k];
-                    }
-                    else {
-                      lib.cardPack.mode_derivation.push(k);
-                    }
-                  }
-                }
-              }
-            }
           }
         }
         if (lib.cardPack.mode_derivation) {
@@ -43853,16 +44075,18 @@ module.exports = function (element, _mode, _message) {
         lib.connectCardPack = [];
         for (var i = 0; i < lib.config.all.characters.length; i++) {
           var packname = lib.config.all.characters[i];
-          if (connectCharacterPack.contains(packname)) {
+          if (_status.connectCharacterPack.contains(packname)) {
             lib.connectCharacterPack.push(packname)
           }
         }
+        delete _status.connectCharacterPack
         for (var i = 0; i < lib.config.all.cards.length; i++) {
           var packname = lib.config.all.cards[i];
-          if (connectCardPack.contains(packname)) {
+          if (_status.connectCardPack.contains(packname)) {
             lib.connectCardPack.push(packname)
           }
         }
+        delete _status.connectCardPack
         if (lib.config.mode != 'connect') {
           for (i = 0; i < lib.card.list.length; i++) {
             if (lib.card.list[i][2] == 'huosha') {
@@ -43915,8 +44139,6 @@ module.exports = function (element, _mode, _message) {
           lib.cheat.i();
         }
         lib.config.sort_card = get.sortCard(lib.config.sort);
-        delete lib.imported.character;
-        delete lib.imported.card;
         delete lib.imported.mode;
         delete lib.imported.play;
         for (var i in init) {
@@ -43997,95 +44219,290 @@ module.exports = function (element, _mode, _message) {
       };
       if (!lib.imported.mode || !lib.imported.mode[lib.config.mode]) {
         window.inSplash = true;
-        clearTimeout(window.resetGameTimeout);
-        delete window.resetGameTimeout;
-        var clickedNode = false;
-        var clickNode = function () {
-          if (clickedNode) return;
-          this.classList.add('clicked');
-          clickedNode = true;
-          lib.config.mode = this.link;
-          game.saveConfig('mode', this.link);
-          if (this.link == 'connect') {
-            localStorage.setItem(lib.configprefix + 'directstart', true);
-            game.reload();
-          }
-          else {
-            if (game.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
-              game.layout = 'mobile';
-              ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
-            }
-            else if (game.layout == 'mobile' && lib.config.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) === -1) {
-              game.layout = lib.config.layout;
-              if (game.layout == 'default') {
-                ui.css.layout.href = '';
-              }
-              else {
-                ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
-              }
-            }
-            splash.delete(1000);
-            delete window.inSplash;
-            window.resetGameTimeout = setTimeout(init.reset, 5000);
-
-            this.listenTransition(() => {
-              init.js(dist(), 'mode', proceed);
-            }, 500);
-          }
+        if (window.resetGameTimeout) {
+          clearTimeout(window.resetGameTimeout);
+          delete window.resetGameTimeout;
         }
-        var downNode = function () {
-          this.classList.add('glow');
-        }
-        var upNode = function () {
-          this.classList.remove('glow');
-        }
-        var splash = ui.create.div('#splash', document.body);
-        if (lib.config.touchscreen) {
-          splash.classList.add('touch');
-          lib.setScroll(splash);
-        }
-        if (lib.config.player_border != 'wide') {
-          splash.classList.add('slim');
-        }
-        splash.dataset.radius_size = lib.config.radius_size;
-        for (var i = 0; i < lib.config.all.mode.length; i++) {
-          var node = ui.create.div('.hidden', splash, clickNode);
-          node.link = lib.config.all.mode[i];
-          node.dataset.cursor_style = "pointer";
-          ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
-          if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
-            ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
-          }
-          else {
-            var avatarnode = ui.create.div(node, '.avatar');
-            var avatarbg = _mode[lib.config.all.mode[i]].splash;
-            if (avatarbg.indexOf('ext:') == 0) {
-              avatarnode.setBackgroundImage(avatarbg.replace(/ext:/, 'extension/'));
-            }
-            else {
-              avatarnode.setBackgroundDB(avatarbg);
-            }
-          }
-          if (!lib.config.touchscreen) {
-            node.addEventListener('mousedown', downNode);
-            node.addEventListener('mouseup', upNode);
-            node.addEventListener('mouseleave', upNode);
-          }
-          setTimeout((function (node) {
-            return function () {
-              node.show();
-            }
-          }(node)), i * 100);
-        }
-        if (lib.config.mousewheel) {
-          splash.onmousewheel = ui.click.mousewheel;
-        }
+        init.createSplash(proceed)
       }
       else {
         proceed();
       }
       localStorage.removeItem(lib.configprefix + 'directstart');
       delete init.init;
+    },
+    analyseLoad() {
+      console.log('stepA')
+      if (lib.imported.character) {
+        init.analyseChara()
+      }
+      if (lib.imported.card) {
+        init.analyseCard()
+      }
+    },
+    analyseChara() {
+      let character = lib.imported.character;
+      _status.connectCharacterPack = [];
+      for (let i in character) {
+        if (character[i].character) {
+          lib.characterPack[i] = character[i].character
+        }
+        for (j in character[i]) {
+          if (j == 'mode' || j == 'forbid') continue;
+          if (j == 'connect') {
+            _status.connectCharacterPack.push(i);
+            continue;
+          }
+          if (j == 'character' && !lib.config.characters.contains(i) && lib.config.mode != 'connect') {
+            if (lib.config.mode == 'chess' && get.config('chess_mode') == 'leader' && get.config('chess_leader_allcharacter')) {
+              for (k in character[i][j]) {
+                lib.hiddenCharacters.push(k);
+              }
+            }
+            else if (lib.config.mode != 'boss' || i != 'boss') {
+              continue;
+            }
+          }
+          if (Array.isArray(lib[j]) && Array.isArray(character[i][j])) {
+            lib[j].addArray(character[i][j]);
+            continue;
+          }
+          for (k in character[i][j]) {
+            if (j == 'character') {
+              if (!character[i][j][k][4]) {
+                character[i][j][k][4] = [];
+              }
+              if (character[i][j][k][4].contains('boss') ||
+                character[i][j][k][4].contains('hiddenboss')) {
+                lib.config.forbidai.add(k);
+              }
+              if (lib.config.forbidai_user && lib.config.forbidai_user.contains(k)) {
+                lib.config.forbidai.add(k);
+              }
+              for (var l = 0; l < character[i][j][k][3].length; l++) {
+                lib.skilllist.add(character[i][j][k][3][l]);
+              }
+            }
+            if (j == 'skill' && k[0] == '_' && (lib.config.mode != 'connect' ? (!lib.config.characters.contains(i)) : (!character[i].connect))) {
+              continue;
+            }
+            if (j == 'translate' && k == i) {
+              lib[j][k + '_character_config'] = character[i][j][k];
+            }
+            else {
+              if (lib[j][k] == undefined) {
+                if (j == 'skill' && !character[i][j][k].forceLoad && lib.config.mode == 'connect' && !character[i].connect) {
+                  lib[j][k] = {
+                    nopop: character[i][j][k].nopop,
+                    derivation: character[i][j][k].derivation
+                  };
+                }
+                else {
+                  lib[j][k] = character[i][j][k];
+                }
+                if (j == 'card' && lib[j][k].derivation) {
+                  if (!lib.cardPack.mode_derivation) {
+                    lib.cardPack.mode_derivation = [k];
+                  }
+                  else {
+                    lib.cardPack.mode_derivation.push(k);
+                  }
+                }
+              }
+              else if (Array.isArray(lib[j][k]) && Array.isArray(character[i][j][k])) {
+                lib[j][k].addArray(character[i][j][k]);
+              }
+              else {
+                console.log('dublicate ' + j + ' in character ' + i + ':\n' + k + '\n' + ': ' + lib[j][k] + '\n' + character[i][j][k]);
+              }
+            }
+          }
+        }
+      }
+      let connect_avatar_list = [];
+      for (let i in lib.character) {
+        connect_avatar_list.push(i);
+      }
+      connect_avatar_list.sort(lib.sort.capt);
+      for (let i = 0; i < connect_avatar_list.length; i++) {
+        let ia = connect_avatar_list[i];
+        _mode.connect.config.connect_avatar.item[ia] = lib.translate[ia];
+      }
+      delete lib.imported.character;
+    },
+    analyseCard() {
+      let card = lib.imported.card;
+      _status.connectCardPack = [];
+      if (lib.config.mode == 'connect') {
+        lib.cardPackList = {};
+      }
+      for (let i in card) {
+        lib.cardPack[i] = [];
+        if (card[i].card) {
+          for (var j in card[i].card) {
+            if (!card[i].card[j].hidden && card[i].translate[j + '_info']) {
+              lib.cardPack[i].push(j);
+            }
+          }
+        }
+        for (j in card[i]) {
+          if (j == 'mode' || j == 'forbid') continue;
+          if (j == 'connect') {
+            _status.connectCardPack.push(i);
+            continue;
+          }
+          if (j == 'list') {
+            if (lib.config.mode == 'connect') {
+              lib.cardPackList[i] = card[i][j];
+            }
+            else {
+              if (lib.config.cards.contains(i)) {
+                var pile;
+                if (typeof card[i][j] == 'function') {
+                  pile = card[i][j]();
+                }
+                else {
+                  pile = card[i][j];
+                }
+                lib.cardPile[i] = pile.slice(0);
+                if (lib.config.bannedpile[i]) {
+                  for (var k = 0; k < lib.config.bannedpile[i].length; k++) {
+                    pile[lib.config.bannedpile[i][k]] = null;
+                  }
+                }
+                for (var k = 0; k < pile.length; k++) {
+                  if (!pile[k]) {
+                    pile.splice(k--, 1);
+                  }
+                }
+                if (lib.config.addedpile[i]) {
+                  for (var k = 0; k < lib.config.addedpile[i].length; k++) {
+                    pile.push(lib.config.addedpile[i][k]);
+                  }
+                }
+                lib.card.list = lib.card.list.concat(pile);
+              }
+            }
+          }
+          else {
+            for (k in card[i][j]) {
+              if (j == 'skill' && k[0] == '_' && !card[i][j][k].forceLoad && (lib.config.mode != 'connect' ? (!lib.config.cards.contains(i)) : (!card[i].connect))) {
+                continue;
+              }
+              if (j == 'translate' && k == i) {
+                lib[j][k + '_card_config'] = card[i][j][k];
+              }
+              else {
+                if (lib[j][k] == undefined) {
+                  if (j == 'skill' && !card[i][j][k].forceLoad && lib.config.mode == 'connect' && !card[i].connect) {
+                    lib[j][k] = {
+                      nopop: card[i][j][k].nopop,
+                      derivation: card[i][j][k].derivation
+                    };
+                  }
+                  else {
+                    lib[j][k] = card[i][j][k];
+                  }
+                }
+                else console.log('dublicate ' + j + ' in card ' + i + ':\n' + k + '\n' + lib[j][k] + '\n' + card[i][j][k]);
+                if (j == 'card' && lib[j][k].derivation) {
+                  if (!lib.cardPack.mode_derivation) {
+                    lib.cardPack.mode_derivation = [k];
+                  }
+                  else {
+                    lib.cardPack.mode_derivation.push(k);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      delete lib.imported.card;
+    },
+    createSplash(proceed, body = document.body) {
+      var clickedNode = false;
+      var clickNode = function () {
+        if (clickedNode) return;
+        this.classList.add('clicked');
+        clickedNode = true;
+        lib.config.mode = this.link;
+        game.saveConfig('mode', this.link);
+        if (this.link == 'connect') {
+          localStorage.setItem(lib.configprefix + 'directstart', true);
+          game.reload();
+        }
+        else {
+          if (game.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) !== -1) {
+            game.layout = 'mobile';
+            ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
+          }
+          else if (game.layout == 'mobile' && lib.config.layout != 'mobile' && lib.layoutfixed.indexOf(lib.config.mode) === -1) {
+            game.layout = lib.config.layout;
+            if (game.layout == 'default') {
+              ui.css.layout.href = '';
+            }
+            else {
+              ui.css.layout.href = lib.assetURL + 'layout/' + game.layout + '/layout.css';
+            }
+          }
+          splash.delete(1000);
+          delete window.inSplash;
+          window.resetGameTimeout = setTimeout(init.reset, 5000);
+
+          this.listenTransition(() => {
+            init.js(dist(), 'mode', proceed);
+          }, 500);
+        }
+      }
+      var downNode = function () {
+        this.classList.add('glow');
+      }
+      var upNode = function () {
+        this.classList.remove('glow');
+      }
+      var splash = ui.create.div('#splash', body);
+      console.log(splash)
+      if (lib.config.touchscreen) {
+        splash.classList.add('touch');
+        lib.setScroll(splash);
+      }
+      if (lib.config.player_border != 'wide') {
+        splash.classList.add('slim');
+      }
+      splash.dataset.radius_size = lib.config.radius_size;
+      for (var i = 0; i < lib.config.all.mode.length; i++) {
+        var node = ui.create.div('.hidden', splash, clickNode);
+        node.link = lib.config.all.mode[i];
+        node.dataset.cursor_style = "pointer";
+        ui.create.div(node, '.splashtext', get.verticalStr(get.translation(lib.config.all.mode[i])));
+        if (lib.config.all.stockmode.indexOf(lib.config.all.mode[i]) != -1) {
+          ui.create.div(node, '.avatar').setBackgroundImage(`image/splash/${lib.config.all.mode[i]}.jpg`, 'loading.gif');
+        }
+        else {
+          var avatarnode = ui.create.div(node, '.avatar');
+          var avatarbg = _mode[lib.config.all.mode[i]].splash;
+          if (avatarbg.indexOf('ext:') == 0) {
+            avatarnode.setBackgroundImage(avatarbg.replace(/ext:/, 'extension/'));
+          }
+          else {
+            avatarnode.setBackgroundDB(avatarbg);
+          }
+        }
+        if (!lib.config.touchscreen) {
+          node.addEventListener('mousedown', downNode);
+          node.addEventListener('mouseup', upNode);
+          node.addEventListener('mouseleave', upNode);
+        }
+        setTimeout((function (node) {
+          return function () {
+            node.show();
+          }
+        }(node)), i * 100);
+      }
+      if (lib.config.mousewheel) {
+        splash.onmousewheel = ui.click.mousewheel;
+      }
     },
     startOnline: [function () {
       Evt._resultid = null;
@@ -44107,8 +44524,10 @@ module.exports = function (element, _mode, _message) {
      */
     onfree: function () {
       if (lib.onfree) {
-        clearTimeout(window.resetGameTimeout);
-        delete window.resetGameTimeout;
+        if(window.resetGameTimeout){
+          clearTimeout(window.resetGameTimeout);
+          delete window.resetGameTimeout;
+        }
         if (!game.syncMenu) {
           delete window.resetExtension;
           localStorage.removeItem(lib.configprefix + 'disable_extension');
@@ -45048,8 +45467,22 @@ module.exports = {
              * 菜单创建
              * @param {*} connectMenu 
              */
-            menu: function (connectMenu) {
+            menu: function (...args) {
                var menuTimeout = null;
+               let connectMenu = false, menuList = ['开始', '选项', '武将', '卡牌', '扩展', '其它'], bar = 40
+               for (let v of args) {
+                  if (v === true) {
+                     connectMenu = true
+                     menuList = ['模式', '武将', '卡牌']
+                     bar = 123
+                  }
+                  else if (v instanceof Array) {
+                     menuList = v
+                  }
+                  else if (typeof v === 'number') {
+                     bar = v
+                  }
+               }
                if (!connectMenu && !game.syncMenu) {
                   menuTimeout = setTimeout(lib.init.reset, 1000);
                }
@@ -45437,8 +45870,8 @@ module.exports = {
                         clickContainer.call(menuContainer);
                      }
                   }
-                  menux = createMenu(['开始', '选项', '武将', '卡牌', '扩展', '其它'], {
-                     position: menuContainer, bar: 40
+                  menux = createMenu(menuList, {
+                     position: menuContainer, bar: bar
                   });
                }
                else {
@@ -45471,8 +45904,8 @@ module.exports = {
                      }
                   }
 
-                  menux = createMenu(['模式', '武将', '卡牌'], {
-                     position: menuContainer, bar: 123
+                  menux = createMenu(menuList, {
+                     position: menuContainer, bar: bar
                   });
                   menu = menux.menu;
                }
@@ -45480,6 +45913,7 @@ module.exports = {
 
                var copyObj = get.copy;
 
+               if(menuList.includes('开始')||menuList.includes('模式'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -45846,6 +46280,7 @@ module.exports = {
                   }
                }());
 
+               if(menuList.includes('选项'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -46328,6 +46763,7 @@ module.exports = {
                   rightPane.appendChild(active.link);
                }());
 
+               if(menuList.includes('武将'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -46781,6 +47217,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('卡牌'))
                (function () {
                   var start = menuxpages.shift();
                   var rightPane = start.lastChild;
@@ -47346,6 +47783,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('扩展'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -47561,6 +47999,7 @@ module.exports = {
                   updateNodes();
                }());
 
+               if(menuList.includes('其它'))
                (function () {
                   if (connectMenu) return;
                   var start = menuxpages.shift();
@@ -51129,7 +51568,7 @@ module.exports = {
                            if (/^[A-z\d\s\.]+$/.test(node.node.name.innerHTML)) {
                               node.node.name.classList.add('English');
                            }
-                           else{
+                           else {
                               let nameLength = node.node.name.querySelectorAll('br').length
                               if (nameLength <= 1) {
                                  node.node.name.classList.add('short');
@@ -51334,7 +51773,9 @@ module.exports = {
                   chain: ui.create.div('.chain', '<div></div>', node),
                   handcards1: ui.create.div('.handcards'),
                   handcards2: ui.create.div('.handcards'),
+                  expansions:ui.create.div('.expansions'),
                };
+               node.node.expansions.display='none';
                avatar2.playerEle = avatar.playerEle = node
                var chainlength = game.layout == 'default' ? 64 : 40;
                for (var i = 0; i < chainlength; i++) {
@@ -57262,6 +57703,1097 @@ try {
 
 /***/ }),
 
+/***/ 4231:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+__webpack_require__(4649);
+module.exports = __webpack_require__(66).Dict;
+
+
+/***/ }),
+
+/***/ 2761:
+/***/ ((module) => {
+
+module.exports = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
+};
+
+
+/***/ }),
+
+/***/ 6365:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var isObject = __webpack_require__(7334);
+module.exports = function (it) {
+  if (!isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+
+/***/ }),
+
+/***/ 9021:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = __webpack_require__(5703);
+var toLength = __webpack_require__(6078);
+var toAbsoluteIndex = __webpack_require__(8615);
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+
+/***/ }),
+
+/***/ 106:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// getting tag from 19.1.3.6 Object.prototype.toString()
+var cof = __webpack_require__(6688);
+var TAG = __webpack_require__(2190)('toStringTag');
+// ES3 wrong here
+var ARG = cof(function () { return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function (it, key) {
+  try {
+    return it[key];
+  } catch (e) { /* empty */ }
+};
+
+module.exports = function (it) {
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
+    // builtinTag case
+    : ARG ? cof(O)
+    // ES3 arguments fallback
+    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+
+
+/***/ }),
+
+/***/ 6688:
+/***/ ((module) => {
+
+var toString = {}.toString;
+
+module.exports = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+
+/***/ }),
+
+/***/ 66:
+/***/ ((module) => {
+
+var core = module.exports = { version: '2.6.12' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+
+
+/***/ }),
+
+/***/ 1528:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// optional / simple context binding
+var aFunction = __webpack_require__(2761);
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+
+/***/ 1622:
+/***/ ((module) => {
+
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
+  return it;
+};
+
+
+/***/ }),
+
+/***/ 6628:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(8625)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+
+/***/ 5050:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var isObject = __webpack_require__(7334);
+var document = (__webpack_require__(8113).document);
+// typeof document.createElement is 'object' in old IE
+var is = isObject(document) && isObject(document.createElement);
+module.exports = function (it) {
+  return is ? document.createElement(it) : {};
+};
+
+
+/***/ }),
+
+/***/ 3603:
+/***/ ((module) => {
+
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+
+
+/***/ }),
+
+/***/ 5772:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var global = __webpack_require__(8113);
+var core = __webpack_require__(66);
+var hide = __webpack_require__(4216);
+var redefine = __webpack_require__(7738);
+var ctx = __webpack_require__(1528);
+var PROTOTYPE = 'prototype';
+
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // extend global
+    if (target) redefine(target, key, out, type & $export.U);
+    // export
+    if (exports[key] != out) hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+  }
+};
+global.core = core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library`
+module.exports = $export;
+
+
+/***/ }),
+
+/***/ 8625:
+/***/ ((module) => {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
+
+/***/ }),
+
+/***/ 1891:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var ctx = __webpack_require__(1528);
+var call = __webpack_require__(3221);
+var isArrayIter = __webpack_require__(8908);
+var anObject = __webpack_require__(6365);
+var toLength = __webpack_require__(6078);
+var getIterFn = __webpack_require__(7107);
+var BREAK = {};
+var RETURN = {};
+var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
+  var iterFn = ITERATOR ? function () { return iterable; } : getIterFn(iterable);
+  var f = ctx(fn, that, entries ? 2 : 1);
+  var index = 0;
+  var length, step, iterator, result;
+  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');
+  // fast case for arrays with default iterator
+  if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {
+    result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+    if (result === BREAK || result === RETURN) return result;
+  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {
+    result = call(iterator, f, step.value, entries);
+    if (result === BREAK || result === RETURN) return result;
+  }
+};
+exports.BREAK = BREAK;
+exports.RETURN = RETURN;
+
+
+/***/ }),
+
+/***/ 646:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(8655)('native-function-to-string', Function.toString);
+
+
+/***/ }),
+
+/***/ 8113:
+/***/ ((module) => {
+
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
+  // eslint-disable-next-line no-new-func
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+
+
+/***/ }),
+
+/***/ 4040:
+/***/ ((module) => {
+
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
+
+/***/ }),
+
+/***/ 4216:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var dP = __webpack_require__(8558);
+var createDesc = __webpack_require__(6061);
+module.exports = __webpack_require__(6628) ? function (object, key, value) {
+  return dP.f(object, key, createDesc(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+
+/***/ 8954:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var document = (__webpack_require__(8113).document);
+module.exports = document && document.documentElement;
+
+
+/***/ }),
+
+/***/ 5100:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = !__webpack_require__(6628) && !__webpack_require__(8625)(function () {
+  return Object.defineProperty(__webpack_require__(5050)('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+
+/***/ 8467:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = __webpack_require__(6688);
+// eslint-disable-next-line no-prototype-builtins
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+
+/***/ }),
+
+/***/ 8908:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// check on default Array iterator
+var Iterators = __webpack_require__(3988);
+var ITERATOR = __webpack_require__(2190)('iterator');
+var ArrayProto = Array.prototype;
+
+module.exports = function (it) {
+  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
+};
+
+
+/***/ }),
+
+/***/ 7334:
+/***/ ((module) => {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+
+/***/ 3221:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// call something on iterator step with safe closing on error
+var anObject = __webpack_require__(6365);
+module.exports = function (iterator, fn, value, entries) {
+  try {
+    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
+  // 7.4.6 IteratorClose(iterator, completion)
+  } catch (e) {
+    var ret = iterator['return'];
+    if (ret !== undefined) anObject(ret.call(iterator));
+    throw e;
+  }
+};
+
+
+/***/ }),
+
+/***/ 6445:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+var create = __webpack_require__(2897);
+var descriptor = __webpack_require__(6061);
+var setToStringTag = __webpack_require__(5727);
+var IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+__webpack_require__(4216)(IteratorPrototype, __webpack_require__(2190)('iterator'), function () { return this; });
+
+module.exports = function (Constructor, NAME, next) {
+  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
+  setToStringTag(Constructor, NAME + ' Iterator');
+};
+
+
+/***/ }),
+
+/***/ 5038:
+/***/ ((module) => {
+
+module.exports = function (done, value) {
+  return { value: value, done: !!done };
+};
+
+
+/***/ }),
+
+/***/ 3988:
+/***/ ((module) => {
+
+module.exports = {};
+
+
+/***/ }),
+
+/***/ 2486:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var getKeys = __webpack_require__(2912);
+var toIObject = __webpack_require__(5703);
+module.exports = function (object, el) {
+  var O = toIObject(object);
+  var keys = getKeys(O);
+  var length = keys.length;
+  var index = 0;
+  var key;
+  while (length > index) if (O[key = keys[index++]] === el) return key;
+};
+
+
+/***/ }),
+
+/***/ 1422:
+/***/ ((module) => {
+
+module.exports = false;
+
+
+/***/ }),
+
+/***/ 7029:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var DESCRIPTORS = __webpack_require__(6628);
+var getKeys = __webpack_require__(2912);
+var gOPS = __webpack_require__(7957);
+var pIE = __webpack_require__(5873);
+var toObject = __webpack_require__(6033);
+var IObject = __webpack_require__(8467);
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(8625)(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) {
+      key = keys[j++];
+      if (!DESCRIPTORS || isEnum.call(S, key)) T[key] = S[key];
+    }
+  } return T;
+} : $assign;
+
+
+/***/ }),
+
+/***/ 2897:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject = __webpack_require__(6365);
+var dPs = __webpack_require__(7331);
+var enumBugKeys = __webpack_require__(3603);
+var IE_PROTO = __webpack_require__(8034)('IE_PROTO');
+var Empty = function () { /* empty */ };
+var PROTOTYPE = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function () {
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = __webpack_require__(5050)('iframe');
+  var i = enumBugKeys.length;
+  var lt = '<';
+  var gt = '>';
+  var iframeDocument;
+  iframe.style.display = 'none';
+  (__webpack_require__(8954).appendChild)(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties) {
+  var result;
+  if (O !== null) {
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty();
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+
+
+/***/ }),
+
+/***/ 8558:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+var anObject = __webpack_require__(6365);
+var IE8_DOM_DEFINE = __webpack_require__(5100);
+var toPrimitive = __webpack_require__(1382);
+var dP = Object.defineProperty;
+
+exports.f = __webpack_require__(6628) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+
+/***/ }),
+
+/***/ 7331:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var dP = __webpack_require__(8558);
+var anObject = __webpack_require__(6365);
+var getKeys = __webpack_require__(2912);
+
+module.exports = __webpack_require__(6628) ? Object.defineProperties : function defineProperties(O, Properties) {
+  anObject(O);
+  var keys = getKeys(Properties);
+  var length = keys.length;
+  var i = 0;
+  var P;
+  while (length > i) dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+
+
+/***/ }),
+
+/***/ 7957:
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.f = Object.getOwnPropertySymbols;
+
+
+/***/ }),
+
+/***/ 9002:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has = __webpack_require__(4040);
+var toObject = __webpack_require__(6033);
+var IE_PROTO = __webpack_require__(8034)('IE_PROTO');
+var ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function (O) {
+  O = toObject(O);
+  if (has(O, IE_PROTO)) return O[IE_PROTO];
+  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+
+
+/***/ }),
+
+/***/ 5547:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var has = __webpack_require__(4040);
+var toIObject = __webpack_require__(5703);
+var arrayIndexOf = __webpack_require__(9021)(false);
+var IE_PROTO = __webpack_require__(8034)('IE_PROTO');
+
+module.exports = function (object, names) {
+  var O = toIObject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while (names.length > i) if (has(O, key = names[i++])) {
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+
+
+/***/ }),
+
+/***/ 2912:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys = __webpack_require__(5547);
+var enumBugKeys = __webpack_require__(3603);
+
+module.exports = Object.keys || function keys(O) {
+  return $keys(O, enumBugKeys);
+};
+
+
+/***/ }),
+
+/***/ 5873:
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+
+/***/ 6061:
+/***/ ((module) => {
+
+module.exports = function (bitmap, value) {
+  return {
+    enumerable: !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable: !(bitmap & 4),
+    value: value
+  };
+};
+
+
+/***/ }),
+
+/***/ 7738:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var global = __webpack_require__(8113);
+var hide = __webpack_require__(4216);
+var has = __webpack_require__(4040);
+var SRC = __webpack_require__(5078)('src');
+var $toString = __webpack_require__(646);
+var TO_STRING = 'toString';
+var TPL = ('' + $toString).split(TO_STRING);
+
+(__webpack_require__(66).inspectSource) = function (it) {
+  return $toString.call(it);
+};
+
+(module.exports = function (O, key, val, safe) {
+  var isFunction = typeof val == 'function';
+  if (isFunction) has(val, 'name') || hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === global) {
+    O[key] = val;
+  } else if (!safe) {
+    delete O[key];
+    hide(O, key, val);
+  } else if (O[key]) {
+    O[key] = val;
+  } else {
+    hide(O, key, val);
+  }
+// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
+})(Function.prototype, TO_STRING, function toString() {
+  return typeof this == 'function' && this[SRC] || $toString.call(this);
+});
+
+
+/***/ }),
+
+/***/ 5727:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var def = (__webpack_require__(8558).f);
+var has = __webpack_require__(4040);
+var TAG = __webpack_require__(2190)('toStringTag');
+
+module.exports = function (it, tag, stat) {
+  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
+};
+
+
+/***/ }),
+
+/***/ 8034:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var shared = __webpack_require__(8655)('keys');
+var uid = __webpack_require__(5078);
+module.exports = function (key) {
+  return shared[key] || (shared[key] = uid(key));
+};
+
+
+/***/ }),
+
+/***/ 8655:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var core = __webpack_require__(66);
+var global = __webpack_require__(8113);
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: core.version,
+  mode: __webpack_require__(1422) ? 'pure' : 'global',
+  copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
+});
+
+
+/***/ }),
+
+/***/ 8615:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var toInteger = __webpack_require__(3338);
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+
+/***/ 3338:
+/***/ ((module) => {
+
+// 7.1.4 ToInteger
+var ceil = Math.ceil;
+var floor = Math.floor;
+module.exports = function (it) {
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+
+
+/***/ }),
+
+/***/ 5703:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(8467);
+var defined = __webpack_require__(1622);
+module.exports = function (it) {
+  return IObject(defined(it));
+};
+
+
+/***/ }),
+
+/***/ 6078:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 7.1.15 ToLength
+var toInteger = __webpack_require__(3338);
+var min = Math.min;
+module.exports = function (it) {
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+
+
+/***/ }),
+
+/***/ 6033:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(1622);
+module.exports = function (it) {
+  return Object(defined(it));
+};
+
+
+/***/ }),
+
+/***/ 1382:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = __webpack_require__(7334);
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function (it, S) {
+  if (!isObject(it)) return it;
+  var fn, val;
+  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+
+/***/ }),
+
+/***/ 5078:
+/***/ ((module) => {
+
+var id = 0;
+var px = Math.random();
+module.exports = function (key) {
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+
+/***/ }),
+
+/***/ 2190:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var store = __webpack_require__(8655)('wks');
+var uid = __webpack_require__(5078);
+var Symbol = (__webpack_require__(8113).Symbol);
+var USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function (name) {
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+
+
+/***/ }),
+
+/***/ 4649:
+/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+var ctx = __webpack_require__(1528);
+var $export = __webpack_require__(5772);
+var createDesc = __webpack_require__(6061);
+var assign = __webpack_require__(7029);
+var create = __webpack_require__(2897);
+var getPrototypeOf = __webpack_require__(9002);
+var getKeys = __webpack_require__(2912);
+var dP = __webpack_require__(8558);
+var keyOf = __webpack_require__(2486);
+var aFunction = __webpack_require__(2761);
+var forOf = __webpack_require__(1891);
+var isIterable = __webpack_require__(2284);
+var $iterCreate = __webpack_require__(6445);
+var step = __webpack_require__(5038);
+var isObject = __webpack_require__(7334);
+var toIObject = __webpack_require__(5703);
+var DESCRIPTORS = __webpack_require__(6628);
+var has = __webpack_require__(4040);
+
+// 0 -> Dict.forEach
+// 1 -> Dict.map
+// 2 -> Dict.filter
+// 3 -> Dict.some
+// 4 -> Dict.every
+// 5 -> Dict.find
+// 6 -> Dict.findKey
+// 7 -> Dict.mapPairs
+var createDictMethod = function (TYPE) {
+  var IS_MAP = TYPE == 1;
+  var IS_EVERY = TYPE == 4;
+  return function (object, callbackfn, that /* = undefined */) {
+    var f = ctx(callbackfn, that, 3);
+    var O = toIObject(object);
+    var result = IS_MAP || TYPE == 7 || TYPE == 2
+          ? new (typeof this == 'function' ? this : Dict)() : undefined;
+    var key, val, res;
+    for (key in O) if (has(O, key)) {
+      val = O[key];
+      res = f(val, key, object);
+      if (TYPE) {
+        if (IS_MAP) result[key] = res;          // map
+        else if (res) switch (TYPE) {
+          case 2: result[key] = val; break;     // filter
+          case 3: return true;                  // some
+          case 5: return val;                   // find
+          case 6: return key;                   // findKey
+          case 7: result[res[0]] = res[1];      // mapPairs
+        } else if (IS_EVERY) return false;      // every
+      }
+    }
+    return TYPE == 3 || IS_EVERY ? IS_EVERY : result;
+  };
+};
+var findKey = createDictMethod(6);
+
+var createDictIter = function (kind) {
+  return function (it) {
+    return new DictIterator(it, kind);
+  };
+};
+var DictIterator = function (iterated, kind) {
+  this._t = toIObject(iterated); // target
+  this._a = getKeys(iterated);   // keys
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+};
+$iterCreate(DictIterator, 'Dict', function () {
+  var that = this;
+  var O = that._t;
+  var keys = that._a;
+  var kind = that._k;
+  var key;
+  do {
+    if (that._i >= keys.length) {
+      that._t = undefined;
+      return step(1);
+    }
+  } while (!has(O, key = keys[that._i++]));
+  if (kind == 'keys') return step(0, key);
+  if (kind == 'values') return step(0, O[key]);
+  return step(0, [key, O[key]]);
+});
+
+function Dict(iterable) {
+  var dict = create(null);
+  if (iterable != undefined) {
+    if (isIterable(iterable)) {
+      forOf(iterable, true, function (key, value) {
+        dict[key] = value;
+      });
+    } else assign(dict, iterable);
+  }
+  return dict;
+}
+Dict.prototype = null;
+
+function reduce(object, mapfn, init) {
+  aFunction(mapfn);
+  var O = toIObject(object);
+  var keys = getKeys(O);
+  var length = keys.length;
+  var i = 0;
+  var memo, key;
+  if (arguments.length < 3) {
+    if (!length) throw TypeError('Reduce of empty object with no initial value');
+    memo = O[keys[i++]];
+  } else memo = Object(init);
+  while (length > i) if (has(O, key = keys[i++])) {
+    memo = mapfn(memo, O[key], key, object);
+  }
+  return memo;
+}
+
+function includes(object, el) {
+  // eslint-disable-next-line no-self-compare
+  return (el == el ? keyOf(object, el) : findKey(object, function (it) {
+    // eslint-disable-next-line no-self-compare
+    return it != it;
+  })) !== undefined;
+}
+
+function get(object, key) {
+  if (has(object, key)) return object[key];
+}
+function set(object, key, value) {
+  if (DESCRIPTORS && key in Object) dP.f(object, key, createDesc(0, value));
+  else object[key] = value;
+  return object;
+}
+
+function isDict(it) {
+  return isObject(it) && getPrototypeOf(it) === Dict.prototype;
+}
+
+$export($export.G + $export.F, { Dict: Dict });
+
+$export($export.S, 'Dict', {
+  keys: createDictIter('keys'),
+  values: createDictIter('values'),
+  entries: createDictIter('entries'),
+  forEach: createDictMethod(0),
+  map: createDictMethod(1),
+  filter: createDictMethod(2),
+  some: createDictMethod(3),
+  every: createDictMethod(4),
+  find: createDictMethod(5),
+  findKey: findKey,
+  mapPairs: createDictMethod(7),
+  reduce: reduce,
+  keyOf: keyOf,
+  includes: includes,
+  has: has,
+  get: get,
+  set: set,
+  isDict: isDict
+});
+
+
+/***/ }),
+
+/***/ 7107:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var classof = __webpack_require__(106);
+var ITERATOR = __webpack_require__(2190)('iterator');
+var Iterators = __webpack_require__(3988);
+module.exports = (__webpack_require__(66).getIteratorMethod) = function (it) {
+  if (it != undefined) return it[ITERATOR]
+    || it['@@iterator']
+    || Iterators[classof(it)];
+};
+
+
+/***/ }),
+
+/***/ 2284:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var classof = __webpack_require__(106);
+var ITERATOR = __webpack_require__(2190)('iterator');
+var Iterators = __webpack_require__(3988);
+module.exports = (__webpack_require__(66).isIterable) = function (it) {
+  var O = Object(it);
+  return O[ITERATOR] !== undefined
+    || '@@iterator' in O
+    // eslint-disable-next-line no-prototype-builtins
+    || Iterators.hasOwnProperty(classof(O));
+};
+
+
+/***/ }),
+
 /***/ 6590:
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -58275,7 +59807,7 @@ try {
 const WebSocket = __webpack_require__(7787);
 
 WebSocket.createWebSocketStream = __webpack_require__(942);
-WebSocket.Server = __webpack_require__(1528);
+WebSocket.Server = __webpack_require__(9150);
 WebSocket.Receiver = __webpack_require__(9519);
 WebSocket.Sender = __webpack_require__(3120);
 
@@ -60977,7 +62509,7 @@ try {
 
 /***/ }),
 
-/***/ 1528:
+/***/ 9150:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";

@@ -81,7 +81,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**塞菲拉·苏 */
 			SephiraSu: ['female', 'qun', 3, ['mishu', 'xingchen']],
 			/**姬雏 */
-			HIMEHINA: ['female', 'qun', 3, ['jichu', 'mingshizhige']],
+			HIMEHINA: ['female', 'singer', 3, ['jichu', 'mingshizhige']],
 			/**月紫亚里亚 */
 			TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
 
@@ -136,7 +136,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**秋蒂 */
 			qiudi: ['female', 'qun', 3, ['xiangnuo'], ['guoV']],
 			/**麟＆犀 */
-			linxi: ['female', 'qun', 5, ['lilian', 'zihuai'], ['guoV']],
+			linxi: ['female', 'singer', 5, ['lilian', 'zihuai'], ['guoV']],
 
 			/**七濑Unia */
 			NanaseUnia: ['female', 'Providence', 4, ['qisui'], ['guoV']],
@@ -148,6 +148,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			Haya: ['female', 'Providence', 4, ['shengping', 'jiushuang'], ['guoV']],
 			/**咲间妮娜 */
 			SakumaNiina: ['female', 'Providence', 3, ['tianjiang', 'baiquan'], ['guoV']],
+			/**月隐空夜 */
+			yueyinkongye: ['female', 'Providence', 4, ['zhanji', 'jiyang'], ['guoV']],
 			/**满月 */
 			Mitsuki: ['female', 'Providence', 4, ['xuedian'], ['guoV']],
 			/**白桃shirako */
