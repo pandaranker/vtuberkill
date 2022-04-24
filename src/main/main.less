@@ -82,7 +82,7 @@
         width: 32vw;
         position: absolute;
         animation-name: rightEnter;
-        animation-duration: 0.8s;
+        animation-duration: 0.7s;
         transition: .5s all;
 
         @keyframes rightEnter {
@@ -123,11 +123,11 @@
                 outline-offset: -1.5vh;
 
                 animation-name: topEnter;
-                animation-duration: 1.2s;
+                animation-duration: 1.6s;
 
                 @keyframes topEnter {
                     0% {
-                        top: -80%
+                        top: -100%
                     }
 
                     100% {
@@ -242,7 +242,11 @@
             color: #906cd7;
             background: #4711ae;
 
-            @media (max-width: 1200px) {
+            @media (max-width: 900px) {
+                font-size: 70%;
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
                 font-size: 90%;
             }
 

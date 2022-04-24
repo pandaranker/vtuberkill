@@ -36,6 +36,7 @@
             data.cfg = cfg
             let func = () => {
                 if (cfg.loadedTheme === 'done') {
+                    lib.init.onload_createBG()
                     this.createHome_top()
                 }
                 else {
@@ -49,7 +50,7 @@
             ui.home = home
             ui.arena = home;
 
-            lib.init.updateZoom()
+            lib.init.onload_updateZoom()
             // ui.window = ui.create.div('#window.hidden', document.body);
             // setTimeout(function () {
             //    ui.window.show();

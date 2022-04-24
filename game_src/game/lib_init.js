@@ -2018,38 +2018,15 @@ module.exports = function (element, _mode, _message) {
      */
     onload: () => {
       if(!ui.firstUpdatedZoom){
-        init.updateZoom()
+        init.onload_updateZoom()
       }
       {
-        if (!lib.config.low_performance)
+        if (!lib.config.low_performance){
           game.clickCanvas.init();
-        ui.background = ui.create.div('.background');
-        ui.background.style.backgroundSize = "cover";
-        ui.background.style.backgroundPosition = '50% 50%';
-        if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
-          if (lib.config.image_background.indexOf('svg_') == 0) {
-            ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
-          }
-          else {
-            ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-            if (!ui.backgroundFlash) {
-              ui.backgroundFlash = ui.create.div('.background', ui.background);
-              ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
-              ui.backgroundFlash.style.mixBlendMode = 'overlay';
-              ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
-              ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
-            }
-          }
-          if (lib.config.image_background_blur) {
-            ui.background.style.filter = 'blur(8px)';
-            ui.background.style.webkitFilter = 'blur(8px)';
-            ui.background.style.transform = 'scale(1.05)';
-          }
         }
-        document.documentElement.style.backgroundImage = '';
-        document.documentElement.style.backgroundSize = '';
-        document.documentElement.style.backgroundPosition = '';
-        document.documentElement.style.height = '';
+        if(!ui.firstCreatedBG){
+          init.onload_createBG()
+        }
         document.body.insertBefore(ui.background, document.body.firstChild);
         document.body.onresize = ui.updatexr;
         if (lib.config.touchscreen) {
@@ -2581,7 +2558,7 @@ module.exports = function (element, _mode, _message) {
       localStorage.removeItem(lib.configprefix + 'directstart');
       delete init.init;
     },
-    updateZoom: () => {
+    onload_updateZoom: () => {
       ui.updated();
       /**
        * 文档缩放比例
@@ -2592,6 +2569,37 @@ module.exports = function (element, _mode, _message) {
         ui.updatez();
       }
       ui.firstUpdatedZoom = true
+    },
+    onload_createBG:()=>{
+      ui.background = ui.create.div('.background');
+      ui.background.style.backgroundSize = "cover";
+      ui.background.style.backgroundPosition = '50% 50%';
+      if (lib.config.image_background && lib.config.image_background != 'default' && lib.config.image_background.indexOf('custom_') != 0) {
+        if (lib.config.image_background.indexOf('svg_') == 0) {
+          ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
+        }
+        else {
+          ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
+          if (!ui.backgroundFlash) {
+            ui.backgroundFlash = ui.create.div('.background', ui.background);
+            ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
+            ui.backgroundFlash.style.mixBlendMode = 'overlay';
+            ui.backgroundSVG = ui.create.div('.background.slow_flash', ui.backgroundFlash);
+            ui.backgroundSVG.style.backgroundImage = `url("${lib.assetURL}image/background/simple1_bg.svg")`;
+          }
+        }
+        if (lib.config.image_background_blur) {
+          ui.background.style.filter = 'blur(8px)';
+          ui.background.style.webkitFilter = 'blur(8px)';
+          ui.background.style.transform = 'scale(1.05)';
+        }
+      }
+      document.documentElement.style.backgroundImage = '';
+      document.documentElement.style.backgroundSize = '';
+      document.documentElement.style.backgroundPosition = '';
+      document.documentElement.style.height = '';
+
+      ui.firstCreatedBG = true
     },
     analyseLoad() {
       if (lib.imported.character) {
