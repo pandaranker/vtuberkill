@@ -1374,6 +1374,8 @@ window.vk_asset_list=[
 	'image/character/Sayako.jpg',
 	'image/character/ShiinaNanoha.jpg',
 	'image/character/yueyinkongye.jpg',
+	'image/character/ElizabethHodophilaxYork.jpg',
+	'image/character/mutangchun.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',

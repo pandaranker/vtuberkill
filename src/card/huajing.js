@@ -473,6 +473,9 @@ game.import('card', function (lib, game, ui, get, ai, _status) {
 						player.addJudgeNext(card);
 					}
 				},
+				cancel: function () {
+					player.addJudgeNext(card);
+				},
 				ai: {
 					basic: {
 						order: 1,

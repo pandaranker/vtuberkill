@@ -12,7 +12,7 @@ module.exports = {
          //TODO
          sourceCharacter: function (str) {
             if (str) {
-               for (var i in lib.characterReplace) {
+               for (let i in lib.characterReplace) {
                   if (lib.characterReplace[i].contains(str)) return i;
                }
             }
@@ -2296,6 +2296,7 @@ module.exports = {
             let str = lib.translate[name];
             if (lib.skill[name] && lib.translate[name + '_info']) {
                str = get.skillInfoTranslation(name, player);
+               if(lib.config.low_performance)   return str;
                let info = lib.skill[name];
                let iKeys = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
                iKeys = [...new Set(iKeys)];
@@ -2303,38 +2304,47 @@ module.exports = {
                   let tra = get.translation(i);
                   if (tra.indexOf('(') > 0)
                      tra = tra.substring(0, tra.indexOf('('));
-                  let reg = new RegExp(`\[【\|『\](${tra})\[】\|』\]`, 'g');
-                  str = str.replace(reg, `<span class="iText" ${typeof i == 'object' ? `data-introLink="${i.name}" ${i.nature ? `data-nature="${i.nature}"` : ``}` : `data-introLink="${i}"`}>
-                              <svg width="${tra.length * 1.1 + 2}em" height="1.3em" style="vertical-align: bottom">
-                                  <text x="0" y="80%" fill="white">『$1』</text>
+                  let reg = new RegExp(`(\[【\|『\]${tra}\[】\|』\])`, 'g');
+                  str = str.replace(reg, `<span class="iText" ${typeof i == 'object' ? `data-introlink="${i.name}" ${i.nature ? `data-nature="${i.nature}"` : ``}` : `data-introlink="${i}"`}>
+                              <svg width="${tra.length * 1.1 + 1.8}em" height="1.3em" style="vertical-align: bottom">
+                                  <text x="0" y="80%" fill="white">$1</text>
                                   <rect width="100%" height="100%" class="iRec"/>
                               </svg></span>`);
                }
+               for (let k in lib.helpKeyWords) {
+                  let tra = `${k}*`;
+                  let reg = new RegExp(`(${k}\\*)`, 'g');
+                  str = str.replace(reg, `<span class="iText" data-introlink="${k}" data-introlinkstr="${lib.helpKeyWords[k]}"}>
+                              <svg width="${k.length + 0.6}em" height="1.3em" style="vertical-align: bottom">
+                                  <text x="0" y="80%" fill="white">$1</text>
+                                  <rect width="100%" height="100%" class="iRec"/>
+                              </svg></span>`);
+               }
+               (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText =
+                  lib.init.sheet(`
+                                 .iText{
+                                     position: relative;
+                                     cursor: pointer;
+                                     font-style: italic;
+                                     line-height: 1em;
+                                 }
+                             `, `
+                                 .iRec{
+                                     fill:transparent;
+                                     stroke:aqua;
+                                     stroke-width: 6px;
+                                     stroke-dasharray: 100 500;
+                                     stroke-dashoffset: 230;
+                                     transition: 1.2s;
+                                 }
+                             `, `
+                                 .iText:hover .iRec{
+                                     stroke-width: 4px;
+                                     stroke-dasharray: 600;
+                                     stroke-dashoffset: 0;
+                                 }
+                             `));
             }
-            (_b = ui.interoperableText) !== null && _b !== void 0 ? _b : (ui.interoperableText =
-               lib.init.sheet(`
-                              .iText{
-                                  position: relative;
-                                  cursor: pointer;
-                                  font-style: italic;
-                                  line-height: 1em;
-                              }
-                          `, `
-                              .iRec{
-                                  fill:transparent;
-                                  stroke:aqua;
-                                  stroke-width: 6px;
-                                  stroke-dasharray: 100 500;
-                                  stroke-dashoffset: 230;
-                                  transition: 1.2s;
-                              }
-                          `, `
-                              .iText:hover .iRec{
-                                  stroke-width: 4px;
-                                  stroke-dasharray: 600;
-                                  stroke-dashoffset: 0;
-                              }
-                          `));
             return str;
          },
          skillInfoTranslation(name, player) {
@@ -2732,7 +2742,7 @@ module.exports = {
          owner: function (card, method) {
             var list = game.players.concat(game.dead);
             for (var i = 0; i < list.length; i++) {
-               if(list[i].getCards('hejsx').contains(card)) return list[i];
+               if (list[i].getCards('hejsx').contains(card)) return list[i];
                if (list[i].judging[0] == card && method != 'judge') return list[i];
             }
             //for(var i=0;i<game.players.length;i++){
@@ -2961,14 +2971,14 @@ module.exports = {
                   }
                   return false;
                }
-               case 'expansion':{
-                  content=player.getCards('x',function(card){
+               case 'expansion': {
+                  content = player.getCards('x', function (card) {
                      return card.hasGaintag(skill);
                   });
-                  if(dialog&&content.length){
+                  if (dialog && content.length) {
                      dialog.addAuto(content);
                   }
-                  else{
+                  else {
                      return '没有卡牌';
                   }
                   return false;
@@ -3095,15 +3105,15 @@ module.exports = {
                }
             }
             function setOceanInfo() {
-               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' +
+               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.9">' +
                   '<span class="bluetext">海洋</span>' +
-                  '：海洋属性的牌被使用时，若此牌没有「伤害」标签且目标没有护甲，则令目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' +
+                  '：当海洋属性的牌被使用时，若此牌不为【杀】或伤害类锦囊，则会令没有护甲的目标获得1点护甲；有护甲的角色受到海洋伤害时，此伤害+1且不产生传递' +
                   '</div>');
             }
             function setYamiInfo() {
-               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.8">' +
+               uiintro.add('<div class="text" style="font-family: yuanli;zoom: 0.9">' +
                   '<span class="legendtext">暗影</span>' +
-                  '：暗影属性的牌可以在其他角色的结束阶段对其使用；暗影属性的牌被使用时，若目标手牌数多于使用者，则其不能响应此牌且此牌造成的伤害不产生传递' +
+                  '：暗影属性的牌可以在其他角色的结束阶段对其使用；当暗影属性的牌被使用时，若目标手牌数多于使用者，则其不能响应此牌且此牌造成的伤害不产生传递' +
                   '</div>');
             }
             if (typeof node._customintro == 'function') {
@@ -3267,12 +3277,14 @@ module.exports = {
                      if (lib.translate[skills[i] + '_append']) {
                         uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                      }
-                     for (let v of uiintro.getElementsByTagName('span')) {
-                        v.link = v.dataset.introlink
-                        v.nature = v.dataset.nature
-                        if (v.classList.contains('iText')) {
-                           v.parentLink = uiintro
-                           lib.setIntro(v)
+                     if(!lib.config.low_performance){
+                        for (let v of uiintro.getElementsByTagName('span')) {
+                           v.link = v.dataset.introlink
+                           v.nature = v.dataset.nature
+                           if (v.classList.contains('iText')) {
+                              v.parentLink = uiintro
+                              lib.setIntro(v)
+                           }
                         }
                      }
                   }
@@ -3955,12 +3967,14 @@ module.exports = {
                         if (lib.translate[skills[i] + '_append']) {
                            uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                         }
-                        for (let v of uiintro.getElementsByTagName('span')) {
-                           v.link = v.dataset.introlink
-                           v.nature = v.dataset.nature
-                           if (v.classList.contains('iText')) {
-                              v.parentLink = uiintro
-                              lib.setIntro(v)
+                        if(!lib.config.low_performance){
+                           for (let v of uiintro.getElementsByTagName('span')) {
+                              v.link = v.dataset.introlink
+                              v.nature = v.dataset.nature
+                              if (v.classList.contains('iText')) {
+                                 v.parentLink = uiintro
+                                 lib.setIntro(v)
+                              }
                            }
                         }
                      }
@@ -4074,7 +4088,11 @@ module.exports = {
                   name = node.link.name;
                }
                node.curUiintro = uiintro
-               if (lib.card[name]) {
+               if (node.dataset.introlinkstr) {
+                  let str = node.dataset.introlinkstr
+                  uiintro.add(`<div><div class="skilln">【${name}】</div><div${(name.length > 3) ? ' class="skilltext"' : ''}>${str}</div></div>`);
+               }
+               else if (lib.card[name]) {
                   uiintro.add(get.translation(name));
                   setCardInfo(name)
                   if (lib.translate[`${name}_info`]) {

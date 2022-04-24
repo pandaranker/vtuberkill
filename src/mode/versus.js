@@ -1189,7 +1189,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					//22选将框分配
 					var list=[];
 					var list4=[];
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(lib.filter.characterDisabled(ix[j])) ix.splice(j--,1);
@@ -3124,17 +3124,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					var libCharacter={};
 					var list4=[];
-					for(var i=0;i<lib.configOL.characterPack.length;i++){
-						var pack=lib.characterPack[lib.configOL.characterPack[i]];
-						for(var j in pack){
+					for(let i=0;i<lib.configOL.characterPack.length;i++){
+						let pack=lib.characterPack[lib.configOL.characterPack[i]];
+						for(let j in pack){
 							if(typeof func=='function'&&func(j)) continue;
 							if(lib.connectBanned.contains(j)) continue;
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
-					for(i in lib.characterReplace){
-						var ix=lib.characterReplace[i];
-						for(var j=0;j<ix.length;j++){
+					for(let i in lib.characterReplace){
+						let ix=lib.characterReplace[i];
+						for(let j=0;j<ix.length;j++){
 							if(!libCharacter[ix[j]]||lib.filter.characterDisabled(ix[j],libCharacter)) ix.splice(j--,1);
 						}
 						if(ix.length){
@@ -3143,9 +3143,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					game.broadcast(function(list){
-						for(var i in lib.characterReplace){
-							var ix=lib.characterReplace[i];
-							for(var j=0;j<ix.length;j++){
+						for(let i in lib.characterReplace){
+							let ix=lib.characterReplace[i];
+							for(let j=0;j<ix.length;j++){
 								if(!list.contains(ix[j])) ix.splice(j--,1);
 							}
 						}
@@ -3155,19 +3155,38 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						list.push(i);
 						list4.push(i);
 					}
-					var choose=[];
 					event.list=list;
 					_status.characterlist=list4;
-					for(var i=0;i<game.players.length;i++){
-						choose.push([game.players[i],['选择角色',[list.randomRemove(7),'characterx']],true]);
+					var map={};
+					for(var player of game.players){
+						player._characterChoice=event.list.randomRemove(7);
+						player._friend=(player.next.side==player.side?player.next:player.previous);
+						map[player.playerid]=player._characterChoice;
+					}
+					game.broadcastAll(function(map){
+						for(var i in map){
+							lib.playerOL[i]._characterChoice=map[i];
+						}
+					},map);
+					'step 1'
+					let choose=[];
+					for(let i=0;i<game.players.length;i++){
+						var dialog=['请选择角色',[game.players[i]._characterChoice,'characterx']];
+						if(game.players[i]._friend){
+							dialog.push('队友的角色');
+							dialog.push([game.players[i]._friend._characterChoice,'characterx']);
+						}
+						choose.push([game.players[i],dialog,true,function(){return Math.random()},function(button){
+							return _status.event.player._characterChoice.contains(get.sourceCharacter(button.link));
+						}]);
 					}
 					game.me.chooseButtonOL(choose,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0]);
 					});
-					'step 1'
-					for(var i in result){
+					'step 2'
+					for(let i in result){
 						if(result[i]=='ai'){
-							var name=event.list.randomRemove();
+							let name=event.list.randomRemove();
 							if(lib.characterReplace[name]&&lib.characterReplace[name].length) name=lib.characterReplace[name].randomGet();
 							result[i]=name;
 						}

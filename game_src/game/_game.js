@@ -489,6 +489,7 @@ module.exports = {
                 }
             },
             playAudio: function () {
+                if (lib.config.volumn_audio === 0) return;
                 if (_status.video && arguments[1] != 'video') return;
                 var str = '';
                 var onerror = null;
@@ -520,16 +521,16 @@ module.exports = {
                     this.remove();
                 });
                 audio.onerror = function () {
-                    if (this._changed) {
+                    // if (this._changed) {
                         this.remove();
                         if (onerror) {
                             onerror();
                         }
-                    }
-                    else {
-                        this.src = lib.assetURL + 'audio' + str + '.ogg';
-                        this._changed = true;
-                    }
+                    // }
+                    // else {
+                    //     this.src = lib.assetURL + 'audio' + str + '.ogg';
+                    //     this._changed = true;
+                    // }
                 };
                 ui.window.appendChild(audio);
                 return audio;
@@ -620,7 +621,7 @@ module.exports = {
                 audio.onerror = function () {
                     switch (this._changed) {
                         case 1: {
-                            audio.src = lib.assetURL + str + name + '.ogg';
+                            // audio.src = lib.assetURL + str + name + '.ogg';
                             this._changed = 2;
                             break;
                         }
@@ -630,7 +631,7 @@ module.exports = {
                             break;
                         }
                         case 3: {
-                            audio.src = lib.assetURL + str + name + index + '.ogg';
+                            // audio.src = lib.assetURL + str + name + index + '.ogg';
                             this._changed = 4;
                             break;
                         }

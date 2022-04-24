@@ -34,7 +34,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			/**月之美兔 */
 			re_MitoTsukino: ['female', 'nijisanji', 3, ['re_bingdielei'], ['zhu']],
 			/**宇志海莓 */
-			re_UshimiIchigo: ['female', 'nijisanji', 3, ['re_shuangren', 're_jitui']],
+			re_UshimiIchigo: ['female', 'nijisanji', 3, ['re_kuangren', 're_jitui']],
 			/**樋口枫 */
 			re_HiguchiKaede: ['female', 'nijisanji', 4, ['re_zhenyin']],
 			/**铃鹿诗子 */
@@ -687,7 +687,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				trigger: { player: 'damageEnd' },
 				content: [() => {
 					Evt.num ??= trigger.num;
-					let next = player.chooseTarget('令一名角色摸两张牌')
+					player.chooseTarget('令一名角色摸两张牌')
 						.set('prompt2', '（若其手牌数少于你或为全场最少，改为摸三张牌）')
 						.set('ai', function (target: any) {
 							var player = _status.event.player;
@@ -809,7 +809,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			},
 			//reYuNi
 			re_shengcai: {
-				trigger: { player: 'useCardAfter' },
+				trigger: { player: 'useCard1' },
 				priority: 123,
 				filter(Evt, player) {
 					var repeat = 0;
@@ -828,6 +828,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				frequent: true,
 				content() {
 					var stats = 0;
+					function getStats(sum,cur){
+
+					}
 					game.hasPlayer(cur => {
 						cur.getHistory('useCard', evt => {
 							if (get.color(evt.card, cur) !== get.color(trigger.card, player)) {
@@ -1450,7 +1453,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						result.links.forEach((element: string[]) => {
 							if (element[2] == "额外目标") {
 								//console.log(trigger);
-								player.chooseTarget(true, '额外指定一名' + get.translation(trigger.card) + '的目标？', function (card: any, player: any, target: any) {
+								player.chooseTarget(true, `额外指定一名${get.translation(trigger.card)}的目标？`, function (card: any, player: any, target: any) {
 									var trigger = _status.event;
 									if (trigger.targets.contains(target)) return false;
 									return lib.filter.targetEnabled2(trigger.card, _status.event.player, target);
@@ -1467,7 +1470,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						if (!Evt.isMine()) game.delayx();
 						Evt.target = result.targets[0];
 						if (Evt.target) {
+							game.log(Evt.target, '成为了', trigger.card, '的额外目标');
 							trigger.targets.add(Evt.target);
+							game.delayx();
 						}
 					}
 				}],
@@ -1663,7 +1668,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}]
 			},
 			//re海牛
-			re_shuangren: {
+			re_kuangren: {
 				audio: 'kuangbaoshuangren',
 				trigger: { player: 'shaBegin' },
 				priority: 98,
@@ -1673,7 +1678,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 				},
 				content() { },
-				group: ['re_shuangren_red', 're_shuangren_black'],
+				group: ['re_kuangren_red', 're_kuangren_black'],
 				subSkill: {
 					red: {
 						mod: {
@@ -1693,7 +1698,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						direct: true,
 						content: [() => {
-							player.chooseTarget(get.prompt('re_shuangren'), `为${get.translation(trigger.card)}增加一个目标`,
+							player.chooseTarget(get.prompt('re_kuangren'), `为${get.translation(trigger.card)}增加一个目标`,
 								function (card, player, target) {
 									return !_status.event.targets.contains(target) && lib.filter.targetEnabled2(_status.event.card, player, target);
 								})
@@ -1711,7 +1716,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								Evt.finish();
 							}
 						}, () => {
-							player.logSkill('re_shuangren', Evt.target);
+							player.logSkill('re_kuangren', Evt.target);
 							trigger.targets.push(Evt.target);
 						}],
 					},
@@ -5641,7 +5646,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_YuNi: `新·YuNi`,
 			re_shengcai: `声彩`,
-			re_shengcai_info: `当你使用一张牌后，若与本回合此前被使用的牌颜色均不同，你可以摸X张牌。（X为本回合之前使用过的牌数）`,
+			re_shengcai_info: `当你使用一张牌时，若与本回合此前被使用的牌颜色均不同，你可以摸X张牌。（X为本回合之前被使用的牌数）`,
 			re_shengcai_append: lib.figurer(`回合内爆发（注意不要被其他人使用的牌干扰）`),
 
 			re_TomariMari: `新·兎鞠まり`,
@@ -5736,8 +5741,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 			re_zhenyin_info: `每回合限一次，当你使用黑色牌指定目标后，可以将一名目标区域内的一张牌移至其下家，若引起冲突，进行替代并对下家造成 1 点伤害。`,
 
 			re_UshimiIchigo: `新·宇志海莓`,
-			re_shuangren: `狂刃`,
-			re_shuangren_info: `你的黑色【杀】可以额外指定一名角色为目标；你的红色【杀】无距离与次数限制。`,
+			re_kuangren: `狂刃`,
+			re_kuangren_info: `你的黑色【杀】可以额外指定一名角色为目标；你的红色【杀】无视距离与次数限制。`,
 			re_jitui: `急退`,
 			re_jitui_info: `当你受到伤害后或在回合外正面朝上失去非基本牌后，你可以摸一张牌。`,
 

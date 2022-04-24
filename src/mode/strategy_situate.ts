@@ -352,7 +352,7 @@ class Mount extends Area {
     }
 }
 Mount.mountId = 0
-interface adjoinsType extends Record<string,Block|posType> {
+interface adjoinsType extends Record<string, Block | posType> {
     left, right, leftup, rightup, leftdown, rightdown
 }
 /**
@@ -382,7 +382,7 @@ class Block extends Pos {
             rightdown: [0.25, 0.5],
             leftdown: [-0.25, 0.5],
         } as adjoinsType
-        let reserveMap = {
+        let reverseMap = {
             right: 'left',
             left: 'right',
             rightup: 'leftdown',
@@ -396,7 +396,7 @@ class Block extends Pos {
                 if (adjoins[v] instanceof Array) {
                     if (bpos[0] - pos[0] === adjoins[v][0] && bpos[1] - pos[1] === adjoins[v][1]) {
                         adjoins[v] = b
-                        b.adjoins[reserveMap[v]] = this
+                        b.adjoins[reverseMap[v]] = this
                     }
                 }
             }
@@ -1436,7 +1436,9 @@ const control = {
     },
     close() {
         this.clear()
+        this.tempClear()
         data = {}
+        situate.data = data
     },
     clear() {
         if (context.curCvs && context.curCtx) {
@@ -1456,11 +1458,15 @@ const control = {
         }
     }
 }
-export default {
-    citys,
-    mounts,
+let situate = {
+    items:{
+        citys,
+        mounts,
+        factions
+    },
     translation,
     control,
+    data,
     drama: {
         init(info) {
             if (info.resource) {
@@ -1483,3 +1489,4 @@ export default {
         }
     }
 }
+export default situate

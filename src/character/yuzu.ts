@@ -118,6 +118,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**雨街F */
 			AmemachiF: ['female', 'RedC', 3, ['ciling', 'xiyu'], ['guoV']],
+			/**艾尔莎 */
+			ElizabethHodophilaxYork: ['female', 'RedC', 4, ['mengxue', 'nier'], ['guoV']],
+			/**冥冥meichan */
+			Meimei: ['female', 'RedC', 4, ['zhichan', 'mmjieyuan'], ['guoV']],
+
+
+			/**木糖纯 */
+			mutangchun: ['female', 'xuyan', 4, ['zuanyan','diji','yaoyan'], ['guoV', 'doublegroup:xuyan:qun']],
 
 			/**中国绊爱 */
 			zhongguobanai: ['female', 'NetEase', 4, ['liying', 'fuyu'], ['guoV']],
@@ -221,6 +229,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				let str = lib.translate.shixi_info;
 				if (player.$.yuezhi) {
 					return str.replace(/（你）/g, `<span class="changetext">（你或一名<皇珈骑士>）</span>`);
+				}
+				return str;
+			},
+			mmjieyuan(player) {
+				let str = lib.translate.mmjieyuan_info;
+				if (player.$.mmjieyuan_change) {
+					return str.replace(/两\/一/g, `<span class="changetext">一/两</span>`);
 				}
 				return str;
 			},

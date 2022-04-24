@@ -53,7 +53,7 @@ declare global {
             name?: string,
             name2?: string,
             mark?: Function,
-            markcount?: (storage, player) => number
+            markcount?: string|((storage, player) => number)
         }
         chooseButton?: {
             dialog: (event?: EventModel, player?: PlayerModel) => any,
@@ -101,6 +101,7 @@ declare global {
         get: {
             $a: ((from: PlayerModel, to: PlayerModel) => number)
             $a2: ((to: PlayerModel) => number)
+            is: Record<string,Function>
             [key: string]: Function
         },
         ai,

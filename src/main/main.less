@@ -1,18 +1,37 @@
+.home-window {
+    width: 100vw;
+    height: 100vh;
+
+    .menu.main {
+        >.menu-tab-bar {
+            background-color: #ebff37;
+            height: 2.2px;
+            transition: transform 0.25s;
+        }
+
+        >.menu-content {
+            outline: 3px #ebff37 solid;
+            outline-offset: -1vh;
+        }
+    }
+}
+
 #home {
-    left: 10%;
-    width: 80vw;
+    left: 10vw;
+    width: 90vw;
     top: 10%;
     height: 90vh;
     position: fixed;
 
     // background: #3333;
     >div {
-        animation-delay: 100ms;
+        animation-delay: 50ms;
         animation-fill-mode: forwards;
+        user-select: none;
     }
 
     #home-top {
-        top: -50%;
+        top: -40vh;
         left: 0;
         position: absolute;
         animation-name: topEnter;
@@ -20,8 +39,7 @@
         color: #fff;
 
         @keyframes topEnter {
-            0% {
-            }
+            0% {}
 
             100% {
                 top: 0;
@@ -59,18 +77,16 @@
     }
 
     #home-right {
-        right: -50%;
-        height: 62vh;
-        width: 25vw;
+        right: -40%;
+        height: 64vh;
+        width: 32vw;
         position: absolute;
         animation-name: rightEnter;
         animation-duration: 0.8s;
         transition: .5s all;
-        transform: translateX(2vw);
 
         @keyframes rightEnter {
-            0% {
-            }
+            0% {}
 
             100% {
                 right: 0;
@@ -78,56 +94,131 @@
         }
 
         &:hover {
-            transform: translateX(-5vw);
+            width: 36vw;
         }
 
         #start-game {
             position: absolute;
-            right: 0;
+            left: 0;
             top: 0;
-            width: 25vw;
-            height: 30vh;
-            color: #e2fa00;
-            background: #aebc2f;
-            text-align: center;
+            width: 27vw;
+            height: 32vh;
+            color: #ebff37;
+            background: #cc844c;
 
-            >div {
-                max-width: 100%;
+            >.home-inner {
+                outline: 4px #ebff37 solid;
+                outline-offset: 2.5vh;
             }
 
             #start-game-mode {
-                background: #e2fa00;
+                position: absolute;
+                left: -5vw;
+                width: 40%;
+                height: 27vh;
+                background: #858868;
+                font-size: 80%;
+                color: #e9eae2;
+                outline: 4px #e9eae2 solid;
+                outline-offset: -1.5vh;
+
+                animation-name: topEnter;
+                animation-duration: 1.2s;
+
+                @keyframes topEnter {
+                    0% {
+                        top: -80%
+                    }
+
+                    100% {
+                        top: 0;
+                    }
+                }
+
+                #start-game-mode-change {
+                    position: relative;
+                    display: inline-block;
+                    width: 50%;
+                    top: 19vh;
+                    height: 8vh;
+                    line-height: 8vh;
+                    font-size: 240%;
+                    color: #e9eae2;
+                    text-align: center;
+                    outline: 3px #e9eae2 solid;
+                    outline-offset: -1.5vh;
+                }
+            }
+
+            &:hover {
+                >.home-inner {
+                    outline-offset: 0.8vh;
+                }
+
+                #start-game-mode {
+                    left: -7vw;
+                }
             }
         }
 
         #start-connect {
             position: absolute;
-            right: 12vw;
-            top: 32vh;
-            width: 13vw;
+            left: 0;
+            top: 34vh;
+            width: 15vw;
             height: 30vh;
             color: #bd63d4;
             background: #8805a8;
-            text-align: center;
+
+            @media (max-width: 400px) {
+                font-size: 40%;
+            }
+
+            @media (min-width: 401px) and (max-width: 900px) {
+                font-size: 60%;
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                font-size: 80%;
+            }
+
+            >.home-inner {
+                outline: 4px #bd63d4 solid;
+                outline-offset: 2vh;
+
+                @media (max-width: 900px) {
+                    outline-offset: 0.9vh;
+                }
+
+                @media (min-width: 901px) and (max-width: 1200px) {
+                    outline-offset: 1.1vh;
+                }
+            }
+
+            &:hover {
+                >.home-inner {
+                    outline-offset: 0.5vh;
+                }
+            }
         }
 
         #start-config {
             position: absolute;
-            right: 0;
-            top: 32vh;
+            left: 17vw;
+            top: 34vh;
             width: 10vw;
             height: 30vh;
             color: #ec6aa1;
             background: #d9005b;
-            text-align: center;
         }
     }
 
     #home-bottom {
-        bottom: -50%;
-        right: 0;
-        width: 85%;
-        height: 16vh;
+        bottom: -40vh;
+        right: 4vw;
+        width: 85vw;
+        height: 12vh;
+        background-color: #7746d7;
         position: absolute;
         display: flex;
         justify-content: space-between;
@@ -137,8 +228,7 @@
         animation-duration: 0.8s;
 
         @keyframes bottomEnter {
-            0% {
-            }
+            0% {}
 
             100% {
                 bottom: 0;
@@ -152,18 +242,39 @@
             color: #906cd7;
             background: #4711ae;
 
+            @media (max-width: 1200px) {
+                font-size: 90%;
+            }
+
             &#handbook-hide {
                 width: 8%;
                 background: linear-gradient(to right, #7746d7, #482a83);
+
+                @media (max-width: 900px) {
+                    font-size: 60%;
+                }
+
+                @media (min-width: 901px) and (max-width: 1200px) {
+                    font-size: 80%;
+                }
+            }
+
+            &:not(#handbook-hide) {
+                overflow: hidden;
             }
         }
 
         &.hided {
+            width: unset;
             justify-content: right;
 
-            >div:not(#handbook-hide) {
-                width: 0;
-                overflow: hidden;
+            >div {
+                box-shadow: none;
+                transition: none;
+
+                &:not(#handbook-hide) {
+                    width: 0;
+                }
             }
         }
     }

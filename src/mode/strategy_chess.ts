@@ -4,7 +4,12 @@ export default {
             chessFocus: function (POS) {
                 if (map._chessdrag) return;
                 if (_status.chessscrolling) return;
-                var dx = 0, dy = 0;
+                let dx = 0, dy = 0;
+                if(!POS.tempCoord){
+                    console.log(POS)
+                    return
+                }
+                console.log(POS)
                 let pos = POS.tempCoord()
                 if (pos[0] - container.chessLeft < 200) {
                     dx = pos[0] - container.chessLeft - 250;

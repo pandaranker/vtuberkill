@@ -1131,7 +1131,7 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 				mod:{
 					maxHandcard:function(player,num){
 						if(player.hasSkill('huangjintianbingfu')){
-							num+=player.$.huangjintianbingfu.length;
+							num+=player.getExpansions('huangjintianbingfu').length;
 						}
 						return num+game.countPlayer(function(current){
 							return current.isFriendOf(player);

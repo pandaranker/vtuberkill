@@ -60,7 +60,7 @@ export default {
             if (!game.hasPlayer(cur => {
                 return lib.filter.targetEnabled2(trigger.card, player, cur)
                     && player.inRange(cur)
-                    && !trigger.targets.contains(cur)
+                    && !trigger.targets.includes(cur)
                     //&& (player.canUse(trigger.card, cur)||cur.canUse(trigger.card, cur))
                     && (get.type(trigger.card) != 'equip' && get.type(trigger.card) != 'delay')
             })) {
@@ -94,9 +94,9 @@ export default {
                 });
                 result.links.forEach(element => {
                     if (element[2] == "额外目标") {
-                        player.chooseTarget(true, '额外指定一名' + get.translation(trigger.card) + '的目标？', function (card, player, target) {
+                        player.chooseTarget(true, `额外指定一名${get.translation(trigger.card)}的目标？`, function (card, player, target) {
                             var trigger = _status.event;
-                            if (trigger.targets.contains(target)) return false;
+                            if (trigger.targets.includes(target)) return false;
                             return lib.filter.targetEnabled2(trigger.card, _status.event.player, target);
                         }).set('ai', function (target) {
                             var trigger = _status.event.getTrigger();
@@ -111,7 +111,10 @@ export default {
                 if (!Evt.isMine()) game.delayx();
                 Evt.target = result.targets[0];
                 if (Evt.target) {
+                    player.line(Evt.target)
+                    game.log(Evt.target, '成为了', trigger.card, '的额外目标');
                     trigger.targets.add(Evt.target);
+                    game.delayx()
                 }
             }
         },
@@ -525,7 +528,7 @@ export default {
                 if (trigger.targets.length > 1) {
                     Evt.multiTrue = true;
                     player.chooseTarget(function (card, player, target) {
-                        return player.$.momizhiyanGroup.contains(target);
+                        return player.$.momizhiyanGroup.includes(target);
                     }, 1, true);
                     game.delayx();
                 }
@@ -717,7 +720,7 @@ export default {
         filter(Evt, player) {
             if (!player.$.huxiGroup) player.$.huxiGroup = [];
             if (Evt.target) {
-                if (player.$.huxiGroup && player.$.huxiGroup.contains(Evt.target)) {
+                if (player.$.huxiGroup && player.$.huxiGroup.includes(Evt.target)) {
                     return false;
                 }
             }
@@ -730,7 +733,7 @@ export default {
                 return false;
             }
             if (game.hasPlayer(cur => {
-                return player.inRange(cur) && !player.$.huxiGroup.contains(cur) && cur.countCards('h') > 0;
+                return player.inRange(cur) && !player.$.huxiGroup.includes(cur) && cur.countCards('h') > 0;
             })) {
                 return true;
             }
@@ -745,12 +748,12 @@ export default {
                 if (target.countCards('h') < 1) {
                     return false;
                 }
-                if (player.$.huxiGroup && player.$.huxiGroup.contains(target)) {
+                if (player.$.huxiGroup && player.$.huxiGroup.includes(target)) {
                     return false;
                 }
-                if (player.$.huxiGroup.contains(target)) return false;
+                if (player.$.huxiGroup.includes(target)) return false;
                 if (game.hasPlayer(cur => {
-                    if (player.$.huxiGroup && player.$.huxiGroup.contains(cur)) {
+                    if (player.$.huxiGroup && player.$.huxiGroup.includes(cur)) {
                         return false;
                     }
                     if (cur.countCards('h') == 0) {
@@ -1362,7 +1365,7 @@ export default {
                 .set('ai', function (button) {
                     var card = _status.event.card;
                     var now = button.link;
-                    if ([get.type2(card), get.suit(card), get.number(card)].contains(now[3])) return true;
+                    if ([get.type2(card), get.suit(card), get.number(card)].includes(now[3])) return true;
                     return 0;
                 })
                 .set('card', cards[0]);
@@ -1382,20 +1385,20 @@ export default {
                 Evt.card = result.links[0];
                 var str = "『豪赌』展示<br>";
                 game.log(player, '选择了', Evt.chi);
-                if (Evt.chi.contains(get.number(Evt.card))) str += "你与其交换手牌<br>";
-                if (Evt.chi.contains(get.type(Evt.card, 'trick'))) str += "你弃置其两张牌<br>";
-                if (Evt.chi.contains(get.suit(Evt.card))) str += "你获得其一张牌<br>";
+                if (Evt.chi.includes(get.number(Evt.card))) str += "你与其交换手牌<br>";
+                if (Evt.chi.includes(get.type(Evt.card, 'trick'))) str += "你弃置其两张牌<br>";
+                if (Evt.chi.includes(get.suit(Evt.card))) str += "你获得其一张牌<br>";
                 player.showCards(Evt.card, str);
                 game.delayx();
             }
             else Evt.finish();
             'step 6'
-            if (Evt.chi.contains(get.number(Evt.card))) {
+            if (Evt.chi.includes(get.number(Evt.card))) {
                 player.line(target, 'grean');
                 player.swapHandcards(target);
             }
             'step 7'
-            if (Evt.chi.contains(get.type(Evt.card))) {
+            if (Evt.chi.includes(get.type(Evt.card))) {
                 game.delayx();
                 if (target.countDiscardableCards(player, 'he')) {
                     player.line(target, 'grean');
@@ -1403,7 +1406,7 @@ export default {
                 }
             }
             'step 8'
-            if (Evt.chi.contains(get.suit(Evt.card))) {
+            if (Evt.chi.includes(get.suit(Evt.card))) {
                 game.delayx();
                 if (target.countGainableCards(player, 'he')) {
                     player.line(target, 'grean');
@@ -1514,12 +1517,12 @@ export default {
         },
         mod: {
             maxHandcard(player, num) {
-                if (player.awakenedSkills.contains('xinghejianduei')) {
+                if (player.awakenedSkills.includes('xinghejianduei')) {
                     return num + player.getExpansions('yong').length;
                 }
             },
             attackFrom(from, to, distance) {
-                if (from.awakenedSkills.contains('xinghejianduei')) {
+                if (from.awakenedSkills.includes('xinghejianduei')) {
                     return distance - from.getExpansions('yong').length;
                 }
             },
@@ -1766,7 +1769,7 @@ export default {
                     });
                     Evt.card = player.$.youyishiyue || shi;
                     player.chooseTarget('让你或她回复一点体力', 1, function (card, player, target) {
-                        return [player, _status.event.aqua].contains(target) && target.isDamaged();
+                        return [player, _status.event.aqua].includes(target) && target.isDamaged();
                     }).set('ai', function (target) {
                         return get.recoverEffect(target, player, player) + Math.random();
                     }).set('aqua', aqua);
@@ -1928,9 +1931,9 @@ export default {
                 forced: true,
                 priority: 66,
                 filter(Evt, player) {
-                    if (!(player.$.kuangxin_draw.contains(Evt.targets[0]) && player.$.kuangxin_draw.contains(Evt.card))) return false
+                    if (!(player.$.kuangxin_draw.includes(Evt.targets[0]) && player.$.kuangxin_draw.includes(Evt.card))) return false
                     if (!Evt.targets[0].$.kuangxin2) return false;
-                    return Evt.targets[0].$.kuangxin2.contains(player);
+                    return Evt.targets[0].$.kuangxin2.includes(player);
                 },
                 content() {
                     'step 0'
@@ -1966,7 +1969,7 @@ export default {
             player: ['damage'],
         },
         filter(Evt, player) {
-            return player.$.kuangxin2 && Evt.card && player.$.kuangxin2.contains(Evt.card);
+            return player.$.kuangxin2 && Evt.card && player.$.kuangxin2.includes(Evt.card);
         },
         silent: true,
         forced: true,
@@ -2095,7 +2098,7 @@ export default {
                             return get.suit(ca) == 'heart';
                         }), 'giveAuto');
                     }
-                    if (diaG && !player.getCards('h').contains(player.$.hangao)) {
+                    if (diaG && !player.getCards('h').includes(player.$.hangao)) {
                         player.$.hangao_houxu.gain(player, player.getCards('he').filter(ca => {
                             return get.suit(ca) == 'diamond';
                         }), 'giveAuto');
@@ -2114,9 +2117,9 @@ export default {
         content() {
             'step 0'
             player.chooseToDisable().set('ai', function (Evt, player, list) {
-                if (list.contains('equip2')) return 'equip2';
-                if (list.contains('equip1') && player.countCards('h', { name: 'sha' }) > 2) return 'equip1';
-                if (list.contains('equip5') && player.countCards('h', { type: 'trick' }) >= 1) return 'equip5';
+                if (list.includes('equip2')) return 'equip2';
+                if (list.includes('equip1') && player.countCards('h', { name: 'sha' }) > 2) return 'equip1';
+                if (list.includes('equip5') && player.countCards('h', { type: 'trick' }) >= 1) return 'equip5';
                 return list.randomGet();
             });
             'step 1'
@@ -2293,8 +2296,9 @@ export default {
         filter(Evt, player) {
             if (get.type(Evt.card) == 'delay' || !Evt.targets) return false;
             if (!player.getLastUsed(1)) return false;
-            var num = player.$.paomo_contains.length ? player.$.paomo_contains[0] : get.number(player.getLastUsed(1).card);
-            if (player.$.paomo_contains && player.$.paomo_contains.length) {
+            let num = get.number(player.getLastUsed(1).card);
+            if (player.getStorage('paomo_contains').length) {
+                num = player.$.paomo_contains[0]
                 player.unmarkSkill('paomo_contains');
                 player.$.paomo_contains.length = 0;
             }
@@ -2303,7 +2307,7 @@ export default {
         content() {
             'step 0'
             if (player.$.shenhai >= 3) {
-                var list = ['令一名其他角色使用', '额外结算一次', '增加或减少一个目标'];
+                let list = ['令一名其他角色使用', '额外结算一次', '增加或减少一个目标'];
                 player.chooseControlList(list, get.prompt('shenhai'), true, function () {
                     return 1;
                 });
@@ -2336,12 +2340,12 @@ export default {
             var prompt2 = '为' + get.translation(trigger.card) + '增加或减少一个目标';
             player.chooseTarget(get.prompt('shenhai'), function (card, player, target) {
                 var player = _status.event.player;
-                if (_status.event.targets.contains(target)) return true;
+                if (_status.event.targets.includes(target)) return true;
                 return lib.filter.targetEnabled2(_status.event.card, player, target) && lib.filter.targetInRange(_status.event.card, player, target);
             }).set('prompt2', prompt2).set('ai', function (target) {
                 var trigger = _status.event.getTrigger();
                 var player = _status.event.player;
-                return get.effect(target, trigger.card, player, player) * (_status.event.targets.contains(target) ? -1 : 1);
+                return get.effect(target, trigger.card, player, player) * (_status.event.targets.includes(target) ? -1 : 1);
             }).set('targets', trigger.targets).set('card', trigger.card);
             'step 3'
             if (result.bool) {
@@ -2353,7 +2357,7 @@ export default {
             'step 4'
             if (Evt.targets) {
                 player.logSkill('shenhai', Evt.targets);
-                if (trigger.targets.contains(Evt.targets[0])) trigger.targets.removeArray(Evt.targets);
+                if (trigger.targets.includes(Evt.targets[0])) trigger.targets.removeArray(Evt.targets);
                 else trigger.targets.addArray(Evt.targets);
             }
             Evt.finish();
@@ -2410,7 +2414,7 @@ export default {
                     let card = game.createCard(trigger.card.name, trigger.card.suit, trigger.card.number, trigger.card.nature);
                     player.useCard(card, (trigger._targets || trigger.targets).slice(0), trigger.cards).skill = trigger.skill || 'shenhai_jiesuan';
                 }
-            }, 'direct').setT('useCardAfter').setI([]),
+            }, 'direct', 'onremove').setT('useCardAfter').setI([]),
             clear: new toSkill('rule', {
                 priority: 42,
                 content() {
@@ -2428,7 +2432,7 @@ export default {
         priority: 42,
         filter(Evt, player) {
             if (player != _status.currentPhase || player == Evt.player) return false;
-            return !player.$.paomo.contains(Evt.player) && player.getLastUsed(1) && get.number(Evt.card);
+            return !player.$.paomo.includes(Evt.player) && player.getLastUsed(1) && get.number(Evt.card);
         },
         check(Evt, player) {
             return get.$a(player, Evt.player) > 0
@@ -2440,15 +2444,14 @@ export default {
                 player.$.paomo_contains.add(get.number(trigger.card));
                 player.markSkill('paomo_contains');
             }
-            player.draw();
-            trigger.player.draw();
+            game.asyncDraw([player, target])
         },
         ai: {
             combo: 'shenhai'
         },
         group: ['paomo_contains', 'paomo_init'],
         subSkill: {
-            contains: {
+            contains: new toSkill('mark', {
                 marktext: '恋',
                 intro: {
                     name: "泡沫爱恋",
@@ -2460,8 +2463,7 @@ export default {
                 init(player, skill) {
                     if (!player.storage[skill]) player.storage[skill] = [];
                 },
-                mark: true,
-            },
+            }, 'mark', 'onremove'),
             init: {
                 trigger: { player: 'phaseEnd' },
                 forced: true,
@@ -2474,7 +2476,7 @@ export default {
                 }
             }
         }
-    }).setT({ global: 'useCardAfter' }),
+    }, 'onremove').setT({ global: 'useCardAfter' }),
     //Yogiri
     shisang: {
         trigger: { player: 'useCard1' },
@@ -2505,64 +2507,9 @@ export default {
             'step 1'
             player.$.shisang2 = trigger.card;
             player.addTempSkill('shisang2', { player: 'useCardAfter' });
-            /*		if(player.hasSkill('wanjie_change')){
-                        trigger.getParent().setContent(function(){
-                            targets.forEach(function(target){
-                                target.damage(player);
-                            })
-                        });
-                    }else{
-                        trigger.getParent().setContent(function(){
-                            targets.forEach(function(target){
-                                target.recover();
-                            })
-                        });
-                    }
-                */
-            /*		player.$.shisang_clear = get.info(trigger.card).content;
-                    if(player.hasSkill('wanjie_change')){
-                        get.info(trigger.card).content = function(){
-                            target.damage(player);
-                        }
-                    }else{
-                        get.info(trigger.card).content = function(){
-                            target.recover();
-                        }
-                    }
-                    'step 2'
-                    if(get.itemtype(trigger.card)=='card'){
-                        let next = game.createEvent('sanchaji_clear');
-                        next.card = trigger.card;
-                        next.cardContent = player.$.shisang_clear;
-                        Evt.next.remove(next);
-                        trigger.after.push(next);
-                        next.setContent(function(){
-                            get.info(next).content = cardContent;
-                        });
-                    }
-                */
         },
-        //	group:'shisang_clear',
         subSkill: {
             used: {},
-            clear: {
-                trigger: { global: ['damage', 'damageZero', 'recoverEnd', 'useCardEnd'] },
-                forced: true,
-                silent: true,
-                popup: false,
-                filter(Evt, player) {
-                    return false;
-                    if (!player.hasSkill('shisang_used')) return false;
-                    if ((Evt.name == 'useCard' && Evt.addedSkill && Evt.addedSkill.contains('shisang'))) return true;
-                    if (!(Evt.getParent(2).addedSkill && Evt.getParent(2).addedSkill.contains('shisang'))) return false;
-                    return (Evt.player == Evt.getParent(2).targets[Evt.getParent(2).targets.length - 1]);
-                },
-                content() {
-                    if (get.info(trigger.card).content != player.$.shisang_clear) {
-                        get.info(trigger.card).content = player.$.shisang_clear;
-                    }
-                },
-            },
         }
     },
     shisang2: {
@@ -2602,7 +2549,7 @@ export default {
                 .set('ai', card => {
                     var player = _status.event.player;
                     var cardTo = player.getCards('h', { color: 'black' });
-                    return cardTo.contains(card);
+                    return cardTo.includes(card);
                 });
             'step 1'
             if (result.bool) {
@@ -2669,7 +2616,7 @@ export default {
         lastDo: true,
         content() {
             'step 0'
-            if (['game', 'phaseLoop'].contains(trigger.name)) {
+            if (['game', 'phaseLoop'].includes(trigger.name)) {
                 var cards = player.getCards('h');
                 player.loseToSpecial(cards, 'maoge');
             } else {
@@ -2738,9 +2685,9 @@ export default {
                 Evt.finish();
             }
             'step 2'
-            if (game.hasPlayer(cur => Evt.targets.contains(cur) && !player.$.bianlan.contains(cur))) {
+            if (game.hasPlayer(cur => Evt.targets.includes(cur) && !player.$.bianlan.includes(cur))) {
                 player.chooseTarget('###『遍览』###可以令一名目标摸一张牌', function (card, player, target) {
-                    return _status.event.targets.contains(target) && !player.$.bianlan.contains(target);
+                    return _status.event.targets.includes(target) && !player.$.bianlan.includes(target);
                 }).set('targets', Evt.targets);
             } else {
                 Evt.finish();
@@ -2770,8 +2717,7 @@ export default {
             },
         },
     },
-    futian: {
-        trigger: { player: 'phaseBegin' },
+    futian: new toSkill('trigger',{
         limited: true,
         unique: true,
         skillAnimation: true,
@@ -2806,21 +2752,13 @@ export default {
             combo: 'maoge',
         },
         subSkill: {
-            futian: {
-                init(player, skill) {
-                    player.storage[skill] = [];
-                },
+            futian: new toSkill('regard',{
                 hiddenCard(player, name) {
                     if (player.countCards('s', card => card.hasGaintag('maoge')) > player.countCards('h')) return false;
                     var list = get.inpile('trick', card => {
-                        var player = _status.event.player;
-                        if (player.$.futian_futian.contains(card)) return false;
-                        return true;
+                        return !player.$.futian_futian.includes(card);
                     });
-                    for (var i = 0; i < list.length; i++) {
-                        if (list[i] == name) return true;
-                    }
-                    return false;
+                    return list.some(i => i === name);
                 },
                 enable: 'chooseToUse',
                 filter(Evt, player) {
@@ -2829,8 +2767,7 @@ export default {
                 chooseButton: {
                     dialog(Evt, player) {
                         var list = get.inpile('trick', card => {
-                            if (player.$.futian_futian.contains(card)) return false;
-                            return true;
+                            return !player.$.futian_futian.includes(card);
                         });
                         for (var i = 0; i < list.length; i++) {
                             list[i] = ['锦囊', '', list[i]];
@@ -2838,7 +2775,6 @@ export default {
                         if (list.length == 0) {
                             return ui.create.dialog('『覆天』已无可用牌');
                         }
-                        console.log(player, ui.create.dialog)
                         return ui.create.dialog('『覆天』', [list, 'vcard']);
                     },
                     filter(button, player) {
@@ -2868,11 +2804,11 @@ export default {
                         }
                     },
                     prompt(links, player) {
-                        return '###『覆天』###将两张牌当做【' + (get.translation(links[0][3]) || '') + get.translation(links[0][2]) + '】使用';
+                        return `###『覆天』###将两张牌当做【${get.translation(links[0][3]) || ''}${get.translation(links[0][2])}】使用`;
                     }
                 },
-            },
+            },'enable:chooseToUse').setI([]),
         },
-    },
+    }).setT('phaseZhunbeiBegin'),
 
 }

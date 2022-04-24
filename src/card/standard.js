@@ -2112,6 +2112,9 @@ game.import('card',function(lib,game,ui,get,ai,_status){
 					player.$.qinggang2.remove(trigger.card);
 					if(!player.$.qinggang2.length) player.removeSkill('qinggang2');
 				},
+				mark:true,
+				marktext:'※',
+				intro:{content:'当前防具技能已失效'},
 			},
 			qinglong_skill:{
 				equipSkill:true,

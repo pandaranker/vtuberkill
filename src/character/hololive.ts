@@ -112,7 +112,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			juhun: `聚魂`,
 			juhun_info: `锁定技 每回合任意角色首次受到伤害后，将牌堆顶牌置于你武将牌上。一轮开始时，你获得所有『聚魂』牌。`,
 			meilu: `没露`,
-			meilu_info: `锁定技 准备阶段，若你的手牌数比体力值多三或以上，你翻面。<br>
+			meilu_info: `锁定技 准备阶段，若你的手牌数比体力值多三或以上，你翻面*。<br>
 			当你的武将牌背面朝上时，你使用【杀】没有次数限制；当你的武将牌翻面时，你回复 1 点体力。`,
 			meilu_append: lib.figurer(`特性：多次出杀`),
 
@@ -267,7 +267,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			bianlan: `遍览`,
 			bianlan_info: `当你使用牌指定目标后，你可以获得一种花色的「书」。然后你可以令其中一名本回合未因此摸牌的目标摸一张牌。`,
 			futian: `覆天`,
-			futian_info: `<font color=#abf>限定技</font> 回合开始时，你可以交换手牌与「书」，然后本回合你可以将任意两张牌当一张未以此法使用过的通常锦囊牌使用。`,
+			futian_info: `<font color=#abf>限定技</font> 准备阶段，你可以交换手牌与「书」，然后本回合你可以将两张牌当作一张未以此法使用过的通常锦囊牌使用。`,
 			futian_append: lib.figurer(`特性：爆发`),
 
 		},

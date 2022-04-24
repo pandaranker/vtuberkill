@@ -1,3 +1,5 @@
+import { toSkill } from "./skilltype";
+
 window.game.import('character', function (lib, game, ui, get, ai, _status) {
 	return {
 		name: 'huajing',
@@ -798,7 +800,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				},
 			},
 			//海熊猫
-			haishou: {
+			haishou: new toSkill('regard',{
 				audio: 3,
 				enable: 'chooseToUse',
 				filterCard(card, player) {
@@ -832,10 +834,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						}
 					},
 				},
+				involve:'qi',
 				ai: {
 					gainHujia: true
 				}
-			},
+			}),
 			lishi: {
 				audio: 2,
 				trigger: { player: 'changeHujiaEnd' },
@@ -1164,6 +1167,9 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						next.cards = Evt.cards;
 					}
 				},
+				ai:{
+					combo:'qiming'
+				}
 			},
 			//SP鲨皇
 			sp_guaisheng: {
@@ -1410,7 +1416,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			sea_HosimiyaSio: `海·星宫汐`,
 			zhuhan: `筑寒`,
-			zhuhan_info: `锁定技 你的护甲获得量+1；轮次开始时，若你的护甲少于体力，你失去一点体力并获得等量护甲。`,
+			zhuhan_info: `锁定技 你的护甲获得量+1；轮次开始时，若你的护甲少于体力，你失去一点体力并获得等量护甲*。`,
 			zhuhan_append: lib.figurer(`特性：叠甲`),
 			pobing: `破冰`,
 			pobing_info: `锁定技 你对护甲少于自己的角色造成伤害时，失去所有护甲，根据满足的项数，令此伤害等量增加：<br>
@@ -1421,18 +1427,18 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			haishou_info: `每轮限一次，你可以将任一非基本牌当【气】使用；你造成属性伤害时，重置此技能。`,
 			haishoun_append: lib.figurer(`特性：叠甲`),
 			lishi: `幕下力士`,
-			lishi_info: `锁定技 你失去最后1点护甲时，摸一张牌。`,
+			lishi_info: `锁定技 你失去最后1点护甲*时，摸一张牌。`,
 
 			sea_MinatoAqua: `海·湊阿夸`,
 			jinchen: `浸沉`,
-			jinchen_info: `出牌阶段结束时，你可以回复一点体力并翻面，视为使用一张【沉没】。`,
+			jinchen_info: `出牌阶段结束时，你可以回复一点体力并翻面*，视为使用一张【沉没】。`,
 			qianyong: `潜涌`,
 			qianyong_info: `锁定技 当你背面朝上时，你不能成为其他角色的【杀】或伤害类锦囊的目标且造成的海洋伤害+1；当你翻至正面时，可以视为使用一张无视防具的【海杀】或摸两张牌。`,
 			qianyong_draw: `潜涌`,
 
 			sea_Ava: `海·向晚`,
 			zhuiguang: `追光澈海`,
-			zhuiguang_info: `出牌阶段限一次，你可以将所有手牌交给一名其他角色并令其获得一点护甲，然后直到你下一次发动此技能：你每一次成为非装备牌的目标或进入濒死状态时，其需交给你一张牌。`,
+			zhuiguang_info: `出牌阶段限一次，你可以将所有手牌交给一名其他角色并令其获得1点护甲*，然后直到你下一次发动此技能：你每一次成为非装备牌的目标或进入濒死状态时，其需交给你一张牌。`,
 			zhuiguang_chehai: `追光澈海`,
 			zhuiguang_chehai_info: `向晚成为非装备牌的目标或进入濒死状态时，你需交给其一张牌。`,
 			ronglei: `眀渊融泪`,
@@ -1448,18 +1454,20 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			qiti: `气嚏`,
 			qiti_info: `你受到属性伤害后，可以交给来源一张牌，令其交给你X张牌。（X为你已损失的体力+1）`,
 			miaoyu: `喵鱼`,
-			miaoyu_info: `转换技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的【海杀】。`,
+			miaoyu_info: `转换技 阳~你不因摸牌获得牌时，可以令一名角色获得1点护甲*。阴~你不因弃牌失去牌时，可以视为使用一张无距离限制的【海杀】。`,
+			miaoyu_append: lib.figurer(`特性：叠甲`),
 
 			ShirakamiHaruka: `白神遥`,
 			baoxiao: `豹笑`,
 			baoxiao_info: `锁定技 你使用【海杀】不计入次数，且每指定一名无护甲角色为目标，你摸一张牌。`,
 			quru: `取乳`,
-			quru_info: `出牌阶段，你可以将两张非基本牌当作【海杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲；此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。`,
+			quru_info: `出牌阶段，你可以将两张非基本牌当作【海杀】使用，若你因此失去了某区域的最后一张牌，你获得1点护甲*；<br>
+			此【杀】造成伤害时，你可以失去所有护甲令伤害等量增加。`,
 			quru_append: lib.figurer(`特性：叠甲`),
 
 			KisaragiKoyori: `如月こより`,
 			shinve: `尸虐`,
-			shinve_info: `锁定技 你体力减少时，获得等量护甲。准备阶段，你失去所有护甲，摸等量的牌。`,
+			shinve_info: `锁定技 你体力减少时，获得等量护甲*。准备阶段，你失去所有护甲，摸等量的牌。`,
 			shinve_append: lib.figurer(`特性：叠甲`),
 			juzu: `举组`,
 			juzu_info: `<font color=#ed5>觉醒技</font> 手牌数多于你的角色对你造成伤害后，你增加1点体力上限并摸牌至体力上限，获得技能『海狗』。`,
@@ -1468,7 +1476,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			GawrGura: `噶呜·古拉`,
 			lingqun: `领群`,
-			lingqun_info: `锁定技 你于弃牌阶段弃牌后获得等量护甲。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。`,
+			lingqun_info: `锁定技 你于弃牌阶段弃牌后获得等量护甲*。你的手牌数多于体力值时，你的护甲效果改为使你增加等量手牌上限。`,
 			lingqun_append: lib.figurer(`特性：叠甲`),
 			yangliu: `洋流`,
 			yangliu_info: `当你使用能造成伤害的牌时，可以扣减1点护甲将此伤害改为海洋属性。然后你摸一张牌；或令之不可被响应。`,
@@ -1484,7 +1492,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			xieqi: `携七`,
 			xieqi_info: `每回合限一次，你可以将任意张点数合计为7倍数的手牌当化鲸篇的一张牌使用，若仅指定了一名角色为目标，你摸等同于以此法失去牌数的牌。`,
 			youhai: `佑海`,
-			youhai_info: `你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲。（X为你已损失的体力值）`,
+			youhai_info: `你使用点数或点数合计为7的牌时，可以令至多X名角色各获得一点护甲*。（X为你已损失的体力值）`,
 			youhai_append: lib.figurer(`特性：叠甲`),
 
 			sp_HisekiErio: `皇·绯赤艾利欧`,
@@ -1497,7 +1505,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			sp_GawrGura: `皇·噶呜·古拉`,
 			sp_guaisheng: `海洋怪声`,
-			sp_guaisheng_info: `当一名角色造成海洋伤害时，你可选择以下任意项构成未执行过的组合以执行：1.令一名角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性。然后若你执行过所有的组合，获得1点护甲，重置此技能。`,
+			sp_guaisheng_info: `当一名角色造成海洋伤害时，你可选择以下任意项构成未执行过的组合以执行：1.令一名角色摸一张牌；2.弃置来源一张牌；3.将本次伤害改为冰属性。<br>
+			然后若你执行过所有的组合，获得1点护甲*，重置此技能。`,
 			sp_guaisheng_append: lib.figurer(`特性：叠甲`),
 			sp_guiliu: `百川归流`,
 			sp_guiliu_info: `每回合限一次，当一张牌不因使用进入弃牌堆时，你可以展示任意同色的牌，将此牌的等量复制洗入牌堆。且若此牌牌面中有“氵”，你获得之。`,

@@ -136,6 +136,9 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 					player.node.identity.dataset.color = 'qun';
 					player.classList.add('bossplayer');
 
+					if (!lib.storage.currentDrama) {
+						game.save('currentDrama', i);
+					}
 					if (lib.storage.currentDrama == i) {
 						Evt.currentDrama = player;
 						player.classList.add('highlight');
@@ -240,7 +243,6 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 				player.dataset.position = position
 				player.style = `--transY:${game.factions.indexOf(player) + Math.random() * 0.9};
 				--transX:${game.factions.indexOf(player) + Math.random() * 0.8}`
-				console.log(player.style)
 				ui.arena.appendChild(player)
 			}
 
@@ -594,58 +596,80 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 					ui.sortCard.style.display = 'none';
 					ui.cardPileButton.style.display = 'none';
 				}
-				var next = game.createEvent('phaseLoop');
-				// if (game.bossinfo.loopFirst) {
-				// 	next.player = game.bossinfo.loopFirst();
-				// }
-				// else {
-				// 	next.player = game.boss;
-				// }
-				next.player = game.me
-				_status.looped = true;
-				next.setContent([() => {
-					if (player.chongzheng) {
-						player.chongzheng = false;
-					}
-					else if (player.isDead()) {
-						if (player.hp < 0) player.hp = 0;
-						player.$.boss_chongzheng++;
-						if (player.maxHp > 0 && game.bossinfo.chongzheng) {
-							if (player.hp < player.maxHp) {
-								player.hp++;
-							}
-							else if (player.countCards('h') < 4) {
-								var card = get.cards()[0];
-								var sort = lib.config.sort_card(card);
-								var position = sort > 0 ? player.node.handcards1 : player.node.handcards2;
-								card.fix();
-								card.animate('start');
-								position.insertBefore(card, position.firstChild);
-							}
-							player.update();
-							if (player.$.boss_chongzheng >= game.bossinfo.chongzheng) {
-								player.revive(player.hp);
-							}
+				_status.drama.watch = true;
+				game.stginfo.situation.show()
+				let protagonist = lib.situate.items.factions.find(f => f.name === game.me.name)
+				setTimeout(() => {
+					console.log(protagonist)
+					if (protagonist) lib.situate.data.chessFunctions.chessFocus(protagonist)
+					setTimeout(() => {
+						if (_status.drama.watch) {
+							_status.drama.watch = false;
+							game.stginfo.situation.hide()
 						}
-					}
-					else {
-						player.phase();
-						game.delayx()
-					}
-				}, () => {
-					let index = game.factions.indexOf(Evt.player)
-					if (index + 1 === game.factions.length) {
-						game.log('新的一个月开始~')
-						game.stg.mouthNext(_status.drama.watch)
-						game.delayx()
-						Evt.player = game.factions[0]
-					}
-					else {
-						Evt.player = game.factions[index + 1]
-					}
-				}, () => {
-					Evt.goto(0);
-				}]);
+						let next = game.createEvent('phaseLoop');
+						// if (game.bossinfo.loopFirst) {
+						// 	next.player = game.bossinfo.loopFirst();
+						// }
+						// else {
+						// 	next.player = game.boss;
+						// }
+						next.player = game.me
+						_status.looped = true;
+						next.setContent([() => {
+							if (ui.STG_start) {
+								let preUi = ui.STG_start
+								ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1');
+								preUi.remove()
+							} else {
+								ui.STG_start = lib.init.css(`${lib.assetURL}layout/mode`, 'strategy1')
+							}
+						}, () => {
+							if (player.chongzheng) {
+								player.chongzheng = false;
+							}
+							else if (player.isDead()) {
+								if (player.hp < 0) player.hp = 0;
+								player.$.boss_chongzheng++;
+								if (player.maxHp > 0 && game.bossinfo.chongzheng) {
+									if (player.hp < player.maxHp) {
+										player.hp++;
+									}
+									else if (player.countCards('h') < 4) {
+										var card = get.cards()[0];
+										var sort = lib.config.sort_card(card);
+										var position = sort > 0 ? player.node.handcards1 : player.node.handcards2;
+										card.fix();
+										card.animate('start');
+										position.insertBefore(card, position.firstChild);
+									}
+									player.update();
+									if (player.$.boss_chongzheng >= game.bossinfo.chongzheng) {
+										player.revive(player.hp);
+									}
+								}
+							}
+							else {
+								player.phase();
+								game.delayx()
+							}
+						}, () => {
+							let index = game.factions.indexOf(Evt.player)
+							if (index + 1 === game.factions.length) {
+								game.log('新的一个月开始~')
+								game.stg.mouthNext(_status.drama.watch)
+								game.delayx()
+								Evt.player = game.factions[0]
+							}
+							else {
+								Evt.player = game.factions[index + 1]
+							}
+						}, () => {
+							Evt.goto(Evt.step - 2);
+						}]);
+					}, 1600)
+				}, 800)
+				game.delay(2.4)
 			},
 			onSwapControl: function () {
 				if (game.me == game.boss) return;
@@ -697,6 +721,7 @@ window.game.import('mode', function (lib: Record<string, any>, game, ui, get, ai
 				}
 			},
 			chooseCharacter: function (func) {
+				if (!lib.storage.currentDrama) return
 				for (let v in dramas) {
 					if (lib.drama[v]) {
 						lib.drama[v] = {

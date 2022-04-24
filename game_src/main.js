@@ -1,5 +1,7 @@
-import JSZip from 'jszip/dist/jszip.min'
-import Game from './game/Game'
+import JSZip from 'jszip/dist/jszip.min';
+import _ from 'lodash';
+import Game from './game/Game';
+
 // import 'ionicons/dist/ionicons.js'
 // import html2canvas from 'html2canvas'
 window.JSZip = JSZip

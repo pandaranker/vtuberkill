@@ -4,6 +4,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 		name: 'identity',
 		start: function () {
 			"step 0"
+			if (!lib.config.new_tutorial) {
+				_status.new_tutorial = true;
+				// ui.arena.classList.add('only_dialog');
+			}
 			_status.mode = get.config('identity_mode');
 			if (_status.brawl && _status.brawl.submode) {
 				_status.mode = _status.brawl.submode;
@@ -70,18 +74,72 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				else if (_status.mode == 'purple') {
 					game.prepareArena(8);
 				}
+				else if (_status.new_tutorial) {
+					game.prepareArena(3);
+				}
 				else {
 					game.prepareArena();
 				}
 				game.delay();
 			}
 			"step 2"
-			if (!_status.connectMode) {
-				game.showChangeLog();
+			if (!lib.config.new_tutorial) {
+				// lib.init.onfree();
+				game.saveConfig('version', lib.version);
+				game.saveConfig('new_tutorial',true);
+			}
+			else {
+				if (!_status.connectMode) {
+					game.showChangeLog();
+				}
 			}
 			"step 3"
 			if (_status.new_tutorial) {
 				_status.new_beginner = true;
+				if( ui.playerids.style.display !== 'none'){
+					ui.playerids.style.display = 'none'
+				}
+				if(get.is.phoneLayout()){
+					ui.new_beginner=ui.create.div('.touchinfo.left',ui.window);
+				}
+				else{
+					ui.new_beginner = ui.create.div(ui.gameinfo);
+				}
+				ui.new_beginner.innerHTML='身份模式';
+				if(ui.time3) ui.time3.style.display='none';
+				ui.new_beginnerInfo=ui.create.system('身份模式',null,true);
+				lib.setPopped(ui.new_beginnerInfo,function(){
+					var uiintro=ui.create.dialog('hidden');
+					uiintro.add('身份模式');
+					var list=[
+						'简介：身份模式是三国杀历史最悠久的游戏模式，在身份模式中玩家将根据随机抽取的身份牌决定自己的游戏目标和获胜条件，然后互相斗智斗力，最终完成一局游戏。',
+						'游戏目标：每一名角色会在游戏开始时获得一张身份牌，主公须立即亮出自己的身份牌，其他身份的角色不能让他人看到自己的身份牌，也不得通过游戏外的方式明示或暗示自己的身份。',
+						`主公：<br>
+						&nbsp;获胜条件：所有反贼和内奸死亡
+						&nbsp;失败条件：自己死亡<br>`,
+						`忠臣：<br>
+						&nbsp;获胜条件：所有反贼和内奸死亡
+						&nbsp;失败条件：主公死亡<br>`,
+						`反贼：<br>
+						&nbsp;获胜条件：主公死亡时，场上有一名反贼或至少两名角色存活
+						&nbsp;失败条件：主公死亡时，仅剩一名内奸存活；所有反贼和内奸死亡<br>`,
+						`内奸：<br>
+						&nbsp;获胜条件：主公死亡时，仅剩自己存活
+						&nbsp;失败条件：主公死亡时，场上有至少两名角色存活；自己死亡<br>`,
+					];
+					var intro='<ul style="text-align:left;margin-top:0;width:450px">';
+					for(var i=0;i<list.length;i++){
+						intro+='<li>'+list[i];
+					}
+					intro+='</ul>'
+					uiintro.add('<div class="text center">'+intro+'</div>');
+					var ul=uiintro.querySelector('ul');
+					if(ul){
+						ul.style.width='180px';
+					}
+					uiintro.add(ui.create.div('.placeholder'));
+					return uiintro;
+				},250);
 			}
 			if (typeof _status.new_tutorial == 'function') {
 				_status.new_tutorial();
@@ -218,7 +276,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						clear();
 						game.resume();
 					});
-					ui.create.control('继续', step7);
+					ui.create.control('继续', step1);
 				}
 				var step1 = function () {
 					clear();
@@ -238,16 +296,15 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 									ui.create.dialog('每名玩家将在一局游戏中扮演不同的身份<br>不同的身份对应了不同的胜利条件<br>比如“主公”的胜利条件就是杀死所有身份为“反贼”或“内奸”的玩家');
 									ui.controls[0].replace('继续', function () {
 										game.zhu.classList.remove('glow_phase');
-										game.me.classList.add('glow_phase');
-										ui.create.dialog('而你的身份是“反贼”，你的胜利条件就是杀死身份为“主公”的角色<br>除此以外还有身份为“忠臣”和“内奸的玩家');
+										ui.create.dialog('而你的身份是“反贼”，你的任务就是杀死“主公”');
 										ui.dialog.add('<div class="text center">“忠臣”的胜利条件就是保护主公，让主公胜利，而“内奸”的胜利条件是成为最后一个存活的角色');
 										ui.controls[0].replace('一旦主公死亡，反贼立即获得胜利', function () {
-											ui.create.dialog('特殊的规则是，杀死反贼的角色将摸三张牌<br>主公在杀死忠臣将弃掉所有的牌');
+											ui.create.dialog('比较特殊的规则是，杀死反贼的角色将摸三张牌<br>主公如果杀死忠臣将会弃掉所有的牌');
 											ui.controls[0].replace('继续', function () {
 												ui.create.dialog('牌和角色的技能是驱动游戏的核心要素<br>你在接下来的游戏过程中，可以随时使用鼠标右键（移动端为长按）查看角色或卡牌的技能');
 												ui.dialog.add('<div class="text center">你面前的这些牌便是你的“手牌”，尝试学会查看它们的详细信息吧！');
 												ui.controls[0].replace('每个轮次会从主公开始，由逆时针进行回合', function () {
-													ui.controls[0].replace('跟随着ai们的步伐，学会在V杀世界里战斗吧！', function () {
+													ui.controls[0].replace('跟随着ai们的步伐，学会在V杀世界里战斗吧~', function () {
 														step8();
 													});
 												});
@@ -1274,18 +1331,16 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					event.removeSetting = removeSetting;
 					event.list = [];
 					identityList.randomSort();
-					if (_status.event.isbeginner) {
-						identityList.remove('fan');
-						identityList.unshift('fan');
-						if (event.fixedseat) {
-							var zhuIdentity = (_status.mode == 'zhong') ? 'mingzhong' : 'zhu';
-							if (zhuIdentity != 'fan') {
-								identityList.remove(zhuIdentity);
-								identityList.splice(event.fixedseat, 0, zhuIdentity);
-							}
-							delete event.fixedseat;
-						}
-					}
+					// if (_status.event.isbeginner) {
+					// 	identityList.remove('fan');
+					// 	identityList.unshift('fan');
+					// 	if (event.fixedseat) {
+					// 		var zhuIdentity = (_status.mode == 'zhong') ? 'mingzhong' : 'zhu';
+					// 		identityList.remove(zhuIdentity);
+					// 		identityList.splice(event.fixedseat, 0, zhuIdentity);
+					// 		delete event.fixedseat;
+					// 	}
+					// }
 					if (event.identity) {
 						identityList.remove(event.identity);
 						identityList.unshift(event.identity);
@@ -1319,9 +1374,17 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							identityList.splice(game.players.indexOf(game.me), 0, ban_identity);
 						}
 					}
+					if(_status.new_beginner){
+						game.me.identity = 'fan'
+						game.me.previous.identity = 'zhu'
+						game.me.next.identity = 'nei'
+					}
 					for (i = 0; i < game.players.length; i++) {
-						if (_status.brawl && _status.brawl.identityShown) {
+						if (_status.brawl && _status.brawl.identityShown || _status.new_beginner) {
 							if (game.players[i].identity == 'zhu') game.zhu = game.players[i];
+							if(_status.new_beginner){
+								game.players[i].setIdentity(game.players[i].identity);
+							}
 							game.players[i].identityShown = true;
 						}
 						else {
@@ -1346,7 +1409,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 
 					if (get.config('special_identity') && !event.zhongmode && game.players.length == 8) {
-						for (var i = 0; i < game.players.length; i++) {
+						for (let i = 0; i < game.players.length; i++) {
 							delete game.players[i].special_identity;
 						}
 						event.special_identity = [];
@@ -1388,24 +1451,30 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						game.me.node.identity.classList.remove('guessing');
 					}
 					//选将框分配
-					for (i in lib.characterReplace) {
-						var ix = lib.characterReplace[i];
-						for (var j = 0; j < ix.length; j++) {
+					for (let i in lib.characterReplace) {
+						let ix = lib.characterReplace[i];
+						for (let j = 0; j < ix.length; j++) {
 							if (chosen.contains(ix[j]) || lib.filter.characterDisabled(ix[j])) ix.splice(j--, 1);
 						}
 						if (ix.length) {
 							event.list.push(i);
 							list4.addArray(ix);
-							var bool = false;
-							for (var j of ix) {
+							let bool = false;
+							for (let j of ix) {
 								if (lib.character[j][4] && lib.character[j][4].contains('zhu')) {
 									bool = true; break;
 								}
 							}
 							(bool ? list2 : list3).push(i);
+							if (_status.new_beginner) {
+								let rank = lib.rank.rarity;
+								if (rank.beginner.includes(i)){
+									list5.push(i);
+								}
+							}
 						}
 					}
-					for (i in lib.character) {
+					for (let i in lib.character) {
 						if (list4.contains(i)) continue;
 						if (chosen.contains(i)) continue;
 						if (lib.filter.characterDisabled(i)) continue;
@@ -1418,8 +1487,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							list3.push(i);
 						}
 						if (_status.new_beginner) {
-							var rank = lib.rank.rarity;
-							if (rank.beginner.contains(i)) list5.push(i);
+							let rank = lib.rank.rarity;
+							if (rank.beginner.includes(i)){
+								list5.push(i);
+							}
 						}
 					}
 					list2.sort(lib.sort.character);
@@ -2020,24 +2091,24 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					event.list2 = [];
 
 					var libCharacter = {};
-					for (var i = 0; i < lib.configOL.characterPack.length; i++) {
-						var pack = lib.characterPack[lib.configOL.characterPack[i]];
-						for (var j in pack) {
+					for (let i = 0; i < lib.configOL.characterPack.length; i++) {
+						let pack = lib.characterPack[lib.configOL.characterPack[i]];
+						for (let j in pack) {
 							if (j == 'zuoci') continue;
 							if (lib.character[j]) libCharacter[j] = pack[j];
 						}
 					}
-					for (i in lib.characterReplace) {
-						var ix = lib.characterReplace[i];
-						for (var j = 0; j < ix.length; j++) {
+					for (let i in lib.characterReplace) {
+						let ix = lib.characterReplace[i];
+						for (let j = 0; j < ix.length; j++) {
 							if (!libCharacter[ix[j]] || lib.filter.characterDisabled(ix[j])) ix.splice(j--, 1);
 						}
 						if (ix.length) {
 							event.list.push(i);
 							event.list2.push(i);
 							list4.addArray(ix);
-							var bool = false;
-							for (var j of ix) {
+							let bool = false;
+							for (let j of ix) {
 								if (libCharacter[j][4] && libCharacter[j][4].contains('zhu')) {
 									bool = true; break;
 								}
@@ -2046,9 +2117,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						}
 					}
 					game.broadcast(function (list) {
-						for (var i in lib.characterReplace) {
-							var ix = lib.characterReplace[i];
-							for (var j = 0; j < ix.length; j++) {
+						for (let i in lib.characterReplace) {
+							let ix = lib.characterReplace[i];
+							for (let j = 0; j < ix.length; j++) {
 								if (!list.contains(ix[j])) ix.splice(j--, 1);
 							}
 						}

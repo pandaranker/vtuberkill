@@ -25,7 +25,7 @@ module.exports = {
     character:'./character/_entry.js',
     card:'./card/_entry.js',
     mode:'./mode/_entry.js',
-    main:'./main/main.js',
+    main:'./main/main.ts',
   },
   output: {
     filename: '[name].js',

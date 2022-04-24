@@ -627,25 +627,24 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					}, player);
 					'step 1'
 					if (result.bool) {
-						_status.event.target = result.targets[0];
-						game.broadcastAll(function (target) {
-							let next = target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌')
-								.set('forced', false)
-								.set('ai', card => {
-									if (get.name(card) == 'shan') return 10;
-									var player;
-									game.hasPlayer(cur => {
-										if (cur.hasSkill('chahui')) player = cur;
-									});
-									if ((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(card) == 'spade')
-										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'spade' && get.suit(card) == 'diamond')
-										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'diamond' && get.suit(card) == 'club')
-										|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(card) == 'heart')
-									) {
-										return 100;
+						Evt.target = result.targets[0];
+						Evt.target.chooseCard('h', 1, '是否紧跟爱丽丝之后使用一张牌')
+							.set('filterCard')
+							.set('ai', card => {
+								let alice = _status.event.alice,
+									player = _status.event.player;
+								if (!player.hasUseTarget(card)) return 0;
+								if ((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(card) == 'spade')
+									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'spade' && get.suit(card) == 'diamond')
+									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'diamond' && get.suit(card) == 'club')
+									|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(card) == 'heart')
+								) {
+									if (get.$a(player, alice) > 0) {
+										return 10;
 									}
-								});
-						}, _status.event.target);
+								}
+							})
+							.set('alice', player)
 					}
 					else {
 						Evt.finish();
@@ -653,17 +652,15 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					'step 2'
 					if (result.bool) {
 						Evt.card = result.cards[0];
-						if ((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(Evt.card) == 'spade')
+						if (((player.$.xianjing[player.$.xianjing.length - 1] == 'heart' && get.suit(Evt.card) == 'spade')
 							|| (player.$.xianjing[player.$.xianjing.length - 1] == 'spade' && get.suit(Evt.card) == 'diamond')
 							|| (player.$.xianjing[player.$.xianjing.length - 1] == 'diamond' && get.suit(Evt.card) == 'club')
-							|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(Evt.card) == 'heart')
-						) {
-							player.gain(Evt.card);
-							game.log(player, '获得了', Evt.card)
-							player.chooseUseTarget(Evt.card, true);
+							|| (player.$.xianjing[player.$.xianjing.length - 1] == 'club' && get.suit(Evt.card) == 'heart'))
+							&& player.hasUseTarget(Evt.card)) {
+							player.chooseUseTarget(Evt.card, `视为使用一张${get.$t(Evt.card)}`, true)
 						}
 						else {
-							_status.event.target.chooseUseTarget(Evt.card, true);
+							Evt.target.chooseUseTarget(Evt.card, true);
 						}
 					}
 					else {
@@ -2319,22 +2316,26 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			sp_MinatoAqua: `皇·湊阿库娅`,
 			shenghuang: `圣皇之愈`,
-			shenghuang_info: `锁定技 当你进入濒死状态时，更换新的体力牌。你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。`,
+			shenghuang_info: `锁定技 当你进入濒死状态时，更换新的体力牌。<br>
+			你失去过黑色牌的回合结束时，其他角色将体力回复至回合开始时的状态。`,
 			renzhan: `瞬息刃斩`,
-			renzhan_info: `每回合限一次。其他角色受到伤害后，若其未濒死，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，然后获得这些牌；或获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。`,
+			renzhan_info: `每回合限一次。其他角色受到伤害后，你可以失去1点体力，亮出牌堆顶牌直到出现【杀】，选择一项：<br>
+			获得亮出牌；获得其中的【杀】并对一名角色使用任意张【杀】，直到其进入濒死状态。`,
 			kuase: `夸色梦想`,
-			kuase_info: `<font color=#f5c>限定技</font> 一个回合结束时，若有角色在回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）`,
+			kuase_info: `<font color=#f5c>限定技</font> 一个回合结束时，若有角色在该回合内回复体力，你可以摸X张牌然后执行一个额外的出牌阶段。（X为所有角色本回合回复的体力值之和）`,
 
 			sp_MononobeAlice: `皇·物述有栖`,
 			xianjing: `仙境奇遇`,
-			xianjing_info: `当你使用一张牌后，若与本回合被使用的上一张牌在Alice序列（♥️、♠️、♦️、♣️、♥️......）中连续，你可以令一名角色摸一张牌。
-			<br>一个回合结束时，若此回合进入弃牌堆的牌包含所有花色，你可选择一项：令一名其他角色获得「小兔子」标记，或令所有「小兔子」各摸一张牌。`,
+			xianjing_info: `当你使用一张牌后，若与本回合被使用的上一张牌在Alice序列（♥️、♠️、♦️、♣️、♥️......）中连续，你可以令一名角色摸一张牌。<br>
+			一个回合结束时，若此回合进入弃牌堆的牌包含所有花色，你可选择一项：<br>
+			令一名其他角色获得「小兔子」标记；令所有「小兔子」各摸一张牌。`,
 			chahui: `茶会交流`,
-			chahui_info: `你于出牌阶段使用牌后，可以令一名小兔子选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用。小兔子于出牌阶段使用牌后也可以对你如此做。`,
+			chahui_info: `你于出牌阶段使用牌后，可以令一名小兔子选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌改为由你使用。<br>
+			小兔子于出牌阶段使用牌后也可以对你如此做。`,
 			duandai: `嚣张缎带`,
 			duandai_info: `回合结束时，若本回合你使用牌完成过一组Alice序列，你可以回复所有体力。`,
 			xiaotuzi: `小兔子`,
-			xiaotuzi_info: `成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌视为你使用`,
+			xiaotuzi_info: `成为了爱丽丝的小兔子，于出牌阶段使用牌后，可以令一名爱丽丝选择是否使用一张牌，若其因此使用的牌与上一张牌在Alice序列中连续，此牌改为由你使用`,
 
 			sp_UsadaPekora: `皇·兔田佩克拉`,
 			tuqi: `兔起乌沉`,

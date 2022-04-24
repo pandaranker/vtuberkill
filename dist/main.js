@@ -7,15 +7,116 @@
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
 /******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./main/main.js":
+/***/ "../node_modules/css-loader/dist/cjs.js!../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[1].use[2]!../node_modules/less-loader/dist/cjs.js!./main/main.less":
+/*!***************************************************************************************************************************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[1].use[2]!../node_modules/less-loader/dist/cjs.js!./main/main.less ***!
+  \***************************************************************************************************************************************************************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ \"../node_modules/css-loader/dist/runtime/noSourceMaps.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ \"../node_modules/css-loader/dist/runtime/api.js\");\n/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);\n// Imports\n\n\nvar ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));\n// Module\n___CSS_LOADER_EXPORT___.push([module.id, \".home-window {\\n  width: 100vw;\\n  height: 100vh;\\n}\\n.home-window .menu.main > .menu-tab-bar {\\n  background-color: #ebff37;\\n  height: 2.2px;\\n  transition: -webkit-transform 0.25s;\\n  transition: transform 0.25s;\\n  transition: transform 0.25s, -webkit-transform 0.25s;\\n}\\n.home-window .menu.main > .menu-content {\\n  outline: 3px #ebff37 solid;\\n  outline-offset: -1vh;\\n}\\n#home {\\n  left: 10vw;\\n  width: 90vw;\\n  top: 10%;\\n  height: 90vh;\\n  position: fixed;\\n}\\n#home > div {\\n  -webkit-animation-delay: 50ms;\\n          animation-delay: 50ms;\\n  -webkit-animation-fill-mode: forwards;\\n          animation-fill-mode: forwards;\\n  -webkit-user-select: none;\\n      -ms-user-select: none;\\n          user-select: none;\\n}\\n#home #home-top {\\n  top: -40vh;\\n  left: 0;\\n  position: absolute;\\n  -webkit-animation-name: topEnter;\\n          animation-name: topEnter;\\n  -webkit-animation-duration: 0.8s;\\n          animation-duration: 0.8s;\\n  color: #fff;\\n}\\n@-webkit-keyframes topEnter {\\n  100% {\\n    top: 0;\\n  }\\n}\\n@keyframes topEnter {\\n  100% {\\n    top: 0;\\n  }\\n}\\n#home #home-top > div {\\n  position: inherit;\\n}\\n#home #home-top #personal-avatar {\\n  width: 10vw;\\n  height: 10vw;\\n  border-radius: 50%;\\n  border: #4711ae 0.5vw solid;\\n  box-shadow: inset #e2fa00 0 0 3px, inset #e2fa00 0 0 0.2vw, #e2fa00 0 0 4px, #e2fa00 0 0 0.3vw;\\n}\\n#home #home-top #personal-identify {\\n  left: 20vw;\\n  top: 5vw;\\n  text-shadow: #e2fa00 0 0 3px, #e2fa00 0 0 5px;\\n  -webkit-text-stroke: 0.2em #f96;\\n}\\n#home #home-top #personal-identify > div {\\n  font-family: 'hyk2gj', Arial, Helvetica, sans-serif;\\n}\\n#home #home-top #personal-welcome {\\n  left: 18vw;\\n  top: 9vw;\\n  text-shadow: #4711ae 0 0 3px, #4711ae 0 0 5px;\\n}\\n#home #home-right {\\n  right: -40%;\\n  height: 64vh;\\n  width: 32vw;\\n  position: absolute;\\n  -webkit-animation-name: rightEnter;\\n          animation-name: rightEnter;\\n  -webkit-animation-duration: 0.8s;\\n          animation-duration: 0.8s;\\n  transition: 0.5s all;\\n}\\n@-webkit-keyframes rightEnter {\\n  100% {\\n    right: 0;\\n  }\\n}\\n@keyframes rightEnter {\\n  100% {\\n    right: 0;\\n  }\\n}\\n#home #home-right:hover {\\n  width: 36vw;\\n}\\n#home #home-right #start-game {\\n  position: absolute;\\n  left: 0;\\n  top: 0;\\n  width: 27vw;\\n  height: 32vh;\\n  color: #ebff37;\\n  background: #cc844c;\\n}\\n#home #home-right #start-game > .home-inner {\\n  outline: 4px #ebff37 solid;\\n  outline-offset: 2.5vh;\\n}\\n#home #home-right #start-game #start-game-mode {\\n  position: absolute;\\n  left: -5vw;\\n  width: 40%;\\n  height: 27vh;\\n  background: #858868;\\n  font-size: 80%;\\n  color: #e9eae2;\\n  outline: 4px #e9eae2 solid;\\n  outline-offset: -1.5vh;\\n  -webkit-animation-name: topEnter;\\n          animation-name: topEnter;\\n  -webkit-animation-duration: 1.2s;\\n          animation-duration: 1.2s;\\n}\\n@keyframes topEnter {\\n  0% {\\n    top: -80%;\\n  }\\n  100% {\\n    top: 0;\\n  }\\n}\\n#home #home-right #start-game #start-game-mode #start-game-mode-change {\\n  position: relative;\\n  display: inline-block;\\n  width: 50%;\\n  top: 19vh;\\n  height: 8vh;\\n  line-height: 8vh;\\n  font-size: 240%;\\n  color: #e9eae2;\\n  text-align: center;\\n  outline: 3px #e9eae2 solid;\\n  outline-offset: -1.5vh;\\n}\\n#home #home-right #start-game:hover > .home-inner {\\n  outline-offset: 0.8vh;\\n}\\n#home #home-right #start-game:hover #start-game-mode {\\n  left: -7vw;\\n}\\n#home #home-right #start-connect {\\n  position: absolute;\\n  left: 0;\\n  top: 34vh;\\n  width: 15vw;\\n  height: 30vh;\\n  color: #bd63d4;\\n  background: #8805a8;\\n}\\n@media (max-width: 400px) {\\n  #home #home-right #start-connect {\\n    font-size: 40%;\\n  }\\n}\\n@media (min-width: 401px) and (max-width: 900px) {\\n  #home #home-right #start-connect {\\n    font-size: 60%;\\n  }\\n}\\n@media (min-width: 901px) and (max-width: 1200px) {\\n  #home #home-right #start-connect {\\n    font-size: 80%;\\n  }\\n}\\n#home #home-right #start-connect > .home-inner {\\n  outline: 4px #bd63d4 solid;\\n  outline-offset: 2vh;\\n}\\n@media (max-width: 900px) {\\n  #home #home-right #start-connect > .home-inner {\\n    outline-offset: 0.9vh;\\n  }\\n}\\n@media (min-width: 901px) and (max-width: 1200px) {\\n  #home #home-right #start-connect > .home-inner {\\n    outline-offset: 1.1vh;\\n  }\\n}\\n#home #home-right #start-connect:hover > .home-inner {\\n  outline-offset: 0.5vh;\\n}\\n#home #home-right #start-config {\\n  position: absolute;\\n  left: 17vw;\\n  top: 34vh;\\n  width: 10vw;\\n  height: 30vh;\\n  color: #ec6aa1;\\n  background: #d9005b;\\n}\\n#home #home-bottom {\\n  bottom: -40vh;\\n  right: 4vw;\\n  width: 85vw;\\n  height: 12vh;\\n  background-color: #7746d7;\\n  position: absolute;\\n  display: flex;\\n  justify-content: space-between;\\n  -webkit-animation-name: bottomEnter;\\n          animation-name: bottomEnter;\\n  -webkit-animation-duration: 0.8s;\\n          animation-duration: 0.8s;\\n}\\n@-webkit-keyframes bottomEnter {\\n  100% {\\n    bottom: 0;\\n  }\\n}\\n@keyframes bottomEnter {\\n  100% {\\n    bottom: 0;\\n  }\\n}\\n#home #home-bottom > div {\\n  position: relative;\\n  width: 21%;\\n  height: 100%;\\n  color: #906cd7;\\n  background: #4711ae;\\n}\\n@media (max-width: 1200px) {\\n  #home #home-bottom > div {\\n    font-size: 90%;\\n  }\\n}\\n#home #home-bottom > div#handbook-hide {\\n  width: 8%;\\n  background: linear-gradient(to right, #7746d7, #482a83);\\n}\\n@media (max-width: 900px) {\\n  #home #home-bottom > div#handbook-hide {\\n    font-size: 60%;\\n  }\\n}\\n@media (min-width: 901px) and (max-width: 1200px) {\\n  #home #home-bottom > div#handbook-hide {\\n    font-size: 80%;\\n  }\\n}\\n#home #home-bottom > div:not(#handbook-hide) {\\n  overflow: hidden;\\n}\\n#home #home-bottom.hided {\\n  width: unset;\\n  justify-content: right;\\n}\\n#home #home-bottom.hided > div {\\n  box-shadow: none;\\n  transition: none;\\n}\\n#home #home-bottom.hided > div:not(#handbook-hide) {\\n  width: 0;\\n}\\n#home .home-inner {\\n  position: absolute;\\n  top: 50%;\\n  left: 50%;\\n  font-size: 250%;\\n  -webkit-transform: translateY(-50%) translateX(-50%);\\n          transform: translateY(-50%) translateX(-50%);\\n  font-family: 'Tiejili', 'hyk2gj', Arial, Helvetica, sans-serif;\\n  white-space: nowrap;\\n  text-shadow: inherit;\\n}\\n\", \"\"]);\n// Exports\n/* harmony default export */ __webpack_exports__[\"default\"] = (___CSS_LOADER_EXPORT___);\n\n\n//# sourceURL=webpack:///./main/main.less?../node_modules/css-loader/dist/cjs.js!../node_modules/postcss-loader/dist/cjs.js??ruleSet%5B1%5D.rules%5B0%5D.oneOf%5B1%5D.use%5B2%5D!../node_modules/less-loader/dist/cjs.js");
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/runtime/api.js":
+/*!******************************************************!*\
+  !*** ../node_modules/css-loader/dist/runtime/api.js ***!
+  \******************************************************/
+/***/ (function(module) {
+
+eval("\n\n/*\n  MIT License http://www.opensource.org/licenses/mit-license.php\n  Author Tobias Koppers @sokra\n*/\nmodule.exports = function (cssWithMappingToString) {\n  var list = []; // return the list of modules as css string\n\n  list.toString = function toString() {\n    return this.map(function (item) {\n      var content = \"\";\n      var needLayer = typeof item[5] !== \"undefined\";\n\n      if (item[4]) {\n        content += \"@supports (\".concat(item[4], \") {\");\n      }\n\n      if (item[2]) {\n        content += \"@media \".concat(item[2], \" {\");\n      }\n\n      if (needLayer) {\n        content += \"@layer\".concat(item[5].length > 0 ? \" \".concat(item[5]) : \"\", \" {\");\n      }\n\n      content += cssWithMappingToString(item);\n\n      if (needLayer) {\n        content += \"}\";\n      }\n\n      if (item[2]) {\n        content += \"}\";\n      }\n\n      if (item[4]) {\n        content += \"}\";\n      }\n\n      return content;\n    }).join(\"\");\n  }; // import a list of modules into the list\n\n\n  list.i = function i(modules, media, dedupe, supports, layer) {\n    if (typeof modules === \"string\") {\n      modules = [[null, modules, undefined]];\n    }\n\n    var alreadyImportedModules = {};\n\n    if (dedupe) {\n      for (var k = 0; k < this.length; k++) {\n        var id = this[k][0];\n\n        if (id != null) {\n          alreadyImportedModules[id] = true;\n        }\n      }\n    }\n\n    for (var _k = 0; _k < modules.length; _k++) {\n      var item = [].concat(modules[_k]);\n\n      if (dedupe && alreadyImportedModules[item[0]]) {\n        continue;\n      }\n\n      if (typeof layer !== \"undefined\") {\n        if (typeof item[5] === \"undefined\") {\n          item[5] = layer;\n        } else {\n          item[1] = \"@layer\".concat(item[5].length > 0 ? \" \".concat(item[5]) : \"\", \" {\").concat(item[1], \"}\");\n          item[5] = layer;\n        }\n      }\n\n      if (media) {\n        if (!item[2]) {\n          item[2] = media;\n        } else {\n          item[1] = \"@media \".concat(item[2], \" {\").concat(item[1], \"}\");\n          item[2] = media;\n        }\n      }\n\n      if (supports) {\n        if (!item[4]) {\n          item[4] = \"\".concat(supports);\n        } else {\n          item[1] = \"@supports (\".concat(item[4], \") {\").concat(item[1], \"}\");\n          item[4] = supports;\n        }\n      }\n\n      list.push(item);\n    }\n  };\n\n  return list;\n};\n\n//# sourceURL=webpack:///../node_modules/css-loader/dist/runtime/api.js?");
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/runtime/noSourceMaps.js":
+/*!***************************************************************!*\
+  !*** ../node_modules/css-loader/dist/runtime/noSourceMaps.js ***!
+  \***************************************************************/
+/***/ (function(module) {
+
+eval("\n\nmodule.exports = function (i) {\n  return i[1];\n};\n\n//# sourceURL=webpack:///../node_modules/css-loader/dist/runtime/noSourceMaps.js?");
+
+/***/ }),
+
+/***/ "./main/main.less":
+/*!************************!*\
+  !*** ./main/main.less ***!
+  \************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ \"../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ \"../node_modules/style-loader/dist/runtime/styleDomAPI.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ \"../node_modules/style-loader/dist/runtime/insertBySelector.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ \"../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ \"../node_modules/style-loader/dist/runtime/insertStyleElement.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ \"../node_modules/style-loader/dist/runtime/styleTagTransform.js\");\n/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_0_oneOf_1_use_2_node_modules_less_loader_dist_cjs_js_main_less__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[1].use[2]!../../node_modules/less-loader/dist/cjs.js!./main.less */ \"../node_modules/css-loader/dist/cjs.js!../node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].oneOf[1].use[2]!../node_modules/less-loader/dist/cjs.js!./main/main.less\");\n\n      \n      \n      \n      \n      \n      \n      \n      \n      \n\nvar options = {};\n\noptions.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());\noptions.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());\n\n      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, \"head\");\n    \noptions.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());\noptions.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());\n\nvar update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_0_oneOf_1_use_2_node_modules_less_loader_dist_cjs_js_main_less__WEBPACK_IMPORTED_MODULE_6__[\"default\"], options);\n\n\n\n\n       /* harmony default export */ __webpack_exports__[\"default\"] = (_node_modules_css_loader_dist_cjs_js_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_0_oneOf_1_use_2_node_modules_less_loader_dist_cjs_js_main_less__WEBPACK_IMPORTED_MODULE_6__[\"default\"] && _node_modules_css_loader_dist_cjs_js_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_0_oneOf_1_use_2_node_modules_less_loader_dist_cjs_js_main_less__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_postcss_loader_dist_cjs_js_ruleSet_1_rules_0_oneOf_1_use_2_node_modules_less_loader_dist_cjs_js_main_less__WEBPACK_IMPORTED_MODULE_6__[\"default\"].locals : undefined);\n\n\n//# sourceURL=webpack:///./main/main.less?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
+/*!*****************************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \*****************************************************************************/
+/***/ (function(module) {
+
+eval("\n\nvar stylesInDOM = [];\n\nfunction getIndexByIdentifier(identifier) {\n  var result = -1;\n\n  for (var i = 0; i < stylesInDOM.length; i++) {\n    if (stylesInDOM[i].identifier === identifier) {\n      result = i;\n      break;\n    }\n  }\n\n  return result;\n}\n\nfunction modulesToDom(list, options) {\n  var idCountMap = {};\n  var identifiers = [];\n\n  for (var i = 0; i < list.length; i++) {\n    var item = list[i];\n    var id = options.base ? item[0] + options.base : item[0];\n    var count = idCountMap[id] || 0;\n    var identifier = \"\".concat(id, \" \").concat(count);\n    idCountMap[id] = count + 1;\n    var indexByIdentifier = getIndexByIdentifier(identifier);\n    var obj = {\n      css: item[1],\n      media: item[2],\n      sourceMap: item[3],\n      supports: item[4],\n      layer: item[5]\n    };\n\n    if (indexByIdentifier !== -1) {\n      stylesInDOM[indexByIdentifier].references++;\n      stylesInDOM[indexByIdentifier].updater(obj);\n    } else {\n      var updater = addElementStyle(obj, options);\n      options.byIndex = i;\n      stylesInDOM.splice(i, 0, {\n        identifier: identifier,\n        updater: updater,\n        references: 1\n      });\n    }\n\n    identifiers.push(identifier);\n  }\n\n  return identifiers;\n}\n\nfunction addElementStyle(obj, options) {\n  var api = options.domAPI(options);\n  api.update(obj);\n\n  var updater = function updater(newObj) {\n    if (newObj) {\n      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {\n        return;\n      }\n\n      api.update(obj = newObj);\n    } else {\n      api.remove();\n    }\n  };\n\n  return updater;\n}\n\nmodule.exports = function (list, options) {\n  options = options || {};\n  list = list || [];\n  var lastIdentifiers = modulesToDom(list, options);\n  return function update(newList) {\n    newList = newList || [];\n\n    for (var i = 0; i < lastIdentifiers.length; i++) {\n      var identifier = lastIdentifiers[i];\n      var index = getIndexByIdentifier(identifier);\n      stylesInDOM[index].references--;\n    }\n\n    var newLastIdentifiers = modulesToDom(newList, options);\n\n    for (var _i = 0; _i < lastIdentifiers.length; _i++) {\n      var _identifier = lastIdentifiers[_i];\n\n      var _index = getIndexByIdentifier(_identifier);\n\n      if (stylesInDOM[_index].references === 0) {\n        stylesInDOM[_index].updater();\n\n        stylesInDOM.splice(_index, 1);\n      }\n    }\n\n    lastIdentifiers = newLastIdentifiers;\n  };\n};\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/insertBySelector.js":
+/*!*********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/insertBySelector.js ***!
+  \*********************************************************************/
+/***/ (function(module) {
+
+eval("\n\nvar memo = {};\n/* istanbul ignore next  */\n\nfunction getTarget(target) {\n  if (typeof memo[target] === \"undefined\") {\n    var styleTarget = document.querySelector(target); // Special case to return head of iframe instead of iframe itself\n\n    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {\n      try {\n        // This will throw an exception if access to iframe is blocked\n        // due to cross-origin restrictions\n        styleTarget = styleTarget.contentDocument.head;\n      } catch (e) {\n        // istanbul ignore next\n        styleTarget = null;\n      }\n    }\n\n    memo[target] = styleTarget;\n  }\n\n  return memo[target];\n}\n/* istanbul ignore next  */\n\n\nfunction insertBySelector(insert, style) {\n  var target = getTarget(insert);\n\n  if (!target) {\n    throw new Error(\"Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.\");\n  }\n\n  target.appendChild(style);\n}\n\nmodule.exports = insertBySelector;\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/insertBySelector.js?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/insertStyleElement.js":
+/*!***********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
+  \***********************************************************************/
+/***/ (function(module) {
+
+eval("\n\n/* istanbul ignore next  */\nfunction insertStyleElement(options) {\n  var element = document.createElement(\"style\");\n  options.setAttributes(element, options.attributes);\n  options.insert(element, options.options);\n  return element;\n}\n\nmodule.exports = insertStyleElement;\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/insertStyleElement.js?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
+/*!***********************************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
+  \***********************************************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+eval("\n\n/* istanbul ignore next  */\nfunction setAttributesWithoutAttributes(styleElement) {\n  var nonce =  true ? __webpack_require__.nc : 0;\n\n  if (nonce) {\n    styleElement.setAttribute(\"nonce\", nonce);\n  }\n}\n\nmodule.exports = setAttributesWithoutAttributes;\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/styleDomAPI.js":
+/*!****************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
+  \****************************************************************/
+/***/ (function(module) {
+
+eval("\n\n/* istanbul ignore next  */\nfunction apply(styleElement, options, obj) {\n  var css = \"\";\n\n  if (obj.supports) {\n    css += \"@supports (\".concat(obj.supports, \") {\");\n  }\n\n  if (obj.media) {\n    css += \"@media \".concat(obj.media, \" {\");\n  }\n\n  var needLayer = typeof obj.layer !== \"undefined\";\n\n  if (needLayer) {\n    css += \"@layer\".concat(obj.layer.length > 0 ? \" \".concat(obj.layer) : \"\", \" {\");\n  }\n\n  css += obj.css;\n\n  if (needLayer) {\n    css += \"}\";\n  }\n\n  if (obj.media) {\n    css += \"}\";\n  }\n\n  if (obj.supports) {\n    css += \"}\";\n  }\n\n  var sourceMap = obj.sourceMap;\n\n  if (sourceMap && typeof btoa !== \"undefined\") {\n    css += \"\\n/*# sourceMappingURL=data:application/json;base64,\".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), \" */\");\n  } // For old IE\n\n  /* istanbul ignore if  */\n\n\n  options.styleTagTransform(css, styleElement, options.options);\n}\n\nfunction removeStyleElement(styleElement) {\n  // istanbul ignore if\n  if (styleElement.parentNode === null) {\n    return false;\n  }\n\n  styleElement.parentNode.removeChild(styleElement);\n}\n/* istanbul ignore next  */\n\n\nfunction domAPI(options) {\n  var styleElement = options.insertStyleElement(options);\n  return {\n    update: function update(obj) {\n      apply(styleElement, options, obj);\n    },\n    remove: function remove() {\n      removeStyleElement(styleElement);\n    }\n  };\n}\n\nmodule.exports = domAPI;\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/styleDomAPI.js?");
+
+/***/ }),
+
+/***/ "../node_modules/style-loader/dist/runtime/styleTagTransform.js":
+/*!**********************************************************************!*\
+  !*** ../node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
+  \**********************************************************************/
+/***/ (function(module) {
+
+eval("\n\n/* istanbul ignore next  */\nfunction styleTagTransform(css, styleElement) {\n  if (styleElement.styleSheet) {\n    styleElement.styleSheet.cssText = css;\n  } else {\n    while (styleElement.firstChild) {\n      styleElement.removeChild(styleElement.firstChild);\n    }\n\n    styleElement.appendChild(document.createTextNode(css));\n  }\n}\n\nmodule.exports = styleTagTransform;\n\n//# sourceURL=webpack:///../node_modules/style-loader/dist/runtime/styleTagTransform.js?");
+
+/***/ }),
+
+/***/ "./main/main.ts":
 /*!**********************!*\
-  !*** ./main/main.js ***!
+  !*** ./main/main.ts ***!
   \**********************/
 /***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
-eval("{\r\n    const { game, ui, get, ai, lib, _status } = vkCore\r\n    /**\r\n     * dist 路径\r\n     */\r\n    const dist = () => lib.assetURL + 'dist'\r\n    let data = {}\r\n    game.main = {\r\n        initCSS() {\r\n            __webpack_require__.e(/*! import() */ \"main_main_less\").then(__webpack_require__.bind(__webpack_require__, /*! ./main.less */ \"./main/main.less\"))\r\n        },\r\n        initData(cfg) {\r\n            window.game = game;\r\n            lib.init.js(dist(), ['card', 'character'], cfg.packLoaded, cfg.packLoaded);\r\n        },\r\n        createHome(cfg) {\r\n            if (!Object.keys(lib.character).length) {\r\n                this.initData(cfg)\r\n            }\r\n            this.initCSS()\r\n            let home = ui.create.div('#home', document.body, () => { })\r\n\r\n            data.home = home\r\n            data.cfg = cfg\r\n            this.createHome_top()\r\n            this.createHome_right()\r\n            this.createHome_bottom()\r\n            console.log('stepG', home)\r\n        },\r\n        createHome_top(home = data.home, cfg = data.cfg) {\r\n            let topHome = ui.create.div('#home-top', home, () => { })\r\n            let personalAvatar = ui.create.div('#personal-avatar', topHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            personalAvatar.setBackground(lib.config.connect_avatar, 'character');\r\n            let personalIdentify = ui.create.div('#personal-identify', topHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let personalIdentify_text = ui.create.div('.home-inner', personalIdentify)\r\n            personalIdentify_text.innerHTML = `${get.connectNickname()}`\r\n            let id = 2 + (8 - personalIdentify_text.innerHTML.length) * 0.4\r\n            personalIdentify_text.style.fontSize = `${id > 0 ? id : 0.2}em`\r\n            let personalWelcome = ui.create.div('#personal-welcome', topHome, () => {\r\n                this.becomeHome()\r\n            })\r\n            let personalWelcome_text = ui.create.div('.home-inner', personalWelcome)\r\n            personalWelcome_text.innerHTML = `欢迎${get.connectNickname() === '无名玩家' ? `来到V杀` : `回来~${get.connectNickname()}`}`\r\n        },\r\n        createHome_right(home = data.home, cfg = data.cfg) {\r\n            let rightHome = ui.create.div('#home-right', home, () => { })\r\n            let startGame = ui.create.div('#start-game', rightHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let startGame_text = ui.create.div('.home-inner', startGame)\r\n            startGame_text.innerHTML = '开始游戏'\r\n            let startConnect = ui.create.div('#start-connect', rightHome, () => {\r\n                lib.init.init_startConnect(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let startConnect_text = ui.create.div('.home-inner', startConnect)\r\n            startConnect_text.innerHTML = '联机大厅'\r\n            let startConfig = ui.create.div('#start-config', rightHome, () => {\r\n                ui.create.menu(['选项'], 123)\r\n            })\r\n            let startConfig_text = ui.create.div('.home-inner', startConfig)\r\n            startConfig_text.innerHTML = '设置'\r\n        },\r\n        createHome_bottom(home = data.home, cfg = data.cfg) {\r\n            let bottomHome = ui.create.div('#home-bottom', home, () => { })\r\n            let handbookHide = ui.create.div('#handbook-hide.button', bottomHome, () => {\r\n                bottomHome.classList.toggle('hided')\r\n            })\r\n            let handbookHide_text = ui.create.div('.home-inner', handbookHide)\r\n            handbookHide_text.innerHTML = '折叠'\r\n            let handbookGuide = ui.create.div('#handbook-guide', bottomHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let handbookGuide_text = ui.create.div('.home-inner', handbookGuide)\r\n            handbookGuide_text.innerHTML = '新手引导'\r\n            let handbookTutorial = ui.create.div('#handbook-tutorial', bottomHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let handbookTutorial_text = ui.create.div('.home-inner', handbookTutorial)\r\n            handbookTutorial_text.innerHTML = '身份教程'\r\n            let handbookCharacter = ui.create.div('#handbook-character', bottomHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let handbookCharacter_text = ui.create.div('.home-inner', handbookCharacter)\r\n            handbookCharacter_text.innerHTML = '角色图鉴'\r\n            let handbookCard = ui.create.div('#handbook-card', bottomHome, () => {\r\n                lib.init.init_startGame(cfg)\r\n                this.leaveHome()\r\n            })\r\n            let handbookCard_text = ui.create.div('.home-inner', handbookCard)\r\n            handbookCard_text.innerHTML = '卡牌图鉴'\r\n        },\r\n        leaveHome() {\r\n            data.home.delete()\r\n            data = {}\r\n        },\r\n        becomeHome(delay = 500, cfg = data.cfg) {\r\n            if (data.home) {\r\n                this.leaveHome()\r\n            }\r\n            setTimeout(() => this.createHome(cfg), delay)\r\n        }\r\n    }\r\n}\n\n//# sourceURL=webpack:///./main/main.js?");
+eval("\r\n{\r\n    const { game, ui, get, ai, lib, _status } = window.vkCore;\r\n    const dist = () => lib.assetURL + 'dist';\r\n    let data = {};\r\n    game.main = {\r\n        initCSS() {\r\n            __webpack_require__(/*! ./main.less */ \"./main/main.less\");\r\n        },\r\n        initData(cfg, callback) {\r\n            window.game = game;\r\n            let func = () => {\r\n                cfg.packLoaded();\r\n                if (callback) {\r\n                    callback();\r\n                }\r\n            };\r\n            lib.init.js(dist(), ['card', 'character'], func, func);\r\n        },\r\n        createHome(cfg) {\r\n            this.initCSS();\r\n            cfg.gainLocalStorage(() => {\r\n                this.initData(cfg, () => {\r\n                    if (cfg.loadedTheme === false) {\r\n                        cfg.loadTheme();\r\n                    }\r\n                });\r\n            });\r\n            let homeWindow = ui.create.div('#window.home-window', document.body);\r\n            let home = ui.create.div('#home', homeWindow, () => { });\r\n            data.home = home;\r\n            data.cfg = cfg;\r\n            let func = () => {\r\n                if (cfg.loadedTheme === 'done') {\r\n                    this.createHome_top();\r\n                }\r\n                else {\r\n                    setTimeout(func, 100);\r\n                }\r\n            };\r\n            func();\r\n            this.createHome_right();\r\n            this.createHome_bottom();\r\n            ui.window = homeWindow;\r\n            ui.home = home;\r\n            ui.arena = home;\r\n            lib.init.updateZoom();\r\n        },\r\n        createHome_top(home = data.home, cfg = data.cfg) {\r\n            let topHome = ui.create.div('#home-top', home, () => { });\r\n            let playerName = get.connectNickname() === '无名玩家' ? '无名DD' : get.connectNickname();\r\n            let personalAvatar = ui.create.div('#personal-avatar', topHome, () => {\r\n                lib.init.init_startGame(cfg);\r\n                this.leaveHome();\r\n            });\r\n            personalAvatar.setBackground(lib.config.connect_avatar, 'character');\r\n            let personalIdentify = ui.create.div('#personal-identify', topHome, () => {\r\n                lib.init.init_startGame(cfg);\r\n                this.leaveHome();\r\n            });\r\n            let personalIdentify_text = ui.create.div('.home-inner', personalIdentify);\r\n            personalIdentify_text.innerHTML = `${playerName}`;\r\n            let id = 2 + (8 - personalIdentify_text.innerHTML.length) * 0.4;\r\n            personalIdentify_text.style.fontSize = `${id > 0 ? id : 0.2}em`;\r\n            let personalWelcome = ui.create.div('#personal-welcome', topHome, () => {\r\n                this.becomeHome();\r\n            });\r\n            let personalWelcome_text = ui.create.div('.home-inner', personalWelcome);\r\n            personalWelcome_text.innerHTML = `欢迎${playerName === '无名DD' ? `来到V杀` : `回来~`}`;\r\n        },\r\n        createHome_right(home = data.home, cfg = data.cfg) {\r\n            let rightHome = ui.create.div('#home-right', home, () => { });\r\n            let startGame = ui.create.div('#start-game', rightHome, () => {\r\n                lib.init.init_startGame(cfg);\r\n                this.leaveHome();\r\n            });\r\n            let startGame_text = ui.create.div('.home-inner', startGame);\r\n            startGame_text.innerHTML = '开始游戏';\r\n            let func = () => {\r\n                if (cfg.loadedTheme === 'done') {\r\n                    let modeList = ['identity', 'doudizhu', 'versus', 'guozhan', 'brawl'];\r\n                    let modeIndex = modeList.indexOf(lib.config.mode);\r\n                    if (modeIndex === -1)\r\n                        modeIndex = 0;\r\n                    let startGame_mode = ui.create.div('#start-game-mode', startGame, (e) => {\r\n                        game.saveConfig('mode', modeList[modeIndex]);\r\n                        lib.init.init_startGame_Mode(cfg, modeList[modeIndex]);\r\n                        this.leaveHome();\r\n                        e.stopPropagation();\r\n                    });\r\n                    let startGame_mode_text = ui.create.div('.home-inner', startGame_mode);\r\n                    startGame_mode_text.innerHTML = get.$t(modeList[modeIndex]);\r\n                    let startGame_mode_change_left = ui.create.div('#start-game-mode-change', startGame_mode, (e) => {\r\n                        if (modeIndex === 0)\r\n                            modeIndex = modeList.length;\r\n                        modeIndex--;\r\n                        startGame_mode_text.innerHTML = get.$t(modeList[modeIndex]);\r\n                        e.stopPropagation();\r\n                    });\r\n                    startGame_mode_change_left.innerHTML = '«';\r\n                    let startGame_mode_change_right = ui.create.div('#start-game-mode-change', startGame_mode, (e) => {\r\n                        modeIndex++;\r\n                        if (modeIndex === modeList.length)\r\n                            modeIndex = 0;\r\n                        startGame_mode_text.innerHTML = get.$t(modeList[modeIndex]);\r\n                        e.stopPropagation();\r\n                    });\r\n                    startGame_mode_change_right.innerHTML = '»';\r\n                }\r\n                else {\r\n                    setTimeout(func, 200);\r\n                }\r\n            };\r\n            func();\r\n            let startConnect = ui.create.div('#start-connect', rightHome, () => {\r\n                game.saveConfig('mode', 'connect');\r\n                lib.init.init_startConnect(cfg);\r\n                this.leaveHome();\r\n            });\r\n            let startConnect_text = ui.create.div('.home-inner', startConnect);\r\n            startConnect_text.innerHTML = '联机大厅';\r\n            let startConfig = ui.create.div('#start-config', rightHome, () => {\r\n                if (!ui.click.configMenu) {\r\n                    ui.create.menu(['基础', '演出', '其它'], 123, { center: true, noControl: true });\r\n                }\r\n                ui.click.configMenu();\r\n            });\r\n            let startConfig_text = ui.create.div('.home-inner', startConfig);\r\n            startConfig_text.innerHTML = '设置';\r\n        },\r\n        createHome_bottom(home = data.home, cfg = data.cfg) {\r\n            let bottomHome = ui.create.div('#home-bottom', home, () => { });\r\n            let handbookHide = ui.create.div('#handbook-hide.button', bottomHome, () => {\r\n                bottomHome.classList.toggle('hided');\r\n            });\r\n            let handbookHide_text = ui.create.div('.home-inner', handbookHide);\r\n            handbookHide_text.innerHTML = '折叠';\r\n            let handbookGuide = ui.create.div('#handbook-guide', bottomHome, () => {\r\n                lib.init.init_startGame_Mode(cfg, 'yindao');\r\n                this.leaveHome();\r\n            });\r\n            let handbookGuide_text = ui.create.div('.home-inner', handbookGuide);\r\n            handbookGuide_text.innerHTML = '新手引导';\r\n            let handbookTutorial = ui.create.div('#handbook-tutorial', bottomHome, () => {\r\n                if (lib.config.new_tutorial) {\r\n                    game.saveConfig('new_tutorial', false);\r\n                }\r\n                cfg.new_tutorial = true;\r\n                lib.init.init_startGame_Mode(cfg, 'identity');\r\n                this.leaveHome();\r\n            });\r\n            let handbookTutorial_text = ui.create.div('.home-inner', handbookTutorial);\r\n            handbookTutorial_text.innerHTML = '身份教程';\r\n            let handbookCharacter = ui.create.div('#handbook-character', bottomHome, () => {\r\n                lib.init.init_startGame(cfg);\r\n                this.leaveHome();\r\n            });\r\n            let handbookCharacter_text = ui.create.div('.home-inner', handbookCharacter);\r\n            handbookCharacter_text.innerHTML = '角色图鉴';\r\n            let handbookCard = ui.create.div('#handbook-card', bottomHome, () => {\r\n                lib.init.init_startGame(cfg);\r\n                this.leaveHome();\r\n            });\r\n            let handbookCard_text = ui.create.div('.home-inner', handbookCard);\r\n            handbookCard_text.innerHTML = '卡牌图鉴';\r\n        },\r\n        leaveHome() {\r\n            console.log('stepG');\r\n            data.home.delete();\r\n            data = {};\r\n            ui.window.delete();\r\n            delete ui.window;\r\n            delete ui.home;\r\n            delete ui.arena;\r\n            setTimeout(ui.updatez, 120);\r\n        },\r\n        becomeHome(delay = 500, cfg = data.cfg) {\r\n            if (data.home) {\r\n                this.leaveHome();\r\n            }\r\n            setTimeout(() => this.createHome(cfg), delay);\r\n        }\r\n    };\r\n}\r\n\n\n//# sourceURL=webpack:///./main/main.ts?");
 
 /***/ })
 
@@ -45,9 +146,6 @@ eval("{\r\n    const { game, ui, get, ai, lib, _status } = vkCore\r\n    /**\r\n
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = __webpack_modules__;
-/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	!function() {
@@ -73,89 +171,9 @@ eval("{\r\n    const { game, ui, get, ai, lib, _status } = vkCore\r\n    /**\r\n
 /******/ 		};
 /******/ 	}();
 /******/ 	
-/******/ 	/* webpack/runtime/ensure chunk */
-/******/ 	!function() {
-/******/ 		__webpack_require__.f = {};
-/******/ 		// This file contains only the entry chunk.
-/******/ 		// The chunk loading function for additional chunks
-/******/ 		__webpack_require__.e = function(chunkId) {
-/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce(function(promises, key) {
-/******/ 				__webpack_require__.f[key](chunkId, promises);
-/******/ 				return promises;
-/******/ 			}, []));
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/get javascript chunk filename */
-/******/ 	!function() {
-/******/ 		// This function allow to reference async chunks
-/******/ 		__webpack_require__.u = function(chunkId) {
-/******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + ".js";
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/global */
-/******/ 	!function() {
-/******/ 		__webpack_require__.g = (function() {
-/******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
-/******/ 		})();
-/******/ 	}();
-/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	!function() {
 /******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/load script */
-/******/ 	!function() {
-/******/ 		var inProgress = {};
-/******/ 		// data-webpack is not used as build has no uniqueName
-/******/ 		// loadScript function to load a script via script tag
-/******/ 		__webpack_require__.l = function(url, done, key, chunkId) {
-/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
-/******/ 			var script, needAttach;
-/******/ 			if(key !== undefined) {
-/******/ 				var scripts = document.getElementsByTagName("script");
-/******/ 				for(var i = 0; i < scripts.length; i++) {
-/******/ 					var s = scripts[i];
-/******/ 					if(s.getAttribute("src") == url) { script = s; break; }
-/******/ 				}
-/******/ 			}
-/******/ 			if(!script) {
-/******/ 				needAttach = true;
-/******/ 				script = document.createElement('script');
-/******/ 		
-/******/ 				script.charset = 'utf-8';
-/******/ 				script.timeout = 120;
-/******/ 				if (__webpack_require__.nc) {
-/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
-/******/ 				}
-/******/ 		
-/******/ 				script.src = url;
-/******/ 			}
-/******/ 			inProgress[url] = [done];
-/******/ 			var onScriptComplete = function(prev, event) {
-/******/ 				// avoid mem leaks in IE.
-/******/ 				script.onerror = script.onload = null;
-/******/ 				clearTimeout(timeout);
-/******/ 				var doneFns = inProgress[url];
-/******/ 				delete inProgress[url];
-/******/ 				script.parentNode && script.parentNode.removeChild(script);
-/******/ 				doneFns && doneFns.forEach(function(fn) { return fn(event); });
-/******/ 				if(prev) return prev(event);
-/******/ 			}
-/******/ 			;
-/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
-/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
-/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
-/******/ 			needAttach && document.head.appendChild(script);
-/******/ 		};
 /******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
@@ -169,124 +187,12 @@ eval("{\r\n    const { game, ui, get, ai, lib, _status } = vkCore\r\n    /**\r\n
 /******/ 		};
 /******/ 	}();
 /******/ 	
-/******/ 	/* webpack/runtime/publicPath */
-/******/ 	!function() {
-/******/ 		var scriptUrl;
-/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
-/******/ 		var document = __webpack_require__.g.document;
-/******/ 		if (!scriptUrl && document) {
-/******/ 			if (document.currentScript)
-/******/ 				scriptUrl = document.currentScript.src
-/******/ 			if (!scriptUrl) {
-/******/ 				var scripts = document.getElementsByTagName("script");
-/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
-/******/ 			}
-/******/ 		}
-/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
-/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
-/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
-/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
-/******/ 		__webpack_require__.p = scriptUrl;
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/jsonp chunk loading */
-/******/ 	!function() {
-/******/ 		// no baseURI
-/******/ 		
-/******/ 		// object to store loaded and loading chunks
-/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 		var installedChunks = {
-/******/ 			"main": 0
-/******/ 		};
-/******/ 		
-/******/ 		__webpack_require__.f.j = function(chunkId, promises) {
-/******/ 				// JSONP chunk loading for javascript
-/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
-/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
-/******/ 		
-/******/ 					// a Promise means "currently loading".
-/******/ 					if(installedChunkData) {
-/******/ 						promises.push(installedChunkData[2]);
-/******/ 					} else {
-/******/ 						if(true) { // all chunks have JS
-/******/ 							// setup Promise in chunk cache
-/******/ 							var promise = new Promise(function(resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; });
-/******/ 							promises.push(installedChunkData[2] = promise);
-/******/ 		
-/******/ 							// start chunk loading
-/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
-/******/ 							// create error before stack unwound to get useful stacktrace later
-/******/ 							var error = new Error();
-/******/ 							var loadingEnded = function(event) {
-/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
-/******/ 									installedChunkData = installedChunks[chunkId];
-/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
-/******/ 									if(installedChunkData) {
-/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
-/******/ 										var realSrc = event && event.target && event.target.src;
-/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
-/******/ 										error.name = 'ChunkLoadError';
-/******/ 										error.type = errorType;
-/******/ 										error.request = realSrc;
-/******/ 										installedChunkData[1](error);
-/******/ 									}
-/******/ 								}
-/******/ 							};
-/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
-/******/ 						} else installedChunks[chunkId] = 0;
-/******/ 					}
-/******/ 				}
-/******/ 		};
-/******/ 		
-/******/ 		// no prefetching
-/******/ 		
-/******/ 		// no preloaded
-/******/ 		
-/******/ 		// no HMR
-/******/ 		
-/******/ 		// no HMR manifest
-/******/ 		
-/******/ 		// no on chunks loaded
-/******/ 		
-/******/ 		// install a JSONP callback for chunk loading
-/******/ 		var webpackJsonpCallback = function(parentChunkLoadingFunction, data) {
-/******/ 			var chunkIds = data[0];
-/******/ 			var moreModules = data[1];
-/******/ 			var runtime = data[2];
-/******/ 			// add "moreModules" to the modules object,
-/******/ 			// then flag all "chunkIds" as loaded and fire callback
-/******/ 			var moduleId, chunkId, i = 0;
-/******/ 			if(chunkIds.some(function(id) { return installedChunks[id] !== 0; })) {
-/******/ 				for(moduleId in moreModules) {
-/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
-/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
-/******/ 					}
-/******/ 				}
-/******/ 				if(runtime) var result = runtime(__webpack_require__);
-/******/ 			}
-/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
-/******/ 			for(;i < chunkIds.length; i++) {
-/******/ 				chunkId = chunkIds[i];
-/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 					installedChunks[chunkId][0]();
-/******/ 				}
-/******/ 				installedChunks[chunkId] = 0;
-/******/ 			}
-/******/ 		
-/******/ 		}
-/******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
-/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
-/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
-/******/ 	}();
-/******/ 	
 /************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./main/main.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./main/main.ts");
 /******/ 	
 /******/ })()
 ;

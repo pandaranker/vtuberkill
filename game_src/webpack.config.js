@@ -114,6 +114,7 @@ module.exports = {
     extensions: ['.ts', '.js', '.json'],
     // 配置别名
     alias: {
+      '@c': resolve('class'),
       '@d': resolve('data'),
       '@m': resolve('methods'),
       '@e': resolve('extension'),

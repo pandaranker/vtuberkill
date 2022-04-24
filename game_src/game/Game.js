@@ -143,45 +143,46 @@ export default {
         }
       }, player, skill);
     }
-    game.clickAudio = (...args)=> {
-        var str = '';
-        var onerror = null;
-        for(let i of args){
-          if (typeof i === 'string' || typeof i == 'number') {
-              str += '/' + i;
+    game.clickAudio = (...args) => {
+      if (lib.config.volumn_click === 0) return;
+      var str = '';
+      var onerror = null;
+      for (let i of args) {
+        if (typeof i === 'string' || typeof i == 'number') {
+          str += '/' + i;
+        }
+        else if (typeof i == 'function') {
+          onerror = i
+        }
+      }
+      if (!lib.config.repeat_audio && _status.skillaudio.contains(str)) return;
+      _status.skillaudio.add(str);
+      setTimeout(function () {
+        _status.skillaudio.remove(str);
+      }, 200);
+      var audio = document.createElement('audio');
+      audio.autoplay = true;
+      audio.volume = lib.config.volumn_click / 8;
+      if (str.indexOf('.mp3') != -1 || str.indexOf('.ogg') != -1 || str.indexOf('.wav') != -1) {
+        audio.src = lib.assetURL + 'audio/click' + str;
+      }
+      else {
+        audio.src = lib.assetURL + 'audio/click' + str + '.mp3';
+      }
+      audio.addEventListener('ended', function () {
+        this.remove();
+      });
+      audio.onerror = function () {
+        if (this._changed) {
+          this.remove();
+          if (onerror) {
+            onerror();
           }
-          else if (typeof i == 'function') {
-              onerror = i
-          }
         }
-        if (!lib.config.repeat_audio && _status.skillaudio.contains(str)) return;
-        _status.skillaudio.add(str);
-        setTimeout(function () {
-            _status.skillaudio.remove(str);
-        }, 200);
-        var audio = document.createElement('audio');
-        audio.autoplay = true;
-        audio.volume = lib.config.volumn_click / 8;
-        if (str.indexOf('.mp3') != -1 || str.indexOf('.ogg') != -1|| str.indexOf('.wav') != -1) {
-            audio.src = lib.assetURL + 'audio/click' + str;
-        }
-        else {
-            audio.src = lib.assetURL + 'audio/click' + str + '.mp3';
-        }
-        audio.addEventListener('ended', function () {
-            this.remove();
-        });
-        audio.onerror = function () {
-            if (this._changed) {
-                this.remove();
-                if (onerror) {
-                    onerror();
-                }
-            }
-        };
-        document.body.appendChild(audio);
-        return audio;
-    },
+      };
+      document.body.appendChild(audio);
+      return audio;
+    }
     ui.putImgDialog = (str) => {
       if (str && !ui[`imgDialog_${str}`]) {
         let dialog = ui.create.dialog('hidden');

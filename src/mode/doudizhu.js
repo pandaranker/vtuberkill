@@ -498,7 +498,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.list2=[];
 					var list4=[];
 					if(!event.map) event.map={};
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(lib.filter.characterDisabled(ix[j])) ix.splice(j--,1);
@@ -526,7 +526,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						event.map[id].addArray(event.list.randomRemove(4-event.map[id].length));
 						event.list2.removeArray(event.map[id]);
 					}
-					event.dialog=ui.create.dialog('你的选将框',[event.map[game.me.playerid],'character']);
+					event.dialog=ui.create.dialog('你的选将框',[event.map[game.me.playerid],'characterx']);
 					event.start=game.players.randomGet();
 					event.current=event.start;
 					lib.init.onfree();
@@ -555,7 +555,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.delay(1.5);
 					}
 					"step 3"
-					game.me.chooseButton(['请选择你的武将',[event.map[game.me.playerid],'character']],true);
+					game.me.chooseButton(['请选择你的武将',[event.map[game.me.playerid],'characterx']],true);
 					"step 4"
 					game.me.init(result.links[0]);
 					for(var player of game.players){
@@ -604,7 +604,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.classList.remove('guessing');
 					}
 					
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(lib.filter.characterDisabled(ix[j])) ix.splice(j--,1);
@@ -625,10 +625,10 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						if(player.identity=='fan') player._friend=(player.next.identity=='fan'?player.next:player.previous);
 					}
 					var createDialog=['选择武将'];
-					createDialog.push([game.me._characterChoice,'character']);
+					createDialog.push([game.me._characterChoice,'characterx']);
 					if(game.me._friend){
 						createDialog.push('队友的武将');
-						createDialog.push([game.me._friend._characterChoice,'character']);
+						createDialog.push([game.me._friend._characterChoice,'characterx']);
 					}
 					game.me.chooseButton(createDialog,true).set('onfree',true).set('filterButton',function(button){
 						return _status.event.player._characterChoice.contains(button.link);
@@ -891,7 +891,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						game.me.node.identity.classList.remove('guessing');
 					}
 					//选将框分配
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(chosen.contains(ix[j])||lib.filter.characterDisabled(ix[j])) ix.splice(j--,1);
@@ -1127,7 +1127,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(!libCharacter[ix[j]]||lib.filter.characterDisabled(ix[j],libCharacter)) ix.splice(j--,1);
@@ -1157,13 +1157,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					"step 1"
 					var list=[];
 					for(var i=0;i<game.players.length;i++){
-						var dialog=['请选择武将',[game.players[i]._characterChoice,'character']];
+						var dialog=['请选择武将',[game.players[i]._characterChoice,'characterx']];
 						if(game.players[i]._friend){
 							dialog.push('队友的武将');
-							dialog.push([game.players[i]._friend._characterChoice,'character']);
+							dialog.push([game.players[i]._friend._characterChoice,'characterx']);
 						}
 						list.push([game.players[i],dialog,true,function(){return Math.random()},function(button){
-							return _status.event.player._characterChoice.contains(button.link);
+							return _status.event.player._characterChoice.contains(get.sourceCharacter(button.link));
 						}]);
 					}
 					game.me.chooseButtonOL(list,function(player,result){
@@ -1229,7 +1229,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(!libCharacter[ix[j]]||lib.filter.characterDisabled(ix[j],libCharacter)) ix.splice(j--,1);
@@ -1257,7 +1257,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					_status.characterlist=event.list.slice(0);
 					event.videoId=lib.status.videoId++;
 					game.broadcastAll(function(map,id){
-						ui.create.dialog('你的选将框',[map[game.me.playerid],'character']).videoId=id;
+						ui.create.dialog('你的选将框',[map[game.me.playerid],'characterx']).videoId=id;
 					},event.map,event.videoId);
 					event.start=game.players.randomGet();
 					event.current=event.start;
@@ -1286,7 +1286,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					var str='选择角色';
 					for(var i=0;i<game.players.length;i++){
-						list.push([game.players[i],[str,[event.map[game.players[i].playerid],'character']],true]);
+						list.push([game.players[i],[str,[event.map[game.players[i].playerid],'characterx']],true]);
 					}
 					game.me.chooseButtonOL(list,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0],result.links[1]);
@@ -1665,7 +1665,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 							if(lib.character[j]) libCharacter[j]=pack[j];
 						}
 					}
-					for(i in lib.characterReplace){
+					for(let i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
 							if(!libCharacter[ix[j]]||lib.filter.characterDisabled(ix[j],libCharacter)) ix.splice(j--,1);
@@ -1676,9 +1676,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 						}
 					}
 					game.broadcast(function(list){
-						for(var i in lib.characterReplace){
-							var ix=lib.characterReplace[i];
-							for(var j=0;j<ix.length;j++){
+						for(let i in lib.characterReplace){
+							let ix=lib.characterReplace[i];
+							for(let j=0;j<ix.length;j++){
 								if(!list.contains(ix[j])) ix.splice(j--,1);
 							}
 						}

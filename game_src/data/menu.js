@@ -6,14 +6,9 @@
      * @type {!Object}
      */
     let { game, ui, get, ai, lib, _status } = vkCore
-    lib.configMenu = {
-        /**
-         * 通用设置
-         * @name configMenu.general
-         * @type {!Object}
-         */
-        general: {
-            name: '通用',
+    lib.configBaseMenu = {
+        base: {
+            name: '全局',
             config: {
                 low_performance: {
                     name: '流畅模式',
@@ -29,25 +24,45 @@
                         }
                     }
                 },
-                compatiblemode: {
-                    name: '兼容模式',
+                auto_check_update: {
+                    name: '自动检查游戏更新',
+                    intro: '进入游戏时检查更新',
+                    init: true,
+                    unfrequent: true
+                },
+                touchscreen: {
+                    name: '触屏模式',
                     init: false,
-                    intro: '开启兼容模式可防止扩展使游戏卡死并提高对旧扩展的兼容性，但对游戏速度有一定影响，若无不稳定或不兼容的扩展建议关闭',
+                    restart: true,
+                    unfrequent: true,
+                    intro: '开启后可使触屏设备反应更快，但无法使用鼠标操作',
                     onclick: function (bool) {
-                        game.saveConfig('compatiblemode', bool);
-                        if (bool) {
-                            ui.window.classList.add('compatiblemode');
-                        }
-                        else {
-                            ui.window.classList.remove('compatiblemode');
-                        }
+                        if (get.is.nomenu('touchscreen', bool)) return false;
+                        game.saveConfig('touchscreen', bool);
                     }
                 },
-                confirm_exit: {
-                    name: '确认退出',
-                    init: false,
-                    unfrequent: true,
-                    intro: '离开游戏前弹出确认对话框',
+                game_speed: {
+                    name: '游戏速度',
+                    init: 'mid',
+                    item: {
+                        vslow: '慢',
+                        slow: '较慢',
+                        mid: '中',
+                        fast: '较快',
+                        vfast: '快',
+                        vvfast: '很快',
+                    },
+                    intro: '设置不同游戏操作间的时间间隔'
+                },
+                sync_speed: {
+                    name: '限制结算速度',
+                    intro: '在动画结算完成前不执行下一步操作，开启后游戏操作的间隔更长但画面更浏畅，在游戏较卡时建议开启',
+                    init: true
+                },
+                enable_vibrate: {
+                    name: '开启震动',
+                    intro: '回合开始时使手机震动',
+                    init: false
                 },
                 keep_awake: {
                     name: '屏幕常亮',
@@ -71,6 +86,33 @@
                         }
                     }
                 },
+                update: function (config, map) {
+                    if (('ontouchstart' in document)|| lib.config.touchscreen) {
+                        map.touchscreen.show();
+                    }
+                    else {
+                        map.touchscreen.hide();
+                    }
+                    if (lib.device || lib.node) {
+                        map.auto_check_update.show();
+                    }
+                    else {
+                        map.auto_check_update.hide();
+                    }
+                    if (lib.device) {
+                        map.enable_vibrate.show();
+                        map.keep_awake.show();
+                    }
+                    else {
+                        map.enable_vibrate.hide();
+                        map.keep_awake.hide();
+                    }
+                }
+            },
+        },
+        operation: {
+            name: '操作',
+            config: {
                 auto_confirm: {
                     name: '自动确认',
                     init: true,
@@ -118,40 +160,6 @@
                     init: false,
                     unfrequent: true,
                     intro: '拖拽时显示虚线，可能降低游戏速度',
-                },
-                // enable_pressure:{
-                //     name:'启用压感',
-                //     init:false,
-                //     intro:'开启后可通过按压执行操作',
-                //     unfrequent:true,
-                // },
-                // pressure_taptic:{
-                //     name:'触觉反馈',
-                //     init:false,
-                //     intro:'开启后按压操作执行时将产生震动',
-                //     unfrequent:true,
-                // },
-                // pressure_click:{
-                //     name:'按压操作',
-                //     init:'pause',
-                //     intro:'在空白区域按压时的操作',
-                //     unfrequent:true,
-                //     item:{
-                //         pause:'暂停',
-                //         config:'选项',
-                //         auto:'托管',
-                //     }
-                // },
-                touchscreen: {
-                    name: '触屏模式',
-                    init: false,
-                    restart: true,
-                    unfrequent: true,
-                    intro: '开启后可使触屏设备反应更快，但无法使用鼠标操作',
-                    onclick: function (bool) {
-                        if (get.is.nomenu('touchscreen', bool)) return false;
-                        game.saveConfig('touchscreen', bool);
-                    }
                 },
                 swipe: {
                     name: '滑动手势',
@@ -247,39 +255,6 @@
                         game.saveConfig('round_menu_func', item);
                     },
                 },
-                show_splash: {
-                    name: '显示开始界面',
-                    intro: '游戏开始前进入模式选择画面',
-                    init: 'init',
-                    item: {
-                        off: '关闭',
-                        init: '首次启动',
-                        always: '保持开启',
-                    }
-                },
-                game_speed: {
-                    name: '游戏速度',
-                    init: 'mid',
-                    item: {
-                        vslow: '慢',
-                        slow: '较慢',
-                        mid: '中',
-                        fast: '较快',
-                        vfast: '快',
-                        vvfast: '很快',
-                    },
-                    intro: '设置不同游戏操作间的时间间隔'
-                },
-                sync_speed: {
-                    name: '限制结算速度',
-                    intro: '在动画结算完成前不执行下一步操作，开启后游戏操作的间隔更长但画面更浏畅，在游戏较卡时建议开启',
-                    init: true
-                },
-                enable_vibrate: {
-                    name: '开启震动',
-                    intro: '回合开始时使手机震动',
-                    init: false
-                },
                 right_click: {
                     name: '右键操作',
                     init: 'pause',
@@ -295,6 +270,69 @@
                         if (get.is.nomenu('right_click', item)) return false;
                         game.saveConfig('right_click', item);
                     }
+                },
+                doubleclick_intro: {
+                    name: '双击显示武将资料',
+                    init: true,
+                    unfrequent: true,
+                    intro: '双击武将头像后显示其资料卡',
+                },
+                update: function (config, map) {
+                    if (lib.config.touchscreen) {
+                        map.right_click.hide();
+                        map.swipe.show();
+                        if (lib.config.swipe) {
+                            map.swipe_up.show();
+                            map.swipe_down.show();
+                            map.swipe_left.show();
+                            map.swipe_right.show();
+                        }
+                        else {
+                            map.swipe_up.hide();
+                            map.swipe_down.hide();
+                            map.swipe_left.hide();
+                            map.swipe_right.hide();
+                        }
+                    }
+                    else {
+                        map.right_click.show();
+                        map.swipe.hide();
+                        map.swipe_up.hide();
+                        map.swipe_down.hide();
+                        map.swipe_left.hide();
+                        map.swipe_right.hide();
+                    }
+                    if (lib.config.enable_drag) {
+                        if (lib.config.touchscreen) {
+                            map.enable_dragline.hide();
+                            map.enable_touchdragline.show();
+                        }
+                        else {
+                            map.enable_dragline.show();
+                            map.enable_touchdragline.hide();
+                        }
+                    }
+                    else {
+                        map.enable_dragline.hide();
+                        map.enable_touchdragline.hide();
+                    }
+                    if (!get.is.phoneLayout()) {
+                        map.round_menu_func.hide();
+                    }
+                    else {
+                        map.round_menu_func.show();
+                    }
+                }
+            }
+        },
+        interactive: {
+            name: '交互',
+            config: {
+                confirm_exit: {
+                    name: '确认退出',
+                    init: false,
+                    unfrequent: true,
+                    intro: '离开游戏前弹出确认对话框',
                 },
                 longpress_info: {
                     name: '长按显示信息',
@@ -336,40 +374,20 @@
                         '2500': '2.5秒',
                     }
                 },
-                doubleclick_intro: {
-                    name: '双击显示武将资料',
-                    init: true,
-                    unfrequent: true,
-                    intro: '双击武将头像后显示其资料卡',
-                },
-                video: {
-                    name: '保存录像',
-                    init: '20',
-                    intro: '游戏结束后保存录像在最大条数，超过后将从最早的录像开始删除（已收藏的录像不计入条数）',
-                    item: {
-                        '0': '关闭',
-                        '5': '五局',
-                        '10': '十局',
-                        '20': '二十局',
-                        '50': '五十局',
-                        '10000': '无限',
-                    },
-                    unfrequent: true,
-                },
                 max_loadtime: {
                     name: '最长载入时间',
                     intro: '设置游戏从启动到完成载入所需的最长时间，超过此时间未完成载入会报错，若设备较慢或安装了较多扩展可适当延长此时间',
                     init: '10000',
                     unfrequent: true,
                     item: {
-                        5000: '5秒',
+                        3000: '3秒',
                         10000: '10秒',
                         20000: '20秒',
                         60000: '60秒'
                     },
                     onclick: function (item) {
                         game.saveConfig('max_loadtime', item);
-                        if (item == '5000') {
+                        if (item == '3000') {
                             localStorage.removeItem(lib.configprefix + 'loadtime');
                         }
                         else {
@@ -395,11 +413,78 @@
                         }
                     }
                 },
-                auto_check_update: {
-                    name: '自动检查游戏更新',
-                    intro: '进入游戏时检查更新',
-                    init: true,
-                    unfrequent: true
+                update: function (config, map) {
+                    if (lib.config.touchscreen) {
+                        map.mousewheel.hide();
+                        map.hover_all.hide();
+                        map.hover_handcard.hide();
+                        map.hoveration.hide();
+                        map.right_info.hide();
+                        map.longpress_info.show();
+                    }
+                    else {
+                        map.mousewheel.show();
+                        map.hover_all.show();
+                        map.right_info.show();
+                        map.longpress_info.hide();
+                        if (!config.hover_all) {
+                            map.hover_handcard.hide();
+                            map.hoveration.hide();
+                        }
+                        else {
+                            map.hover_handcard.show();
+                            map.hoveration.show();
+                        }
+                    }
+                    if (!lib.node && lib.device != 'ios') {
+                        map.confirm_exit.show();
+                    }
+                    else {
+                        map.confirm_exit.hide();
+                    }
+                }
+            }
+        },
+        exploitation: {
+            name: '开发',
+            config: {
+                compatiblemode: {
+                    name: '兼容模式',
+                    init: false,
+                    intro: '开启兼容模式可防止扩展使游戏卡死并提高对旧扩展的兼容性，但对游戏速度有一定影响，若无不稳定或不兼容的扩展建议关闭',
+                    onclick: function (bool) {
+                        game.saveConfig('compatiblemode', bool);
+                        if (bool) {
+                            ui.window.classList.add('compatiblemode');
+                        }
+                        else {
+                            ui.window.classList.remove('compatiblemode');
+                        }
+                    }
+                },
+                show_splash: {
+                    name: '显示开始界面',
+                    intro: '游戏开始前进入模式选择画面',
+                    init: 'init',
+                    item: {
+                        off: '关闭',
+                        init: '首次启动',
+                        always: '保持开启',
+                    }
+                },
+                video: {
+                    name: '保存录像',
+                    init: '20',
+                    intro: '游戏结束后保存录像在最大条数，超过后将从最早的录像开始删除（已收藏的录像不计入条数）',
+                    item: {
+                        '0': '关闭',
+                        '5': '五局',
+                        '10': '十局',
+                        '20': '二十局',
+                        '50': '五十局',
+                        '10000': '无限',
+                    },
+                    unfrequent: true,
                 },
                 lucky_star: {
                     name: '幸运星模式',
@@ -428,11 +513,6 @@
                         }
                     },
                     unfrequent: true,
-                },
-                errstop: {
-                    name: '出错时停止游戏',
-                    init: false,
-                    unfrequent: true
                 },
                 update_link: {
                     name: '更新地址',
@@ -542,6 +622,35 @@
                         alert('已删除扩展地址：' + name);
                     },
                 },
+                errstop: {
+                    name: '出错时停止游戏',
+                    init: false,
+                    unfrequent: true
+                },
+                update: function (config, map) {
+                    if (config.dev) {
+                        map.errstop.show();
+                    }
+                    else {
+                        map.errstop.hide();
+                    }
+                }
+            }
+        }
+    }
+    lib.configMenu = {
+        /**
+         * 通用设置
+         * @name configMenu.general
+         * @type {!Object}
+         */
+        general: {
+            name: '通用',
+            config: {
+                ...lib.configBaseMenu.base.config,
+                ...lib.configBaseMenu.operation.config,
+                ...lib.configBaseMenu.interactive.config,
+                ...lib.configBaseMenu.exploitation.config,
                 update: function (config, map) {
                     if ('ontouchstart' in document) {
                         map.touchscreen.show();
@@ -563,19 +672,6 @@
                         map.enable_vibrate.hide();
                         map.keep_awake.hide();
                     }
-                    // if(config.enable_pressure){
-                    //     map.pressure_click.show();
-                    //     if(lib.device){
-                    //         map.pressure_taptic.show();
-                    //     }
-                    //     else{
-                    //         map.pressure_taptic.hide();
-                    //     }
-                    // }
-                    // else{
-                    //     map.pressure_click.hide();
-                    //     map.pressure_taptic.hide();
-                    // }
                     if (lib.config.touchscreen) {
                         map.mousewheel.hide();
                         map.hover_all.hide();
@@ -1164,14 +1260,14 @@
                         else {
                             if (lib.config.image_background.indexOf('svg_') == 0) {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background.slice(4) + '.svg');
-                                if(ui.backgroundFlash){
+                                if (ui.backgroundFlash) {
                                     ui.backgroundFlash.delete()
                                     delete ui.backgroundFlash
                                 }
                             }
                             else {
                                 ui.background.setBackgroundImage('image/background/' + lib.config.image_background + '.jpg');
-                                if(!ui.backgroundFlash){
+                                if (!ui.backgroundFlash) {
                                     ui.backgroundFlash = ui.create.div('.background', ui.background);
                                     ui.backgroundFlash.style.backgroundImage = `linear-gradient(to bottom, rgba(255, 255, 255, 0.1),rgba(255, 255, 255, 0.4) 60%,rgba(255, 255, 255, 0.6))`;
                                     ui.backgroundFlash.style.mixBlendMode = 'overlay';
@@ -1593,7 +1689,7 @@
                     visualMenu: function (node, link, name, config) {
                         node.className = `button hpbutton dashedmenubutton ${link}Hp`;
                         node.innerHTML = '';
-                        if(!ui.hpbutton)    ui.hpbutton = lib.init.css(lib.assetURL + 'theme/style/hp','hpbutton')
+                        if (!ui.hpbutton) ui.hpbutton = lib.init.css(lib.assetURL + 'theme/style/hp', 'hpbutton')
                         for (var i = 1; i <= 4; i++) {
                             var div = ui.create.div(node);
                             if (link == 'default') {
@@ -1602,7 +1698,7 @@
                             else if (link != 'custom') {
                                 // div.setBackgroundImage(`theme/style/hp/image/${link}${i}.png`);
                             }
-                            if (i == 4&&link !== 'vk') {
+                            if (i == 4 && link !== 'vk') {
                                 div.style.webkitFilter = 'grayscale(1)';
                             }
                         }
@@ -3709,21 +3805,21 @@
                     },
                     clear: true
                 },
-                reset_tutorial: {
-                    name: '重置身份模式的新手向导',
-                    onclick: function () {
-                        if (this.firstChild.innerHTML != '已重置') {
-                            this.firstChild.innerHTML = '已重置'
-                            game.saveConfig('new_tutorial', false);
-                            game.saveConfig('prompt_hidebg');
-                            game.saveConfig('prompt_hidepack');
-                            setTimeout(() => {
-                                this.firstChild.innerHTML = '重置新手向导';
-                            }, 500);
-                        }
-                    },
-                    clear: true
-                },
+                // reset_tutorial: {
+                //     name: '重置身份模式的新手向导',
+                //     onclick: function () {
+                //         if (this.firstChild.innerHTML != '已重置') {
+                //             this.firstChild.innerHTML = '已重置'
+                //             game.saveConfig('new_tutorial', false);
+                //             game.saveConfig('prompt_hidebg');
+                //             game.saveConfig('prompt_hidepack');
+                //             setTimeout(() => {
+                //                 this.firstChild.innerHTML = '重置新手向导';
+                //             }, 500);
+                //         }
+                //     },
+                //     clear: true
+                // },
                 import_data: {
                     name: '导入游戏设置',
                     onclick: function () {
