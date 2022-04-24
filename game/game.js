@@ -34939,7 +34939,6 @@ module.exports = function (element, _mode, _message) {
         if(!ui.firstCreatedBG){
           init.onload_createBG()
         }
-        document.body.insertBefore(ui.background, document.body.firstChild);
         document.body.onresize = ui.updatexr;
         if (lib.config.touchscreen) {
           document.body.addEventListener('touchstart', function (e) {
@@ -35510,6 +35509,7 @@ module.exports = function (element, _mode, _message) {
       document.documentElement.style.backgroundSize = '';
       document.documentElement.style.backgroundPosition = '';
       document.documentElement.style.height = '';
+      document.body.insertBefore(ui.background, document.body.firstChild);
 
       ui.firstCreatedBG = true
     },
