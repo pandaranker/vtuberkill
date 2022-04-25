@@ -82,5 +82,8 @@ module.exports = {
     // 配置别名
     alias: {
     }
+  },
+  externals: {
+    'lodash': '_'
   }
 }

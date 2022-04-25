@@ -30,7 +30,7 @@
                 })
             })
             let homeWindow = ui.create.div('#window.home-window', document.body)
-            let home = ui.create.div('#home', homeWindow, () => { })
+            let home = ui.create.div('#home.themeA', homeWindow, () => { })
 
             data.home = home
             data.cfg = cfg
@@ -56,12 +56,11 @@
             //    ui.window.show();
             // }, 500);
         },
-        createHome_top(home = data.home, cfg = data.cfg) {
+        createHome_top(home = data.home as HTMLDivElement, cfg = data.cfg) {
             let topHome = ui.create.div('#home-top', home, () => { })
             let playerName = get.connectNickname() === '无名玩家' ? '无名DD' : get.connectNickname()
             let personalAvatar = ui.create.div('#personal-avatar', topHome, () => {
-                lib.init.init_startGame(cfg)
-                this.leaveHome()
+                home.classList.toggle('themeA')
             })
             personalAvatar.setBackground(lib.config.connect_avatar, 'character');
             let personalIdentify = ui.create.div('#personal-identify', topHome, () => {

@@ -9800,17 +9800,12 @@ export default {
                 return ui.create.dialog('###夜魔###' + lib.translate.yemo_info);
             },
             chooseControl(Evt, player) {
-                let list = [];
-                for (let i = 1; i < 6; i++) {
-                    if (!player.isDisabled(i)) list.push('equip' + i);
-                }
+                let list = _.range(1, 6).map(i => 'equip' + i)
                 list.push('cancel2');
                 return list;
             },
             check(Evt, player) {
-                for (let i = 5; i > 0; i--) {
-                    if (player.isEmpty(i)) return ('equip' + i);
-                }
+                _.range(5, 0, -1).forEach(i => { if (player.isEmpty(i)) return ('equip' + i); })
                 return 'cancel2';
             },
             backup(result) {
@@ -14779,7 +14774,7 @@ export default {
     }, 'direct').setT({ global: 'useCardToPlayered' }),
     mmjieyuan: new toSkill('regard', {
         hiddenCard(player, name) {
-            if(!player.countCards('hs'))    return false;
+            if (!player.countCards('hs')) return false;
             let list = get.inpile('trick', card => !player.$.mmjieyuan.includes(card));
             return list.some(i => i === name);
         },
@@ -14828,7 +14823,7 @@ export default {
                 return `###『结渊』###将${get.cnNumber((player.$.mmjieyuan_change != (_status.currentPhase === player)) ? 2 : 1)}张牌当做【${get.translation(links[0][3]) || ''}${get.translation(links[0][2])}】使用`;
             }
         },
-        group: ['mmjieyuan_change','mmjieyuan_clear'],
+        group: ['mmjieyuan_change', 'mmjieyuan_clear'],
         subSkill: {
             clear: new toSkill('rule', {
                 content() {
@@ -14841,7 +14836,7 @@ export default {
                     player.$.mmjieyuan_change = !player.$.mmjieyuan_change
                     player.syncStorage('mmjieyuan_change')
                 }],
-            },'onremove').setT('zhichanAfter').setI(false)
+            }, 'onremove').setT('zhichanAfter').setI(false)
         },
         ai: {
             combo: 'zhichan'

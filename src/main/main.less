@@ -46,6 +46,14 @@
             }
         }
 
+        @media (max-width: 900px) {
+            font-size: 70%;
+        }
+
+        @media (min-width: 901px) and (max-width: 1200px) {
+            font-size: 90%;
+        }
+
         >div {
             position: inherit;
         }
@@ -62,7 +70,7 @@
             left: 20vw;
             top: 5vw;
             text-shadow: #e2fa00 0 0 3px, #e2fa00 0 0 5px;
-            -webkit-text-stroke: 0.2em #f96;
+            -webkit-text-stroke: 0.2em #d868;
 
             >div {
                 font-family: 'hyk2gj', Arial, Helvetica, sans-serif;
@@ -95,6 +103,18 @@
 
         &:hover {
             width: 36vw;
+        }
+
+        @media (max-width: 400px) {
+            font-size: 40%;
+        }
+
+        @media (min-width: 401px) and (max-width: 900px) {
+            font-size: 60%;
+        }
+
+        @media (min-width: 901px) and (max-width: 1200px) {
+            font-size: 80%;
         }
 
         #start-game {
@@ -170,34 +190,26 @@
             color: #bd63d4;
             background: #8805a8;
 
-            @media (max-width: 400px) {
-                font-size: 40%;
-            }
-
-            @media (min-width: 401px) and (max-width: 900px) {
-                font-size: 60%;
-            }
-
-            @media (min-width: 901px) and (max-width: 1200px) {
-                font-size: 80%;
-            }
-
             >.home-inner {
                 outline: 4px #bd63d4 solid;
                 outline-offset: 2vh;
 
-                @media (max-width: 900px) {
-                    outline-offset: 0.9vh;
+                @media (min-width: 401px) and (max-width: 900px) {
+                    outline-offset: 0.6vh;
                 }
 
                 @media (min-width: 901px) and (max-width: 1200px) {
-                    outline-offset: 1.1vh;
+                    outline-offset: 1.2vh;
                 }
             }
 
             &:hover {
                 >.home-inner {
                     outline-offset: 0.5vh;
+
+                    @media (max-width: 900px) {
+                        outline-offset: 0.2vh;
+                    }
                 }
             }
         }
@@ -235,20 +247,20 @@
             }
         }
 
+        @media (max-width: 900px) {
+            font-size: 70%;
+        }
+
+        @media (min-width: 901px) and (max-width: 1200px) {
+            font-size: 90%;
+        }
+
         >div {
             position: relative;
             width: 21%;
             height: 100%;
             color: #906cd7;
             background: #4711ae;
-
-            @media (max-width: 900px) {
-                font-size: 70%;
-            }
-
-            @media (min-width: 901px) and (max-width: 1200px) {
-                font-size: 90%;
-            }
 
             &#handbook-hide {
                 width: 8%;
@@ -283,6 +295,64 @@
         }
     }
 
+    &.themeA {
+        #home-top {
+            #personal-avatar {
+                border: #5e6ce9 0.5vw solid;
+                box-shadow: inset #ea74e2 0 0 3px, inset #ea74e2 0 0 0.2vw, #ea74e2 0 0 4px, #ea74e2 0 0 0.3vw;
+            }
+
+            #personal-identify {
+                text-shadow: #ea74e2 0 0 3px, #ea74e2 0 0 5px;
+                -webkit-text-stroke: 0.2em #8d68;
+            }
+
+            #personal-welcome {
+                text-shadow: #5e6ce9 0 0 3px, #5e6ce9 0 0 5px;
+            }
+        }
+
+        #home-right {
+            #start-game {
+                color: #f7bff3;
+                background: #ea74e2;
+
+                >.home-inner {
+                    outline: 4px #f7bff3 solid;
+                }
+                #start-game-mode {
+                    background: #aa9c72;
+                }
+            }
+
+            #start-connect {
+                color: #c690d3;
+                background: #8b34a0;
+
+                >.home-inner {
+                    outline: 4px #c690d3 solid;
+                }
+            }
+
+            #start-config {
+                color: #f18db7;
+                background: #bb4375;
+            }
+        }
+
+        #home-bottom {
+            background-color: #5e6ce9;
+
+            >div {
+                color: #9fb2f8;
+                background: #5d52a7;
+
+                &#handbook-hide {
+                    background: linear-gradient(to right, #5e6ce9, #5d52a7);
+                }
+            }
+        }
+    }
 
     .home-inner {
         position: absolute;
