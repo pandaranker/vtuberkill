@@ -440,7 +440,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}]
 			},
 			//re猫宫
-			yingdan: {
+			yingdan: new toSkill('regard', {
 				hiddenCard(player: { countCards: (arg0: string, arg1: { name: string; }) => any; }, name: any) {
 					if (['wuxie', 'shan'].contains(name) && player.countCards('h', { name: 'sha' })) return true;
 				},
@@ -568,8 +568,8 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				ai: {
 					noautowuxie: true,
 				}
-			},
-			tianzhuo: {
+			}),
+			tianzhuo: new toSkill('trigger', {
 				audio: 2,
 				trigger: { global: 'die' },
 				filter(Evt: { player: { countCards: (arg0: string) => number; }; }) {
@@ -587,10 +587,9 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				ai: {
 					threaten: 1.5,
 				}
-			},
+			}),
 			//re小白
-			lingsi: {
-				enable: 'phaseUse',
+			lingsi: new toSkill('active', {
 				usable: 1,
 				content() {
 					player.draw(2);
@@ -612,11 +611,10 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 				group: 'lingsi_discard',
 				subSkill: {
-					discard: {
-						trigger: { player: 'discardAfter' },
+					discard: new toSkill('trigger', {
 						filter(Evt: { cards: any[]; }, player: any) {
 							if (!Evt.cards || Evt.cards.length < 2) return false;
-							var num1 = 0, num2 = 0;
+							let num1 = 0, num2 = 0;
 							Evt.cards.forEach((card: any) => {
 								if (get.type(card) == 'basic') {
 									num1++;
@@ -627,7 +625,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							return Math.max(num1, num2) >= 2;
 						},
 						prompt2(Evt: { cards: any[]; }, player: any) {
-							var num1 = 0, num2 = 0;
+							let num1 = 0, num2 = 0;
 							Evt.cards.forEach((card: any) => {
 								if (get.type(card) == 'basic') {
 									num1++;
@@ -635,7 +633,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 									num2++;
 								}
 							});
-							var prompt2 = '可以';
+							let prompt2 = '可以';
 							if (num1 >= 2) {
 								prompt2 += '视为使用一张杀';
 								if (num2 >= 2) {
@@ -648,7 +646,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 						},
 						priority: 22,
 						content: [() => {
-							var num1 = 0, num2 = 0;
+							let num1 = 0, num2 = 0;
 							trigger.cards.forEach((card: any) => {
 								if (get.type(card) == 'basic') {
 									num1++;
@@ -658,7 +656,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 							});
 							if (num1 >= 2) {
 								player.chooseUseTarget({ name: 'sha' }, '可以视为打出一张杀', false).set('ai', function (target: any) {
-									var player = _status.event.player;
+									let player = _status.event.player;
 									return get.effect(target, { name: 'sha' }, player, player);
 								});
 							}
@@ -668,7 +666,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								player.chooseTarget('令一名角色回复一点体力', function (card: any, player: any, target: { hp: number; maxHp: number; }) {
 									return target.hp < target.maxHp;
 								}).ai = function (target: any) {
-									var att = get.attitude(_status.event.player, target);
+									let att = get.attitude(_status.event.player, target);
 									return att;
 								};
 							} else {
@@ -679,24 +677,24 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 								result.targets[0].recover();
 							}
 						}],
-					}
+					}).setT('discardAfter')
 				},
-			},
+			}),
 			//re狐叔
-			re_dianyin: {
+			re_dianyin: new toSkill('trigger', {
 				trigger: { player: 'damageEnd' },
 				content: [() => {
 					Evt.num ??= trigger.num;
 					player.chooseTarget('令一名角色摸两张牌')
 						.set('prompt2', '（若其手牌数少于你或为全场最少，改为摸三张牌）')
-						.set('ai', function (target: any) {
-							var player = _status.event.player;
-							var att = get.attitude(player, target);
+						.set('ai', (target: any) => {
+							let player = _status.event.player;
+							let att = get.attitude(player, target);
 							return att;
 						});
 				}, () => {
 					if (result.bool && result?.targets?.length) {
-						var target = result.targets[0];
+						let target = result.targets[0];
 						player.line(target, 'green');
 						if (target.countCards('h') < player.countCards('h') || target.isMinHandcard()) {
 							target.draw(3);
@@ -721,7 +719,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				ai: {
 					maixie: true,
 				},
-			},
+			}),
 			//re王妃
 			kouhu: {
 				group: ['kouhu_shan', 'kouhu_sha'],
@@ -828,7 +826,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				frequent: true,
 				content() {
 					var stats = 0;
-					function getStats(sum,cur){
+					function getStats(sum, cur) {
 
 					}
 					game.hasPlayer(cur => {
@@ -851,32 +849,32 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				},
 			},
 			//reMari
-			liansheng: {
-				trigger: { player: 'changeHp' },
-				forced: true,
+			liansheng: new toSkill('trigger', {
 				silent: true,
-				firstDo: true,
+				filter(Evt, player) {
+					return Evt.num !== 0 && (player.hp === player.maxHp || player.hp - Evt.num === player.maxHp);
+				},
 				content() {
-					if (player.hp == player.maxHp && player.sex == 'female') {
-						player.sex = 'male';
-						player.markSkill('liansheng');
-						game.log(player, '的性别变更为', '#g' + get.translation(player.sex));
-						if (_status.currentPhase && _status.currentPhase.sex == 'female') player.draw();
-					}
-					if (player.hp < player.maxHp && player.sex == 'male') {
-						player.sex = 'female';
-						player.markSkill('liansheng');
-						game.log(player, '的性别变更为', '#g' + get.translation(player.sex));
-						if (_status.currentPhase && _status.currentPhase.sex == 'female') player.draw();
-					}
+					player.changeSex().set('mark', 'liansheng')
 				},
 				mark: true,
 				intro: {
 					content($: any, player: { sex: any; }) {
-						return '当前性别：' + get.translation(player.sex);
+						return `当前性别：${get.translation(player.sex)}`;
 					},
 				},
-			},
+				group: 'liansheng_drawBy',
+				subSkill: {
+					drawBy: new toSkill('trigger', {
+						filter(Evt, player) {
+							return _status.currentPhase.sex = 'female'
+						},
+						content() {
+							player.draw()
+						},
+					}, 'forced').setT('changeSexEnd')
+				}
+			}, 'direct', 'firstDo').setT('changeHp'),
 			ruantang: {
 				trigger: { player: 'phaseJudgeBefore' },
 				direct: true,
@@ -2593,7 +2591,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 				}],
 			},
 			//re夏色祭
-			re_huxi: new toSkill('trigger',{
+			re_huxi: new toSkill('trigger', {
 				audio: 'huxi',
 				filter(Evt, player: PlayerModel) {
 					if (!player.$.re_huxiGroup) player.$.re_huxiGroup = []
@@ -5651,7 +5649,7 @@ window.game.import('character', function (lib: Record<string, any>, game: Record
 
 			re_TomariMari: `新·兎鞠まり`,
 			liansheng: `恋声`,
-			liansheng_info: `锁定技 你未受伤时性别为男；受伤时性别为女。你的性别变化时，若当前回合角色为女性，你摸一张牌。`,
+			liansheng_info: `锁定技 你进入或离开已受伤状态时，改变你的性别。你的性别变化时，若当前回合角色为女性，你摸一张牌。`,
 			ruantang: `软糖`,
 			ruantang_info: `你可以跳过判定阶段和摸牌阶段，令至多一名异性角色与你各回复1点体力，然后体力因此回复至上限的角色摸一张牌。`,
 

@@ -2296,7 +2296,7 @@ module.exports = {
             let str = lib.translate[name];
             if (lib.skill[name] && lib.translate[name + '_info']) {
                str = get.skillInfoTranslation(name, player);
-               if(lib.config.low_performance)   return str;
+               if (lib.config.low_performance) return str;
                let info = lib.skill[name];
                let iKeys = [(_a = info.ai) === null || _a === void 0 ? void 0 : _a.combo, info.derivation, info.involve].vkflat();
                iKeys = [...new Set(iKeys)];
@@ -2305,8 +2305,7 @@ module.exports = {
                   if (tra.indexOf('(') > 0)
                      tra = tra.substring(0, tra.indexOf('('));
                   let reg = new RegExp(`(\[【\|『\]${tra}\[】\|』\])`, 'g');
-                  str = str.replace(reg, `<span class="iText" ${typeof i == 'object' ? `data-introlink="${i.name}" ${i.nature ? `data-nature="${i.nature}"` : ``}` : `data-introlink="${i}"`}>
-                              <svg width="${tra.length * 1.1 + 1.8}em" height="1.3em" style="vertical-align: bottom">
+                  str = str.replace(reg, `<span class="iText" ${typeof i == 'object' ? `data-introlink="${i.name}" ${i.nature ? `data-nature="${i.nature}"` : ``}` : `data-introlink="${i}"`}><svg width="${tra.length * 1.1 + 1.8}em" height="1.3em" style="vertical-align: bottom">
                                   <text x="0" y="80%" fill="white">$1</text>
                                   <rect width="100%" height="100%" class="iRec"/>
                               </svg></span>`);
@@ -2314,8 +2313,7 @@ module.exports = {
                for (let k in lib.helpKeyWords) {
                   let tra = `${k}*`;
                   let reg = new RegExp(`(${k}\\*)`, 'g');
-                  str = str.replace(reg, `<span class="iText" data-introlink="${k}" data-introlinkstr="${lib.helpKeyWords[k]}"}>
-                              <svg width="${k.length + 0.6}em" height="1.3em" style="vertical-align: bottom">
+                  str = str.replace(reg, `<span class="iText" data-introlink="${k}" data-introlinkstr="${lib.helpKeyWords[k]}"}><svg width="${k.length + 0.6}em" height="1.3em" style="vertical-align: bottom">
                                   <text x="0" y="80%" fill="white">$1</text>
                                   <rect width="100%" height="100%" class="iRec"/>
                               </svg></span>`);
@@ -3277,7 +3275,7 @@ module.exports = {
                      if (lib.translate[skills[i] + '_append']) {
                         uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                      }
-                     if(!lib.config.low_performance){
+                     if (!lib.config.low_performance) {
                         for (let v of uiintro.getElementsByTagName('span')) {
                            v.link = v.dataset.introlink
                            v.nature = v.dataset.nature
@@ -3967,7 +3965,7 @@ module.exports = {
                         if (lib.translate[skills[i] + '_append']) {
                            uiintro._place_text = uiintro.add('<div class="text">' + lib.translate[skills[i] + '_append'] + '</div>')
                         }
-                        if(!lib.config.low_performance){
+                        if (!lib.config.low_performance) {
                            for (let v of uiintro.getElementsByTagName('span')) {
                               v.link = v.dataset.introlink
                               v.nature = v.dataset.nature
@@ -4090,7 +4088,7 @@ module.exports = {
                node.curUiintro = uiintro
                if (node.dataset.introlinkstr) {
                   let str = node.dataset.introlinkstr
-                  uiintro.add(`<div><div class="skilln">【${name}】</div><div${(name.length > 3) ? ' class="skilltext"' : ''}>${str}</div></div>`);
+                  uiintro.add(`<div><div class="skilln">~${name}~</div><div${(name.length > 3) ? ' class="skilltext"' : ''}>${str}</div></div>`);
                }
                else if (lib.card[name]) {
                   uiintro.add(get.translation(name));

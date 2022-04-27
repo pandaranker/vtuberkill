@@ -56,6 +56,7 @@
 
         >div {
             position: inherit;
+            box-shadow: #482a83 3px 3px 5px;
         }
 
         #personal-avatar {
@@ -117,6 +118,10 @@
             font-size: 80%;
         }
 
+        >div {
+            filter:drop-shadow(#482a83 4px 3px 6px);
+        }
+
         #start-game {
             position: absolute;
             left: 0;
@@ -135,15 +140,27 @@
                 position: absolute;
                 left: -5vw;
                 width: 40%;
-                height: 27vh;
+                height: 14vw;
                 background: #858868;
-                font-size: 80%;
+                box-shadow: #482a83 1px 1px 5px;
                 color: #e9eae2;
                 outline: 4px #e9eae2 solid;
-                outline-offset: -1.5vh;
+                outline-offset: -0.8vw;
 
                 animation-name: topEnter;
                 animation-duration: 1.6s;
+
+                @media (max-width: 600px) {
+                    font-size: 40%;
+                }
+
+                @media (min-width: 601px) and (max-width: 1200px) {
+                    font-size: 60%;
+                }
+
+                @media (min-width: 1201px) {
+                    font-size: 80%;
+                }
 
                 @keyframes topEnter {
                     0% {
@@ -159,14 +176,14 @@
                     position: relative;
                     display: inline-block;
                     width: 50%;
-                    top: 19vh;
-                    height: 8vh;
-                    line-height: 8vh;
-                    font-size: 240%;
+                    top: 9vw;
+                    height: 5vw;
+                    line-height: 5vw;
+                    font-size: 500%;
                     color: #e9eae2;
                     text-align: center;
                     outline: 3px #e9eae2 solid;
-                    outline-offset: -1.5vh;
+                    outline-offset: -0.8vw;
                 }
             }
 
@@ -277,6 +294,7 @@
 
             &:not(#handbook-hide) {
                 overflow: hidden;
+                box-shadow: #482a83 0px 1px 8px;
             }
         }
 
@@ -298,7 +316,7 @@
     &.themeA {
         #home-top {
             #personal-avatar {
-                border: #5e6ce9 0.5vw solid;
+                border: #1c1825 0.5vw solid;
                 box-shadow: inset #ea74e2 0 0 3px, inset #ea74e2 0 0 0.2vw, #ea74e2 0 0 4px, #ea74e2 0 0 0.3vw;
             }
 
@@ -314,29 +332,30 @@
 
         #home-right {
             #start-game {
-                color: #f7bff3;
-                background: #ea74e2;
+                color: #f5cbf2;
+                background: #e27edb;
 
                 >.home-inner {
-                    outline: 4px #f7bff3 solid;
+                    outline: 4px #f5cbf2 solid;
                 }
+
                 #start-game-mode {
-                    background: #aa9c72;
+                    background: #aca07c;
                 }
             }
 
             #start-connect {
-                color: #c690d3;
-                background: #8b34a0;
+                color: #d1abda;
+                background: #9c61aa;
 
                 >.home-inner {
-                    outline: 4px #c690d3 solid;
+                    outline: 4px #d1abda solid;
                 }
             }
 
             #start-config {
-                color: #f18db7;
-                background: #bb4375;
+                color: #f0a1c2;
+                background: #b45e82;
             }
         }
 

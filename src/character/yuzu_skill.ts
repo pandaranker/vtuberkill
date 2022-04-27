@@ -1875,23 +1875,20 @@ export default {
         }, () => {
             if (get.suit(Evt.cards[0]) === 'club') {
                 player.loseHp();
-                player.addTempSkill('shengya_lost');
+                player.addTempSkill('shengya_lost', 'phaseNext');
             }
         }],
         subSkill: {
-            lost: {
-                mark: true,
+            lost: new toSkill('mark', {
                 marktext: "卒",
                 intro: {
                     name: '职业生涯结束',
-                    content(storage, player, skill) {
-                        return '『职业生涯』失效直到下个回合开始';
-                    },
+                    content: '『职业生涯』失效',
                 },
-            }
+            }, 'mark')
         }
     }).setI(true),
-    liangshan: {
+    hange: {
         trigger: { global: 'drawEnd' },
         priority: 996,
         filter(Evt, player) {
@@ -1900,10 +1897,10 @@ export default {
         content() {
             let cards = get.cards();
             game.log(player, '将', cards, '置于武将牌上');
-            player.addToExpansion(cards, 'draw').gaintag.add('liangshan_mark');
+            player.addToExpansion(cards, 'draw').gaintag.add('hange_mark');
             game.delayx(2);
         },
-        group: ['liangshan_mark', 'liangshan_use', 'liangshan_save'],
+        group: ['hange_mark', 'hange_use', 'hange_save'],
         subSkill: {
             mark: new toSkill('mark', {
                 marktext: "汉",
@@ -1921,7 +1918,7 @@ export default {
                 trigger: { global: 'phaseBegin' },
                 priority: 996,
                 filter(Evt, player) {
-                    return player.getExpansions('liangshan_mark').length;
+                    return player.getExpansions('hange_mark').length;
                 },
                 check(Evt, player) {
                     if (player.hasUnknown(1)) return false;
@@ -1929,7 +1926,7 @@ export default {
                 },
                 prompt2: '一名角色回合开始时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
                 content: [() => {
-                    player.chooseCardButton('交给其一张你武将牌上的牌', player.getExpansions('liangshan_mark'));
+                    player.chooseCardButton('交给其一张你武将牌上的牌', player.getExpansions('hange_mark'));
                 }, () => {
                     if (result.bool) {
                         let cards = result.links.slice(0);
@@ -1942,14 +1939,14 @@ export default {
                 trigger: { global: 'dying' },
                 priority: 996,
                 filter(Evt, player) {
-                    return Evt.player.hp <= 0 && player.getExpansions('liangshan_mark').length;
+                    return Evt.player.hp <= 0 && player.getExpansions('hange_mark').length;
                 },
                 check(Evt, player) {
                     return get.$a(player, Evt.player) > 0;
                 },
                 prompt2: '一名角色濒死时，你可以交给其一张你武将牌上的牌，视为其使用了一张【酒】。',
                 content: [() => {
-                    player.chooseCardButton('交给其一张你武将牌上的一张牌', player.getExpansions('liangshan_mark'));
+                    player.chooseCardButton('交给其一张你武将牌上的一张牌', player.getExpansions('hange_mark'));
                 }, () => {
                     if (result.bool) {
                         let cards = result.links.slice(0);
@@ -11544,102 +11541,112 @@ export default {
         threaten: 1.2,
     },
     //叽叽
-    guangan: {
-        trigger: { global: 'useCard2' },
+    guangan: new toSkill('trigger', {
         filter(Evt, player) {
-            if (player.$.guangan >= game.countPlayer() - 1) return false;
-            return Evt.player == player && (Evt.targets.includes(player.getNext()) || player.getStorage('zonghe').filter(function (zonghe) {
-                return Evt.targets.includes(zonghe);
-            }).length) || (Evt.player == player.getPrevious() || player.getStorage('zonghe').includes(Evt.player)) && Evt.targets.includes(player);
+            return player.$.guangan ? ((Evt.player == player.getPrevious() || player.getStorage('zonghe').includes(Evt.player))
+                && Evt.targets.includes(player)) : (Evt.player == player && (Evt.targets.includes(player.getNext())
+                    || player.getStorage('zonghe').some((zonghe) => Evt.targets.includes(zonghe))));
         },
-        frequent: true,
         content: [() => {
+            player.$.guangan = !player.$.guangan;
+        }, () => {
             player.draw();
-            if (!player.$.guangan) player.$.guangan = 0;
-            player.$.guangan++;
-        }, () => {
-            player.markSkill('guangan');
         }],
-        marktext: '叽',
-        intro: {
-            content: '本轮次已摸了&张牌',
-            markcount(storage, player) {
-                return player.$.guangan;
-            }
-        },
-        group: 'guangan_clear',
+        group: 'guangan_change',
         subSkill: {
-            clear: {
-                trigger: { global: 'roundStart' },
-                forced: true,
-                silent: true,
-                firstDo: true,
-                content() {
-                    delete player.$.guangan;
-                    player.unmarkSkill('guangan');
-                }
-            },
-        }
-    },
-    lanxuan: {
-        mod: {
-            targetInRange(card, player, target) {
-                if (_status.event.logSkill == 'lanxuan') return true;
-            },
-            cardUsable(card, player, num) {
-                if (_status.event.logSkill == 'lanxuan') return Infinity;
-            },
-        },
-        trigger: { source: 'damageAfter' },
-        filter(Evt, player) {
-            if (player.hasSkill('lanxuan_used1')) return false;
-            return player.countCards('hs', card => player.hasUseTarget(card));
-        },
-        direct: true,
-        usable: 1,
-        content: [() => {
-            player.chooseToUse({
-                filterCard(card, player) {
-                    return lib.filter.filterCard.apply(this, arguments);
-                },
-                prompt: get.$pro2('lanxuan')
-            }).set('logSkill', ['lanxuan']).set('targetRequired', true);
-        }, () => {
-            if (result.bool) {
-                player.addTempSkill('lanxuan_used1');
-            }
-        }],
-        group: 'lanxuan_damageUse',
-        subSkill: {
-            damageUse: {
-                trigger: { player: 'damageAfter' },
+            change: new toSkill('trigger', {
+                prompt2: '展示牌并转换一次『珖黯』',
                 filter(Evt, player) {
-                    if (player.hasSkill('lanxuan_used2')) return false;
-                    return player.countCards('hs', card => player.hasUseTarget(card));
+                    let cards = Evt.cards || Evt.result
+                    return cards && cards.some(c => get.color(c) === 'black');
                 },
-                direct: true,
-                usable: 1,
-                content: [() => {
-                    player.chooseToUse({
-                        filterCard(card, player) {
-                            return lib.filter.filterCard.apply(this, arguments);
-                        },
-                        prompt: get.$pro2('lanxuan')
-                    }).set('logSkill', ['lanxuan']).set('targetRequired', true);
-                }, () => {
-                    if (result.bool) {
-                        player.addTempSkill('lanxuan_used2');
-                    }
-                }],
-            },
-            used1: {},
-            used2: {},
+                content() {
+                    Evt.cards = (trigger.cards || trigger.result).filter(c => get.color(c) === 'black')
+                    player.showCards(Evt.cards, `『珖黯-转换』：${trigger.name === 'discard' ? '弃置' : '摸到'}的牌`)
+                    player.$.guangan = !player.$.guangan;
+                }
+            }).setT(['discardBegin', 'drawEnd'])
         },
         ai: {
+            effect: {
+                player(card, player, target, current) {
+                    if (!player.$.guangan && target) {
+                        if (player.getNext() === target || player.getStorage('zonghe').includes(target)) return [1, 0.6];
+                    }
+                },
+                target(card, player, target, current) {
+                    if (target.$.guangan) {
+                        if (player == target.getPrevious() || player.getStorage('zonghe').includes(player)) return [1, 0.6];
+                    }
+                }
+            }
+        }
+    }).setT({ global: 'useCard2' }).setI(true),
+    lanxuan: new toSkill('trigger', {
+        mod: {
+            targetInRange(card, player, target) {
+                if (_status.event.sourceSkill == 'lanxuan') return true;
+            },
+            cardUsable(card, player, num) {
+                if (_status.event.sourceSkill == 'lanxuan') return Infinity;
+            },
+        },
+        trigger: { source: 'damageSource', player: 'damageAfter' },
+        filter(Evt, player) {
+            if (player.hasSkill('lanxuan_used')) return false;
+            if (Evt.player !== player) return player.countCards('he');
+            return true
+        },
+        check(Evt, player) {
+            return Evt.player === player || player.countCards('hs') >= 5
+        },
+        frequent(Evt, player) {
+            return Evt.player === player
+        },
+        content: [() => {
+            if (trigger.player === player) {
+                player.logSkill('lanxuan')
+                player.draw()
+            }
+            else {
+                player.chooseToDiscard(get.$pro2('lanxuan'), 'he').set('logSkill', 'lanxuan')
+            }
+        }, () => {
+            if ((trigger.player === player || (result.bool && result.cards))
+                && player.hasCard(card => player.hasUseTarget(card), 'hs')) {
+                player.chooseToUse({
+                    forced: true,
+                    filterCard(card, player) {
+                        return lib.filter.filterCard.apply(this, arguments);
+                    },
+                    prompt: '『澜绚』：请使用一张牌'
+                }).set('sourceSkill', 'lanxuan').set('targetRequired', true);
+            }
+            else Evt.finish()
+        }, () => {
+            console.log(result, player.countUsed(result.card.name, true))
+            if (result.bool && result.card?.name) {
+                if (player.countUsed(result.card.name, true) > 1) {
+                    player.recover()
+                    player.addTempSkill('lanxuan_used');
+                    game.delayx()
+                }
+            }
+        }],
+        subSkill: {
+            used: new toSkill('mark', {
+                intro: {
+                    name: '嗓子休息中',
+                    content: '『澜绚』失效',
+                },
+            }, 'mark')
+        },
+        ai: {
+            maixie: true,
             threaten: 1.2,
         }
-    },
-    zonghe: {
+    }),
+    zonghe: new toSkill('trigger', {
         audio: true,
         init(player, skill) {
             if (!player.$[skill]) player.$[skill] = [];
@@ -11684,7 +11691,7 @@ export default {
                 },
             }
         }
-    },
+    }),
     //牛牛子
     qiying: new toSkill('trigger', {
         filter(Evt, player) {
@@ -11897,9 +11904,8 @@ export default {
         }],
     },
     //白夜真宵
-    bykuangxin: {
+    bykuangxin: new toSkill('active', {
         audio: 2,
-        enable: 'phaseUse',
         usable: 1,
         content: [() => {
             if (Evt.cards == undefined) Evt.cards = [];
@@ -12031,7 +12037,7 @@ export default {
                 player: 1
             }
         },
-    },
+    }),
     //小柔
     rouqing: {
         init(player, skill) {
@@ -13669,7 +13675,7 @@ export default {
         }
     },
     //启七海
-    niyou: {
+    niyou: new toSkill('trigger', {
         trigger: { global: 'phaseEnd' },
         priority: 49,
         filter(Evt, player) {
@@ -13698,10 +13704,9 @@ export default {
                 if (from.$.niyou) return distance + from.$.niyou;
             }
         }
-    },
-    shalu: {
+    }),
+    shalu: new toSkill('active', {
         audio: 3,
-        enable: 'phaseUse',
         usable: 1,
         filter(Evt, player) {
             return player.countCards('h') > 0;
@@ -13732,7 +13737,7 @@ export default {
             },
             expose: 0.2,
         },
-    },
+    }),
     //启阿梓
     puyu: {
         audio: true,
@@ -14741,6 +14746,7 @@ export default {
             player.chooseToDiscard('he', get.$pro2('zhichan')).set('logSkill', 'zhichan')
         }, () => {
             if (result.bool && result.cards) {
+                Evt.cards = result.cards.slice()
                 player.$.zhichan_gainBy = _status.discarded.slice()
                 player.addTempSkill('zhichan_gainBy')
                 game.delayx(2)
@@ -14832,6 +14838,9 @@ export default {
             }, 'direct', 'silent').setT({ global: 'phaseAfter' }),
             change: new toSkill('trigger', {
                 prompt2: '当你发动『旨阐』后，你可以交换此技能回合内和回合外的技能效果。',
+                filter(Evt, player) {
+                    return Evt.cards
+                },
                 content: [() => {
                     player.$.mmjieyuan_change = !player.$.mmjieyuan_change
                     player.syncStorage('mmjieyuan_change')
@@ -17631,9 +17640,6 @@ export default {
         }
     }, 'forced').setT({ global: 'useCard' }),
     wenda: new toSkill('regard', {
-        init(player, skill) {
-            if (!player.$[skill]) player.$[skill] = true;
-        },
         filter(Evt, player) {
             return (player.$.wenda === true && player.countCards('hs', { type: 'equip' }))
                 || (player.$.wenda === false && player.countCards('hs', { type: 'basic' }));
@@ -17687,7 +17693,7 @@ export default {
                 return `###『一问一答』###将一张牌当做【${get.$t(links[0][3]) || ''}${get.$t(links[0][2])}】使用`;
             }
         },
-    }, 'enable:chooseToUse'),
+    }, 'enable:chooseToUse').setI(true),
     //羽澄照乌愈
     chenming: new toSkill('trigger', {
         filter(Evt, player) {
@@ -19114,8 +19120,7 @@ export default {
         }]
     }).setT({ global: 'phaseEnd' }),
     //闪光pika
-    yikai: {
-        enable: 'phaseUse',
+    yikai: new toSkill('active', {
         limited: true,
         filterTarget: true,
         content: [() => {
@@ -19213,8 +19218,8 @@ export default {
                 }
             }
         }
-    },
-    pkyuanjun: {
+    }),
+    pkyuanjun: new toSkill('trigger', {
         trigger: { player: 'damageEnd', source: 'damageEnd' },
         filter(Evt, player) {
             if (Evt.nature != 'thunder') return false;
@@ -19246,11 +19251,10 @@ export default {
                 player: 1,
             }
         },
-    },
+    }),
     //咩栗
-    qinhuo: {
+    qinhuo: new toSkill('trigger', {
         trigger: { global: 'useCardAfter' },
-        direct: true,
         filter(Evt, player) {
             if (Evt.cards && get.name(Evt.card) == 'huogong'
                 && !Evt.player.hasHistory('sourceDamage', evt => evt.getParent('useCard').name === 'useCard')) return true;
@@ -19276,8 +19280,8 @@ export default {
                 target.gain(trigger.cards, 'gain2');
             }
         }],
-    },
-    lvecao: {
+    }, 'direct'),
+    lvecao: new toSkill('trigger', {
         trigger: { player: 'damageEnd' },
         filter(Evt, player) {
             return player.hasUseTarget({ name: 'tiesuo' });
@@ -19285,13 +19289,12 @@ export default {
         check(Evt, player) {
             return true;
         },
-        frequent: true,
         content() {
             player.chooseUseTarget({ name: 'tiesuo' }, true).set('addedSkill', ['lvecao']);
         },
         group: 'lvecao_fadian',
         subSkill: {
-            fadian: {
+            fadian: new toSkill('trigger', {
                 trigger: { global: 'linkEnd' },
                 filter(Evt, player) {
                     let evt = Evt.getParent('useCard');
@@ -19303,7 +19306,6 @@ export default {
                             });
                     }
                 },
-                direct: true,
                 content() {
                     Evt.tar = trigger.player
                     player.gainPlayerCard(trigger.player, 'hej', `###${get.prompt('lvecao')}###获得其区域内一张可见牌`).set('filterButton', function (button) {
@@ -19323,11 +19325,10 @@ export default {
                         }
                     }
                 },
-            }
+            }, 'direct')
         }
-    },
-    yangxi: {
-        enable: 'phaseUse',
+    }, 'frequent'),
+    yangxi: new toSkill('active', {
         usable: 1,
         filter(Evt, player) {
             return player.countCards('he') > player.countCards('he', { type: ['trick', 'delay'] });
@@ -19375,9 +19376,9 @@ export default {
                 }
             }
         }
-    },
+    }),
     //呜米
-    naisi: {
+    naisi: new toSkill('trigger', {
         trigger: { global: 'phaseEnd' },
         direct: true,
         init(player, skill) {
@@ -19416,8 +19417,8 @@ export default {
                 },
             }
         }
-    },
-    tuzai: {
+    }),
+    tuzai: new toSkill('trigger', {
         trigger: { source: 'damageEnd' },
         filter(Evt, player) {
             return Evt.player.countGainableCards(player, 'hej', card => {
@@ -19457,9 +19458,8 @@ export default {
                 }
             }
         }
-    },
-    wuneng: {
-        enable: 'phaseUse',
+    }),
+    wuneng: new toSkill('active', {
         filter(Evt, player) {
             return player.countCards('h', card => ['tao', 'taoyuan'].includes(card.name) && !card.hasGaintag('ming_'));
         },
@@ -19486,7 +19486,7 @@ export default {
                 player: 1,
             }
         }
-    },
+    }),
     //林大力
     xilv: new toSkill('trigger', {
         trigger: { global: 'drawAfter' },
@@ -19781,7 +19781,7 @@ export default {
             }
         }],
     }),
-    meizhan: {
+    meizhan: new toSkill('trigger', {
         audio: true,
         zhuSkill: true,
         trigger: { global: 'gainAfter' },
@@ -19810,7 +19810,7 @@ export default {
                 game.asyncDraw(draws);
             }
         }],
-    },
+    }),
     //伊莎贝拉·霍利
     ya: new toSkill('mark', {
         marktext: '芽',

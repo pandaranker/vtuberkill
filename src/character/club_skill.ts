@@ -18,6 +18,9 @@ export default {
         content() {
             trigger.num = player.countCards('e') || 1;
         },
+        ai:{
+            combo:'yaoji'
+        }
     },
     yaoji: {
         audio: 3,
@@ -1182,13 +1185,11 @@ export default {
     },
 
     milijianying: new toSkill('trigger', {
-        direct: true,
         mark: true,
         marktext: '性',
-        locked: true,
         intro: {
             content(storage, player, skill) {
-                return "当前为" + get.translation(player.sex);
+                return `当前性别：${get.translation(player.sex)}`;
             },
         },
         trigger: {
@@ -1198,13 +1199,7 @@ export default {
             return get.name(Evt.card) == 'sha';
         },
         content() {
-            if (player.sex == 'female') {
-                player.sex = 'male';
-            }
-            else {
-                player.sex = 'female'
-            }
-            player.markSkill('milijianying');
+            player.changeSex().set('mark','milijianying')
         },
         group: 'milijianying_cixiong',
         subSkill: {
@@ -1213,8 +1208,9 @@ export default {
                 noHidden: true,
                 inherit: 'cixiong_skill',
             },
-        }
-    }),
+        },
+        involve: 'cixiong'
+    },'direct','locked'),
     dianyinchuancheng: {
         trigger: {
             player: 'damageEnd',

@@ -27,7 +27,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			/**P家诸人 */
 			Paryi: ['male', 'paryi', 4, ['tiantang', 'haoren'], ['doublegroup:paryi:painter']],
-			TakatsukiRitsu: ['female', 'paryi', 3, ['shengya', 'liangshan', 'chongshi']],
+			TakatsukiRitsu: ['female', 'paryi', 3, ['shengya', 'hange', 'chongshi']],
 			MorinagaMiu: ['female', 'paryi', 3, ['guanzhai', 'zhishu']],
 			OtomeOto: ['female', 'paryi', 3, ['yuxia', 'lianjue', 'changxiang'], ['zhu']],
 			HisekiErio: ['female', 'paryi', 4, ['huange', 'qishi', 'yongtuan'], ['zhu']],

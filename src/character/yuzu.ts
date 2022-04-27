@@ -300,6 +300,13 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 				if (player.$.wenda === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
 				return str.replace(yin, lib.spanClass(yin, 'changetext'));
 			},
+			guangan(player) {
+				let str = lib.translate.guangan_info;
+				let result = /(阳~.*?)[；。].*(阴~.*?)[；。]/g.exec(str);
+				let yang = result[1], yin = result[2];
+				if (player.$.guangan === true) return str.replace(yang, lib.spanClass(yang, 'changetext'));
+				return str.replace(yin, lib.spanClass(yin, 'changetext'));
+			},
 			yinxu(player) {
 				let str = lib.translate.yinxu_info;
 				switch (player.$.yinxu) {

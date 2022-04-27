@@ -46,6 +46,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		characterSort: {
 			sololive: {
 				KurokawaPresents: ['Qiankesaier', 'heichuan'],
+				oldCharacter: ['old_Eilene', 'old_InabaHaneru', 'old_HanazonoSerena', 'old_UsadaPekora', 'old_Elu'],
 				rewriteGuo: ['gz_LizeHelesta', 'gz_AngeKatrina', 'gz_Ava', 'gz_InabaHaneru', 'gz_xinke', 'gz_YukihanaLamy', 'gz_KataribeTsumugu'],
 			},
 		},
@@ -193,8 +194,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					return game.hasPlayer(cur => {
 						if (player.inRange(cur)) {
 							return player.countCards('h') != cur.countCards('h')
-							||player.countCards('e') != cur.countCards('e')
-							|| player.countCards('j') != cur.countCards('j')
+								|| player.countCards('e') != cur.countCards('e')
+								|| player.countCards('j') != cur.countCards('j')
 						}
 						return false;
 					});
@@ -206,8 +207,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 						if (ui.selected.targets.length && ui.selected.targets[0] != player) return false;
 						if (player.inRange(target)) {
 							return player.countCards('h') != target.countCards('h')
-							||player.countCards('e') != target.countCards('e')
-							|| player.countCards('j') != target.countCards('j')
+								|| player.countCards('e') != target.countCards('e')
+								|| player.countCards('j') != target.countCards('j')
 						}
 						return false;
 					});
@@ -911,6 +912,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 		},
 		translate: {
 			KurokawaPresents: `Kurokawa Presents`,
+			oldCharacter: `废案收集`,
 			rewriteGuo: `国战共通`,
 
 			db_atk: `进攻对策`,
