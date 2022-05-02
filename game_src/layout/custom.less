@@ -1,4 +1,3 @@
-
 .card_hightlight {
     animation: pulse 5s infinite;
 }
@@ -153,5 +152,31 @@ td.warnning_flash {
 
     100% {
         opacity: 1;
+    }
+}
+
+
+.fixed_medium {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    &.fixed_around {
+        justify-content: space-around;
+    }
+
+    &.hidden {
+        height: 0;
+    }
+
+    &.pinkbg {
+        background-image: linear-gradient(#6f4d6933, #6f4d6933);
+    }
+
+    >div {
+        width: fit-content;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
     }
 }

@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '1.10.2.23',
+	version: '1.10.2.24',
 	update: '1.9.102.2',
 	changeLog: [
-		`1.10.2.23微型更新：调整早稻叽的技能组，调整启动界面`,
+		`1.10.2.24小型更新：新增势力~Re:AcT，新增角色~天川花乃【Re:AcT】、久檻夜Qu【Re:AcT】`,
 		`1.10.2.22中型更新：新增角色~木糖纯【虚研/群】、艾尔莎【红圈】、冥冥meichan【红圈】`,
 		`测试性的实装了启动界面（目前界面十分简陋，还在完善中，请见谅）`,
 		``,
@@ -10,14 +10,14 @@ window.noname_update = {
 		`部分新特效可以用设置里的 “流畅模式” 关闭（包括斜体字二级菜单）`,
 		`化鲸篇等新增机制可以在游戏内或者设置的 “帮助” 中查看`,
 	],
-	players: ['Zaodaoji', 'ShiinaNanoha', 'yueyinkongye', 'mutangchun', 'ElizabethHodophilaxYork', 'Meimei'],
+	players: ['AmakawaHano', 'QualiaQu', 'mutangchun', 'ElizabethHodophilaxYork', 'Meimei'],
 	files: [
 		'dist/card.js',
 		'dist/character.js',
 		'dist/mode.js',
 
-		'layout/default/layout.css',
-		'layout/default/menu.css',
+		// 'layout/default/layout.css',
+		// 'layout/default/menu.css',
 
 		'game/game.js',
 

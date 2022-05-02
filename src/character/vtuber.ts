@@ -83,7 +83,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**姬雏 */
 			HIMEHINA: ['female', 'singer', 3, ['jichu', 'mingshizhige']],
 			/**月紫亚里亚 */
-			TsukushiAria: ['female', 'qun', 3, ['tatongling', 'yumeng'], ['riV']],
+			TsukushiAria: ['female', 'ReAcT', 3, ['tatongling', 'yumeng'], ['riV']],
 
 			/**泠鸢 */
 			Yousa: ['female', 'VirtuaReal', 3, ['niaoji', 'ysxiangxing'], ['guoV']],

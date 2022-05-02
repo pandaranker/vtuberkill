@@ -1,4 +1,4 @@
-window.vk_asset_list=[
+window.vk_asset_list = [
 	'v1.9.191.11.2',
 
 	'layout/cursor/aero_arrow_glow.cur',
@@ -21,7 +21,7 @@ window.vk_asset_list=[
 	'audio/background/music_Quiet.mp3',
 	'audio/background/music_VTL.mp3',
 	'audio/card/default.mp3',
-	
+
 	'audio/card/female/caomu.mp3',
 	'audio/card/female/chiling.mp3',
 	'audio/card/female/diaohulishan.mp3',
@@ -40,7 +40,7 @@ window.vk_asset_list=[
 	'audio/card/female/sha_ice.mp3',
 	'audio/card/female/suijiyingbian.mp3',
 	'audio/card/female/zhujinqiyuan.mp3',
-	
+
 	// 'audio/card/female/hanbing.mp3',
 	// 'audio/card/female/bagua.mp3',
 	// 'audio/card/female/baiyin.mp3',
@@ -66,7 +66,7 @@ window.vk_asset_list=[
 	// 'audio/card/female/zhuge.mp3',
 	// 'audio/card/female/zhuque.mp3',
 	// 'audio/card/female/zixin.mp3',
-		
+
 	'audio/card/female/bingliang.mp3',
 	'audio/card/female/guohe.mp3',
 	'audio/card/female/huogong.mp3',
@@ -90,7 +90,7 @@ window.vk_asset_list=[
 	'audio/card/female/yiyi.mp3',
 	'audio/card/female/yuanjiao.mp3',
 	'audio/card/female/zhibi.mp3',
-	
+
 	'audio/card/male/caomu.mp3',
 	'audio/card/male/chiling.mp3',
 	'audio/card/male/diaohulishan.mp3',
@@ -109,7 +109,7 @@ window.vk_asset_list=[
 	'audio/card/male/sha_ice.mp3',
 	'audio/card/male/suijiyingbian.mp3',
 	'audio/card/male/zhujinqiyuan.mp3',
-	
+
 	'audio/skill/bagua_skill.mp3',
 	'audio/skill/baiyin_skill.mp3',
 	'audio/skill/cixiong_skill.mp3',
@@ -151,7 +151,7 @@ window.vk_asset_list=[
 	// 'audio/card/male/zhuge.mp3',
 	// 'audio/card/male/zhuque.mp3',
 	// 'audio/card/male/zixin.mp3',
-	
+
 	'audio/card/male/bingliang.mp3',
 	'audio/card/male/guohe.mp3',
 	'audio/card/male/huogong.mp3',
@@ -204,7 +204,7 @@ window.vk_asset_list=[
 	'audio/effect/throw_wine2.mp3',
 	'audio/effect/tie.mp3',
 	'audio/effect/win.mp3',
-	
+
 	'audio/effect/throw_sc1.mp3',
 	'audio/effect/throw_sc2.mp3',
 	'audio/effect/throw_ship1.mp3',
@@ -805,7 +805,7 @@ window.vk_asset_list=[
 	'image/background/simple1_bg.svg',
 	'image/background/simple2_bg.svg',
 	'image/background/simple3_bg.svg',
-	
+
 
 	'image/card/minguangkai.png',
 	'image/card/db_atk1.jpg',
@@ -827,7 +827,7 @@ window.vk_asset_list=[
 	// 'image/card/rewrite_renwang.png',
 	// 'image/card/rewrite_tengjia.png',
 	// 'image/card/rewrite_zhuge.png',
-	
+
 	'image/card/groups/holo.png',
 	'image/card/groups/nijisanji.png',
 	'image/card/groups/VirtuaReal.png',
@@ -948,7 +948,7 @@ window.vk_asset_list=[
 	'image/card/zhuque.png',
 	'image/card/zixin.png',
 	'image/card/zong.png',
-	
+
 	'image/card/caochuan.png',
 	'image/card/jiejia.png',
 	'image/card/jinhe.png',
@@ -1016,7 +1016,7 @@ window.vk_asset_list=[
 	'image/card/promote_kouqin.png',
 	'audio/effect/music_beauty.mp3',
 
-	
+
 	'image/replace/bagua.png',
 	'image/replace/baiyin.png',
 	'image/replace/bingliang.png',
@@ -1100,7 +1100,7 @@ window.vk_asset_list=[
 	'image/replace/zhungangshuo.png',
 	'image/replace/zhuque.png',
 	'image/replace/zixin.png',
-	
+
 	'image/replace/chuqibuyi.png',
 	'image/replace/dongzhuxianji.png',
 	'image/replace/heiguangkai.png',
@@ -1117,7 +1117,7 @@ window.vk_asset_list=[
 	'image/replace/jintuiziru.png',
 	'image/replace/jiwangkailai.png',
 	'image/replace/zhadan.png',
-	
+
 	'image/character/AchikitaChinami.jpg',
 	'image/character/Ahab.jpg',
 	'image/character/aibai.jpg',
@@ -1377,6 +1377,9 @@ window.vk_asset_list=[
 	'image/character/ElizabethHodophilaxYork.jpg',
 	'image/character/mutangchun.jpg',
 	'image/character/Meimei.jpg',
+	//2022年5月新增的图片文件
+	'image/character/AmakawaHano.jpg',
+	'image/character/QualiaQu.jpg',
 
 	//天启系列
 	'image/character/ap_Azusa.jpg',
@@ -1611,7 +1614,7 @@ window.vk_asset_list=[
 	'image/skin/Zaodaoji/1.jpg',
 	'image/skin/Zaodaoji/2.jpg',
 	'image/skin/Zaodaoji/3.jpg',
-	
+
 	'image/skin/sp_MinatoAqua/1.jpg',
 	'image/skin/sp_GawrGura/1.jpg',
 
@@ -1777,12 +1780,12 @@ window.vk_asset_list=[
 	'image/emotion/throw_emotion/wine2.png',
 	'image/emotion/throw_emotion/yuxisx1.png',
 	'image/emotion/throw_emotion/yuxisx2.png',
-	
+
 	'image/emotion/throw_emotion/sc1.png',
 	'image/emotion/throw_emotion/sc2.png',
 	'image/emotion/throw_emotion/ship1.png',
 	'image/emotion/throw_emotion/ship2.png',
-	
+
 	'image/mode/boss/card/chixueqingfeng.png',
 	'image/mode/boss/card/chiyanzhenhunqin.png',
 	'image/mode/boss/card/guilongzhanyuedao.png',
@@ -1806,7 +1809,7 @@ window.vk_asset_list=[
 	'image/mode/boss/card/lingsheji.png',
 	'image/mode/boss/card/shanrangzhaoshu.png',
 	'image/mode/boss/card/xingtianpojunfu.png',
-	
+
 	'image/mode/boss/character/boss_bianchengwang.jpg',
 	'image/mode/boss/character/boss_chujiangwang.jpg',
 	'image/mode/boss/character/boss_dushiwang.jpg',
@@ -1819,7 +1822,7 @@ window.vk_asset_list=[
 	'image/mode/boss/character/boss_zhuanlunwang.jpg',
 	'image/mode/boss/character/boss_dizangwang.jpg',
 	'image/mode/boss/character/boss_mengpo.jpg',
-	
+
 	'image/mode/boss/character/boss_xiangliu.jpg',
 	'image/mode/boss/character/boss_zhuyan.jpg',
 	'image/mode/boss/character/boss_bifang.jpg',
@@ -1922,7 +1925,7 @@ window.vk_asset_list=[
 	'image/mode/longlaoguan/card/longjiao.png',
 	'image/mode/longlaoguan/card/chuanjia.png',
 	'image/mode/longlaoguan/card/dulun.png',
-	
+
 	'image/splash/boss.jpg',
 	'image/splash/brawl.jpg',
 	'image/splash/connect.jpg',
@@ -1975,7 +1978,7 @@ window.vk_asset_list=[
 	'theme/style/player/silver3.png',
 	'theme/style/player/silver_d1.png',
 	'theme/style/player/silver_d2.png',
-	
+
 	'extension/yindao/Bella.jpg',
 	'extension/yindao/dusongziGin.jpg',
 	'extension/yindao/Kaf.jpg',
@@ -1985,6 +1988,6 @@ window.vk_asset_list=[
 	'extension/yindao/ShirakamiHaruka.jpg',
 	'extension/yindao/path2.png',
 ];
-window.vk_skin_list={
+window.vk_skin_list = {
 
 };

@@ -60,11 +60,16 @@ module.exports = {
             /**
              * 获取本角色势力组
              */
-            getGroups() {
-                let result = [this.group]
-                if (this.subgroup) result.push(this.subgroup)
-                if (this.group === 'VirtuaReal') result.push('nijisanji')
-                return _.uniq(result)
+            getGroups(aim) {
+                if(aim){
+                    return this.getGroups().includes(aim)
+                }
+                else{
+                    let result = [this.group]
+                    if (this.subgroup) result.push(this.subgroup)
+                    if (this.group === 'VirtuaReal') result.push('nijisanji')
+                    return _.uniq(result)
+                }
             },
             /**
              * 判断本角色是否是英V

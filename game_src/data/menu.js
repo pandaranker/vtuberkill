@@ -3309,10 +3309,10 @@
                 character_dialog_tool: {
                     name: '自由选将显示',
                     intro: '点击自由选将时默认显示的条目',
-                    init: '最近',
+                    init: '最近使用',
                     item: {
                         '收藏': '收藏',
-                        '最近': '最近',
+                        '最近使用': '最近使用',
                         'all': '全部'
                     },
                     unfrequent: true,

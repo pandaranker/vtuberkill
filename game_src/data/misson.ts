@@ -22,7 +22,7 @@ class Misson {
 module.exports = {
     missons: [
         new Misson({
-            name: 'hetero',
+            name: 'Hetero',
             trans: '异性攻略',
             intro: '成为异性角色使用牌的目标',
             trigger: { source: 'useCardToTargeted' },
@@ -31,7 +31,7 @@ module.exports = {
             }
         }),
         new Misson({
-            name: 'hetero',
+            name: 'Wrath',
             trans: '狂乱',
             intro: '受到无来源的伤害',
             trigger: { player: 'damageEnd' },
@@ -40,8 +40,8 @@ module.exports = {
             }
         }),
         new Misson({
-            name: 'hetero',
-            trans: '共鸣',
+            name: 'Spellboost',
+            trans: '魔力增幅',
             intro: '使用7种不同的锦囊牌',
             trigger: { player: 'useCard2' },
             filter(Evt, player) {
@@ -53,7 +53,7 @@ module.exports = {
             }
         }),
         new Misson({
-            name: 'hetero',
+            name: 'Rally',
             trans: '协作',
             intro: '成为红色锦囊牌的目标',
             trigger: { source: 'useCardToTargeted' },

@@ -2,6 +2,7 @@ module.exports = {
    getFun: (vkCore) => {
       let { game, ui, get, ai, lib, _status } = vkCore
       return {
+         ...require('@m/get_custom').getData(vkCore),
          /**
           * 返回联机名称
           * @returns {!number} 默认为“无名玩家”

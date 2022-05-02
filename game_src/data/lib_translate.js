@@ -5,8 +5,8 @@ module.exports = {
 	 * @type {!Object}
 	 */
 	translate: {
-		faction: ' ',
-		
+		faction: '',
+
 		sc: '打钱',
 		ship: '上舰',
 		flower: '鲜花',
@@ -107,6 +107,7 @@ module.exports = {
 		asoul: 'A',
 		nori: '苔',
 		vwp: '神椿',
+		ReAcT: 'RA',
 		vshojo: 'V',
 		xuyan: '虚',
 		chaos: 'C',
@@ -143,6 +144,7 @@ module.exports = {
 		asoul2: 'A-SOUL',
 		nori2: 'Noripro',
 		vwp2: '神椿市',
+		ReAcT2: 'Re:AcT',
 		vshojo2: 'Vshojo',
 		xuyan2: '虚研社',
 		chaos2: 'ChaosLive',

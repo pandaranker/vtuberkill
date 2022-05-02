@@ -717,6 +717,9 @@
         this.finish();
         if (notrigger != 'notrigger') {
           this.trigger(this.name + 'Cancelled');
+          if (this.type === 'card') {
+            this.trigger('cardCancelled');
+          }
           if (this.player && lib.phaseName.contains(this.name)) this.player.getHistory('skipped').add(this.name)
         }
       },

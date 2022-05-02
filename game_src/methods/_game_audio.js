@@ -1,7 +1,7 @@
 let { game, ui, get, ai, lib, _status } = vkCore
 /**音效类game方法 */
 module.exports = {
-    clickAudio: (...args) => {
+    clickAudio(...args) {
         if (lib.config.volumn_click === 0) return;
         var str = '';
         var onerror = null;
@@ -41,17 +41,17 @@ module.exports = {
         document.body.appendChild(audio);
         return audio;
     },
-    playAudio: () => {
+    playAudio(...args) {
         if (lib.config.volumn_audio === 0) return;
-        if (_status.video && arguments[1] != 'video') return;
+        if (_status.video && args[1] != 'video') return;
         var str = '';
         var onerror = null;
-        for (var i = 0; i < arguments.length; i++) {
-            if (typeof arguments[i] === 'string' || typeof arguments[i] == 'number') {
-                str += '/' + arguments[i];
+        for (var i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'string' || typeof args[i] == 'number') {
+                str += '/' + args[i];
             }
-            else if (typeof arguments[i] == 'function') {
-                onerror = arguments[i]
+            else if (typeof args[i] == 'function') {
+                onerror = args[i]
             }
             if (_status.video) break;
         }
@@ -88,7 +88,7 @@ module.exports = {
         ui.window.appendChild(audio);
         return audio;
     },
-    trySkillAudio: (skill, player, directaudio) => {
+    trySkillAudio(skill, player, directaudio) {
         game.broadcast(game.trySkillAudio, skill, player, directaudio);
         var info = get.info(skill);
         if (!info)
@@ -149,8 +149,8 @@ module.exports = {
             }
         }
     },
-    playSkillAudio: (name, index) => {
-        if (_status.video && arguments[1] != 'video') return;
+    playSkillAudio(name, index) {
+        if (_status.video && index != 'video') return;
         if (!lib.config.repeat_audio && _status.skillaudio.contains(name)) return;
         game.addVideo('playSkillAudio', null, name);
         if (name.indexOf('|') < name.lastIndexOf('|')) {

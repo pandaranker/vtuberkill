@@ -3230,7 +3230,7 @@ module.exports = {
       layoutfixed: ['chess', 'tafang', 'stone'],//特殊样式模式
       /**
        * 角色选择弹窗中的特殊选项
-       * ['收藏', '最近']
+       * ['收藏', '最近使用']
        * @name lib.characterDialogGroup
        * @see {@link ui.create.characterDialog}
        */
@@ -3238,7 +3238,7 @@ module.exports = {
         '收藏': function (name, capt) {
           return lib.config.favouriteCharacter.contains(name) ? capt : null;
         },
-        '最近': function (name, capt) {
+        '最近使用': function (name, capt) {
           var list = get.config('recentCharacter') || [];
           return list.contains(name) ? capt : null;
         }

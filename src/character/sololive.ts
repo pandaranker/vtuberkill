@@ -341,9 +341,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 					Evt.target.classList.remove('glow');
 					switch (result.index) {
 						case 0: {
-							player.$give(Evt.card, Evt.target, false);
-							if (Evt.effect.contains('lebu') && Evt.target.canAddJudge('lebu')) Evt.target.addJudge({ name: 'lebu' }, [Evt.card]);
-							else if (Evt.effect.contains('bingliang') && Evt.target.canAddJudge('bingliang')) Evt.target.addJudge({ name: 'bingliang' }, [Evt.card]);
+							Evt.target.addToJudge(Evt.card, player);
 							break;
 						}
 						case 1: {
@@ -1047,7 +1045,8 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 			gz_AngeKatrina: `国战安洁`,
 			gz_lianjin: `炼金`,
-			gz_lianjin_info: `当你使用一张牌后，可以将一张手牌置于此将牌上。然后若此将牌上有三种不同/相同花色的牌，你将其中的装备牌置入场上，弃置其余的牌，视为使用了两张：火【杀】/【无中生有】，然后本回合不再触发此项。`,
+			gz_lianjin_info: `当你使用一张牌后，可以将一张手牌置于此将牌上。<br>
+			然后若此将牌上有三种不同/相同花色的牌，你将其中的装备牌置入*场上，弃置其余的牌，视为使用了两张：火【杀】/【无中生有】，然后本回合不再触发此项。`,
 
 		}
 	};

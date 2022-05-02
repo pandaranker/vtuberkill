@@ -32,7 +32,7 @@ module.exports = {
 	group: [
 		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
 		'painter', 'singer',
-		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
+		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi', 'ReAcT',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
 		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
 		'vshojo',
@@ -79,7 +79,9 @@ module.exports = {
 		asoul: 'fire',
 		nori: 'key',
 		vwp: 'key',
+		ReAcT: 'thunder',
 		vshojo: 'metal',
+
 		xuyan: 'ice',
 		chaos: 'yami',
 		xuefeng: 'orange',

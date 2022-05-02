@@ -9,7 +9,11 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			//新月岚
 			xinyuelan: ['female', 'qun', 4, ['chisha', 'wujian'], ['guoV']],
 			//白音小雪
-			Shiranekoyuki: ['female', 'qun', 4, ['jvliu', 'wuxia'], ['riV']],
+			Shiranekoyuki: ['female', 'ReAcT', 4, ['jvliu', 'wuxia'], ['riV']],
+			/**天川花乃 */
+			AmakawaHano: ['female', 'ReAcT', 3, ['dunxin', 'wailin'], ['riV']],
+			/**天川花乃 */
+			QualiaQu: ['female', 'ReAcT', 4, ['xianliao', 'jidan'], ['yingV']],
 
 			/**------------------------------------------------------------------------------------------------------- */
 
@@ -57,14 +61,14 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 			/**梦乃栞 */
 			YumenoShiori: ['female', 'paryi', 4, ['rencan', 'yiduo'],],
 			/**椎名菜羽 */
-			ShiinaNanoha: ['female', 'paryi', 4, ['qiansi', 'kangqie'],],
+			ShiinaNanoha: ['female', 'paryi', 4, ['qiansi', 'yuanxian'], ['misson:Wrath']],
 			/**早见咲 */
 			HayamiSaki: ['female', 'paryi', 4, ['tuncai', 'zhidu'], ['zhu', 'guoV']],
 			/**纪代因果 */
 			KiyoInga: ['female', 'paryi', 4, ['huanxi', 'celv'], ['yingV']],
 
 			/**喵田弥夜Miya */
-			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV']],
+			Miya: ['female', 'painter', 4, ['maoxiao', 'jianfa', 'jijie'], ['zhu', 'guoV', 'doublegroup:painter:Providence']],
 			/**谢拉 */
 			CierraRunis: ['female', 'qun', 3, ['minghuahongxiao']],
 			/**恋乃夜舞 */
@@ -125,7 +129,7 @@ window.game.import('character', function (lib, game, ui, get, ai, _status) {
 
 
 			/**木糖纯 */
-			mutangchun: ['female', 'xuyan', 4, ['zuanyan','diji','yaoyan'], ['guoV', 'doublegroup:xuyan:qun']],
+			mutangchun: ['female', 'xuyan', 4, ['zuanyan', 'diji', 'yaoyan'], ['guoV', 'doublegroup:xuyan:qun']],
 
 			/**中国绊爱 */
 			zhongguobanai: ['female', 'NetEase', 4, ['liying', 'fuyu'], ['guoV']],

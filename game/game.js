@@ -130,10 +130,11 @@ module.exports = {
     '翻面': '武将牌被翻面的角色将视为跳过该角色的下一回合，然后将其武将牌翻回来。',
     '护甲': '和体力类似，每点护甲可抵挡一点伤害，但不影响手牌上限。',
     '发现': '从三张随机亮出的牌中选择一张，若无特殊说明，则获得此牌。',
+    '置入': '当一张不为延时锦囊的牌被“置入”判定区时，黑色牌转化为【兵粮寸断】，红色牌转化为【乐不思蜀】。',
     '背水': '角色在进行选择一项的抉择时，执行背水项，表示依次执行以上每一项。',
     '不致命': '因不致命伤害进入濒死状态的角色，不会因本次濒死求救失败而死亡。',
     '夺取': '在夺取状态持续的期间，发起夺取的角色视为拥有目标技能，被夺取的角色对应技能失效。',
-    '标记': '标记一名角色（仅自己可见）。不同技能间的标记相互独立，同一名角色不能被同一个技能重复标记。',
+    '秘密标记': '标记一名角色（仅自己可见）。不同技能间的标记相互独立，同一名角色不能被同一个技能重复标记。',
 }
 
 /***/ }),
@@ -175,7 +176,7 @@ module.exports = {
 	group: [
 		'wei', 'shu', 'wu', 'qun', 'jin', 'western', 'key', 'shen',
 		'painter', 'singer',
-		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi',
+		'holo', 'nijisanji', 'dotlive', 'upd8', 'eilene', 'paryi', 'kagura', 'nori', 'vwp', 'nanashi', 'ReAcT',
 		'VirtuaReal', 'HappyEl', 'psp', 'asoul', 'xuyan', 'chaos', 'xuefeng', 'Providence', 'NetEase', 'Tencent',
 		'hunmiao', 'ego', 'lucca', 'RedC', 'MiyaFam', 'VirtualUnion',
 		'vshojo',
@@ -222,7 +223,9 @@ module.exports = {
 		asoul: 'fire',
 		nori: 'key',
 		vwp: 'key',
+		ReAcT: 'thunder',
 		vshojo: 'metal',
+
 		xuyan: 'ice',
 		chaos: 'yami',
 		xuefeng: 'orange',
@@ -271,8 +274,8 @@ module.exports = {
 	 * @type {!Object}
 	 */
 	translate: {
-		faction: ' ',
-		
+		faction: '',
+
 		sc: '打钱',
 		ship: '上舰',
 		flower: '鲜花',
@@ -373,6 +376,7 @@ module.exports = {
 		asoul: 'A',
 		nori: '苔',
 		vwp: '神椿',
+		ReAcT: 'RA',
 		vshojo: 'V',
 		xuyan: '虚',
 		chaos: 'C',
@@ -409,6 +413,7 @@ module.exports = {
 		asoul2: 'A-SOUL',
 		nori2: 'Noripro',
 		vwp2: '神椿市',
+		ReAcT2: 'Re:AcT',
 		vshojo2: 'Vshojo',
 		xuyan2: '虚研社',
 		chaos2: 'ChaosLive',
@@ -3922,10 +3927,10 @@ module.exports = {
                 character_dialog_tool: {
                     name: '自由选将显示',
                     intro: '点击自由选将时默认显示的条目',
-                    init: '最近',
+                    init: '最近使用',
                     item: {
                         '收藏': '收藏',
-                        '最近': '最近',
+                        '最近使用': '最近使用',
                         'all': '全部'
                     },
                     unfrequent: true,
@@ -13058,6 +13063,7 @@ module.exports = {
    getFun: (vkCore) => {
       let { game, ui, get, ai, lib, _status } = vkCore
       return {
+         ...(__webpack_require__(1804).getData)(vkCore),
          /**
           * 返回联机名称
           * @returns {!number} 默认为“无名玩家”
@@ -21493,7 +21499,7 @@ module.exports = {
       layoutfixed: ['chess', 'tafang', 'stone'],//特殊样式模式
       /**
        * 角色选择弹窗中的特殊选项
-       * ['收藏', '最近']
+       * ['收藏', '最近使用']
        * @name lib.characterDialogGroup
        * @see {@link ui.create.characterDialog}
        */
@@ -21501,7 +21507,7 @@ module.exports = {
         '收藏': function (name, capt) {
           return lib.config.favouriteCharacter.contains(name) ? capt : null;
         },
-        '最近': function (name, capt) {
+        '最近使用': function (name, capt) {
           var list = get.config('recentCharacter') || [];
           return list.contains(name) ? capt : null;
         }
@@ -24522,6 +24528,10 @@ module.exports = {
         this.finish();
         if (notrigger != 'notrigger') {
           this.trigger(this.name + 'Cancelled');
+          console.log(this)
+          if (this.type === 'card') {
+            this.trigger('cardCancelled');
+          }
           if (this.player && lib.phaseName.contains(this.name)) this.player.getHistory('skipped').add(this.name)
         }
       },
@@ -29032,6 +29042,8 @@ module.exports = function (element, _mode, _message) {
 /***/ 717:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+const { some } = __webpack_require__(8784);
+
 module.exports = {
    uiFun: (vkCore) => {
       let { game, ui, get, ai, lib, _status } = vkCore
@@ -31145,9 +31157,8 @@ module.exports = {
                         }
                         alterableCharacters.sort();
                         var getGroup = function (name) {
-                           var group = get.is.double(name, true);
-                           if (group) return group[0];
-                           return lib.character[name][1];
+                           let groups = get.charaGroups(name);
+                           if (groups) return groups[0];
                         },
                            groupSort = function (name) {
                               if (!lib.character[name]) return 50;
@@ -33869,6 +33880,16 @@ module.exports = {
                }
                return ui.create.characterDialog.apply(this, args);
             },
+            /**
+             * 生成带有卡牌或角色按钮的弹窗（旧版）
+             * @function
+             * @param {?string} thisiscard 是否是卡牌
+             * @param {?string} heightset 是否是大弹窗
+             * @param {?string} characterx 同一角色是否可替换武将牌（例如在标准和界限突破间切换）
+             * @param {?function} filter 卡牌或角色的筛选条件
+             * @param {?boolean} noclick 按钮是否可以被点击
+             * @returns {HTMLDivElement} 返回生成的弹窗
+             */
             characterDialog2: function (filter) {
                var list = [];
                for (var i in lib.character) {
@@ -33891,13 +33912,13 @@ module.exports = {
                list.sort(lib.sort.character);
                dialog.classList.add('character');
                dialog.classList.add('choose-character');
-               var getPack = function (name) {
-                  for (var i in lib.characterPack) {
-                     if (lib.characterPack[i][name]) return i;
-                  }
-                  return null;
-               }
-               var packs = {};
+               // var getPack = function (name) {
+               //    for (var i in lib.characterPack) {
+               //       if (lib.characterPack[i][name]) return i;
+               //    }
+               //    return null;
+               // }
+               // var packs = {};
                var packnode = ui.create.div('.packnode', dialog);
                lib.setScroll(packnode);
                var clickCapt = function () {
@@ -33916,9 +33937,8 @@ module.exports = {
                   }
                }
                var createNode = function (packname) {
-                  var translate;
                   var pack = null;
-                  if (packname == '最近') {
+                  if (packname == '最近使用') {
                      pack = get.config('recentCharacter') || [];
                   }
                   else if (packname == '收藏') {
@@ -33933,8 +33953,8 @@ module.exports = {
                var node;
                var recent = get.config('recentCharacter');
                if (recent && recent.length) {
-                  node = createNode('最近');
-                  if (lib.config.character_dialog_tool == '最近') {
+                  node = createNode('最近使用');
+                  if (lib.config.character_dialog_tool == '最近使用') {
                      clickCapt.call(node);
                      bool = false;
                   }
@@ -33959,7 +33979,7 @@ module.exports = {
                return dialog;
             },
             /**
-             * 生成带有卡牌或角色按钮的弹窗
+             * 生成带有卡牌或角色按钮的弹窗（新版）
              * @function
              * @param {?string} thisiscard 是否是卡牌
              * @param {?string} heightset 是否是大弹窗
@@ -34012,72 +34032,25 @@ module.exports = {
                      noclick = arguments[i];
                   }
                }
-               var list = [];
-               var dialog;
-               var node = ui.create.div('.caption.pointerspan');
+               let dialog = ui.create.dialog('hidden');
+               let node = ui.create.div('.caption.pointerspan');
                if (get.is.phoneLayout()) {
                   node.style.fontSize = '30px';
                }
-               var namecapt = [];
-               var getCapt = function (str) {
-                  var capt;
-                  if (str.indexOf('_') == -1) {
-                     capt = str[0];
-                  }
-                  else {
-                     capt = str[str.lastIndexOf('_') + 1];
-                  }
-                  capt = capt.toLowerCase();
-                  if (!/[a-z]/i.test(capt)) {
-                     capt = '自定义';
-                  }
-                  return capt;
-               }
-               if (thisiscard) {
-                  for (var i in lib.card) {
-                     if (!lib.translate[i + '_info']) continue;
-                     if (filter && filter(i)) continue;
-                     list.push(['', get.translation(lib.card[i].type), i]);
-                     if (namecapt.indexOf(getCapt(i)) == -1) {
-                        namecapt.push(getCapt(i));
-                     }
-                  }
-               }
-               else {
-                  for (var i in lib.character) {
-                     if (lib.character[i][4].contains('minskin')) continue;
-                     if (lib.character[i][4].contains('boss') || lib.character[i][4].contains('hiddenboss')) {
-                        if (lib.config.mode == 'boss') continue;
-                        if (!lib.character[i][4].contains('bossallowed')) continue;
-                     }
-
-                     if (lib.character[i][4].contains('stonehidden')) continue;
-                     if (lib.character[i][4].contains('unseen')) continue;
-                     if (lib.config.banned.contains(i)) continue;
-                     if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) continue;
-                     if (filter && filter(i)) continue;
-                     list.push(i);
-                     if (namecapt.indexOf(getCapt(i)) == -1) {
-                        namecapt.push(getCapt(i));
-                     }
-                  }
-               }
-               namecapt.sort(function (a, b) {
-                  return a > b ? 1 : -1;
-               });
+               let { list, namecapt } = ui.create.characterDialog_getList(thisiscard, filter);
                if (!thisiscard) {
                   namecapt.remove('自定义');
                   namecapt.push('newline');
-                  for (var i in lib.characterDialogGroup) {
+                  for (let i in lib.characterDialogGroup) {
                      namecapt.push(i);
                   }
                }
-               var newlined = false;
-               var newlined2;
-               var packsource;
-               var clickCapt = function (e) {
+               let newlined = false;
+               let newlined2;
+               let packsource;
+               let clickCapt = function (e) {
                   if (_status.dragged) return;
-                  if (dialog.currentcapt2 == '最近' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
+                  if (dialog.currentcapt2 == '最近使用' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
                      dialog.currentcapt2 = null;
                      dialog.currentcaptnode2.classList.remove('thundertext');
                      dialog.currentcaptnode2.inited = true;
@@ -34149,7 +34122,7 @@ module.exports = {
                         if (this.touchlink) {
                            this.touchlink.classList.remove('active');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                            if (dialog.currentgroup && dialog.buttons[i].group != dialog.currentgroup) {
                               dialog.buttons[i].classList.add('nodisplay');
                            }
@@ -34178,7 +34151,7 @@ module.exports = {
                            packsource.innerHTML = this.innerHTML;
                            packsource.classList.add('thundertext');
                         }
-                        for (var i = 0; i < dialog.buttons.length; i++) {
+                        for (let i = 0; i < dialog.buttons.length; i++) {
                            if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
                               dialog.buttons[i].classList.add('nodisplay');
                            }
@@ -34219,7 +34192,7 @@ module.exports = {
                   }
                   if (e) e.stopPropagation();
                };
-               for (i = 0; i < namecapt.length; i++) {
+               for (let i = 0; i < namecapt.length; i++) {
                   if (namecapt[i] == 'newline') {
                      newlined = document.createElement('div');
                      newlined.style.marginTop = '5px';
@@ -34235,7 +34208,7 @@ module.exports = {
                      node.appendChild(newlined);
                   }
                   else if (newlined) {
-                     var span = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius');
+                     let span = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius');
                      span.style.margin = '3px';
                      span.style.width = 'auto';
                      span.innerHTML = ' ' + namecapt[i].toUpperCase() + ' ';
@@ -34243,114 +34216,183 @@ module.exports = {
                      span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickCapt);
                      newlined.appendChild(span);
                      node[namecapt[i]] = span;
-                     if (namecapt[i] == '收藏') {
-                        span._nature = 'fire';
-                     }
-                     else {
-                        span._nature = 'wood';
-                     }
                   }
                   else {
-                     var span = document.createElement('span');
+                     if (!node.spans) {
+                        node.spans = ui.create.div('.menu.shadowed.reduce_radius.fixed_medium.fixed_around.pinkbg', node);
+                        let span = document.createElement('span');
+                        span.className = 'menubutton dim'
+                        span.innerHTML = '罗马音';
+                        node.spans.appendChild(span);
+                     }
+                     let span = document.createElement('span');
                      span.innerHTML = ' ' + namecapt[i].toUpperCase() + ' ';
                      span.link = namecapt[i];
                      span.alphabet = true;
                      span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickCapt);
-                     node.appendChild(span);
+                     node.spans.appendChild(span);
                   }
                }
-               if (!thisiscard) {
-                  let groups = lib.group.slice(0).removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
-                  if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && (!_status.connectMode || lib.configOL.versus_mode === '4v4'))) groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
-                  let bool1 = false;
-                  let bool4 = false;
-                  let groups_copy = [...groups]
-                  for (let i of list) {
-                     let group = lib.character[i][1]
-                     if (groups_copy.includes(group)) {
-                        groups_copy.remove(group)
-                     }
-                     if (group == 'shen') {
-                        bool1 = true;
-                     }
-                     if (!bool4 && get.is.double(i)) bool4 = true;
-                     if (bool1 && bool4 && groups_copy.length === 0) break;
-                  }
-                  groups.removeArray(groups_copy)
-                  if (!bool1) groups.remove('shen');
-                  if (bool4) groups.add('double');
-                  var natures = ['water', 'soil', 'wood', 'metal'];
-                  var span = document.createElement('span');
+               let putSpan = () => {
+                  let span = document.createElement('span');
                   newlined.appendChild(span);
                   span.style.margin = '8px';
-                  var clickGroup = function () {
-                     if (_status.dragged) return;
-                     if (dialog.currentcapt2 == '最近' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
-                        dialog.currentcapt2 = null;
-                        dialog.currentcaptnode2.classList.remove('thundertext');
-                        dialog.currentcaptnode2.inited = true;
-                        dialog.currentcaptnode2 = null;
+               }
+               if (!thisiscard) {
+                  let updateCapt = (i) => {
+                     if (dialog.currentcapt && i.capt != dialog.getCurrentCapt(i.link, i.capt)) {
+                        i.classList.add('nodisplay');
                      }
-                     var node = this, link = this.link;
-                     if (node.classList.contains('thundertext')) {
-                        dialog.currentgroup = null;
-                        dialog.currentgroupnode = null;
-                        node.classList.remove('thundertext');
-                        for (var i = 0; i < dialog.buttons.length; i++) {
-                           if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
-                              dialog.buttons[i].classList.add('nodisplay');
-                           }
-                           else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
-                              dialog.buttons[i].classList.add('nodisplay');
-                           }
-                           else {
-                              dialog.buttons[i].classList.remove('nodisplay');
-                           }
-                        }
+                     else if (dialog.currentcapt2 && i.capt != dialog.getCurrentCapt(i.link, i.capt, true)) {
+                        i.classList.add('nodisplay');
+                     }
+                     else if (dialog.currentcharanode && i.capt != dialog.getCurrentCapt(i.link, i.capt, 'chara')) {
+                        i.classList.add('nodisplay');
                      }
                      else {
-                        if (dialog.currentgroupnode) {
-                           dialog.currentgroupnode.classList.remove('thundertext');
+                        i.classList.remove('nodisplay');
+                     }
+                  }
+                  putSpan()
+                  let groupCapt = {
+                     ...ui.create.characterDialog_getGroups(list),
+                     clickButton() {
+                        if (this.classList.contains('thundertext')) {
+                           this.classList.remove('thundertext');
+                           if (node.bigGroup) node.bigGroup.hide()
+                           if (node.smallGroup) node.smallGroup.hide()
                         }
-                        dialog.currentgroup = link;
-                        dialog.currentgroupnode = node;
-                        node.classList.add('thundertext');
-                        for (var i = 0; i < dialog.buttons.length; i++) {
-                           if (dialog.currentcapt && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt)) {
-                              dialog.buttons[i].classList.add('nodisplay');
+                        else {
+                           this.classList.add('thundertext');
+                           if (node.bigGroup) node.bigGroup.show()
+                           if (node.smallGroup) node.smallGroup.show()
+                        }
+                     },
+                     clickGroup() {
+                        if (_status.dragged) return;
+                        if (dialog.currentcapt2 == '最近使用' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
+                           dialog.currentcapt2 = null;
+                           dialog.currentcaptnode2.classList.remove('thundertext');
+                           dialog.currentcaptnode2.inited = true;
+                           dialog.currentcaptnode2 = null;
+                        }
+                        var link = this.link;
+                        if (this.classList.contains('thundertext')) {
+                           dialog.currentgroup = null;
+                           dialog.currentgroupnode = null;
+                           this.classList.remove('thundertext');
+                           dialog.buttons.forEach(i => updateCapt(i))
+                        }
+                        else {
+                           if (dialog.currentgroupnode) {
+                              dialog.currentgroupnode.classList.remove('thundertext');
                            }
-                           else if (dialog.currentcapt2 && dialog.buttons[i].capt != dialog.getCurrentCapt(dialog.buttons[i].link, dialog.buttons[i].capt, true)) {
-                              dialog.buttons[i].classList.add('nodisplay');
-                           }
-                           else if (dialog.currentgroup == 'double') {
-                              if (dialog.buttons[i]._changeGroup || dialog.buttons[i].group == 'ye') dialog.buttons[i].classList.remove('nodisplay');
-                              else dialog.buttons[i].classList.add('nodisplay');
-                           }
-                           else {
-                              if (dialog.buttons[i]._changeGroup || dialog.buttons[i].group == 'ye' || dialog.buttons[i].group != dialog.currentgroup) {
-                                 dialog.buttons[i].classList.add('nodisplay');
+                           dialog.currentgroup = link;
+                           dialog.currentgroupnode = this;
+                           this.classList.add('thundertext');
+                           dialog.buttons.forEach(i => {
+                              updateCapt(i)
+                              if (dialog.currentgroup == 'double') {
+                                 if (i._changeGroup || i.group == 'ye') i.classList.remove('nodisplay');
+                                 else i.classList.add('nodisplay');
                               }
                               else {
-                                 dialog.buttons[i].classList.remove('nodisplay');
+                                 if (i._changeGroup || i.group == 'ye' || i.group != dialog.currentgroup) {
+                                    i.classList.add('nodisplay');
+                                 }
                               }
-                           }
+                           })
                         }
                      }
-                  };
-                  for (var i = 0; i < groups.length; i++) {
-                     var span = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
-                     span.style.margin = '3px';
-                     newlined.appendChild(span);
-                     span.innerHTML = lib.translate[groups[i] + '2'] ? get.translation(groups[i] + '2') : get.translation(groups[i]);
-                     span.link = groups[i];
-                     span._nature = natures[i];
-                     span.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', clickGroup);
                   }
-
-                  var span = document.createElement('span');
-                  newlined.appendChild(span);
-                  span.style.margin = '8px';
-
+                  groupCapt.button = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin', '势力列表', newlined, groupCapt.clickButton)
+                  groupCapt.button.style.margin = '3px';
+                  groupCapt.groups.forEach(g => {
+                     let groupdiv = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
+                     groupdiv.style.margin = '3px';
+                     groupdiv.innerHTML = lib.translate[`${g}2`] ? get.translation(`${g}2`) : get.translation(g);
+                     groupdiv.link = g;
+                     groupdiv.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', groupCapt.clickGroup);
+                     if (groupCapt.groups_count[g] > 5) {
+                        if (!node.bigGroup) {
+                           node.bigGroup = ui.create.div('.menu.shadowed.reduce_radius.fixed_medium.pinkbg.hidden', node);
+                           ui.create.div('.tdnode.menubutton.dim', '大势力', node.bigGroup);
+                        }
+                        node.bigGroup.appendChild(groupdiv);
+                     }
+                     else {
+                        if (!node.smallGroup) {
+                           node.smallGroup = ui.create.div('.menu.shadowed.reduce_radius.fixed_medium.pinkbg.hidden', node);
+                           ui.create.div('.tdnode.menubutton.dim', '小势力', node.smallGroup);
+                        }
+                        node.smallGroup.appendChild(groupdiv);
+                     }
+                  })
+                  dialog.groupCapt = groupCapt
+                  putSpan()
+                  let charaCapt = {
+                     curCapt: '无',
+                     charas: {
+                        '无': () => true,
+                        '主公': (name) => get.character(name, 4).includes('zhu'),
+                        '国V': (name) => get.character(name, 4).includes('guoV'),
+                        '英V': (name) => get.character(name, 4).includes('yingV'),
+                        '觉醒': (name) => lib.character[name][3].some(skill => lib.skill[skill].juexingji),
+                     },
+                     filter: () => charaCapt.charas[charaCapt.curCapt],
+                     clickButton() {
+                        if (this.classList.contains('thundertext')) {
+                           this.classList.remove('thundertext');
+                           if (node.charas) node.charas.hide()
+                        }
+                        else {
+                           this.classList.add('thundertext');
+                           if (node.charas) node.charas.show()
+                        }
+                     },
+                     clickChara() {
+                        if (_status.dragged) return;
+                        if (dialog.currentcapt2 == '最近使用' && dialog.currentcaptnode2 != this && !dialog.currentcaptnode2.inited) {
+                           dialog.currentcapt2 = null;
+                           dialog.currentcaptnode2.classList.remove('thundertext');
+                           dialog.currentcaptnode2.inited = true;
+                           dialog.currentcaptnode2 = null;
+                        }
+                        var link = this.link;
+                        if (this.classList.contains('thundertext')) {
+                           charaCapt.curCapt = '无'
+                           dialog.currentcharanode = null
+                           this.classList.remove('thundertext');
+                           dialog.buttons.forEach(i => updateCapt(i))
+                        }
+                        else {
+                           if (dialog.currentcharanode) {
+                              dialog.currentcharanode.classList.remove('thundertext');
+                           }
+                           charaCapt.curCapt = link;
+                           dialog.currentcharanode = this;
+                           this.classList.add('thundertext');
+                           dialog.buttons.forEach(i => updateCapt(i))
+                        }
+                     }
+                  }
+                  charaCapt.button = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin', '角色特性', newlined, charaCapt.clickButton)
+                  charaCapt.button.style.margin = '3px';
+                  for (let i in charaCapt.charas) {
+                     if (i === '无') continue;
+                     let charadiv = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
+                     charadiv.style.margin = '3px';
+                     charadiv.innerHTML = i;
+                     charadiv.link = i;
+                     charadiv.addEventListener(lib.config.touchscreen ? 'touchend' : 'click', charaCapt.clickChara);
+                     if (!node.charas) {
+                        node.charas = ui.create.div('.menu.shadowed.reduce_radius.fixed_medium.pinkbg.hidden', node);
+                        ui.create.div('.tdnode.menubutton.dim', '特性', node.charas);
+                     }
+                     node.charas.appendChild(charadiv);
+                  }
+                  putSpan()
+                  dialog.charaCapt = charaCapt
                   packsource = ui.create.div('.tdnode.pointerdiv.shadowed.reduce_radius.reduce_margin');
                   packsource.style.margin = '3px';
                   newlined.appendChild(packsource);
@@ -34375,13 +34417,18 @@ module.exports = {
                         this.classList.remove('shown');
                         e.stopPropagation();
                      });
-                     for (var i = 0; i < node.childElementCount; i++) {
-                        if (node.childNodes[i].tagName.toLowerCase() == 'span') {
-                           node.childNodes[i].style.display = 'none';
-                           node.childNodes[i].touchlink = ui.create.div(filternode.firstChild, clickCaptNode, '.menubutton.large.capt', node.childNodes[i].innerHTML);
-                           node.childNodes[i].touchlink.link = node.childNodes[i];
+                     phone = (container) => {
+                        container.style.visibility = 'hidden';
+                        container.style.height = '0';
+                        for (var i = 1; i < container.childElementCount; i++) {
+                           if (container.childNodes[i].tagName.toLowerCase() == 'span') {
+                              container.childNodes[i].style.display = 'none';
+                              container.childNodes[i].touchlink = ui.create.div(filternode.firstChild, clickCaptNode, '.menubutton.large.capt', container.childNodes[i].innerHTML);
+                              container.childNodes[i].touchlink.link = container.childNodes[i];
+                           }
                         }
                      }
+                     phone(node.spans);
                      ui.create.node('br', filternode.firstChild);
                   }
                   else {
@@ -34429,9 +34476,11 @@ module.exports = {
                      }
                      else {
                         if (newlined2.style.display == 'none') {
+                           packsource.classList.add('thundertext');
                            newlined2.style.display = 'block';
                         }
                         else {
+                           packsource.classList.remove('thundertext');
                            newlined2.style.display = 'none';
                         }
                      }
@@ -34488,9 +34537,8 @@ module.exports = {
                }
                else {
                   var getGroup = function (name) {
-                     var group = get.is.double(name, true);
-                     if (group) return group[0];
-                     return lib.character[name][1];
+                     let groups = get.charaGroups(name);
+                     if (groups) return groups[0];
                   },
                      groupSort = function (name) {
                         if (!lib.character[name]) return 50;
@@ -34517,7 +34565,6 @@ module.exports = {
                   }
                   return aa > bb ? 1 : -1;
                });
-               dialog = ui.create.dialog('hidden');
                dialog.classList.add('noupdate');
                dialog.classList.add('scroll1');
                dialog.classList.add('scroll2');
@@ -34530,9 +34577,11 @@ module.exports = {
                   dialog._scrollset = true;
                }
                dialog.getCurrentCapt = function (link, capt, noalph) {
+                  if (dialog.charaCapt && !dialog.charaCapt.filter()(link)) return false
+                  if (noalph === 'chara') return capt
                   var currentcapt = noalph ? this.currentcapt2 : this.currentcapt;
                   if (this.seperatelist && noalph) {
-                     if (this.seperatelist[currentcapt].contains(link)) return capt;
+                     if (this.seperatelist[currentcapt].includes(link)) return capt;
                      return null;
                   }
                   if (lib.characterDialogGroup[currentcapt]) {
@@ -34608,15 +34657,15 @@ module.exports = {
                   }
                }
                dialog.add(ui.create.div('.placeholder'));
-               for (i = 0; i < dialog.buttons.length; i++) {
+               dialog.buttons.forEach(i => {
                   if (thisiscard) {
-                     dialog.buttons[i].capt = getCapt(dialog.buttons[i].link[2]);
+                     i.capt = ui.create.characterDialog_getCapt(i.link[2]);
                   }
                   else {
-                     dialog.buttons[i].group = lib.character[dialog.buttons[i].link][1];
-                     dialog.buttons[i].capt = getCapt(dialog.buttons[i].link);
+                     i.group = get.charaGroups(i.link)[0];
+                     i.capt = ui.create.characterDialog_getCapt(i.link);
                   }
-               }
+               })
                if (!expandall) {
                   if (!thisiscard && (lib.characterDialogGroup[lib.config.character_dialog_tool] ||
                      lib.config.character_dialog_tool == '自创')) {
@@ -34624,6 +34673,77 @@ module.exports = {
                   }
                }
                return dialog;
+            },
+            characterDialog_getCapt: function (str) {
+               var capt;
+               if (str.indexOf('_') == -1) {
+                  capt = str[0];
+               }
+               else {
+                  capt = str[str.lastIndexOf('_') + 1];
+               }
+               capt = capt.toLowerCase();
+               if (!/[a-z]/i.test(capt)) {
+                  capt = '自定义';
+               }
+               return capt;
+            },
+            characterDialog_getList: function (thisiscard, filter) {
+               let list = [], namecapt = []
+               if (thisiscard) {
+                  for (let i in lib.card) {
+                     if (!lib.translate[i + '_info']) continue;
+                     if (filter && filter(i)) continue;
+                     list.push(['', get.translation(lib.card[i].type), i]);
+                     if (namecapt.indexOf(ui.create.characterDialog_getCapt(i)) == -1) {
+                        namecapt.push(ui.create.characterDialog_getCapt(i));
+                     }
+                  }
+               }
+               else {
+                  for (let i in lib.character) {
+                     if (lib.character[i][4].contains('minskin')) continue;
+                     if (lib.character[i][4].contains('boss') || lib.character[i][4].contains('hiddenboss')) {
+                        if (lib.config.mode == 'boss') continue;
+                        if (!lib.character[i][4].contains('bossallowed')) continue;
+                     }
+
+                     if (lib.character[i][4].contains('stonehidden')) continue;
+                     if (lib.character[i][4].contains('unseen')) continue;
+                     if (lib.config.banned.contains(i)) continue;
+                     if (lib.characterFilter[i] && !lib.characterFilter[i](get.mode())) continue;
+                     if (filter && filter(i)) continue;
+                     list.push(i);
+                     if (namecapt.indexOf(ui.create.characterDialog_getCapt(i)) == -1) {
+                        namecapt.push(ui.create.characterDialog_getCapt(i));
+                     }
+                  }
+               }
+               namecapt.sort(function (a, b) {
+                  return a > b ? 1 : -1;
+               });
+               return { list, namecapt }
+            },
+            characterDialog_getGroups: function (characters) {
+               let groups = lib.group.slice().removeArray(['wei', 'shu', 'wu', 'jin', 'western', 'key', 'vtuber', 'clubs']);
+               if (get.mode() == 'guozhan' || (get.mode() == 'versus' && _status.mode != 'jiange' && (!_status.connectMode || lib.configOL.versus_mode === '4v4'))) {
+                  groups = ['holo', 'nijisanji', 'vtuber', 'clubs'];
+               }
+               let groups_copy = [...groups]
+               let groups_count = {}
+               characters.forEach(c => {
+                  if (get.is.double(c)) {
+                     groups_count.double ? groups_count.double++ : (groups_count.double = 1)
+                  }
+                  else {
+                     let sourceGroups = get.charaGroups(c)
+                     sourceGroups.forEach(g => groups_count[g] ? groups_count[g]++ : (groups_count[g] = 1))
+                     groups_copy.removeArray(sourceGroups)
+                  }
+               })
+               groups.removeArray(groups_copy)
+               if (groups_count.double) groups.add('double');
+               return { groups, groups_count }
             },
             dialog: function (...args) {
                let small = null, hidden = notouchscroll = forcebutton = promotionbutton = false;
@@ -34741,16 +34861,16 @@ module.exports = {
              */
             control: function () {
                var nc = !ui.control.querySelector('div:not(.removing):not(.stayleft)');
-               var i, controls;
+               var controls;
                var nozoom = false;
                if (Array.isArray(arguments[0])) controls = arguments[0];
                else controls = arguments;
                var control = ui.create.div('.control');
                ui.control.insertBefore(control, _status.createControl || ui.confirm);
-               for (i in lib.element.control) {
+               for (let i in lib.element.control) {
                   control[i] = lib.element.control[i];
                }
-               for (i = 0; i < controls.length; i++) {
+               for (let i = 0; i < controls.length; i++) {
                   if (typeof controls[i] == 'function') {
                      control.custom = controls[i];
                   }
@@ -34853,11 +34973,11 @@ module.exports = {
                }
             },
             skills: function (skills) {
-               var i, same;
+               var same;
                if (ui.skills) {
                   if (ui.skills.skills.length == skills.length && ui.skills.style.display != 'none') {
                      same = true;
-                     for (i = 0; i < skills.length; i++) {
+                     for (let i = 0; i < skills.length; i++) {
                         if (ui.skills.skills.contains(skills[i]) == false) {
                            same = false;
                            break;
@@ -34887,11 +35007,11 @@ module.exports = {
                return ui.skills;
             },
             skills2: function (skills) {
-               var i, same;
+               var same;
                if (ui.skills2) {
                   if (ui.skills2.skills.length == skills.length && ui.skills2.style.display != 'none') {
                      same = true;
-                     for (i = 0; i < skills.length; i++) {
+                     for (let i = 0; i < skills.length; i++) {
                         if (ui.skills2.skills.contains(skills[i]) == false) {
                            same = false;
                            break;
@@ -34921,11 +35041,11 @@ module.exports = {
                return ui.skills2;
             },
             skills3: function (skills) {
-               var i, same;
+               var same;
                if (ui.skills3) {
                   if (ui.skills3.skills.length == skills.length && ui.skills3.style.display != 'none') {
                      same = true;
-                     for (i = 0; i < skills.length; i++) {
+                     for (let i = 0; i < skills.length; i++) {
                         if (ui.skills3.skills.contains(skills[i]) == false) {
                            same = false;
                            break;
@@ -40149,11 +40269,10 @@ module.exports = {
             game.addVideo('uiClear');
             var thrown = document.getElementsByClassName('thrown');
             var nodes = [];
-            var i;
-            for (i = 0; i < thrown.length; i++) {
+            for (let i = 0; i < thrown.length; i++) {
                nodes.push(thrown[i]);
             }
-            for (i = 0; i < nodes.length; i++) {
+            for (let i = 0; i < nodes.length; i++) {
                if (!nodes[i].fixed) nodes[i].delete();
             }
          },
@@ -40650,7 +40769,7 @@ module.exports = {
 let { game, ui, get, ai, lib, _status } = vkCore
 /**音效类game方法 */
 module.exports = {
-    clickAudio: (...args) => {
+    clickAudio(...args) {
         if (lib.config.volumn_click === 0) return;
         var str = '';
         var onerror = null;
@@ -40690,17 +40809,17 @@ module.exports = {
         document.body.appendChild(audio);
         return audio;
     },
-    playAudio: () => {
+    playAudio(...args) {
         if (lib.config.volumn_audio === 0) return;
-        if (_status.video && arguments[1] != 'video') return;
+        if (_status.video && args[1] != 'video') return;
         var str = '';
         var onerror = null;
-        for (var i = 0; i < arguments.length; i++) {
-            if (typeof arguments[i] === 'string' || typeof arguments[i] == 'number') {
-                str += '/' + arguments[i];
+        for (var i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'string' || typeof args[i] == 'number') {
+                str += '/' + args[i];
             }
-            else if (typeof arguments[i] == 'function') {
-                onerror = arguments[i]
+            else if (typeof args[i] == 'function') {
+                onerror = args[i]
             }
             if (_status.video) break;
         }
@@ -40737,7 +40856,7 @@ module.exports = {
         ui.window.appendChild(audio);
         return audio;
     },
-    trySkillAudio: (skill, player, directaudio) => {
+    trySkillAudio(skill, player, directaudio) {
         game.broadcast(game.trySkillAudio, skill, player, directaudio);
         var info = get.info(skill);
         if (!info)
@@ -40798,8 +40917,8 @@ module.exports = {
             }
         }
     },
-    playSkillAudio: (name, index) => {
-        if (_status.video && arguments[1] != 'video') return;
+    playSkillAudio(name, index) {
+        if (_status.video && index != 'video') return;
         if (!lib.config.repeat_audio && _status.skillaudio.contains(name)) return;
         game.addVideo('playSkillAudio', null, name);
         if (name.indexOf('|') < name.lastIndexOf('|')) {
@@ -42241,7 +42360,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*--------标签--------*/\nhtml {\n  
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".card_hightlight {\n  -webkit-animation: pulse 5s infinite;\n          animation: pulse 5s infinite;\n}\n.player_buff {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(255, 150, 0, 0.45);\n}\n.player_nerf {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(10, 155, 70, 0.5);\n}\n@-webkit-keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n.displayer {\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n#window:not(.low_performance) .player.fullskin.glow_phase .displayer::before {\n  content: '';\n  position: absolute;\n  pointer-events: none;\n  z-index: 3;\n  width: 100%;\n  height: 100%;\n  background: linear-gradient(#1a98ca, #1a98ca), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(transparent, #1a98ca);\n  background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;\n  background-repeat: no-repeat, repeat, repeat, no-repeat;\n  background-position: 0% 0%, 0 0, 0 0, 0 0;\n  /* 初始位置 */\n  -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n          clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n  /* 添加动画效果 */\n  -webkit-animation: move-wrapper 3s infinite linear;\n          animation: move-wrapper 3s infinite linear;\n}\n#window:not(.low_performance) .player .displayer::after,\n#window:not(.low_performance) .card .displayer::after {\n  content: '已选择';\n  position: absolute;\n  pointer-events: none;\n  z-index: 4;\n  width: 100%;\n  height: 100%;\n  top: calc(50% - 1em);\n  left: calc(45% - 1.5em);\n  font-size: larger;\n  font-family: 'Tiejili', 'LuoLiTi2', sans-serif;\n  color: white;\n  opacity: 0;\n  transition: all 1s;\n}\n#window:not(.low_performance) .player.selected .displayer::after,\n#window:not(.low_performance) .card.selected .displayer::after {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  opacity: 1;\n}\n@-webkit-keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\n@keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\ntd.warnning_flash {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  -webkit-animation: nofade_flash 2s infinite;\n          animation: nofade_flash 2s infinite;\n}\n.slow_flash {\n  animation: nofade_flash 5s infinite;\n  -webkit-animation: nofade_flash 5s infinite;\n}\n@-webkit-keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".card_hightlight {\n  -webkit-animation: pulse 5s infinite;\n          animation: pulse 5s infinite;\n}\n.player_buff {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(255, 150, 0, 0.45);\n}\n.player_nerf {\n  animation: game_start 0.2s;\n  -webkit-animation: game_start 0.2s;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  z-index: 3;\n  pointer-events: none;\n  background: rgba(10, 155, 70, 0.5);\n}\n@-webkit-keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n@keyframes pulse {\n  0% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n  50% {\n    box-shadow: 0 0 8px 6px #faf607;\n  }\n  100% {\n    box-shadow: 0 0 8px 6px #fff;\n  }\n}\n.displayer {\n  left: 0;\n  top: 0;\n  width: 100% !important;\n  height: 100% !important;\n}\n#window:not(.low_performance) .player.fullskin.glow_phase .displayer::before {\n  content: '';\n  position: absolute;\n  pointer-events: none;\n  z-index: 3;\n  width: 100%;\n  height: 100%;\n  background: linear-gradient(#1a98ca, #1a98ca), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(rgba(255,255,255,0.2) 1px, transparent 0, transparent 19px), linear-gradient(transparent, #1a98ca);\n  background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;\n  background-repeat: no-repeat, repeat, repeat, no-repeat;\n  background-position: 0% 0%, 0 0, 0 0, 0 0;\n  /* 初始位置 */\n  -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n          clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);\n  /* 添加动画效果 */\n  -webkit-animation: move-wrapper 3s infinite linear;\n          animation: move-wrapper 3s infinite linear;\n}\n#window:not(.low_performance) .player .displayer::after,\n#window:not(.low_performance) .card .displayer::after {\n  content: '已选择';\n  position: absolute;\n  pointer-events: none;\n  z-index: 4;\n  width: 100%;\n  height: 100%;\n  top: calc(50% - 1em);\n  left: calc(45% - 1.5em);\n  font-size: larger;\n  font-family: 'Tiejili', 'LuoLiTi2', sans-serif;\n  color: white;\n  opacity: 0;\n  transition: all 1s;\n}\n#window:not(.low_performance) .player.selected .displayer::after,\n#window:not(.low_performance) .card.selected .displayer::after {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  opacity: 1;\n}\n@-webkit-keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\n@keyframes move-wrapper {\n  from {\n    opacity: 0.2;\n  }\n  85% {\n    opacity: 0.9;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 0% 95%);\n  }\n  to {\n    opacity: 0.1;\n    background-position: 0 100%, 0 0, 0 0, 0 0;\n    /* 终止位置 */\n    -webkit-clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  }\n}\ntd.warnning_flash {\n  text-shadow: 0 0 2px #F00, 0px 0px 4px #a54d2a;\n  -webkit-animation: nofade_flash 2s infinite;\n          animation: nofade_flash 2s infinite;\n}\n.slow_flash {\n  animation: nofade_flash 5s infinite;\n  -webkit-animation: nofade_flash 5s infinite;\n}\n@-webkit-keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n@keyframes nofade_flash {\n  0% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.4;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n.fixed_medium {\n  display: flex !important;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: center;\n}\n.fixed_medium.fixed_around {\n  justify-content: space-around;\n}\n.fixed_medium.hidden {\n  height: 0;\n}\n.fixed_medium.pinkbg {\n  background-image: linear-gradient(rgba(111,77,105,0.2), rgba(111,77,105,0.2));\n}\n.fixed_medium > div {\n  width: fit-content;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -75547,13 +75666,18 @@ module.exports = {
                 }
                 return cards;
             },
-            getGroups() {
-                let result = [this.group];
-                if (this.subgroup)
-                    result.push(this.subgroup);
-                if (this.group === 'VirtuaReal')
-                    result.push('nijisanji');
-                return _.uniq(result);
+            getGroups(aim) {
+                if (aim) {
+                    return this.getGroups().includes(aim);
+                }
+                else {
+                    let result = [this.group];
+                    if (this.subgroup)
+                        result.push(this.subgroup);
+                    if (this.group === 'VirtuaReal')
+                        result.push('nijisanji');
+                    return _.uniq(result);
+                }
             },
             isYingV() {
                 var info = lib.character[this.name || this.name1];
@@ -75679,6 +75803,44 @@ module.exports = {
                     }
                 }
                 return bool;
+            },
+        };
+    }
+};
+
+
+/***/ }),
+
+/***/ 1804:
+/***/ ((module) => {
+
+"use strict";
+
+module.exports = {
+    getData(vkCore) {
+        const { game, ui, get, ai, lib, _status } = vkCore;
+        return {
+            charaGroups: (name) => {
+                let double = get.is.double(name, true);
+                if (double)
+                    return double;
+                let source = lib.character[name][1];
+                if (source instanceof Array) {
+                    return source;
+                }
+                else {
+                    return [source];
+                }
+            },
+            charaMisson: (name) => {
+                if (!lib.character[name] || !lib.character[name][4])
+                    return false;
+                for (let i of lib.character[name][4]) {
+                    if (i.indexOf('misson:') == 0) {
+                        return i.split(':')[1];
+                    }
+                }
+                return false;
             },
         };
     }
